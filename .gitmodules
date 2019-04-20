@@ -1,6 +1,3 @@
 [submodule ".idea/codeStyles"]
 	path = .idea/codeStyles
-	url = https://github.com/jinahya/dot-idea-codestyles
-[submodule "verbose-hello-world-api"]
-	path = verbose-hello-world-api
-	url = https://github.com/jinahya/verbose-hello-world-api.git
+	url = https://github.com/jinahya/dot-idea-codestyles.git
