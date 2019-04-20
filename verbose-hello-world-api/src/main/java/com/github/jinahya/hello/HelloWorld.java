@@ -8,7 +8,8 @@ package com.github.jinahya.hello;
 public interface HelloWorld {
 
     /**
-     * The number of bytes to represent the {@code hello, world} string in {@code US-ASCII} character set.
+     * The number of bytes to represent the {@code hello, world} string in {@code US-ASCII} character set. The value is
+     * {@value SIZE}.
      */
     int SIZE = 12;
 
@@ -18,7 +19,7 @@ public interface HelloWorld {
      * @param array the array to which {@code hello, world} bytes are set.
      * @param index the starting index of the array.
      * @return given array.
-     * @throws NullPointerException      if {@code array} is {@code null}
+     * @throws NullPointerException      if the {@code array} is {@code null}
      * @throws IndexOutOfBoundsException if {@code index} is negative or {@code index} + {@value SIZE} is greater than
      *                                   {@code array.length}
      */
