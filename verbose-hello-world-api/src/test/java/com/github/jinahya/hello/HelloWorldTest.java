@@ -23,6 +23,8 @@ import static org.mockito.Mockito.when;
 @ExtendWith({MockitoExtension.class})
 public class HelloWorldTest {
 
+    // -----------------------------------------------------------------------------------------------------------------
+
     /**
      * Asserts the value of {@link HelloWorld#SIZE} constant equals to the length of {@code hello, world} string in form
      * of bytes encoded with {@link StandardCharsets#US_ASCII} character set.
@@ -35,17 +37,7 @@ public class HelloWorldTest {
                 expected, actual, "HelloWorld.SIZE(" + actual + ") is not equal to " + expected);
     }
 
-    @BeforeEach
-    private void stubSetAsReturnsGivenArray() {
-        when(helloWorld.set(any(), anyInt())).thenAnswer(i -> i.getArguments()[0]);
-    }
-
-    @Test
-    void assertSetReturnsGiven() {
-        final byte[] array = current().nextBoolean() ? null : new byte[current().nextInt(0, HelloWorld.SIZE << 2)];
-        final int index = current().nextInt();
-        assertEquals(array, helloWorld.set(array, index));
-    }
+    // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * Asserts {@link HelloWorld#set(byte[])} throws {@code NullPointerException} when {@code array} is {@code null}.
@@ -55,6 +47,34 @@ public class HelloWorldTest {
         // @todo: implement!
     }
 
+    /**
+     * Asserts {@link HelloWorld#set(byte[])} method throws {@code IndexOutOfBoundsException} when {@code array.length}
+     * is less than {@link HelloWorld#SIZE}.
+     */
+    @Test
+    public void assertSetThrowsIndexOufOfBoundsExceptionWhenArrayLengthIsLessThanSize() {
+        // @todo: implement!
+    }
+
+    @Test
+    public void assertSetReturnsSpecifiedArray() {
+        // @todo: implement!
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    @Test
+    private void assertSetReturnsGiven() {
+        final byte[] array = current().nextBoolean() ? null : new byte[current().nextInt(0, HelloWorld.SIZE << 2)];
+        final int index = current().nextInt();
+        assertEquals(array, helloWorld.set(array, index));
+    }
+
+    @BeforeEach
+    private void stubSetAsReturnsGivenArray() {
+        when(helloWorld.set(any(), anyInt())).thenAnswer(i -> i.getArguments()[0]);
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
     @Spy
     private HelloWorld helloWorld;
 }
