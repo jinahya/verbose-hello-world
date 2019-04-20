@@ -2,12 +2,15 @@ package com.github.jinahya.hello;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.nio.charset.StandardCharsets;
 
 /**
  * A class for testing {@link HelloWorld} class.
  */
+@ExtendWith({MockitoExtension.class})
 public class HelloWorldTest {
 
     /**
