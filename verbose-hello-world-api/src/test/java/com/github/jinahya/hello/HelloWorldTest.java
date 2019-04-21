@@ -5,6 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -41,13 +42,35 @@ public class HelloWorldTest {
      * is less than {@link HelloWorld#SIZE}.
      */
     @Test
-    public void assertSetArrayThrowsIndexOufOfBoundsExceptionWhenArrayLengthIsLessThanSize() {
+    public void assertSetArrayThrowsIndexOufOfBoundsExceptionWhenArrayLengthIsLessThanHelloWorldSize() {
+        // @todo: implement!
+    }
+
+    /**
+     * Asserts {@link HelloWorld#set(byte[])} method returns specified array argument.
+     */
+    @Test
+    public void assertSetArrayReturnsGivenArray() {
         // @todo: implement!
     }
 
     // -----------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Asserts {@link HelloWorld#write(OutputStream)} method throws {@code NullPointerException} when {@code stream}
+     * argument is {@code null}.
+     */
     @Test
     public void assertWriteStreamThrowsNullPointerExceptionWhenStreamIsNull() {
+        // @todo: implement!
+    }
+
+    /**
+     * Asserts {@link HelloWorld#write(OutputStream)} method returns specified {@code stream} argument.
+     */
+    @Test
+    public void assertWriteStreamReturnsSpecifiedStream() {
+        // @todo: implement!
     }
 
     // -----------------------------------------------------------------------------------------------------------------
