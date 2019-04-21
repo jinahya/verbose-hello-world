@@ -48,6 +48,17 @@ public interface HelloWorld {
         return null;
     }
 
+    /**
+     * Writes {@value SIZE} bytes of {@code hello, world} string on specified output stream.
+     *
+     * @param stream the output stream to which bytes are written.
+     * @param <T>    output stream type parameter.
+     * @return given output stream.
+     * @throws IOException          if an I/O error occurs.
+     * @throws NullPointerException if {@code stream} is {@code null}
+     * @see #set(byte[])
+     * @see OutputStream#write(byte[])
+     */
     default <T extends OutputStream> T write(final T stream) throws IOException {
         // @todo: implement!
         return null;

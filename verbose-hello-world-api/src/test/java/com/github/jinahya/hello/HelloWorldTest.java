@@ -26,7 +26,7 @@ public class HelloWorldTest {
         assertEquals("hello, world".getBytes(StandardCharsets.US_ASCII).length, HelloWorld.SIZE);
     }
 
-    // -----------------------------------------------------------------------------------------------------------------
+    // ----------------------------------------------------------------------------------------------------- set(byte[])
 
     /**
      * Asserts {@link HelloWorld#set(byte[])} throws {@code NullPointerException} when {@code array} is {@code null}.
@@ -43,6 +43,11 @@ public class HelloWorldTest {
     @Test
     public void assertSetArrayThrowsIndexOufOfBoundsExceptionWhenArrayLengthIsLessThanSize() {
         // @todo: implement!
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    @Test
+    public void assertWriteStreamThrowsNullPointerExceptionWhenStreamIsNull() {
     }
 
     // -----------------------------------------------------------------------------------------------------------------
