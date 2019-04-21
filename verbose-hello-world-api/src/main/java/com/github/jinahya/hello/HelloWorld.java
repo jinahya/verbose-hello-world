@@ -65,6 +65,7 @@ public interface HelloWorld {
     }
 
     default <T extends File> T write(final T file) throws IOException {
+        // @todo: implement!
         return null;
     }
 
@@ -73,6 +74,7 @@ public interface HelloWorld {
         return null;
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
     default <T extends ByteBuffer> T put(final T buffer) {
         // @todo: implement!
         return null;

@@ -12,6 +12,7 @@ import org.mockito.quality.Strictness;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 
 import static java.util.concurrent.ThreadLocalRandom.current;
@@ -110,7 +111,7 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#write(File)} method write exactly {@value HelloWorld#SIZE} bytes to specified file.
      */
     @Test
-    public void assertWriteFileWritesExactly12BytesToFile() {
+    public void assertWriteFileWritesExactly12BytesToFile() throws IOException {
         // @todo: implement!
     }
 
@@ -119,6 +120,34 @@ public class HelloWorldTest {
      */
     @Test
     public void assertWriteFileReturnsSpecifiedFile() {
+        // @todo: implement!
+    }
+
+    // ---------------------------------------------------------------------------------------------------- send(Socket)
+
+    /**
+     * Asserts {@link HelloWorld#send(Socket)} method throws {@code NullPointerException} when the {@code socket}
+     * argument is {@code null}.
+     */
+    @Test
+    public void assertSendSocketThrowsNullPointerExceptionWhenSocketIsNull() {
+        // @todo: implement!
+    }
+
+    /**
+     * Asserts {@link HelloWorld#send(Socket)} method sends exactly {@value HelloWorld#SIZE} bytes to the {@code
+     * socket}.
+     */
+    @Test
+    public void assertSendSocketSendsExactly12BytesToSocket() {
+        // @todo: implement!
+    }
+
+    /**
+     * Asserts {@link HelloWorld#send(Socket)} method returns the specified {@code socket}.
+     */
+    @Test
+    public void assertSendSocketReturnsSpecifiedSocket() {
         // @todo: implement!
     }
 
