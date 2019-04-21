@@ -76,10 +76,11 @@ public class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#write(OutputStream)} method writes {@value HelloWorld#SIZE} bytes to the stream.
+     * Asserts {@link HelloWorld#write(OutputStream)} method writes exactly {@value HelloWorld#SIZE} bytes to the
+     * stream.
      */
     @Test
-    public void assertWriteStreamWrites12Bytes() {
+    public void assertWriteStreamWritesExactly12Bytes() {
         // @todo: implement!
     }
 
