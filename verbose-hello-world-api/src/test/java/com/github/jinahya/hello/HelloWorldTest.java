@@ -1,19 +1,29 @@
 package com.github.jinahya.hello;
 
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
+import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.when;
 
 /**
  * A class for testing {@link HelloWorld} class.
  */
+@MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith({MockitoExtension.class})
+@Slf4j
 public class HelloWorldTest {
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -71,6 +81,28 @@ public class HelloWorldTest {
     @Test
     public void assertWriteStreamReturnsSpecifiedStream() {
         // @todo: implement!
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Stubs {@link HelloWorld#set(byte[], int)} method of {@link #helloWorld} to return specified {@code array}
+     * argument.
+     */
+    @BeforeEach
+    private void stubSetArrayWithIndexToReturnSpecifiedArray() {
+        when(helloWorld.set(any(), anyInt())).thenAnswer(i -> i.getArgument(0));
+    }
+
+    /**
+     * Asserts {@link HelloWorld#set(byte[], int)} method of {@link #helloWorld} returns specified {@code array}
+     * argument.
+     */
+    @Test
+    private void assertSetArrayWitnIndexReturnsSpecifiedArray() {
+        final byte[] array = current().nextBoolean() ? null : new byte[current().nextInt(HelloWorld.SIZE << 1)];
+        final int index = current().nextInt();
+        assertEquals(array, helloWorld.set(array, index));
     }
 
     // -----------------------------------------------------------------------------------------------------------------
