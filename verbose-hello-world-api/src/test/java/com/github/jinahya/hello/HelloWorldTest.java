@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
@@ -91,6 +92,33 @@ public class HelloWorldTest {
      */
     @Test
     public void assertWriteStreamReturnsSpecifiedStream() throws IOException {
+        // @todo: implement!
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Asserts {@link HelloWorld#write(File)} method throws {@code NullPointerException} when {@code file} argument is
+     * {@code null}.
+     */
+    @Test
+    public void assertWriteFileThrowsNullPointerExceptionWhenFileIsNull() {
+        // @todo: implement!
+    }
+
+    /**
+     * Asserts {@link HelloWorld#write(File)} method write exactly {@value HelloWorld#SIZE} bytes to specified file.
+     */
+    @Test
+    public void assertWriteFileWritesExactly12BytesToFile() {
+        // @todo: implement!
+    }
+
+    /**
+     * Asserts {@link HelloWorld#write(File)} method returns specified file.
+     */
+    @Test
+    public void assertWriteFileReturnsSpecifiedFile() {
         // @todo: implement!
     }
 
