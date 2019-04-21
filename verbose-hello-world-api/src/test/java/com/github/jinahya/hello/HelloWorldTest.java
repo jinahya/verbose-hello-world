@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
@@ -81,7 +82,7 @@ public class HelloWorldTest {
      * stream.
      */
     @Test
-    public void assertWriteStreamWritesExactly12Bytes() {
+    public void assertWriteStreamWritesExactly12Bytes() throws IOException {
         // @todo: implement!
     }
 
@@ -89,7 +90,7 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#write(OutputStream)} method returns specified {@code stream} argument.
      */
     @Test
-    public void assertWriteStreamReturnsSpecifiedStream() {
+    public void assertWriteStreamReturnsSpecifiedStream() throws IOException {
         // @todo: implement!
     }
 
