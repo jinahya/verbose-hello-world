@@ -32,7 +32,7 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#set(byte[])} throws {@code NullPointerException} when {@code array} is {@code null}.
      */
     @Test
-    public void assertSetThrowsNullPointerExceptionWhenArrayIsNull() {
+    public void assertSetArrayThrowsNullPointerExceptionWhenArrayIsNull() {
         // @todo: implement!
     }
 
@@ -41,7 +41,7 @@ public class HelloWorldTest {
      * is less than {@link HelloWorld#SIZE}.
      */
     @Test
-    public void assertSetThrowsIndexOufOfBoundsExceptionWhenArrayLengthIsLessThanSize() {
+    public void assertSetArrayThrowsIndexOufOfBoundsExceptionWhenArrayLengthIsLessThanSize() {
         // @todo: implement!
     }
 
