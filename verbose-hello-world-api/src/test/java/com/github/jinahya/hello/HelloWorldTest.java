@@ -16,6 +16,7 @@ import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -112,6 +113,7 @@ public class HelloWorldTest {
         final byte[] array = current().nextBoolean() ? null : new byte[current().nextInt(HelloWorld.SIZE << 1)];
         final int index = current().nextInt();
         assertEquals(array, helloWorld.set(array, index));
+        verify(helloWorld).set(array, index);
     }
 
     // -----------------------------------------------------------------------------------------------------------------
