@@ -76,6 +76,14 @@ public class HelloWorldTest {
     }
 
     /**
+     * Asserts {@link HelloWorld#write(OutputStream)} method writes {@value HelloWorld#SIZE} bytes to the stream.
+     */
+    @Test
+    public void assertWriteStreamWrites12Bytes() {
+        // @todo: implement!
+    }
+
+    /**
      * Asserts {@link HelloWorld#write(OutputStream)} method returns specified {@code stream} argument.
      */
     @Test
