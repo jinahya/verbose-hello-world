@@ -54,7 +54,7 @@ public class HelloWorldTest {
         // @todo: implement!
     }
 
-    // -----------------------------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------- write(OutputStream)
 
     /**
      * Asserts {@link HelloWorld#write(OutputStream)} method throws {@code NullPointerException} when {@code stream}
