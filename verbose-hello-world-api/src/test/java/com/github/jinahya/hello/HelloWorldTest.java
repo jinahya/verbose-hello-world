@@ -1,25 +1,17 @@
 package com.github.jinahya.hello;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 
 import java.nio.charset.StandardCharsets;
 
-import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.when;
 
 /**
  * A class for testing {@link HelloWorld} class.
  */
-@MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith({MockitoExtension.class})
 public class HelloWorldTest {
 
@@ -31,10 +23,7 @@ public class HelloWorldTest {
      */
     @Test
     void assertSizeEqualsToHelloWorldBytes() {
-        final int expected = "hello, world".getBytes(StandardCharsets.US_ASCII).length;
-        final int actual = HelloWorld.SIZE;
-        assertEquals(
-                expected, actual, "HelloWorld.SIZE(" + actual + ") is not equal to " + expected);
+        assertEquals("hello, world".getBytes(StandardCharsets.US_ASCII).length, HelloWorld.SIZE);
     }
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -54,24 +43,6 @@ public class HelloWorldTest {
     @Test
     public void assertSetThrowsIndexOufOfBoundsExceptionWhenArrayLengthIsLessThanSize() {
         // @todo: implement!
-    }
-
-    @Test
-    public void assertSetReturnsSpecifiedArray() {
-        // @todo: implement!
-    }
-
-    // -----------------------------------------------------------------------------------------------------------------
-    @Test
-    private void assertSetReturnsGiven() {
-        final byte[] array = current().nextBoolean() ? null : new byte[current().nextInt(0, HelloWorld.SIZE << 2)];
-        final int index = current().nextInt();
-        assertEquals(array, helloWorld.set(array, index));
-    }
-
-    @BeforeEach
-    private void stubSetAsReturnsGivenArray() {
-        when(helloWorld.set(any(), anyInt())).thenAnswer(i -> i.getArguments()[0]);
     }
 
     // -----------------------------------------------------------------------------------------------------------------
