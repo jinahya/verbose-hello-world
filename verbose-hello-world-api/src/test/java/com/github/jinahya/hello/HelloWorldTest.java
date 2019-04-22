@@ -4,6 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -16,6 +19,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.stream.Stream;
 
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -193,13 +197,35 @@ public class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#put(ByteBuffer)} method throws a {@link java.nio.BufferOverflowException} when the
-     * value of {@link ByteBuffer#remaining() remaining()} of {@code buffer} argument is less than {@link
-     * HelloWorld#SIZE}.
+     * Provides a stream of test arguments which each is an instance of {@link ByteBuffer} whose {@code remaining()} is
+     * less than {@link HelloWorld#SIZE}.
+     *
+     * @return a stream of test arguments of byte buffers.
      */
-    @Test
-    public void assertPutBufferThrowsBufferOverflowExceptionWhenBufferRemainingIsLessThan12() {
+    private static Stream<Arguments> buffersOfNotEnoughRemaining() {
+        return Stream.of(
+                Arguments.of(ByteBuffer.allocate(current().nextInt(HelloWorld.SIZE))),
+                Arguments.of(ByteBuffer.allocateDirect(current().nextInt(HelloWorld.SIZE)))
+        );
+    }
+
+    /**
+     * Asserts {@link HelloWorld#put(ByteBuffer)} method throws a {@link java.nio.BufferOverflowException} when {@link
+     * ByteBuffer#remaining() buffer.remaining()} is less than {@link HelloWorld#SIZE}.
+     *
+     * @param buffer a byte buffer whose {@link ByteBuffer#remaining() remaining} is less than {@link HelloWorld#SIZE}.
+     */
+    @MethodSource({"buffersOfNotEnoughRemaining"})
+    @ParameterizedTest
+    public void assertPutBufferThrowsBufferOverflowExceptionWhenBufferRemainingIsLessThan12(final ByteBuffer buffer) {
         // @todo: implement!
+    }
+
+    private static Stream<Arguments> buffersOfEnoughRemaining() {
+        return Stream.of(
+                Arguments.of(ByteBuffer.allocate(HelloWorld.SIZE)),
+                Arguments.of(ByteBuffer.allocateDirect(HelloWorld.SIZE))
+        );
     }
 
     /**
@@ -207,7 +233,7 @@ public class HelloWorldTest {
      * {@value HelloWorld#SIZE}.
      */
     @Test
-    public void assertPutBufferIncreasesBufferPositionBy12() {
+    public void assertPutBufferIncreasesBufferPositionBy12(final ByteBuffer buffer) {
         // @todo: implement!
     }
 
