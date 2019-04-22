@@ -1,5 +1,6 @@
 package com.github.jinahya.hello;
 
+import java.io.DataOutput;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -44,6 +45,23 @@ public interface HelloWorld {
      * @see #set(byte[], int)
      */
     default byte[] set(final byte[] array) {
+        // @todo: implement!
+        return null;
+    }
+
+    /**
+     * Wrties {@value SIZE} bytes of {@code hello, world} string represented in {@code US-ASCII} character set to
+     * specified data output.
+     *
+     * @param data the data output to which bytes are written.
+     * @param <T>  data output type parameter.
+     * @return the specified data output.
+     * @throws NullPointerException if {@code data} is {@code null}
+     * @throws IOException          if an I/O error occurs
+     * @see #set(byte[])
+     * @see DataOutput#write(byte[])
+     */
+    default <T extends DataOutput> T write(T data) throws IOException {
         // @todo: implement!
         return null;
     }

@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import java.io.DataOutput;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -69,6 +70,34 @@ public class HelloWorldTest {
         // @todo: implement!
     }
 
+    // ----------------------------------------------------------------------------------------------- write(DataOutput)
+
+    /**
+     * Asserts {@link HelloWorld#write(DataOutput)} method throws a {@code NullPointerException} when {@code data}
+     * argument is {@code null}.
+     */
+    @Test
+    public void assertWriteDataThrowsNullPointerExceptionWhenDataOutputIsNull() {
+        // @todo: implement!
+    }
+
+    /**
+     * Asserts {@link HelloWorld#write(DataOutput)} method writes exactly {@value HelloWorld#SIZE} bytes to specified
+     * data output.
+     */
+    @Test
+    public void assertWriteDataMethodWritesExactly12BytesToDataOutput() {
+        // @todo: implement!
+    }
+
+    /**
+     * Asserts {@link HelloWorld#write(DataOutput)} method returns the specified data output.
+     */
+    @Test
+    public void assertWriteDataMethodReturnsSpecifiedDataOutput() {
+        // @todo: implement!
+    }
+
     // --------------------------------------------------------------------------------------------- write(OutputStream)
 
     /**
@@ -76,7 +105,7 @@ public class HelloWorldTest {
      * argument is {@code null}.
      */
     @Test
-    public void assertWriteStreamThrowsNullPointerExceptionWhenStreamIsNull() {
+    public void assertWriteStreamThrowsNullPointerExceptionWhenOutputStreamIsNull() {
         // @todo: implement!
     }
 
@@ -85,7 +114,7 @@ public class HelloWorldTest {
      * stream.
      */
     @Test
-    public void assertWriteStreamWritesExactly12Bytes() throws IOException {
+    public void assertWriteStreamWritesExactly12BytesToOutputStream() throws IOException {
         // @todo: implement!
     }
 
@@ -93,7 +122,7 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#write(OutputStream)} method returns specified {@code stream} argument.
      */
     @Test
-    public void assertWriteStreamReturnsSpecifiedStream() throws IOException {
+    public void assertWriteStreamReturnsSpecifiedOutputStream() throws IOException {
         // @todo: implement!
     }
 
