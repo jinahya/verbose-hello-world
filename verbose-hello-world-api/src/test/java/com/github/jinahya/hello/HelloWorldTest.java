@@ -203,11 +203,11 @@ public class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#put(ByteBuffer)} method puts exactly {@value HelloWorld#SIZE} bytes to specified byte
-     * buffer.
+     * Asserts {@link HelloWorld#put(ByteBuffer)} method increases the {@code buffer}'s {@code position} by exactly
+     * {@value HelloWorld#SIZE}.
      */
     @Test
-    public void assertPutBufferPutsExactly12Bytes() {
+    public void assertPutBufferIncreasesBufferPositionBy12() {
         // @todo: implement!
     }
 
