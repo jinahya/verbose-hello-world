@@ -64,11 +64,27 @@ public interface HelloWorld {
         return null;
     }
 
+    /**
+     * Writes {@value SIZE} bytes of {@code hello, world} string on specified file.
+     *
+     * @param file the file to which bytes are written
+     * @param <T>  file type parameter
+     * @return the specified file
+     * @throws IOException if an I/O error occurs.
+     */
     default <T extends File> T write(final T file) throws IOException {
         // @todo: implement!
         return null;
     }
 
+    /**
+     * Sends {@value SIZE} bytes of {@code hello, world} string to specified socket.
+     *
+     * @param socket the socket to which bytes are sent
+     * @param <T>    socket type parameter.
+     * @return the specified socket.
+     * @throws IOException if an I/O error occurs.
+     */
     default <T extends Socket> T send(final T socket) throws IOException {
         // @todo: implement!
         return null;
