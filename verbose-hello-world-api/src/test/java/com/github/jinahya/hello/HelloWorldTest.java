@@ -96,7 +96,7 @@ public class HelloWorldTest {
         // @todo: implement!
     }
 
-    // -----------------------------------------------------------------------------------------------------------------
+    // ----------------------------------------------------------------------------------------------------- write(File)
 
     /**
      * Asserts {@link HelloWorld#write(File)} method throws {@code NullPointerException} when {@code file} argument is
