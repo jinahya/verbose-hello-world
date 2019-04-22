@@ -112,7 +112,8 @@ public interface HelloWorld {
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
-     * Puts {@value SIZE} bytes of {@code hello, world} string on specified byte buffer.
+     * Puts {@value SIZE} bytes of {@code hello, world} on specified byte buffer. The {@code position} of the byte
+     * buffer, on successful return, is increased by {@value SIZE}.
      *
      * @param buffer the byte buffer to which bytes are put
      * @param <T>    byte buffer type parameter
