@@ -77,7 +77,7 @@ public class HelloWorldTest {
      * argument is {@code null}.
      */
     @Test
-    public void assertWriteDataThrowsNullPointerExceptionWhenDataOutputIsNull() {
+    public void assertWriteDataThrowsNullPointerExceptionWhenDataIsNull() {
         // @todo: implement!
     }
 
@@ -86,7 +86,7 @@ public class HelloWorldTest {
      * data output.
      */
     @Test
-    public void assertWriteDataMethodWritesExactly12BytesToDataOutput() {
+    public void assertWriteDataMethodWritesExactly12BytesToData() {
         // @todo: implement!
     }
 
@@ -94,7 +94,7 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#write(DataOutput)} method returns the specified data output.
      */
     @Test
-    public void assertWriteDataMethodReturnsSpecifiedDataOutput() {
+    public void assertWriteDataMethodReturnsSpecifiedData() {
         // @todo: implement!
     }
 
@@ -105,7 +105,7 @@ public class HelloWorldTest {
      * argument is {@code null}.
      */
     @Test
-    public void assertWriteStreamThrowsNullPointerExceptionWhenOutputStreamIsNull() {
+    public void assertWriteStreamThrowsNullPointerExceptionWhenStreamIsNull() {
         // @todo: implement!
     }
 
@@ -114,7 +114,7 @@ public class HelloWorldTest {
      * stream.
      */
     @Test
-    public void assertWriteStreamWritesExactly12BytesToOutputStream() throws IOException {
+    public void assertWriteStreamWritesExactly12BytesToStream() throws IOException {
         // @todo: implement!
     }
 
@@ -122,7 +122,7 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#write(OutputStream)} method returns specified {@code stream} argument.
      */
     @Test
-    public void assertWriteStreamReturnsSpecifiedOutputStream() throws IOException {
+    public void assertWriteStreamReturnsSpecifiedStream() throws IOException {
         // @todo: implement!
     }
 
