@@ -86,7 +86,7 @@ public class HelloWorldTest {
      * data output.
      */
     @Test
-    public void assertWriteDataMethodWritesExactly12BytesToData() {
+    public void assertWriteDataMethodWritesExactly12BytesToData() throws IOException {
         // @todo: implement!
     }
 
