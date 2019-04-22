@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
 import static java.util.concurrent.ThreadLocalRandom.current;
@@ -148,6 +149,34 @@ public class HelloWorldTest {
      */
     @Test
     public void assertSendSocketReturnsSpecifiedSocket() throws IOException {
+        // @todo: implement!
+    }
+
+    // ------------------------------------------------------------------------------------------------- put(ByteBuffer)
+
+    /**
+     * Asserts {@link HelloWorld#put(ByteBuffer)} method throws {@code NullPointerException} when {@code buffer}
+     * argument is {@code null}.
+     */
+    @Test
+    public void assertPutByteBufferThrowsNullPointerExceptionWhenBufferIsNull() {
+        // @todo: implement!
+    }
+
+    /**
+     * Asserts {@link HelloWorld#put(ByteBuffer)} method puts exactly {@value HelloWorld#SIZE} bytes to specified byte
+     * buffer.
+     */
+    @Test
+    public void assertPutByteBufferPutsExactly12Bytes() {
+        // @todo: implement!
+    }
+
+    /**
+     * Asserts {@link HelloWorld#put(ByteBuffer)} method returns specified byte buffer.
+     */
+    @Test
+    public void assertPutByteBufferReturnsSpecifiedBuffer() {
         // @todo: implement!
     }
 
