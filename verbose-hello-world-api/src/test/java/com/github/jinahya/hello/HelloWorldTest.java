@@ -197,12 +197,11 @@ public class HelloWorldTest {
     }
 
     /**
-     * Provides a stream of test arguments which each is an instance of {@link ByteBuffer} whose {@code remaining()} is
-     * less than {@link HelloWorld#SIZE}.
+     * Provides byte buffers whose {@code remaining()} is less than {@link HelloWorld#SIZE}.
      *
      * @return a stream of test arguments of byte buffers.
      */
-    private static Stream<Arguments> buffersOfNotEnoughRemaining() {
+    private static Stream<Arguments> buffersWithNotEnoughRemaining() {
         return Stream.of(
                 Arguments.of(ByteBuffer.allocate(current().nextInt(HelloWorld.SIZE))),
                 Arguments.of(ByteBuffer.allocateDirect(current().nextInt(HelloWorld.SIZE)))
@@ -215,13 +214,18 @@ public class HelloWorldTest {
      *
      * @param buffer a byte buffer whose {@link ByteBuffer#remaining() remaining} is less than {@link HelloWorld#SIZE}.
      */
-    @MethodSource({"buffersOfNotEnoughRemaining"})
+    @MethodSource({"buffersWithNotEnoughRemaining"})
     @ParameterizedTest
     public void assertPutBufferThrowsBufferOverflowExceptionWhenBufferRemainingIsLessThan12(final ByteBuffer buffer) {
         // @todo: implement!
     }
 
-    private static Stream<Arguments> buffersOfEnoughRemaining() {
+    /**
+     * Provides byte buffers whose {@code remaining()} is equals to {@link HelloWorld#SIZE}.
+     *
+     * @return a stream of arguments of bytes buffers.
+     */
+    private static Stream<Arguments> buffersWithEnoughRemaining() {
         return Stream.of(
                 Arguments.of(ByteBuffer.allocate(HelloWorld.SIZE)),
                 Arguments.of(ByteBuffer.allocateDirect(HelloWorld.SIZE))
@@ -232,7 +236,8 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#put(ByteBuffer)} method increases the {@code buffer}'s {@code position} by exactly
      * {@value HelloWorld#SIZE}.
      */
-    @Test
+    @MethodSource({"buffersWithEnoughRemaining"})
+    @ParameterizedTest
     public void assertPutBufferIncreasesBufferPositionBy12(final ByteBuffer buffer) {
         // @todo: implement!
     }
