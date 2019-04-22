@@ -27,12 +27,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
+import static com.github.jinahya.hello.ByteBufferParameterResolver.DirectBuffer;
+import static com.github.jinahya.hello.ByteBufferParameterResolver.NotEnoughRemaining;
 /**
  * A class for testing {@link HelloWorld} class.
  */
 @MockitoSettings(strictness = Strictness.LENIENT)
-@ExtendWith({MockitoExtension.class})
+@ExtendWith({MockitoExtension.class, ByteBufferParameterResolver.class})
 @Slf4j
 public class HelloWorldTest {
 
@@ -217,6 +218,19 @@ public class HelloWorldTest {
     @MethodSource({"buffersWithNotEnoughRemaining"})
     @ParameterizedTest
     public void assertPutBufferThrowsBufferOverflowExceptionWhenBufferRemainingIsLessThan12(final ByteBuffer buffer) {
+        // @todo: implement!
+    }
+
+    @Test
+    public void assertPutBufferThrowsBufferOverflowExceptionWhenBufferRemainingIsLessThan12a(
+            @NotEnoughRemaining final ByteBuffer buffer) {
+        // @todo: implement!
+    }
+
+    @Test
+    public void assertPutBufferThrowsBufferOverflowExceptionWhenBufferRemainingIsLessThan12b(
+            @NotEnoughRemaining @DirectBuffer
+            final ByteBuffer buffer) {
         // @todo: implement!
     }
 
