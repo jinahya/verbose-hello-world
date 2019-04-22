@@ -139,7 +139,7 @@ public class HelloWorldTest {
      * socket}.
      */
     @Test
-    public void assertSendSocketSendsExactly12BytesToSocket() {
+    public void assertSendSocketSendsExactly12BytesToSocket() throws IOException {
         // @todo: implement!
     }
 
@@ -147,7 +147,7 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#send(Socket)} method returns the specified {@code socket}.
      */
     @Test
-    public void assertSendSocketReturnsSpecifiedSocket() {
+    public void assertSendSocketReturnsSpecifiedSocket() throws IOException {
         // @todo: implement!
     }
 

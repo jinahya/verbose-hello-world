@@ -83,7 +83,8 @@ public interface HelloWorld {
      * @param socket the socket to which bytes are sent
      * @param <T>    socket type parameter.
      * @return the specified socket.
-     * @throws IOException if an I/O error occurs.
+     * @throws NullPointerException if {@code socket} is {@code null}
+     * @throws IOException          if an I/O error occurs.
      */
     default <T extends Socket> T send(final T socket) throws IOException {
         // @todo: implement!
@@ -91,6 +92,16 @@ public interface HelloWorld {
     }
 
     // -----------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Puts {@value SIZE} bytes of {@code hello, world} string on specified byte buffer.
+     *
+     * @param buffer the byte buffer to which bytes are put
+     * @param <T>    byte buffer type parameter
+     * @return the specified byte buffer
+     * @throws NullPointerException             if {@code buffer} is {@code null}
+     * @throws java.nio.BufferOverflowException if {@code buffer.remaining()} is less than {@link HelloWorld#SIZE}
+     */
     default <T extends ByteBuffer> T put(final T buffer) {
         // @todo: implement!
         return null;
