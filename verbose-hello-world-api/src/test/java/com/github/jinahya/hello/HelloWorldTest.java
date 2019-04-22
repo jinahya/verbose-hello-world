@@ -155,11 +155,21 @@ public class HelloWorldTest {
     // ------------------------------------------------------------------------------------------------- put(ByteBuffer)
 
     /**
-     * Asserts {@link HelloWorld#put(ByteBuffer)} method throws {@code NullPointerException} when {@code buffer}
+     * Asserts {@link HelloWorld#put(ByteBuffer)} method throws a {@code NullPointerException} when {@code buffer}
      * argument is {@code null}.
      */
     @Test
-    public void assertPutByteBufferThrowsNullPointerExceptionWhenBufferIsNull() {
+    public void assertPutBufferThrowsNullPointerExceptionWhenBufferIsNull() {
+        // @todo: implement!
+    }
+
+    /**
+     * Asserts {@link HelloWorld#put(ByteBuffer)} method throws a {@link java.nio.BufferOverflowException} when the
+     * value of {@link ByteBuffer#remaining() remaining()} of {@code buffer} argument is less than {@link
+     * HelloWorld#SIZE}.
+     */
+    @Test
+    public void assertPutBufferThrowsBufferOverflowExceptionWhenBufferRemainingIsLessThan12() {
         // @todo: implement!
     }
 
@@ -168,7 +178,7 @@ public class HelloWorldTest {
      * buffer.
      */
     @Test
-    public void assertPutByteBufferPutsExactly12Bytes() {
+    public void assertPutBufferPutsExactly12Bytes() {
         // @todo: implement!
     }
 
@@ -176,7 +186,7 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#put(ByteBuffer)} method returns specified byte buffer.
      */
     @Test
-    public void assertPutByteBufferReturnsSpecifiedBuffer() {
+    public void assertPutBufferReturnsSpecifiedBuffer() {
         // @todo: implement!
     }
 
