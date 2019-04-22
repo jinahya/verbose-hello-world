@@ -96,13 +96,15 @@ public interface HelloWorld {
     }
 
     /**
-     * Sends {@value SIZE} bytes of {@code hello, world} string to specified socket.
+     * Writes {@value SIZE} bytes of {@code hello, world} to the output stream of the specified socket.
      *
      * @param socket the socket to which bytes are sent
      * @param <T>    socket type parameter.
      * @return the specified socket.
      * @throws NullPointerException if {@code socket} is {@code null}
      * @throws IOException          if an I/O error occurs.
+     * @see Socket#getOutputStream()
+     * @see #write(OutputStream)
      */
     default <T extends Socket> T send(final T socket) throws IOException {
         // @todo: implement!
