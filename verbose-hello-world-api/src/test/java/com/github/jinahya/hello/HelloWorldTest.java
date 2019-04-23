@@ -161,6 +161,8 @@ public class HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(File)} method returns specified file.
+     *
+     * @throws IOException if an I/O error occurs.
      */
     @Test
     public void assertWriteFileReturnsSpecifiedFile() throws IOException {
