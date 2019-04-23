@@ -216,7 +216,7 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#put(ByteBuffer)} method throws a {@link java.nio.BufferOverflowException} if specified
      * buffer's {@code remaining} is less than {@link HelloWorld#SIZE}.
      *
-     * @param buffer
+     * @param buffer a byte buffer whose {@code remaining} is less than {@link HelloWorld#SIZE}
      */
     @Test
     public void assertPutBufferThrowsBufferOverflowExceptionWhenBufferRemainingIsLessThanHelloWorldSize(
@@ -228,7 +228,7 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#put(ByteBuffer)} method throws a {@link java.nio.BufferOverflowException} if specified
      * direct buffer's {@code remaining} is less than {@link HelloWorld#SIZE}.
      *
-     * @param buffer
+     * @param buffer a direct byte buffer whose {@code remaining} is less than {@link HelloWorld#SIZE}
      */
     @Test
     public void assertPutBufferThrowsBufferOverflowExceptionWhenBufferRemainingIsLessThanHelloWorldSizeDirect(
@@ -239,6 +239,9 @@ public class HelloWorldTest {
     /**
      * Asserts {@link HelloWorld#put(ByteBuffer)} method increases the {@code buffer}'s {@code position} by {@value
      * HelloWorld#SIZE}.
+     *
+     * @param buffer a non direct byte buffer whose {@code remaining} is equals to or greater than {@link
+     *               HelloWorld#SIZE}
      */
     @Test
     public void assertPutBufferIncreasesBufferPositionByHelloWorldSize(final ByteBuffer buffer) {
@@ -248,6 +251,8 @@ public class HelloWorldTest {
     /**
      * Asserts {@link HelloWorld#put(ByteBuffer)} method increases specified direct buffer's {@code position} by {@value
      * HelloWorld#SIZE}.
+     *
+     * @param buffer a direct buffer whose {@code remaining} is equals to or greater than {@link HelloWorld#SIZE}
      */
     @Test
     public void assertPutBufferIncreasesBufferPositionByHelloWorldSizeDirect(@DirectBuffer final ByteBuffer buffer) {
