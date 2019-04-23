@@ -133,6 +133,14 @@ public interface HelloWorld {
         return null;
     }
 
+    /**
+     * Writes {@value SIZE} bytes to specified path.
+     *
+     * @param path the path to which bytes are written.
+     * @param <T>  path type paramter
+     * @return specified path
+     * @throws IOException if an I/O error occurs.
+     */
     default <T extends Path> T write(final T path) throws IOException {
         // @todo: implement!
         return null;
