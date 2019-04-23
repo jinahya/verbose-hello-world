@@ -19,11 +19,10 @@ import java.nio.charset.StandardCharsets;
 
 import static com.github.jinahya.hello.ByteBufferParameterResolver.DirectBuffer;
 import static com.github.jinahya.hello.ByteBufferParameterResolver.NotEnoughRemaining;
-import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -221,6 +220,7 @@ public class HelloWorldTest {
     @Test
     public void assertPutBufferThrowsBufferOverflowExceptionWhenBufferRemainingIsLessThanHelloWorldSize(
             @NotEnoughRemaining final ByteBuffer buffer) {
+        assertTrue(buffer.remaining() < HelloWorld.SIZE);
         // @todo: implement!
     }
 
@@ -233,6 +233,8 @@ public class HelloWorldTest {
     @Test
     public void assertPutBufferThrowsBufferOverflowExceptionWhenBufferRemainingIsLessThanHelloWorldSizeDirect(
             @NotEnoughRemaining @DirectBuffer final ByteBuffer buffer) {
+        assertTrue(buffer.remaining() < HelloWorld.SIZE);
+        assertTrue(buffer.isDirect());
         // @todo: implement!
     }
 
@@ -245,6 +247,7 @@ public class HelloWorldTest {
      */
     @Test
     public void assertPutBufferIncreasesBufferPositionByHelloWorldSize(final ByteBuffer buffer) {
+        assertTrue(buffer.remaining() >= HelloWorld.SIZE);
         // @todo: implement!
     }
 
@@ -256,6 +259,8 @@ public class HelloWorldTest {
      */
     @Test
     public void assertPutBufferIncreasesBufferPositionByHelloWorldSizeDirect(@DirectBuffer final ByteBuffer buffer) {
+        assertTrue(buffer.remaining() >= HelloWorld.SIZE);
+        assertTrue(buffer.isDirect());
         // @todo: implement!
     }
 
