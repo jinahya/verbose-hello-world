@@ -300,9 +300,11 @@ public class HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(WritableByteChannel)} method writes {@value HelloWorld#SIZE} bytes.
+     *
+     * @throws IOException if an I/O error occurs.
      */
     @Test
-    public void assertWriteChannelWritesBytesOfHelloWorldSize() {
+    public void assertWriteChannelWritesBytesOfHelloWorldSize() throws IOException {
         // TODO: implement!
     }
 
