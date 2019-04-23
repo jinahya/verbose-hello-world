@@ -17,6 +17,7 @@ import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 
 import static com.github.jinahya.hello.ByteBufferParameterResolver.DirectBuffer;
 import static com.github.jinahya.hello.ByteBufferParameterResolver.NotEnoughRemaining;
@@ -331,16 +332,27 @@ public class HelloWorldTest {
     }
 
     // ----------------------------------------------------------------------------------------------------- write(Path)
+
+    /**
+     * Asserts {@link HelloWorld#write(Path)} method throws a {@code NullPointerException} when {@code path} argument is
+     * {@code null}.
+     */
     @Test
     public void assertWritePathThrowsNullPointerExceptionWhenPathIsNull() {
         // TODO: implement!
     }
 
+    /**
+     * Asserts {@link HelloWorld#write(Path)} method writes {@value HelloWorld#SIZE} bytes to specified path.
+     */
     @Test
     public void assertWritePathWriteHelloWorldSizeBytes() {
         // TODO: implement!
     }
 
+    /**
+     * Asserts {@link HelloWorld#write(Path)} method returns specified path.
+     */
     @Test
     public void assertWritePathReturnsSpecifiedPath() {
         // TODO: implement!
