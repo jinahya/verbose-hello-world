@@ -330,6 +330,22 @@ public class HelloWorldTest {
         // TODO: implement!
     }
 
+    // ----------------------------------------------------------------------------------------------------- write(Path)
+    @Test
+    public void assertWritePathThrowsNullPointerExceptionWhenPathIsNull() {
+        // TODO: implement!
+    }
+
+    @Test
+    public void assertWritePathWriteHelloWorldSizeBytes() {
+        // TODO: implement!
+    }
+
+    @Test
+    public void assertWritePathReturnsSpecifiedPath() {
+        // TODO: implement!
+    }
+
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
