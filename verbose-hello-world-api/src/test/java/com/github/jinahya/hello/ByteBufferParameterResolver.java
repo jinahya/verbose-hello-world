@@ -5,58 +5,72 @@ import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 import java.lang.reflect.Parameter;
 import java.nio.ByteBuffer;
 
+import static com.github.jinahya.hello.HelloWorld.SIZE;
+import static java.nio.ByteBuffer.allocate;
+import static java.nio.ByteBuffer.allocateDirect;
 import static java.util.concurrent.ThreadLocalRandom.current;
 
+/**
+ * Resolves parameters of {@link ByteBuffer}.
+ */
 class ByteBufferParameterResolver implements ParameterResolver {
 
+    /**
+     * A marker annotation for parameters of {@link ByteBuffer} whose {@link ByteBuffer#remaining() remaining()} is less
+     * than {@link HelloWorld#SIZE}.
+     */
+    @Documented
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.PARAMETER})
     @interface NotEnoughRemaining {
 
     }
 
-//    @Retention(RetentionPolicy.RUNTIME)
-//    @Target({ElementType.PARAMETER})
-//    @interface EnoughRemaining {
-//
-//    }
-
+    /**
+     * A marker annotation for parameters of {@link ByteBuffer} which each allocated vis {@link
+     * ByteBuffer#allocateDirect(int)}.
+     */
+    @Documented
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.PARAMETER})
     @interface DirectBuffer {
 
     }
 
+    /**
+     * Checks if this parameter resolver supports specified contexts.
+     *
+     * @param parameterContext a parameter context
+     * @param extensionContext an execution context
+     * @return {@code true} if {@code parameterContext.parameter.type} is equals to {@code ByteBuffer.class}.
+     * @throws ParameterResolutionException if failed to resolve parameter.
+     */
     @Override
     public boolean supportsParameter(final ParameterContext parameterContext, final ExtensionContext extensionContext)
             throws ParameterResolutionException {
         return ByteBuffer.class == parameterContext.getParameter().getType();
     }
 
+    /**
+     * Resolves a byte buffer parameter. This method checks whether the parameter is annotated {@link
+     * NotEnoughRemaining} and/or {@link DirectBuffer} and returns an appropriate instance.
+     *
+     * @param parameterContext a parameter context
+     * @param extensionContext an execution context
+     * @return an instance of byte buffer
+     * @throws ParameterResolutionException if failed to resolve parameter
+     */
     @Override
     public Object resolveParameter(final ParameterContext parameterContext, final ExtensionContext extensionContext)
             throws ParameterResolutionException {
         final Parameter parameter = parameterContext.getParameter();
-        if (parameter.isAnnotationPresent(NotEnoughRemaining.class)) {
-            final int capacity = current().nextInt(HelloWorld.SIZE);
-            if (parameter.isAnnotationPresent(DirectBuffer.class)) {
-                return ByteBuffer.allocateDirect(capacity);
-            } else {
-                return ByteBuffer.allocate(capacity);
-            }
-        }
-        final int capacity = current().nextInt(HelloWorld.SIZE, HelloWorld.SIZE << 1);
-        if (parameter.isAnnotationPresent(DirectBuffer.class)) {
-            return ByteBuffer.allocateDirect(capacity);
-        } else {
-            return ByteBuffer.allocate(capacity);
-        }
+        final boolean notEnoughRemaining = parameter.isAnnotationPresent(NotEnoughRemaining.class);
+        final boolean directBuffer = parameter.isAnnotationPresent(DirectBuffer.class);
+        final int capacity = notEnoughRemaining ? current().nextInt(SIZE) : current().nextInt(SIZE, SIZE << 1);
+        return directBuffer ? allocateDirect(capacity) : allocate(capacity);
     }
 }

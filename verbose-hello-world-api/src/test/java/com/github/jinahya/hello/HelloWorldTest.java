@@ -4,9 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -19,16 +16,16 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.stream.Stream;
 
+import static com.github.jinahya.hello.ByteBufferParameterResolver.DirectBuffer;
+import static com.github.jinahya.hello.ByteBufferParameterResolver.NotEnoughRemaining;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static com.github.jinahya.hello.ByteBufferParameterResolver.DirectBuffer;
-import static com.github.jinahya.hello.ByteBufferParameterResolver.NotEnoughRemaining;
+
 /**
  * A class for testing {@link HelloWorld} class.
  */
@@ -89,6 +86,8 @@ public class HelloWorldTest {
     /**
      * Asserts {@link HelloWorld#write(DataOutput)} method writes exactly {@value HelloWorld#SIZE} bytes to specified
      * data output.
+     *
+     * @throws IOException if an I/O error occurs.
      */
     @Test
     public void assertWriteDataMethodWritesExactly12BytesToData() throws IOException {
@@ -117,6 +116,8 @@ public class HelloWorldTest {
     /**
      * Asserts {@link HelloWorld#write(OutputStream)} method writes exactly {@value HelloWorld#SIZE} bytes to the
      * stream.
+     *
+     * @throws IOException if an I/O error occurs.
      */
     @Test
     public void assertWriteStreamWritesExactly12BytesToStream() throws IOException {
@@ -125,6 +126,8 @@ public class HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(OutputStream)} method returns specified {@code stream} argument.
+     *
+     * @throws IOException if an I/O error occurs.
      */
     @Test
     public void assertWriteStreamReturnsSpecifiedStream() throws IOException {
@@ -144,6 +147,8 @@ public class HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(File)} method write exactly {@value HelloWorld#SIZE} bytes to specified file.
+     *
+     * @throws IOException if an I/O error occurs.
      */
     @Test
     public void assertWriteFileWritesExactly12BytesToFile() throws IOException {
@@ -172,6 +177,8 @@ public class HelloWorldTest {
     /**
      * Asserts {@link HelloWorld#send(Socket)} method sends exactly {@value HelloWorld#SIZE} bytes to the {@code
      * socket}.
+     *
+     * @throws IOException if an I/O error occurs.
      */
     @Test
     public void assertSendSocketSendsExactly12BytesToSocket() throws IOException {
@@ -180,6 +187,8 @@ public class HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#send(Socket)} method returns the specified {@code socket}.
+     *
+     * @throws IOException if an I/O error occurs.
      */
     @Test
     public void assertSendSocketReturnsSpecifiedSocket() throws IOException {
@@ -197,62 +206,46 @@ public class HelloWorldTest {
         // @todo: implement!
     }
 
-    /**
-     * Provides byte buffers whose {@code remaining()} is less than {@link HelloWorld#SIZE}.
-     *
-     * @return a stream of test arguments of byte buffers.
-     */
-    private static Stream<Arguments> buffersWithNotEnoughRemaining() {
-        return Stream.of(
-                Arguments.of(ByteBuffer.allocate(current().nextInt(HelloWorld.SIZE))),
-                Arguments.of(ByteBuffer.allocateDirect(current().nextInt(HelloWorld.SIZE)))
-        );
-    }
-
-    /**
-     * Asserts {@link HelloWorld#put(ByteBuffer)} method throws a {@link java.nio.BufferOverflowException} when {@link
-     * ByteBuffer#remaining() buffer.remaining()} is less than {@link HelloWorld#SIZE}.
-     *
-     * @param buffer a byte buffer whose {@link ByteBuffer#remaining() remaining} is less than {@link HelloWorld#SIZE}.
-     */
-    @MethodSource({"buffersWithNotEnoughRemaining"})
-    @ParameterizedTest
-    public void assertPutBufferThrowsBufferOverflowExceptionWhenBufferRemainingIsLessThan12(final ByteBuffer buffer) {
-        // @todo: implement!
-    }
-
     @Test
-    public void assertPutBufferThrowsBufferOverflowExceptionWhenBufferRemainingIsLessThan12a(
+    public void assertPutBufferThrowsBufferOverflowExceptionWhenBufferRemainingIsLessThan12NonDirect(
             @NotEnoughRemaining final ByteBuffer buffer) {
         // @todo: implement!
     }
 
     @Test
-    public void assertPutBufferThrowsBufferOverflowExceptionWhenBufferRemainingIsLessThan12b(
-            @NotEnoughRemaining @DirectBuffer
-            final ByteBuffer buffer) {
+    public void assertPutBufferThrowsBufferOverflowExceptionWhenBufferRemainingIsLessThan12Direct(
+            @NotEnoughRemaining @DirectBuffer final ByteBuffer buffer) {
         // @todo: implement!
     }
 
+//    /**
+//     * Provides byte buffers whose {@code remaining()} is equals to {@link HelloWorld#SIZE}.
+//     *
+//     * @return a stream of arguments of bytes buffers.
+//     */
+//    private static Stream<Arguments> buffersWithEnoughRemaining() {
+//        return Stream.of(
+//                Arguments.of(ByteBuffer.allocate(HelloWorld.SIZE)),
+//                Arguments.of(ByteBuffer.allocateDirect(HelloWorld.SIZE))
+//        );
+//    }
+//
+
     /**
-     * Provides byte buffers whose {@code remaining()} is equals to {@link HelloWorld#SIZE}.
-     *
-     * @return a stream of arguments of bytes buffers.
+     * Asserts {@link HelloWorld#put(ByteBuffer)} method increases the {@code buffer}'s {@code position} by exactly
+     * {@value HelloWorld#SIZE}.
      */
-    private static Stream<Arguments> buffersWithEnoughRemaining() {
-        return Stream.of(
-                Arguments.of(ByteBuffer.allocate(HelloWorld.SIZE)),
-                Arguments.of(ByteBuffer.allocateDirect(HelloWorld.SIZE))
-        );
+    @Test
+    public void assertPutBufferIncreasesBufferPositionBy12NonDirect(final ByteBuffer buffer) {
+        // @todo: implement!
     }
 
     /**
      * Asserts {@link HelloWorld#put(ByteBuffer)} method increases the {@code buffer}'s {@code position} by exactly
      * {@value HelloWorld#SIZE}.
      */
-    @MethodSource({"buffersWithEnoughRemaining"})
-    @ParameterizedTest
-    public void assertPutBufferIncreasesBufferPositionBy12(final ByteBuffer buffer) {
+    @Test
+    public void assertPutBufferIncreasesBufferPositionBy12Direct(@DirectBuffer final ByteBuffer buffer) {
         // @todo: implement!
     }
 
