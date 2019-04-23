@@ -218,19 +218,6 @@ public class HelloWorldTest {
         // @todo: implement!
     }
 
-//    /**
-//     * Provides byte buffers whose {@code remaining()} is equals to {@link HelloWorld#SIZE}.
-//     *
-//     * @return a stream of arguments of bytes buffers.
-//     */
-//    private static Stream<Arguments> buffersWithEnoughRemaining() {
-//        return Stream.of(
-//                Arguments.of(ByteBuffer.allocate(HelloWorld.SIZE)),
-//                Arguments.of(ByteBuffer.allocateDirect(HelloWorld.SIZE))
-//        );
-//    }
-//
-
     /**
      * Asserts {@link HelloWorld#put(ByteBuffer)} method increases the {@code buffer}'s {@code position} by exactly
      * {@value HelloWorld#SIZE}.
