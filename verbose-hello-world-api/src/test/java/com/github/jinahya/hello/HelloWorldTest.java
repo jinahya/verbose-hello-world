@@ -60,7 +60,7 @@ public class HelloWorldTest {
      * is less than {@link HelloWorld#SIZE}.
      */
     @Test
-    public void assertSetArrayThrowsIndexOufOfBoundsExceptionWhenArrayLengthIsLessThanHelloWorldSize() {
+    public void assertSetArrayThrowsIndexOufOfBoundsExceptionWhenArrayLengthIsLessThan12() {
         // @todo: implement!
     }
 
