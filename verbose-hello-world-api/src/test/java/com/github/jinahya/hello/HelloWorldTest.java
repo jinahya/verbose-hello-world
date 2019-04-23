@@ -265,24 +265,24 @@ public class HelloWorldTest {
     /**
      * Asserts {@link HelloWorld#put(ByteBuffer)} method returns specified byte buffer.
      *
-     * @param buffer a non direct byte buffer whose {@code remaining} is equals to or greater than {@link
+     * @param expected a non direct byte buffer whose {@code remaining} is equals to or greater than {@link
      *               HelloWorld#SIZE}
      */
     @Test
-    public void assertPutBufferReturnsSpecifiedBuffer(final ByteBuffer buffer) {
-        assertTrue(buffer.remaining() >= HelloWorld.SIZE);
+    public void assertPutBufferReturnsSpecifiedBuffer(final ByteBuffer expected) {
+        assertTrue(expected.remaining() >= HelloWorld.SIZE);
         // @todo: implement!
     }
 
     /**
      * Asserts {@link HelloWorld#put(ByteBuffer)} method returns specified byte buffer.
      *
-     * @param buffer a direct buffer whose {@code remaining} is equals to or greater than {@link HelloWorld#SIZE}
+     * @param expected a direct buffer whose {@code remaining} is equals to or greater than {@link HelloWorld#SIZE}
      */
     @Test
-    public void assertPutBufferReturnsSpecifiedBufferDirect(final ByteBuffer buffer) {
-        assertTrue(buffer.remaining() >= HelloWorld.SIZE);
-        assertTrue(buffer.isDirect());
+    public void assertPutBufferReturnsSpecifiedBufferDirect(final ByteBuffer expected) {
+        assertTrue(expected.remaining() >= HelloWorld.SIZE);
+        assertTrue(expected.isDirect());
         // @todo: implement!
     }
 
