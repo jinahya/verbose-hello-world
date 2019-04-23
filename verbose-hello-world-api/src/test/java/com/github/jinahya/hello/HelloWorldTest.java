@@ -140,11 +140,9 @@ public class HelloWorldTest {
     /**
      * Asserts {@link HelloWorld#write(File)} method throws {@code NullPointerException} when {@code file} argument is
      * {@code null}.
-     *
-     * @throws IOException if an I/O error occurs.
      */
     @Test
-    public void assertWriteFileThrowsNullPointerExceptionWhenFileIsNull() throws IOException {
+    public void assertWriteFileThrowsNullPointerExceptionWhenFileIsNull() {
         // @todo: implement!
     }
 
