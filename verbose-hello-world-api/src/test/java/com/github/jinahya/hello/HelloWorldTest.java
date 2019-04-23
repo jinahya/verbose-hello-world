@@ -96,9 +96,11 @@ public class HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(DataOutput)} method returns the specified data output.
+     *
+     * @throws IOException if an I/O error occurs.
      */
     @Test
-    public void assertWriteDataMethodReturnsSpecifiedData() {
+    public void assertWriteDataMethodReturnsSpecifiedData() throws IOException {
         // @todo: implement!
     }
 
