@@ -137,7 +137,7 @@ public interface HelloWorld {
      * Writes {@value SIZE} bytes to specified path.
      *
      * @param path the path to which bytes are written.
-     * @param <T>  path type paramter
+     * @param <T>  path type parameter
      * @return specified path
      * @throws IOException if an I/O error occurs.
      */
