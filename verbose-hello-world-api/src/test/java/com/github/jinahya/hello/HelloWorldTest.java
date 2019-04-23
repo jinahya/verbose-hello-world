@@ -141,19 +141,21 @@ public class HelloWorldTest {
     /**
      * Asserts {@link HelloWorld#write(File)} method throws {@code NullPointerException} when {@code file} argument is
      * {@code null}.
-     */
-    @Test
-    public void assertWriteFileThrowsNullPointerExceptionWhenFileIsNull() {
-        // @todo: implement!
-    }
-
-    /**
-     * Asserts {@link HelloWorld#write(File)} method write exactly {@value HelloWorld#SIZE} bytes to specified file.
      *
      * @throws IOException if an I/O error occurs.
      */
     @Test
-    public void assertWriteFileWritesExactly12BytesToFile() throws IOException {
+    public void assertWriteFileThrowsNullPointerExceptionWhenFileIsNull() throws IOException {
+        // @todo: implement!
+    }
+
+    /**
+     * Asserts {@link HelloWorld#write(File)} method writes exactly {@value HelloWorld#SIZE} bytes to specified file.
+     *
+     * @throws IOException if an I/O error occurs.
+     */
+    @Test
+    public void assertWriteFileWritesExpectedNumberOfBytesToFile() throws IOException {
         // @todo: implement!
     }
 
@@ -161,7 +163,7 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#write(File)} method returns specified file.
      */
     @Test
-    public void assertWriteFileReturnsSpecifiedFile() {
+    public void assertWriteFileReturnsSpecifiedFile() throws IOException {
         // @todo: implement!
     }
 
