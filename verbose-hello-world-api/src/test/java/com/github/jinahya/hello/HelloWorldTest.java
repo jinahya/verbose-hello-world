@@ -280,7 +280,7 @@ public class HelloWorldTest {
      * @param expected a direct buffer whose {@code remaining} is equals to or greater than {@link HelloWorld#SIZE}
      */
     @Test
-    public void assertPutBufferReturnsSpecifiedBufferDirect(final ByteBuffer expected) {
+    public void assertPutBufferReturnsSpecifiedBufferDirect(@DirectBuffer final ByteBuffer expected) {
         assertTrue(expected.remaining() >= HelloWorld.SIZE);
         assertTrue(expected.isDirect());
         // @todo: implement!
