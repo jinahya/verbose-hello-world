@@ -322,9 +322,11 @@ public class HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(WritableByteChannel)} method returns specified channel.
+     *
+     * @throws IOException if an I/O error occurs.
      */
     @Test
-    public void assertWriteChannelReturnsSpecifiedChannel() {
+    public void assertWriteChannelReturnsSpecifiedChannel() throws IOException {
         // TODO: implement!
     }
 
