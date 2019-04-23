@@ -304,7 +304,7 @@ public class HelloWorldTest {
      * @throws IOException if an I/O error occurs.
      */
     @Test
-    public void assertWriteChannelWritesBytesOfHelloWorldSize() throws IOException {
+    public void assertWriteChannelWritesOfHelloWorldSizeBytes() throws IOException {
         // TODO: implement!
     }
 
