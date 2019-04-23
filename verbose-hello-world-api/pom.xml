@@ -15,45 +15,12 @@
 
   <name>${project.artifactId}</name>
   <description>Defines hello world APIs</description>
-  <url>https://github.com/jinahya/verbose-hello-world</url>
-
-  <prerequisites>
-    <maven>3.3.9</maven>
-  </prerequisites>
-
-  <scm>
-    <connection>scm:git:git@github.com:jinahya/${project.artifactId}.git</connection>
-    <developerConnection>scm:git:git@github.com:jinahya/${project.artifactId}.git</developerConnection>
-    <url>https://github.com/jinahya/${project.artifactId}</url>
-    <tag>HEAD</tag>
-  </scm>
-  <issueManagement>
-    <system>GitHub Issues</system>
-    <url>https://github.com/jinahya/${project.artifactId}/issues</url>
-  </issueManagement>
+  <url>https://github.com/jinahya/verbose-hello-world/verbose-hello-world-api</url>
 
   <dependencies>
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.google.inject</groupId>
-      <artifactId>guice</artifactId>
-      <version>4.2.2</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-      <version>2.6</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-lang3</artifactId>
-      <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
     <dependency>
