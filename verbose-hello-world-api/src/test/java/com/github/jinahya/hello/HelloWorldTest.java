@@ -299,12 +299,24 @@ public class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#write(WritableByteChannel)} method writes {@value HelloWorld#SIZE} bytes.
+     * Asserts {@link HelloWorld#write(WritableByteChannel)} method writes {@value HelloWorld#SIZE} bytes to the {@code
+     * channel} argument.
      *
      * @throws IOException if an I/O error occurs.
      */
     @Test
     public void assertWriteChannelWritesOfHelloWorldSizeBytes() throws IOException {
+        // TODO: implement!
+    }
+
+    /**
+     * Asserts {@link HelloWorld#write(WritableByteChannel)} method writes {@value HelloWorld#SIZE} bytes to the {@code
+     * channel} argument. This method uses a channel emulating the non-blocking mode.
+     *
+     * @throws IOException if an I/O error occurs.
+     */
+    @Test
+    public void assertWriteChannelWritesOfHelloWorldSizeBytesNonBlockingEmulated() throws IOException {
         // TODO: implement!
     }
 
