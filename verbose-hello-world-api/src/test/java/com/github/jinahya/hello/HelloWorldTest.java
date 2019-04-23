@@ -187,7 +187,7 @@ public class HelloWorldTest {
      * @throws IOException if an I/O error occurs.
      */
     @Test
-    public void assertSendSocketSendsExactly12BytesToSocket() throws IOException {
+    public void assertSendSocketSendsExpectedNumberOfBytesToSocket() throws IOException {
         // @todo: implement!
     }
 
