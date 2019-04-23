@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.ByteBuffer;
+import java.nio.channels.WritableByteChannel;
 import java.nio.charset.StandardCharsets;
 
 import static com.github.jinahya.hello.ByteBufferParameterResolver.DirectBuffer;
@@ -266,7 +267,7 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#put(ByteBuffer)} method returns specified byte buffer.
      *
      * @param expected a non direct byte buffer whose {@code remaining} is equals to or greater than {@link
-     *               HelloWorld#SIZE}
+     *                 HelloWorld#SIZE}
      */
     @Test
     public void assertPutBufferReturnsSpecifiedBuffer(final ByteBuffer expected) {
@@ -284,6 +285,33 @@ public class HelloWorldTest {
         assertTrue(expected.remaining() >= HelloWorld.SIZE);
         assertTrue(expected.isDirect());
         // @todo: implement!
+    }
+
+    // -------------------------------------------------------------------------------------- write(WritableByteChannel)
+
+    /**
+     * Asserts {@link HelloWorld#write(WritableByteChannel)} method throws a {@code NullPointerException} when {@code
+     * channel} argument is {@code null}.
+     */
+    @Test
+    public void assertWriteChannelThrowsNullPointerExceptionWhenChannelIsNull() {
+        // TODO: implement!
+    }
+
+    /**
+     * Asserts {@link HelloWorld#write(WritableByteChannel)} method writes {@value HelloWorld#SIZE} bytes.
+     */
+    @Test
+    public void assertWriteChannelWritesBytesOfHelloWorldSize() {
+        // TODO: implement!
+    }
+
+    /**
+     * Asserts {@link HelloWorld#write(WritableByteChannel)} method returns specified channel.
+     */
+    @Test
+    public void assertWriteChannelReturnsSpecifiedChannel() {
+        // TODO: implement!
     }
 
     // -----------------------------------------------------------------------------------------------------------------
