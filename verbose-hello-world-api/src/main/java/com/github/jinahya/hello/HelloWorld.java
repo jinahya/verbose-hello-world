@@ -138,7 +138,7 @@ public interface HelloWorld {
      *
      * @param path the path to which bytes are written.
      * @param <T>  path type parameter
-     * @return specified path
+     * @return the specified path
      * @throws IOException if an I/O error occurs.
      */
     default <T extends Path> T write(final T path) throws IOException {
