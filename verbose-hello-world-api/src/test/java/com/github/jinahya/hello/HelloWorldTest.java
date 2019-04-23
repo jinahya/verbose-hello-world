@@ -212,33 +212,45 @@ public class HelloWorldTest {
         // @todo: implement!
     }
 
+    /**
+     * Asserts {@link HelloWorld#put(ByteBuffer)} method throws a {@link java.nio.BufferOverflowException} if specified
+     * buffer's {@code remaining} is less than {@link HelloWorld#SIZE}.
+     *
+     * @param buffer
+     */
     @Test
-    public void assertPutBufferThrowsBufferOverflowExceptionWhenBufferRemainingIsLessThan12NonDirect(
+    public void assertPutBufferThrowsBufferOverflowExceptionWhenBufferRemainingIsLessThanHelloWorldSize(
             @NotEnoughRemaining final ByteBuffer buffer) {
         // @todo: implement!
     }
 
+    /**
+     * Asserts {@link HelloWorld#put(ByteBuffer)} method throws a {@link java.nio.BufferOverflowException} if specified
+     * direct buffer's {@code remaining} is less than {@link HelloWorld#SIZE}.
+     *
+     * @param buffer
+     */
     @Test
-    public void assertPutBufferThrowsBufferOverflowExceptionWhenBufferRemainingIsLessThan12Direct(
+    public void assertPutBufferThrowsBufferOverflowExceptionWhenBufferRemainingIsLessThanHelloWorldSizeDirect(
             @NotEnoughRemaining @DirectBuffer final ByteBuffer buffer) {
         // @todo: implement!
     }
 
     /**
-     * Asserts {@link HelloWorld#put(ByteBuffer)} method increases the {@code buffer}'s {@code position} by exactly
-     * {@value HelloWorld#SIZE}.
+     * Asserts {@link HelloWorld#put(ByteBuffer)} method increases the {@code buffer}'s {@code position} by {@value
+     * HelloWorld#SIZE}.
      */
     @Test
-    public void assertPutBufferIncreasesBufferPositionBy12NonDirect(final ByteBuffer buffer) {
+    public void assertPutBufferIncreasesBufferPositionByHelloWorldSize(final ByteBuffer buffer) {
         // @todo: implement!
     }
 
     /**
-     * Asserts {@link HelloWorld#put(ByteBuffer)} method increases the {@code buffer}'s {@code position} by exactly
-     * {@value HelloWorld#SIZE}.
+     * Asserts {@link HelloWorld#put(ByteBuffer)} method increases specified direct buffer's {@code position} by {@value
+     * HelloWorld#SIZE}.
      */
     @Test
-    public void assertPutBufferIncreasesBufferPositionBy12Direct(@DirectBuffer final ByteBuffer buffer) {
+    public void assertPutBufferIncreasesBufferPositionByHelloWorldSizeDirect(@DirectBuffer final ByteBuffer buffer) {
         // @todo: implement!
     }
 
