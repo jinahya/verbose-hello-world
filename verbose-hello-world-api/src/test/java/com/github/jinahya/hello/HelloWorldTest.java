@@ -199,11 +199,11 @@ public class HelloWorldTest {
     /**
      * Asserts {@link HelloWorld#write(File)} method returns specified file.
      *
-     * @param file an empty file to use
+     * @param expected an empty file to use
      * @throws IOException if an I/O error occurs.
      */
     @Test
-    public void assertWriteFileReturnsSpecifiedFile(@Temporary final File file) throws IOException {
+    public void assertWriteFileReturnsSpecifiedFile(@Temporary final File expected) throws IOException {
         // TODO: implement!
     }
 
@@ -398,11 +398,11 @@ public class HelloWorldTest {
     /**
      * Asserts {@link HelloWorld#write(Path)} method returns specified path.
      *
-     * @param path an empty file to use
+     * @param expected an empty file to use
      * @throws IOException if an I/O error occurs.
      */
     @Test
-    public void assertWritePathReturnsSpecifiedPath(@Temporary final Path path) throws IOException {
+    public void assertWritePathReturnsSpecifiedPath(@Temporary final Path expected) throws IOException {
         // TODO: implement!!
     }
 
