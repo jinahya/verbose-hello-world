@@ -37,7 +37,7 @@ class ByteBufferParameterResolver implements ParameterResolver {
     @Documented
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.PARAMETER})
-    @interface DirectBuffer {
+    @interface Direct {
 
     }
 
@@ -57,7 +57,7 @@ class ByteBufferParameterResolver implements ParameterResolver {
 
     /**
      * Resolves a byte buffer parameter. This method checks whether the parameter is annotated {@link
-     * NotEnoughRemaining} and/or {@link DirectBuffer} and returns an appropriate instance.
+     * NotEnoughRemaining} and/or {@link Direct} and returns an appropriate instance.
      *
      * @param parameterContext a parameter context
      * @param extensionContext an execution context
@@ -69,7 +69,7 @@ class ByteBufferParameterResolver implements ParameterResolver {
             throws ParameterResolutionException {
         final Parameter parameter = parameterContext.getParameter();
         final boolean notEnoughRemaining = parameter.isAnnotationPresent(NotEnoughRemaining.class);
-        final boolean directBuffer = parameter.isAnnotationPresent(DirectBuffer.class);
+        final boolean directBuffer = parameter.isAnnotationPresent(Direct.class);
         final int capacity = notEnoughRemaining ? current().nextInt(SIZE) : current().nextInt(SIZE, SIZE << 1);
         return directBuffer ? allocateDirect(capacity) : allocate(capacity);
     }

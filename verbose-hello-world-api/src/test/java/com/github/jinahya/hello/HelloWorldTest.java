@@ -21,8 +21,9 @@ import java.nio.channels.WritableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
-import static com.github.jinahya.hello.ByteBufferParameterResolver.DirectBuffer;
+import static com.github.jinahya.hello.ByteBufferParameterResolver.Direct;
 import static com.github.jinahya.hello.ByteBufferParameterResolver.NotEnoughRemaining;
+import static com.github.jinahya.hello.TemporaryFileParameterResolver.Temporary;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -33,7 +34,7 @@ import static org.mockito.Mockito.when;
  * A class for testing {@link HelloWorld} class.
  */
 @MockitoSettings(strictness = Strictness.LENIENT)
-@ExtendWith({MockitoExtension.class, ByteBufferParameterResolver.class})
+@ExtendWith({MockitoExtension.class, ByteBufferParameterResolver.class, TemporaryFileParameterResolver.class})
 @Slf4j
 public class HelloWorldTest {
 
@@ -187,20 +188,22 @@ public class HelloWorldTest {
     /**
      * Asserts {@link HelloWorld#write(File)} method writes exactly {@value HelloWorld#SIZE} bytes to specified file.
      *
+     * @param file an empty file to use
      * @throws IOException if an I/O error occurs.
      */
     @Test
-    public void assertWriteFileWritesExpectedNumberOfBytesToFile() throws IOException {
+    public void assertWriteFileWritesExpectedNumberOfBytesToFile(@Temporary final File file) throws IOException {
         // TODO: implement!
     }
 
     /**
      * Asserts {@link HelloWorld#write(File)} method returns specified file.
      *
+     * @param file an empty file to use
      * @throws IOException if an I/O error occurs.
      */
     @Test
-    public void assertWriteFileReturnsSpecifiedFile() throws IOException {
+    public void assertWriteFileReturnsSpecifiedFile(@Temporary final File file) throws IOException {
         // TODO: implement!
     }
 
@@ -268,7 +271,7 @@ public class HelloWorldTest {
      */
     @Test
     public void assertPutBufferThrowsBufferOverflowExceptionWhenBufferRemainingIsLessThanHelloWorldSizeDirect(
-            @NotEnoughRemaining @DirectBuffer final ByteBuffer buffer) {
+            @NotEnoughRemaining @Direct final ByteBuffer buffer) {
         assertTrue(buffer.remaining() < HelloWorld.SIZE);
         assertTrue(buffer.isDirect());
         // TODO: implement!
@@ -294,7 +297,7 @@ public class HelloWorldTest {
      * @param buffer a direct buffer whose {@code remaining} is equals to or greater than {@link HelloWorld#SIZE}
      */
     @Test
-    public void assertPutBufferIncreasesBufferPositionByHelloWorldSizeDirect(@DirectBuffer final ByteBuffer buffer) {
+    public void assertPutBufferIncreasesBufferPositionByHelloWorldSizeDirect(@Direct final ByteBuffer buffer) {
         assertTrue(buffer.remaining() >= HelloWorld.SIZE);
         assertTrue(buffer.isDirect());
         // TODO: implement!
@@ -318,7 +321,7 @@ public class HelloWorldTest {
      * @param expected a direct buffer whose {@code remaining} is equals to or greater than {@link HelloWorld#SIZE}
      */
     @Test
-    public void assertPutBufferReturnsSpecifiedBufferDirect(@DirectBuffer final ByteBuffer expected) {
+    public void assertPutBufferReturnsSpecifiedBufferDirect(@Direct final ByteBuffer expected) {
         assertTrue(expected.remaining() >= HelloWorld.SIZE);
         assertTrue(expected.isDirect());
         // TODO: implement!
@@ -383,20 +386,23 @@ public class HelloWorldTest {
     /**
      * Asserts {@link HelloWorld#write(Path)} method writes {@value HelloWorld#SIZE} bytes to specified path.
      *
+     * @param path an empty file to use
      * @throws IOException if an I/O error occurs.
      */
     @Test
-    public void assertWritePathWritesHelloWorldSizeBytesToPath() throws IOException {
+    public void assertWritePathWritesHelloWorldSizeBytesToPath(@Temporary final Path path)
+            throws IOException {
         // TODO: implement!!
     }
 
     /**
      * Asserts {@link HelloWorld#write(Path)} method returns specified path.
      *
+     * @param path an empty file to use
      * @throws IOException if an I/O error occurs.
      */
     @Test
-    public void assertWritePathReturnsSpecifiedPath() throws IOException {
+    public void assertWritePathReturnsSpecifiedPath(@Temporary final Path path) throws IOException {
         // TODO: implement!!
     }
 
