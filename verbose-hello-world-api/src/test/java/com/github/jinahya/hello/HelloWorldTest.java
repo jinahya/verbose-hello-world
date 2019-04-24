@@ -334,8 +334,8 @@ public class HelloWorldTest {
     // ----------------------------------------------------------------------------------------------------- write(Path)
 
     /**
-     * Asserts {@link HelloWorld#write(Path)} method throws a {@code NullPointerException} when {@code path} argument is
-     * {@code null}.
+     * Asserts {@link HelloWorld#write(Path)} method throws a {@code NullPointerException} when specified {@code path}
+     * argument is {@code null}.
      */
     @Test
     public void assertWritePathThrowsNullPointerExceptionWhenPathIsNull() {
@@ -346,7 +346,7 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#write(Path)} method writes {@value HelloWorld#SIZE} bytes to specified path.
      */
     @Test
-    public void assertWritePathWriteHelloWorldSizeBytes() {
+    public void assertWritePathWritesHelloWorldSizeBytesToPath() throws IOException {
         // TODO: implement!
     }
 
