@@ -45,7 +45,7 @@ public interface HelloWorld {
      * @see #set(byte[], int)
      */
     default byte[] set(final byte[] array) {
-        // @todo: implement!
+        // TODO: implement!
         return null;
     }
 
@@ -62,7 +62,7 @@ public interface HelloWorld {
      * @see DataOutput#write(byte[])
      */
     default <T extends DataOutput> T write(T data) throws IOException {
-        // @todo: implement!
+        // TODO: implement!
         return null;
     }
 
@@ -78,7 +78,7 @@ public interface HelloWorld {
      * @see OutputStream#write(byte[])
      */
     default <T extends OutputStream> T write(final T stream) throws IOException {
-        // @todo: implement!
+        // TODO: implement!
         return null;
     }
 
@@ -91,7 +91,7 @@ public interface HelloWorld {
      * @throws IOException if an I/O error occurs.
      */
     default <T extends File> T write(final T file) throws IOException {
-        // @todo: implement!
+        // TODO: implement!
         return null;
     }
 
@@ -107,7 +107,7 @@ public interface HelloWorld {
      * @see #write(OutputStream)
      */
     default <T extends Socket> T send(final T socket) throws IOException {
-        // @todo: implement!
+        // TODO: implement!
         return null;
     }
 
@@ -124,30 +124,52 @@ public interface HelloWorld {
      * @throws java.nio.BufferOverflowException if {@code buffer.remaining()} is less than {@link HelloWorld#SIZE}
      */
     default <T extends ByteBuffer> T put(final T buffer) {
-        // @todo: implement!
-        return null;
-    }
-
-    default <T extends WritableByteChannel> T write(final T channel) throws IOException {
-        // @todo: implement!
+        // TODO: implement!
         return null;
     }
 
     /**
-     * Writes {@value SIZE} bytes to specified path.
+     * Writes {@value SIZE} bytes, representing {@code hello, world} string in {@code US-ASCII} character set, to
+     * specified channel.
+     *
+     * @param channel the channel to which bytes are written.
+     * @param <T>     channel type parameter
+     * @return the specified channel
+     * @throws NullPointerException if {@code channel} is {@code null}
+     * @throws IOException          if an I/O error occurs
+     * @see #put(ByteBuffer)
+     * @see WritableByteChannel#write(ByteBuffer)
+     */
+    default <T extends WritableByteChannel> T write(final T channel) throws IOException {
+        // TODO: implement!
+        return null;
+    }
+
+    /**
+     * Writes {@value SIZE} bytes of {@code hello, world} string to specified path.
      *
      * @param path the path to which bytes are written.
      * @param <T>  path type parameter
      * @return the specified path
-     * @throws IOException if an I/O error occurs.
+     * @throws NullPointerException if {@code path} is {@code null}
+     * @throws IOException          if an I/O error occurs.
      */
     default <T extends Path> T write(final T path) throws IOException {
-        // @todo: implement!
+        // TODO: implement!
         return null;
     }
 
-    default <T extends SocketChannel> T send(final T socket) throws IOException {
-        // @todo: implement!
+    /**
+     * Sends {@value SIZE} bytes of {@code hello, world} string to specified socket channel.
+     *
+     * @param channel the socket channel to which bytes are written.
+     * @param <T>     socket channel type parameter
+     * @return the specified socket channel
+     * @throws NullPointerException if {@code channel} is {@code null}
+     * @throws IOException          if an I/O error occurs.
+     */
+    default <T extends SocketChannel> T send(final T channel) throws IOException {
+        // TODO: implement!
         return null;
     }
 }
