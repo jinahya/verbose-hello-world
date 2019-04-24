@@ -336,9 +336,11 @@ public class HelloWorldTest {
     /**
      * Asserts {@link HelloWorld#write(Path)} method throws a {@code NullPointerException} when specified {@code path}
      * argument is {@code null}.
+     *
+     * @throws IOException if an I/O error occurs.
      */
     @Test
-    public void assertWritePathThrowsNullPointerExceptionWhenPathIsNull() {
+    public void assertWritePathThrowsNullPointerExceptionWhenPathIsNull() throws IOException {
         // TODO: implement!
     }
 
@@ -354,9 +356,11 @@ public class HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(Path)} method returns specified path.
+     *
+     * @throws IOException if an I/O error occurs.
      */
     @Test
-    public void assertWritePathReturnsSpecifiedPath() {
+    public void assertWritePathReturnsSpecifiedPath() throws IOException {
         // TODO: implement!
     }
 
