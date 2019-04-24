@@ -97,11 +97,11 @@
         <artifactId>mockito-junit-jupiter</artifactId>
         <version>${version.org.mockito}</version>
       </dependency>
-      <dependency>
-        <groupId>org.projectlombok</groupId>
-        <artifactId>lombok</artifactId>
-        <version>1.18.6</version>
-      </dependency>
+      <!--      <dependency>-->
+      <!--        <groupId>org.projectlombok</groupId>-->
+      <!--        <artifactId>lombok</artifactId>-->
+      <!--        <version>1.18.6</version>-->
+      <!--      </dependency>-->
     </dependencies>
   </dependencyManagement>
 
@@ -133,7 +133,7 @@
           <artifactId>maven-javadoc-plugin</artifactId>
           <version>${version.maven-javadoc-plugin}</version>
           <configuration>
-<!--            <detectLinks>true</detectLinks>-->
+            <!--            <detectLinks>true</detectLinks>-->
             <links>
               <link>https://static.javadoc.io/org.mockito/mockito-core/${version.org.mockito}</link>
               <link>https://static.javadoc.io/org.mockito/junit-jupiter/${version.org.mockito}</link>
@@ -275,7 +275,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
-<!--          <detectLinks>true</detectLinks>-->
+          <!--          <detectLinks>true</detectLinks>-->
           <links>
             <link>https://static.javadoc.io/org.mockito/mockito-core/${version.org.mockito}</link>
             <link>https://static.javadoc.io/org.mockito/junit-jupiter/${version.org.mockito}</link>

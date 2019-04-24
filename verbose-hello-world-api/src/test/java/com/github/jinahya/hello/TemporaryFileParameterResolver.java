@@ -12,11 +12,18 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Parameter;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.logging.Logger;
+
+import static java.lang.String.format;
 
 class TemporaryFileParameterResolver implements ParameterResolver {
+
+    // -----------------------------------------------------------------------------------------------------------------
+    private static final Logger logger = Logger.getLogger(MethodHandles.lookup().lookupClass().getName());
 
     // -----------------------------------------------------------------------------------------------------------------
 
@@ -53,7 +60,7 @@ class TemporaryFileParameterResolver implements ParameterResolver {
     public Object resolveParameter(final ParameterContext parameterContext, final ExtensionContext extensionContext)
             throws ParameterResolutionException {
         final Parameter parameter = parameterContext.getParameter();
-        final Temporary temporary = parameter.getAnnotation(Temporary.class);
+        final Temporary annotation = parameter.getAnnotation(Temporary.class);
         final Class<?> parameterType = parameter.getType();
         if (File.class == parameterType) {
             final File file;
@@ -62,7 +69,7 @@ class TemporaryFileParameterResolver implements ParameterResolver {
             } catch (final IOException ioe) {
                 throw new ParameterResolutionException("failed to create a temporary file", ioe);
             }
-            if (temporary.deleteOnExit()) {
+            if (annotation.deleteOnExit()) {
                 file.deleteOnExit();
             }
             return file;
@@ -74,10 +81,12 @@ class TemporaryFileParameterResolver implements ParameterResolver {
             } catch (final IOException ioe) {
                 throw new ParameterResolutionException("failed to create a temporary file", ioe);
             }
-            if (temporary.deleteOnExit()) {
+            if (annotation.deleteOnExit()) {
                 Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                     try {
-                        Files.deleteIfExists(path);
+                        if (!Files.deleteIfExists(path)) {
+                            logger.warning(() -> format("failed to delete %1$s", path));
+                        }
                     } catch (final IOException ioe) {
                         throw new RuntimeException("failed to delete the temporary file: " + path, ioe);
                     }

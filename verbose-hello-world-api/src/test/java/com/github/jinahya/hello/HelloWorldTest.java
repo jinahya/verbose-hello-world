@@ -1,6 +1,5 @@
 package com.github.jinahya.hello;
 
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,12 +13,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
+import java.lang.invoke.MethodHandles;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.logging.Logger;
 
 import static com.github.jinahya.hello.ByteBufferParameterResolver.Direct;
 import static com.github.jinahya.hello.ByteBufferParameterResolver.NotEnoughRemaining;
@@ -35,8 +36,10 @@ import static org.mockito.Mockito.when;
  */
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith({MockitoExtension.class, ByteBufferParameterResolver.class, TemporaryFileParameterResolver.class})
-@Slf4j
 public class HelloWorldTest {
+
+    // -----------------------------------------------------------------------------------------------------------------
+    private static final Logger logger = Logger.getLogger(MethodHandles.lookup().lookupClass().getName());
 
     // -----------------------------------------------------------------------------------------------------------------
 
