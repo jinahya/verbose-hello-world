@@ -50,7 +50,7 @@ public interface HelloWorld {
     }
 
     /**
-     * Wrties {@value SIZE} bytes of {@code hello, world} string represented in {@code US-ASCII} character set to
+     * Writes {@value SIZE} bytes of {@code hello, world} string represented in {@code US-ASCII} character set to
      * specified data output.
      *
      * @param data the data output to which bytes are written.
