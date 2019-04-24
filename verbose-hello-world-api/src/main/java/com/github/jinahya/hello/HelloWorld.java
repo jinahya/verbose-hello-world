@@ -4,6 +4,7 @@ import java.io.DataOutput;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.RandomAccessFile;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
@@ -61,7 +62,21 @@ public interface HelloWorld {
      * @see #set(byte[])
      * @see DataOutput#write(byte[])
      */
-    default <T extends DataOutput> T write(T data) throws IOException {
+    default <T extends DataOutput> T write(final T data) throws IOException {
+        // TODO: implement!
+        return null;
+    }
+
+    /**
+     * Writes {@value SIZE} bytes to specified random access file.
+     *
+     * @param file the random access file to which bytes are written.
+     * @param <T>  random access file type parameter.
+     * @return the specified random access file.
+     * @throws NullPointerException if {@code file} argument is {@code null}
+     * @throws IOException          if an I/O error occurs.
+     */
+    default <T extends RandomAccessFile> T write(final T file) throws IOException {
         // TODO: implement!
         return null;
     }

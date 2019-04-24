@@ -13,6 +13,7 @@ import java.io.DataOutput;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.RandomAccessFile;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
@@ -103,6 +104,39 @@ public class HelloWorldTest {
      */
     @Test
     public void assertWriteDataMethodReturnsSpecifiedData() throws IOException {
+        // TODO: implement!
+    }
+
+    // ----------------------------------------------------------------------------------------- write(RandomAccessFile)
+
+    /**
+     * Asserts {@link HelloWorld#write(RandomAccessFile)} method throws a {@code NullPointerException} when {@code file}
+     * argument is {@code null}.
+     *
+     * @throws IOException if an I/O error occurs.
+     */
+    @Test
+    public void assertWriteRandomAccessFileThrowsNullPointerExceptionWhenFileIsNull() throws IOException {
+        // TODO: implement!
+    }
+
+    /**
+     * Asserts {@link HelloWorld#write(RandomAccessFile)} methods writes as many bytes as {@link HelloWorld#SIZE} to
+     * specified random access file.
+     *
+     * @throws IOException if an I/O error occurs.
+     */
+    @Test
+    public void assertWriteRandomAccessFileWritesAsManyBytesAsHelloWorldSize() throws IOException {
+        // TODO: implement!
+    }
+
+    /**
+     * Asserts {@link HelloWorld#write(RandomAccessFile)} method returns the specified random access file.
+     *
+     * @throws IOException if an I/O error occurs.
+     */
+    public void assertWriteRandomAccessFileReturnsSpecifiedFile() throws IOException {
         // TODO: implement!
     }
 
