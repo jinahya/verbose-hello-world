@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.ByteBuffer;
+import java.nio.channels.SocketChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -361,6 +362,47 @@ public class HelloWorldTest {
      */
     @Test
     public void assertWritePathReturnsSpecifiedPath() throws IOException {
+        // TODO: implement!
+    }
+
+    // --------------------------------------------------------------------------------------------- send(SocketChannel)
+
+    /**
+     * Asserts {@link HelloWorld#send(SocketChannel)} method throws a {@code NullPointerException} when specified socket
+     * channel is {@code null}.
+     *
+     * @throws IOException if an I/O error occurs.
+     */
+    public void assertSendChannelThrowsNullPointerExceptionIfChannelIsNull() throws IOException {
+        // TODO: implement!
+    }
+
+    /**
+     * Asserts {@link HelloWorld#send(SocketChannel)} method sends {@link HelloWorld#SIZE} bytes to specified socket
+     * channel.
+     *
+     * @throws IOException if an I/O error occurs.
+     */
+    public void assertSendChannelSendsHelloWorldSizeBytesToSpecifiedChannel() throws IOException {
+        // TODO: implement!
+    }
+
+    /**
+     * Asserts {@link HelloWorld#send(SocketChannel)} method sends {@link HelloWorld#SIZE} bytes to specified socket
+     * channel. This method emulates non-blocking channel.
+     *
+     * @throws IOException if an I/O error occurs.
+     */
+    public void assertSendChannelSendsHelloWorldSizeBytesToSpecifiedChannelEmulateNonBlocking() throws IOException {
+        // TODO: implement!
+    }
+
+    /**
+     * Asserts {@link HelloWorld#send(SocketChannel)} method returns specified socket channel.
+     *
+     * @throws IOException if an I/O error occurs.
+     */
+    public void assertSendChannelReturnsSpecifiedChannel() throws IOException {
         // TODO: implement!
     }
 
