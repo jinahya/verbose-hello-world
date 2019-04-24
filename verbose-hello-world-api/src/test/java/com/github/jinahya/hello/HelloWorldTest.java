@@ -344,6 +344,8 @@ public class HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(Path)} method writes {@value HelloWorld#SIZE} bytes to specified path.
+     *
+     * @throws IOException if an I/O error occurs.
      */
     @Test
     public void assertWritePathWritesHelloWorldSizeBytesToPath() throws IOException {
