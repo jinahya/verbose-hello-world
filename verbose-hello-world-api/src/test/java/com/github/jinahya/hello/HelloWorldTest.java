@@ -383,6 +383,7 @@ public class HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
+    @Test
     public void assertSendChannelSendsHelloWorldSizeBytesToSpecifiedChannel() throws IOException {
         // TODO: implement!!
     }
@@ -393,6 +394,7 @@ public class HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
+    @Test
     public void assertSendChannelSendsHelloWorldSizeBytesToSpecifiedChannelEmulateNonBlocking() throws IOException {
         // TODO: implement!!
     }
@@ -402,6 +404,7 @@ public class HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
+    @Test
     public void assertSendChannelReturnsSpecifiedChannel() throws IOException {
         // TODO: implement!!
     }
