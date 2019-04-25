@@ -73,8 +73,8 @@ class ByteBufferParameterResolver implements ParameterResolver {
             throws ParameterResolutionException {
         final Parameter parameter = parameterContext.getParameter();
         final boolean notEnoughRemaining = parameter.isAnnotationPresent(NotEnoughRemaining.class);
-        final boolean directBuffer = parameter.isAnnotationPresent(Direct.class);
+        final boolean direct = parameter.isAnnotationPresent(Direct.class);
         final int capacity = notEnoughRemaining ? current().nextInt(SIZE) : current().nextInt(SIZE, SIZE << 1);
-        return directBuffer ? allocateDirect(capacity) : allocate(capacity);
+        return direct ? allocateDirect(capacity) : allocate(capacity);
     }
 }

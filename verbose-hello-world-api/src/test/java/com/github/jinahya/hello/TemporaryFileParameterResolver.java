@@ -23,12 +23,16 @@ import static java.lang.String.format;
 class TemporaryFileParameterResolver implements ParameterResolver {
 
     // -----------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Just a logger.
+     */
     private static final Logger logger = Logger.getLogger(MethodHandles.lookup().lookupClass().getName());
 
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
-     * A marker annotation for temporary file parameters.
+     * An annotation for parameters of temporary files.
      */
     @Documented
     @Retention(RetentionPolicy.RUNTIME)
@@ -36,7 +40,7 @@ class TemporaryFileParameterResolver implements ParameterResolver {
     @interface Temporary {
 
         /**
-         * Whether the created file should be deleted on exit.
+         * Whether the created file should be deleted on exit by adding a shutdown hook.
          *
          * @return {@code true} if the file should be deleted on exit; {@code false} otherwise.
          */
@@ -60,8 +64,8 @@ class TemporaryFileParameterResolver implements ParameterResolver {
     public Object resolveParameter(final ParameterContext parameterContext, final ExtensionContext extensionContext)
             throws ParameterResolutionException {
         final Parameter parameter = parameterContext.getParameter();
-        final Temporary annotation = parameter.getAnnotation(Temporary.class);
         final Class<?> parameterType = parameter.getType();
+        final Temporary annotation = parameter.getAnnotation(Temporary.class);
         if (File.class == parameterType) {
             final File file;
             try {
@@ -85,7 +89,7 @@ class TemporaryFileParameterResolver implements ParameterResolver {
                 Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                     try {
                         if (!Files.deleteIfExists(path)) {
-                            logger.warning(() -> format("failed to delete %1$s", path));
+                            logger.warning(() -> format("failed to delete the temporary file; %1$s", path));
                         }
                     } catch (final IOException ioe) {
                         throw new RuntimeException("failed to delete the temporary file: " + path, ioe);
@@ -94,6 +98,7 @@ class TemporaryFileParameterResolver implements ParameterResolver {
             }
             return path;
         }
-        throw new ParameterResolutionException("failed to resolve parameter for " + parameterContext);
+        throw new ParameterResolutionException("failed to resolve parameter; parameterContext: " + parameterContext
+                                               + ", executionContext: " + extensionContext);
     }
 }
