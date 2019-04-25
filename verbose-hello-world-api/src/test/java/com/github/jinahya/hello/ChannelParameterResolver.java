@@ -129,7 +129,7 @@ class ChannelParameterResolver implements ParameterResolver {
     @Override
     public boolean supportsParameter(final ParameterContext parameterContext, final ExtensionContext extensionContext)
             throws ParameterResolutionException {
-        return CountableByteChannel.class == parameterContext.getParameter().getType();
+        return WritableByteChannel.class.isAssignableFrom(parameterContext.getParameter().getType());
     }
 
     // -----------------------------------------------------------------------------------------------------------------
