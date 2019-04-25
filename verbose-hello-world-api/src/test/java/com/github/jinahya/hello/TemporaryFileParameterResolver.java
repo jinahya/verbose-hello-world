@@ -102,6 +102,6 @@ class TemporaryFileParameterResolver implements ParameterResolver {
             return path;
         }
         throw new ParameterResolutionException("failed to resolve parameter; parameterContext: " + parameterContext
-                                               + ", executionContext: " + extensionContext);
+                                               + ", extensionContext: " + extensionContext);
     }
 }
