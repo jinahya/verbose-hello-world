@@ -402,29 +402,6 @@ public class HelloWorldTest {
         // TODO: implement!!
     }
 
-    /**
-     * Asserts {@link HelloWorld#write(WritableByteChannel)} method returns the specified channel.
-     *
-     * @param expected a writable byte channel to use with
-     * @throws IOException if an I/O error occurs.
-     */
-    @Test
-    public void assertWriteChannelReturnsSpecifiedChannel(final WritableByteChannel expected) throws IOException {
-        // TODO: implement!!
-    }
-
-    /**
-     * Asserts {@link HelloWorld#write(WritableByteChannel)} method returns the specified channel.
-     *
-     * @param expected a writable byte channel to use with
-     * @throws IOException if an I/O error occurs.
-     */
-    @Test
-    public void assertWriteChannelReturnsSpecifiedChannelNonBlocking(@NonBlocking final WritableByteChannel expected)
-            throws IOException {
-        // TODO: implement!!
-    }
-
     // ----------------------------------------------------------------------------------------------------- write(Path)
 
     /**
