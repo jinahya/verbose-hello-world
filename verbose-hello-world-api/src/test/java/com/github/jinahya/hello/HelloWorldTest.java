@@ -369,6 +369,7 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#write(WritableByteChannel)} method writes as many bytes as {@link HelloWorld#SIZE} to
      * specified writable byte channel.
      *
+     * @param channel a writable byte channel to use with
      * @throws IOException if an I/O error occurs.
      */
     @Test
@@ -381,6 +382,7 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#write(WritableByteChannel)} method writes as many bytes as {@link HelloWorld#SIZE} to
      * specified writable byte channel. This method uses a channel emulating the non-blocking mode.
      *
+     * @param channel a writable byte channel to use with
      * @throws IOException if an I/O error occurs.
      */
     @Test
@@ -393,10 +395,23 @@ public class HelloWorldTest {
     /**
      * Asserts {@link HelloWorld#write(WritableByteChannel)} method returns the specified channel.
      *
+     * @param expected a writable byte channel to use with
      * @throws IOException if an I/O error occurs.
      */
     @Test
-    public void assertWriteChannelReturnsSpecifiedChannel() throws IOException {
+    public void assertWriteChannelReturnsSpecifiedChannel(final WritableByteChannel expected) throws IOException {
+        // TODO: implement!!
+    }
+
+    /**
+     * Asserts {@link HelloWorld#write(WritableByteChannel)} method returns the specified channel.
+     *
+     * @param expected a writable byte channel to use with
+     * @throws IOException if an I/O error occurs.
+     */
+    @Test
+    public void assertWriteChannelReturnsSpecifiedChannelNonBlocking(@NonBlocking final WritableByteChannel expected)
+            throws IOException {
         // TODO: implement!!
     }
 
