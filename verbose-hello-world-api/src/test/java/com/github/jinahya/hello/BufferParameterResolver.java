@@ -4,12 +4,15 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Parameter;
 import java.nio.ByteBuffer;
 
@@ -19,9 +22,12 @@ import static java.nio.ByteBuffer.allocateDirect;
 import static java.util.concurrent.ThreadLocalRandom.current;
 
 /**
- * A parameter resolver for parameters of {@link ByteBuffer}s.
+ * A parameter resolver for byte buffers.
  */
-class ByteBufferParameterResolver implements ParameterResolver {
+class BufferParameterResolver implements ParameterResolver {
+
+    // -----------------------------------------------------------------------------------------------------------------
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     // -----------------------------------------------------------------------------------------------------------------
 

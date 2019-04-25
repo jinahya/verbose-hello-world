@@ -77,6 +77,9 @@ public interface HelloWorld {
      * @throws IOException          if an I/O error occurs.
      */
     default <T extends RandomAccessFile> T write(final T file) throws IOException {
+        if (file == null) {
+            throw new NullPointerException("file is null");
+        }
         // TODO: implement!
         return null;
     }
@@ -93,6 +96,9 @@ public interface HelloWorld {
      * @see OutputStream#write(byte[])
      */
     default <T extends OutputStream> T write(final T stream) throws IOException {
+        if (stream == null) {
+            throw new NullPointerException("stream is null");
+        }
         // TODO: implement!
         return null;
     }
@@ -106,6 +112,9 @@ public interface HelloWorld {
      * @throws IOException if an I/O error occurs.
      */
     default <T extends File> T write(final T file) throws IOException {
+        if (file == null) {
+            throw new NullPointerException("file is null");
+        }
         // TODO: implement!
         return null;
     }
@@ -122,6 +131,9 @@ public interface HelloWorld {
      * @see #write(OutputStream)
      */
     default <T extends Socket> T send(final T socket) throws IOException {
+        if (socket == null) {
+            throw new NullPointerException("socket is null");
+        }
         // TODO: implement!
         return null;
     }
@@ -139,6 +151,9 @@ public interface HelloWorld {
      * @throws java.nio.BufferOverflowException if {@code buffer.remaining()} is less than {@link HelloWorld#SIZE}
      */
     default <T extends ByteBuffer> T put(final T buffer) {
+        if (buffer == null) {
+            throw new NullPointerException("buffer is null");
+        }
         // TODO: implement!
         return null;
     }
@@ -156,6 +171,9 @@ public interface HelloWorld {
      * @see WritableByteChannel#write(ByteBuffer)
      */
     default <T extends WritableByteChannel> T write(final T channel) throws IOException {
+        if (channel == null) {
+            throw new NullPointerException("channel is null");
+        }
         // TODO: implement!
         return null;
     }
@@ -170,6 +188,9 @@ public interface HelloWorld {
      * @throws IOException          if an I/O error occurs.
      */
     default <T extends Path> T write(final T path) throws IOException {
+        if (path == null) {
+            throw new NullPointerException("path is null");
+        }
         // TODO: implement!
         return null;
     }
@@ -184,6 +205,9 @@ public interface HelloWorld {
      * @throws IOException          if an I/O error occurs.
      */
     default <T extends SocketChannel> T send(final T channel) throws IOException {
+        if (channel == null) {
+            throw new NullPointerException("channel is null");
+        }
         // TODO: implement!
         return null;
     }

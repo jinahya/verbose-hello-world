@@ -4,6 +4,8 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,21 +18,14 @@ import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Parameter;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.logging.Logger;
-
-import static java.lang.String.format;
 
 /**
- * A parameter resolver for temporary files.
+ * A parameter resolver for files ans paths.
  */
-class TemporaryFileParameterResolver implements ParameterResolver {
+class FileParameterResolver implements ParameterResolver {
 
     // -----------------------------------------------------------------------------------------------------------------
-
-    /**
-     * Just a logger.
-     */
-    private static final Logger logger = Logger.getLogger(MethodHandles.lookup().lookupClass().getName());
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     // -----------------------------------------------------------------------------------------------------------------
 
@@ -55,8 +50,7 @@ class TemporaryFileParameterResolver implements ParameterResolver {
     public boolean supportsParameter(final ParameterContext parameterContext, final ExtensionContext extensionContext)
             throws ParameterResolutionException {
         if (parameterContext.isAnnotated(Temporary.class)) {
-            final Parameter parameter = parameterContext.getParameter();
-            final Class<?> type = parameter.getType();
+            final Class<?> type = parameterContext.getParameter().getType();
             return File.class == type || Path.class == type;
         }
         return false;
@@ -92,7 +86,7 @@ class TemporaryFileParameterResolver implements ParameterResolver {
                 Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                     try {
                         if (!Files.deleteIfExists(path)) {
-                            logger.warning(() -> format("failed to delete the temporary file; %1$s", path));
+                            logger.warn("failed to delete the temporary file; {}", path);
                         }
                     } catch (final IOException ioe) {
                         throw new RuntimeException("failed to delete the temporary file: " + path, ioe);
