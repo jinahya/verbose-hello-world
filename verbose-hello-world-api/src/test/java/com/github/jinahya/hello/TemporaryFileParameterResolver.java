@@ -20,6 +20,9 @@ import java.util.logging.Logger;
 
 import static java.lang.String.format;
 
+/**
+ * A parameter resolver for temporary files.
+ */
 class TemporaryFileParameterResolver implements ParameterResolver {
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -53,8 +56,8 @@ class TemporaryFileParameterResolver implements ParameterResolver {
             throws ParameterResolutionException {
         if (parameterContext.isAnnotated(Temporary.class)) {
             final Parameter parameter = parameterContext.getParameter();
-            final Class<?> parameterType = parameter.getType();
-            return File.class == parameterType || Path.class == parameterType;
+            final Class<?> type = parameter.getType();
+            return File.class == type || Path.class == type;
         }
         return false;
     }
@@ -64,9 +67,9 @@ class TemporaryFileParameterResolver implements ParameterResolver {
     public Object resolveParameter(final ParameterContext parameterContext, final ExtensionContext extensionContext)
             throws ParameterResolutionException {
         final Parameter parameter = parameterContext.getParameter();
-        final Class<?> parameterType = parameter.getType();
+        final Class<?> type = parameter.getType();
         final Temporary annotation = parameter.getAnnotation(Temporary.class);
-        if (File.class == parameterType) {
+        if (File.class == type) {
             final File file;
             try {
                 file = File.createTempFile("tmp", null);
@@ -78,7 +81,7 @@ class TemporaryFileParameterResolver implements ParameterResolver {
             }
             return file;
         }
-        if (Path.class == parameterType) {
+        if (Path.class == type) {
             final Path path;
             try {
                 path = Files.createTempFile(null, null);

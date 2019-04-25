@@ -19,9 +19,11 @@ import static java.nio.ByteBuffer.allocateDirect;
 import static java.util.concurrent.ThreadLocalRandom.current;
 
 /**
- * Resolves parameters of {@link ByteBuffer}.
+ * A parameter resolver for parameters of {@link ByteBuffer}s.
  */
 class ByteBufferParameterResolver implements ParameterResolver {
+
+    // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * A marker annotation for parameters of {@link ByteBuffer} whose {@link ByteBuffer#remaining() remaining()} is less
@@ -44,6 +46,8 @@ class ByteBufferParameterResolver implements ParameterResolver {
     @interface Direct {
 
     }
+
+    // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * Checks if this parameter resolver supports specified contexts.
