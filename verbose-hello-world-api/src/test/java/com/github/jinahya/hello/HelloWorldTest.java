@@ -272,14 +272,14 @@ public class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#put(ByteBuffer)} method throws a {@link java.nio.BufferOverflowException} if specified
-     * buffer's {@link ByteBuffer#remaining()} remaining()} is less than {@link HelloWorld#SIZE}.
+     * Asserts {@link HelloWorld#put(ByteBuffer)} method throws a {@code IllegalArgumentException} if specified buffer's
+     * {@link ByteBuffer#remaining()} remaining()} is less than {@link HelloWorld#SIZE}.
      *
      * @param buffer a non-direct byte buffer whose {@link ByteBuffer#remaining() remaining()} is less than {@link
      *               HelloWorld#SIZE}
      */
     @Test
-    public void assertPutBufferThrowsBufferOverflowExceptionWhenBufferRemainingIsLessThanHelloWorldSize(
+    public void assertPutBufferThrowsIllegalArgumentExceptionWhenBufferRemainingIsLessThanHelloWorldSize(
             @NotEnoughRemaining final ByteBuffer buffer) {
         assertTrue(buffer.remaining() < HelloWorld.SIZE);
         // TODO: implement!

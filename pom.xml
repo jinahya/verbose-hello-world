@@ -100,12 +100,12 @@
     </dependencies>
   </dependencyManagement>
 
-<!--  <distributionManagement>-->
-<!--    <site>-->
-<!--      <id>github-gh-pages</id>-->
-<!--      <url>https://github.com/jinahya/verbose-hello-world/tree/gh-pages</url>-->
-<!--    </site>-->
-<!--  </distributionManagement>-->
+  <!--  <distributionManagement>-->
+  <!--    <site>-->
+  <!--      <id>github-gh-pages</id>-->
+  <!--      <url>https://github.com/jinahya/verbose-hello-world/tree/gh-pages</url>-->
+  <!--    </site>-->
+  <!--  </distributionManagement>-->
 
   <build>
     <pluginManagement>
@@ -228,25 +228,25 @@
       </plugins>
     </pluginManagement>
     <plugins>
-<!--      <plugin>-->
-<!--        <groupId>com.github.github</groupId>-->
-<!--        <artifactId>site-maven-plugin</artifactId>-->
-<!--        <version>0.9</version>-->
-<!--        <executions>-->
-<!--          <execution>-->
-<!--            <goals>-->
-<!--              <goal>site</goal>-->
-<!--            </goals>-->
-<!--            <phase>site-deploy</phase>-->
-<!--            <configuration>-->
-<!--              <server>github</server>-->
-<!--              <message>Building site for my project</message>-->
-<!--              <path>/</path>-->
-<!--              <merge>false</merge>-->
-<!--            </configuration>-->
-<!--          </execution>-->
-<!--        </executions>-->
-<!--      </plugin>-->
+      <!--      <plugin>-->
+      <!--        <groupId>com.github.github</groupId>-->
+      <!--        <artifactId>site-maven-plugin</artifactId>-->
+      <!--        <version>0.9</version>-->
+      <!--        <executions>-->
+      <!--          <execution>-->
+      <!--            <goals>-->
+      <!--              <goal>site</goal>-->
+      <!--            </goals>-->
+      <!--            <phase>site-deploy</phase>-->
+      <!--            <configuration>-->
+      <!--              <server>github</server>-->
+      <!--              <message>Building site for my project</message>-->
+      <!--              <path>/</path>-->
+      <!--              <merge>false</merge>-->
+      <!--            </configuration>-->
+      <!--          </execution>-->
+      <!--        </executions>-->
+      <!--      </plugin>-->
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>

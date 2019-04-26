@@ -147,8 +147,8 @@ public interface HelloWorld {
      * @param buffer the byte buffer to which bytes are put
      * @param <T>    byte buffer type parameter
      * @return the specified byte buffer
-     * @throws NullPointerException             if {@code buffer} is {@code null}
-     * @throws java.nio.BufferOverflowException if {@code buffer.remaining()} is less than {@link HelloWorld#SIZE}
+     * @throws NullPointerException     if {@code buffer} is {@code null}
+     * @throws IllegalArgumentException {@code buffer.remaining()} is less than {@link HelloWorld#SIZE}
      */
     default <T extends ByteBuffer> T put(final T buffer) {
         if (buffer == null) {
