@@ -3,9 +3,6 @@ package com.github.jinahya.hello;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -26,10 +23,6 @@ import java.nio.channels.WritableByteChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.stream.Stream;
 
 import static com.github.jinahya.hello.BufferParameterResolver.Direct;
 import static com.github.jinahya.hello.BufferParameterResolver.NotEnoughRemaining;
@@ -487,48 +480,6 @@ public class HelloWorldTest {
     @Test
     public void assertSendChannelReturnsSpecifiedChannel() throws IOException {
         // TODO: implement!!
-    }
-
-    // ------------------------------------------------------------------------------------------------- acc(Collection)
-
-    /**
-     * Asserts {@link HelloWorld#add(Collection)} method throws a {@code NullPointerException} when {@code collection}
-     * argument is {@code null}.
-     */
-    @Test
-    public void assertAddCollectionThrowsNullPointerExceptionWhenCollectionIsNull() {
-        assertThrows(NullPointerException.class, () -> helloWorld.add((Collection) null));
-    }
-
-    /**
-     * Returns a stream of arguments which each is a {@code Collection<Byte>}.
-     *
-     * @return a stream of arguments.
-     */
-    private static Stream<Arguments> collections() {
-        return Stream.of(
-                Arguments.of(new ArrayList<>()),
-                Arguments.of(new HashSet<>())
-        );
-    }
-
-    /**
-     * Asserts {@link HelloWorld#add(Collection)} method adds as many bytes as {@link HelloWorld#SIZE}.
-     *
-     * @param collection a collection to use with
-     */
-    @MethodSource({"collections"})
-    @ParameterizedTest
-    public void assertAddCollectionAddsAsManyBytesAsHelloWorldSize(final Collection<Byte> collection) {
-        // TODO: implement!
-    }
-
-    /**
-     * Asserts {@link HelloWorld#add(Collection)} method returns the specified collection.
-     */
-    @Test
-    public void assertAddCollectionReturnsSpecifiedCollection() {
-        // TODO: implement!
     }
 
     // -----------------------------------------------------------------------------------------------------------------
