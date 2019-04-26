@@ -10,6 +10,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.file.Path;
+import java.util.Collection;
 
 /**
  * An interface for generating bytes of {@code hello, world} string.
@@ -207,6 +208,23 @@ public interface HelloWorld {
     default <T extends SocketChannel> T send(final T channel) throws IOException {
         if (channel == null) {
             throw new NullPointerException("channel is null");
+        }
+        // TODO: implement!
+        return null;
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Adds {@value SIZE} bytes of {@code hello, world} string to specified collection.
+     *
+     * @param collection the collection to which bytes are added
+     * @param <T> collection type parameter
+     * @return the specified collection
+     */
+    default <T extends Collection<? super Byte>> T add(final T collection) {
+        if (collection == null) {
+            throw new NullPointerException("collection is null");
         }
         // TODO: implement!
         return null;

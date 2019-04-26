@@ -23,6 +23,7 @@ import java.nio.channels.WritableByteChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.Collection;
 
 import static com.github.jinahya.hello.BufferParameterResolver.Direct;
 import static com.github.jinahya.hello.BufferParameterResolver.NotEnoughRemaining;
@@ -47,7 +48,7 @@ public class HelloWorldTest {
     // -----------------------------------------------------------------------------------------------------------------
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    // -----------------------------------------------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------------------------------------ SIZE
 
     /**
      * Asserts the value of {@link HelloWorld#SIZE} constant equals to the length of {@code hello, world} string in form
@@ -480,6 +481,33 @@ public class HelloWorldTest {
     @Test
     public void assertSendChannelReturnsSpecifiedChannel() throws IOException {
         // TODO: implement!!
+    }
+
+    // ------------------------------------------------------------------------------------------------- acc(Collection)
+
+    /**
+     * Asserts {@link HelloWorld#add(Collection)} method throws a {@code NullPointerException} when {@code collection}
+     * argument is {@code null}.
+     */
+    @Test
+    public void assertAddCollectionThrowsNullPointerExceptionWhenCollectionIsNull() {
+        assertThrows(NullPointerException.class, () -> helloWorld.add((Collection) null));
+    }
+
+    /**
+     * Asserts {@link HelloWorld#add(Collection)} method adds as many bytes as {@link HelloWorld#SIZE}.
+     */
+    @Test
+    public void assertAddCollectionAddsAsManyBytesAsHelloWorldSize() {
+        // TODO: implement!
+    }
+
+    /**
+     * Asserts {@link HelloWorld#add(Collection)} method returns the specified collection.
+     */
+    @Test
+    public void assertAddCollectionReturnsSpecifiedCollection() {
+        // TODO: implement!
     }
 
     // -----------------------------------------------------------------------------------------------------------------

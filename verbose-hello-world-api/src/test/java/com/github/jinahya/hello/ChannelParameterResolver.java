@@ -72,7 +72,7 @@ class ChannelParameterResolver implements ParameterResolver {
                 return 0;
             }
             final int written = blocking ? src.remaining() : current().nextInt(src.remaining() + 1);
-            logger.debug("writing {} byte(s)", written);
+            //logger.debug("writing {} byte(s)", written);
             src.position(src.position() + written);
             count += written;
             return written;
