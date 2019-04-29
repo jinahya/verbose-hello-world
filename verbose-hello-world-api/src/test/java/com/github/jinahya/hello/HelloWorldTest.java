@@ -318,6 +318,18 @@ public class HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(WritableByteChannel)} method writes as many bytes as {@link HelloWorld#SIZE} to
+     * specified channel.
+     *
+     * @throws IOException if an I/O error occurs.
+     * @see HelloWorld#write(WritableByteChannel)
+     */
+    @Test
+    public void assertWriteChannelWritesAsManyBytesAsHelloWorldSizeToChannel() throws IOException {
+        // TODO: implement!
+    }
+
+    /**
+     * Asserts {@link HelloWorld#write(WritableByteChannel)} method writes as many bytes as {@link HelloWorld#SIZE} to
      * specified writable byte channel.
      *
      * @param channel a writable byte channel to use with
