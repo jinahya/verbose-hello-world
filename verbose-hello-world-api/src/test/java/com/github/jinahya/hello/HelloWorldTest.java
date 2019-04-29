@@ -272,10 +272,10 @@ public class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#put(ByteBuffer)} method throws a {@code IllegalArgumentException} if specified buffer's
-     * {@link ByteBuffer#remaining()} remaining()} is less than {@link HelloWorld#SIZE}.
+     * Asserts {@link HelloWorld#put(ByteBuffer)} method throws an {@code IllegalArgumentException} if {@link
+     * ByteBuffer#remaining() buffer.remaining()} is less than {@link HelloWorld#SIZE}.
      *
-     * @param buffer a non-direct byte buffer whose {@link ByteBuffer#remaining() remaining()} is less than {@link
+     * @param buffer a non-direct buffer whose {@link ByteBuffer#remaining() remaining()} is less than {@link
      *               HelloWorld#SIZE}
      */
     @Test
@@ -286,19 +286,33 @@ public class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#put(ByteBuffer)} method throws a {@link java.nio.BufferOverflowException} if specified
-     * direct buffer's {@link ByteBuffer#remaining() remaining()} is less than {@link HelloWorld#SIZE}.
+     * Asserts {@link HelloWorld#put(ByteBuffer)} method throws an {@code IllegalArgumentException} if {@link
+     * ByteBuffer#remaining() buffer.remaining()} is less than {@link HelloWorld#SIZE}.
      *
-     * @param buffer a direct byte buffer whose {@link ByteBuffer#remaining() remaining} is less than {@link
+     * @param buffer a non-direct buffer whose {@link ByteBuffer#remaining() remaining()} is less than {@link
      *               HelloWorld#SIZE}
      */
     @Test
-    public void assertPutBufferThrowsBufferOverflowExceptionWhenBufferRemainingIsLessThanHelloWorldSizeDirect(
-            @NotEnoughRemaining @Direct final ByteBuffer buffer) {
+    public void assertPutBufferThrowsIllegalArgumentExceptionWhenBufferRemainingIsLessThanHelloWorldSize1(
+            @NotEnoughRemaining final ByteBuffer buffer) {
         assertTrue(buffer.remaining() < HelloWorld.SIZE);
-        assertTrue(buffer.isDirect());
         // TODO: implement!
     }
+
+//    /**
+//     * Asserts {@link HelloWorld#put(ByteBuffer)} method throws an {@code IllegalArgumentException} if {@link
+//     * ByteBuffer#remaining() bufffe.remaining()} is less than {@link HelloWorld#SIZE}.
+//     *
+//     * @param buffer a direct buffer whose {@link ByteBuffer#remaining() remaining} is less than {@link
+//     *               HelloWorld#SIZE}
+//     */
+//    @Test
+//    public void assertPutBufferThrowsBufferOverflowExceptionWhenBufferRemainingIsLessThanHelloWorldSizeDirect(
+//            @NotEnoughRemaining @Direct final ByteBuffer buffer) {
+//        assertTrue(buffer.remaining() < HelloWorld.SIZE);
+//        assertTrue(buffer.isDirect());
+//        // TODO: implement!
+//    }
 
     /**
      * Asserts {@link HelloWorld#put(ByteBuffer)} method puts as many bytes as {@link HelloWorld#SIZE} to specified byte

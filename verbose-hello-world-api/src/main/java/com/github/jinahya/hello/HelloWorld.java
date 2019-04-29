@@ -71,13 +71,17 @@ public interface HelloWorld {
     }
 
     /**
-     * Writes {@value SIZE} bytes to specified random access file.
+     * Writes {@value SIZE} bytes of {@code hello, world} string to specified random access file. This method gets the
+     * bytes from {@link #set(byte[])} and writes the array to specified random access file using {@link
+     * RandomAccessFile#write(byte[])}.
      *
-     * @param file the random access file to which bytes are written.
-     * @param <T>  random access file type parameter.
+     * @param file the random access file to which bytes are written
+     * @param <T>  random access file type parameter
      * @return the specified random access file.
      * @throws NullPointerException if {@code file} argument is {@code null}
      * @throws IOException          if an I/O error occurs.
+     * @see #set(byte[])
+     * @see RandomAccessFile#write(byte[])
      */
     default <T extends RandomAccessFile> T write(final T file) throws IOException {
         if (file == null) {
@@ -88,13 +92,15 @@ public interface HelloWorld {
     }
 
     /**
-     * Writes {@value SIZE} bytes of {@code hello, world} string on specified output stream.
+     * Writes {@value SIZE} bytes of {@code hello, world} string to specified output stream. This method gets the bytes
+     * from {@link #set(byte[])} and writes the array to specified output stream using {@link
+     * OutputStream#write(byte[])}.
      *
-     * @param stream the output stream to which bytes are written.
-     * @param <T>    output stream type parameter.
-     * @return given output stream.
-     * @throws IOException          if an I/O error occurs.
+     * @param stream the output stream to which bytes are written
+     * @param <T>    output stream type parameter
+     * @return the specified output stream
      * @throws NullPointerException if {@code stream} is {@code null}
+     * @throws IOException          if an I/O error occurs
      * @see #set(byte[])
      * @see OutputStream#write(byte[])
      */
@@ -107,12 +113,16 @@ public interface HelloWorld {
     }
 
     /**
-     * Writes {@value SIZE} bytes of {@code hello, world} string on specified file.
+     * Writes {@value SIZE} bytes of {@code hello, world} string to specified file. This method constructs an output
+     * stream using {@link java.io.FileOutputStream#FileOutputStream(File)} with the specified file and invokes {@link
+     * #write(OutputStream)} with the output stream.
      *
      * @param file the file to which bytes are written
      * @param <T>  file type parameter
      * @return the specified file
      * @throws IOException if an I/O error occurs.
+     * @see java.io.FileOutputStream#FileOutputStream(File)
+     * @see #write(OutputStream)
      */
     default <T extends File> T write(final T file) throws IOException {
         if (file == null) {
@@ -123,7 +133,9 @@ public interface HelloWorld {
     }
 
     /**
-     * Writes {@value SIZE} bytes of {@code hello, world} to the output stream of the specified socket.
+     * Writes {@value SIZE} bytes of {@code hello, world} to the output stream of the specified socket. This method
+     * invokes {@link #write(OutputStream)} with the value of {@link Socket#getOutputStream()} invoked on the specified
+     * socket.
      *
      * @param socket the socket to which bytes are sent
      * @param <T>    socket type parameter.
@@ -144,14 +156,22 @@ public interface HelloWorld {
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
-     * Puts {@value SIZE} bytes of {@code hello, world} on specified byte buffer. The {@code position} of the byte
-     * buffer, on successful return, is increased by {@value SIZE}.
+     * Puts {@value SIZE} bytes of {@code hello, world} string on specified byte buffer. The {@code position} of the
+     * byte buffer, on successful return, is increased by {@value SIZE}. This method, if the specified buffer has an
+     * array, invokes directly {@link #set(byte[], int)} with {@link ByteBuffer#array() buffer.array} and {@link
+     * ByteBuffer#arrayOffset() buffer.arrayOffset}. Otherwise, gets the bytes from {@link #set(byte[])} and puts those
+     * bytes using {@link ByteBuffer#put(byte[])}.
      *
      * @param buffer the byte buffer to which bytes are put
      * @param <T>    byte buffer type parameter
      * @return the specified byte buffer
      * @throws NullPointerException     if {@code buffer} is {@code null}
      * @throws IllegalArgumentException {@code buffer.remaining()} is less than {@link HelloWorld#SIZE}
+     * @see ByteBuffer#hasArray()
+     * @see ByteBuffer#array()
+     * @see #set(byte[], int)
+     * @see #set(byte[])
+     * @see ByteBuffer#put(byte[])
      */
     default <T extends ByteBuffer> T put(final T buffer) {
         if (buffer == null) {
