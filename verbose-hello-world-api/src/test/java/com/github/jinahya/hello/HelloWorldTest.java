@@ -24,8 +24,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
-import static com.github.jinahya.hello.BufferParameterResolver.Direct;
-import static com.github.jinahya.hello.BufferParameterResolver.NotEnoughRemaining;
+import static com.github.jinahya.hello.BufferParameterResolver.HasBackingArray;
 import static com.github.jinahya.hello.ChannelParameterResolver.CountableByteChannel;
 import static com.github.jinahya.hello.ChannelParameterResolver.NonBlocking;
 import static com.github.jinahya.hello.FileParameterResolver.Temporary;
@@ -281,43 +280,14 @@ public class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#put(ByteBuffer)} method throws an {@code IllegalArgumentException} if {@link
-     * ByteBuffer#remaining() buffer.remaining()} is less than {@link HelloWorld#SIZE}.
-     *
-     * @param buffer a non-direct buffer whose {@link ByteBuffer#remaining() remaining()} is less than {@link
-     *               HelloWorld#SIZE}
-     */
-    @Test
-    public void assertPutBufferThrowsIllegalArgumentExceptionWhenBufferRemainingIsLessThanHelloWorldSize1(
-            @NotEnoughRemaining final ByteBuffer buffer) {
-        assertTrue(buffer.remaining() < HelloWorld.SIZE);
-        // TODO: implement!
-    }
-
-//    /**
-//     * Asserts {@link HelloWorld#put(ByteBuffer)} method throws an {@code IllegalArgumentException} if {@link
-//     * ByteBuffer#remaining() bufffe.remaining()} is less than {@link HelloWorld#SIZE}.
-//     *
-//     * @param buffer a direct buffer whose {@link ByteBuffer#remaining() remaining} is less than {@link
-//     *               HelloWorld#SIZE}
-//     */
-//    @Test
-//    public void assertPutBufferThrowsBufferOverflowExceptionWhenBufferRemainingIsLessThanHelloWorldSizeDirect(
-//            @NotEnoughRemaining @Direct final ByteBuffer buffer) {
-//        assertTrue(buffer.remaining() < HelloWorld.SIZE);
-//        assertTrue(buffer.isDirect());
-//        // TODO: implement!
-//    }
-
-    /**
      * Asserts {@link HelloWorld#put(ByteBuffer)} method puts as many bytes as {@link HelloWorld#SIZE} to specified byte
      * buffer.
      *
-     * @param buffer a non-direct byte buffer whose {@link ByteBuffer#remaining() remaining()} is equals to or greater
-     *               than {@link HelloWorld#SIZE}
+     * @param buffer a byte buffer which has a backing array.
      */
     @Test
-    public void assertPutBufferPutsAsManyBytesAsHelloWorldSizeToBuffer(final ByteBuffer buffer) {
+    public void assertPutBufferPutsAsManyBytesAsHelloWorldSizeToBufferBackingArray(
+            @HasBackingArray final ByteBuffer buffer) {
         assertTrue(buffer.remaining() >= HelloWorld.SIZE);
         // TODO: implement!
     }
@@ -330,7 +300,7 @@ public class HelloWorldTest {
      *               HelloWorld#SIZE}
      */
     @Test
-    public void assertPutBufferPutsAsManyBytesAsHelloWorldToBufferDirect(@Direct final ByteBuffer buffer) {
+    public void assertPutBufferPutsAsManyBytesAsHelloWorldToBuffer(final ByteBuffer buffer) {
         assertTrue(buffer.remaining() >= HelloWorld.SIZE);
         assertTrue(buffer.isDirect());
         // TODO: implement!
@@ -343,7 +313,7 @@ public class HelloWorldTest {
      *                 than {@link HelloWorld#SIZE}
      */
     @Test
-    public void assertPutBufferReturnsSpecifiedBuffer(final ByteBuffer expected) {
+    public void assertPutBufferReturnsSpecifiedBufferBackingArray(@HasBackingArray final ByteBuffer expected) {
         assertTrue(expected.remaining() >= HelloWorld.SIZE);
         // TODO: implement!
     }
@@ -355,7 +325,7 @@ public class HelloWorldTest {
      *                 {@link HelloWorld#SIZE}
      */
     @Test
-    public void assertPutBufferReturnsSpecifiedBufferDirect(@Direct final ByteBuffer expected) {
+    public void assertPutBufferReturnsSpecifiedBuffer(final ByteBuffer expected) {
         assertTrue(expected.remaining() >= HelloWorld.SIZE);
         assertTrue(expected.isDirect());
         // TODO: implement!

@@ -43,13 +43,14 @@ class BufferParameterResolver implements ParameterResolver {
     }
 
     /**
-     * A marker annotation for parameters of {@link ByteBuffer} which each allocated vis {@link
-     * ByteBuffer#allocateDirect(int)}.
+     * A marker annotation for parameters of {@link ByteBuffer} which has a backing array.
+     *
+     * @see <a href="https://docs.oracle.com/javase/7/docs/api/java/nio/ByteBuffer.html#array()">backing array</a>
      */
     @Documented
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.PARAMETER})
-    @interface Direct {
+    @interface HasBackingArray {
 
     }
 
@@ -71,7 +72,7 @@ class BufferParameterResolver implements ParameterResolver {
 
     /**
      * Resolves a byte buffer parameter. This method checks whether the parameter is annotated {@link
-     * NotEnoughRemaining} and/or {@link Direct} and returns an appropriate instance.
+     * NotEnoughRemaining} and/or {@link HasBackingArray} and returns an appropriate instance.
      *
      * @param parameterContext a parameter context
      * @param extensionContext an execution context
@@ -83,8 +84,8 @@ class BufferParameterResolver implements ParameterResolver {
             throws ParameterResolutionException {
         final Parameter parameter = parameterContext.getParameter();
         final boolean notEnoughRemaining = parameter.isAnnotationPresent(NotEnoughRemaining.class);
-        final boolean direct = parameter.isAnnotationPresent(Direct.class);
+        final boolean hasBackingArray = parameter.isAnnotationPresent(HasBackingArray.class);
         final int capacity = notEnoughRemaining ? current().nextInt(SIZE) : current().nextInt(SIZE, SIZE << 1);
-        return direct ? allocateDirect(capacity) : allocate(capacity);
+        return hasBackingArray ? allocate(capacity) : allocateDirect(capacity);
     }
 }
