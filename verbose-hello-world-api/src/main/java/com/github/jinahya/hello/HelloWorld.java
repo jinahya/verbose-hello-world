@@ -184,8 +184,10 @@ public interface HelloWorld {
     /**
      * Writes {@value SIZE} bytes, representing {@code hello, world} string in {@code US-ASCII} character set, to
      * specified channel.
+     * <p>
+     * This method gets bytes from {@link #put(ByteBuffer)} and write the buffer to specified channel.
      *
-     * @param channel the channel to which bytes are written.
+     * @param channel the channel to which bytes are written
      * @param <T>     channel type parameter
      * @return the specified channel
      * @throws NullPointerException if {@code channel} is {@code null}
