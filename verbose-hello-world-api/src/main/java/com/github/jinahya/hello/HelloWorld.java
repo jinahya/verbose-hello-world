@@ -27,8 +27,8 @@ public interface HelloWorld {
     /**
      * Sets {@value SIZE} bytes of {@code hello, world} string on specified array starting at specified position.
      *
-     * @param array the array to which {@code hello, world} bytes are set.
-     * @param index the starting index of the array.
+     * @param array the array on which bytes are set
+     * @param index the starting index of the array
      * @return the specified array
      * @throws NullPointerException      if the {@code array} is {@code null}
      * @throws IndexOutOfBoundsException if {@code index} is negative or {@code index} + {@value SIZE} is greater than
@@ -37,9 +37,11 @@ public interface HelloWorld {
     byte[] set(byte[] array, int index);
 
     /**
-     * Sets {@value SIZE} bytes of {@code hello, world} string on specified array starting at {@code 0}.
+     * Sets {@value SIZE} bytes of {@code hello, world} string on specified array starting at {@code 0}. This method
+     * returns the result of {@link #set(byte[], int)} invoked with given array and {@code 0} for {@code index}
+     * argument.
      *
-     * @param array the array to which bytes are set
+     * @param array the array on which bytes are set
      * @return the specified array
      * @throws NullPointerException      if {@code array} is {@code null}
      * @throws IndexOutOfBoundsException if {@code array.length} is less than {@value SIZE}
@@ -52,11 +54,12 @@ public interface HelloWorld {
 
     /**
      * Writes {@value SIZE} bytes of {@code hello, world} string represented in {@code US-ASCII} character set to
-     * specified data output.
+     * specified data output. This method gets the bytes from {@link #set(byte[])} and writes the array to specified
+     * data output using {@link DataOutput#write(byte[])} method.
      *
-     * @param data the data output to which bytes are written.
-     * @param <T>  data output type parameter.
-     * @return the specified data output.
+     * @param data the data output to which bytes are written
+     * @param <T>  data output type parameter
+     * @return the specified data output
      * @throws NullPointerException if {@code data} is {@code null}
      * @throws IOException          if an I/O error occurs
      * @see #set(byte[])
