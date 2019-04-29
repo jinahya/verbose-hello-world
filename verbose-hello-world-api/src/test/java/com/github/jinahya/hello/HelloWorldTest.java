@@ -137,7 +137,7 @@ public class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#write(RandomAccessFile)} methods writes as many bytes as {@link HelloWorld#SIZE} to
+     * Asserts {@link HelloWorld#write(RandomAccessFile)} method writes as many bytes as {@link HelloWorld#SIZE} to
      * specified random access file.
      *
      * @throws IOException if an I/O error occurs.
