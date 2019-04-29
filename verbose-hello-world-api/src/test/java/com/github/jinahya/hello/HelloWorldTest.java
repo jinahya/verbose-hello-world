@@ -303,7 +303,6 @@ public class HelloWorldTest {
     public void assertPutBufferPutsAsManyBytesAsHelloWorldToBuffer(final ByteBuffer buffer) {
         assertTrue(buffer.remaining() >= HelloWorld.SIZE);
         assertTrue(buffer.isDirect());
-        logger.debug("buffer.hasArray: {}", buffer.hasArray());
         // TODO: implement!
     }
 
@@ -318,12 +317,13 @@ public class HelloWorldTest {
     /**
      * Asserts {@link HelloWorld#put(ByteBuffer)} method returns specified byte buffer.
      *
-     * @param expected a non-direct byte buffer whose {@link ByteBuffer#remaining() remaining()} is equals to or greater
-     *                 than {@link HelloWorld#SIZE}
+     * @param expected an array-backed byte buffer whose {@link ByteBuffer#remaining() remaining()} is equals to or
+     *                 greater than {@link HelloWorld#SIZE}
      */
     @Test
     public void assertPutBufferReturnsSpecifiedBufferBackingArray(@HasBackingArray final ByteBuffer expected) {
         assertTrue(expected.remaining() >= HelloWorld.SIZE);
+        assertTrue(expected.hasArray());
         // TODO: implement!
     }
 
