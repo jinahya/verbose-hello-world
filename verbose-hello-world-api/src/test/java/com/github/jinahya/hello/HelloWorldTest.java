@@ -274,14 +274,9 @@ public class HelloWorldTest {
     /**
      * Asserts {@link HelloWorld#put(ByteBuffer)} method throws an {@code IllegalArgumentException} if {@link
      * ByteBuffer#remaining() buffer.remaining()} is less than {@link HelloWorld#SIZE}.
-     *
-     * @param buffer a non-direct buffer whose {@link ByteBuffer#remaining() remaining()} is less than {@link
-     *               HelloWorld#SIZE}
      */
     @Test
-    public void assertPutBufferThrowsIllegalArgumentExceptionWhenBufferRemainingIsLessThanHelloWorldSize(
-            @NotEnoughRemaining final ByteBuffer buffer) {
-        assertTrue(buffer.remaining() < HelloWorld.SIZE);
+    public void assertPutBufferThrowsIllegalArgumentExceptionWhenBufferRemainingIsLessThanHelloWorldSize() {
         // TODO: implement!
     }
 
