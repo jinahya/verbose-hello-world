@@ -279,7 +279,7 @@ public class HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#put(ByteBuffer)} method puts as many bytes as {@link HelloWorld#SIZE} to specified byte
-     * buffer.
+     * buffer. This method aims to test with a byte buffer which has a backing-array.
      */
     @Test
     public void assertPutBufferPutsAsManyBytesAsHelloWorldSizeToBufferBackingArray() {
@@ -288,7 +288,7 @@ public class HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#put(ByteBuffer)} method puts as many bytes as {@link HelloWorld#SIZE} to specified byte
-     * buffer.
+     * buffer. This method aims to test with a byte buffer which doesn't have a backing-array.
      */
     @Test
     public void assertPutBufferPutsAsManyBytesAsHelloWorldToBuffer() {
