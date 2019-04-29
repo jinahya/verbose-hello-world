@@ -24,13 +24,11 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
-import static com.github.jinahya.hello.BufferParameterResolver.HasBackingArray;
 import static com.github.jinahya.hello.ChannelParameterResolver.CountableByteChannel;
 import static com.github.jinahya.hello.ChannelParameterResolver.NonBlocking;
 import static com.github.jinahya.hello.FileParameterResolver.Temporary;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
@@ -38,7 +36,7 @@ import static org.mockito.Mockito.when;
 /**
  * A class for testing {@link HelloWorld} class.
  */
-@ExtendWith({BufferParameterResolver.class, ChannelParameterResolver.class, FileParameterResolver.class})
+@ExtendWith({ChannelParameterResolver.class, FileParameterResolver.class})
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith({MockitoExtension.class})
 public class HelloWorldTest {
@@ -291,36 +289,9 @@ public class HelloWorldTest {
     /**
      * Asserts {@link HelloWorld#put(ByteBuffer)} method puts as many bytes as {@link HelloWorld#SIZE} to specified byte
      * buffer.
-     *
-     * @param buffer a byte buffer which has a backing array.
-     */
-    @Test
-    public void assertPutBufferPutsAsManyBytesAsHelloWorldSizeToBufferBackingArray(
-            @HasBackingArray final ByteBuffer buffer) {
-        assertTrue(buffer.remaining() >= HelloWorld.SIZE);
-        assertTrue(buffer.hasArray());
-        // TODO: implement!
-    }
-
-    /**
-     * Asserts {@link HelloWorld#put(ByteBuffer)} method puts as many bytes as {@link HelloWorld#SIZE} to specified byte
-     * buffer.
      */
     @Test
     public void assertPutBufferPutsAsManyBytesAsHelloWorldToBuffer() {
-        // TODO: implement!
-    }
-
-    /**
-     * Asserts {@link HelloWorld#put(ByteBuffer)} method puts as many bytes as {@link HelloWorld#SIZE} to specified byte
-     * buffer.
-     *
-     * @param buffer a byte buffer allocate directly.
-     */
-    @Test
-    public void assertPutBufferPutsAsManyBytesAsHelloWorldToBuffer(final ByteBuffer buffer) {
-        assertTrue(buffer.remaining() >= HelloWorld.SIZE);
-        assertTrue(buffer.isDirect());
         // TODO: implement!
     }
 
@@ -329,32 +300,6 @@ public class HelloWorldTest {
      */
     @Test
     public void assertPutBufferReturnsSpecifiedBufferBackingArray() {
-        // TODO: implement!
-    }
-
-    /**
-     * Asserts {@link HelloWorld#put(ByteBuffer)} method returns specified byte buffer.
-     *
-     * @param expected an array-backed byte buffer whose {@link ByteBuffer#remaining() remaining()} is equals to or
-     *                 greater than {@link HelloWorld#SIZE}
-     */
-    @Test
-    public void assertPutBufferReturnsSpecifiedBufferBackingArray(@HasBackingArray final ByteBuffer expected) {
-        assertTrue(expected.remaining() >= HelloWorld.SIZE);
-        assertTrue(expected.hasArray());
-        // TODO: implement!
-    }
-
-    /**
-     * Asserts {@link HelloWorld#put(ByteBuffer)} method returns the specified byte buffer.
-     *
-     * @param expected a direct buffer whose {@link ByteBuffer#remaining() remaining()} is equals to or greater than
-     *                 {@link HelloWorld#SIZE}
-     */
-    @Test
-    public void assertPutBufferReturnsSpecifiedBuffer(final ByteBuffer expected) {
-        assertTrue(expected.remaining() >= HelloWorld.SIZE);
-        assertTrue(expected.isDirect());
         // TODO: implement!
     }
 
