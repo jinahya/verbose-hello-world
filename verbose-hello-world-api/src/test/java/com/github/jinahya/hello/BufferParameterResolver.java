@@ -20,6 +20,8 @@ import static com.github.jinahya.hello.HelloWorld.SIZE;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteBuffer.allocateDirect;
 import static java.util.concurrent.ThreadLocalRandom.current;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * A parameter resolver for byte buffers.
@@ -86,6 +88,11 @@ class BufferParameterResolver implements ParameterResolver {
         final boolean notEnoughRemaining = parameter.isAnnotationPresent(NotEnoughRemaining.class);
         final boolean hasBackingArray = parameter.isAnnotationPresent(HasBackingArray.class);
         final int capacity = notEnoughRemaining ? current().nextInt(SIZE) : current().nextInt(SIZE, SIZE << 1);
+        if (hasBackingArray) {
+            return allocate(capacity);
+        }
+        final ByteBuffer resolved = mock(ByteBuffer.class);
+        when(resolved.hasArray()).thenReturn(false);
         return hasBackingArray ? allocate(capacity) : allocateDirect(capacity);
     }
 }

@@ -282,6 +282,15 @@ public class HelloWorldTest {
     /**
      * Asserts {@link HelloWorld#put(ByteBuffer)} method puts as many bytes as {@link HelloWorld#SIZE} to specified byte
      * buffer.
+     */
+    @Test
+    public void assertPutBufferPutsAsManyBytesAsHelloWorldSizeToBufferBackingArray() {
+        // TODO: implement!
+    }
+
+    /**
+     * Asserts {@link HelloWorld#put(ByteBuffer)} method puts as many bytes as {@link HelloWorld#SIZE} to specified byte
+     * buffer.
      *
      * @param buffer a byte buffer which has a backing array.
      */
@@ -290,6 +299,15 @@ public class HelloWorldTest {
             @HasBackingArray final ByteBuffer buffer) {
         assertTrue(buffer.remaining() >= HelloWorld.SIZE);
         assertTrue(buffer.hasArray());
+        // TODO: implement!
+    }
+
+    /**
+     * Asserts {@link HelloWorld#put(ByteBuffer)} method puts as many bytes as {@link HelloWorld#SIZE} to specified byte
+     * buffer.
+     */
+    @Test
+    public void assertPutBufferPutsAsManyBytesAsHelloWorldToBuffer() {
         // TODO: implement!
     }
 
