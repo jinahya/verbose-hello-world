@@ -15,7 +15,12 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
 /**
- * An interface for generating bytes of {@code hello, world} string.
+ * An interface for generating <a href="#hello-world-bytes">hello-world-bytes</a> to various targets.
+ *
+ * <h2 id="hello-world-bytes">hello-world-bytes</h2>
+ * A sequence of {@value SIZE} bytes, representing the "{@code hello, world}" string encoded in {@code US-ASCII}
+ * character set, which starts with {@code 0x68} followed by {@code 0x65}, {@code 0x6C}, {@code 0x6C}, {@code 0x6F},
+ * {@code 0x2C}, {@code 0x20}, {@code 0x77}, {@code 0x6F}, {@code 0x72}, {@code 0x6C}, and {@code 0x64}.
  *
  * @author Jin Kwon &lt;jinahya_at_gmail.com&gt;
  */
@@ -28,7 +33,8 @@ public interface HelloWorld {
     int SIZE = 12;
 
     /**
-     * Sets {@value SIZE} bytes of {@code hello, world} string on specified array starting at specified position.
+     * Sets {@value SIZE} <a href="#hello-world-byte">hello-world-bytes</a> on specified array starting at specified
+     * position and returns the specified array.
      *
      * @param array the array on which bytes are set
      * @param index the starting index of the array
@@ -40,8 +46,10 @@ public interface HelloWorld {
     byte[] set(byte[] array, int index);
 
     /**
-     * Sets {@value SIZE} bytes of {@code hello, world} string on specified array starting at {@code 0}. This method
-     * returns the result of {@link #set(byte[], int)} invoked with given array and {@code 0} for {@code index}
+     * Sets {@value SIZE} <a href="#hello-world-bytes">hello-world-bytes</a> on specified array starting at {@code 0}
+     * and returns the specified array.
+     * <p>
+     * This method invokes {@link #set(byte[], int)} method with given array and {@code 0} for the {@code index}
      * argument.
      *
      * @param array the array on which bytes are set
@@ -56,9 +64,11 @@ public interface HelloWorld {
     }
 
     /**
-     * Writes {@value SIZE} bytes of {@code hello, world} string represented in {@code US-ASCII} character set to
-     * specified data output. This method gets the bytes from {@link #set(byte[])} and writes the array to specified
-     * data output using {@link DataOutput#write(byte[])} method.
+     * Writes {@value SIZE} <a href="#hello-world-bytes">hello-world-bytes</a> to specified data output and returns the
+     * specified data output.
+     * <p>
+     * This method gets the bytes from {@link #set(byte[])} and writes the array to specified data output using {@link
+     * DataOutput#write(byte[])} method.
      *
      * @param data the data output to which bytes are written
      * @param <T>  data output type parameter
@@ -74,9 +84,11 @@ public interface HelloWorld {
     }
 
     /**
-     * Writes {@value SIZE} bytes of {@code hello, world} string to specified random access file. This method gets the
-     * bytes from {@link #set(byte[])} and writes the array to specified random access file using {@link
-     * RandomAccessFile#write(byte[])}.
+     * Writes {@value SIZE} <a href="#hello-world-bytes">hello-world-bytes</a> to specified random access file and
+     * returns the random access file.
+     * <p>
+     * This method gets the bytes from {@link #set(byte[])} and writes the array to specified random access file using
+     * {@link RandomAccessFile#write(byte[])}.
      *
      * @param file the random access file to which bytes are written
      * @param <T>  random access file type parameter
