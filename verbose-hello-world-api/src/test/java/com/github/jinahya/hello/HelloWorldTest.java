@@ -24,8 +24,6 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
-import static com.github.jinahya.hello.ChannelParameterResolver.CountableByteChannel;
-import static com.github.jinahya.hello.ChannelParameterResolver.NonBlocking;
 import static com.github.jinahya.hello.FileParameterResolver.Temporary;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -326,33 +324,6 @@ public class HelloWorldTest {
     @Test
     public void assertWriteChannelWritesAsManyBytesAsHelloWorldSizeToChannel() throws IOException {
         // TODO: implement!
-    }
-
-    /**
-     * Asserts {@link HelloWorld#write(WritableByteChannel)} method writes as many bytes as {@link HelloWorld#SIZE} to
-     * specified writable byte channel.
-     *
-     * @param channel a writable byte channel to use with
-     * @throws IOException if an I/O error occurs.
-     */
-    @Test
-    public void assertWriteChannelWritesAsManyBytesAsHelloWorldSizeToChannel(final CountableByteChannel channel)
-            throws IOException {
-        // TODO: implement!!
-    }
-
-    /**
-     * Asserts {@link HelloWorld#write(WritableByteChannel)} method writes as many bytes as {@link HelloWorld#SIZE} to
-     * specified writable byte channel. This method uses a channel emulating the non-blocking mode.
-     *
-     * @param channel a writable byte channel to use with
-     * @throws IOException if an I/O error occurs.
-     */
-    @Test
-    public void assertWriteChannelWritesAsManyBytesAsHelloWorldSizeToChannelNonBlocking(
-            @NonBlocking final CountableByteChannel channel)
-            throws IOException {
-        // TODO: implement!!
     }
 
     /**
