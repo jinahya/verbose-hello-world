@@ -34,7 +34,7 @@ import static org.mockito.Mockito.when;
 /**
  * A class for testing {@link HelloWorld} class.
  */
-@ExtendWith({ChannelParameterResolver.class, FileParameterResolver.class})
+@ExtendWith({FileParameterResolver.class})
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith({MockitoExtension.class})
 public class HelloWorldTest {
