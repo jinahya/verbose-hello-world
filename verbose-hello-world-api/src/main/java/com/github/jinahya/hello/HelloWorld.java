@@ -7,9 +7,12 @@ import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.net.Socket;
 import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.WritableByteChannel;
+import java.nio.file.OpenOption;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 
 /**
  * An interface for generating bytes of {@code hello, world} string.
@@ -204,13 +207,19 @@ public interface HelloWorld {
     }
 
     /**
-     * Writes {@value SIZE} bytes of {@code hello, world} string to specified path.
+     * Writes {@value SIZE} bytes, representing {@code hello, world} string in {@code US-ASCII} character, to specified
+     * path.
+     * <p>
+     * This method opens a file channel on specified path with {@link StandardOpenOption#WRITE} and {@link
+     * StandardOpenOption#APPEND} and invokes {@link #write(WritableByteChannel)} with it.
      *
      * @param path the path to which bytes are written.
      * @param <T>  path type parameter
      * @return the specified path
      * @throws NullPointerException if {@code path} is {@code null}
      * @throws IOException          if an I/O error occurs.
+     * @see FileChannel#open(Path, OpenOption...)
+     * @see #write(WritableByteChannel)
      */
     default <T extends Path> T write(final T path) throws IOException {
         if (path == null) {
