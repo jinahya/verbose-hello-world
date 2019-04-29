@@ -104,7 +104,7 @@ public class HelloWorldTest {
      * @throws IOException if an I/O error occurs.
      */
     @Test
-    public void assertWriteDataMethodWritesAsManyBytesAsHelloWorldSizeToData() throws IOException {
+    public void assertWriteDataWritesAsManyBytesAsHelloWorldSizeToData() throws IOException {
         // TODO: implement!
     }
 
@@ -114,7 +114,7 @@ public class HelloWorldTest {
      * @throws IOException if an I/O error occurs.
      */
     @Test
-    public void assertWriteDataMethodReturnsSpecifiedData() throws IOException {
+    public void assertWriteDataReturnsSpecifiedData() throws IOException {
         // TODO: implement!
     }
 
