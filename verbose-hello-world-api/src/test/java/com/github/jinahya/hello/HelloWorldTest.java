@@ -294,7 +294,7 @@ public class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#put(ByteBuffer)} method puts as many byts as {@link HelloWorld#SIZE} to specified byte
+     * Asserts {@link HelloWorld#put(ByteBuffer)} method puts as many bytes as {@link HelloWorld#SIZE} to specified byte
      * buffer.
      *
      * @param buffer a byte buffer allocate directly.
