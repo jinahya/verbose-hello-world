@@ -309,6 +309,14 @@ public class HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#put(ByteBuffer)} method returns specified byte buffer.
+     */
+    @Test
+    public void assertPutBufferReturnsSpecifiedBufferBackingArray() {
+        // TODO: implement!
+    }
+
+    /**
+     * Asserts {@link HelloWorld#put(ByteBuffer)} method returns specified byte buffer.
      *
      * @param expected a non-direct byte buffer whose {@link ByteBuffer#remaining() remaining()} is equals to or greater
      *                 than {@link HelloWorld#SIZE}
