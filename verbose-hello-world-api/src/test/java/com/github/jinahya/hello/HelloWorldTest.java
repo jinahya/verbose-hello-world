@@ -289,6 +289,7 @@ public class HelloWorldTest {
     public void assertPutBufferPutsAsManyBytesAsHelloWorldSizeToBufferBackingArray(
             @HasBackingArray final ByteBuffer buffer) {
         assertTrue(buffer.remaining() >= HelloWorld.SIZE);
+        assertTrue(buffer.hasArray());
         // TODO: implement!
     }
 
@@ -296,13 +297,13 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#put(ByteBuffer)} method puts as many byts as {@link HelloWorld#SIZE} to specified byte
      * buffer.
      *
-     * @param buffer a direct buffer whose {@link ByteBuffer#remaining() remaining()}is equals to or greater than {@link
-     *               HelloWorld#SIZE}
+     * @param buffer a byte buffer allocate directly.
      */
     @Test
     public void assertPutBufferPutsAsManyBytesAsHelloWorldToBuffer(final ByteBuffer buffer) {
         assertTrue(buffer.remaining() >= HelloWorld.SIZE);
         assertTrue(buffer.isDirect());
+        logger.debug("buffer.hasArray: {}", buffer.hasArray());
         // TODO: implement!
     }
 
