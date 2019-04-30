@@ -228,11 +228,11 @@ public interface HelloWorld {
     }
 
     /**
-     * Writes {@value SIZE} bytes, representing {@code hello, world} string in {@code US-ASCII} character, to specified
-     * path.
+     * Writes {@value SIZE} <a href="#hello-world-bytes">hello-world-bytes</a> to specified path.
      * <p>
-     * This method opens a file channel on specified path with {@link StandardOpenOption#WRITE} and {@link
-     * StandardOpenOption#APPEND} and invokes {@link #write(WritableByteChannel)} with it.
+     * This method opens a file channel on specified path with {@link StandardOpenOption#CREATE}, {@link
+     * StandardOpenOption#WRITE} and {@link StandardOpenOption#APPEND} and invokes {@link #write(WritableByteChannel)}
+     * with it.
      *
      * @param path the path to which bytes are written.
      * @param <T>  path type parameter
