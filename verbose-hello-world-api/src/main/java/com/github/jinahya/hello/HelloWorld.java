@@ -107,9 +107,10 @@ public interface HelloWorld {
     }
 
     /**
-     * Writes {@value SIZE} bytes of {@code hello, world} string to specified output stream. This method gets the bytes
-     * from {@link #set(byte[])} and writes the array to specified output stream using {@link
-     * OutputStream#write(byte[])}.
+     * Writes {@value SIZE} <a href="#hello-world-bytes">hello-world-bytes</a> to specified output stream.
+     * <p>
+     * This method invokes {@link #set(byte[])} with an array whose length is equals to {@value SIZE} and writes the
+     * returned array to specified output stream using {@link OutputStream#write(byte[])}.
      *
      * @param stream the output stream to which bytes are written
      * @param <T>    output stream type parameter
@@ -128,14 +129,17 @@ public interface HelloWorld {
     }
 
     /**
-     * Writes {@value SIZE} bytes of {@code hello, world} string to specified file. This method constructs an output
-     * stream using {@link java.io.FileOutputStream#FileOutputStream(File)} with the specified file and invokes {@link
-     * #write(OutputStream)} with the output stream.
+     * Writes {@value SIZE} <a href="#hello-world-bytes">hello-world-bytes</a> to specified file and returns the
+     * specified file.
+     * <p>
+     * This method constructs an output stream using {@link java.io.FileOutputStream#FileOutputStream(File)} with
+     * specified file and invokes {@link #write(OutputStream)} with the output stream.
      *
      * @param file the file to which bytes are written
      * @param <T>  file type parameter
      * @return the specified file
-     * @throws IOException if an I/O error occurs.
+     * @throws NullPointerException if {@code file} is {@code null}
+     * @throws IOException          if an I/O error occurs.
      * @see java.io.FileOutputStream#FileOutputStream(File)
      * @see #write(OutputStream)
      */
