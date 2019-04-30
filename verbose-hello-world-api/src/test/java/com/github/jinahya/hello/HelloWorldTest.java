@@ -219,17 +219,6 @@ public class HelloWorldTest {
         // TODO: implement!
     }
 
-    /**
-     * Asserts {@link HelloWorld#write(File)} method returns the specified file.
-     *
-     * @param expected an empty file to use with
-     * @throws IOException if an I/O error occurs
-     */
-    @Test
-    public void assertWriteFileReturnsSpecifiedFile(@Temporary final File expected) throws IOException {
-        // TODO: implement!
-    }
-
     // ---------------------------------------------------------------------------------------------------- send(Socket)
 
     /**
