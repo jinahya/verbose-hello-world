@@ -350,22 +350,20 @@ public class HelloWorldTest {
     /**
      * Asserts {@link HelloWorld#write(Path)} method writes as many bytes as {@link HelloWorld#SIZE} to specified path.
      *
-     * @param path an empty path to use with
      * @throws IOException if an I/O error occurs.
      */
     @Test
-    public void assertWritePathWritesAsManyBytesAsHelloWorldSizeToPath(@Temporary final Path path) throws IOException {
+    public void assertWritePathWritesAsManyBytesAsHelloWorldSizeToPath() throws IOException {
         // TODO: implement!!
     }
 
     /**
      * Asserts {@link HelloWorld#write(Path)} method returns the specified path.
      *
-     * @param expected an empty file to use with
      * @throws IOException if an I/O error occurs.
      */
     @Test
-    public void assertWritePathReturnsSpecifiedPath(@Temporary final Path expected) throws IOException {
+    public void assertWritePathReturnsSpecifiedPath() throws IOException {
         // TODO: implement!!
     }
 
