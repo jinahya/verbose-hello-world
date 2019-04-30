@@ -152,9 +152,10 @@ public interface HelloWorld {
     }
 
     /**
-     * Writes {@value SIZE} bytes of {@code hello, world} to the output stream of the specified socket. This method
-     * invokes {@link #write(OutputStream)} with the value of {@link Socket#getOutputStream()} invoked on the specified
-     * socket.
+     * Writes {@value SIZE}  <a href="#hello-world-bytes">hello-world-bytes</a> to specified socket.
+     * <p>
+     * This method invokes {@link #write(OutputStream)} with the value of {@link Socket#getOutputStream()} invoked on
+     * the specified socket.
      *
      * @param socket the socket to which bytes are sent
      * @param <T>    socket type parameter.
