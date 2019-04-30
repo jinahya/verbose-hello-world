@@ -233,13 +233,13 @@ public class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#send(Socket)} method sends as many bytes as {@link HelloWorld#SIZE} via specified
+     * Asserts {@link HelloWorld#send(Socket)} method sends as many bytes as {@link HelloWorld#SIZE} to specified
      * socket.
      *
      * @throws IOException if an I/O error occurs.
      */
     @Test
-    public void assertSendSocketSendsExpectedNumberOfBytesToSocket() throws IOException {
+    public void assertSendSocketSendsAsManyBytesAsHelloWorldSizeToSocket() throws IOException {
         // TODO: implement!
     }
 
