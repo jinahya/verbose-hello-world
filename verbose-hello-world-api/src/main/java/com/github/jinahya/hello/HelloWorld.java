@@ -152,7 +152,7 @@ public interface HelloWorld {
     }
 
     /**
-     * Writes {@value SIZE}  <a href="#hello-world-bytes">hello-world-bytes</a> to specified socket.
+     * Writes {@value SIZE} <a href="#hello-world-bytes">hello-world-bytes</a> to specified socket.
      * <p>
      * This method invokes {@link #write(OutputStream)} with the value of {@link Socket#getOutputStream()} invoked on
      * the specified socket.
@@ -176,20 +176,25 @@ public interface HelloWorld {
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
-     * Puts {@value SIZE} bytes of {@code hello, world} string on specified byte buffer. The {@code position} of the
-     * byte buffer, on successful return, is increased by {@value SIZE}. This method, if the specified buffer has an
-     * array, invokes directly {@link #set(byte[], int)} with {@link ByteBuffer#array() buffer.array} and {@link
-     * ByteBuffer#arrayOffset() buffer.arrayOffset}. Otherwise, gets the bytes from {@link #set(byte[])} and puts those
-     * bytes using {@link ByteBuffer#put(byte[])}.
+     * Puts {@value SIZE} <a href="#hello-world-bytes">hello-world-bytes</a> on specified byte buffer.
+     * <p>
+     * This method, if the buffer has a backing-array, invokes {@link #set(byte[], int)} with the value of {@code
+     * buffer.array()} and {@code buffer.arrayOffset() + buffer.position()} and manually increments the value of {@code
+     * buffer.position} by {@value SIZE}.
+     * <p>
+     * Otherwise, this method invokes {@link #set(byte[])} with an array of {@value SIZE} elements and put the array on
+     * the buffer using {@link ByteBuffer#put(byte[])}.
      *
-     * @param buffer the byte buffer to which bytes are put
+     * @param buffer the byte buffer on which bytes are put
      * @param <T>    byte buffer type parameter
      * @return the specified byte buffer
      * @throws NullPointerException     if {@code buffer} is {@code null}
      * @throws IllegalArgumentException {@code buffer.remaining()} is less than {@link HelloWorld#SIZE}
      * @see ByteBuffer#hasArray()
      * @see ByteBuffer#array()
-     * @see #set(byte[], int)
+     * @see ByteBuffer#arrayOffset()
+     * @see ByteBuffer#position()
+     * @see ByteBuffer#position(int)
      * @see #set(byte[])
      * @see ByteBuffer#put(byte[])
      */
