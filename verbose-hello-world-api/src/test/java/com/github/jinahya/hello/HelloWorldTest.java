@@ -210,13 +210,12 @@ public class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#write(File)} method writes as many bytes as {@link HelloWorld#SIZE} to specified file.
+     * Asserts {@link HelloWorld#write(File)} method returns the specified file.
      *
-     * @param file an empty file to use with
      * @throws IOException if an I/O error occurs
      */
     @Test
-    public void assertWriteFileWritesAsManyBytesAsHelloWorldSizeToFile(@Temporary final File file) throws IOException {
+    public void assertWriteFileReturnsSpecifiedFile() throws IOException {
         // TODO: implement!
     }
 
