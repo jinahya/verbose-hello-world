@@ -207,10 +207,9 @@ public interface HelloWorld {
     }
 
     /**
-     * Writes {@value SIZE} bytes, representing {@code hello, world} string in {@code US-ASCII} character set, to
-     * specified channel.
+     * Writes {@value SIZE} <a href="#hello-world-bytes">hello-world-bytes</a> to specified channel.
      * <p>
-     * This method gets bytes from {@link #put(ByteBuffer)} and write the buffer to specified channel.
+     * This method invokes {@link #put(ByteBuffer)} with a byte buffer and write the buffer to specified channel.
      *
      * @param channel the channel to which bytes are written
      * @param <T>     channel type parameter
