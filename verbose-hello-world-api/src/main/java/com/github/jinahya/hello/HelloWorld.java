@@ -8,7 +8,6 @@ import java.io.RandomAccessFile;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.nio.channels.SocketChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
@@ -245,23 +244,6 @@ public interface HelloWorld {
     default <T extends Path> T write(final T path) throws IOException {
         if (path == null) {
             throw new NullPointerException("path is null");
-        }
-        // TODO: implement!
-        return null;
-    }
-
-    /**
-     * Sends {@value SIZE} bytes of {@code hello, world} string to specified socket channel.
-     *
-     * @param channel the socket channel to which bytes are written.
-     * @param <T>     socket channel type parameter
-     * @return the specified socket channel
-     * @throws NullPointerException if {@code channel} is {@code null}
-     * @throws IOException          if an I/O error occurs.
-     */
-    default <T extends SocketChannel> T send(final T channel) throws IOException {
-        if (channel == null) {
-            throw new NullPointerException("channel is null");
         }
         // TODO: implement!
         return null;

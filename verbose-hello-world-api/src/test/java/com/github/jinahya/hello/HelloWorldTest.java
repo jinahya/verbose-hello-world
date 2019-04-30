@@ -18,13 +18,11 @@ import java.io.RandomAccessFile;
 import java.lang.invoke.MethodHandles;
 import java.net.Socket;
 import java.nio.ByteBuffer;
-import java.nio.channels.SocketChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
-import static com.github.jinahya.hello.FileParameterResolver.Temporary;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -364,51 +362,6 @@ public class HelloWorldTest {
      */
     @Test
     public void assertWritePathReturnsSpecifiedPath() throws IOException {
-        // TODO: implement!!
-    }
-
-    // --------------------------------------------------------------------------------------------- send(SocketChannel)
-
-    /**
-     * Asserts {@link HelloWorld#send(SocketChannel)} method throws a {@code NullPointerException} when {@code socket}
-     * argument is {@code null}.
-     *
-     * @throws IOException if an I/O error occurs.
-     */
-    @Test
-    public void assertSendChannelThrowsNullPointerExceptionIfSocketIsNull() throws IOException {
-        assertThrows(NullPointerException.class, () -> helloWorld.send((SocketChannel) null));
-    }
-
-    /**
-     * Asserts {@link HelloWorld#send(SocketChannel)} method sends as many bytes as {@link HelloWorld#SIZE} to specified
-     * socket channel.
-     *
-     * @throws IOException if an I/O error occurs.
-     */
-    @Test
-    public void assertSendChannelSendsAsManyBytesAsHelloWorldSizeToSocket() throws IOException {
-        // TODO: implement!!
-    }
-
-    /**
-     * Asserts {@link HelloWorld#send(SocketChannel)} method sends as many bytes as {@link HelloWorld#SIZE} to specified
-     * socket channel. This method emulates non-blocking channel.
-     *
-     * @throws IOException if an I/O error occurs.
-     */
-    @Test
-    public void assertSendChannelSendsAsManyBytesAsHelloWorldSizeToSocketNonBlockingEmulated() throws IOException {
-        // TODO: implement!!
-    }
-
-    /**
-     * Asserts {@link HelloWorld#send(SocketChannel)} method returns the specified socket channel.
-     *
-     * @throws IOException if an I/O error occurs.
-     */
-    @Test
-    public void assertSendChannelReturnsSpecifiedChannel() throws IOException {
         // TODO: implement!!
     }
 
