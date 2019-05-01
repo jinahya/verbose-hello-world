@@ -6,7 +6,8 @@ import dagger.Provides;
 @Module(injects = {HelloWorldImplInjectDaggerTest.class})
 class HelloWorldImplInjectDaggerModule {
 
-    @Provides static HelloWorld provideHelloWorld() {
+    @Provides
+    public HelloWorld provideHelloWorld() {
         return new HelloWorldImpl();
     }
 }
