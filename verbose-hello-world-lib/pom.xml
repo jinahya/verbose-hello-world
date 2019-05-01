@@ -30,11 +30,6 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>com.google.dagger</groupId>
-      <artifactId>dagger-compiler</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>com.google.inject</groupId>
       <artifactId>guice</artifactId>
       <scope>test</scope>
@@ -153,6 +148,42 @@
           <groupId>com.squareup.dagger</groupId>
           <artifactId>dagger-compiler</artifactId>
           <scope>provided</scope>
+        </dependency>
+      </dependencies>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>build-helper-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>add-test-source</id>
+                <goals>
+                  <goal>add-test-source</goal>
+                </goals>
+                <configuration>
+                  <sources>
+                    <source>${project.basedir}/src/test/java-dagger</source>
+                  </sources>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>dagger2</id>
+      <dependencies>
+        <dependency>
+          <groupId>com.google.dagger</groupId>
+          <artifactId>dagger</artifactId>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>com.google.dagger</groupId>
+          <artifactId>dagger-compiler</artifactId>
+          <scope>test</scope>
         </dependency>
       </dependencies>
       <build>
