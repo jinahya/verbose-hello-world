@@ -6,14 +6,16 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import java.lang.invoke.MethodHandles;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 abstract class HelloWorldImplInjectTest extends AbstractHelloWorldImplTest {
 
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     @Override
     HelloWorld helloWorld() {
-        // TODO: implement!
-        return null;
+        assertNotNull(helloWorld);
+        return helloWorld;
     }
 
     @Inject

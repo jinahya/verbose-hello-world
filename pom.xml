@@ -51,6 +51,7 @@
     <maven.compiler.testTarget>1.8</maven.compiler.testTarget>
     <version.maven-surefire>3.0.0-M3</version.maven-surefire>
     <version.maven-failsafe>${version.maven-surefire}</version.maven-failsafe>
+    <version.com.google.dagger>2.22.1</version.com.google.dagger>
     <version.com.squareup.dagger>1.2.5</version.com.squareup.dagger>
     <version.org.junit.jupiter>5.5.0-M1</version.org.junit.jupiter>
     <version.org.mockito>2.27.0</version.org.mockito>
@@ -62,6 +63,16 @@
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
         <version>1.3.0-alpha4</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.dagger</groupId>
+        <artifactId>dagger</artifactId>
+        <version>${version.com.google.dagger}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.dagger</groupId>
+        <artifactId>dagger-compiler</artifactId>
+        <version>${version.com.google.dagger}</version>
       </dependency>
       <dependency>
         <groupId>com.google.inject</groupId>
