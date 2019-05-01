@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
 
-class HelloWorldImplInjectDagger1Test extends HelloWorldImplInjectTest {
+class HelloWorldImplInjectDaggerTest extends HelloWorldImplInjectTest {
 
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 }
