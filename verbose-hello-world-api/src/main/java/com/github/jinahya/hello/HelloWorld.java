@@ -18,8 +18,8 @@ import java.nio.file.StandardOpenOption;
  *
  * <h2 id="hello-world-bytes">hello-world-bytes</h2>
  * A sequence of {@value SIZE} bytes, representing the "{@code hello, world}" string encoded in {@code US-ASCII}
- * character set, which starts with {@code 0x68} followed by {@code 0x65}, {@code 0x6C}, {@code 0x6C}, {@code 0x6F},
- * {@code 0x2C}, {@code 0x20}, {@code 0x77}, {@code 0x6F}, {@code 0x72}, {@code 0x6C}, and {@code 0x64}.
+ * character set, which consists of {@code 0x68('h1')} followed by {@code 0x65}, {@code 0x6C}, {@code 0x6C}, {@code
+ * 0x6F}, {@code 0x2C}, {@code 0x20}, {@code 0x77}, {@code 0x6F}, {@code 0x72}, {@code 0x6C}, and {@code 0x64}.
  *
  * @author Jin Kwon &lt;jinahya_at_gmail.com&gt;
  */
@@ -32,8 +32,17 @@ public interface HelloWorld {
     int SIZE = 12;
 
     /**
-     * Sets {@value SIZE} <a href="#hello-world-byte">hello-world-bytes</a> on specified array starting at specified
-     * position and returns the specified array.
+     * Sets <a href="#hello-world-byte">hello-world-bytes</a> on specified array starting at specified position and
+     * returns the specified array.
+     * <p>
+     * The elements in the specified array, on successful return, will be set as follows.
+     * <pre>{@code
+     *   0                                                               array.length
+     *   |                                                               |
+     * |   |...|'h'|'e'|'l'|'l'|'o'|','|' '|'w'|'o'|'r'|'l'|'d'|   |...|
+     *           |                                               |
+     *           index                                           index + SIZE
+     * }</pre>
      *
      * @param array the array on which bytes are set
      * @param index the starting index of the array
