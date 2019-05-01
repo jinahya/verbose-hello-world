@@ -2,6 +2,9 @@ package com.github.jinahya.hello;
 
 import org.junit.jupiter.api.Test;
 
+/**
+ * A class for testing {@link HelloWorldImpl}.
+ */
 public class HelloWorldImplTest {
 
     /**
