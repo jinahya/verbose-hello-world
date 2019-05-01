@@ -5,12 +5,14 @@ import org.junit.jupiter.api.Test;
 /**
  * A class for testing {@link HelloWorldImpl}.
  */
-public class HelloWorldImplTest extends AbstractHelloWorldImplTest {
+abstract class AbstractHelloWorldImplTest {
 
-    @Override
-    HelloWorld helloWorld() {
-        return new HelloWorldImpl();
-    }
+    /**
+     * Returns an instance of {@link HelloWorld} for testing.
+     *
+     * @return an instance of {@link HelloWorld}.
+     */
+    abstract HelloWorld helloWorld();
 
     /**
      * Asserts {@link HelloWorldImpl#set(byte[], int)} method throws a {@code NullPointerException} when {@code array}
