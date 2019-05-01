@@ -54,6 +54,7 @@
     <version.com.google.dagger>2.22.1</version.com.google.dagger>
     <version.com.squareup.dagger>1.2.5</version.com.squareup.dagger>
     <version.org.junit.jupiter>5.5.0-M1</version.org.junit.jupiter>
+    <version.org.glassfish.hk2>2.5.0</version.org.glassfish.hk2>
     <version.org.mockito>2.27.0</version.org.mockito>
   </properties>
 
@@ -113,6 +114,11 @@
         <groupId>org.junit.jupiter</groupId>
         <artifactId>junit-jupiter-engine</artifactId>
         <version>${version.org.junit.jupiter}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.glassfish.hk2</groupId>
+        <artifactId>hk2</artifactId>
+        <version>${version.org.glassfish.hk2}</version>
       </dependency>
       <dependency>
         <groupId>org.junit.jupiter</groupId>
