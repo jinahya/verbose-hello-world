@@ -1,11 +1,17 @@
 package com.github.jinahya.hello;
 
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.invoke.MethodHandles;
 
 /**
  * A class for testing {@link HelloWorldImpl}.
  */
 abstract class AbstractHelloWorldImplTest {
+
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     /**
      * Returns an instance of {@link HelloWorld} for testing.
