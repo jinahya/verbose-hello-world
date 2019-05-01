@@ -69,6 +69,11 @@
         <version>${version.com.squareup.dagger}</version>
       </dependency>
       <dependency>
+        <groupId>com.squareup.dagger</groupId>
+        <artifactId>dagger-compiler</artifactId>
+        <version>${version.com.squareup.dagger}</version>
+      </dependency>
+      <dependency>
         <groupId>javax.inject</groupId>
         <artifactId>javax.inject</artifactId>
         <version>1</version>

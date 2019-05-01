@@ -31,7 +31,7 @@
     </dependency>
     <dependency>
       <groupId>com.squareup.dagger</groupId>
-      <artifactId>dagger</artifactId>
+      <artifactId>dagger-compiler</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
