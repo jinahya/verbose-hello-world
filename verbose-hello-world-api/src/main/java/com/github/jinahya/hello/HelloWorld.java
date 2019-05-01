@@ -241,9 +241,9 @@ public interface HelloWorld {
     /**
      * Writes <a href="#hello-world-bytes">hello-world-bytes</a> to specified path.
      * <p>
-     * This method opens a file channel with specified path, {@link StandardOpenOption#CREATE}, {@link
-     * StandardOpenOption#WRITE} and {@link StandardOpenOption#APPEND} and invokes {@link #write(WritableByteChannel)}
-     * with it.
+     * This method opens a file channel with specified path, {@link StandardOpenOption#CREATE CREATE}, {@link
+     * StandardOpenOption#WRITE WRITE} and {@link StandardOpenOption#APPEND APPEND} and invokes {@link
+     * #write(WritableByteChannel)} with it.
      *
      * @param path the path to which bytes are written.
      * @param <T>  path type parameter
