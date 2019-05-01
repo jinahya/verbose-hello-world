@@ -30,6 +30,7 @@
 
   <modules>
     <module>verbose-hello-world-api</module>
+    <module>verbose-hello-world-lib</module>
   </modules>
 
   <scm>
