@@ -12,6 +12,6 @@ class HelloWorldImplInjectHk2Binder extends AbstractBinder {
 
     @Override
     protected void configure() {
-        bind(HelloWorld.class).to(HelloWorldImpl.class);
+        bind(HelloWorldImpl.class).to(HelloWorld.class);
     }
 }
