@@ -33,4 +33,21 @@ public class HelloWorldImplTest {
     public void assertSetArrayThrowsIndexOutOfBoundsExceptionWhenIndexPlusHelloWorldSizeIsGreaterThanArrayLength() {
         // TODO: implement!
     }
+
+    /**
+     * Asserts {@link HelloWorldImpl#set(byte[], int)} method sets hello world bytes on specified array starting at
+     * specified index.
+     */
+    @Test
+    public void assertSetArraySetsHelloWorldBytesOnArrayStartingAtIndex() {
+        // TODO: implement!
+    }
+
+    /**
+     * Asserts {@link HelloWorldImpl#set(byte[], int)} method returns specified array.
+     */
+    @Test
+    public void assertSetArrayReturnsSpecifiedArray() {
+        // TODO: implement!
+    }
 }
