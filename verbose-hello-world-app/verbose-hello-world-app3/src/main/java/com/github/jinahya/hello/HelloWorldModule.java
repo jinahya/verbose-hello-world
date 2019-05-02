@@ -16,6 +16,6 @@ class HelloWorldModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(HelloWorld.class).to(HELLO_WORLD_IMPL.asSubclass(HelloWorld.class));
+        // TODO: implement!
     }
 }
