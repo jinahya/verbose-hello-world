@@ -20,6 +20,7 @@
   <modules>
     <module>verbose-hello-world-app1</module>
     <module>verbose-hello-world-app2</module>
+    <module>verbose-hello-world-app3</module>
   </modules>
 
   <build>
