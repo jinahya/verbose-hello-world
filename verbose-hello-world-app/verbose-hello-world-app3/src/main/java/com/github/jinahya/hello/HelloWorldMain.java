@@ -1,5 +1,6 @@
 package com.github.jinahya.hello;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.logging.Logger;
@@ -18,6 +19,10 @@ public class HelloWorldMain {
      * @throws IOException if an I/O error occurs.
      */
     public static void main(final String[] args) throws IOException {
-        // TODO: implement!
+        new HelloWorldMain().helloWorld.write(System.out);
+        System.out.println();
     }
+
+    @Inject
+    private HelloWorld helloWorld;
 }
