@@ -31,6 +31,7 @@
   <modules>
     <module>verbose-hello-world-api</module>
     <module>verbose-hello-world-lib</module>
+    <module>verbose-hello-world-app1</module>
   </modules>
 
   <scm>
