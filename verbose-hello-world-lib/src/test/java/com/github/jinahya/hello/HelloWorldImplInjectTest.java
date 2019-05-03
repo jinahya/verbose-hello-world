@@ -40,21 +40,21 @@ abstract class HelloWorldImplInjectTest extends AbstractHelloWorldImplTest {
     }
 
     @Inject
-    private HelloWorld helloWorld;
+    HelloWorld helloWorld;
 
     @Named(QUALIFIER_IMPL)
     @Inject
-    private HelloWorld namedHelloWorldImpl;
+    HelloWorld namedHelloWorldImpl;
 
     @Named(QUALIFIER_DEMO)
     @Inject
-    private HelloWorld namedHelloWorldDemo;
+    HelloWorld namedHelloWorldDemo;
 
     @ImplQualifier
     @Inject
-    private HelloWorld qualifiedHelloWorldImpl;
+    HelloWorld qualifiedHelloWorldImpl;
 
     @DemoQualifier
     @Inject
-    private HelloWorld qualifiedHelloWorldDemo;
+    HelloWorld qualifiedHelloWorldDemo;
 }
