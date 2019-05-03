@@ -12,7 +12,7 @@ public class HelloWorldMain {
     private static final Logger logger = Logger.getLogger(MethodHandles.lookup().lookupClass().getName());
 
     /**
-     * The main method of this program which prints {@code hello, world} followed by a line delimiter.
+     * The main method of this program which prints {@code hello, world} followed by a new line character.
      *
      * @param args an array of main arguments
      * @throws IOException if an I/O error occurs.
