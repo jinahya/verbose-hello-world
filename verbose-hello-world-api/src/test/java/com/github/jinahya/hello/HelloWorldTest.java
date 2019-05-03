@@ -36,10 +36,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith({MockitoExtension.class})
 public class HelloWorldTest {
 
-    // -----------------------------------------------------------------------------------------------------------------
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
-    // ------------------------------------------------------------------------------------------------------------ SIZE
 
     /**
      * Asserts the value of {@link HelloWorld#SIZE} constant equals to the length of {@code hello, world} string in form
