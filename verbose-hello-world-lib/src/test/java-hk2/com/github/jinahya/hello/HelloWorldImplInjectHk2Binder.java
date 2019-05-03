@@ -18,11 +18,11 @@ class HelloWorldImplInjectHk2Binder extends AbstractBinder {
 
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private static class ImplLiteral extends AnnotationLiteral<ImplQualifier> implements ImplQualifier {
+    private static class ImplQualifierLiteral extends AnnotationLiteral<ImplQualifier> implements ImplQualifier {
 
     }
 
-    private static class DemoLiteral extends AnnotationLiteral<DemoQualifier> implements DemoQualifier {
+    private static class DemoQualifierLiteral extends AnnotationLiteral<DemoQualifier> implements DemoQualifier {
 
     }
 
@@ -35,7 +35,7 @@ class HelloWorldImplInjectHk2Binder extends AbstractBinder {
         }
         bind(HelloWorldImpl.class).named(QUALIFIER_IMPL).to(HelloWorld.class);
         bind(HelloWorldDemo.class).named(QUALIFIER_DEMO).to(HelloWorld.class);
-        bind(HelloWorldImpl.class).qualifiedBy(new ImplLiteral()).to(HelloWorld.class);
-        bind(HelloWorldImpl.class).qualifiedBy(new DemoLiteral()).to(HelloWorld.class);
+        bind(HelloWorldImpl.class).qualifiedBy(new ImplQualifierLiteral()).to(HelloWorld.class);
+        bind(HelloWorldImpl.class).qualifiedBy(new DemoQualifierLiteral()).to(HelloWorld.class);
     }
 }
