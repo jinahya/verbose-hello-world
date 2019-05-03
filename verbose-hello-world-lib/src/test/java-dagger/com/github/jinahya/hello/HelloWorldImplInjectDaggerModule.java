@@ -8,7 +8,7 @@ import javax.inject.Named;
 import static java.util.concurrent.ThreadLocalRandom.current;
 
 @Module
-class HelloWorldImplInjectDagge2rModule {
+class HelloWorldImplInjectDaggerModule {
 
     @Provides
     static HelloWorld provideHelloWorld() {
