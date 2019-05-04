@@ -20,4 +20,11 @@ public class HelloWorldMain {
     public static void main(final String[] args) throws IOException {
         // TODO: implement!
     }
+
+    /**
+     * Creates a new instance.
+     */
+    private HelloWorldMain() {
+        super();
+    }
 }
