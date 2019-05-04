@@ -22,6 +22,13 @@ public class HelloWorldMain {
         // TODO: implement!
     }
 
+    /**
+     * Creates a new instance.
+     */
+    private HelloWorldMain() {
+        super();
+    }
+
     @Inject
     HelloWorld helloWorld;
 }
