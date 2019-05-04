@@ -5,37 +5,33 @@ import dagger.Provides;
 
 import javax.inject.Named;
 
-import static java.util.concurrent.ThreadLocalRandom.current;
+import static com.github.jinahya.hello.HelloWorldImplInjectTest.DEMO;
+import static com.github.jinahya.hello.HelloWorldImplInjectTest.IMPL;
 
 @Module
 class HelloWorldImplInjectDaggerModule {
 
     @Provides
-    static HelloWorld provideHelloWorld() {
-        return current().nextBoolean() ? new HelloWorldImpl() : new HelloWorldDemo();
-    }
-
-    @Named(HelloWorldImplInjectTest.QUALIFIER_IMPL)
-    @Provides
-    static HelloWorld providesNmedImpl() {
+    @Named(IMPL)
+    static HelloWorld provideNamedImpl() {
         return new HelloWorldImpl();
     }
 
-    @Named(HelloWorldImplInjectTest.QUALIFIER_DEMO)
     @Provides
-    static HelloWorld providesNamedDemo() {
+    @Named(DEMO)
+    static HelloWorld provideNamedDemo() {
         return new HelloWorldDemo();
     }
 
-    @ImplQualifier
     @Provides
-    static HelloWorld providesQualifiedImpl() {
+    @QualifiedImpl
+    static HelloWorld provideQualifiedImpl() {
         return new HelloWorldImpl();
     }
 
-    @DemoQualifier
     @Provides
-    static HelloWorld providesQualifiedDemo() {
+    @QualifiedDemo
+    static HelloWorld provideQualifiedDemo() {
         return new HelloWorldDemo();
     }
 }

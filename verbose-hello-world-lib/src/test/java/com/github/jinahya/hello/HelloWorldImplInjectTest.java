@@ -6,28 +6,37 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.lang.invoke.MethodHandles;
-import java.util.Arrays;
+import java.lang.reflect.Field;
 import java.util.List;
 
+import static java.util.Arrays.stream;
 import static java.util.Collections.shuffle;
 import static java.util.stream.Collectors.toList;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 abstract class HelloWorldImplInjectTest extends AbstractHelloWorldImplTest {
 
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    static final String QUALIFIER_IMPL = "impl";
+    /**
+     * An injection qualifier for {@link HelloWorldImpl}.
+     */
+    static final String IMPL = "impl";
 
-    static final String QUALIFIER_DEMO = "demo";
+    /**
+     * An injection qualifier for {@link HelloWorldDemo}.
+     */
+    static final String DEMO = "demo";
 
     @Override
     HelloWorld helloWorld() {
-        final List<HelloWorld> helloWorlds
-                = Arrays.stream(getClass().getDeclaredFields())
-                .filter(f -> HelloWorld.class.isAssignableFrom(f.getType()))
+        final List<Field> fields = stream(getClass().getDeclaredFields())
+                .filter(f -> HelloWorld.class.equals(f.getType()))
                 .filter(f -> f.isAnnotationPresent(Inject.class))
+                .collect(toList());
+        assertFalse(fields.isEmpty());
+        final List<HelloWorld> values = fields.stream()
                 .map(f -> {
-                    f.setAccessible(true);
                     try {
                         return (HelloWorld) f.get(this);
                     } catch (final IllegalAccessException iae) {
@@ -35,26 +44,24 @@ abstract class HelloWorldImplInjectTest extends AbstractHelloWorldImplTest {
                     }
                 })
                 .collect(toList());
-        shuffle(helloWorlds);
-        return helloWorlds.get(0);
+        assertFalse(values.isEmpty());
+        shuffle(values);
+        return values.get(0);
     }
 
     @Inject
-    HelloWorld any;
-
-    @Named(QUALIFIER_IMPL)
-    @Inject
+    @Named(IMPL)
     HelloWorld namedImpl;
 
-    @Named(QUALIFIER_DEMO)
     @Inject
+    @Named(DEMO)
     HelloWorld namedDemo;
 
-    @ImplQualifier
     @Inject
+    @QualifiedImpl
     HelloWorld qualifiedImpl;
 
-    @DemoQualifier
     @Inject
+    @QualifiedDemo
     HelloWorld qualifiedDemo;
 }

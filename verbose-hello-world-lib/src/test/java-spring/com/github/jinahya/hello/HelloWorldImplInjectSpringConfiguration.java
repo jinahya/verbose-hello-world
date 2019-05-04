@@ -8,7 +8,8 @@ import org.springframework.context.annotation.Configuration;
 import javax.inject.Named;
 import java.lang.invoke.MethodHandles;
 
-import static java.util.concurrent.ThreadLocalRandom.current;
+import static com.github.jinahya.hello.HelloWorldImplInjectTest.DEMO;
+import static com.github.jinahya.hello.HelloWorldImplInjectTest.IMPL;
 
 /**
  * A configuration for providing {@link HelloWorld} beans.
@@ -19,30 +20,25 @@ class HelloWorldImplInjectSpringConfiguration {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     @Bean
-    HelloWorld any() {
-        return current().nextBoolean() ? new HelloWorldImpl() : new HelloWorldDemo();
-    }
-
-    @Named(HelloWorldImplInjectTest.QUALIFIER_IMPL)
-    @Bean
+    @Named(IMPL)
     HelloWorld namedImpl() {
         return new HelloWorldImpl();
     }
 
-    @Named(HelloWorldImplInjectTest.QUALIFIER_DEMO)
     @Bean
+    @Named(DEMO)
     HelloWorld namedDemo() {
         return new HelloWorldDemo();
     }
 
-    @ImplQualifier
     @Bean
+    @QualifiedImpl
     HelloWorld qualifiedImpl() {
         return new HelloWorldImpl();
     }
 
-    @DemoQualifier
     @Bean
+    @QualifiedDemo
     HelloWorld qualifiedDemo() {
         return new HelloWorldDemo();
     }

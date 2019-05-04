@@ -1,5 +1,6 @@
 package com.github.jinahya.hello;
 
+import dagger.MembersInjector;
 import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,5 +13,8 @@ class HelloWorldImplInjectDaggerTest extends HelloWorldImplInjectTest {
 
     @BeforeEach
     private void inject() {
+        final MembersInjector<HelloWorldImplInjectDaggerTest> injector
+                = DaggerHelloWorldImplInjectDaggerComponent.create();
+        injector.injectMembers(this);
     }
 }

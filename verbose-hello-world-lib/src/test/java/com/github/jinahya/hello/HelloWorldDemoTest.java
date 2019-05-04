@@ -6,14 +6,14 @@ import org.slf4j.LoggerFactory;
 import java.lang.invoke.MethodHandles;
 
 /**
- * A class for testing {@link HelloWorldImpl}.
+ * A class for testing {@link HelloWorldDemo}.
  */
-public class HelloWorldImplTest extends AbstractHelloWorldImplTest {
+class HelloWorldDemoTest extends AbstractHelloWorldImplTest {
 
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     @Override
     HelloWorld helloWorld() {
-        return new HelloWorldImpl();
+        return new HelloWorldDemo();
     }
 }

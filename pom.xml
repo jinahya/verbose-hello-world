@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -54,8 +53,8 @@
     <version.maven-surefire>3.0.0-M3</version.maven-surefire>
     <version.maven-failsafe>${version.maven-surefire}</version.maven-failsafe>
     <version.com.google.dagger>2.22.1</version.com.google.dagger>
+    <version.org.jboss.weld>2.0.0.Final</version.org.jboss.weld>
     <version.org.junit.jupiter>5.5.0-M1</version.org.junit.jupiter>
-    <version.org.github.ruediste.salta>0.3</version.org.github.ruediste.salta>
     <version.org.glassfish.hk2>2.5.0</version.org.glassfish.hk2>
     <version.org.mockito>2.27.0</version.org.mockito>
   </properties>
@@ -66,11 +65,6 @@
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
         <version>1.2.3</version>
-      </dependency>
-      <dependency>
-        <groupId>com.github.ruediste.salta</groupId>
-        <artifactId>salta-jsr330</artifactId>
-        <version>${version.org.github.ruediste.salta}</version>
       </dependency>
       <dependency>
         <groupId>com.google.dagger</groupId>
@@ -116,6 +110,11 @@
         <groupId>org.glassfish.hk2</groupId>
         <artifactId>hk2</artifactId>
         <version>${version.org.glassfish.hk2}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.weld</groupId>
+        <artifactId>weld-junit5</artifactId>
+        <version>${version.org.jboss.weld}</version>
       </dependency>
       <dependency>
         <groupId>org.junit.jupiter</groupId>
