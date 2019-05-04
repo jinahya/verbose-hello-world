@@ -11,23 +11,22 @@ import java.lang.invoke.MethodHandles;
 
 import static com.github.jinahya.hello.HelloWorldImplInjectTest.DEMO;
 import static com.github.jinahya.hello.HelloWorldImplInjectTest.IMPL;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * A provider for {@link HelloWorld}.
+ */
 class HelloWorldImplInjectWeldFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    @Produces
-    @Named(IMPL)
-    HelloWorld produceNamedImpl(final InjectionPoint injectionPoint) {
-        final HelloWorld helloWorld = new HelloWorldImpl();
-        logger.debug("producing {} for {}", helloWorld, injectionPoint);
-        return helloWorld;
-    }
-
-    void disposeNamedImpl(@Disposes @Named(IMPL) final HelloWorld helloWorld) {
-        logger.debug("disposing {}", helloWorld);
-    }
-
+    /**
+     * Produces an instance of {@link HelloWorld} for specified injection point annotated with {@link Named} whose
+     * {@link Named#value() value} equals to {@link HelloWorldImplInjectTest#DEMO}.
+     *
+     * @param injectionPoint the injection point to be injected
+     * @return an instance of {@link HelloWorld}.
+     */
     @Produces
     @Named(DEMO)
     HelloWorld produceNamedDemo(final InjectionPoint injectionPoint) {
@@ -36,22 +35,49 @@ class HelloWorldImplInjectWeldFactory {
         return helloWorld;
     }
 
+    /**
+     * Disposes specified {@link HelloWorld} instance produced for those injection points which each annotated with
+     * {@link Named} whose {@link Named#value() value} equals to {@link HelloWorldImplInjectTest#DEMO}.
+     *
+     * @param helloWorld the {@link HelloWorld} instance to dispose
+     */
     void disposeNamedDemo(@Disposes @Named(DEMO) final HelloWorld helloWorld) {
         logger.debug("disposing {}", helloWorld);
+        assertTrue(helloWorld instanceof HelloWorldDemo);
     }
 
+    /**
+     * Produces an instance of {@link HelloWorld} for specified injection point annotated with {@link Named} whose
+     * {@link Named#value() value} equals to {@link HelloWorldImplInjectTest#IMPL}.
+     *
+     * @param injectionPoint the injection point to be injected
+     * @return an instance of {@link HelloWorld}
+     */
     @Produces
-    @QualifiedImpl
-    HelloWorld produceQualifiedImpl(final InjectionPoint injectionPoint) {
+    @Named(IMPL)
+    HelloWorld produceNamedImpl(final InjectionPoint injectionPoint) {
         final HelloWorld helloWorld = new HelloWorldImpl();
         logger.debug("producing {} for {}", helloWorld, injectionPoint);
         return helloWorld;
     }
 
-    void disposeQualifiedImpl(@Disposes @QualifiedImpl final HelloWorld helloWorld) {
+    /**
+     * Disposes specified {@link HelloWorld} instance produced for those injection points which each annotated with
+     * {@link Named} whose {@link Named#value() value} equals to{@link HelloWorldImplInjectTest#IMPL}.
+     *
+     * @param helloWorld the {@link HelloWorld} instance to dispose
+     */
+    void disposeNamedImpl(@Disposes @Named(IMPL) final HelloWorld helloWorld) {
         logger.debug("disposing {}", helloWorld);
+        assertTrue(helloWorld instanceof HelloWorldImpl);
     }
 
+    /**
+     * Produces an instance of {@link HelloWorld} for specified injection point annotated with {@link QualifiedDemo}.
+     *
+     * @param injectionPoint the injection point
+     * @return an instance of {@link HelloWorld}
+     */
     @Produces
     @QualifiedDemo
     HelloWorld produceQualifiedDemo(final InjectionPoint injectionPoint) {
@@ -60,7 +86,39 @@ class HelloWorldImplInjectWeldFactory {
         return helloWorld;
     }
 
+    /**
+     * Disposes specified {@link HelloWorld} instance produced for those injection points which each annoatated with
+     * {@link QualifiedDemo}.
+     *
+     * @param helloWorld the {@link HelloWorld} instance to dispose
+     */
     void disposeQualifiedDemo(@Disposes @QualifiedDemo final HelloWorld helloWorld) {
         logger.debug("disposing {}", helloWorld);
+        assertTrue(helloWorld instanceof HelloWorldDemo);
+    }
+
+    /**
+     * Produces an instance of {@link HelloWorld} for specified injection point annotated with {@link QualifiedImpl}
+     *
+     * @param injectionPoint the injection point
+     * @return an instance of {@link HelloWorld}
+     */
+    @Produces
+    @QualifiedImpl
+    HelloWorld produceQualifiedImpl(final InjectionPoint injectionPoint) {
+        final HelloWorld helloWorld = new HelloWorldImpl();
+        logger.debug("producing {} for {}", helloWorld, injectionPoint);
+        return helloWorld;
+    }
+
+    /**
+     * Disposes specified {@link HelloWorld} instance produced for those injection points which each annotated with
+     * {@link QualifiedImpl}.
+     *
+     * @param helloWorld the {@link HelloWorld} instance to dispose
+     */
+    void disposeQualifiedImpl(@Disposes @QualifiedImpl final HelloWorld helloWorld) {
+        logger.debug("disposing {}", helloWorld);
+        assertTrue(helloWorld instanceof HelloWorldImpl);
     }
 }

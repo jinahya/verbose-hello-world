@@ -20,20 +20,14 @@ class HelloWorldImplInjectSpringConfiguration {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     @Bean
-    @Named(IMPL)
-    HelloWorld namedImpl() {
-        return new HelloWorldImpl();
-    }
-
-    @Bean
     @Named(DEMO)
     HelloWorld namedDemo() {
         return new HelloWorldDemo();
     }
 
     @Bean
-    @QualifiedImpl
-    HelloWorld qualifiedImpl() {
+    @Named(IMPL)
+    HelloWorld namedImpl() {
         return new HelloWorldImpl();
     }
 
@@ -41,5 +35,11 @@ class HelloWorldImplInjectSpringConfiguration {
     @QualifiedDemo
     HelloWorld qualifiedDemo() {
         return new HelloWorldDemo();
+    }
+
+    @Bean
+    @QualifiedImpl
+    HelloWorld qualifiedImpl() {
+        return new HelloWorldImpl();
     }
 }

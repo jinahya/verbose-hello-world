@@ -12,14 +12,14 @@ abstract class HelloWorldImplInjectTest extends AbstractHelloWorldImplTest {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     /**
-     * An injection qualifier for {@link HelloWorldImpl}.
-     */
-    static final String IMPL = "impl";
-
-    /**
      * An injection qualifier for {@link HelloWorldDemo}.
      */
     static final String DEMO = "demo";
+
+    /**
+     * An injection qualifier for {@link HelloWorldImpl}.
+     */
+    static final String IMPL = "impl";
 
     @Override
     HelloWorld helloWorld() {
@@ -28,18 +28,18 @@ abstract class HelloWorldImplInjectTest extends AbstractHelloWorldImplTest {
     }
 
     @Inject
-    @Named(IMPL)
-    HelloWorld namedImpl;
-
-    @Inject
     @Named(DEMO)
     HelloWorld namedDemo;
 
     @Inject
-    @QualifiedImpl
-    HelloWorld qualifiedImpl;
+    @Named(IMPL)
+    HelloWorld namedImpl;
 
     @Inject
     @QualifiedDemo
     HelloWorld qualifiedDemo;
+
+    @Inject
+    @QualifiedImpl
+    HelloWorld qualifiedImpl;
 }

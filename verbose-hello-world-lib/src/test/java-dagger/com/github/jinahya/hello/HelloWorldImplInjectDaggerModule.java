@@ -12,20 +12,14 @@ import static com.github.jinahya.hello.HelloWorldImplInjectTest.IMPL;
 class HelloWorldImplInjectDaggerModule {
 
     @Provides
-    @Named(IMPL)
-    static HelloWorld provideNamedImpl() {
-        return new HelloWorldImpl();
-    }
-
-    @Provides
     @Named(DEMO)
     static HelloWorld provideNamedDemo() {
         return new HelloWorldDemo();
     }
 
     @Provides
-    @QualifiedImpl
-    static HelloWorld provideQualifiedImpl() {
+    @Named(IMPL)
+    static HelloWorld provideNamedImpl() {
         return new HelloWorldImpl();
     }
 
@@ -33,5 +27,11 @@ class HelloWorldImplInjectDaggerModule {
     @QualifiedDemo
     static HelloWorld provideQualifiedDemo() {
         return new HelloWorldDemo();
+    }
+
+    @Provides
+    @QualifiedImpl
+    static HelloWorld provideQualifiedImpl() {
+        return new HelloWorldImpl();
     }
 }

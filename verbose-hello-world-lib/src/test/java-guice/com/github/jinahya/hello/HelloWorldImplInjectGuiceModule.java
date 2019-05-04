@@ -15,9 +15,9 @@ class HelloWorldImplInjectGuiceModule extends AbstractModule {
     @Override
     protected void configure() {
         bind(HelloWorld.class).to(current().nextBoolean() ? HelloWorldImpl.class : HelloWorldDemo.class);
-        bind(HelloWorld.class).annotatedWith(named(IMPL)).to(HelloWorldImpl.class);
         bind(HelloWorld.class).annotatedWith(named(DEMO)).to(HelloWorldDemo.class);
-        bind((HelloWorld.class)).annotatedWith(QualifiedImpl.class).to(HelloWorldImpl.class);
+        bind(HelloWorld.class).annotatedWith(named(IMPL)).to(HelloWorldImpl.class);
         bind((HelloWorld.class)).annotatedWith(QualifiedDemo.class).to(HelloWorldDemo.class);
+        bind((HelloWorld.class)).annotatedWith(QualifiedImpl.class).to(HelloWorldImpl.class);
     }
 }
