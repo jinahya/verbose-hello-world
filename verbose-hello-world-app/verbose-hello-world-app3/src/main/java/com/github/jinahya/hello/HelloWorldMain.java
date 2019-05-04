@@ -23,5 +23,5 @@ public class HelloWorldMain {
     }
 
     @Inject
-    private HelloWorld helloWorld;
+    HelloWorld helloWorld;
 }
