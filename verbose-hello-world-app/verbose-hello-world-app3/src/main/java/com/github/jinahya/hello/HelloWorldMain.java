@@ -15,7 +15,7 @@ public class HelloWorldMain {
     /**
      * The main method of this program which prints {@code hello, world} followed by a new line character.
      *
-     * @param args an array of main arguments
+     * @param args an array of command line arguments
      * @throws IOException if an I/O error occurs.
      */
     public static void main(final String[] args) throws IOException {
