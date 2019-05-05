@@ -54,6 +54,7 @@
     <version.maven-failsafe>${version.maven-surefire}</version.maven-failsafe>
     <version.com.google.dagger>2.22.1</version.com.google.dagger>
     <version.org.jboss.weld>2.0.0.Final</version.org.jboss.weld>
+    <version.org.jboss.weld.se>3.1.0.Final</version.org.jboss.weld.se>
     <version.org.junit.jupiter>5.5.0-M1</version.org.junit.jupiter>
     <version.org.glassfish.hk2>2.5.0</version.org.glassfish.hk2>
     <version.org.mockito>2.27.0</version.org.mockito>
@@ -80,6 +81,11 @@
         <groupId>com.google.inject</groupId>
         <artifactId>guice</artifactId>
         <version>4.2.2</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.enterprise</groupId>
+        <artifactId>cdi-api</artifactId>
+        <version>2.0.SP1</version>
       </dependency>
       <dependency>
         <groupId>javax.inject</groupId>
@@ -115,6 +121,11 @@
         <groupId>org.jboss.weld</groupId>
         <artifactId>weld-junit5</artifactId>
         <version>${version.org.jboss.weld}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.weld.se</groupId>
+        <artifactId>weld-se-core</artifactId>
+        <version>${version.org.jboss.weld.se}</version>
       </dependency>
       <dependency>
         <groupId>org.junit.jupiter</groupId>
