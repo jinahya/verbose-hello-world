@@ -6,6 +6,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 @AddBeanClasses({HelloWorldCdiFactory.class})
 @ExtendWith({WeldJunit5Extension.class})
-class HelloWordWeldJunit5Test extends HelloWorldDiTest {
+class HelloWorldWeldJunit5Test extends HelloWorldDiTest {
 
 }
