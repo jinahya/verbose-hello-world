@@ -138,6 +138,9 @@
     </profile>
     <profile>
       <id>cdi-se-openwebbeans</id>
+      <properties>
+        <test>HelloWorldCdiSeOpenWebBeansTest</test>
+      </properties>
       <dependencies>
         <dependency>
           <groupId>javax.annotation</groupId>
@@ -192,6 +195,9 @@
     </profile>
     <profile>
       <id>cdi-se-weld</id>
+      <properties>
+        <test>HelloWorldCdiSeWeldTest</test>
+      </properties>
       <dependencies>
         <dependency>
           <groupId>org.jboss.weld.se</groupId>
@@ -236,6 +242,9 @@
     </profile>
     <profile>
       <id>di-dagger</id>
+      <properties>
+        <test>HelloWorldDiDaggerTest</test>
+      </properties>
       <dependencies>
         <dependency>
           <groupId>com.google.dagger</groupId>
@@ -285,6 +294,9 @@
     </profile>
     <profile>
       <id>di-guice</id>
+      <properties>
+        <test>HelloWorldDiGuiceTest</test>
+      </properties>
       <dependencies>
         <dependency>
           <groupId>com.google.inject</groupId>
@@ -329,6 +341,9 @@
     </profile>
     <profile>
       <id>di-hk2</id>
+      <properties>
+        <test>HelloWorldDiHk2Test</test>
+      </properties>
       <dependencies>
         <dependency>
           <groupId>org.glassfish.hk2</groupId>
@@ -373,6 +388,9 @@
     </profile>
     <profile>
       <id>di-spring</id>
+      <properties>
+        <test>HelloWorldDiSpringTest</test>
+      </properties>
       <dependencies>
         <dependency>
           <groupId>org.springframework</groupId>
@@ -417,6 +435,9 @@
     </profile>
     <profile>
       <id>weld-junit5</id>
+      <properties>
+        <test>HelloWorldWeldJunit5Test</test>
+      </properties>
       <dependencies>
         <dependency>
           <groupId>org.jboss.weld</groupId>

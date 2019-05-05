@@ -8,7 +8,8 @@ $profilesAndTests = [ordered]@{
     "weld-junit5" = "HelloWorldWeldJunit5Test"
 }
 Write-Host "at: $PSScriptRoot"
-foreach($profile in $profilesAndTests.keys) {
+foreach ($profile in $profilesAndTests.keys)
+{
     $test = $profilesAndTests[$profile]
     $command = "mvn -f $PSScriptRoot\pom.xml -P$profile -Dtest=$test test"
     Write-Host $command
