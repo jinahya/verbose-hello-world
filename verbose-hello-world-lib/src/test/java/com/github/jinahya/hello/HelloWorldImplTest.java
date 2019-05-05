@@ -8,7 +8,7 @@ import java.lang.invoke.MethodHandles;
 /**
  * A class for testing {@link HelloWorldImpl}.
  */
-public class HelloWorldImplTest extends AbstractHelloWorldImplTest {
+public class HelloWorldImplTest extends AbstractHelloWorldTest {
 
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 

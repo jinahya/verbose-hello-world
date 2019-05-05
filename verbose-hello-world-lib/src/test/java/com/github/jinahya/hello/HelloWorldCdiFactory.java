@@ -9,8 +9,8 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Named;
 import java.lang.invoke.MethodHandles;
 
-import static com.github.jinahya.hello.HelloWorldImplInjectTest.DEMO;
-import static com.github.jinahya.hello.HelloWorldImplInjectTest.IMPL;
+import static com.github.jinahya.hello.HelloWorldDiTest.DEMO;
+import static com.github.jinahya.hello.HelloWorldDiTest.IMPL;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -22,7 +22,7 @@ class HelloWorldCdiFactory {
 
     /**
      * Produces an instance of {@link HelloWorld} for specified injection point annotated with {@link Named} whose
-     * {@link Named#value() value} equals to {@link HelloWorldImplInjectTest#DEMO}.
+     * {@link Named#value() value} equals to {@link HelloWorldDiTest#DEMO}.
      *
      * @param injectionPoint the injection point to be injected
      * @return an instance of {@link HelloWorld}.
@@ -37,7 +37,7 @@ class HelloWorldCdiFactory {
 
     /**
      * Disposes specified {@link HelloWorld} instance produced for those injection points which each annotated with
-     * {@link Named} whose {@link Named#value() value} equals to {@link HelloWorldImplInjectTest#DEMO}.
+     * {@link Named} whose {@link Named#value() value} equals to {@link HelloWorldDiTest#DEMO}.
      *
      * @param helloWorld the {@link HelloWorld} instance to dispose
      */
@@ -48,7 +48,7 @@ class HelloWorldCdiFactory {
 
     /**
      * Produces an instance of {@link HelloWorld} for specified injection point annotated with {@link Named} whose
-     * {@link Named#value() value} equals to {@link HelloWorldImplInjectTest#IMPL}.
+     * {@link Named#value() value} equals to {@link HelloWorldDiTest#IMPL}.
      *
      * @param injectionPoint the injection point to be injected
      * @return an instance of {@link HelloWorld}
@@ -63,7 +63,7 @@ class HelloWorldCdiFactory {
 
     /**
      * Disposes specified {@link HelloWorld} instance produced for those injection points which each annotated with
-     * {@link Named} whose {@link Named#value() value} equals to{@link HelloWorldImplInjectTest#IMPL}.
+     * {@link Named} whose {@link Named#value() value} equals to{@link HelloWorldDiTest#IMPL}.
      *
      * @param helloWorld the {@link HelloWorld} instance to dispose
      */
