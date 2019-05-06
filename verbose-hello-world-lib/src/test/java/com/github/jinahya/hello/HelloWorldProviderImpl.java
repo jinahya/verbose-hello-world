@@ -1,14 +1,19 @@
 package com.github.jinahya.hello;
 
-import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.invoke.MethodHandles;
 
 /**
  * An implementation of {@link HelloWorldProvider} for providing instances of {@link HelloWorldImpl}.
  */
 class HelloWorldProviderImpl implements HelloWorldProvider {
 
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
     @Override
-    public Optional<HelloWorld> provideHelloWorld() {
-        return Optional.of(new HelloWorldImpl());
+    public HelloWorld getAvailable() {
+        return new HelloWorldImpl();
     }
 }

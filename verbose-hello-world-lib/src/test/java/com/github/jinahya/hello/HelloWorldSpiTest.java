@@ -5,6 +5,9 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
 
+/**
+ * A class for testing {@link HelloWorldImpl} using Service Provider Interface.
+ */
 class HelloWorldSpiTest extends AbstractHelloWorldTest {
 
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());

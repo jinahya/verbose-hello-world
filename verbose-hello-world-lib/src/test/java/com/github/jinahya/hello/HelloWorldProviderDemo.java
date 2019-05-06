@@ -4,10 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
-import java.util.Optional;
 
-import static java.util.Optional.empty;
-import static java.util.Optional.of;
 import static java.util.concurrent.ThreadLocalRandom.current;
 
 /**
@@ -18,17 +15,17 @@ class HelloWorldProviderDemo implements HelloWorldProvider {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     /**
-     * {@inheritDoc} The {@code provideHelloWorld} method of {@link HelloWorldProviderDemo} class randomly returns an
-     * empty optional of {@link HelloWorldDemo}.
+     * {@inheritDoc} The {@code isAvailable} method of {@code HelloWorldProviderDemo} class returns a random boolean.
      *
-     * @return a randomly empty optional of {@link HelloWorldDemo}.
+     * @return a random boolean.
      */
     @Override
-    public Optional<HelloWorld> provideHelloWorld() {
-        if (current().nextBoolean()) {
-            logger.debug("returning an empty...");
-            return empty();
-        }
-        return of(new HelloWorldDemo());
+    public boolean isAvailable() {
+        return current().nextBoolean();
+    }
+
+    @Override
+    public HelloWorld getAvailable() {
+        return new HelloWorldDemo();
     }
 }
