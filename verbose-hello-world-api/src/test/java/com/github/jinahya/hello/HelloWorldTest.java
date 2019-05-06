@@ -213,40 +213,6 @@ public class HelloWorldTest {
         // TODO: implement!
     }
 
-    // ---------------------------------------------------------------------------------------------------- send(Socket)
-
-    /**
-     * Asserts {@link HelloWorld#send(Socket)} method throws a {@code NullPointerException} when the {@code socket}
-     * argument is {@code null}.
-     *
-     * @throws IOException if an I/O error occurs.
-     */
-    @Test
-    public void assertSendSocketThrowsNullPointerExceptionWhenSocketIsNull() throws IOException {
-        assertThrows(NullPointerException.class, () -> helloWorld.send((Socket) null));
-    }
-
-    /**
-     * Asserts {@link HelloWorld#send(Socket)} method sends as many bytes as {@link HelloWorld#SIZE} to specified
-     * socket.
-     *
-     * @throws IOException if an I/O error occurs.
-     */
-    @Test
-    public void assertSendSocketSendsAsManyBytesAsHelloWorldSizeToSocket() throws IOException {
-        // TODO: implement!
-    }
-
-    /**
-     * Asserts {@link HelloWorld#send(Socket)} method returns the specified socket.
-     *
-     * @throws IOException if an I/O error occurs.
-     */
-    @Test
-    public void assertSendSocketReturnsSpecifiedSocket() throws IOException {
-        // TODO: implement!
-    }
-
     // ------------------------------------------------------------------------------------------------- put(ByteBuffer)
 
     /**

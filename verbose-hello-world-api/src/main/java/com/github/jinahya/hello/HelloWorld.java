@@ -158,28 +158,6 @@ public interface HelloWorld {
         return null;
     }
 
-    /**
-     * Writes <a href="#hello-world-bytes">hello-world-bytes</a> to specified socket.
-     * <p>
-     * This method invokes {@link #write(OutputStream)} with given socket's {@link Socket#getOutputStream()
-     * outputStream}.
-     *
-     * @param socket the socket to which bytes are sent
-     * @param <T>    socket type parameter.
-     * @return the specified socket.
-     * @throws NullPointerException if {@code socket} is {@code null}
-     * @throws IOException          if an I/O error occurs.
-     * @see Socket#getOutputStream()
-     * @see #write(OutputStream)
-     */
-    default <T extends Socket> T send(final T socket) throws IOException {
-        if (socket == null) {
-            throw new NullPointerException("socket is null");
-        }
-        // TODO: implement!
-        return null;
-    }
-
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
