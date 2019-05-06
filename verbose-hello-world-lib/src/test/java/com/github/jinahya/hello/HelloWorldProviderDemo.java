@@ -10,7 +10,7 @@ import static java.util.concurrent.ThreadLocalRandom.current;
 /**
  * A hello world provider for {@link HelloWorldDemo}.
  */
-class HelloWorldProviderDemo implements HelloWorldProvider {
+public class HelloWorldProviderDemo implements HelloWorldProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 

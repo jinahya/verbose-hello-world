@@ -8,7 +8,7 @@ import java.lang.invoke.MethodHandles;
 /**
  * An implementation of {@link HelloWorldProvider} for providing instances of {@link HelloWorldImpl}.
  */
-class HelloWorldProviderImpl implements HelloWorldProvider {
+public class HelloWorldProviderImpl implements HelloWorldProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
