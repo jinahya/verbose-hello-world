@@ -34,7 +34,8 @@ public interface HelloWorldProvider {
     }
 
     /**
-     * Returns a boolean flag for availability of provider.
+     * Returns a boolean flag for availability of provider. The {@code default} {@code isAvailable} method of {@code
+     * HelloWorldProvider} class returns {@code true}.
      *
      * @return {@code true} if available, {@code false} otherwise.
      */
