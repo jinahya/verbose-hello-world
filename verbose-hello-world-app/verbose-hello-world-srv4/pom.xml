@@ -8,12 +8,12 @@
     <version>0.1.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>verbose-hello-world-srv3</artifactId>
+  <artifactId>verbose-hello-world-srv4</artifactId>
   <version>0.1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>${project.artifactId}</name>
-  <description>Verbose Hello World Srv3</description>
+  <description>Verbose Hello World Srv4</description>
   <url>https://github.com/jinahya/verbose-hello-world/verbose-hello-world-app/${project.artifactId}</url>
 
   <properties>
