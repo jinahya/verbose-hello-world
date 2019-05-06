@@ -15,13 +15,14 @@ public interface HelloWorldProvider {
      *
      * @return a stream of hello world providers
      */
-    static Stream<HelloWorldProvider> availables() {
+    static Stream<HelloWorldProvider> availableProviders() {
         return StreamSupport.stream(load(HelloWorldProvider.class).spliterator(), false)
                 .filter(HelloWorldProvider::isAvailable);
     }
 
-    static HelloWorld findAnyOrElseThrow() {
-        return availables().findAny().orElseThrow(() -> new RuntimeException("no available services")).getAvailable();
+    static HelloWorld findAnyAvailableAndGetOrElseThrow() {
+        return availableProviders().findAny().orElseThrow(() -> new RuntimeException("no available services"))
+                .getAvailable();
     }
 
     /**
