@@ -20,6 +20,10 @@ public interface HelloWorldProvider {
                 .filter(HelloWorldProvider::isAvailable);
     }
 
+    static HelloWorld findAnyOrElseThrow() {
+        return availables().findAny().orElseThrow(() -> new RuntimeException("no available servides")).getAvailable();
+    }
+
     /**
      * Returns a boolean flag for availability of provider.
      *
