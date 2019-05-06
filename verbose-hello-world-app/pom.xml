@@ -22,6 +22,7 @@
     <module>verbose-hello-world-app3</module>
     <module>verbose-hello-world-srv1</module>
     <module>verbose-hello-world-srv2</module>
+    <module>verbose-hello-world-srv3</module>
   </modules>
 
   <build>
