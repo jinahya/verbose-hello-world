@@ -5,14 +5,14 @@ import java.lang.invoke.MethodHandles;
 import java.util.logging.Logger;
 
 /**
- * A class whose {@link #main(String[])} method accepts socket connections and writes {@code hello, world} to clients.
+ * A class whose {@link #main(String[])} method accepts socket connections and sends {@code hello, world} to clients.
  */
 public class HelloWorldMain {
 
     private static final Logger logger = Logger.getLogger(MethodHandles.lookup().lookupClass().getName());
 
     /**
-     * The main method of this program which accepts socket connections and writes {@code hello, world} to clients.
+     * The main method of this program which accepts socket connections and sends {@code hello, world} to clients.
      *
      * @param args an array of command line arguments
      * @throws IOException if an I/O error occurs.
