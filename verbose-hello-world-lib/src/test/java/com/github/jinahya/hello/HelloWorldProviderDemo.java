@@ -25,7 +25,7 @@ public class HelloWorldProviderDemo implements HelloWorldProvider {
     }
 
     @Override
-    public HelloWorld getAvailable() {
+    public HelloWorld getHelloWorld() {
         return new HelloWorldDemo();
     }
 }

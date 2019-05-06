@@ -3,7 +3,7 @@ package com.github.jinahya.hello;
 public class HelloWorldProviderImpl implements HelloWorldProvider {
 
     @Override
-    public HelloWorld getAvailable() {
+    public HelloWorld getHelloWorld() {
         try {
             return Class.forName("com.github.jinahya.hello.HelloWorldImpl").asSubclass(HelloWorld.class)
                     .getConstructor().newInstance();

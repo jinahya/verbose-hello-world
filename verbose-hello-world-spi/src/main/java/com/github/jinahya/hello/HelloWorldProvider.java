@@ -22,7 +22,7 @@ public interface HelloWorldProvider {
     }
 
     /**
-     * Find any available hello world provider and returns the value of {@link #getAvailable()}.
+     * Find any available hello world provider and returns the value of {@link #getHelloWorld()}.
      *
      * @return an available instance of {@link HelloWorld}.
      */
@@ -30,7 +30,7 @@ public interface HelloWorldProvider {
         return providerStream()
                 .filter(HelloWorldProvider::isAvailable)
                 .findAny().orElseThrow(() -> new RuntimeException("no available services"))
-                .getAvailable();
+                .getHelloWorld();
     }
 
     /**
@@ -48,5 +48,5 @@ public interface HelloWorldProvider {
      *
      * @return an instance of {@link HelloWorld}.
      */
-    HelloWorld getAvailable();
+    HelloWorld getHelloWorld();
 }
