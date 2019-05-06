@@ -21,7 +21,7 @@ public interface HelloWorldProvider {
     }
 
     static HelloWorld findAnyOrElseThrow() {
-        return availables().findAny().orElseThrow(() -> new RuntimeException("no available servides")).getAvailable();
+        return availables().findAny().orElseThrow(() -> new RuntimeException("no available services")).getAvailable();
     }
 
     /**
