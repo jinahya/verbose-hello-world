@@ -10,6 +10,11 @@ import static java.util.ServiceLoader.load;
  */
 public interface HelloWorldProvider {
 
+    /**
+     * Returns a stream of hello world providers filtered by {@link #isAvailable()}.
+     *
+     * @return a stream of hello world providers
+     */
     static Stream<HelloWorldProvider> availables() {
         return StreamSupport.stream(load(HelloWorldProvider.class).spliterator(), false)
                 .filter(HelloWorldProvider::isAvailable);
