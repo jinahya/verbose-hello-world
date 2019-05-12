@@ -8,14 +8,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.DataOutput;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
-import java.lang.invoke.MethodHandles;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
@@ -23,11 +21,13 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
+import static java.lang.invoke.MethodHandles.lookup;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * A class for testing {@link HelloWorld} class.
@@ -36,7 +36,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith({MockitoExtension.class})
 public class HelloWorldTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private static final Logger logger = getLogger(lookup().lookupClass());
 
     /**
      * Asserts the value of {@link HelloWorld#SIZE} constant equals to the length of {@code hello, world} string in form
