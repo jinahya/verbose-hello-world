@@ -26,7 +26,7 @@ public interface HelloWorldProvider {
      *
      * @return an available instance of {@link HelloWorld}.
      */
-    static HelloWorld findAnyAvailableAndGetOrElseThrow() {
+    static HelloWorld findAnyAvailable() {
         return providerStream()
                 .filter(HelloWorldProvider::isAvailable)
                 .findAny().orElseThrow(() -> new RuntimeException("no available services"))

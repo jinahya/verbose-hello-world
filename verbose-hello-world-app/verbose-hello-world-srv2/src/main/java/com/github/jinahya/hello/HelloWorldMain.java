@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
-import static com.github.jinahya.hello.HelloWorldProvider.findAnyAvailableAndGetOrElseThrow;
+import static com.github.jinahya.hello.HelloWorldProvider.findAnyAvailable;
 
 /**
  * A class whose {@link #main(String[])} method accepts socket connections and sends {@code hello, world} to clients.
@@ -22,7 +22,7 @@ public class HelloWorldMain {
      * @throws IOException if an I/O error occurs.
      */
     public static void main(final String[] args) throws IOException {
-        final HelloWorld service = findAnyAvailableAndGetOrElseThrow();
+        final HelloWorld service = findAnyAvailable();
         // TODO: implement!
     }
 
