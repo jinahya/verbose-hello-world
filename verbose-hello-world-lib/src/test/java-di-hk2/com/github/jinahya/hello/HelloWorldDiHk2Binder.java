@@ -3,19 +3,18 @@ package com.github.jinahya.hello;
 import org.glassfish.hk2.api.AnnotationLiteral;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.lang.invoke.MethodHandles;
 
 import static com.github.jinahya.hello.HelloWorldDiTest.DEMO;
 import static com.github.jinahya.hello.HelloWorldDiTest.IMPL;
+import static java.lang.invoke.MethodHandles.lookup;
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * A binder for injecting {@link HelloWorld}s.
  */
 class HelloWorldDiHk2Binder extends AbstractBinder {
 
-    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private static final Logger logger = getLogger(lookup().lookupClass());
 
     private static class QualifiedDemo_ extends AnnotationLiteral<QualifiedDemo> implements QualifiedDemo {
 

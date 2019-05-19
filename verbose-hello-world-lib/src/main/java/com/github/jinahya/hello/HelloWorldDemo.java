@@ -4,7 +4,7 @@ import static java.lang.System.arraycopy;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 
 /**
- * An implementation of {@link HelloWorld} for demonstration.
+ * A class implements the {@link HelloWorld} interface.
  */
 class HelloWorldDemo implements HelloWorld {
 

@@ -1,24 +1,24 @@
 package com.github.jinahya.hello;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Named;
-import java.lang.invoke.MethodHandles;
 
 import static com.github.jinahya.hello.HelloWorldDiTest.DEMO;
 import static com.github.jinahya.hello.HelloWorldDiTest.IMPL;
+import static java.lang.invoke.MethodHandles.lookup;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * A provider for {@link HelloWorld}.
  */
 class HelloWorldCdiFactory {
 
-    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private static final Logger logger = getLogger(lookup().lookupClass());
 
     /**
      * Produces an instance of {@link HelloWorld} for specified injection point annotated with {@link Named} whose

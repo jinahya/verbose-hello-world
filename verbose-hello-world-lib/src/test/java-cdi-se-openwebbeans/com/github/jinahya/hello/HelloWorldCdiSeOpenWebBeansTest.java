@@ -2,10 +2,10 @@ package com.github.jinahya.hello;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
-import java.lang.invoke.MethodHandles;
+import static java.lang.invoke.MethodHandles.lookup;
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * A class extends {@link HelloWorldCdiSeTest} for Apache OpenWebBeans.
@@ -14,7 +14,7 @@ import java.lang.invoke.MethodHandles;
  */
 class HelloWorldCdiSeOpenWebBeansTest extends HelloWorldCdiSeTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private static final Logger logger = getLogger(lookup().lookupClass());
 
     /**
      * Removes handlers from the root logger and installs SLF4J bridge handler.

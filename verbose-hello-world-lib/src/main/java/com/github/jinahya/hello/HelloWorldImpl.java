@@ -1,7 +1,7 @@
 package com.github.jinahya.hello;
 
 /**
- * An implementation of {@link HelloWorld}.
+ * A class implements the {@link HelloWorld} interface.
  */
 public class HelloWorldImpl implements HelloWorld {
 

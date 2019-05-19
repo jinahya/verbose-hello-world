@@ -1,15 +1,15 @@
 package com.github.jinahya.hello;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.inject.Named;
-import java.lang.invoke.MethodHandles;
 
 import static com.github.jinahya.hello.HelloWorldDiTest.DEMO;
 import static com.github.jinahya.hello.HelloWorldDiTest.IMPL;
+import static java.lang.invoke.MethodHandles.lookup;
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * A configuration for providing {@link HelloWorld} beans.
@@ -17,7 +17,7 @@ import static com.github.jinahya.hello.HelloWorldDiTest.IMPL;
 @Configuration
 class HelloWorldDiSpringConfiguration {
 
-    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private static final Logger logger = getLogger(lookup().lookupClass());
 
     @Bean
     @Named(DEMO)
