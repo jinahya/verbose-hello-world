@@ -32,6 +32,6 @@ public class HelloWorldMain {
         super();
     }
 
-    @Inject
+    @Injectg
     HelloWorld helloWorld;
 }
