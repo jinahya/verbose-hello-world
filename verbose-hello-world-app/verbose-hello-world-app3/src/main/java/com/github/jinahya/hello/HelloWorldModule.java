@@ -21,7 +21,7 @@ class HelloWorldModule extends AbstractModule {
     /**
      * The class found with {@link #HELLO_WORLD_IMPL_FQCN}.
      */
-    static final Class<? extends HelloWorld> HELLO_WORLD_IMPL_CLASS;
+    private static final Class<? extends HelloWorld> HELLO_WORLD_IMPL_CLASS;
 
     static {
         try {
