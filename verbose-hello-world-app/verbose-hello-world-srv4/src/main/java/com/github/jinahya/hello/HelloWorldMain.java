@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 
 import java.io.IOException;
 
-import static com.github.jinahya.hello.HelloWorldProvider.findAnyAvailable;
+import static com.github.jinahya.hello.HelloWorldProvider.findAnyAvailableInstance;
 import static java.lang.invoke.MethodHandles.lookup;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -22,7 +22,7 @@ public class HelloWorldMain {
      * @throws IOException if an I/O error occurs.
      */
     public static void main(final String[] args) throws IOException {
-        final HelloWorld service = findAnyAvailable();
+        final HelloWorld service = findAnyAvailableInstance();
         // TODO: implement!
     }
 

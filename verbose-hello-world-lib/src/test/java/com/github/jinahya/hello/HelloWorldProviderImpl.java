@@ -13,7 +13,7 @@ public class HelloWorldProviderImpl implements HelloWorldProvider {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     @Override
-    public HelloWorld getHelloWorld() {
+    public HelloWorld getInstance() {
         return new HelloWorldImpl();
     }
 }

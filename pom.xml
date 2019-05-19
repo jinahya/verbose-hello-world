@@ -57,7 +57,7 @@
     <version.org.apache.openwebbeans>2.0.10</version.org.apache.openwebbeans>
     <version.com.google.dagger>2.22.1</version.com.google.dagger>
     <version.org.jboss.weld>2.0.0.Final</version.org.jboss.weld>
-    <version.org.jboss.weld.se>3.1.0.Final</version.org.jboss.weld.se>
+    <version.org.jboss.weld.se>3.1.1.Final</version.org.jboss.weld.se>
     <version.org.junit.jupiter>5.5.0-M1</version.org.junit.jupiter>
     <version.org.glassfish.hk2>2.5.0</version.org.glassfish.hk2>
     <version.org.mockito>2.27.0</version.org.mockito>
@@ -168,8 +168,10 @@
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
-        <artifactId>spring-context</artifactId>
-        <version>5.1.6.RELEASE</version>
+        <artifactId>spring-framework-bom</artifactId>
+        <version>5.1.7.RELEASE</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -201,7 +203,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-assembly-plugin</artifactId>
-          <version>3.1.0</version>
+          <version>3.1.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
