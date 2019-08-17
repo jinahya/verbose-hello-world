@@ -1,3 +1,9 @@
+
+
+# Created by https://www.gitignore.io/api/maven
+# Edit at https://www.gitignore.io/?templates=maven
+
+### Maven ###
 target/
 pom.xml.tag
 pom.xml.releaseBackup
@@ -7,11 +13,15 @@ release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
 
-# Avoid ignoring Maven wrapper jar file (.jar files are usually ignored)
-!/.mvn/wrapper/maven-wrapper.jar
+# End of https://www.gitignore.io/api/maven
 
 
 *.iml
 .idea/
 !.idea/codeStyles
+
+
+*.log
+
