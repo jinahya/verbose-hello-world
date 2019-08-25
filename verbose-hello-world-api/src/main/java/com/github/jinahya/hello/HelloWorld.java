@@ -188,7 +188,7 @@ public interface HelloWorld {
      * <p>
      * This method, if the buffer {@link ByteBuffer#hasArray() has a backing-array}, invokes {@link #set(byte[], int)}
      * with {@link ByteBuffer#array() buffer.array} and ({@link ByteBuffer#arrayOffset() buffer.arrayOffset}  + {@link
-     * ByteBuffer#position() buffer.position}) and then manually increments the {@link ByteBuffer#position(int)
+     * ByteBuffer#position() buffer.position}) and manually increments the {@link ByteBuffer#position(int)
      * buffer.position} by {@link #SIZE}.
      * <p>
      * Otherwise, this method invokes {@link #set(byte[])} with an array of {@link #SIZE} bytes and puts returned array

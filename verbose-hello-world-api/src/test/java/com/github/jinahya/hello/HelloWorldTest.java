@@ -1,7 +1,6 @@
 package com.github.jinahya.hello;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Spy;
@@ -16,6 +15,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.net.Socket;
+import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 import java.nio.charset.Charset;
@@ -260,17 +260,7 @@ public class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#put(ByteBuffer)} method throws an {@link IllegalArgumentException} if {@link
-     * ByteBuffer#remaining() buffer.remaining()} is less than {@link HelloWorld#SIZE}.
-     */
-    @Disabled
-    @Test
-    public void assertPutBufferThrowsIllegalArgumentExceptionWhenBufferRemainingIsLessThanHelloWorldSize() {
-        // TODO: implement!
-    }
-
-    /**
-     * Asserts {@link HelloWorld#put(ByteBuffer)} method throws an {@link java.nio.BufferOverflowException} if {@link
+     * Asserts {@link HelloWorld#put(ByteBuffer)} method throws an {@link BufferOverflowException} if {@link
      * ByteBuffer#remaining() buffer.remaining()} is less than {@link HelloWorld#SIZE}.
      */
     @Test
