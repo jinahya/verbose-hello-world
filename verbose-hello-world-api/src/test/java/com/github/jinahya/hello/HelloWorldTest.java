@@ -3,6 +3,9 @@ package com.github.jinahya.hello;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -21,8 +24,10 @@ import java.nio.channels.WritableByteChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.stream.Stream;
 
 import static java.lang.invoke.MethodHandles.lookup;
+import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -38,6 +43,31 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class HelloWorldTest {
 
     private static final Logger logger = getLogger(lookup().lookupClass());
+
+    /**
+     * Provides arguments of bytes buffers which each has an insufficient remaining for {@link HelloWorld#SIZE}.
+     *
+     * @return a stream of arguments of byte buffers which each has an insufficient remaining for {@link
+     * HelloWorld#SIZE}.
+     */
+    private static Stream<Arguments> providesByteBuffersOfInsufficientRemaining() {
+        return Stream.of(
+                Arguments.of(ByteBuffer.allocate(current().nextInt(HelloWorld.SIZE))),
+                Arguments.of(ByteBuffer.allocateDirect(current().nextInt(HelloWorld.SIZE)))
+        );
+    }
+
+    /**
+     * Provides arguments of bytes buffers which each has a sufficient remaining for {@link HelloWorld#SIZE}.
+     *
+     * @return a stream of arguments of byte buffers which each has a sufficient remaining for {@link HelloWorld#SIZE}.
+     */
+    private static Stream<Arguments> providesByteBuffersOfSufficientRemaining() {
+        return Stream.of(
+                Arguments.of(ByteBuffer.allocate(current().nextInt(HelloWorld.SIZE, HelloWorld.SIZE << 1))),
+                Arguments.of(ByteBuffer.allocateDirect(current().nextInt(HelloWorld.SIZE, HelloWorld.SIZE << 1)))
+        );
+    }
 
     /**
      * Asserts the value of {@link HelloWorld#SIZE} constant equals to the length of {@code hello, world} string in form
@@ -269,6 +299,17 @@ public class HelloWorldTest {
     }
 
     /**
+     * Asserts {@link HelloWorld#put(ByteBuffer)} method throws an {@link BufferOverflowException} if {@link
+     * ByteBuffer#remaining() buffer.remaining()} is less than {@link HelloWorld#SIZE}.
+     */
+    @MethodSource({"providesByteBuffersOfInsufficientRemaining"})
+    @ParameterizedTest
+    public void assertPutBufferThrowsBufferOverflowExceptionWhenBufferRemainingIsLessThanHelloWorldSize(
+            final ByteBuffer buffer) {
+        // TODO: implement!
+    }
+
+    /**
      * Asserts {@link HelloWorld#put(ByteBuffer)} method puts as many bytes as {@link HelloWorld#SIZE} to specified byte
      * buffer. This method aims to test with a byte buffer which has a backing-array.
      */
@@ -283,6 +324,12 @@ public class HelloWorldTest {
      */
     @Test
     public void assertPutBufferPutsAsManyBytesAsHelloWorldToBuffer() {
+        // TODO: implement!
+    }
+
+    @MethodSource({"providesByteBuffersOfSufficientRemaining"})
+    @ParameterizedTest
+    public void assertPutBufferPutsAsManyBytesAsHelloWorldToBuffer(final ByteBuffer buffer) {
         // TODO: implement!
     }
 
