@@ -290,7 +290,7 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#put(ByteBuffer)} method returns specified byte buffer.
      */
     @Test
-    public void assertPutBufferReturnsSpecifiedBufferBackingArray() {
+    public void assertPutBufferReturnsSpecifiedBuffer() {
         // TODO: implement!
     }
 
