@@ -58,7 +58,7 @@
     <version.org.jboss.weld>2.0.0.Final</version.org.jboss.weld>
     <version.org.jboss.weld.se>3.1.2.Final</version.org.jboss.weld.se>
     <version.org.junit.jupiter>5.5.1</version.org.junit.jupiter>
-    <version.org.glassfish.hk2>2.6.0</version.org.glassfish.hk2>
+    <version.org.glassfish.hk2>2.6.1</version.org.glassfish.hk2>
     <version.org.mockito>3.0.0</version.org.mockito>
     <version.org.slf4j>1.7.26</version.org.slf4j>
   </properties>

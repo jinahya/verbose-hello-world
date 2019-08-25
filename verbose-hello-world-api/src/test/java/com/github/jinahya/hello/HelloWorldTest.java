@@ -1,6 +1,7 @@
 package com.github.jinahya.hello;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Spy;
@@ -53,7 +54,7 @@ public class HelloWorldTest {
     // ----------------------------------------------------------------------------------------------------- set(byte[])
 
     /**
-     * Asserts {@link HelloWorld#set(byte[])} method throws a {@code NullPointerException} when {@code array} argument
+     * Asserts {@link HelloWorld#set(byte[])} method throws a {@link NullPointerException} when {@code array} argument
      * is {@code null}.
      */
     @Test
@@ -62,7 +63,7 @@ public class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#set(byte[])} method throws an {@code IndexOutOfBoundsException} when {@code
+     * Asserts {@link HelloWorld#set(byte[])} method throws an {@link IndexOutOfBoundsException} when {@code
      * array.length} is less than {@link HelloWorld#SIZE}.
      */
     @Test
@@ -81,7 +82,7 @@ public class HelloWorldTest {
     // ----------------------------------------------------------------------------------------------- write(DataOutput)
 
     /**
-     * Asserts {@link HelloWorld#write(DataOutput)} method throws a {@code NullPointerException} when {@code data}
+     * Asserts {@link HelloWorld#write(DataOutput)} method throws a {@link NullPointerException} when {@code data}
      * argument is {@code null}.
      *
      * @throws IOException if an I/O error occurs.
@@ -115,7 +116,7 @@ public class HelloWorldTest {
     // ----------------------------------------------------------------------------------------- write(RandomAccessFile)
 
     /**
-     * Asserts {@link HelloWorld#write(RandomAccessFile)} method throws a {@code NullPointerException} when {@code file}
+     * Asserts {@link HelloWorld#write(RandomAccessFile)} method throws a {@link NullPointerException} when {@code file}
      * argument is {@code null}.
      *
      * @throws IOException if an I/O error occurs.
@@ -149,7 +150,7 @@ public class HelloWorldTest {
     // --------------------------------------------------------------------------------------------- write(OutputStream)
 
     /**
-     * Asserts {@link HelloWorld#write(OutputStream)} method throws a {@code NullPointerException} when {@code stream}
+     * Asserts {@link HelloWorld#write(OutputStream)} method throws a {@link NullPointerException} when {@code stream}
      * argument is {@code null}.
      *
      * @throws IOException if an I/O error occurs.
@@ -183,7 +184,7 @@ public class HelloWorldTest {
     // ----------------------------------------------------------------------------------------------------- write(File)
 
     /**
-     * Asserts {@link HelloWorld#write(File)} method throws a {@code NullPointerException} when {@code file} argument is
+     * Asserts {@link HelloWorld#write(File)} method throws a {@link NullPointerException} when {@code file} argument is
      * {@code null}.
      *
      * @throws IOException if an I/O error occurs.
@@ -216,7 +217,7 @@ public class HelloWorldTest {
     // ---------------------------------------------------------------------------------------------------- send(Socket)
 
     /**
-     * Asserts {@link HelloWorld#send(Socket)} method throws a {@code NullPointerException} when the {@code socket}
+     * Asserts {@link HelloWorld#send(Socket)} method throws a {@link NullPointerException} when the {@code socket}
      * argument is {@code null}.
      *
      * @throws IOException if an I/O error occurs.
@@ -250,7 +251,7 @@ public class HelloWorldTest {
     // ------------------------------------------------------------------------------------------------- put(ByteBuffer)
 
     /**
-     * Asserts {@link HelloWorld#put(ByteBuffer)} method throws a {@code NullPointerException} when {@code buffer}
+     * Asserts {@link HelloWorld#put(ByteBuffer)} method throws a {@link NullPointerException} when {@code buffer}
      * argument is {@code null}.
      */
     @Test
@@ -259,11 +260,21 @@ public class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#put(ByteBuffer)} method throws an {@code IllegalArgumentException} if {@link
+     * Asserts {@link HelloWorld#put(ByteBuffer)} method throws an {@link IllegalArgumentException} if {@link
+     * ByteBuffer#remaining() buffer.remaining()} is less than {@link HelloWorld#SIZE}.
+     */
+    @Disabled
+    @Test
+    public void assertPutBufferThrowsIllegalArgumentExceptionWhenBufferRemainingIsLessThanHelloWorldSize() {
+        // TODO: implement!
+    }
+
+    /**
+     * Asserts {@link HelloWorld#put(ByteBuffer)} method throws an {@link java.nio.BufferOverflowException} if {@link
      * ByteBuffer#remaining() buffer.remaining()} is less than {@link HelloWorld#SIZE}.
      */
     @Test
-    public void assertPutBufferThrowsIllegalArgumentExceptionWhenBufferRemainingIsLessThanHelloWorldSize() {
+    public void assertPutBufferThrowsBufferOverflowExceptionWhenBufferRemainingIsLessThanHelloWorldSize() {
         // TODO: implement!
     }
 
@@ -296,7 +307,7 @@ public class HelloWorldTest {
     // -------------------------------------------------------------------------------------- write(WritableByteChannel)
 
     /**
-     * Asserts {@link HelloWorld#write(WritableByteChannel)} method throws a {@code NullPointerException} when {@code
+     * Asserts {@link HelloWorld#write(WritableByteChannel)} method throws a {@link NullPointerException} when {@code
      * channel} argument is {@code null}.
      *
      * @throws IOException if an I/O error occurs.
@@ -331,7 +342,7 @@ public class HelloWorldTest {
     // ----------------------------------------------------------------------------------------------------- write(Path)
 
     /**
-     * Asserts {@link HelloWorld#write(Path)} method throws a {@code NullPointerException} when specified {@code path}
+     * Asserts {@link HelloWorld#write(Path)} method throws a {@link NullPointerException} when specified {@code path}
      * argument is {@code null}.
      *
      * @throws IOException if an I/O error occurs.
