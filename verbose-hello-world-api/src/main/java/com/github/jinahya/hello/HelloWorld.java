@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.net.Socket;
+import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
@@ -28,13 +29,13 @@ public interface HelloWorld {
 
     /**
      * The number of bytes to represent the {@code hello, world} string in {@code US-ASCII} character set. The value is
-     * {@value SIZE}.
+     * {@value}.
      */
     int SIZE = 12;
 
     /**
      * Sets <a href="#hello-world-byte">hello-world-bytes</a> on specified array starting at specified position and
-     * returns the array.
+     * returns given array.
      * <p>
      * The elements in the specified array, on successful return, will be set as follows.
      * <pre>{@code
@@ -49,14 +50,14 @@ public interface HelloWorld {
      * @param index the starting index of the array.
      * @return the specified array.
      * @throws NullPointerException      if the {@code array} is {@code null}.
-     * @throws IndexOutOfBoundsException if {@code index} is negative or {@code index} + {@link #SIZE} is greater than
+     * @throws IndexOutOfBoundsException if {@code index} is negative or {@code index} + {@value #SIZE} is greater than
      *                                   {@code array.length}.
      */
     byte[] set(byte[] array, int index);
 
     /**
-     * Sets <a href="#hello-world-bytes">hello-world-bytes</a> on specified array starting at {@code 0} and returns the
-     * array.
+     * Sets <a href="#hello-world-bytes">hello-world-bytes</a> on specified array starting at {@code 0} and returns
+     * given array.
      * <p>
      * This method invokes {@link #set(byte[], int)} method with given array and {@code 0} for the {@code index}
      * argument.
@@ -64,7 +65,7 @@ public interface HelloWorld {
      * @param array the array on which bytes are set.
      * @return the specified array.
      * @throws NullPointerException      if {@code array} is {@code null}.
-     * @throws IndexOutOfBoundsException if {@code array.length} is less than {@link #SIZE}.
+     * @throws IndexOutOfBoundsException if {@code array.length} is less than {@value #SIZE}.
      * @see #set(byte[], int)
      */
     default byte[] set(final byte[] array) {
@@ -75,7 +76,7 @@ public interface HelloWorld {
     /**
      * Writes <a href="#hello-world-bytes">hello-world-bytes</a> to specified data output and returns the data output.
      * <p>
-     * This method invokes {@link #set(byte[])} with an array of {@link #SIZE} bytes and writes the returned array to
+     * This method invokes {@link #set(byte[])} with an array of {@value #SIZE} bytes and writes the returned array to
      * specified data output using {@link DataOutput#write(byte[])} method.
      *
      * @param data the data output to which bytes are written.
@@ -95,8 +96,8 @@ public interface HelloWorld {
      * Writes <a href="#hello-world-bytes">hello-world-bytes</a> to specified random access file and returns the random
      * access file.
      * <p>
-     * This method invokes {@link #set(byte[])} with an array of {@link #SIZE} bytes and writes the returned array to
-     * specified random access file using {@link RandomAccessFile#write(byte[])}.
+     * This method invokes {@link #set(byte[])} with an array of {@value #SIZE} bytes and writes the returned array to
+     * specified random access file using {@link RandomAccessFile#write(byte[])} method.
      *
      * @param file the random access file to which bytes are written.
      * @param <T>  random access file type parameter
@@ -117,8 +118,8 @@ public interface HelloWorld {
     /**
      * Writes <a href="#hello-world-bytes">hello-world-bytes</a> to specified output stream.
      * <p>
-     * This method invokes {@link #set(byte[])} with an array of {@link #SIZE} bytes  writes the returned array to
-     * specified output stream using {@link OutputStream#write(byte[])}.
+     * This method invokes {@link #set(byte[])} with an array of {@value #SIZE} bytes and writes the returned array to
+     * specified output stream using {@link OutputStream#write(byte[])} method.
      *
      * @param stream the output stream to which bytes are written.
      * @param <T>    output stream type parameter
@@ -137,10 +138,10 @@ public interface HelloWorld {
     }
 
     /**
-     * Writes <a href="#hello-world-bytes">hello-world-bytes</a> to specified file and returns the specified file.
+     * Writes <a href="#hello-world-bytes">hello-world-bytes</a> to specified file and returns the file.
      * <p>
-     * This method constructs an instance of {@link java.io.FileOutputStream} as appending mode and invokes {@link
-     * #write(OutputStream)} with it.
+     * This method creates an instance of {@link java.io.FileOutputStream}, as appending mode, from the file and invokes
+     * {@link #write(OutputStream)} with it.
      *
      * @param file the file to which bytes are written.
      * @param <T>  file type parameter
@@ -161,7 +162,7 @@ public interface HelloWorld {
     /**
      * Writes <a href="#hello-world-bytes">hello-world-bytes</a> to specified socket.
      * <p>
-     * This method invokes {@link #write(OutputStream)} with given socket's {@link Socket#getOutputStream()
+     * This method invokes {@link #write(OutputStream)} method on given socket's {@link Socket#getOutputStream()
      * outputStream}.
      *
      * @param socket the socket to which bytes are sent.
@@ -184,22 +185,21 @@ public interface HelloWorld {
 
     /**
      * Puts <a href="#hello-world-bytes">hello-world-bytes</a> on specified byte buffer. The buffer's position, on
-     * successful return, is incremented by {@link #SIZE}.
+     * successful return, is incremented by {@value #SIZE}.
      * <p>
      * This method, if the buffer {@link ByteBuffer#hasArray() has a backing-array}, invokes {@link #set(byte[], int)}
-     * with {@link ByteBuffer#array() buffer.array} and ({@link ByteBuffer#arrayOffset() buffer.arrayOffset}  + {@link
+     * with {@link ByteBuffer#array() buffer.array} and ({@link ByteBuffer#arrayOffset() buffer.arrayOffset} + {@link
      * ByteBuffer#position() buffer.position}) and manually increments the {@link ByteBuffer#position(int)
-     * buffer.position} by {@link #SIZE}.
+     * buffer.position} by {@value #SIZE}.
      * <p>
-     * Otherwise, this method invokes {@link #set(byte[])} with an array of {@link #SIZE} bytes and puts returned array
-     * on the buffer using {@link ByteBuffer#put(byte[])}.
+     * Otherwise, this method invokes {@link #set(byte[])} method with an array of {@value #SIZE} bytes and puts
+     * returned array on the buffer using {@link ByteBuffer#put(byte[])} method.
      *
      * @param buffer the byte buffer on which bytes are put.
      * @param <T>    byte buffer type parameter
      * @return the specified byte buffer.
-     * @throws NullPointerException             if {@code buffer} is {@code null}
-     * @throws java.nio.BufferOverflowException if {@link ByteBuffer#remaining() buffer.remaining} is ess than {@link
-     *                                          HelloWorld#SIZE}
+     * @throws NullPointerException    if {@code buffer} is {@code null}
+     * @throws BufferOverflowException if {@link ByteBuffer#remaining() buffer.remaining} is less than {@value #SIZE}
      * @see ByteBuffer#hasArray()
      * @see ByteBuffer#array()
      * @see ByteBuffer#arrayOffset()
@@ -219,8 +219,9 @@ public interface HelloWorld {
     /**
      * Writes <a href="#hello-world-bytes">hello-world-bytes</a> to specified channel.
      * <p>
-     * This method invokes {@link #put(ByteBuffer)} with a byte buffer allocated with {@link #SIZE} and writes returned
-     * buffer to specified channel using {@link WritableByteChannel#write(ByteBuffer)}.
+     * This method invokes {@link #put(ByteBuffer)} method with a byte buffer allocated with {@value #SIZE} as its
+     * capacity and writes returned buffer to specified channel using {@link WritableByteChannel#write(ByteBuffer)}
+     * method.
      *
      * @param channel the channel to which bytes are written.
      * @param <T>     channel type parameter
@@ -243,7 +244,7 @@ public interface HelloWorld {
      * <p>
      * This method opens a file channel with specified path, {@link StandardOpenOption#CREATE CREATE}, {@link
      * StandardOpenOption#WRITE WRITE} and {@link StandardOpenOption#APPEND APPEND} and invokes {@link
-     * #write(WritableByteChannel)} with it.
+     * #write(WritableByteChannel)} method with it.
      *
      * @param path the path to which bytes are written.
      * @param <T>  path type parameter
