@@ -2,6 +2,7 @@ package com.github.jinahya.hello;
 
 import java.io.DataOutput;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
@@ -140,8 +141,8 @@ public interface HelloWorld {
     /**
      * Writes <a href="#hello-world-bytes">hello-world-bytes</a> to specified file and returns the file.
      * <p>
-     * This method creates an instance of {@link java.io.FileOutputStream}, as appending mode, from the file and invokes
-     * {@link #write(OutputStream)} with it.
+     * This method creates an instance of {@link FileOutputStream}, as appending mode, from the file and invokes {@link
+     * #write(OutputStream)} method with it.
      *
      * @param file the file to which bytes are written.
      * @param <T>  file type parameter
