@@ -1,5 +1,6 @@
 package com.github.jinahya.hello;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,7 +11,6 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.slf4j.Logger;
 
 import java.io.DataOutput;
 import java.io.File;
@@ -26,23 +26,20 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
-import static java.lang.invoke.MethodHandles.lookup;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
-import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * A class for testing {@link HelloWorld} class.
  */
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith({MockitoExtension.class})
+@Slf4j
 public class HelloWorldTest {
-
-    private static final Logger logger = getLogger(lookup().lookupClass());
 
     /**
      * Provides arguments of bytes buffers which each has an insufficient remaining for {@link HelloWorld#SIZE}.
