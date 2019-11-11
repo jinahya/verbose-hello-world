@@ -4,15 +4,15 @@ import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.Binder;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.jupiter.api.BeforeEach;
-import org.slf4j.Logger;
 
-import static java.lang.invoke.MethodHandles.lookup;
-import static org.slf4j.LoggerFactory.getLogger;
-
+/**
+ * An extended {@link HelloWorldDiTest} which uses {@link HelloWorldDiHk2Binder} as a binder.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 class HelloWorldDiHk2Test extends HelloWorldDiTest {
 
-    private static final Logger logger = getLogger(lookup().lookupClass());
-
+    // -----------------------------------------------------------------------------------------------------------------
     @BeforeEach
     private void inject() {
         final Binder binder = new HelloWorldDiHk2Binder();

@@ -5,12 +5,20 @@ import static java.nio.charset.StandardCharsets.US_ASCII;
 
 /**
  * A class implements the {@link HelloWorld} interface.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 class HelloWorldDemo implements HelloWorld {
 
+    // -----------------------------------------------------------------------------------------------------------------
     @Override
     public byte[] set(byte[] array, final int index) {
-        arraycopy("hello, world".getBytes(US_ASCII), 0, array, index, SIZE);
-        return array;
+        arraycopy(
+                "hello, world".getBytes(US_ASCII), // <1>
+                0,                                 // <2>
+                array,                             // <3>
+                index,                             // <4>
+                BYTES);                            // <5>
+        return array;                              // <6>
     }
 }

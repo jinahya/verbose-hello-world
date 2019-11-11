@@ -29,23 +29,28 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
 /**
- * A class for testing {@link HelloWorld} class.
+ * A class for unit-testing {@link HelloWorld} interface.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith({MockitoExtension.class})
 @Slf4j
 public class HelloWorldTest {
 
+    // -----------------------------------------------------------------------------------------------------------------
+
     /**
-     * Asserts the value of {@link HelloWorld#SIZE} constant equals to the length of {@code hello, world} string in form
-     * of bytes encoded with {@code US-ASCII} character set.
+     * Asserts the value of {@link HelloWorld#BYTES} constant equals to the actual length of "{@code hello, world}"
+     * string in a form of bytes encoded with {@code US-ASCII} character set.
      *
      * @see String#getBytes(Charset)
      * @see StandardCharsets#US_ASCII
      */
     @Test
-    void assertSizeEqualsToHelloWorldBytes() {
-        assertEquals("hello, world".getBytes(StandardCharsets.US_ASCII).length, HelloWorld.SIZE);
+    void assertSizeEqualsToActualNumberOfHelloWorldBytes() {
+        final int expected = "hello, world".getBytes(StandardCharsets.US_ASCII).length;
+        assertEquals(expected, HelloWorld.BYTES);
     }
 
     // ----------------------------------------------------------------------------------------------------- set(byte[])
@@ -61,7 +66,7 @@ public class HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#set(byte[])} method throws an {@link IndexOutOfBoundsException} when {@code
-     * array.length} is less than {@link HelloWorld#SIZE}.
+     * array.length} is less than {@link HelloWorld#BYTES}.
      */
     @Test
     public void assertSetArrayThrowsIndexOufOfBoundsExceptionWhenArrayLengthIsLessThanHelloWorldSize() {
@@ -69,44 +74,10 @@ public class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#set(byte[])} method returns specified byte array.
+     * Asserts {@link HelloWorld#set(byte[])} method returns specified array.
      */
     @Test
     public void assertSetArrayReturnsSpecifiedArray() {
-        // TODO: implement!
-    }
-
-    // ----------------------------------------------------------------------------------------------- write(DataOutput)
-
-    /**
-     * Asserts {@link HelloWorld#write(DataOutput)} method throws a {@link NullPointerException} when {@code data}
-     * argument is {@code null}.
-     *
-     * @throws IOException if an I/O error occurs.
-     */
-    @Test
-    public void assertWriteDataThrowsNullPointerExceptionWhenDataIsNull() throws IOException {
-        // TODO: implement!
-    }
-
-    /**
-     * Asserts {@link HelloWorld#write(DataOutput)} method writes as many bytes as {@value HelloWorld#SIZE} to specified
-     * data output.
-     *
-     * @throws IOException if an I/O error occurs.
-     */
-    @Test
-    public void assertWriteDataWritesAsManyBytesAsHelloWorldSizeToData() throws IOException {
-        // TODO: implement!
-    }
-
-    /**
-     * Asserts {@link HelloWorld#write(DataOutput)} method returns the specified data output.
-     *
-     * @throws IOException if an I/O error occurs.
-     */
-    @Test
-    public void assertWriteDataReturnsSpecifiedData() throws IOException {
         // TODO: implement!
     }
 
@@ -124,7 +95,7 @@ public class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#write(RandomAccessFile)} method writes as many bytes as {@link HelloWorld#SIZE} to
+     * Asserts {@link HelloWorld#write(RandomAccessFile)} method writes as many bytes as {@link HelloWorld#BYTES} to
      * specified random access file.
      *
      * @throws IOException if an I/O error occurs.
@@ -158,7 +129,7 @@ public class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#write(OutputStream)} method writes as many bytes as {@value HelloWorld#SIZE} to
+     * Asserts {@link HelloWorld#write(OutputStream)} method writes as many bytes as {@value HelloWorld#BYTES} to
      * specified stream.
      *
      * @throws IOException if an I/O error occurs.
@@ -192,7 +163,8 @@ public class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#write(File)} method writes as many bytes as {@link HelloWorld#SIZE} to specified file.
+     * Asserts {@link HelloWorld#write(File)} method writes as many bytes as {@link HelloWorld#BYTES} to specified
+     * file.
      *
      * @throws IOException if an I/O error occurs
      */
@@ -225,7 +197,7 @@ public class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#send(Socket)} method sends as many bytes as {@link HelloWorld#SIZE} to specified
+     * Asserts {@link HelloWorld#send(Socket)} method sends as many bytes as {@link HelloWorld#BYTES} to specified
      * socket.
      *
      * @throws IOException if an I/O error occurs.
@@ -245,6 +217,40 @@ public class HelloWorldTest {
         // TODO: implement!
     }
 
+    // ----------------------------------------------------------------------------------------------- write(DataOutput)
+
+    /**
+     * Asserts {@link HelloWorld#write(DataOutput)} method throws a {@link NullPointerException} when {@code data}
+     * argument is {@code null}.
+     *
+     * @throws IOException if an I/O error occurs.
+     */
+    @Test
+    public void assertWriteDataThrowsNullPointerExceptionWhenDataIsNull() throws IOException {
+        // TODO: implement!
+    }
+
+    /**
+     * Asserts {@link HelloWorld#write(DataOutput)} method writes as many bytes as {@value HelloWorld#BYTES} to
+     * specified data output.
+     *
+     * @throws IOException if an I/O error occurs.
+     */
+    @Test
+    public void assertWriteDataWritesAsManyBytesAsHelloWorldSizeToData() throws IOException {
+        // TODO: implement!
+    }
+
+    /**
+     * Asserts {@link HelloWorld#write(DataOutput)} method returns the specified data output.
+     *
+     * @throws IOException if an I/O error occurs.
+     */
+    @Test
+    public void assertWriteDataReturnsSpecifiedData() throws IOException {
+        // TODO: implement!
+    }
+
     // ------------------------------------------------------------------------------------------------- put(ByteBuffer)
 
     /**
@@ -257,8 +263,8 @@ public class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#put(ByteBuffer)} method throws an {@link BufferOverflowException} if {@link
-     * ByteBuffer#remaining() buffer.remaining()} is less than {@link HelloWorld#SIZE}.
+     * Asserts {@link HelloWorld#put(ByteBuffer)} method throws an {@link BufferOverflowException} when {@code buffer}
+     * arguments' {@link ByteBuffer#remaining() remaining} is less than {@link HelloWorld#BYTES}.
      */
     @Test
     public void assertPutBufferThrowsBufferOverflowExceptionWhenBufferRemainingIsLessThanHelloWorldSize() {
@@ -266,17 +272,18 @@ public class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#put(ByteBuffer)} method puts as many bytes as {@link HelloWorld#SIZE} to specified byte
-     * buffer. This method aims to test with a byte buffer which has a backing-array.
+     * Asserts {@link HelloWorld#put(ByteBuffer)} method puts as many bytes as {@link HelloWorld#BYTES} to specified
+     * buffer. This method aims to test with a byte buffer which {@link ByteBuffer#hasArray() has a backing-array}.
      */
     @Test
-    public void assertPutBufferPutsAsManyBytesAsHelloWorldSizeToBufferBackingArray() {
+    public void assertPutBufferPutsAsManyBytesAsHelloWorldSizeToBufferWithBackingArray() {
         // TODO: implement!
     }
 
     /**
-     * Asserts {@link HelloWorld#put(ByteBuffer)} method puts as many bytes as {@link HelloWorld#SIZE} to specified byte
-     * buffer. This method aims to test with a byte buffer which doesn't have a backing-array.
+     * Asserts {@link HelloWorld#put(ByteBuffer)} method puts as many bytes as {@link HelloWorld#BYTES} to specified
+     * byte buffer. This method aims to test with a byte buffer which {@link ByteBuffer#isDirect() doesn't have a
+     * backing-array}.
      */
     @Test
     public void assertPutBufferPutsAsManyBytesAsHelloWorldToBuffer() {
@@ -305,7 +312,7 @@ public class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#write(WritableByteChannel)} method writes as many bytes as {@link HelloWorld#SIZE} to
+     * Asserts {@link HelloWorld#write(WritableByteChannel)} method writes as many bytes as {@link HelloWorld#BYTES} to
      * specified channel.
      *
      * @throws IOException if an I/O error occurs.
@@ -340,7 +347,8 @@ public class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#write(Path)} method writes as many bytes as {@link HelloWorld#SIZE} to specified path.
+     * Asserts {@link HelloWorld#write(Path)} method writes as many bytes as {@link HelloWorld#BYTES} to specified
+     * path.
      *
      * @throws IOException if an I/O error occurs.
      */
@@ -362,15 +370,16 @@ public class HelloWorldTest {
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
-     * Stubs {@link HelloWorld#set(byte[], int)} method of {@link #helloWorld} to return specified {@code array}
-     * argument.
+     * Stubs {@link HelloWorld#set(byte[], int)} method of {@link Spy spied} {@code helloWorld} instance to return
+     * specified {@code array} argument.
      */
     @BeforeEach
     private void stubSetArrayWithIndexToReturnSpecifiedArray() {
-        when(helloWorld.set(any(byte[].class), anyInt())).thenAnswer(i -> i.getArgument(0));
+        when(helloWorld.set(any(byte[].class), anyInt())) // <1>
+                .thenAnswer(i -> i.getArgument(0));       // <2>
     }
 
     // -----------------------------------------------------------------------------------------------------------------
-    @Spy
+    @Spy // <1>
     private HelloWorld helloWorld;
 }

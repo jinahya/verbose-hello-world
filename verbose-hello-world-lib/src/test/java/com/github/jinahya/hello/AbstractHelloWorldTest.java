@@ -1,17 +1,15 @@
 package com.github.jinahya.hello;
 
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-
-import static java.lang.invoke.MethodHandles.lookup;
-import static org.slf4j.LoggerFactory.getLogger;
 
 /**
- * A class for testing {@link HelloWorldImpl}.
+ * A abstract class for unit-testing classes implement {@link HelloWorld} interface.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-abstract class AbstractHelloWorldTest {
+public abstract class AbstractHelloWorldTest {
 
-    private static final Logger logger = getLogger(lookup().lookupClass());
+    // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * Returns an instance of {@link HelloWorld} for testing.
@@ -20,8 +18,10 @@ abstract class AbstractHelloWorldTest {
      */
     abstract HelloWorld helloWorld();
 
+    // -----------------------------------------------------------------------------------------------------------------
+
     /**
-     * Asserts {@link HelloWorldImpl#set(byte[], int)} method throws a {@code NullPointerException} when {@code array}
+     * Asserts {@link HelloWorld#set(byte[], int)} method throws a {@code NullPointerException} when {@code array}
      * argument is {@code null}.
      */
     @Test
@@ -30,8 +30,8 @@ abstract class AbstractHelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorldImpl#set(byte[], int)} method throws an {@code IndexOutOfBoundsException} when {@code
-     * index} argument is negative.
+     * Asserts {@link HelloWorld#set(byte[], int)} method throws an {@code IndexOutOfBoundsException} when {@code index}
+     * argument is negative.
      */
     @Test
     public void assertSetArrayThrowsIndexOutOfBoundsExceptionWhenIndexIsNegative() {
@@ -39,8 +39,8 @@ abstract class AbstractHelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorldImpl#set(byte[], int)} method throws an {@code IndexOutOfBoundsException} when {@code
-     * index} argument plus {@link HelloWorld#SIZE} is greater than {@code array.length}.
+     * Asserts {@link HelloWorld#set(byte[], int)} method throws an {@code IndexOutOfBoundsException} when {@code index}
+     * argument plus {@link HelloWorld#BYTES} is greater than {@code array.length}.
      */
     @Test
     public void assertSetArrayThrowsIndexOutOfBoundsExceptionWhenIndexPlusHelloWorldSizeIsGreaterThanArrayLength() {
@@ -48,8 +48,8 @@ abstract class AbstractHelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorldImpl#set(byte[], int)} method sets hello world bytes on specified array starting at
-     * specified index.
+     * Asserts {@link HelloWorld#set(byte[], int)} method sets "{@code hello, world}" bytes on specified array starting
+     * at specified index.
      */
     @Test
     public void assertSetArraySetsHelloWorldBytesOnArrayStartingAtIndex() {
@@ -57,7 +57,7 @@ abstract class AbstractHelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorldImpl#set(byte[], int)} method returns specified array.
+     * Asserts {@link HelloWorld#set(byte[], int)} method returns specified array.
      */
     @Test
     public void assertSetArrayReturnsSpecifiedArray() {

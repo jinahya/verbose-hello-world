@@ -11,26 +11,26 @@ import static com.github.jinahya.hello.HelloWorldDiTest.IMPL;
 @Module
 class HelloWorldDiDaggerModule {
 
-    @Provides
     @Named(DEMO)
+    @Provides
     static HelloWorld provideNamedDemo() {
         return new HelloWorldDemo();
     }
 
-    @Provides
     @Named(IMPL)
+    @Provides
     static HelloWorld provideNamedImpl() {
         return new HelloWorldImpl();
     }
 
-    @Provides
     @QualifiedDemo
+    @Provides
     static HelloWorld provideQualifiedDemo() {
         return new HelloWorldDemo();
     }
 
-    @Provides
     @QualifiedImpl
+    @Provides
     static HelloWorld provideQualifiedImpl() {
         return new HelloWorldImpl();
     }
