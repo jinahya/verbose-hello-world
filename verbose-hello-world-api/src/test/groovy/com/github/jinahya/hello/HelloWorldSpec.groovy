@@ -1,10 +1,13 @@
 package com.github.jinahya.hello
 
-
 import spock.lang.Shared
 import spock.lang.Specification
 
 class HelloWorldSpec extends Specification {
+
+    // -----------------------------------------------------------------------------------------------------------------
+    @Shared
+    static HelloWorld mock;
 
     // -----------------------------------------------------------------------------------------------------------------
     def setupSpec() { // runs once - before the first feature method
@@ -29,8 +32,4 @@ class HelloWorldSpec extends Specification {
         then:
         NullPointerException npe = thrown()
     }
-
-    // -----------------------------------------------------------------------------------------------------------------
-    @Shared
-    HelloWorld mock;
 }
