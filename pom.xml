@@ -59,6 +59,7 @@
     <version.org.jboss.weld>2.0.1.Final</version.org.jboss.weld>
     <version.org.jboss.weld.se>3.1.2.Final</version.org.jboss.weld.se>
     <version.org.junit.jupiter>5.5.1</version.org.junit.jupiter>
+    <version.org.junit.vintage>${version.org.junit.jupiter}</version.org.junit.vintage>
     <version.org.glassfish.hk2>2.6.1</version.org.glassfish.hk2>
     <version.org.mockito>3.1.0</version.org.mockito>
     <version.org.slf4j>1.7.26</version.org.slf4j>
@@ -125,6 +126,11 @@
         <groupId>org.junit.jupiter</groupId>
         <artifactId>junit-jupiter-engine</artifactId>
         <version>${version.org.junit.jupiter}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.junit.vintage</groupId>
+        <artifactId>junit-vintage-engine</artifactId>
+        <version>${version.org.junit.vintage}</version>
       </dependency>
       <dependency>
         <groupId>org.glassfish.hk2</groupId>
