@@ -38,7 +38,7 @@ import static org.mockito.Mockito.when;
 @Slf4j
 public class HelloWorldTest {
 
-    // -----------------------------------------------------------------------------------------------------------------
+    // ----------------------------------------------------------------------------------------------------------- BYTES
 
     /**
      * Asserts the value of {@link HelloWorld#BYTES} constant equals to the actual length of "{@code hello, world}"

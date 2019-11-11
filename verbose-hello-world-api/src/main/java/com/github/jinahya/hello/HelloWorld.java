@@ -32,8 +32,8 @@ public interface HelloWorld {
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
-     * The number of bytes to represent the {@code hello, world} string in {@code US-ASCII} character set. The value is
-     * {@value}.
+     * The number of bytes to represent the "{@code hello, world}" string in {@code US-ASCII} character set. The value
+     * is {@value}.
      */
     int BYTES = 12;
 
