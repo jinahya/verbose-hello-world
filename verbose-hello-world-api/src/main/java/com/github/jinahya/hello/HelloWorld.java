@@ -80,25 +80,6 @@ public interface HelloWorld {
     }
 
     /**
-     * Writes <a href="#hello-world-bytes">hello-world-bytes</a> to specified data output and returns the data output.
-     * <p>
-     * This method invokes {@link #set(byte[])} with an array of {@value #BYTES} bytes and writes the returned array to
-     * specified data output using {@link DataOutput#write(byte[])} method.
-     *
-     * @param data the data output to which bytes are written.
-     * @param <T>  data output type parameter
-     * @return the specified data output.
-     * @throws NullPointerException if {@code data} is {@code null}.
-     * @throws IOException          if an I/O error occurs.
-     * @see #set(byte[])
-     * @see DataOutput#write(byte[])
-     */
-    default <T extends DataOutput> T write(final T data) throws IOException {
-        // TODO: implement!
-        return null;
-    }
-
-    /**
      * Writes <a href="#hello-world-bytes">hello-world-bytes</a> to specified output stream.
      * <p>
      * This method invokes {@link #set(byte[])} with an array of {@value #BYTES} bytes and writes the returned array to
@@ -162,6 +143,26 @@ public interface HelloWorld {
         if (socket == null) {
             throw new NullPointerException("socket is null");
         }
+        // TODO: implement!
+        return null;
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    /**
+     * Writes <a href="#hello-world-bytes">hello-world-bytes</a> to specified data output and returns the data output.
+     * <p>
+     * This method invokes {@link #set(byte[])} with an array of {@value #BYTES} bytes and writes the returned array to
+     * specified data output using {@link DataOutput#write(byte[])} method.
+     *
+     * @param data the data output to which bytes are written.
+     * @param <T>  data output type parameter
+     * @return the specified data output.
+     * @throws NullPointerException if {@code data} is {@code null}.
+     * @throws IOException          if an I/O error occurs.
+     * @see #set(byte[])
+     * @see DataOutput#write(byte[])
+     */
+    default <T extends DataOutput> T write(final T data) throws IOException {
         // TODO: implement!
         return null;
     }
