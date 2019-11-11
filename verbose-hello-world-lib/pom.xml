@@ -13,8 +13,8 @@
   <packaging>jar</packaging>
 
   <name>${project.artifactId}</name>
-  <description>Implements hello world API</description>
-  <url>https://github.com/jinahya/verbose-hello-world/verbose-hello-world-lib</url>
+  <description>Verbose Hello World Lib</description>
+  <url>https://github.com/jinahya/verbose-hello-world/${project.artifactId}</url>
 
   <dependencies>
     <dependency>

@@ -13,7 +13,7 @@
   <packaging>pom</packaging>
 
   <name>${project.artifactId}</name>
-  <description>a verbose hello world</description>
+  <description>Verbose Hello World</description>
   <url>https://github.com/jinahya/${project.artifactId}</url>
   <inceptionYear>2018</inceptionYear>
   <licenses>
@@ -23,10 +23,6 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
-
-  <prerequisites>
-    <maven>3.3.9</maven>
-  </prerequisites>
 
   <modules>
     <module>verbose-hello-world-api</module>
