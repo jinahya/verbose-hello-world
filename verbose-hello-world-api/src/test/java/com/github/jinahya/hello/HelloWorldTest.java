@@ -1,5 +1,7 @@
 package com.github.jinahya.hello;
 
+import com.github.jinahya.jupiter.api.extension.TempFileParameterResolver;
+import com.github.jinahya.jupiter.api.io.TempFile;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,7 +36,7 @@ import static org.mockito.Mockito.when;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @MockitoSettings(strictness = Strictness.LENIENT)
-@ExtendWith({MockitoExtension.class})
+@ExtendWith({MockitoExtension.class, TempFileParameterResolver.class})
 @Slf4j
 public class HelloWorldTest {
 
@@ -166,20 +168,22 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#write(File)} method writes as many bytes as {@link HelloWorld#BYTES} to specified
      * file.
      *
+     * @param file a temp file to test with.
      * @throws IOException if an I/O error occurs
      */
     @Test
-    public void assertWriteFileWritesAsManyBytesAsHelloWorldSizeToFile() throws IOException {
+    public void assertWriteFileWritesAsManyBytesAsHelloWorldSizeToFile(@TempFile final File file) throws IOException {
         // TODO: implement!
     }
 
     /**
      * Asserts {@link HelloWorld#write(File)} method returns the specified file.
      *
+     * @param file a temp file to test with.
      * @throws IOException if an I/O error occurs
      */
     @Test
-    public void assertWriteFileReturnsSpecifiedFile() throws IOException {
+    public void assertWriteFileReturnsSpecifiedFile(@TempFile final File file) throws IOException {
         // TODO: implement!
     }
 
