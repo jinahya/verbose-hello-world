@@ -81,8 +81,8 @@ public class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#set(byte[])} method invokes {@link HelloWorld#set(byte[], int) set(byte[], index)} with
-     * specified {@code array} and {@code 0}.
+     * Asserts {@link HelloWorld#set(byte[])} method invokes {@link HelloWorld#set(byte[], int)} with specified {@code
+     * array} and {@code 0}.
      */
     @DisplayName("Assert set(byte[]) method invokes set(byte[], int) with specified array and 0")
     @Test
