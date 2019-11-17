@@ -34,23 +34,25 @@ public interface HelloWorld {
     /**
      * The number of bytes to represent the "{@code hello, world}" string in {@code US-ASCII} character set. The value
      * is {@value}.
+     *
+     * @see <a href="#hello-world-bytes">hello-world-bytes</a>
      */
     int BYTES = 12;
 
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
-     * Sets <a href="#hello-world-byte">hello-world-bytes</a> on specified array starting at specified position and
+     * Sets <a href="#hello-world-bytes">hello-world-bytes</a> on specified array starting at specified position and
      * returns the array.
      * <p>
      * The elements in the specified array, on successful return, will be set as follows.
-     * <pre>{@code
+     * <blockquote><pre>{@code
      *   0                                                               array.length
      *   |                                                               |
      * |   |...|'h'|'e'|'l'|'l'|'o'|','|' '|'w'|'o'|'r'|'l'|'d'|   |...|
      *           |                                               |
      *           index                                           index + SIZE
-     * }</pre>
+     * }</pre></blockquote>
      *
      * @param array the array on which bytes are set.
      * @param index the starting index of the {@code array}.
@@ -148,6 +150,7 @@ public interface HelloWorld {
     }
 
     // -----------------------------------------------------------------------------------------------------------------
+
     /**
      * Writes <a href="#hello-world-bytes">hello-world-bytes</a> to specified data output and returns the data output.
      * <p>
