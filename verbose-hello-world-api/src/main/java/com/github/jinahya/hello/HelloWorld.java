@@ -203,8 +203,8 @@ public interface HelloWorld {
      * <p>
      * This method, if specified buffer {@link ByteBuffer#hasArray() has a backing-array}, invokes {@link #set(byte[],
      * int)} with the buffer's {@link ByteBuffer#array() backing array} and ({@link ByteBuffer#arrayOffset()
-     * buffer.arrayOffset} + {@link ByteBuffer#position() buffer.position}) and manually increments the buffer's {@link
-     * ByteBuffer#position(int) position} by {@value #BYTES}.
+     * buffer.arrayOffset} + {@link ByteBuffer#position() buffer.position}) and then manually increments the buffer's
+     * {@link ByteBuffer#position(int) position} by {@value #BYTES}.
      * <p>
      * Otherwise, this method invokes {@link #set(byte[])} method with an array of {@value #BYTES} bytes and puts the
      * returned array on the buffer using {@link ByteBuffer#put(byte[])} method.
