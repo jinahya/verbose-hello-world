@@ -383,5 +383,5 @@ public class HelloWorldTest {
 
     // -----------------------------------------------------------------------------------------------------------------
     @Spy // <1>
-    private HelloWorld helloWorld;
+    HelloWorld helloWorld;
 }
