@@ -106,7 +106,7 @@ public interface HelloWorld {
     /**
      * Appends <a href="#hello-world-bytes">hello-world-bytes</a> to specified file and returns the file.
      * <p>
-     * This method creates an instance of {@link FileOutputStream}, with {@link java.io.FileOutputStream#FileOutputStream(File,
+     * This method creates an instance of {@link FileOutputStream}, with {@link FileOutputStream#FileOutputStream(File,
      * boolean) appending mode}, from specified file and invokes {@link #write(OutputStream)} method with it and {@link
      * OutputStream#flush() flushes} the stream.
      *
