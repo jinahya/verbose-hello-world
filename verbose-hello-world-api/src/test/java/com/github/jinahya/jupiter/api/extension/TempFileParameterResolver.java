@@ -16,6 +16,12 @@ import static java.lang.Runtime.getRuntime;
 import static java.nio.file.Files.createTempFile;
 import static java.nio.file.Files.deleteIfExists;
 
+/**
+ * A class for resolving temporary file to test with.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ * @see TempFile
+ */
 @Slf4j
 public class TempFileParameterResolver implements ParameterResolver {
 
