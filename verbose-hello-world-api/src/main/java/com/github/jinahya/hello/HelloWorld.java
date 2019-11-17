@@ -45,7 +45,7 @@ public interface HelloWorld {
      * Sets <a href="#hello-world-bytes">hello-world-bytes</a> on specified array starting at specified position and
      * returns the array.
      * <p>
-     * The elements in the specified array, on successful return, will be set as follows.
+     * The elements in specified array, on successful return, will be set as follows.
      * <blockquote><pre>{@code
      *   0                                                               array.length
      *   |                                                               |
@@ -56,7 +56,7 @@ public interface HelloWorld {
      *
      * @param array the array on which bytes are set.
      * @param index the starting index of the {@code array}.
-     * @return the specified array.
+     * @return specified array.
      * @throws NullPointerException      if the {@code array} is {@code null}.
      * @throws IndexOutOfBoundsException if {@code index} is negative or ({@code index} + {@value #BYTES}) is greater
      *                                   than {@code array.length}.
@@ -71,7 +71,7 @@ public interface HelloWorld {
      * argument.
      *
      * @param array the array on which bytes are set.
-     * @return the specified array.
+     * @return specified array.
      * @throws NullPointerException      if {@code array} is {@code null}.
      * @throws IndexOutOfBoundsException if {@code array.length} is less than {@value #BYTES}.
      * @see #set(byte[], int)
@@ -89,7 +89,7 @@ public interface HelloWorld {
      *
      * @param stream the output stream to which bytes are written.
      * @param <T>    output stream type parameter
-     * @return the specified output stream.
+     * @return specified output stream.
      * @throws NullPointerException if {@code stream} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @see #set(byte[])
@@ -112,7 +112,7 @@ public interface HelloWorld {
      *
      * @param file the file to which bytes are appended.
      * @param <T>  file type parameter
-     * @return the specified file.
+     * @return specified file.
      * @throws NullPointerException if {@code file} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @see java.io.FileOutputStream#FileOutputStream(File, boolean)
@@ -135,7 +135,7 @@ public interface HelloWorld {
      *
      * @param socket the socket to which bytes are sent.
      * @param <T>    socket type parameter
-     * @return the specified socket.
+     * @return specified socket.
      * @throws NullPointerException if {@code socket} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @see Socket#getOutputStream()
@@ -159,7 +159,7 @@ public interface HelloWorld {
      *
      * @param data the data output to which bytes are written.
      * @param <T>  data output type parameter
-     * @return the specified data output.
+     * @return specified data output.
      * @throws NullPointerException if {@code data} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @see #set(byte[])
@@ -181,7 +181,7 @@ public interface HelloWorld {
      *
      * @param file the random access file to which bytes are written.
      * @param <T>  random access file type parameter
-     * @return the specified random access file.
+     * @return specified random access file.
      * @throws NullPointerException if {@code file} argument is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @see #set(byte[])
@@ -211,7 +211,7 @@ public interface HelloWorld {
      *
      * @param buffer the byte buffer on which bytes are put.
      * @param <T>    byte buffer type parameter
-     * @return the specified byte buffer.
+     * @return specified byte buffer.
      * @throws NullPointerException    if {@code buffer} is {@code null}
      * @throws BufferOverflowException if {@link ByteBuffer#remaining() buffer.remaining} is less than {@value #BYTES}
      * @see ByteBuffer#hasArray()
@@ -239,7 +239,7 @@ public interface HelloWorld {
      *
      * @param channel the channel to which bytes are written.
      * @param <T>     channel type parameter
-     * @return the specified channel.
+     * @return specified channel.
      * @throws NullPointerException if {@code channel} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @see #put(ByteBuffer)
@@ -262,7 +262,7 @@ public interface HelloWorld {
      *
      * @param path the path to which bytes are written.
      * @param <T>  path type parameter
-     * @return the specified path.
+     * @return specified path.
      * @throws NullPointerException if {@code path} is {@code null}
      * @throws IOException          if an I/O error occurs.
      * @see FileChannel#open(Path, OpenOption...)
@@ -284,7 +284,7 @@ public interface HelloWorld {
      *
      * @param socket the socket channel to which bytes are sent.
      * @param <T>    socket channel type parameter
-     * @return the specified socket.
+     * @return specified socket.
      * @throws NullPointerException if {@code socket} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @see #write(WritableByteChannel)
