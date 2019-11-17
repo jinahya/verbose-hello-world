@@ -285,8 +285,7 @@ public interface HelloWorld {
      * @param socket the socket channel to which bytes are sent.
      * @param <T>    socket channel type parameter
      * @return specified socket.
-     * @throws NullPointerException if {@code socket} is {@code null}.
-     * @throws IOException          if an I/O error occurs.
+     * @throws IOException if an I/O error occurs.
      * @see #write(WritableByteChannel)
      * @deprecated Use {@link #write(WritableByteChannel)}.
      */
