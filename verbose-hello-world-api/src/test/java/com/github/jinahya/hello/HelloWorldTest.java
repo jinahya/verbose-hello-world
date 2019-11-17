@@ -353,20 +353,22 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#write(Path)} method writes as many bytes as {@link HelloWorld#BYTES} to specified
      * path.
      *
+     * @param path a temporary file to test with.
      * @throws IOException if an I/O error occurs.
      */
     @Test
-    public void assertWritePathWritesAsManyBytesAsHelloWorldBytesToPath() throws IOException {
+    public void assertWritePathWritesAsManyBytesAsHelloWorldBytesToPath(@TempFile final Path path) throws IOException {
         // TODO: implement!!
     }
 
     /**
      * Asserts {@link HelloWorld#write(Path)} method returns the specified path.
      *
+     * @param path a temporary file to test with.
      * @throws IOException if an I/O error occurs.
      */
     @Test
-    public void assertWritePathReturnsSpecifiedPath() throws IOException {
+    public void assertWritePathReturnsSpecifiedPath(@TempFile final Path path) throws IOException {
         // TODO: implement!!
     }
 
