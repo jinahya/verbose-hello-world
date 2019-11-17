@@ -364,11 +364,11 @@ public class HelloWorldTest {
     /**
      * Asserts {@link HelloWorld#write(Path)} method returns the specified path.
      *
-     * @param path a temporary file to test with.
+     * @param expected a temporary file to test with.
      * @throws IOException if an I/O error occurs.
      */
     @Test
-    public void assertWritePathReturnsSpecifiedPath(@TempFile final Path path) throws IOException {
+    public void assertWritePathReturnsSpecifiedPath(@TempFile final Path expected) throws IOException {
         // TODO: implement!!
     }
 
