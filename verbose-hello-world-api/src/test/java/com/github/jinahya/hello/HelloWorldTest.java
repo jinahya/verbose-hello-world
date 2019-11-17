@@ -74,9 +74,9 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#set(byte[])} method throws an {@link IndexOutOfBoundsException} when {@code
      * array.length} is less than {@link HelloWorld#BYTES}.
      */
-    @DisplayName("Asserts set(byte[]) method throws IndexOutOfBoundsException when array.length < BYTES")
+    @DisplayName("Asserts set(byte[]) method throws IndexOutOfBoundsException when array.length is less than BYTES")
     @Test
-    public void assertSetArrayThrowsIndexOufOfBoundsExceptionWhenArrayLengthIsLessThanHelloWorldLength() {
+    public void assertSetArrayThrowsIndexOufOfBoundsExceptionWhenArrayLengthIsLessThanHelloWorldBytes() {
         // TODO: implement!
     }
 
@@ -248,6 +248,7 @@ public class HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
+    @DisplayName("Asserts write(DataOutput) method returns specified data output")
     @Test
     public void assertWriteDataReturnsSpecifiedData() throws IOException {
         // TODO: implement!
@@ -256,18 +257,20 @@ public class HelloWorldTest {
     // ------------------------------------------------------------------------------------------------- put(ByteBuffer)
 
     /**
-     * Asserts {@link HelloWorld#put(ByteBuffer)} method throws a {@link NullPointerException} when {@code buffer}
-     * argument is {@code null}.
+     * Asserts {@link HelloWorld#put(ByteBuffer)} method throws a {@link NullPointerException} when {@code buffer} is
+     * {@code null}.
      */
+    @DisplayName("Asserts put(ByteBuffer) method throws NullPointerException when buffer is null")
     @Test
     public void assertPutBufferThrowsNullPointerExceptionWhenBufferIsNull() {
         assertThrows(NullPointerException.class, () -> helloWorld.put(null));
     }
 
     /**
-     * Asserts {@link HelloWorld#put(ByteBuffer)} method throws an {@link BufferOverflowException} when {@code buffer}
-     * arguments' {@link ByteBuffer#remaining() remaining} is less than {@link HelloWorld#BYTES}.
+     * Asserts {@link HelloWorld#put(ByteBuffer)} method throws an {@link BufferOverflowException} when {@code buffer}'s
+     * {@link ByteBuffer#remaining() remaining} is less than {@link HelloWorld#BYTES}.
      */
+    @DisplayName("Asserts put(ByteBuffer) method throws BufferOverflowException when buffer.remaining is not enough")
     @Test
     public void assertPutBufferThrowsBufferOverflowExceptionWhenBufferRemainingIsLessThanHelloWorldBytes() {
         // TODO: implement!
@@ -277,6 +280,7 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#put(ByteBuffer)} method puts as many bytes as {@link HelloWorld#BYTES} to specified
      * buffer. This method aims to test with a byte buffer which {@link ByteBuffer#hasArray() has a backing-array}.
      */
+    @DisplayName("Asserts put(ByteBuffer) puts as many bytes as BYTES; with backing array")
     @Test
     public void assertPutBufferPutsAsManyBytesAsHelloWorldBytesToBufferWithBackingArray() {
         // TODO: implement!
@@ -287,6 +291,7 @@ public class HelloWorldTest {
      * byte buffer. This method aims to test with a byte buffer which {@link ByteBuffer#isDirect() doesn't have a
      * backing-array}.
      */
+    @DisplayName("Asserts put(ByteBuffer) puts as many bytes as BYTES; without backing array")
     @Test
     public void assertPutBufferPutsAsManyBytesAsHelloWorldBytesToBuffer() {
         // TODO: implement!
@@ -305,11 +310,9 @@ public class HelloWorldTest {
     /**
      * Asserts {@link HelloWorld#write(WritableByteChannel)} method throws a {@link NullPointerException} when {@code
      * channel} argument is {@code null}.
-     *
-     * @throws IOException if an I/O error occurs.
      */
     @Test
-    public void assertWriteChannelThrowsNullPointerExceptionWhenChannelIsNull() throws IOException {
+    public void assertWriteChannelThrowsNullPointerExceptionWhenChannelIsNull() {
         assertThrows(NullPointerException.class, () -> helloWorld.write((WritableByteChannel) null));
     }
 
@@ -340,11 +343,9 @@ public class HelloWorldTest {
     /**
      * Asserts {@link HelloWorld#write(Path)} method throws a {@link NullPointerException} when specified {@code path}
      * argument is {@code null}.
-     *
-     * @throws IOException if an I/O error occurs.
      */
     @Test
-    public void assertWritePathThrowsNullPointerExceptionWhenPathIsNull() throws IOException {
+    public void assertWritePathThrowsNullPointerExceptionWhenPathIsNull() {
         assertThrows(NullPointerException.class, () -> helloWorld.write((Path) null));
     }
 
@@ -383,5 +384,5 @@ public class HelloWorldTest {
 
     // -----------------------------------------------------------------------------------------------------------------
     @Spy // <1>
-    HelloWorld helloWorld;
+            HelloWorld helloWorld;
 }
