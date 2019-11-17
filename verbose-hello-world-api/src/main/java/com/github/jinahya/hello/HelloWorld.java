@@ -288,6 +288,7 @@ public interface HelloWorld {
      * @throws NullPointerException if {@code socket} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @see #write(WritableByteChannel)
+     * @deprecated Use {@link #write(WritableByteChannel)}.
      */
     @Deprecated
     default <T extends SocketChannel> T send(final T socket) throws IOException {
