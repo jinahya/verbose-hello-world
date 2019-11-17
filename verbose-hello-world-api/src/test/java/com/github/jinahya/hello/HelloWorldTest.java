@@ -53,7 +53,7 @@ public class HelloWorldTest {
      * @see StandardCharsets#US_ASCII
      */
     @Test
-    void assertSizeEqualsToActualNumberOfHelloWorldBytes() {
+    void assertHelloWorldBytesEqualsToActualNumberOfHelloWorldBytes() {
         final int expected = "hello, world".getBytes(US_ASCII).length;
         assertEquals(expected, BYTES);
     }
@@ -94,8 +94,6 @@ public class HelloWorldTest {
     /**
      * Asserts {@link HelloWorld#write(OutputStream)} method throws a {@link NullPointerException} when {@code stream}
      * argument is {@code null}.
-     *
-     * @throws IOException if an I/O error occurs.
      */
     @Test
     public void assertWriteStreamThrowsNullPointerExceptionWhenStreamIsNull() {
@@ -109,7 +107,7 @@ public class HelloWorldTest {
      * @throws IOException if an I/O error occurs.
      */
     @Test
-    public void assertWriteStreamWritesAsManyBytesAsHelloWorldSizeToStream() throws IOException {
+    public void assertWriteStreamWritesAsManyBytesAsHelloWorldBytesToStream() throws IOException {
         // TODO: implement!
     }
 
@@ -128,11 +126,9 @@ public class HelloWorldTest {
     /**
      * Asserts {@link HelloWorld#write(File)} method throws a {@link NullPointerException} when {@code file} argument is
      * {@code null}.
-     *
-     * @throws IOException if an I/O error occurs.
      */
     @Test
-    public void assertWriteFileThrowsNullPointerExceptionWhenFileIsNull() throws IOException {
+    public void assertWriteFileThrowsNullPointerExceptionWhenFileIsNull() {
         assertThrows(NullPointerException.class, () -> helloWorld.write((File) null));
     }
 
@@ -144,7 +140,7 @@ public class HelloWorldTest {
      * @throws IOException if an I/O error occurs
      */
     @Test
-    public void assertWriteFileWritesAsManyBytesAsHelloWorldSizeToFile(@TempFile final File file) throws IOException {
+    public void assertWriteFileWritesAsManyBytesAsHelloWorldBytes(@TempFile final File file) throws IOException {
         // TODO: implement!
     }
 
@@ -164,11 +160,9 @@ public class HelloWorldTest {
     /**
      * Asserts {@link HelloWorld#send(Socket)} method throws a {@link NullPointerException} when the {@code socket}
      * argument is {@code null}.
-     *
-     * @throws IOException if an I/O error occurs.
      */
     @Test
-    public void assertSendSocketThrowsNullPointerExceptionWhenSocketIsNull() throws IOException {
+    public void assertSendSocketThrowsNullPointerExceptionWhenSocketIsNull() {
         assertThrows(NullPointerException.class, () -> helloWorld.send((Socket) null));
     }
 
@@ -179,7 +173,7 @@ public class HelloWorldTest {
      * @throws IOException if an I/O error occurs.
      */
     @Test
-    public void assertSendSocketSendsAsManyBytesAsHelloWorldSizeToSocket() throws IOException {
+    public void assertSendSocketSendsAsManyBytesAsHelloWorldBytes() throws IOException {
         // TODO: implement!
     }
 
@@ -198,8 +192,6 @@ public class HelloWorldTest {
     /**
      * Asserts {@link HelloWorld#write(RandomAccessFile)} method throws a {@link NullPointerException} when {@code file}
      * argument is {@code null}.
-     *
-     * @throws IOException if an I/O error occurs.
      */
     @DisplayName("Asserts write(RandomAccessFile) method throws NullPointerException when file is null")
     @Test
@@ -234,12 +226,10 @@ public class HelloWorldTest {
     /**
      * Asserts {@link HelloWorld#write(DataOutput)} method throws a {@link NullPointerException} when {@code data}
      * argument is {@code null}.
-     *
-     * @throws IOException if an I/O error occurs.
      */
     @Test
-    public void assertWriteDataThrowsNullPointerExceptionWhenDataIsNull() throws IOException {
-        // TODO: implement!
+    public void assertWriteDataThrowsNullPointerExceptionWhenDataIsNull() {
+        assertThrows(NullPointerException.class, () -> helloWorld.write((DataOutput) null));
     }
 
     /**
@@ -249,7 +239,7 @@ public class HelloWorldTest {
      * @throws IOException if an I/O error occurs.
      */
     @Test
-    public void assertWriteDataWritesAsManyBytesAsHelloWorldSizeToData() throws IOException {
+    public void assertWriteDataWritesAsManyBytesAsHelloWorldBytes() throws IOException {
         // TODO: implement!
     }
 
@@ -279,7 +269,7 @@ public class HelloWorldTest {
      * arguments' {@link ByteBuffer#remaining() remaining} is less than {@link HelloWorld#BYTES}.
      */
     @Test
-    public void assertPutBufferThrowsBufferOverflowExceptionWhenBufferRemainingIsLessThanHelloWorldSize() {
+    public void assertPutBufferThrowsBufferOverflowExceptionWhenBufferRemainingIsLessThanHelloWorldBytes() {
         // TODO: implement!
     }
 
@@ -288,7 +278,7 @@ public class HelloWorldTest {
      * buffer. This method aims to test with a byte buffer which {@link ByteBuffer#hasArray() has a backing-array}.
      */
     @Test
-    public void assertPutBufferPutsAsManyBytesAsHelloWorldSizeToBufferWithBackingArray() {
+    public void assertPutBufferPutsAsManyBytesAsHelloWorldBytesToBufferWithBackingArray() {
         // TODO: implement!
     }
 
@@ -298,7 +288,7 @@ public class HelloWorldTest {
      * backing-array}.
      */
     @Test
-    public void assertPutBufferPutsAsManyBytesAsHelloWorldToBuffer() {
+    public void assertPutBufferPutsAsManyBytesAsHelloWorldBytesToBuffer() {
         // TODO: implement!
     }
 
@@ -331,7 +321,7 @@ public class HelloWorldTest {
      * @see HelloWorld#write(WritableByteChannel)
      */
     @Test
-    public void assertWriteChannelWritesAsManyBytesAsHelloWorldSizeToChannel() throws IOException {
+    public void assertWriteChannelWritesAsManyBytesAsHelloWorldBytesToChannel() throws IOException {
         // TODO: implement!
     }
 
@@ -365,7 +355,7 @@ public class HelloWorldTest {
      * @throws IOException if an I/O error occurs.
      */
     @Test
-    public void assertWritePathWritesAsManyBytesAsHelloWorldSizeToPath() throws IOException {
+    public void assertWritePathWritesAsManyBytesAsHelloWorldBytesToPath() throws IOException {
         // TODO: implement!!
     }
 
