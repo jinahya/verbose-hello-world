@@ -4,12 +4,12 @@ import com.github.jinahya.jupiter.api.extension.TempFileParameterResolver;
 import com.github.jinahya.jupiter.api.io.TempFile;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 
 import java.io.DataOutput;
 import java.io.File;
@@ -24,18 +24,21 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
+import static com.github.jinahya.hello.HelloWorld.BYTES;
+import static java.nio.charset.StandardCharsets.US_ASCII;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
+import static org.mockito.quality.Strictness.LENIENT;
 
 /**
  * A class for unit-testing {@link HelloWorld} interface.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@MockitoSettings(strictness = Strictness.LENIENT)
+@MockitoSettings(strictness = LENIENT)
 @ExtendWith({MockitoExtension.class, TempFileParameterResolver.class})
 @Slf4j
 public class HelloWorldTest {
@@ -51,8 +54,8 @@ public class HelloWorldTest {
      */
     @Test
     void assertSizeEqualsToActualNumberOfHelloWorldBytes() {
-        final int expected = "hello, world".getBytes(StandardCharsets.US_ASCII).length;
-        assertEquals(expected, HelloWorld.BYTES);
+        final int expected = "hello, world".getBytes(US_ASCII).length;
+        assertEquals(expected, BYTES);
     }
 
     // ----------------------------------------------------------------------------------------------------- set(byte[])
@@ -61,6 +64,7 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#set(byte[])} method throws a {@link NullPointerException} when {@code array} argument
      * is {@code null}.
      */
+    @DisplayName("Asserts set(byte[]) method throws NullPointerException when array is null")
     @Test
     public void assertSetArrayThrowsNullPointerExceptionWhenArrayIsNull() {
         // TODO: implement!
@@ -70,50 +74,18 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#set(byte[])} method throws an {@link IndexOutOfBoundsException} when {@code
      * array.length} is less than {@link HelloWorld#BYTES}.
      */
+    @DisplayName("Asserts set(byte[]) method throws IndexOutOfBoundsException when array.length < BYTES")
     @Test
-    public void assertSetArrayThrowsIndexOufOfBoundsExceptionWhenArrayLengthIsLessThanHelloWorldSize() {
+    public void assertSetArrayThrowsIndexOufOfBoundsExceptionWhenArrayLengthIsLessThanHelloWorldLength() {
         // TODO: implement!
     }
 
     /**
      * Asserts {@link HelloWorld#set(byte[])} method returns specified array.
      */
+    @DisplayName("Assert set(byte[]) returns specified array")
     @Test
     public void assertSetArrayReturnsSpecifiedArray() {
-        // TODO: implement!
-    }
-
-    // ----------------------------------------------------------------------------------------- write(RandomAccessFile)
-
-    /**
-     * Asserts {@link HelloWorld#write(RandomAccessFile)} method throws a {@link NullPointerException} when {@code file}
-     * argument is {@code null}.
-     *
-     * @throws IOException if an I/O error occurs.
-     */
-    @Test
-    public void assertWriteRandomAccessFileThrowsNullPointerExceptionWhenFileIsNull() throws IOException {
-        assertThrows(NullPointerException.class, () -> helloWorld.write((RandomAccessFile) null));
-    }
-
-    /**
-     * Asserts {@link HelloWorld#write(RandomAccessFile)} method writes as many bytes as {@link HelloWorld#BYTES} to
-     * specified random access file.
-     *
-     * @throws IOException if an I/O error occurs.
-     */
-    @Test
-    public void assertWriteRandomAccessFileWritesAsManyBytesAsHelloWorldSizeToFile() throws IOException {
-        // TODO: implement!
-    }
-
-    /**
-     * Asserts {@link HelloWorld#write(RandomAccessFile)} method returns the specified random access file.
-     *
-     * @throws IOException if an I/O error occurs.
-     */
-    @Test
-    public void assertWriteRandomAccessFileReturnsSpecifiedFile() throws IOException {
         // TODO: implement!
     }
 
@@ -126,7 +98,7 @@ public class HelloWorldTest {
      * @throws IOException if an I/O error occurs.
      */
     @Test
-    public void assertWriteStreamThrowsNullPointerExceptionWhenStreamIsNull() throws IOException {
+    public void assertWriteStreamThrowsNullPointerExceptionWhenStreamIsNull() {
         assertThrows(NullPointerException.class, () -> helloWorld.write((OutputStream) null));
     }
 
@@ -218,6 +190,42 @@ public class HelloWorldTest {
      */
     @Test
     public void assertSendSocketReturnsSpecifiedSocket() throws IOException {
+        // TODO: implement!
+    }
+
+    // ----------------------------------------------------------------------------------------- write(RandomAccessFile)
+
+    /**
+     * Asserts {@link HelloWorld#write(RandomAccessFile)} method throws a {@link NullPointerException} when {@code file}
+     * argument is {@code null}.
+     *
+     * @throws IOException if an I/O error occurs.
+     */
+    @DisplayName("Asserts write(RandomAccessFile) method throws NullPointerException when file is null")
+    @Test
+    public void assertWriteRandomAccessFileThrowsNullPointerExceptionWhenFileIsNull() {
+        assertThrows(NullPointerException.class, () -> helloWorld.write((RandomAccessFile) null));
+    }
+
+    /**
+     * Asserts {@link HelloWorld#write(RandomAccessFile)} method writes as many bytes as {@link HelloWorld#BYTES} to
+     * specified random access file.
+     *
+     * @throws IOException if an I/O error occurs.
+     */
+    @DisplayName("Asserts write(RandomAccessFile) method writes as many bytes as BYTES")
+    @Test
+    public void assertWriteRandomAccessFileWritesAsManyBytesAsHelloWorldBytes() throws IOException {
+        // TODO: implement!
+    }
+
+    /**
+     * Asserts {@link HelloWorld#write(RandomAccessFile)} method returns the specified random access file.
+     *
+     * @throws IOException if an I/O error occurs.
+     */
+    @Test
+    public void assertWriteRandomAccessFileReturnsSpecifiedFile() throws IOException {
         // TODO: implement!
     }
 
