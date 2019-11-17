@@ -413,7 +413,7 @@ public class HelloWorldTest {
             buffer.position(buffer.limit());
             return written;
         });
-        final SocketChannel actual = helloWorld.write(expected);
+        final SocketChannel actual = helloWorld.send(expected);
         assertEquals(expected, actual);
     }
 
