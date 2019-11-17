@@ -19,6 +19,7 @@ import java.io.RandomAccessFile;
 import java.net.Socket;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
+import java.nio.channels.SocketChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -30,6 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.quality.Strictness.LENIENT;
 
@@ -398,6 +400,13 @@ public class HelloWorldTest {
     @Test
     public void assertWritePathReturnsSpecifiedPath(@TempFile final Path expected) throws IOException {
         // TODO: implement!!
+    }
+
+    // --------------------------------------------------------------------------------------------- send(SocketChannel)
+    @Deprecated
+    @Test
+    void testSendSocketChannel() throws IOException {
+        helloWorld.write(mock(SocketChannel.class));
     }
 
     // -----------------------------------------------------------------------------------------------------------------
