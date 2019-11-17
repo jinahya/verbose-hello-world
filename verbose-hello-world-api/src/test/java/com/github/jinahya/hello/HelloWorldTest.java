@@ -406,7 +406,15 @@ public class HelloWorldTest {
     @Deprecated
     @Test
     void testSendSocketChannel() throws IOException {
-        helloWorld.write(mock(SocketChannel.class));
+        final SocketChannel expected = mock(SocketChannel.class);
+        when(expected.write(any(ByteBuffer.class))).then(i -> {
+            final ByteBuffer buffer = i.getArgument(0);
+            final int written = buffer.remaining();
+            buffer.position(buffer.limit());
+            return written;
+        });
+        final SocketChannel actual = helloWorld.write(expected);
+        assertEquals(expected, actual);
     }
 
     // -----------------------------------------------------------------------------------------------------------------
