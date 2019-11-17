@@ -413,6 +413,6 @@ public class HelloWorldTest {
     }
 
     // -----------------------------------------------------------------------------------------------------------------
-    @Spy // <1>
-            HelloWorld helloWorld;
+    @Spy
+    HelloWorld helloWorld;
 }
