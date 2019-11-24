@@ -10,10 +10,10 @@ import org.junit.jupiter.api.extension.ParameterResolver;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.nio.file.Path;
 
-import static java.lang.Runtime.getRuntime;
 import static java.nio.file.Files.createTempFile;
 import static java.nio.file.Files.deleteIfExists;
 
@@ -38,6 +38,7 @@ public class TempFileParameterResolver implements ParameterResolver, AfterEachCa
     @Override
     public Object resolveParameter(final ParameterContext parameterContext, final ExtensionContext extensionContext)
             throws ParameterResolutionException {
+        method = extensionContext.getTestMethod().orElse(null);
 //        final Path file;
         try {
             file = createTempFile(null, null);
@@ -63,6 +64,9 @@ public class TempFileParameterResolver implements ParameterResolver, AfterEachCa
 
     @Override
     public void afterEach(final ExtensionContext extensionContext) throws Exception {
+        if (method != null && method.equals(extensionContext.getTestMethod().orElse(null))) {
+            return;
+        }
         try {
             final boolean deleted = deleteIfExists(file);
             log.debug("temp file deleted: {} {}", deleted, file);
@@ -72,5 +76,7 @@ public class TempFileParameterResolver implements ParameterResolver, AfterEachCa
     }
 
     // -----------------------------------------------------------------------------------------------------------------
+    private transient Method method;
+
     private transient Path file;
 }
