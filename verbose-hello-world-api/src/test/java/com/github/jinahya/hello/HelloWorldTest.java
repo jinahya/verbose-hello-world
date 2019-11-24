@@ -1,6 +1,5 @@
 package com.github.jinahya.hello;
 
-import com.github.jinahya.jupiter.api.extension.TempFileParameterResolver;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -41,7 +40,7 @@ import static org.mockito.quality.Strictness.LENIENT;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @MockitoSettings(strictness = LENIENT)
-@ExtendWith({MockitoExtension.class, TempFileParameterResolver.class})
+@ExtendWith({MockitoExtension.class})
 @Slf4j
 public class HelloWorldTest {
 
