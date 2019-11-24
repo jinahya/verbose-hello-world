@@ -64,7 +64,7 @@ public class TempFileParameterResolver implements ParameterResolver, AfterEachCa
 
     @Override
     public void afterEach(final ExtensionContext extensionContext) throws Exception {
-        if (method != null && method.equals(extensionContext.getTestMethod().orElse(null))) {
+        if (method == null || !method.equals(extensionContext.getTestMethod().orElse(null))) {
             return;
         }
         try {
