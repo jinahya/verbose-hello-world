@@ -2,6 +2,7 @@ package com.github.jinahya.jupiter.api.extension;
 
 import com.github.jinahya.jupiter.api.io.TempFile;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
@@ -23,7 +24,7 @@ import static java.nio.file.Files.deleteIfExists;
  * @see TempFile
  */
 @Slf4j
-public class TempFileParameterResolver implements ParameterResolver {
+public class TempFileParameterResolver implements ParameterResolver, AfterEachCallback {
 
     // -----------------------------------------------------------------------------------------------------------------
     @Override
@@ -37,24 +38,39 @@ public class TempFileParameterResolver implements ParameterResolver {
     @Override
     public Object resolveParameter(final ParameterContext parameterContext, final ExtensionContext extensionContext)
             throws ParameterResolutionException {
-        final Path file;
+//        final Path file;
         try {
             file = createTempFile(null, null);
             log.debug("temp file created: {}", file);
         } catch (final IOException e) {
             throw new RuntimeException(e);
         }
-        getRuntime().addShutdownHook(new Thread(() -> {
-            try {
-                final boolean deleted = deleteIfExists(file);
-                log.debug("temp file deleted: {} {}", deleted, file);
-            } catch (final IOException ioe) {
-                throw new RuntimeException(ioe);
-            }
-        }));
+//        getRuntime().addShutdownHook(new Thread(() -> {
+//            try {
+//                final boolean deleted = deleteIfExists(file);
+//                log.debug("temp file deleted: {} {}", deleted, file);
+//            } catch (final IOException ioe) {
+//                throw new RuntimeException(ioe);
+//            }
+//        }));
         if (parameterContext.getParameter().getType() == File.class) {
             return file.toFile();
         }
         return file;
     }
+
+    // -----------------------------------------------------------------------------------------------------------------
+
+    @Override
+    public void afterEach(final ExtensionContext extensionContext) throws Exception {
+        try {
+            final boolean deleted = deleteIfExists(file);
+            log.debug("temp file deleted: {} {}", deleted, file);
+        } catch (final IOException ioe) {
+            throw new RuntimeException(ioe);
+        }
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    private transient Path file;
 }
