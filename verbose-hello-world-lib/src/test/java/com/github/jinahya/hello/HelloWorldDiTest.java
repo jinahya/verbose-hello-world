@@ -3,6 +3,11 @@ package com.github.jinahya.hello;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+/**
+ * An abstract class for testing {@link HelloWorld} implementations using Dependency Injection.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 public abstract class HelloWorldDiTest extends AbstractHelloWorldTest {
 
     // -----------------------------------------------------------------------------------------------------------------
