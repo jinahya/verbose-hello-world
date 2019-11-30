@@ -256,14 +256,14 @@ public class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#write(RandomAccessFile)} method writes as many bytes as {@link HelloWorld#BYTES} to
-     * specified random access file.
+     * Asserts {@link HelloWorld#write(RandomAccessFile)} invokes {@link HelloWorld#set(byte[])} with an array of
+     * {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and writes the array to specified random access file.
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(RandomAccessFile) method writes as many bytes as BYTES")
+    @DisplayName("write(RandomAccessFile) method invokes set(byte[]) and writes the array to file")
     @Test
-    public void assertWriteRandomAccessFileWritesAsManyBytesAsHelloWorldBytes() throws IOException {
+    public void assertWriteRandomAccessFileInvokesSetArrayAndWritesTheArrayToFile() throws IOException {
         // TODO: implement!
     }
 
