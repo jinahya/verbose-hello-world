@@ -88,7 +88,7 @@ public class HelloWorldTest {
      */
     @DisplayName("set(byte[]) method invokes set(byte[], int) method with specified array and 0")
     @Test
-    public void assertSetArrayInvokesSetWithIndexOfZero() {
+    public void assertSetArrayInvokesSetWithArrayAndZero() {
         // TODO: implement!
     }
 
