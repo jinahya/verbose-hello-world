@@ -312,13 +312,13 @@ public class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#put(ByteBuffer)} method puts as many bytes as {@link HelloWorld#BYTES} to specified
-     * byte buffer. This method aims to test with a byte buffer which {@link ByteBuffer#isDirect() doesn't have a
-     * backing-array}.
+     * Asserts {@link HelloWorld#put(ByteBuffer)} method invokes {@link HelloWorld#set(byte[])} method when the {@code
+     * buffer} is a direct buffer and, also, assert the {@code buffer}'s position is increments by {@value
+     * com.github.jinahya.hello.HelloWorld#BYTES}.
      */
-    @DisplayName("put(ByteBuffer) puts as many bytes as BYTES; without backing array")
+    @DisplayName("put(ByteBuffer) invokes set(byte[]) method and put the array to the buffer")
     @Test
-    public void assertPutBufferPutsAsManyBytesAsHelloWorldBytesToBuffer() {
+    public void assertPutBufferInvokesSetWhenBufferIsDirect() {
         // TODO: implement!
     }
 
