@@ -208,41 +208,6 @@ public class HelloWorldTest {
         // TODO: implement!
     }
 
-    // ----------------------------------------------------------------------------------------- write(RandomAccessFile)
-
-    /**
-     * Asserts {@link HelloWorld#write(RandomAccessFile)} method throws {@link NullPointerException} when {@code file}
-     * argument is {@code null}.
-     */
-    @DisplayName("write(RandomAccessFile) method throws a NullPointerException when file is null")
-    @Test
-    public void assertWriteRandomAccessFileThrowsNullPointerExceptionWhenFileIsNull() {
-        assertThrows(NullPointerException.class, () -> helloWorld.write((RandomAccessFile) null));
-    }
-
-    /**
-     * Asserts {@link HelloWorld#write(RandomAccessFile)} method writes as many bytes as {@link HelloWorld#BYTES} to
-     * specified random access file.
-     *
-     * @throws IOException if an I/O error occurs.
-     */
-    @DisplayName("write(RandomAccessFile) method writes as many bytes as BYTES")
-    @Test
-    public void assertWriteRandomAccessFileWritesAsManyBytesAsHelloWorldBytes() throws IOException {
-        // TODO: implement!
-    }
-
-    /**
-     * Asserts {@link HelloWorld#write(RandomAccessFile)} method returns the specified random access file.
-     *
-     * @throws IOException if an I/O error occurs.
-     */
-    @DisplayName("write(RandomAccessFile) method returns specified random access file")
-    @Test
-    public void assertWriteRandomAccessFileReturnsSpecifiedFile() throws IOException {
-        // TODO: implement!
-    }
-
     // ----------------------------------------------------------------------------------------------- write(DataOutput)
 
     /**
@@ -275,6 +240,41 @@ public class HelloWorldTest {
     @DisplayName("write(DataOutput) method returns specified data output")
     @Test
     public void assertWriteDataReturnsSpecifiedData() throws IOException {
+        // TODO: implement!
+    }
+
+    // ----------------------------------------------------------------------------------------- write(RandomAccessFile)
+
+    /**
+     * Asserts {@link HelloWorld#write(RandomAccessFile)} method throws {@link NullPointerException} when {@code file}
+     * argument is {@code null}.
+     */
+    @DisplayName("write(RandomAccessFile) method throws a NullPointerException when file is null")
+    @Test
+    public void assertWriteRandomAccessFileThrowsNullPointerExceptionWhenFileIsNull() {
+        assertThrows(NullPointerException.class, () -> helloWorld.write((RandomAccessFile) null));
+    }
+
+    /**
+     * Asserts {@link HelloWorld#write(RandomAccessFile)} method writes as many bytes as {@link HelloWorld#BYTES} to
+     * specified random access file.
+     *
+     * @throws IOException if an I/O error occurs.
+     */
+    @DisplayName("write(RandomAccessFile) method writes as many bytes as BYTES")
+    @Test
+    public void assertWriteRandomAccessFileWritesAsManyBytesAsHelloWorldBytes() throws IOException {
+        // TODO: implement!
+    }
+
+    /**
+     * Asserts {@link HelloWorld#write(RandomAccessFile)} method returns the specified random access file.
+     *
+     * @throws IOException if an I/O error occurs.
+     */
+    @DisplayName("write(RandomAccessFile) method returns specified random access file")
+    @Test
+    public void assertWriteRandomAccessFileReturnsSpecifiedFile() throws IOException {
         // TODO: implement!
     }
 
