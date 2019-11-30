@@ -301,12 +301,13 @@ public class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#put(ByteBuffer)} method puts as many bytes as {@link HelloWorld#BYTES} to specified
-     * buffer. This method aims to test with a byte buffer which {@link ByteBuffer#hasArray() has a backing-array}.
+     * Asserts {@link HelloWorld#put(ByteBuffer)} method invokes {@link HelloWorld#set(byte[], int)} method when the
+     * {@code buffer} has a backing array and, also, assert the {@code buffer}'s position is incremented by {@value
+     * com.github.jinahya.hello.HelloWorld#BYTES}.
      */
-    @DisplayName("put(ByteBuffer) puts as many bytes as BYTES; with backing array")
+    @DisplayName("put(ByteBuffer) invokes set(byte[], int) method with buffer's backing array")
     @Test
-    public void assertPutBufferPutsAsManyBytesAsHelloWorldBytesToBufferWithBackingArray() {
+    public void assertPutBufferInvokesSetArrayIndexWhenBufferHasBackingArray() {
         // TODO: implement!
     }
 
