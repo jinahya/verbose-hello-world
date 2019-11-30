@@ -221,14 +221,14 @@ public class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#write(DataOutput)} method writes as many bytes as {@value HelloWorld#BYTES} to
-     * specified data output.
+     * Asserts {@link HelloWorld#write(DataOutput)} method invokes {@link HelloWorld#set(byte[])} with an array of
+     * {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and write the array to specified data output.
      *
      * @throws IOException if an I/O error occurs.
      */
     @DisplayName("write(DataOutput) method writes as many bytes as BYTES")
     @Test
-    public void assertWriteDataWritesAsManyBytesAsHelloWorldBytes() throws IOException {
+    public void assertWriteDataInvokesSetArrayAndWritesTheArrayToData() throws IOException {
         // TODO: implement!
     }
 
