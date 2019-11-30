@@ -186,8 +186,8 @@ public class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#send(Socket)} method sends as many bytes as {@link HelloWorld#BYTES} to specified
-     * socket.
+     * Asserts {@link HelloWorld#send(Socket)} method invokes {@link HelloWorld#write(OutputStream)} method with
+     * specified socket's {@link Socket#getOutputStream() outputStream}.
      *
      * @throws IOException if an I/O error occurs.
      */
