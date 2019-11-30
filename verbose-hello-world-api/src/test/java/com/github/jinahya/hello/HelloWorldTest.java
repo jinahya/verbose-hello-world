@@ -191,7 +191,7 @@ public class HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("send(Socket) method sends as many bytes as BYTES")
+    @DisplayName("send(Socket) method invokes write(OutputStream) with socket's outputStream")
     @Test
     public void assertSendSocketInvokesWriteOutputWithSocketOutputStream() throws IOException {
         // TODO: implement!
