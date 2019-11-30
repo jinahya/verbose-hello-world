@@ -114,14 +114,15 @@ public class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#write(OutputStream)} method writes as many bytes as {@value HelloWorld#BYTES} to
-     * specified output stream.
+     * Asserts {@link HelloWorld#write(OutputStream)} method invokes {@link HelloWorld#set(byte[])} method with an array
+     * of {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and writes the returned array to specified output
+     * stream.
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(OutputStream) method writes as many bytes as BYTES to specified output stream")
+    @DisplayName("write(OutputStream) method invokes set(byte[12]) and write the returned array to the stream")
     @Test
-    public void assertWriteStreamWritesAsManyBytesAsHelloWorldBytesToStream() throws IOException {
+    public void assertWriteStreamInvokesSetArrayAndWritesTheReturnedArrayToStream() throws IOException {
         // TODO: implement!
     }
 
