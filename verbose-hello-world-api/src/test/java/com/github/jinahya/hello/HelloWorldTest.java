@@ -1,12 +1,11 @@
 package com.github.jinahya.hello;
 
-import com.github.jinahya.jupiter.api.extension.TempFileParameterResolver;
-import com.github.jinahya.jupiter.api.io.TempFile;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -41,7 +40,7 @@ import static org.mockito.quality.Strictness.LENIENT;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @MockitoSettings(strictness = LENIENT)
-@ExtendWith({MockitoExtension.class, TempFileParameterResolver.class})
+@ExtendWith({MockitoExtension.class})
 @Slf4j
 public class HelloWorldTest {
 
@@ -153,24 +152,24 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#write(File)} method writes as many bytes as {@link HelloWorld#BYTES} to specified
      * {@code file} argument.
      *
-     * @param file a temp file to test with.
+     * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
     @DisplayName("Asserts write(File) method writes as many bytes as BYTES to specified file")
     @Test
-    public void assertWriteFileWritesAsManyBytesAsHelloWorldBytes(@TempFile final File file) throws IOException {
+    public void assertWriteFileWritesAsManyBytesAsHelloWorldBytes(@TempDir final File tempDir) throws IOException {
         // TODO: implement!
     }
 
     /**
      * Asserts {@link HelloWorld#write(File)} method returns specified file.
      *
-     * @param expected a temp file to test with.
+     * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
     @DisplayName("Asserts write(File) method returns specified file")
     @Test
-    public void assertWriteFileReturnsSpecifiedFile(@TempFile final File expected) throws IOException {
+    public void assertWriteFileReturnsSpecifiedFile(@TempDir final File tempDir) throws IOException {
         // TODO: implement!
     }
 
@@ -382,24 +381,25 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#write(Path)} method writes as many bytes as {@link HelloWorld#BYTES} to specified
      * path.
      *
-     * @param path a temporary file to test with.
+     * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
     @DisplayName("Asserts write(Path) methods writes as many bytes as BYTES")
     @Test
-    public void assertWritePathWritesAsManyBytesAsHelloWorldBytesToPath(@TempFile final Path path) throws IOException {
+    public void assertWritePathWritesAsManyBytesAsHelloWorldBytesToPath(@TempDir final Path tempDir)
+            throws IOException {
         // TODO: implement!!
     }
 
     /**
      * Asserts {@link HelloWorld#write(Path)} method returns the specified path.
      *
-     * @param expected a temporary file to test with.
+     * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
     @DisplayName("Asserts write(Path) method returns specified path")
     @Test
-    public void assertWritePathReturnsSpecifiedPath(@TempFile final Path expected) throws IOException {
+    public void assertWritePathReturnsSpecifiedPath(@TempDir final Path tempDir) throws IOException {
         // TODO: implement!!
     }
 
