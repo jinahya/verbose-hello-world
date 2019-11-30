@@ -150,15 +150,14 @@ public class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#write(File)} method writes as many bytes as {@link HelloWorld#BYTES} to specified
-     * {@code file} argument.
+     * Asserts {@link HelloWorld#write(File)} method invokes {@link HelloWorld#write(OutputStream)} method.
      *
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(File) method writes as many bytes as BYTES to specified file")
+    @DisplayName("write(File) method invokes write(OutputStream) method")
     @Test
-    public void assertWriteFileWritesAsManyBytesAsHelloWorldBytes(@TempDir final File tempDir) throws IOException {
+    public void assertWriteFileInvokesWriteStream(@TempDir final File tempDir) throws IOException {
         // TODO: implement!
     }
 
