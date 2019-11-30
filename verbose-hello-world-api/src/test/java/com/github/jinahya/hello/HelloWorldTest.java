@@ -47,13 +47,13 @@ public class HelloWorldTest {
     // ----------------------------------------------------------------------------------------------------------- BYTES
 
     /**
-     * Asserts the value of {@link HelloWorld#BYTES} constant equals to the actual length of "{@code hello, world}"
-     * string in a form of bytes encoded with {@code US-ASCII} character set.
+     * Asserts the value of {@link HelloWorld#BYTES} constant equals to the actual number of bytes of "{@code hello,
+     * world}" string encoded in {@code US-ASCII} character set.
      *
      * @see String#getBytes(Charset)
      * @see StandardCharsets#US_ASCII
      */
-    @DisplayName("Assert BYTES equals to actual number of \"hello, world\" bytes")
+    @DisplayName("BYTES equals to actual number of \"hello, world\" bytes")
     @Test
     void assertHelloWorldBytesEqualsToActualNumberOfHelloWorldBytes() {
         final int expected = "hello, world".getBytes(US_ASCII).length;
@@ -66,7 +66,7 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#set(byte[])} method throws {@link NullPointerException} when {@code array} argument is
      * {@code null}.
      */
-    @DisplayName("Asserts set(byte[]) method throws a NullPointerException when array is null")
+    @DisplayName("set(byte[]) method throws a NullPointerException when array is null")
     @Test
     public void assertSetArrayThrowsNullPointerExceptionWhenArrayIsNull() {
         // TODO: implement!
@@ -76,7 +76,7 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#set(byte[])} method throws {@link IndexOutOfBoundsException} when {@code array.length}
      * is less than {@link HelloWorld#BYTES}.
      */
-    @DisplayName("Asserts set(byte[]) method throws an IndexOutOfBoundsException when array.length is less than BYTES")
+    @DisplayName("set(byte[]) method throws an IndexOutOfBoundsException when array.length is less than BYTES")
     @Test
     public void assertSetArrayThrowsIndexOufOfBoundsExceptionWhenArrayLengthIsLessThanHelloWorldBytes() {
         // TODO: implement!
@@ -86,7 +86,7 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#set(byte[])} method invokes {@link HelloWorld#set(byte[], int)} with specified {@code
      * array} and {@code 0}.
      */
-    @DisplayName("Assert set(byte[]) method invokes set(byte[], int) method with specified array and 0")
+    @DisplayName("set(byte[]) method invokes set(byte[], int) method with specified array and 0")
     @Test
     public void assertSetArrayInvokesSetWithIndexOfZero() {
         // TODO: implement!
@@ -95,7 +95,7 @@ public class HelloWorldTest {
     /**
      * Asserts {@link HelloWorld#set(byte[])} method returns specified {@code array}.
      */
-    @DisplayName("Assert set(byte[]) method returns specified array")
+    @DisplayName("set(byte[]) method returns specified array")
     @Test
     public void assertSetArrayReturnsSpecifiedArray() {
         // TODO: implement!
@@ -107,7 +107,7 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#write(OutputStream)} method throws {@link NullPointerException} when {@code stream}
      * argument is {@code null}.
      */
-    @DisplayName("Asserts write(OutputStream) method throws a NullPointerException when stream is null")
+    @DisplayName("write(OutputStream) method throws a NullPointerException when stream is null")
     @Test
     public void assertWriteStreamThrowsNullPointerExceptionWhenStreamIsNull() {
         // TODO: implement!
@@ -119,7 +119,7 @@ public class HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("Asserts write(OutputStream) method writes as many bytes as BYTES to specified output stream")
+    @DisplayName("write(OutputStream) method writes as many bytes as BYTES to specified output stream")
     @Test
     public void assertWriteStreamWritesAsManyBytesAsHelloWorldBytesToStream() throws IOException {
         // TODO: implement!
@@ -130,7 +130,7 @@ public class HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("Asserts write(OutputStream) method returns specified output stream")
+    @DisplayName("write(OutputStream) method returns specified output stream")
     @Test
     public void assertWriteStreamReturnsSpecifiedStream() throws IOException {
         // TODO: implement!
@@ -142,7 +142,7 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#write(File)} method throws {@link NullPointerException} when {@code file} argument is
      * {@code null}.
      */
-    @DisplayName("Asserts write(File) method throws a NullPointerException when file is null")
+    @DisplayName("write(File) method throws a NullPointerException when file is null")
     @Test
     public void assertWriteFileThrowsNullPointerExceptionWhenFileIsNull() {
         assertThrows(NullPointerException.class, () -> helloWorld.write((File) null));
@@ -155,7 +155,7 @@ public class HelloWorldTest {
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("Asserts write(File) method writes as many bytes as BYTES to specified file")
+    @DisplayName("write(File) method writes as many bytes as BYTES to specified file")
     @Test
     public void assertWriteFileWritesAsManyBytesAsHelloWorldBytes(@TempDir final File tempDir) throws IOException {
         // TODO: implement!
@@ -167,7 +167,7 @@ public class HelloWorldTest {
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("Asserts write(File) method returns specified file")
+    @DisplayName("write(File) method returns specified file")
     @Test
     public void assertWriteFileReturnsSpecifiedFile(@TempDir final File tempDir) throws IOException {
         // TODO: implement!
@@ -179,7 +179,7 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#send(Socket)} method throws {@link NullPointerException} when the {@code socket}
      * argument is {@code null}.
      */
-    @DisplayName("Asserts send(Socket) method throws a NullPointerException when socket is null")
+    @DisplayName("send(Socket) method throws a NullPointerException when socket is null")
     @Test
     public void assertSendSocketThrowsNullPointerExceptionWhenSocketIsNull() {
         assertThrows(NullPointerException.class, () -> helloWorld.send((Socket) null));
@@ -191,7 +191,7 @@ public class HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("Asserts send(Socket) method sends as many bytes as BYTES")
+    @DisplayName("send(Socket) method sends as many bytes as BYTES")
     @Test
     public void assertSendSocketSendsAsManyBytesAsHelloWorldBytes() throws IOException {
         // TODO: implement!
@@ -202,7 +202,7 @@ public class HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("Asserts send(Socket) method returns specified socket")
+    @DisplayName("send(Socket) method returns specified socket")
     @Test
     public void assertSendSocketReturnsSpecifiedSocket() throws IOException {
         // TODO: implement!
@@ -214,7 +214,7 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#write(RandomAccessFile)} method throws {@link NullPointerException} when {@code file}
      * argument is {@code null}.
      */
-    @DisplayName("Asserts write(RandomAccessFile) method throws a NullPointerException when file is null")
+    @DisplayName("write(RandomAccessFile) method throws a NullPointerException when file is null")
     @Test
     public void assertWriteRandomAccessFileThrowsNullPointerExceptionWhenFileIsNull() {
         assertThrows(NullPointerException.class, () -> helloWorld.write((RandomAccessFile) null));
@@ -226,7 +226,7 @@ public class HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("Asserts write(RandomAccessFile) method writes as many bytes as BYTES")
+    @DisplayName("write(RandomAccessFile) method writes as many bytes as BYTES")
     @Test
     public void assertWriteRandomAccessFileWritesAsManyBytesAsHelloWorldBytes() throws IOException {
         // TODO: implement!
@@ -237,7 +237,7 @@ public class HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("Asserts write(RandomAccessFile) method returns specified random access file")
+    @DisplayName("write(RandomAccessFile) method returns specified random access file")
     @Test
     public void assertWriteRandomAccessFileReturnsSpecifiedFile() throws IOException {
         // TODO: implement!
@@ -249,7 +249,7 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#write(DataOutput)} method throws {@link NullPointerException} when {@code data}
      * argument is {@code null}.
      */
-    @DisplayName("Asserts write(DataOutput) method throws a NullPointerException when data output is null")
+    @DisplayName("write(DataOutput) method throws a NullPointerException when data output is null")
     @Test
     public void assertWriteDataThrowsNullPointerExceptionWhenDataIsNull() {
         assertThrows(NullPointerException.class, () -> helloWorld.write((DataOutput) null));
@@ -261,7 +261,7 @@ public class HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("Asserts write(DataOutput) method writes as many bytes as BYTES")
+    @DisplayName("write(DataOutput) method writes as many bytes as BYTES")
     @Test
     public void assertWriteDataWritesAsManyBytesAsHelloWorldBytes() throws IOException {
         // TODO: implement!
@@ -272,7 +272,7 @@ public class HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("Asserts write(DataOutput) method returns specified data output")
+    @DisplayName("write(DataOutput) method returns specified data output")
     @Test
     public void assertWriteDataReturnsSpecifiedData() throws IOException {
         // TODO: implement!
@@ -284,7 +284,7 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#put(ByteBuffer)} method throws {@link NullPointerException} when {@code buffer} is
      * {@code null}.
      */
-    @DisplayName("Asserts put(ByteBuffer) method throws a NullPointerException when buffer is null")
+    @DisplayName("put(ByteBuffer) method throws a NullPointerException when buffer is null")
     @Test
     public void assertPutBufferThrowsNullPointerExceptionWhenBufferIsNull() {
         assertThrows(NullPointerException.class, () -> helloWorld.put(null));
@@ -294,7 +294,7 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#put(ByteBuffer)} method throws {@link BufferOverflowException} when {@code buffer}'s
      * {@link ByteBuffer#remaining() remaining} is less than {@link HelloWorld#BYTES}.
      */
-    @DisplayName("Asserts put(ByteBuffer) method throws a BufferOverflowException when buffer.remaining is not enough")
+    @DisplayName("put(ByteBuffer) method throws a BufferOverflowException when buffer.remaining is not enough")
     @Test
     public void assertPutBufferThrowsBufferOverflowExceptionWhenBufferRemainingIsLessThanHelloWorldBytes() {
         // TODO: implement!
@@ -304,7 +304,7 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#put(ByteBuffer)} method puts as many bytes as {@link HelloWorld#BYTES} to specified
      * buffer. This method aims to test with a byte buffer which {@link ByteBuffer#hasArray() has a backing-array}.
      */
-    @DisplayName("Asserts put(ByteBuffer) puts as many bytes as BYTES; with backing array")
+    @DisplayName("put(ByteBuffer) puts as many bytes as BYTES; with backing array")
     @Test
     public void assertPutBufferPutsAsManyBytesAsHelloWorldBytesToBufferWithBackingArray() {
         // TODO: implement!
@@ -315,7 +315,7 @@ public class HelloWorldTest {
      * byte buffer. This method aims to test with a byte buffer which {@link ByteBuffer#isDirect() doesn't have a
      * backing-array}.
      */
-    @DisplayName("Asserts put(ByteBuffer) puts as many bytes as BYTES; without backing array")
+    @DisplayName("put(ByteBuffer) puts as many bytes as BYTES; without backing array")
     @Test
     public void assertPutBufferPutsAsManyBytesAsHelloWorldBytesToBuffer() {
         // TODO: implement!
@@ -324,7 +324,7 @@ public class HelloWorldTest {
     /**
      * Asserts {@link HelloWorld#put(ByteBuffer)} method returns specified byte buffer.
      */
-    @DisplayName("Asserts put(ByteBuffer) method returns specified byte buffer")
+    @DisplayName("put(ByteBuffer) method returns specified byte buffer")
     @Test
     public void assertPutBufferReturnsSpecifiedBuffer() {
         // TODO: implement!
@@ -336,7 +336,7 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#write(WritableByteChannel)} method throws {@link NullPointerException} when {@code
      * channel} argument is {@code null}.
      */
-    @DisplayName("Asserts write(WritableByteChannel) method throws a NullPointerException when channel is null")
+    @DisplayName("write(WritableByteChannel) method throws a NullPointerException when channel is null")
     @Test
     public void assertWriteChannelThrowsNullPointerExceptionWhenChannelIsNull() {
         assertThrows(NullPointerException.class, () -> helloWorld.write((WritableByteChannel) null));
@@ -348,7 +348,7 @@ public class HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("Asserts write(WritableByteChannel) writes as many bytes as BYTES to the stream")
+    @DisplayName("write(WritableByteChannel) writes as many bytes as BYTES to the stream")
     @Test
     public void assertWriteChannelWritesAsManyBytesAsHelloWorldBytesToChannel() throws IOException {
         // TODO: implement!
@@ -359,7 +359,7 @@ public class HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("Asserts write(WritableByteChannel) method returns specified channel")
+    @DisplayName("write(WritableByteChannel) method returns specified channel")
     @Test
     public void assertWriteChannelReturnsSpecifiedChannel() throws IOException {
         // TODO: implement!!
@@ -371,7 +371,7 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#write(Path)} method throws {@link NullPointerException} when specified {@code path}
      * argument is {@code null}.
      */
-    @DisplayName("Asserts write(Path) method throws a NullPointerException when path is null")
+    @DisplayName("write(Path) method throws a NullPointerException when path is null")
     @Test
     public void assertWritePathThrowsNullPointerExceptionWhenPathIsNull() {
         assertThrows(NullPointerException.class, () -> helloWorld.write((Path) null));
@@ -384,7 +384,7 @@ public class HelloWorldTest {
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("Asserts write(Path) methods writes as many bytes as BYTES")
+    @DisplayName("write(Path) methods writes as many bytes as BYTES")
     @Test
     public void assertWritePathWritesAsManyBytesAsHelloWorldBytesToPath(@TempDir final Path tempDir)
             throws IOException {
@@ -397,7 +397,7 @@ public class HelloWorldTest {
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("Asserts write(Path) method returns specified path")
+    @DisplayName("write(Path) method returns specified path")
     @Test
     public void assertWritePathReturnsSpecifiedPath(@TempDir final Path tempDir) throws IOException {
         // TODO: implement!!
