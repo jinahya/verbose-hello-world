@@ -175,8 +175,8 @@ public interface HelloWorld {
      * Writes <a href="#hello-world-bytes">hello-world-bytes</a> to specified random access file and returns the random
      * access file.
      * <p>
-     * This method invokes {@link #set(byte[])} with an array of {@value #BYTES} bytes and writes the returned array to
-     * specified random access file using {@link RandomAccessFile#write(byte[])} method.
+     * This method invokes {@link #set(byte[])} with an array of {@value #BYTES} bytes and writes the array to specified
+     * random access file using {@link RandomAccessFile#write(byte[])} method.
      *
      * @param file the random access file to which bytes are written.
      * @param <T>  random access file type parameter
