@@ -14,7 +14,6 @@ import java.nio.channels.SocketChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 
 /**
  * An interface for generating <a href="#hello-world-bytes">hello-world-bytes</a> to various targets.
@@ -118,7 +117,7 @@ public interface HelloWorld {
      * @see #write(OutputStream)
      * @see OutputStream#flush()
      */
-    default <T extends File> T write(final T file) throws IOException {
+    default <T extends File> T append(final T file) throws IOException {
         if (file == null) {
             throw new NullPointerException("file is null");
         }
@@ -253,11 +252,10 @@ public interface HelloWorld {
     }
 
     /**
-     * Writes <a href="#hello-world-bytes">hello-world-bytes</a> to specified path.
+     * Appends <a href="#hello-world-bytes">hello-world-bytes</a> to specified path and returns the path.
      * <p>
-     * This method opens a file channel with specified path, {@link StandardOpenOption#CREATE CREATE}, {@link
-     * StandardOpenOption#WRITE WRITE} and {@link StandardOpenOption#APPEND APPEND} and invokes {@link
-     * #write(WritableByteChannel)} method with it and {@link FileChannel#force(boolean) forces} on it.
+     * This method opens a file channel for specified path and invokes {@link #write(WritableByteChannel)} method with
+     * it.
      *
      * @param path the path to which bytes are written.
      * @param <T>  path type parameter
@@ -267,7 +265,7 @@ public interface HelloWorld {
      * @see FileChannel#open(Path, OpenOption...)
      * @see #write(WritableByteChannel)
      */
-    default <T extends Path> T write(final T path) throws IOException {
+    default <T extends Path> T append(final T path) throws IOException {
         if (path == null) {
             throw new NullPointerException("path is null");
         }

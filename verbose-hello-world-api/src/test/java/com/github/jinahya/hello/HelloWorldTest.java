@@ -140,36 +140,36 @@ public class HelloWorldTest {
     // ----------------------------------------------------------------------------------------------------- write(File)
 
     /**
-     * Asserts {@link HelloWorld#write(File)} method throws {@link NullPointerException} when {@code file} argument is
+     * Asserts {@link HelloWorld#append(File)} method throws {@link NullPointerException} when {@code file} argument is
      * {@code null}.
      */
-    @DisplayName("write(File) method throws a NullPointerException when file is null")
+    @DisplayName("append(File) method throws a NullPointerException when file is null")
     @Test
-    public void assertWriteFileThrowsNullPointerExceptionWhenFileIsNull() {
-        assertThrows(NullPointerException.class, () -> helloWorld.write((File) null));
+    public void assertAppendFileThrowsNullPointerExceptionWhenFileIsNull() {
+        assertThrows(NullPointerException.class, () -> helloWorld.append((File) null));
     }
 
     /**
-     * Asserts {@link HelloWorld#write(File)} method invokes {@link HelloWorld#write(OutputStream)} method.
+     * Asserts {@link HelloWorld#append(File)} method invokes {@link HelloWorld#write(OutputStream)} method.
      *
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(File) method invokes write(OutputStream) method")
+    @DisplayName("append(File) method invokes write(OutputStream) method")
     @Test
-    public void assertWriteFileInvokesWriteStream(@TempDir final File tempDir) throws IOException {
+    public void assertAppendFileInvokesWriteStream(@TempDir final File tempDir) throws IOException {
         // TODO: implement!
     }
 
     /**
-     * Asserts {@link HelloWorld#write(File)} method returns specified file.
+     * Asserts {@link HelloWorld#append(File)} method returns specified file.
      *
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(File) method returns specified file")
+    @DisplayName("append(File) method returns specified file")
     @Test
-    public void assertWriteFileReturnsSpecifiedFile(@TempDir final File tempDir) throws IOException {
+    public void assertAppendFileReturnsSpecifiedFile(@TempDir final File tempDir) throws IOException {
         // TODO: implement!
     }
 
@@ -369,17 +369,17 @@ public class HelloWorldTest {
     // ----------------------------------------------------------------------------------------------------- write(Path)
 
     /**
-     * Asserts {@link HelloWorld#write(Path)} method throws a {@link NullPointerException} when specified {@code path}
+     * Asserts {@link HelloWorld#append(Path)} method throws a {@link NullPointerException} when specified {@code path}
      * argument is {@code null}.
      */
     @DisplayName("write(Path) method throws a NullPointerException when path is null")
     @Test
     public void assertWritePathThrowsNullPointerExceptionWhenPathIsNull() {
-        assertThrows(NullPointerException.class, () -> helloWorld.write((Path) null));
+        assertThrows(NullPointerException.class, () -> helloWorld.append((Path) null));
     }
 
     /**
-     * Asserts {@link HelloWorld#write(Path)} method invokes {@link HelloWorld#write(WritableByteChannel)} method and
+     * Asserts {@link HelloWorld#append(Path)} method invokes {@link HelloWorld#write(WritableByteChannel)} method and
      * asserts {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes are written to the {@code path}.
      *
      * @param tempDir a temporary directory to test with.
@@ -392,7 +392,7 @@ public class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#write(Path)} method returns the specified path.
+     * Asserts {@link HelloWorld#append(Path)} method returns the specified path.
      *
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
