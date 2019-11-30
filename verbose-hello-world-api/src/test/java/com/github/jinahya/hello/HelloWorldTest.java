@@ -193,7 +193,7 @@ public class HelloWorldTest {
      */
     @DisplayName("send(Socket) method sends as many bytes as BYTES")
     @Test
-    public void assertSendSocketSendsAsManyBytesAsHelloWorldBytes() throws IOException {
+    public void assertSendSocketInvokesWriteOutputWithSocketOutputStream() throws IOException {
         // TODO: implement!
     }
 
