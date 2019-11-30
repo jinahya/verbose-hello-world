@@ -47,7 +47,7 @@ public abstract class AbstractHelloWorldTest {
      */
     @DisplayName("Assert set(byte[], int) method throws an IndexOutOfBoundsException when space is not enough")
     @Test
-    public void assertSetArrayThrowsIndexOutOfBoundsExceptionWhenIndexPlusHelloWorldSizeIsGreaterThanArrayLength() {
+    public void assertSetArrayThrowsIndexOutOfBoundsExceptionWhenIndexPlusHelloWorldBytesIsGreaterThanArrayLength() {
         // TODO: implement!
     }
 
