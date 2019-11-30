@@ -27,7 +27,7 @@ public abstract class AbstractHelloWorldTest {
      */
     @DisplayName("Assert set(byte[], int) method throws a NullPointerException when array is null")
     @Test
-    public void assertSetArrayThrowsNullPointerExceptionIfArrayIsNull() {
+    public void assertSetArrayThrowsNullPointerExceptionWhenArrayIsNull() {
         // TODO: implement!
     }
 
