@@ -369,7 +369,7 @@ public class HelloWorldTest {
     // ----------------------------------------------------------------------------------------------------- write(Path)
 
     /**
-     * Asserts {@link HelloWorld#write(Path)} method throws {@link NullPointerException} when specified {@code path}
+     * Asserts {@link HelloWorld#write(Path)} method throws a {@link NullPointerException} when specified {@code path}
      * argument is {@code null}.
      */
     @DisplayName("write(Path) method throws a NullPointerException when path is null")
@@ -379,16 +379,15 @@ public class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#write(Path)} method writes as many bytes as {@link HelloWorld#BYTES} to specified
-     * path.
+     * Asserts {@link HelloWorld#write(Path)} method invokes {@link HelloWorld#write(WritableByteChannel)} method and
+     * asserts {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes are written to the {@code path}.
      *
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(Path) methods writes as many bytes as BYTES")
+    @DisplayName("write(Path) methods invokes write(WritableByteChannel) method")
     @Test
-    public void assertWritePathWritesAsManyBytesAsHelloWorldBytesToPath(@TempDir final Path tempDir)
-            throws IOException {
+    public void assertWritePathInvokesWriteChannel(@TempDir final Path tempDir) throws IOException {
         // TODO: implement!!
     }
 
