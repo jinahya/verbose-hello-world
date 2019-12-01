@@ -89,7 +89,8 @@ public interface HelloWorld {
      * @see #set(byte[])
      */
     default byte[] set() {
-        return set(new byte[BYTES]);
+        // TODO: Implement!!!
+        return null;
     }
 
     /**
