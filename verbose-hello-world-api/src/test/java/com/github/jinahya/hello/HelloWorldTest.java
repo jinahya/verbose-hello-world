@@ -184,7 +184,7 @@ public class HelloWorldTest {
         // TODO: implement!
     }
 
-    // ---------------------------------------------------------------------------------------------------- send(Socket)
+    // ------------------------------------------------------------------------ send(Ljava.net.Socket;)Ljava.net.Socket;
 
     /**
      * Asserts {@link HelloWorld#send(Socket)} method throws {@link NullPointerException} when the {@code socket}
@@ -219,7 +219,7 @@ public class HelloWorldTest {
         // TODO: implement!
     }
 
-    // ----------------------------------------------------------------------------------------------- write(DataOutput)
+    // ------------------------------------------------------------------ write(Ljava.io.DataOutput;)Ljava.io.DataOutput
 
     /**
      * Asserts {@link HelloWorld#write(DataOutput)} method throws {@link NullPointerException} when {@code data}
@@ -232,12 +232,12 @@ public class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#write(DataOutput)} method invokes {@link HelloWorld#set(byte[])} with an array of
-     * {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and write the array to specified data output.
+     * Asserts {@link HelloWorld#write(DataOutput)} method invokes {@link HelloWorld#set()} method and writes the
+     * returned array to specified data output.
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(DataOutput) method writes as many bytes as BYTES")
+    @DisplayName("write(DataOutput) method invokes set() method and writes the array to data")
     @Test
     public void assertWriteDataInvokesSetArrayAndWritesTheArrayToData() throws IOException {
         // TODO: implement!
