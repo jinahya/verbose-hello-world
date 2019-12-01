@@ -216,8 +216,8 @@ public interface HelloWorld {
      * buffer.arrayOffset} + {@link ByteBuffer#position() buffer.position}) and then manually increments the buffer's
      * {@link ByteBuffer#position(int) position} by {@value #BYTES}.
      * <p>
-     * Otherwise, this method invokes {@link #set(byte[])} method with an array of {@value #BYTES} bytes and puts the
-     * returned array on the buffer using {@link ByteBuffer#put(byte[])} method.
+     * Otherwise, this method invokes {@link #set()} method and puts the returned array on the buffer using {@link
+     * ByteBuffer#put(byte[])} method.
      *
      * @param buffer the byte buffer on which bytes are put.
      * @param <T>    byte buffer type parameter
@@ -229,7 +229,7 @@ public interface HelloWorld {
      * @see ByteBuffer#arrayOffset()
      * @see ByteBuffer#position()
      * @see ByteBuffer#position(int)
-     * @see #set(byte[])
+     * @see #set()
      * @see ByteBuffer#put(byte[])
      */
     default <T extends ByteBuffer> T put(final T buffer) {
