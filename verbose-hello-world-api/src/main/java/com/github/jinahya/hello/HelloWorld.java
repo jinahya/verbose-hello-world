@@ -83,6 +83,16 @@ public interface HelloWorld {
     }
 
     /**
+     * Invokes {@link #set(byte[])} with an array of {@value #BYTES} bytes and returns the result.
+     *
+     * @return an array of {@value #BYTES} bytes contains the <a href="#hello-world-bytes">hello-world-bytes</a>
+     * @see #set(byte[])
+     */
+    default byte[] set() {
+        return set(new byte[BYTES]);
+    }
+
+    /**
      * Writes <a href="#hello-world-bytes">hello-world-bytes</a> to specified output stream.
      * <p>
      * This method invokes {@link #set(byte[])} with an array of {@value #BYTES} bytes and writes the returned array to

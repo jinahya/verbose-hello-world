@@ -60,7 +60,7 @@ public class HelloWorldTest {
         assertEquals(expected, BYTES);
     }
 
-    // ----------------------------------------------------------------------------------------------------- set(byte[])
+    // ------------------------------------------------------------------------------------------------------- set([B)[B
 
     /**
      * Asserts {@link HelloWorld#set(byte[])} method throws {@link NullPointerException} when {@code array} argument is
@@ -99,6 +99,18 @@ public class HelloWorldTest {
     @Test
     public void assertSetArrayReturnsSpecifiedArray() {
         // TODO: implement!
+    }
+
+    // --------------------------------------------------------------------------------------------------------- set()[B
+
+    /**
+     * Asserts {@link HelloWorld#set()} method invokes {@link HelloWorld#set(byte[])} with an array of {@value
+     * com.github.jinahya.hello.HelloWorld#BYTES} bytes and returns the result.
+     */
+    @DisplayName("set() method invokes set(byte[]) and returns the result")
+    @Test
+    public void assertSetInvokesSetArrayAndReturnsTheResult() {
+        // TODO: Implement!!!
     }
 
     // --------------------------------------------------------------------------------------------- write(OutputStream)
