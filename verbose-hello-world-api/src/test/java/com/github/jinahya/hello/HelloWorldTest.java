@@ -367,14 +367,14 @@ public class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#write(WritableByteChannel)} method invokes {@link HelloWorld#put(ByteBuffer)} with a
-     * buffer and put the buffer to specified channel.
+     * Asserts {@link HelloWorld#write(WritableByteChannel)} method invokes {@link HelloWorld#put()} and writes the
+     * buffer to specified channel.
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(WritableByteChannel) invokes put(ByteBuffer) and writes the buffer to the channel")
+    @DisplayName("write(WritableByteChannel) invokes put() and writes the buffer to the channel")
     @Test
-    public void assertWriteChannelInvokesPutBufferAndWriteBufferToChannel() throws IOException {
+    public void assertWriteChannelInvokesPutAndWritesBufferToChannel() throws IOException {
         // TODO: implement!
     }
 
