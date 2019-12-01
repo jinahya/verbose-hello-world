@@ -377,7 +377,7 @@ public class HelloWorldTest {
         // TODO: implement!!
     }
 
-    // ----------------------------------------------------------------------------------------------------- write(Path)
+    // ----------------------------------------------------------------- write(Ljava.nio.file.Path;)Ljava.nio.file.Path;
 
     /**
      * Asserts {@link HelloWorld#append(Path)} method throws a {@link NullPointerException} when specified {@code path}
@@ -414,7 +414,7 @@ public class HelloWorldTest {
         // TODO: implement!!
     }
 
-    // --------------------------------------------------------------------------------------------- send(SocketChannel)
+    // ---------------------------------------- send(Ljava.nio.channels.SocketChannel;)Ljava.nio.channels.SocketChannel;
     @Deprecated
     @Test
     void testSendSocketChannel() throws IOException {
