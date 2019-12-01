@@ -107,7 +107,7 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#set()} method invokes {@link HelloWorld#set(byte[])} with an array of {@value
      * com.github.jinahya.hello.HelloWorld#BYTES} bytes and returns the result.
      */
-    @DisplayName("set() method invokes set(byte[]) and returns the result")
+    @DisplayName("set() method invokes set(byte[]) method and returns the result")
     @Test
     public void assertSetInvokesSetArrayAndReturnsTheResult() {
         // TODO: Implement!!!
