@@ -383,9 +383,9 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#append(Path)} method throws a {@link NullPointerException} when specified {@code path}
      * argument is {@code null}.
      */
-    @DisplayName("write(Path) method throws a NullPointerException when path is null")
+    @DisplayName("append(Path) method throws a NullPointerException when path is null")
     @Test
-    public void assertWritePathThrowsNullPointerExceptionWhenPathIsNull() {
+    public void assertAppendPathThrowsNullPointerExceptionWhenPathIsNull() {
         assertThrows(NullPointerException.class, () -> helloWorld.append((Path) null));
     }
 
@@ -396,9 +396,9 @@ public class HelloWorldTest {
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(Path) methods invokes write(WritableByteChannel) method")
+    @DisplayName("append(Path) method invokes write(WritableByteChannel) method")
     @Test
-    public void assertWritePathInvokesWriteChannel(@TempDir final Path tempDir) throws IOException {
+    public void assertAppendPathInvokesWriteChannel(@TempDir final Path tempDir) throws IOException {
         // TODO: implement!!
     }
 
@@ -410,7 +410,7 @@ public class HelloWorldTest {
      */
     @DisplayName("write(Path) method returns specified path")
     @Test
-    public void assertWritePathReturnsSpecifiedPath(@TempDir final Path tempDir) throws IOException {
+    public void assertAppendPathReturnsSpecifiedPath(@TempDir final Path tempDir) throws IOException {
         // TODO: implement!!
     }
 

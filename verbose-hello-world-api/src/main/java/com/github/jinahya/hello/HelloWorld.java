@@ -266,8 +266,8 @@ public interface HelloWorld {
     /**
      * Appends <a href="#hello-world-bytes">hello-world-bytes</a> to specified path and returns the path.
      * <p>
-     * This method opens a file channel for specified path and invokes {@link #write(WritableByteChannel)} method with
-     * it.
+     * This method opens a file channel, as {@link java.nio.file.StandardOpenOption#APPEND appedning mode}, for
+     * specified path and invokes {@link #write(WritableByteChannel)} method with it.
      *
      * @param path the path to which bytes are written.
      * @param <T>  path type parameter
