@@ -257,9 +257,8 @@ public interface HelloWorld {
     /**
      * Writes <a href="#hello-world-bytes">hello-world-bytes</a> to specified channel.
      * <p>
-     * This method invokes {@link #put(ByteBuffer)} method with a byte buffer allocated with {@value #BYTES} as its
-     * capacity and writes the returned buffer to specified channel using {@link WritableByteChannel#write(ByteBuffer)}
-     * method.
+     * This method invokes {@link #put()} method and writes all remaining bytes in the returned buffer to specified
+     * channel using {@link WritableByteChannel#write(ByteBuffer)} method.
      *
      * @param channel the channel to which bytes are written.
      * @param <T>     channel type parameter
