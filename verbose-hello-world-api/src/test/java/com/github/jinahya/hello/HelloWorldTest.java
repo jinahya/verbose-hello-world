@@ -436,7 +436,7 @@ public class HelloWorldTest {
      * specified {@code array} argument.
      */
     @BeforeEach
-    private void stubSetArrayWithIndexToReturnSpecifiedArray() {
+    private void stubSetArrayIndexToReturnSpecifiedArray() {
         when(helloWorld.set(any(byte[].class), anyInt())) // <1>
                 .thenAnswer(i -> i.getArgument(0));       // <2>
     }
