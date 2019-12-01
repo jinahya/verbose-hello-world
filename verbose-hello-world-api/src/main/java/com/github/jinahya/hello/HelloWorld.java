@@ -96,15 +96,15 @@ public interface HelloWorld {
     /**
      * Writes <a href="#hello-world-bytes">hello-world-bytes</a> to specified output stream.
      * <p>
-     * This method invokes {@link #set(byte[])} with an array of {@value #BYTES} bytes and writes the returned array to
-     * specified output stream using {@link OutputStream#write(byte[])} method.
+     * This method invokes {@link #set()} and writes the returned array to specified output stream using {@link
+     * OutputStream#write(byte[])} method.
      *
      * @param stream the output stream to which bytes are written.
      * @param <T>    output stream type parameter
      * @return specified output stream.
      * @throws NullPointerException if {@code stream} is {@code null}.
      * @throws IOException          if an I/O error occurs.
-     * @see #set(byte[])
+     * @see #set()
      * @see OutputStream#write(byte[])
      */
     default <T extends OutputStream> T write(final T stream) throws IOException {
