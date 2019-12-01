@@ -254,7 +254,7 @@ public class HelloWorldTest {
         // TODO: implement!
     }
 
-    // ----------------------------------------------------------------------------------------- write(RandomAccessFile)
+    // ----------------------------------------------------- write(Ljava.io.RandomAccessFile;)Ljava.io.RandomAccessFile;
 
     /**
      * Asserts {@link HelloWorld#write(RandomAccessFile)} method throws {@link NullPointerException} when {@code file}
