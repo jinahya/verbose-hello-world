@@ -15,6 +15,8 @@ import java.nio.channels.WritableByteChannel;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 
+import static java.util.Objects.requireNonNull;
+
 /**
  * An interface for generating <a href="#hello-world-bytes">hello-world-bytes</a> to various targets.
  *
@@ -288,6 +290,6 @@ public interface HelloWorld {
      */
     @Deprecated
     default <T extends SocketChannel> T send(final T socket) throws IOException {
-        return write(socket);
+        return write(requireNonNull(socket, "socket is null"));
     }
 }
