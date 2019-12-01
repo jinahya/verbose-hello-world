@@ -113,7 +113,7 @@ public class HelloWorldTest {
         // TODO: Implement!!!
     }
 
-    // --------------------------------------------------------------------------------------------- write(OutputStream)
+    // -------------------------------------------------------------- write(Ljava.io.OutputStream;)Ljava.io.OutputStream
 
     /**
      * Asserts {@link HelloWorld#write(OutputStream)} method throws {@link NullPointerException} when {@code stream}
@@ -126,15 +126,14 @@ public class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#write(OutputStream)} method invokes {@link HelloWorld#set(byte[])} method with an array
-     * of {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and writes the returned array to specified output
-     * stream.
+     * Asserts {@link HelloWorld#write(OutputStream)} method invokes {@link HelloWorld#set()} and writes the returned
+     * array to specified output stream.
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(OutputStream) method invokes set(byte[12]) and write the returned array to the stream")
+    @DisplayName("write(OutputStream) method invokes set() and writes the returned array to the stream")
     @Test
-    public void assertWriteStreamInvokesSetArrayAndWritesTheReturnedArrayToStream() throws IOException {
+    public void assertWriteStreamInvokesSetAndWritesArrayToStream() throws IOException {
         // TODO: implement!
     }
 
