@@ -239,7 +239,7 @@ public class HelloWorldTest {
      */
     @DisplayName("write(DataOutput) method invokes set() method and writes the array to data")
     @Test
-    public void assertWriteDataInvokesSetArrayAndWritesTheArrayToData() throws IOException {
+    public void assertWriteDataInvokesSetAndWritesTheArrayToData() throws IOException {
         // TODO: implement!
     }
 
