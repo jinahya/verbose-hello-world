@@ -342,6 +342,18 @@ public class HelloWorldTest {
         // TODO: implement!
     }
 
+    // -------------------------------------------------------------------------------------- put()Ljava.nio.ByteBuffer;
+
+    /**
+     * Asserts {@link HelloWorld#put()} method invokes {@link HelloWorld#put(ByteBuffer)} and returns the result as
+     * ready to be written.
+     */
+    @DisplayName("put() method invokes put(ByteBuffer) and returns the result as ready to be written")
+    @Test
+    public void assertPutInvokesPutBufferAndReturnsAsReadyToBeWritten() {
+        // TODO: Implement!!!
+    }
+
     // -------------------------------------------------------------------------------------- write(WritableByteChannel)
 
     /**

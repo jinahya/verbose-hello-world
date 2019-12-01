@@ -241,6 +241,20 @@ public interface HelloWorld {
     }
 
     /**
+     * Returns a byte buffer contains the <a href="#hello-world-bytes">hello-world-bytes</a>.
+     * <p>
+     * The {@code put()} method invokes {@link #put(ByteBuffer)} with a byte buffer of {@value #BYTES} bytes and returns
+     * the result buffer as {@link ByteBuffer#flip() flipped}. The result buffer's {@code position} is {@code 0} and the
+     * {@code limit} is {@value #BYTES}.
+     *
+     * @return a byte buffer contains the <a href="#hello-world-bytes">hello-world-bytes</a> and is ready to be written.
+     */
+    default ByteBuffer put() {
+        // TODO: Implement!!!
+        return null;
+    }
+
+    /**
      * Writes <a href="#hello-world-bytes">hello-world-bytes</a> to specified channel.
      * <p>
      * This method invokes {@link #put(ByteBuffer)} method with a byte buffer allocated with {@value #BYTES} as its
