@@ -116,7 +116,7 @@ public interface HelloWorld {
     }
 
     /**
-     * Writes <a href="#hello-world-bytes">hello-world-bytes</a> to specified file and returns the file.
+     * Appends <a href="#hello-world-bytes">hello-world-bytes</a> to specified file and returns the file.
      * <p>
      * This method creates an instance of {@link FileOutputStream}, as an {@link FileOutputStream#FileOutputStream(File,
      * boolean) appending mode}, from specified file and invokes {@link #write(OutputStream)} method with it.
@@ -128,7 +128,6 @@ public interface HelloWorld {
      * @throws IOException          if an I/O error occurs.
      * @see java.io.FileOutputStream#FileOutputStream(File, boolean)
      * @see #write(OutputStream)
-     * @see OutputStream#flush()
      */
     default <T extends File> T append(final T file) throws IOException {
         if (file == null) {

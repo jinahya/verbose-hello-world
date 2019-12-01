@@ -148,7 +148,7 @@ public class HelloWorldTest {
         // TODO: implement!
     }
 
-    // ----------------------------------------------------------------------------------------------------- write(File)
+    // ----------------------------------------------------------------------------- write(Ljava.io.File;)Ljava.io.File;
 
     /**
      * Asserts {@link HelloWorld#append(File)} method throws {@link NullPointerException} when {@code file} argument is
