@@ -83,12 +83,12 @@ public class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#set(byte[])} method invokes {@link HelloWorld#set(byte[], int)} with specified {@code
-     * array} and {@code 0}.
+     * Asserts {@link HelloWorld#set(byte[])} method invokes {@link HelloWorld#set(byte[], int)} method with specified
+     * {@code array} and {@code 0}.
      */
     @DisplayName("set(byte[]) method invokes set(byte[], int) method with specified array and 0")
     @Test
-    public void assertSetArrayInvokesSetWithArrayAndZero() {
+    public void assertSetArrayInvokesSetArrayIndex() {
         // TODO: implement!
     }
 
@@ -97,7 +97,7 @@ public class HelloWorldTest {
      */
     @DisplayName("set(byte[]) method returns specified array")
     @Test
-    public void assertSetArrayReturnsSpecifiedArray() {
+    public void assertSetArrayReturnsArray() {
         // TODO: implement!
     }
 
@@ -142,9 +142,9 @@ public class HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(OutputStream) method returns specified output stream")
+    @DisplayName("write(OutputStream) method returns specified stream")
     @Test
-    public void assertWriteStreamReturnsSpecifiedStream() throws IOException {
+    public void assertWriteStreamReturnsStream() throws IOException {
         // TODO: implement!
     }
 
@@ -180,7 +180,7 @@ public class HelloWorldTest {
      */
     @DisplayName("append(File) method returns specified file")
     @Test
-    public void assertAppendFileReturnsSpecifiedFile(@TempDir final File tempDir) throws IOException {
+    public void assertAppendFileReturnsFile(@TempDir final File tempDir) throws IOException {
         // TODO: implement!
     }
 
@@ -215,7 +215,7 @@ public class HelloWorldTest {
      */
     @DisplayName("send(Socket) method returns specified socket")
     @Test
-    public void assertSendSocketReturnsSpecifiedSocket() throws IOException {
+    public void assertSendSocketReturnsSocket() throws IOException {
         // TODO: implement!
     }
 
@@ -250,7 +250,7 @@ public class HelloWorldTest {
      */
     @DisplayName("write(DataOutput) method returns specified data output")
     @Test
-    public void assertWriteDataReturnsSpecifiedData() throws IOException {
+    public void assertWriteDataReturnsData() throws IOException {
         // TODO: implement!
     }
 
@@ -283,9 +283,9 @@ public class HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(RandomAccessFile) method returns specified random access file")
+    @DisplayName("write(RandomAccessFile) method returns specified file")
     @Test
-    public void assertWriteRandomAccessFileReturnsSpecifiedFile() throws IOException {
+    public void assertWriteRandomAccessFileReturnsFile() throws IOException {
         // TODO: implement!
     }
 
@@ -336,9 +336,9 @@ public class HelloWorldTest {
     /**
      * Asserts {@link HelloWorld#put(ByteBuffer)} method returns specified byte buffer.
      */
-    @DisplayName("put(ByteBuffer) method returns specified byte buffer")
+    @DisplayName("put(ByteBuffer) method returns specified buffer")
     @Test
-    public void assertPutBufferReturnsSpecifiedBuffer() {
+    public void assertPutBufferReturnsBuffer() {
         // TODO: implement!
     }
 
@@ -379,13 +379,13 @@ public class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#write(WritableByteChannel)} method returns the specified channel.
+     * Asserts {@link HelloWorld#write(WritableByteChannel)} method returns the specified writable byte channel.
      *
      * @throws IOException if an I/O error occurs.
      */
     @DisplayName("write(WritableByteChannel) returns specified channel")
     @Test
-    public void assertWriteChannelReturnsSpecifiedChannel() throws IOException {
+    public void assertWriteChannelReturnsChannel() throws IOException {
         // TODO: implement!!
     }
 
@@ -422,7 +422,7 @@ public class HelloWorldTest {
      */
     @DisplayName("write(Path) method returns specified path")
     @Test
-    public void assertAppendPathReturnsSpecifiedPath(@TempDir final Path tempDir) throws IOException {
+    public void assertAppendPathReturnsPath(@TempDir final Path tempDir) throws IOException {
         // TODO: implement!!
     }
 
