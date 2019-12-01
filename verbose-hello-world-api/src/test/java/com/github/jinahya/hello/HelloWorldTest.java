@@ -126,8 +126,8 @@ public class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#write(OutputStream)} method invokes {@link HelloWorld#set()} and writes the returned
-     * array to specified output stream.
+     * Asserts {@link HelloWorld#write(OutputStream)} method invokes {@link HelloWorld#set()} method and writes the
+     * returned array to specified output stream.
      *
      * @throws IOException if an I/O error occurs.
      */
