@@ -422,7 +422,7 @@ public class HelloWorldTest {
         when(expected.write(any(ByteBuffer.class))).then(i -> {
             final ByteBuffer buffer = i.getArgument(0);
             final int written = buffer.remaining();
-            buffer.position(buffer.limit());
+            buffer.position(buffer.limit()); // drains all available bytes
             return written;
         });
         final SocketChannel actual = helloWorld.send(expected);
