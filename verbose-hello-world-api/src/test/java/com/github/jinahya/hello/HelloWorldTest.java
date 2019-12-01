@@ -289,7 +289,7 @@ public class HelloWorldTest {
         // TODO: implement!
     }
 
-    // ------------------------------------------------------------------------------------------------- put(ByteBuffer)
+    // ----------------------------------------------------------------- put(Ljava.nio.ByteBuffer;)Ljava.nio.ByteBuffer;
 
     /**
      * Asserts {@link HelloWorld#put(ByteBuffer)} method throws {@link NullPointerException} when {@code buffer} is
@@ -348,7 +348,7 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#write(WritableByteChannel)} method throws {@link NullPointerException} when {@code
      * channel} argument is {@code null}.
      */
-    @DisplayName("write(WritableByteChannel) method throws a NullPointerException when channel is null")
+    @DisplayName("write(WritableByteChannel) throws a NullPointerException when channel is null")
     @Test
     public void assertWriteChannelThrowsNullPointerExceptionWhenChannelIsNull() {
         assertThrows(NullPointerException.class, () -> helloWorld.write((WritableByteChannel) null));
@@ -360,9 +360,9 @@ public class HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(WritableByteChannel) invokes put(ByteBuffer) and put the buffer to the channel")
+    @DisplayName("write(WritableByteChannel) invokes put(ByteBuffer) and writes the buffer to the channel")
     @Test
-    public void assertWriteChannelInvokesPutBufferAndPutBufferToChannel() throws IOException {
+    public void assertWriteChannelInvokesPutBufferAndWriteBufferToChannel() throws IOException {
         // TODO: implement!
     }
 
@@ -371,7 +371,7 @@ public class HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(WritableByteChannel) method returns specified channel")
+    @DisplayName("write(WritableByteChannel) returns specified channel")
     @Test
     public void assertWriteChannelReturnsSpecifiedChannel() throws IOException {
         // TODO: implement!!
