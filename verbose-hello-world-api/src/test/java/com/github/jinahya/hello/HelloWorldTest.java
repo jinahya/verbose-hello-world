@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
+import java.lang.reflect.InvocationHandler;
 import java.net.Socket;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
@@ -460,16 +461,16 @@ public class HelloWorldTest {
 
     HelloWorld helloWorld() {
         if (validationProxy == null) {
+            final ClassLoader loader = getClass().getClassLoader();
+            final Class<?>[] interfaces = new Class<?>[] {HelloWorld.class};
             final Validator validator
                     = Validation.byDefaultProvider()
                     .configure()
                     .messageInterpolator(new ParameterMessageInterpolator())
                     .buildValidatorFactory()
                     .getValidator();
-            validationProxy = (HelloWorld) newProxyInstance(
-                    getClass().getClassLoader(),
-                    new Class[] {HelloWorld.class},
-                    new ValidationInvocationHandler(helloWorld, validator));
+            final InvocationHandler handler = new ValidationInvocationHandler(helloWorld, validator);
+            validationProxy = (HelloWorld) newProxyInstance(loader, interfaces, handler);
         }
         return validationProxy;
     }
