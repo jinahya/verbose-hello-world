@@ -448,17 +448,6 @@ public class HelloWorldTest {
     }
 
     // -----------------------------------------------------------------------------------------------------------------
-
-    /**
-     * Stubs {@link HelloWorld#set(byte[], int)} method of {@link Spy spied} {@code helloWorld} instance to return
-     * specified {@code array}.
-     */
-    @BeforeEach
-    private void stubSetArrayIndexToReturnSpecifiedArray() {
-        when(helloWorld.set(any(byte[].class), anyInt())) // <1>
-                .thenAnswer(i -> i.getArgument(0));       // <2>
-    }
-
     HelloWorld helloWorld() {
         if (validationProxy == null) {
             final ClassLoader loader = getClass().getClassLoader();
@@ -473,6 +462,16 @@ public class HelloWorldTest {
             validationProxy = (HelloWorld) newProxyInstance(loader, interfaces, handler);
         }
         return validationProxy;
+    }
+
+    /**
+     * Stubs {@link HelloWorld#set(byte[], int)} method of {@link Spy spied} {@code helloWorld} instance to return
+     * specified {@code array}.
+     */
+    @BeforeEach
+    private void stubSetArrayIndexToReturnSpecifiedArray() {
+        when(helloWorld.set(any(byte[].class), anyInt())) // <1>
+                .thenAnswer(i -> i.getArgument(0));       // <2>
     }
 
     // -----------------------------------------------------------------------------------------------------------------
