@@ -1,6 +1,8 @@
 package com.github.jinahya.hello;
 
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator;
+import org.hibernate.validator.testutil.ValidationInvocationHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,6 +12,8 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 
+import javax.validation.Validation;
+import javax.validation.ValidatorFactory;
 import java.io.DataOutput;
 import java.io.File;
 import java.io.IOException;
@@ -25,6 +29,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
+import static java.lang.reflect.Proxy.newProxyInstance;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -453,7 +458,24 @@ public class HelloWorldTest {
                 .thenAnswer(i -> i.getArgument(0));       // <2>
     }
 
+    HelloWorld validationProxy() {
+        if (validationProxy == null) {
+            final ValidatorFactory validatorFactory
+                    = Validation.byDefaultProvider()
+                    .configure()
+                    .messageInterpolator(new ParameterMessageInterpolator())
+                    .buildValidatorFactory();
+            validationProxy = (HelloWorld) newProxyInstance(
+                    getClass().getClassLoader(),
+                    new Class[] {HelloWorld.class},
+                    new ValidationInvocationHandler(helloWorld, validatorFactory.getValidator()));
+        }
+        return validationProxy;
+    }
+
     // -----------------------------------------------------------------------------------------------------------------
     @Spy
     HelloWorld helloWorld;
+
+    HelloWorld validationProxy;
 }
