@@ -133,7 +133,7 @@ public class HelloWorldTest {
      */
     @DisplayName("write(stream) invokes set() and writes the returned array to the stream")
     @Test
-    public void assertWriteStreamInvokesSetAndWritesArrayToStream() throws IOException {
+    public void assertWriteStreamInvokesSetAndWritesTheResultToStream() throws IOException {
         // TODO: implement!
     }
 
