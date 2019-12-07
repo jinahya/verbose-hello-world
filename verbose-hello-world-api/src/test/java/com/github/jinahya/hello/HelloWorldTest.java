@@ -66,7 +66,7 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#set(byte[])} method throws {@link NullPointerException} when {@code array} argument is
      * {@code null}.
      */
-    @DisplayName("set(byte[]) method throws a NullPointerException when array is null")
+    @DisplayName("set(byte[]) throws a NullPointerException when array is null")
     @Test
     public void assertSetArrayThrowsNullPointerExceptionWhenArrayIsNull() {
         // TODO: implement!
@@ -76,7 +76,7 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#set(byte[])} method throws {@link IndexOutOfBoundsException} when {@code array.length}
      * is less than {@link HelloWorld#BYTES}.
      */
-    @DisplayName("set(byte[]) method throws an IndexOutOfBoundsException when array.length is less than BYTES")
+    @DisplayName("set(array) throws an IndexOutOfBoundsException when array.length is less than BYTES")
     @Test
     public void assertSetArrayThrowsIndexOufOfBoundsExceptionWhenArrayLengthIsLessThanHelloWorldBytes() {
         // TODO: implement!
@@ -86,7 +86,7 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#set(byte[])} method invokes {@link HelloWorld#set(byte[], int)} method with specified
      * {@code array} and {@code 0}.
      */
-    @DisplayName("set(byte[]) method invokes set(byte[], int) method with specified array and 0")
+    @DisplayName("set(array) invokes set(array, 0)")
     @Test
     public void assertSetArrayInvokesSetArrayIndex() {
         // TODO: implement!
@@ -95,7 +95,7 @@ public class HelloWorldTest {
     /**
      * Asserts {@link HelloWorld#set(byte[])} method returns specified {@code array}.
      */
-    @DisplayName("set(byte[]) method returns specified array")
+    @DisplayName("set(array) returns specified array")
     @Test
     public void assertSetArrayReturnsArray() {
         // TODO: implement!
@@ -107,7 +107,7 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#set()} method invokes {@link HelloWorld#set(byte[])} with an array of {@value
      * com.github.jinahya.hello.HelloWorld#BYTES} bytes and returns the result.
      */
-    @DisplayName("set() method invokes set(byte[]) method and returns the result")
+    @DisplayName("set() invokes set(byte[BYTES]) and returns the result")
     @Test
     public void assertSetInvokesSetArrayAndReturnsTheResult() {
         // TODO: Implement!!!
@@ -119,7 +119,7 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#write(OutputStream)} method throws {@link NullPointerException} when {@code stream}
      * argument is {@code null}.
      */
-    @DisplayName("write(OutputStream) method throws a NullPointerException when stream is null")
+    @DisplayName("write(stream) throws a NullPointerException when stream is null")
     @Test
     public void assertWriteStreamThrowsNullPointerExceptionWhenStreamIsNull() {
         // TODO: implement!
@@ -131,7 +131,7 @@ public class HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(OutputStream) method invokes set() and writes the returned array to the stream")
+    @DisplayName("write(stream) invokes set() and writes the returned array to the stream")
     @Test
     public void assertWriteStreamInvokesSetAndWritesArrayToStream() throws IOException {
         // TODO: implement!
@@ -142,7 +142,7 @@ public class HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(OutputStream) method returns specified stream")
+    @DisplayName("write(stream) returns the stream")
     @Test
     public void assertWriteStreamReturnsStream() throws IOException {
         // TODO: implement!
@@ -154,7 +154,7 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#append(File)} method throws {@link NullPointerException} when {@code file} argument is
      * {@code null}.
      */
-    @DisplayName("append(File) method throws a NullPointerException when file is null")
+    @DisplayName("append(file) throws NullPointerException when file is null")
     @Test
     public void assertAppendFileThrowsNullPointerExceptionWhenFileIsNull() {
         assertThrows(NullPointerException.class, () -> helloWorld.append((File) null));
@@ -166,7 +166,7 @@ public class HelloWorldTest {
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("append(File) method invokes write(OutputStream) method")
+    @DisplayName("append(file) invokes write(stream)")
     @Test
     public void assertAppendFileInvokesWriteStream(@TempDir final File tempDir) throws IOException {
         // TODO: implement!
@@ -178,7 +178,7 @@ public class HelloWorldTest {
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("append(File) method returns specified file")
+    @DisplayName("append(file) returns the file")
     @Test
     public void assertAppendFileReturnsFile(@TempDir final File tempDir) throws IOException {
         // TODO: implement!
