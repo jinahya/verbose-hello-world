@@ -187,10 +187,10 @@ public class HelloWorldTest {
     // ------------------------------------------------------------------------ send(Ljava.net.Socket;)Ljava.net.Socket;
 
     /**
-     * Asserts {@link HelloWorld#send(Socket)} method throws {@link NullPointerException} when the {@code socket}
+     * Asserts {@link HelloWorld#send(Socket)} method throws a {@link NullPointerException} when the {@code socket}
      * argument is {@code null}.
      */
-    @DisplayName("send(Socket) method throws a NullPointerException when socket is null")
+    @DisplayName("send(socket) throws NullPointerException when socket is null")
     @Test
     public void assertSendSocketThrowsNullPointerExceptionWhenSocketIsNull() {
         assertThrows(NullPointerException.class, () -> helloWorld.send((Socket) null));
@@ -202,7 +202,7 @@ public class HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("send(Socket) method invokes write(OutputStream) with socket's outputStream")
+    @DisplayName("send(socket) invokes write(socket.outputStream)")
     @Test
     public void assertSendSocketInvokesWriteOutputWithSocketOutputStream() throws IOException {
         // TODO: implement!
@@ -213,7 +213,7 @@ public class HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("send(Socket) method returns specified socket")
+    @DisplayName("send(socket) returns socket")
     @Test
     public void assertSendSocketReturnsSocket() throws IOException {
         // TODO: implement!
@@ -222,10 +222,10 @@ public class HelloWorldTest {
     // ------------------------------------------------------------------ write(Ljava.io.DataOutput;)Ljava.io.DataOutput
 
     /**
-     * Asserts {@link HelloWorld#write(DataOutput)} method throws {@link NullPointerException} when {@code data}
+     * Asserts {@link HelloWorld#write(DataOutput)} method throws a {@link NullPointerException} when {@code data}
      * argument is {@code null}.
      */
-    @DisplayName("write(DataOutput) method throws a NullPointerException when data output is null")
+    @DisplayName("write(data) method throws NullPointerException when data is null")
     @Test
     public void assertWriteDataThrowsNullPointerExceptionWhenDataIsNull() {
         assertThrows(NullPointerException.class, () -> helloWorld.write((DataOutput) null));
@@ -237,18 +237,18 @@ public class HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(DataOutput) method invokes set() method and writes the array to data")
+    @DisplayName("write(data) invokes set() and writes the result to data")
     @Test
-    public void assertWriteDataInvokesSetAndWritesTheArrayToData() throws IOException {
+    public void assertWriteDataInvokesSetAndWritesTheResultToData() throws IOException {
         // TODO: implement!
     }
 
     /**
-     * Asserts {@link HelloWorld#write(DataOutput)} method returns the specified data output.
+     * Asserts {@link HelloWorld#write(DataOutput)} method returns the specified {@code data} argument.
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(DataOutput) method returns specified data output")
+    @DisplayName("write(data) returns specified data")
     @Test
     public void assertWriteDataReturnsData() throws IOException {
         // TODO: implement!
