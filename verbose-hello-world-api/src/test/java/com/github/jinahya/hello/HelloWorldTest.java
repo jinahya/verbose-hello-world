@@ -458,7 +458,7 @@ public class HelloWorldTest {
                 .thenAnswer(i -> i.getArgument(0));       // <2>
     }
 
-    HelloWorld validationProxy() {
+    HelloWorld helloWorld() {
         if (validationProxy == null) {
             final ValidatorFactory validatorFactory
                     = Validation.byDefaultProvider()
@@ -475,7 +475,7 @@ public class HelloWorldTest {
 
     // -----------------------------------------------------------------------------------------------------------------
     @Spy
-    HelloWorld helloWorld;
+    private HelloWorld helloWorld;
 
     HelloWorld validationProxy;
 }
