@@ -204,7 +204,7 @@ public class HelloWorldTest {
      */
     @DisplayName("send(socket) invokes write(socket.outputStream)")
     @Test
-    public void assertSendSocketInvokesWriteOutputWithSocketOutputStream() throws IOException {
+    public void assertSendSocketInvokesWriteStreamWithSocketOutputStream() throws IOException {
         // TODO: implement!
     }
 
