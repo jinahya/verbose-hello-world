@@ -330,21 +330,30 @@ public class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#put(ByteBuffer)} method, when the {@code buffer} is a direct buffer, invokes {@link
-     * HelloWorld#set()} method and puts the result to the buffer.
+     * Asserts {@link HelloWorld#put(ByteBuffer)} method, when the {@code buffer} doesn't have a backing array, invokes
+     * {@link HelloWorld#set()} method and puts the result to the buffer.
      */
     @DisplayName("put(buffer) invokes set() and put the result to the buffer")
     @Test
-    public void assertPutBufferInvokesSetWhenBufferIsDirect() {
+    public void assertPutBufferInvokesSetWhenBufferHasNoBackingArray() {
         // TODO: implement!
     }
 
     /**
      * Asserts {@link HelloWorld#put(ByteBuffer)} method returns specified {@code buffer}.
      */
-    @DisplayName("put(buffer) returns specified buffer")
+    @DisplayName("put(buffer with backing array) returns specified buffer")
     @Test
-    public void assertPutBufferReturnsBuffer() {
+    public void assertPutBufferReturnsBufferHasBackingArray() {
+        // TODO: implement!
+    }
+
+    /**
+     * Asserts {@link HelloWorld#put(ByteBuffer)} method returns specified {@code buffer}.
+     */
+    @DisplayName("put(buffer with no backing array) returns specified buffer; without backing array")
+    @Test
+    public void assertPutBufferReturnsBufferHasNoBackingArray() {
         // TODO: implement!
     }
 
@@ -449,19 +458,16 @@ public class HelloWorldTest {
 
     // -----------------------------------------------------------------------------------------------------------------
     HelloWorld helloWorld() {
-        if (validationProxy == null) {
-            final ClassLoader loader = getClass().getClassLoader();
-            final Class<?>[] interfaces = new Class<?>[] {HelloWorld.class};
-            final Validator validator
-                    = Validation.byDefaultProvider()
-                    .configure()
-                    .messageInterpolator(new ParameterMessageInterpolator())
-                    .buildValidatorFactory()
-                    .getValidator();
-            final InvocationHandler handler = new ValidationInvocationHandler(helloWorld, validator);
-            validationProxy = (HelloWorld) newProxyInstance(loader, interfaces, handler);
-        }
-        return validationProxy;
+        final ClassLoader loader = getClass().getClassLoader();
+        final Class<?>[] interfaces = new Class<?>[] {HelloWorld.class};
+        final Validator validator
+                = Validation.byDefaultProvider()
+                .configure()
+                .messageInterpolator(new ParameterMessageInterpolator())
+                .buildValidatorFactory()
+                .getValidator();
+        final InvocationHandler handler = new ValidationInvocationHandler(helloWorld, validator);
+        return (HelloWorld) newProxyInstance(loader, interfaces, handler);
     }
 
     /**
@@ -477,6 +483,4 @@ public class HelloWorldTest {
     // -----------------------------------------------------------------------------------------------------------------
     @Spy
     HelloWorld helloWorld;
-
-    private HelloWorld validationProxy;
 }
