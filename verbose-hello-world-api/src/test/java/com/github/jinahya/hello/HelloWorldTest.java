@@ -13,7 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 
 import javax.validation.Validation;
-import javax.validation.ValidatorFactory;
+import javax.validation.Validator;
 import java.io.DataOutput;
 import java.io.File;
 import java.io.IOException;
@@ -460,22 +460,23 @@ public class HelloWorldTest {
 
     HelloWorld helloWorld() {
         if (validationProxy == null) {
-            final ValidatorFactory validatorFactory
+            final Validator validator
                     = Validation.byDefaultProvider()
                     .configure()
                     .messageInterpolator(new ParameterMessageInterpolator())
-                    .buildValidatorFactory();
+                    .buildValidatorFactory()
+                    .getValidator();
             validationProxy = (HelloWorld) newProxyInstance(
                     getClass().getClassLoader(),
                     new Class[] {HelloWorld.class},
-                    new ValidationInvocationHandler(helloWorld, validatorFactory.getValidator()));
+                    new ValidationInvocationHandler(helloWorld, validator);
         }
         return validationProxy;
     }
 
     // -----------------------------------------------------------------------------------------------------------------
     @Spy
-    private HelloWorld helloWorld;
+    HelloWorld helloWorld;
 
-    HelloWorld validationProxy;
+    private HelloWorld validationProxy;
 }
