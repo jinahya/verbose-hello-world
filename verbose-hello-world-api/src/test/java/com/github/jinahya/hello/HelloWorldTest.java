@@ -469,7 +469,7 @@ public class HelloWorldTest {
             validationProxy = (HelloWorld) newProxyInstance(
                     getClass().getClassLoader(),
                     new Class[] {HelloWorld.class},
-                    new ValidationInvocationHandler(helloWorld, validator);
+                    new ValidationInvocationHandler(helloWorld, validator));
         }
         return validationProxy;
     }
