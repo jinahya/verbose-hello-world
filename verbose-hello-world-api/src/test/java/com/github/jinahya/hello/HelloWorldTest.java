@@ -257,33 +257,33 @@ public class HelloWorldTest {
     // ----------------------------------------------------- write(Ljava.io.RandomAccessFile;)Ljava.io.RandomAccessFile;
 
     /**
-     * Asserts {@link HelloWorld#write(RandomAccessFile)} method throws {@link NullPointerException} when {@code file}
+     * Asserts {@link HelloWorld#write(RandomAccessFile)} method throws a {@link NullPointerException} when {@code file}
      * argument is {@code null}.
      */
-    @DisplayName("write(RandomAccessFile) method throws a NullPointerException when file is null")
+    @DisplayName("write(file) throws NullPointerException when file is null")
     @Test
-    public void assertWriteRandomAccessFileThrowsNullPointerExceptionWhenFileIsNull() {
+    public void assertWriteFileThrowsNullPointerExceptionWhenFileIsNull() {
         assertThrows(NullPointerException.class, () -> helloWorld.write((RandomAccessFile) null));
     }
 
     /**
      * Asserts {@link HelloWorld#write(RandomAccessFile)} invokes {@link HelloWorld#set()} method and writes the
-     * returned array to specified random access file.
+     * returned array to specified {@code file}.
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(RandomAccessFile) method invokes set() method and writes the array to file")
+    @DisplayName("write(file) invokes set() method and writes the result to file")
     @Test
-    public void assertWriteRandomAccessFileInvokesSetAndWritesTheArrayToFile() throws IOException {
+    public void assertWriteFileInvokesSetAndWritesTheResultToFile() throws IOException {
         // TODO: implement!
     }
 
     /**
-     * Asserts {@link HelloWorld#write(RandomAccessFile)} method returns the specified random access file.
+     * Asserts {@link HelloWorld#write(RandomAccessFile)} method returns the specified {@code file}.
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(RandomAccessFile) method returns specified file")
+    @DisplayName("write(file) returns specified file")
     @Test
     public void assertWriteRandomAccessFileReturnsFile() throws IOException {
         // TODO: implement!
@@ -292,10 +292,10 @@ public class HelloWorldTest {
     // ----------------------------------------------------------------- put(Ljava.nio.ByteBuffer;)Ljava.nio.ByteBuffer;
 
     /**
-     * Asserts {@link HelloWorld#put(ByteBuffer)} method throws {@link NullPointerException} when {@code buffer} is
+     * Asserts {@link HelloWorld#put(ByteBuffer)} method throws a {@link NullPointerException} when {@code buffer} is
      * {@code null}.
      */
-    @DisplayName("put(ByteBuffer) method throws a NullPointerException when buffer is null")
+    @DisplayName("put(buffer) throws NullPointerException when buffer is null")
     @Test
     public void assertPutBufferThrowsNullPointerExceptionWhenBufferIsNull() {
         assertThrows(NullPointerException.class, () -> helloWorld.put(null));
@@ -305,38 +305,38 @@ public class HelloWorldTest {
      * Asserts {@link HelloWorld#put(ByteBuffer)} method throws {@link BufferOverflowException} when {@code buffer}'s
      * {@link ByteBuffer#remaining() remaining} is less than {@link HelloWorld#BYTES}.
      */
-    @DisplayName("put(ByteBuffer) method throws a BufferOverflowException when buffer.remaining is not enough")
+    @DisplayName("put(buffer) throws BufferOverflowException when buffer.remaining is less than BYTES")
     @Test
     public void assertPutBufferThrowsBufferOverflowExceptionWhenBufferRemainingIsLessThanHelloWorldBytes() {
         // TODO: implement!
     }
 
     /**
-     * Asserts {@link HelloWorld#put(ByteBuffer)} method invokes {@link HelloWorld#set(byte[], int)} method when the
-     * {@code buffer} has a backing array and, also, assert the {@code buffer}'s position is incremented by {@value
-     * com.github.jinahya.hello.HelloWorld#BYTES}.
+     * Asserts {@link HelloWorld#put(ByteBuffer)} method, when the {@code buffer} {@link ByteBuffer#hasArray() has a
+     * backing array}, invokes {@link HelloWorld#set(byte[], int)} method with {@link ByteBuffer#array() buffer.array}
+     * and ({@link ByteBuffer#arrayOffset() buffer.arrayOffset} + {@link ByteBuffer#position() position}) and increments
+     * the {@link ByteBuffer#position(int) position} by {@link HelloWorld#BYTES}.
      */
-    @DisplayName("put(ByteBuffer) invokes set(byte[], int) method with buffer's backing array")
+    @DisplayName("put(buffer) invokes set(buffer.array, buffer.arrayOffset + buffer.position)")
     @Test
     public void assertPutBufferInvokesSetArrayIndexWhenBufferHasBackingArray() {
         // TODO: implement!
     }
 
     /**
-     * Asserts {@link HelloWorld#put(ByteBuffer)} method invokes {@link HelloWorld#set(byte[])} method when the {@code
-     * buffer} is a direct buffer and, also, assert the {@code buffer}'s position is increments by {@value
-     * com.github.jinahya.hello.HelloWorld#BYTES}.
+     * Asserts {@link HelloWorld#put(ByteBuffer)} method, when the {@code buffer} is a direct buffer, invokes {@link
+     * HelloWorld#set()} method and puts the result to the buffer.
      */
-    @DisplayName("put(ByteBuffer) invokes set(byte[]) method and put the array to the buffer")
+    @DisplayName("put(buffer) invokes set() and put the result to the buffer")
     @Test
     public void assertPutBufferInvokesSetWhenBufferIsDirect() {
         // TODO: implement!
     }
 
     /**
-     * Asserts {@link HelloWorld#put(ByteBuffer)} method returns specified byte buffer.
+     * Asserts {@link HelloWorld#put(ByteBuffer)} method returns specified {@code buffer}.
      */
-    @DisplayName("put(ByteBuffer) method returns specified buffer")
+    @DisplayName("put(buffer) returns specified buffer")
     @Test
     public void assertPutBufferReturnsBuffer() {
         // TODO: implement!
@@ -346,21 +346,21 @@ public class HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#put()} method invokes {@link HelloWorld#put(ByteBuffer)} and returns the result as
-     * ready to be written.
+     * ready to be read.
      */
-    @DisplayName("put() method invokes put(ByteBuffer) and returns the result as ready to be written")
+    @DisplayName("put() invokes put(buffer) and returns the result as ready to be read")
     @Test
-    public void assertPutInvokesPutBufferAndReturnsAsReadyToBeWritten() {
+    public void assertPutInvokesPutBufferAndReturnsTheResultAsReadyToBeWritten() {
         // TODO: Implement!!!
     }
 
     // -------------------------------------------------------------------------------------- write(WritableByteChannel)
 
     /**
-     * Asserts {@link HelloWorld#write(WritableByteChannel)} method throws {@link NullPointerException} when {@code
-     * channel} argument is {@code null}.
+     * Asserts {@link HelloWorld#write(WritableByteChannel)} method throws a {@link NullPointerException} when {@code
+     * channel} is {@code null}.
      */
-    @DisplayName("write(WritableByteChannel) throws a NullPointerException when channel is null")
+    @DisplayName("write(channel) throws NullPointerException when channel is null")
     @Test
     public void assertWriteChannelThrowsNullPointerExceptionWhenChannelIsNull() {
         assertThrows(NullPointerException.class, () -> helloWorld.write((WritableByteChannel) null));
@@ -368,13 +368,13 @@ public class HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(WritableByteChannel)} method invokes {@link HelloWorld#put()} and writes the
-     * buffer to specified channel.
+     * buffer to specified writable byte channel.
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(WritableByteChannel) invokes put() and writes the buffer to the channel")
+    @DisplayName("write(channel) invokes put() and writes the result to the channel")
     @Test
-    public void assertWriteChannelInvokesPutAndWritesBufferToChannel() throws IOException {
+    public void assertWriteChannelInvokesPutAndWritesTheResultToChannel() throws IOException {
         // TODO: implement!
     }
 
@@ -383,7 +383,7 @@ public class HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(WritableByteChannel) returns specified channel")
+    @DisplayName("write(channel) returns specified channel")
     @Test
     public void assertWriteChannelReturnsChannel() throws IOException {
         // TODO: implement!!
@@ -393,9 +393,9 @@ public class HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#append(Path)} method throws a {@link NullPointerException} when specified {@code path}
-     * argument is {@code null}.
+     * is {@code null}.
      */
-    @DisplayName("append(Path) method throws a NullPointerException when path is null")
+    @DisplayName("append(path) throws NullPointerException when path is null")
     @Test
     public void assertAppendPathThrowsNullPointerExceptionWhenPathIsNull() {
         assertThrows(NullPointerException.class, () -> helloWorld.append((Path) null));
@@ -403,12 +403,12 @@ public class HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#append(Path)} method invokes {@link HelloWorld#write(WritableByteChannel)} method and
-     * asserts {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes are written to the {@code path}.
+     * asserts as many bytes as {@link HelloWorld#BYTES} are written to the {@code path}.
      *
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("append(Path) method invokes write(WritableByteChannel) method")
+    @DisplayName("append(path) invokes write(WritableByteChannel)")
     @Test
     public void assertAppendPathInvokesWriteChannel(@TempDir final Path tempDir) throws IOException {
         // TODO: implement!!
@@ -420,7 +420,7 @@ public class HelloWorldTest {
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(Path) method returns specified path")
+    @DisplayName("write(path) returns specified path")
     @Test
     public void assertAppendPathReturnsPath(@TempDir final Path tempDir) throws IOException {
         // TODO: implement!!
@@ -445,7 +445,7 @@ public class HelloWorldTest {
 
     /**
      * Stubs {@link HelloWorld#set(byte[], int)} method of {@link Spy spied} {@code helloWorld} instance to return
-     * specified {@code array} argument.
+     * specified {@code array}.
      */
     @BeforeEach
     private void stubSetArrayIndexToReturnSpecifiedArray() {
