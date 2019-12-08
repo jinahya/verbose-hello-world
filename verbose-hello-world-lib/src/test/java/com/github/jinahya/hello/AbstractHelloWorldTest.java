@@ -9,9 +9,9 @@ package com.github.jinahya.hello;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -45,9 +45,9 @@ public abstract class AbstractHelloWorldTest {
      * Asserts {@link HelloWorld#set(byte[], int)} method throws a {@code NullPointerException} when {@code array}
      * argument is {@code null}.
      */
-    @DisplayName("Assert set(byte[], int) method throws a NullPointerException when array is null")
+    @DisplayName("set(array, index) throws NullPointerException when array is null")
     @Test
-    public void assertSetArrayThrowsNullPointerExceptionWhenArrayIsNull() {
+    public void assertSetArrayIndexThrowsNullPointerExceptionWhenArrayIsNull() {
         // TODO: implement!
     }
 
@@ -55,19 +55,19 @@ public abstract class AbstractHelloWorldTest {
      * Asserts {@link HelloWorld#set(byte[], int)} method throws an {@code IndexOutOfBoundsException} when {@code index}
      * argument is negative.
      */
-    @DisplayName("Assert set(byte[], int) method throws an IndexOutOfBoundsException when index is negative")
+    @DisplayName("set(array, index) throws IndexOutOfBoundsException when index is negative")
     @Test
-    public void assertSetArrayThrowsIndexOutOfBoundsExceptionWhenIndexIsNegative() {
+    public void assertSetArrayIndexThrowsIndexOutOfBoundsExceptionWhenIndexIsNegative() {
         // TODO: implement!
     }
 
     /**
-     * Asserts {@link HelloWorld#set(byte[], int)} method throws an {@code IndexOutOfBoundsException} when {@code index}
-     * argument plus {@link HelloWorld#BYTES} is greater than {@code array.length}.
+     * Asserts {@link HelloWorld#set(byte[], int)} method throws an {@code IndexOutOfBoundsException} when ({@code
+     * index} + {@link HelloWorld#BYTES}) is greater than {@code array.length}.
      */
-    @DisplayName("Assert set(byte[], int) method throws an IndexOutOfBoundsException when space is not enough")
+    @DisplayName("set(array, index) throws IndexOutOfBoundsException when space is not enough")
     @Test
-    public void assertSetArrayThrowsIndexOutOfBoundsExceptionWhenIndexPlusHelloWorldBytesIsGreaterThanArrayLength() {
+    public void assertSetArrayIndexThrowsIndexOutOfBoundsExceptionWhenSpaceIsNotEnough() {
         // TODO: implement!
     }
 
@@ -75,18 +75,18 @@ public abstract class AbstractHelloWorldTest {
      * Asserts {@link HelloWorld#set(byte[], int)} method sets "{@code hello, world}" bytes on specified array starting
      * at specified index.
      */
-    @DisplayName("Assert set(byte[], int) method sets \"hello, world\" bytes on array starting at index")
+    @DisplayName("set(array, index) sets \"hello, world\" bytes on array starting at index")
     @Test
-    public void assertSetArraySetsHelloWorldBytesOnArrayStartingAtIndex() {
+    public void assertSetArrayIndexSetsHelloWorldBytesOnArrayStartingAtIndex() {
         // TODO: implement!
     }
 
     /**
      * Asserts {@link HelloWorld#set(byte[], int)} method returns specified array.
      */
-    @DisplayName("Assert set(byte[], int) method returns specified array")
+    @DisplayName("set(array, index) returns specified array")
     @Test
-    public void assertSetArrayReturnsSpecifiedArray() {
+    public void assertSetArrayIndexReturnsSpecifiedArray() {
         // TODO: implement!
     }
 }
