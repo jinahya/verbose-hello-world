@@ -21,20 +21,16 @@ package com.github.jinahya.hello;
  */
 
 import com.google.inject.AbstractModule;
-import org.slf4j.Logger;
-
-import static java.lang.invoke.MethodHandles.lookup;
-import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * A module for injecting instances of {@link HelloWorld}.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 class HelloWorldModule extends AbstractModule {
 
-    private static final Logger logger = getLogger(lookup().lookupClass());
-
     /**
-     * The fully qualified name of the {@code HelloWorldMain} class.
+     * The fully qualified name of the {@code HelloWorldImpl} class.
      */
     private static final String HELLO_WORLD_IMPL_FQCN = "com.github.jinahya.hello.HelloWorldImpl";
 
