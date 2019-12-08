@@ -18,6 +18,7 @@ class ResultPeeper<T> implements Answer<T> {
         return (this.result = result);
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
     public T getResult() {
         return result;
     }
