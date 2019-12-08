@@ -17,6 +17,10 @@
   <description>Verbose Hello World</description>
   <url>https://github.com/jinahya/${project.artifactId}</url>
   <inceptionYear>2018</inceptionYear>
+  <organization>
+    <name>Jinahya, Inc.</name>
+    <url>https://jinahya.com</url>
+  </organization>
   <licenses>
     <license>
       <name>Apache License, Version 2.0</name>
@@ -61,11 +65,6 @@
     <version.org.mockito>3.2.0</version.org.mockito>
     <version.org.slf4j>1.7.26</version.org.slf4j>
   </properties>
-
-  <organization>
-    <name>Jinahya, Inc.</name>
-    <url>https://jinahya.com</url>
-  </organization>
 
   <dependencyManagement>
     <dependencies>
@@ -373,6 +372,11 @@
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
+          <artifactId>tidy-maven-plugin</artifactId>
+          <version>1.0-beta-1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
           <artifactId>versions-maven-plugin</artifactId>
           <version>2.7</version>
         </plugin>
@@ -467,14 +471,31 @@
   <profiles>
     <profile>
       <id>umlgraph</id>
-      <properties>
-        <additionalparam>
-          -all -hide java.*
-          -collapsible -horizontal
-          -inferdep -inferdepinpackage -inferrel
-          -outputencoding UTF-8
-        </additionalparam>
-      </properties>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-javadoc-plugin</artifactId>
+              <version>${version.maven-javadoc-plugin}</version>
+              <configuration>
+                <doclint>all</doclint>
+                <additionalOptions>
+                  <additionalOption>-all</additionalOption>
+                  <additionalOption>-collapsible</additionalOption>
+                  <additionalOption>-hide java.*</additionalOption>
+                  <additionalOption>-hide javax.*</additionalOption>
+                  <additionalOption>-horizontal</additionalOption>
+                  <additionalOption>-inferdep</additionalOption>
+                  <additionalOption>-inferdepinpackage</additionalOption>
+                  <additionalOption>-inferrel</additionalOption>
+                  <additionalOption>-outputencoding ${project.reporting.outputEncoding}</additionalOption>
+                </additionalOptions>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
     </profile>
   </profiles>
 </project>
