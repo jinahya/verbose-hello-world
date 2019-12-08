@@ -30,12 +30,6 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>com.github.jinahya</groupId>
-      <artifactId>verbose-hello-world-spi</artifactId>
-      <version>0.1.0-SNAPSHOT</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>javax.enterprise</groupId>
       <artifactId>cdi-api</artifactId>
       <scope>test</scope>
