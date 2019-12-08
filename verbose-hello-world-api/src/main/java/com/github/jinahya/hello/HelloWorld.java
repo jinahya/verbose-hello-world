@@ -70,8 +70,12 @@ public interface HelloWorld {
      * Sets <a href="#hello-world-bytes">hello-world-bytes</a> on specified array starting at {@code 0} and returns the
      * array.
      * <p>
-     * This method invokes {@link #set(byte[], int)} method with given array and {@code 0} for the {@code index}
+     * This method invokes {@link #set(byte[], int)} method with given {@code array} and {@code 0} for the {@code index}
      * argument.
+     * <blockquote><pre>{@code
+     * set(array, 0);
+     * return array;
+     * }</pre></blockquote>
      *
      * @param array the array on which bytes are set.
      * @return specified array.
@@ -85,9 +89,16 @@ public interface HelloWorld {
     }
 
     /**
-     * Invokes {@link #set(byte[])} with an array of {@value #BYTES} bytes and returns the result.
+     * Returns an array of {@value #BYTES} bytes contains the <a href="#hello-world-bytes">hello-world-bytes</a>.
+     * <p>
+     * This method invokes {@link #set(byte[])} with an array of {@value #BYTES} bytes and returns the result.
+     * <blockquote><pre>{@code
+     * byte[] array = new byte[BYTES];
+     * set(array);
+     * return array;
+     * }</pre></blockquote>
      *
-     * @return an array of {@value #BYTES} bytes contains the <a href="#hello-world-bytes">hello-world-bytes</a>
+     * @return an array of {@value #BYTES} bytes contains the <a href="#hello-world-bytes">hello-world-bytes</a>.
      * @see #set(byte[])
      */
     default @NotNull byte[] set() {
@@ -96,10 +107,15 @@ public interface HelloWorld {
     }
 
     /**
-     * Writes <a href="#hello-world-bytes">hello-world-bytes</a> to specified output stream.
+     * Writes <a href="#hello-world-bytes">hello-world-bytes</a> to specified output stream and returns the output
+     * stream.
      * <p>
      * This method invokes {@link #set()} and writes the returned array to specified output stream using {@link
      * OutputStream#write(byte[])} method.
+     * <blockquote><pre>{@code
+     * byte[] array = set();
+     * stream.write(array);
+     * }</pre></blockquote>
      *
      * @param stream the output stream to which bytes are written.
      * @param <T>    output stream type parameter
@@ -120,8 +136,17 @@ public interface HelloWorld {
     /**
      * Appends <a href="#hello-world-bytes">hello-world-bytes</a> to specified file and returns the file.
      * <p>
-     * This method creates an instance of {@link FileOutputStream}, as an {@link FileOutputStream#FileOutputStream(File,
+     * This method creates an instance of {@link FileOutputStream}, in {@link FileOutputStream#FileOutputStream(File,
      * boolean) appending mode}, from specified file and invokes {@link #write(OutputStream)} method with it.
+     * <blockquote><pre>{@code
+     * final OutputStream stream = new FileOutputStream(file, true);
+     * try {
+     *     write(stream);
+     *     stream.flush();
+     * } finally {
+     *     stream.close();
+     * }
+     * }</pre></blockquote>
      *
      * @param file the file to which bytes are written.
      * @param <T>  file type parameter
@@ -144,6 +169,10 @@ public interface HelloWorld {
      * <p>
      * This method invokes {@link #write(OutputStream)} method with specified socket's {@link Socket#getOutputStream()
      * outputStream}.
+     * <blockquote><pre>{@code
+     * write(socket.getOutputStream());
+     * return socket;
+     * }</pre></blockquote>
      *
      * @param socket the socket to which bytes are sent.
      * @param <T>    socket type parameter
@@ -168,6 +197,10 @@ public interface HelloWorld {
      * <p>
      * This method invokes {@link #set()} method and writes the returned array to specified data output using {@link
      * DataOutput#write(byte[])} method.
+     * <blockquote><pre>{@code
+     * byte[] array = set();
+     * data.write(array);
+     * }</pre></blockquote>
      *
      * @param data the data output to which bytes are written.
      * @param <T>  data output type parameter
@@ -193,6 +226,10 @@ public interface HelloWorld {
      * <p>
      * This method invokes {@link #set()} method and writes the returned array to specified random access file using
      * {@link RandomAccessFile#write(byte[])} method.
+     * <blockquote><pre>{@code
+     * byte[] array = set();
+     * file.write(array);
+     * }</pre></blockquote>
      *
      * @param file the random access file to which bytes are written.
      * @param <T>  random access file type parameter
@@ -223,6 +260,18 @@ public interface HelloWorld {
      * <p>
      * Otherwise, this method invokes {@link #set()} method and puts the returned array on the buffer using {@link
      * ByteBuffer#put(byte[])} method.
+     * <blockquote><pre>{@code
+     * if (buffer.hasArray()) {
+     *     byte[] array = buffer.array();
+     *     int index = buffer.arrayOffset() + buffer.position();
+     *     set(array, index);
+     *     buffer.position(buffer.position() + BYTES);
+     * } else {
+     *     byte[] array = set();
+     *     buffer.put(array);
+     * }
+     * return buffer;
+     * }</pre></blockquote>
      *
      * @param buffer the byte buffer on which bytes are put.
      * @param <T>    byte buffer type parameter
@@ -246,11 +295,17 @@ public interface HelloWorld {
     }
 
     /**
-     * Returns a byte buffer contains the <a href="#hello-world-bytes">hello-world-bytes</a>.
+     * Returns a byte buffer contains the <a href="#hello-world-bytes">hello-world-bytes</a>. The buffer's {@code
+     * position} will be {@code 0} and both {@code limit} and {@code capacity} are {@value #BYTES}.
      * <p>
      * The {@code put()} method invokes {@link #put(ByteBuffer)} with a byte buffer of {@value #BYTES} bytes and returns
-     * the result buffer as {@link ByteBuffer#flip() flipped}. The result buffer's {@code position} is {@code 0} and the
-     * {@code limit} is {@value #BYTES}.
+     * the result buffer after {@link ByteBuffer#flip() flipped}.
+     * <blockquote><pre>{@code
+     * ByteBuffer buffer = ByteBuffer.allocate(BYTES); // position == 0, limit == capacity(==12)
+     * put(buffer); // position -> 12
+     * buffer.flip(); // limit -> position, position -> 0
+     * return buffer;
+     * }</pre></blockquote>
      *
      * @return a byte buffer contains the <a href="#hello-world-bytes">hello-world-bytes</a> and is ready to be written.
      */
@@ -264,6 +319,12 @@ public interface HelloWorld {
      * <p>
      * This method invokes {@link #put()} method and writes all remaining bytes in the returned buffer to specified
      * channel using {@link WritableByteChannel#write(ByteBuffer)} method.
+     * <blockquote><pre>{@code
+     * ByteBuffer buffer = put();
+     * while (buffer.hasRemaining()) {
+     *     channel.write(buffer);
+     * }
+     * }</pre></blockquote>
      *
      * @param channel the channel to which bytes are written.
      * @param <T>     channel type parameter
@@ -284,8 +345,17 @@ public interface HelloWorld {
     /**
      * Appends <a href="#hello-world-bytes">hello-world-bytes</a> to specified path and returns the path.
      * <p>
-     * This method opens a file channel, as {@link java.nio.file.StandardOpenOption#APPEND appedning mode}, for
-     * specified path and invokes {@link #write(WritableByteChannel)} method with it.
+     * This method opens a file channel, with an {@link java.nio.file.StandardOpenOption#APPEND appedning mode} option,
+     * from specified {@code path} and invokes {@link #write(WritableByteChannel)} method with it.
+     * <blockquote><pre>{@code
+     * FileChannel channel = FileChannel.open(path, StandardOpenOption.APPEND);
+     * try {
+     *     write(channel);
+     *     channel.force(false);
+     * } finally {
+     *     channel.close();
+     * }
+     * }</pre></blockquote>
      *
      * @param path the path to which bytes are written.
      * @param <T>  path type parameter
@@ -317,7 +387,7 @@ public interface HelloWorld {
      * @deprecated Use {@link #write(WritableByteChannel)}.
      */
     @Deprecated
-    default <T extends SocketChannel> @NotNull T send(final @NotNull T socket) throws IOException {
+    default <T extends SocketChannel> @NotNull T send(@NotNull final T socket) throws IOException {
         return write(requireNonNull(socket, "socket is null"));
     }
 }
