@@ -1,5 +1,25 @@
 package com.github.jinahya.hello;
 
+/*-
+ * #%L
+ * verbose-hello-world-api
+ * %%
+ * Copyright (C) 2018 - 2019 Jinahya, Inc.
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -10,7 +30,6 @@ import java.nio.channels.CompletionHandler;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.function.IntConsumer;
 
 /**
  * An extended hello world interface for asynchronous operations.
@@ -22,7 +41,7 @@ public interface AsynchronousHelloWorld extends HelloWorld {
     // -----------------------------------------------------------------------------------------------------------------
     default <T extends AsynchronousFileChannel> @NotNull T append(@NotNull final T channel)
             throws IOException, InterruptedException, ExecutionException {
-        if (false && channel == null) {
+        if (channel == null) {
             throw new NullPointerException("channel is null");
         }
         for (final ByteBuffer buffer = put(); buffer.hasRemaining(); ) {
@@ -62,7 +81,7 @@ public interface AsynchronousHelloWorld extends HelloWorld {
     }
 
     // -----------------------------------------------------------------------------------------------------------------
-    default <T extends AsynchronousByteChannel> @NotNull T write(@NotNull final T channel, final IntConsumer consumer)
+    default <T extends AsynchronousByteChannel> @NotNull T write(@NotNull final T channel)
             throws InterruptedException, ExecutionException {
         if (channel == null) {
             throw new NullPointerException("channel is null");
@@ -70,9 +89,6 @@ public interface AsynchronousHelloWorld extends HelloWorld {
         for (final ByteBuffer buffer = put(); buffer.hasRemaining(); ) {
             final Future<Integer> future = channel.write(buffer);
             final int written = future.get();
-            if (consumer != null) {
-                consumer.accept(written);
-            }
         }
         return channel;
     }
@@ -83,18 +99,18 @@ public interface AsynchronousHelloWorld extends HelloWorld {
         }
         final CompletableFuture<T> future = new CompletableFuture<>();
         final ByteBuffer buffer = put();
-        final CompletionHandler<Integer, ByteBuffer> handler = new CompletionHandler<Integer, ByteBuffer>() {
+        final CompletionHandler<Integer, Void> handler = new CompletionHandler<Integer, Void>() {
             @Override
-            public void completed(final Integer result, final ByteBuffer attachment) {
-                if (!attachment.hasRemaining()) {
+            public void completed(final Integer result, final Void attachment) {
+                if (!buffer.hasRemaining()) {
                     future.complete(channel);
                     return;
                 }
-                channel.write(attachment, attachment, this);
+                channel.write(buffer, null, this);
             }
 
             @Override
-            public void failed(final Throwable exc, final ByteBuffer attachment) {
+            public void failed(final Throwable exc, final Void attachment) {
                 future.completeExceptionally(exc);
             }
         };
@@ -102,9 +118,9 @@ public interface AsynchronousHelloWorld extends HelloWorld {
         return future;
     }
 
-    default <T extends AsynchronousSocketChannel> @NotNull T send(@NotNull final T channel, final IntConsumer consumer)
+    default <T extends AsynchronousSocketChannel> @NotNull T send(@NotNull final T channel)
             throws InterruptedException, ExecutionException {
-        return write(channel, consumer);
+        return write(channel);
     }
 
     default <T extends AsynchronousSocketChannel> CompletableFuture<T> sendAsync(@NotNull final T channel) {
