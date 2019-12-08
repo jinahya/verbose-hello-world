@@ -46,7 +46,6 @@ import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.channels.FileChannel;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -58,6 +57,7 @@ import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteBuffer.wrap;
 import static java.nio.channels.AsynchronousFileChannel.open;
 import static java.nio.charset.StandardCharsets.US_ASCII;
+import static java.nio.file.Files.createTempFile;
 import static java.nio.file.Files.size;
 import static java.nio.file.StandardOpenOption.APPEND;
 import static java.nio.file.StandardOpenOption.WRITE;
@@ -136,12 +136,13 @@ class AsynchronousHelloWorldTest {
             log.error("times up for awaiting the latch");
         }
         SERVER_SOCKET_CHANNEL.close();
+        log.debug("server socket channel closed");
     }
 
     // ------------------------------------------------------------------------------------------------ AsyncFileChannel
     @Test
     void testAppend(@TempDir final Path tempDir) throws Exception {
-        final Path path = Files.createTempFile(tempDir, null, null);
+        final Path path = createTempFile(tempDir, null, null);
         try (FileChannel channel = FileChannel.open(path, APPEND)) {
             channel.write(allocate(current().nextInt(1, 8)));
             channel.force(false);
@@ -155,7 +156,7 @@ class AsynchronousHelloWorldTest {
 
     @Test
     void testAppendAsync(@TempDir final Path tempDir) throws Exception {
-        final Path path = Files.createTempFile(tempDir, null, null);
+        final Path path = createTempFile(tempDir, null, null);
         try (FileChannel channel = FileChannel.open(path, APPEND)) {
             channel.write(allocate(current().nextInt(1, 8)));
             channel.force(false);
@@ -229,8 +230,14 @@ class AsynchronousHelloWorldTest {
     }
 
     // -----------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Returns a proxy of {@link #helloWorld} whose method arguments and result are validated.
+     *
+     * @return a proxy of {@link #helloWorld}.
+     */
     AsynchronousHelloWorld helloWorld() {
-        final ClassLoader loader = getClass().getClassLoader();
+        final ClassLoader loader = helloWorld.getClass().getClassLoader();
         final Class<?>[] interfaces = new Class<?>[] {AsynchronousHelloWorld.class};
         final Validator validator
                 = Validation.byDefaultProvider()

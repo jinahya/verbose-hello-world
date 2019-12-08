@@ -477,6 +477,12 @@ public class HelloWorldTest {
     }
 
     // -----------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Returns a proxy of {@link #helloWorld} whose method arguments and result are validated.
+     *
+     * @return a proxy of {@link #helloWorld}.
+     */
     HelloWorld helloWorld() {
         final ClassLoader loader = getClass().getClassLoader();
         final Class<?>[] interfaces = new Class<?>[] {HelloWorld.class};

@@ -32,6 +32,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * An injection qualifier for {@link HelloWorldDemo}.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Qualifier
 @Retention(RUNTIME)
