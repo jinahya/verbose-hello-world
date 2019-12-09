@@ -20,20 +20,21 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import org.slf4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 
-import static com.github.jinahya.hello.HelloWorldProvider.findAnyAvailableInstance;
-import static java.lang.invoke.MethodHandles.lookup;
-import static org.slf4j.LoggerFactory.getLogger;
+import static java.util.ServiceLoader.load;
 
 /**
  * A class whose {@link #main(String[])} method accepts socket connections and sends {@code hello, world} to clients.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@Slf4j
 public class HelloWorldMain {
 
-    private static final Logger logger = getLogger(lookup().lookupClass());
+    // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * The main method of this program which accepts socket connections and sends {@code hello, world} to clients.
@@ -42,9 +43,11 @@ public class HelloWorldMain {
      * @throws IOException if an I/O error occurs.
      */
     public static void main(final String... args) throws IOException {
-        final HelloWorld service = findAnyAvailableInstance();
+        final HelloWorld helloWorld = load(HelloWorld.class).iterator().next();
         // TODO: implement!
     }
+
+    // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * Creates a new instance.
