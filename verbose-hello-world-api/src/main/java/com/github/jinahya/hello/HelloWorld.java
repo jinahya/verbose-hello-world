@@ -36,6 +36,7 @@ import java.nio.channels.SocketChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 
 import static java.util.Objects.requireNonNull;
 
@@ -316,7 +317,7 @@ public interface HelloWorld {
 
     /**
      * Returns a byte buffer contains the <a href="#hello-world-bytes">hello-world-bytes</a>. The buffer's {@code
-     * position} will be {@code 0} and both {@code limit} and {@code capacity} are {@value #BYTES}.
+     * position} will be {@code 0} and both {@code limit} and {@code capacity} wil be {@link #BYTES}.
      * <p>
      * The {@code put()} method invokes {@link #put(ByteBuffer)} with a byte buffer of {@value #BYTES} bytes and returns
      * the result buffer after {@link ByteBuffer#flip() flipped}.
@@ -365,8 +366,8 @@ public interface HelloWorld {
     /**
      * Appends <a href="#hello-world-bytes">hello-world-bytes</a> to specified path and returns the path.
      * <p>
-     * This method opens a file channel, with an {@link java.nio.file.StandardOpenOption#APPEND appedning mode} option,
-     * from specified {@code path} and invokes {@link #write(WritableByteChannel)} method with it.
+     * This method opens a file channel, with {@link StandardOpenOption#APPEND}, from specified {@code path} and invokes
+     * {@link #write(WritableByteChannel)} method with it.
      * <blockquote><pre>{@code
      * FileChannel channel = FileChannel.open(path, StandardOpenOption.APPEND);
      * try {

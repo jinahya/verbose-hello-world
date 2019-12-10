@@ -26,10 +26,12 @@ import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.AsynchronousSocketChannel;
-import java.nio.channels.CompletionHandler;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+
+import static com.github.jinahya.hello.AsynchronousChannelHandler.newInstance;
+import static com.github.jinahya.hello.AsynchronousChannelHandler.newInstance;
 
 /**
  * An extended hello world interface for asynchronous operations.
@@ -58,25 +60,7 @@ interface AsynchronousHelloWorld extends HelloWorld {
         }
         final CompletableFuture<T> future = new CompletableFuture<>();
         final ByteBuffer buffer = put();
-        channel.write(buffer, channel.size(), buffer, new CompletionHandler<Integer, ByteBuffer>() {
-            @Override
-            public void completed(final Integer result, final ByteBuffer attachment) {
-                if (!attachment.hasRemaining()) {
-                    future.complete(channel);
-                    return;
-                }
-                try {
-                    channel.write(attachment, channel.size(), attachment, this);
-                } catch (final IOException ioe) {
-                    failed(ioe, attachment);
-                }
-            }
-
-            @Override
-            public void failed(final Throwable exc, final ByteBuffer attachment) {
-                future.completeExceptionally(exc);
-            }
-        });
+        channel.write(buffer, channel.size(), buffer, AsynchronousChannelHandler.newInstance(channel, future));
         return future;
     }
 
@@ -99,31 +83,22 @@ interface AsynchronousHelloWorld extends HelloWorld {
         }
         final CompletableFuture<T> future = new CompletableFuture<>();
         final ByteBuffer buffer = put();
-        final CompletionHandler<Integer, Void> handler = new CompletionHandler<Integer, Void>() {
-            @Override
-            public void completed(final Integer result, final Void attachment) {
-                if (!buffer.hasRemaining()) {
-                    future.complete(channel);
-                    return;
-                }
-                channel.write(buffer, null, this);
-            }
-
-            @Override
-            public void failed(final Throwable exc, final Void attachment) {
-                future.completeExceptionally(exc);
-            }
-        };
-        channel.write(buffer, null, handler);
+        channel.write(buffer, buffer, newInstance(channel, future));
         return future;
     }
 
     default <T extends AsynchronousSocketChannel> @NotNull T send(@NotNull final T channel)
             throws InterruptedException, ExecutionException {
+        if (channel == null) {
+            throw new NullPointerException("channel is null");
+        }
         return write(channel);
     }
 
     default <T extends AsynchronousSocketChannel> CompletableFuture<T> sendAsync(@NotNull final T channel) {
+        if (channel == null) {
+            throw new NullPointerException("channel is null");
+        }
         return writeAsync(channel);
     }
 }

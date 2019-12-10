@@ -21,8 +21,6 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator;
-import org.hibernate.validator.testutil.ValidationInvocationHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,14 +30,11 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 
-import javax.validation.Validation;
-import javax.validation.Validator;
 import java.io.DataOutput;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
-import java.lang.reflect.InvocationHandler;
 import java.net.Socket;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
@@ -50,7 +45,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
-import static java.lang.reflect.Proxy.newProxyInstance;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -484,16 +478,7 @@ public class HelloWorldTest {
      * @return a proxy of {@link #helloWorld}.
      */
     HelloWorld helloWorld() {
-        final ClassLoader loader = getClass().getClassLoader();
-        final Class<?>[] interfaces = new Class<?>[] {HelloWorld.class};
-        final Validator validator
-                = Validation.byDefaultProvider()
-                .configure()
-                .messageInterpolator(new ParameterMessageInterpolator())
-                .buildValidatorFactory()
-                .getValidator();
-        final InvocationHandler handler = new ValidationInvocationHandler(helloWorld, validator);
-        return (HelloWorld) newProxyInstance(loader, interfaces, handler);
+        return ValidationProxy.newInstance(HelloWorld.class, helloWorld);
     }
 
     /**

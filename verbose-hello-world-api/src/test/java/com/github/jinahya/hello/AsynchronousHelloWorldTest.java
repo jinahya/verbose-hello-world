@@ -21,8 +21,6 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator;
-import org.hibernate.validator.testutil.ValidationInvocationHandler;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,10 +31,7 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 
-import javax.validation.Validation;
-import javax.validation.Validator;
 import java.io.IOException;
-import java.lang.reflect.InvocationHandler;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
@@ -51,7 +46,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
-import static java.lang.reflect.Proxy.newProxyInstance;
 import static java.net.InetAddress.getLocalHost;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteBuffer.wrap;
@@ -232,30 +226,22 @@ class AsynchronousHelloWorldTest {
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
-     * Returns a proxy of {@link #helloWorld} whose method arguments and result are validated.
+     * Returns a validation proxy of {@link #helloWorld} whose method arguments and result are validated.
      *
      * @return a proxy of {@link #helloWorld}.
      */
     AsynchronousHelloWorld helloWorld() {
-        final ClassLoader loader = helloWorld.getClass().getClassLoader();
-        final Class<?>[] interfaces = new Class<?>[] {AsynchronousHelloWorld.class};
-        final Validator validator
-                = Validation.byDefaultProvider()
-                .configure()
-                .messageInterpolator(new ParameterMessageInterpolator())
-                .buildValidatorFactory()
-                .getValidator();
-        final InvocationHandler handler = new ValidationInvocationHandler(helloWorld, validator);
-        return (AsynchronousHelloWorld) newProxyInstance(loader, interfaces, handler);
+        return ValidationProxy.newInstance(AsynchronousHelloWorld.class, helloWorld);
     }
 
     /**
-     * Stubs {@link HelloWorld#set(byte[], int)} method of {@link Spy spied} {@code helloWorld} instance to return
-     * specified {@code array}.
+     * Stubs {@link HelloWorld#put()}} method of {@link Spy spied} {@code helloWorld} instance to return an empty bytes
+     * buffer.
      */
     @BeforeEach
     private void stubPutReturnsAnEmpty() {
-        when(helloWorld.put()).thenAnswer(i -> wrap("hello, world".getBytes(US_ASCII)));
+        when(helloWorld.put())                           // <1>
+                .thenAnswer(i -> wrap(new byte[BYTES])); // <2>
     }
 
     // -----------------------------------------------------------------------------------------------------------------
