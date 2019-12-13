@@ -28,6 +28,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
 
 import java.io.DataOutput;
 import java.io.File;
@@ -52,13 +53,15 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.quality.Strictness.LENIENT;
 
 /**
  * A class for unit-testing {@link HelloWorld} interface.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-//@MockitoSettings(strictness = LENIENT)
+@MockitoSettings(strictness = LENIENT)
 @ExtendWith({MockitoExtension.class})
 @Slf4j
 public class HelloWorldTest {
@@ -462,7 +465,7 @@ public class HelloWorldTest {
      */
     @BeforeEach
     private void stubSetArrayIndexToReturnSpecifiedArray() {
-        lenient().when(helloWorld.set(any(byte[].class), anyInt())) // <1>
+        when(helloWorld.set(any(byte[].class), anyInt())) // <1>
                 .thenAnswer(i -> i.getArgument(0));       // <2>
     }
 
