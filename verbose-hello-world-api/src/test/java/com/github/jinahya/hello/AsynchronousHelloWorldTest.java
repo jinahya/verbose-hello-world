@@ -42,7 +42,6 @@ import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.channels.FileChannel;
 import java.nio.file.Path;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -127,10 +126,10 @@ class AsynchronousHelloWorldTest {
 
     @AfterAll
     private static void closeServerSocketChannel() throws InterruptedException, IOException {
-//        final boolean broken = LATCH.await(20L, TimeUnit.SECONDS);
-//        if (!broken) {
-//            log.error("times up for awaiting the latch");
-//        }
+        final boolean broken = LATCH.await(20L, TimeUnit.SECONDS);
+        if (!broken) {
+            log.error("times up for awaiting the latch");
+        }
         SERVER_SOCKET_CHANNEL.close();
         log.debug("server socket channel closed");
     }
@@ -159,9 +158,7 @@ class AsynchronousHelloWorldTest {
         }
         final long size = size(path);
         try (AsynchronousFileChannel channel = open(path, WRITE)) {
-            CompletableFuture<AsynchronousFileChannel> future = helloWorld.appendAsync(channel);
-            final AsynchronousFileChannel actual = future.get();
-            assertEquals(channel, actual);
+            assertEquals(channel, helloWorld.appendAsync(channel).get());
         }
         assertEquals(size + BYTES, size(path));
     }

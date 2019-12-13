@@ -46,10 +46,9 @@ interface AsynchronousHelloWorld extends HelloWorld {
         if (channel == null) {
             throw new NullPointerException("channel is null");
         }
-        for (final ByteBuffer buffer = (ByteBuffer) ((ByteBuffer) put(allocate(BYTES)).flip()); buffer.hasRemaining(); ) {
+        for (final ByteBuffer buffer = (ByteBuffer) ((ByteBuffer) put(allocate(BYTES))).flip(); buffer.hasRemaining(); ) {
             final Future<Integer> future = channel.write(buffer, channel.size());
             final int written = future.get();
-            System.out.println(written);
         }
         return channel;
     }
