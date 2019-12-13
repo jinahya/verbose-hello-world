@@ -46,7 +46,7 @@ final class ValidationProxy {
      * @return a validation proxy of specified instance.
      */
     @SuppressWarnings({"unchecked"})
-    static <T extends HelloWorld> T newInstance(final Class<T> type, final T instance) {
+    static <T extends HelloWorld> T newValidationProxy(final Class<T> type, final T instance) {
         if (type == null) {
             throw new NullPointerException("type is null");
         }

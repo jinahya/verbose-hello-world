@@ -31,7 +31,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import static com.github.jinahya.hello.AsynchronousChannelHandler.newInstance;
-import static com.github.jinahya.hello.AsynchronousChannelHandler.newInstance;
+import static java.nio.ByteBuffer.allocate;
 
 /**
  * An extended hello world interface for asynchronous operations.
@@ -46,9 +46,10 @@ interface AsynchronousHelloWorld extends HelloWorld {
         if (channel == null) {
             throw new NullPointerException("channel is null");
         }
-        for (final ByteBuffer buffer = put(); buffer.hasRemaining(); ) {
+        for (final ByteBuffer buffer = (ByteBuffer) put(allocate(BYTES)).flip(); buffer.hasRemaining(); ) {
             final Future<Integer> future = channel.write(buffer, channel.size());
             final int written = future.get();
+            System.out.println(written);
         }
         return channel;
     }
@@ -59,7 +60,7 @@ interface AsynchronousHelloWorld extends HelloWorld {
             throw new NullPointerException("channel is null");
         }
         final CompletableFuture<T> future = new CompletableFuture<>();
-        final ByteBuffer buffer = put();
+        final ByteBuffer buffer = (ByteBuffer) put(allocate(BYTES)).flip();
         channel.write(buffer, channel.size(), buffer, AsynchronousChannelHandler.newInstance(channel, future));
         return future;
     }
@@ -70,7 +71,7 @@ interface AsynchronousHelloWorld extends HelloWorld {
         if (channel == null) {
             throw new NullPointerException("channel is null");
         }
-        for (final ByteBuffer buffer = put(); buffer.hasRemaining(); ) {
+        for (final ByteBuffer buffer = (ByteBuffer) put(allocate(BYTES)).flip(); buffer.hasRemaining(); ) {
             final Future<Integer> future = channel.write(buffer);
             final int written = future.get();
         }
@@ -82,7 +83,7 @@ interface AsynchronousHelloWorld extends HelloWorld {
             throw new NullPointerException("channel is null");
         }
         final CompletableFuture<T> future = new CompletableFuture<>();
-        final ByteBuffer buffer = put();
+        final ByteBuffer buffer = (ByteBuffer) put(allocate(BYTES)).flip();
         channel.write(buffer, buffer, newInstance(channel, future));
         return future;
     }

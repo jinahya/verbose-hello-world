@@ -42,13 +42,14 @@ import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.channels.FileChannel;
 import java.nio.file.Path;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
+import static com.github.jinahya.hello.ValidationProxy.newValidationProxy;
 import static java.net.InetAddress.getLocalHost;
 import static java.nio.ByteBuffer.allocate;
-import static java.nio.ByteBuffer.wrap;
 import static java.nio.channels.AsynchronousFileChannel.open;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 import static java.nio.file.Files.createTempFile;
@@ -58,7 +59,8 @@ import static java.nio.file.StandardOpenOption.WRITE;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.quality.Strictness.LENIENT;
 
 /**
@@ -125,9 +127,11 @@ class AsynchronousHelloWorldTest {
 
     @AfterAll
     private static void closeServerSocketChannel() throws InterruptedException, IOException {
-        final boolean broken = LATCH.await(20L, TimeUnit.SECONDS);
-        if (!broken) {
-            log.error("times up for awaiting the latch");
+        if (false) {
+            final boolean broken = LATCH.await(20L, TimeUnit.SECONDS);
+            if (!broken) {
+                log.error("times up for awaiting the latch");
+            }
         }
         SERVER_SOCKET_CHANNEL.close();
         log.debug("server socket channel closed");
@@ -157,7 +161,9 @@ class AsynchronousHelloWorldTest {
         }
         final long size = size(path);
         try (AsynchronousFileChannel channel = open(path, WRITE)) {
-            assertSame(channel, helloWorld.appendAsync(channel).get());
+            CompletableFuture<AsynchronousFileChannel> future = helloWorld.appendAsync(channel);
+            final AsynchronousFileChannel actual = future.get();
+            assertEquals(channel, actual);
         }
         assertEquals(size + BYTES, size(path));
     }
@@ -231,17 +237,20 @@ class AsynchronousHelloWorldTest {
      * @return a proxy of {@link #helloWorld}.
      */
     AsynchronousHelloWorld helloWorld() {
-        return ValidationProxy.newInstance(AsynchronousHelloWorld.class, helloWorld);
+        return newValidationProxy(AsynchronousHelloWorld.class, helloWorld);
     }
 
     /**
-     * Stubs {@link HelloWorld#put()}} method of {@link Spy spied} {@code helloWorld} instance to return an empty bytes
+     * Stubs {@link HelloWorld#put(ByteBuffer)}} method of {@link Spy spied} {@code helloWorld} instance to return given
      * buffer.
      */
     @BeforeEach
-    private void stubPutReturnsAnEmpty() {
-        when(helloWorld.put())                           // <1>
-                .thenAnswer(i -> wrap(new byte[BYTES])); // <2>
+    private void stubPutBufferReturnsTheBuffer() throws IOException {
+        doAnswer(i -> {
+            final ByteBuffer buffer = i.getArgument(0, ByteBuffer.class);
+            buffer.position(buffer.position() + BYTES);
+            return buffer;
+        }).when(helloWorld).put(any(ByteBuffer.class));
     }
 
     // -----------------------------------------------------------------------------------------------------------------

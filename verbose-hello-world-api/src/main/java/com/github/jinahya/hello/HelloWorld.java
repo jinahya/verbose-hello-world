@@ -110,29 +110,11 @@ public interface HelloWorld {
     }
 
     /**
-     * Returns an array of {@value #BYTES} bytes contains the <a href="#hello-world-bytes">hello-world-bytes</a>.
-     * <p>
-     * This method invokes {@link #set(byte[])} with an array of {@value #BYTES} bytes and returns the result.
-     * <blockquote><pre>{@code
-     * byte[] array = new byte[BYTES];
-     * set(array);
-     * return array;
-     * }</pre></blockquote>
-     *
-     * @return an array of {@value #BYTES} bytes contains the <a href="#hello-world-bytes">hello-world-bytes</a>.
-     * @see #set(byte[])
-     */
-    default @NotNull byte[] set() {
-        // TODO: Implement!!!
-        return null;
-    }
-
-    /**
      * Writes <a href="#hello-world-bytes">hello-world-bytes</a> to specified output stream and returns the output
      * stream.
      * <p>
-     * This method invokes {@link #set()} and writes the returned array to specified output stream using {@link
-     * OutputStream#write(byte[])} method.
+     * This method invokes {@link #set(byte[])} method with an array of {@link #BYTES} bytes and writes the returned
+     * array to specified output stream using {@link OutputStream#write(byte[])} method.
      * <blockquote><pre>{@code
      * byte[] array = set();
      * stream.write(array);
@@ -143,7 +125,7 @@ public interface HelloWorld {
      * @return specified output stream.
      * @throws NullPointerException if {@code stream} is {@code null}.
      * @throws IOException          if an I/O error occurs.
-     * @see #set()
+     * @see #set(byte[])
      * @see OutputStream#write(byte[])
      */
     default <T extends OutputStream> @NotNull T write(@NotNull final T stream) throws IOException {
@@ -157,7 +139,7 @@ public interface HelloWorld {
     /**
      * Appends <a href="#hello-world-bytes">hello-world-bytes</a> to specified file and returns the file.
      * <p>
-     * This method creates an instance of {@link FileOutputStream}, in {@link FileOutputStream#FileOutputStream(File,
+     * This method creates an instance of {@link FileOutputStream}, as {@link FileOutputStream#FileOutputStream(File,
      * boolean) appending mode}, from specified file and invokes {@link #write(OutputStream)} method with it.
      * <blockquote><pre>{@code
      * final OutputStream stream = new FileOutputStream(file, true);
@@ -216,8 +198,8 @@ public interface HelloWorld {
     /**
      * Writes <a href="#hello-world-bytes">hello-world-bytes</a> to specified data output and returns the data output.
      * <p>
-     * This method invokes {@link #set()} method and writes the returned array to specified data output using {@link
-     * DataOutput#write(byte[])} method.
+     * This method invokes {@link #set(byte[])} method with an array of {@value #BYTES} bytes and writes the returned
+     * array to specified data output using {@link DataOutput#write(byte[])} method.
      * <blockquote><pre>{@code
      * byte[] array = set();
      * data.write(array);
@@ -228,7 +210,7 @@ public interface HelloWorld {
      * @return specified data output.
      * @throws NullPointerException if {@code data} is {@code null}.
      * @throws IOException          if an I/O error occurs.
-     * @see #set()
+     * @see #set(byte[]) #set()
      * @see DataOutput#write(byte[])
      */
     default <T extends DataOutput> @NotNull T write(@NotNull final T data) throws IOException {
@@ -245,8 +227,8 @@ public interface HelloWorld {
      * Writes <a href="#hello-world-bytes">hello-world-bytes</a> to specified random access file and returns the random
      * access file.
      * <p>
-     * This method invokes {@link #set()} method and writes the returned array to specified random access file using
-     * {@link RandomAccessFile#write(byte[])} method.
+     * This method invokes {@link #set(byte[])} method with an array of {@value #BYTES} bytes and writes the returned
+     * array to specified random access file using {@link RandomAccessFile#write(byte[])} method.
      * <blockquote><pre>{@code
      * byte[] array = set();
      * file.write(array);
@@ -257,7 +239,7 @@ public interface HelloWorld {
      * @return specified random access file.
      * @throws NullPointerException if {@code file} argument is {@code null}.
      * @throws IOException          if an I/O error occurs.
-     * @see #set()
+     * @see #set(byte[])
      * @see RandomAccessFile#write(byte[])
      */
     default <T extends RandomAccessFile> @NotNull T write(@NotNull final T file) throws IOException {
@@ -279,8 +261,8 @@ public interface HelloWorld {
      * buffer.arrayOffset} + {@link ByteBuffer#position() buffer.position}) and then manually increments the buffer's
      * {@link ByteBuffer#position(int) position} by {@value #BYTES}.
      * <p>
-     * Otherwise, this method invokes {@link #set()} method and puts the returned array on the buffer using {@link
-     * ByteBuffer#put(byte[])} method.
+     * Otherwise, this method invokes {@link #set(byte[])} method with an array of {@value #BYTES} bytes and puts the
+     * returned array on the buffer using {@link ByteBuffer#put(byte[])} method.
      * <blockquote><pre>{@code
      * if (buffer.hasArray()) {
      *     byte[] array = buffer.array();
@@ -304,7 +286,7 @@ public interface HelloWorld {
      * @see ByteBuffer#arrayOffset()
      * @see ByteBuffer#position()
      * @see ByteBuffer#position(int)
-     * @see #set()
+     * @see #set(byte[])
      * @see ByteBuffer#put(byte[])
      */
     default <T extends ByteBuffer> @NotNull T put(@NotNull final T buffer) {
@@ -316,30 +298,11 @@ public interface HelloWorld {
     }
 
     /**
-     * Returns a byte buffer contains the <a href="#hello-world-bytes">hello-world-bytes</a>. The buffer's {@code
-     * position} will be {@code 0} and both {@code limit} and {@code capacity} wil be {@link #BYTES}.
-     * <p>
-     * The {@code put()} method invokes {@link #put(ByteBuffer)} with a byte buffer of {@value #BYTES} bytes and returns
-     * the result buffer after {@link ByteBuffer#flip() flipped}.
-     * <blockquote><pre>{@code
-     * ByteBuffer buffer = ByteBuffer.allocate(BYTES); // position == 0, limit == capacity(==12)
-     * put(buffer); // position -> 12
-     * buffer.flip(); // limit -> position, position -> 0
-     * return buffer;
-     * }</pre></blockquote>
-     *
-     * @return a byte buffer contains the <a href="#hello-world-bytes">hello-world-bytes</a> and is ready to be written.
-     */
-    default @NotNull ByteBuffer put() {
-        // TODO: Implement!!!
-        return null;
-    }
-
-    /**
      * Writes <a href="#hello-world-bytes">hello-world-bytes</a> to specified channel.
      * <p>
-     * This method invokes {@link #put()} method and writes all remaining bytes in the returned buffer to specified
-     * channel using {@link WritableByteChannel#write(ByteBuffer)} method.
+     * This method invokes {@link #put(ByteBuffer)} with a newly created byte buffer of {@value #BYTES} bytes and, after
+     * flips it, writes all remaining bytes in the returned buffer to specified channel using {@link
+     * WritableByteChannel#write(ByteBuffer)} method.
      * <blockquote><pre>{@code
      * ByteBuffer buffer = put();
      * while (buffer.hasRemaining()) {

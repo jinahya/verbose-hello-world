@@ -28,7 +28,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
 
 import java.io.DataOutput;
 import java.io.File;
@@ -45,21 +44,21 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
+import static com.github.jinahya.hello.ValidationProxy.newValidationProxy;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.quality.Strictness.LENIENT;
 
 /**
  * A class for unit-testing {@link HelloWorld} interface.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@MockitoSettings(strictness = LENIENT)
+//@MockitoSettings(strictness = LENIENT)
 @ExtendWith({MockitoExtension.class})
 @Slf4j
 public class HelloWorldTest {
@@ -121,18 +120,6 @@ public class HelloWorldTest {
         // TODO: implement!
     }
 
-    // --------------------------------------------------------------------------------------------------------- set()[B
-
-    /**
-     * Asserts {@link HelloWorld#set()} method invokes {@link HelloWorld#set(byte[])} with an array of {@value
-     * com.github.jinahya.hello.HelloWorld#BYTES} bytes and returns the result.
-     */
-    @DisplayName("set() invokes set(byte[BYTES]) and returns the result")
-    @Test
-    public void assertSetInvokesSetArrayAndReturnsTheResult() {
-        // TODO: Implement!!!
-    }
-
     // -------------------------------------------------------------- write(Ljava.io.OutputStream;)Ljava.io.OutputStream
 
     /**
@@ -146,14 +133,14 @@ public class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#write(OutputStream)} method invokes {@link HelloWorld#set()} method and writes the
-     * returned array to specified output stream.
+     * Asserts {@link HelloWorld#write(OutputStream)} method invokes {@link HelloWorld#set(byte[])} method and writes
+     * the returned array to specified output stream.
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(stream) invokes set() and writes the returned array to the stream")
+    @DisplayName("write(stream) invokes set(array) and writes the returned array to the stream")
     @Test
-    public void assertWriteStreamInvokesSetAndWritesTheResultToStream() throws IOException {
+    public void assertWriteStreamInvokesSetArrayAndWritesTheResultToStream() throws IOException {
         // TODO: implement!
     }
 
@@ -252,14 +239,14 @@ public class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#write(DataOutput)} method invokes {@link HelloWorld#set()} method and writes the
+     * Asserts {@link HelloWorld#write(DataOutput)} method invokes {@link HelloWorld#set(byte[])} method and writes the
      * returned array to specified data output.
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(data) invokes set() and writes the result to data")
+    @DisplayName("write(data) invokes set(array) and writes the result to data")
     @Test
-    public void assertWriteDataInvokesSetAndWritesTheResultToData() throws IOException {
+    public void assertWriteDataInvokesSetArrayAndWritesTheResultToData() throws IOException {
         // TODO: implement!
     }
 
@@ -287,14 +274,14 @@ public class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#write(RandomAccessFile)} invokes {@link HelloWorld#set()} method and writes the
+     * Asserts {@link HelloWorld#write(RandomAccessFile)} invokes {@link HelloWorld#set(byte[])} method and writes the
      * returned array to specified {@code file}.
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(file) invokes set() method and writes the result to file")
+    @DisplayName("write(file) invokes set(array) method and writes the result to file")
     @Test
-    public void assertWriteFileInvokesSetAndWritesTheResultToFile() throws IOException {
+    public void assertWriteFileInvokesSetArrayAndWritesTheResultToFile() throws IOException {
         // TODO: implement!
     }
 
@@ -337,7 +324,7 @@ public class HelloWorldTest {
      * and ({@link ByteBuffer#arrayOffset() buffer.arrayOffset} + {@link ByteBuffer#position() position}) and increments
      * the {@link ByteBuffer#position(int) position} by {@link HelloWorld#BYTES}.
      */
-    @DisplayName("put(buffer) invokes set(buffer.array, buffer.arrayOffset + buffer.position)")
+    @DisplayName("put(buffer with back array) invokes set(buffer.array, buffer.arrayOffset + buffer.position)")
     @Test
     public void assertPutBufferInvokesSetArrayIndexWhenBufferHasBackingArray() {
         // TODO: implement!
@@ -345,9 +332,9 @@ public class HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#put(ByteBuffer)} method, when the {@code buffer} doesn't have a backing array, invokes
-     * {@link HelloWorld#set()} method and puts the result to the buffer.
+     * {@link HelloWorld#set(byte[])} method and puts the result to the buffer.
      */
-    @DisplayName("put(buffer) invokes set() and put the result to the buffer")
+    @DisplayName("put(buffer with no backing array) invokes set(byte[BYTES]) and put the result to the buffer")
     @Test
     public void assertPutBufferInvokesSetWhenBufferHasNoBackingArray() {
         // TODO: implement!
@@ -365,22 +352,10 @@ public class HelloWorldTest {
     /**
      * Asserts {@link HelloWorld#put(ByteBuffer)} method returns specified {@code buffer}.
      */
-    @DisplayName("put(buffer with no backing array) returns specified buffer; without backing array")
+    @DisplayName("put(buffer with no backing array) returns specified buffer")
     @Test
     public void assertPutBufferReturnsBufferHasNoBackingArray() {
         // TODO: implement!
-    }
-
-    // -------------------------------------------------------------------------------------- put()Ljava.nio.ByteBuffer;
-
-    /**
-     * Asserts {@link HelloWorld#put()} method invokes {@link HelloWorld#put(ByteBuffer)} and returns the result as
-     * ready to be read.
-     */
-    @DisplayName("put() invokes put(buffer) and returns the result as ready to be read")
-    @Test
-    public void assertPutInvokesPutBufferAndReturnsTheResultAsReadyToBeWritten() {
-        // TODO: Implement!!!
     }
 
     // -------------------------------------------------------------------------------------- write(WritableByteChannel)
@@ -396,12 +371,12 @@ public class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#write(WritableByteChannel)} method invokes {@link HelloWorld#put()} and writes the
-     * buffer to specified writable byte channel.
+     * Asserts {@link HelloWorld#write(WritableByteChannel)} method invokes {@link HelloWorld#put(ByteBuffer)} method
+     * with a byte buffer of {@link HelloWorld#BYTES} bytes and writes the buffer to specified writable byte channel.
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(channel) invokes put() and writes the result to the channel")
+    @DisplayName("write(channel) invokes put(ByteBuffer) and writes the result to the channel")
     @Test
     public void assertWriteChannelInvokesPutAndWritesTheResultToChannel() throws IOException {
         // TODO: implement!
@@ -460,7 +435,7 @@ public class HelloWorldTest {
     @Test
     void testSendSocketChannel() throws IOException {
         final SocketChannel expected = mock(SocketChannel.class);
-        when(expected.write(any(ByteBuffer.class))).then(i -> {
+        lenient().when(expected.write(any(ByteBuffer.class))).then(i -> {
             final ByteBuffer buffer = i.getArgument(0);
             final int written = buffer.remaining();
             buffer.position(buffer.limit()); // drains all available bytes
@@ -478,7 +453,7 @@ public class HelloWorldTest {
      * @return a proxy of {@link #helloWorld}.
      */
     HelloWorld helloWorld() {
-        return ValidationProxy.newInstance(HelloWorld.class, helloWorld);
+        return newValidationProxy(HelloWorld.class, helloWorld);
     }
 
     /**
@@ -487,7 +462,7 @@ public class HelloWorldTest {
      */
     @BeforeEach
     private void stubSetArrayIndexToReturnSpecifiedArray() {
-        when(helloWorld.set(any(byte[].class), anyInt())) // <1>
+        lenient().when(helloWorld.set(any(byte[].class), anyInt())) // <1>
                 .thenAnswer(i -> i.getArgument(0));       // <2>
     }
 
