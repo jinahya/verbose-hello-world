@@ -46,7 +46,7 @@ interface AsynchronousHelloWorld extends HelloWorld {
         if (channel == null) {
             throw new NullPointerException("channel is null");
         }
-        for (final ByteBuffer buffer = (ByteBuffer) put(allocate(BYTES)).flip(); buffer.hasRemaining(); ) {
+        for (final ByteBuffer buffer = (ByteBuffer) ((ByteBuffer) put(allocate(BYTES)).flip()); buffer.hasRemaining(); ) {
             final Future<Integer> future = channel.write(buffer, channel.size());
             final int written = future.get();
             System.out.println(written);
@@ -60,7 +60,7 @@ interface AsynchronousHelloWorld extends HelloWorld {
             throw new NullPointerException("channel is null");
         }
         final CompletableFuture<T> future = new CompletableFuture<>();
-        final ByteBuffer buffer = (ByteBuffer) put(allocate(BYTES)).flip();
+        final ByteBuffer buffer = (ByteBuffer) ((ByteBuffer) put(allocate(BYTES))).flip();
         channel.write(buffer, channel.size(), buffer, AsynchronousChannelHandler.newInstance(channel, future));
         return future;
     }

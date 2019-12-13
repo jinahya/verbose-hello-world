@@ -127,12 +127,10 @@ class AsynchronousHelloWorldTest {
 
     @AfterAll
     private static void closeServerSocketChannel() throws InterruptedException, IOException {
-        if (false) {
-            final boolean broken = LATCH.await(20L, TimeUnit.SECONDS);
-            if (!broken) {
-                log.error("times up for awaiting the latch");
-            }
-        }
+//        final boolean broken = LATCH.await(20L, TimeUnit.SECONDS);
+//        if (!broken) {
+//            log.error("times up for awaiting the latch");
+//        }
         SERVER_SOCKET_CHANNEL.close();
         log.debug("server socket channel closed");
     }
