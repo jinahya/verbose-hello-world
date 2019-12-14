@@ -49,7 +49,6 @@ import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static com.github.jinahya.hello.ValidationProxy.newValidationProxy;
 import static java.net.InetAddress.getLocalHost;
 import static java.nio.ByteBuffer.allocate;
-import static java.nio.channels.AsynchronousFileChannel.open;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 import static java.nio.file.Files.createTempFile;
 import static java.nio.file.Files.size;
@@ -73,45 +72,58 @@ import static org.mockito.quality.Strictness.LENIENT;
 class AsynchronousHelloWorldTest {
 
     // -----------------------------------------------------------------------------------------------------------------
-    private static AsynchronousServerSocketChannel SERVER_SOCKET_CHANNEL;
+    private static AsynchronousServerSocketChannel CHANNEL;
 
-    private static SocketAddress SERVER_SOCKET_ADDRESS;
+    private static SocketAddress ADDRESS;
 
     private static CountDownLatch LATCH = new CountDownLatch(2);
 
     // -----------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Opens the {@link #CHANNEL} and starts accepting.
+     *
+     * @throws IOException if an I/O error occurs.
+     */
     @BeforeAll
     private static void openServerSocketChannel() throws IOException {
-        SERVER_SOCKET_CHANNEL = AsynchronousServerSocketChannel.open().bind(new InetSocketAddress(0));
-        SERVER_SOCKET_ADDRESS = SERVER_SOCKET_CHANNEL.getLocalAddress();
-        SERVER_SOCKET_CHANNEL.accept(null, new CompletionHandler<AsynchronousSocketChannel, Void>() {
+        CHANNEL = AsynchronousServerSocketChannel.open().bind(new InetSocketAddress(0));
+        log.debug("server socket channel is open: {}", CHANNEL);
+        ADDRESS = CHANNEL.getLocalAddress();
+        CHANNEL.accept(null, new CompletionHandler<AsynchronousSocketChannel, Void>() {
             @Override
-            public void completed(final AsynchronousSocketChannel socketChannel, final Void attachment) {
+            public void completed(final AsynchronousSocketChannel channel, final Void attachment) {
+                log.debug("accepted: {}", channel);
                 final ByteBuffer buffer = allocate(BYTES);
-                socketChannel.read(buffer, null, new CompletionHandler<Integer, Void>() {
+                channel.read(buffer, null, new CompletionHandler<Integer, Void>() {
                     @Override
-                    public void completed(final Integer result, final Void attachment) {
-                        if (!buffer.hasRemaining()) {
+                    public void completed(final Integer read, final Void attachment) {
+                        assert read != null;
+                        if (read == -1) {
+                            log.debug("channel is closed");
+                            return;
+                        }
+                        if (!buffer.hasRemaining()) { // all 12 bytes are read
                             buffer.flip();
                             log.debug("buffer: {}", US_ASCII.decode(buffer).toString());
                             try {
-                                socketChannel.close();
-                                LATCH.countDown();
+                                channel.close();
                             } catch (final IOException ioe) {
                                 log.debug("failed to close socket channel", ioe);
                             }
-                        } else {
-                            socketChannel.read(buffer, null, this);
+                            LATCH.countDown();
+                            return;
                         }
+                        channel.read(buffer, null, this); // keep reading
                     }
 
                     @Override
                     public void failed(final Throwable exc, final Void attachment) {
                         log.debug("failed to read", exc);
+                        LATCH.countDown();
                     }
                 });
-                LATCH.countDown();
-                SERVER_SOCKET_CHANNEL.accept(null, this);
+                CHANNEL.accept(attachment, this); // keep accepting
             }
 
             @Override
@@ -119,22 +131,38 @@ class AsynchronousHelloWorldTest {
                 if (!(exc instanceof AsynchronousCloseException)) {
                     log.debug("failed to accept", exc);
                 }
+                if (CHANNEL.isOpen()) {
+                    CHANNEL.accept(attachment, this); // keep accepting
+                }
                 LATCH.countDown();
             }
         });
     }
 
+    /**
+     * Closes the {@link #CHANNEL} after awaiting the {@link #LATCH} for some time.
+     *
+     * @throws InterruptedException if interrupted while awaiting the {@link #LATCH}.
+     * @throws IOException          if an I/O error occurs.
+     */
     @AfterAll
     private static void closeServerSocketChannel() throws InterruptedException, IOException {
         final boolean broken = LATCH.await(20L, TimeUnit.SECONDS);
         if (!broken) {
-            log.error("times up for awaiting the latch");
+            log.error("times up while awaiting the latch to be broken");
         }
-        SERVER_SOCKET_CHANNEL.close();
+        CHANNEL.close();
         log.debug("server socket channel closed");
     }
 
     // ------------------------------------------------------------------------------------------------ AsyncFileChannel
+
+    /**
+     * Tests {@link AsynchronousHelloWorld#append(AsynchronousFileChannel)} method.
+     *
+     * @param tempDir a temporary directory to test with.
+     * @throws Exception if an I/O error occurs.
+     */
     @Test
     void testAppend(@TempDir final Path tempDir) throws Exception {
         final Path path = createTempFile(tempDir, null, null);
@@ -143,12 +171,18 @@ class AsynchronousHelloWorldTest {
             channel.force(false);
         }
         final long size = size(path);
-        try (AsynchronousFileChannel channel = open(path, WRITE)) {
+        try (AsynchronousFileChannel channel = AsynchronousFileChannel.open(path, WRITE)) {
             assertSame(channel, helloWorld.append(channel));
         }
         assertEquals(size + BYTES, size(path));
     }
 
+    /**
+     * Tests {@link AsynchronousHelloWorld#appendAsync(AsynchronousFileChannel)} #append(Path)} method.
+     *
+     * @param tempDir a temporary directory to test with.
+     * @throws Exception if an error occurs.
+     */
     @Test
     void testAppendAsync(@TempDir final Path tempDir) throws Exception {
         final Path path = createTempFile(tempDir, null, null);
@@ -157,18 +191,24 @@ class AsynchronousHelloWorldTest {
             channel.force(false);
         }
         final long size = size(path);
-        try (AsynchronousFileChannel channel = open(path, WRITE)) {
+        try (AsynchronousFileChannel channel = AsynchronousFileChannel.open(path, WRITE)) {
             assertEquals(channel, helloWorld.appendAsync(channel).get());
         }
         assertEquals(size + BYTES, size(path));
     }
 
     // --------------------------------------------------------------------------------------- AsynchronousSocketChannel
+
+    /**
+     * Tests {@link AsynchronousHelloWorld#send(AsynchronousSocketChannel)} method.
+     *
+     * @throws Exception if an I/O error occurs.
+     */
     @Test
     void testSend() throws Exception {
         final AsynchronousSocketChannel socketChannel = AsynchronousSocketChannel.open();
         final SocketAddress remote = new InetSocketAddress(
-                getLocalHost(), ((InetSocketAddress) SERVER_SOCKET_ADDRESS).getPort());
+                getLocalHost(), ((InetSocketAddress) ADDRESS).getPort());
         socketChannel.connect(remote, null, new CompletionHandler<Void, Void>() {
             @Override
             public void completed(final Void result, final Void attachment) {
@@ -194,11 +234,16 @@ class AsynchronousHelloWorldTest {
         });
     }
 
+    /**
+     * Tests {@link AsynchronousHelloWorld#sendAsync(AsynchronousSocketChannel)} method.
+     *
+     * @throws Exception if an I/O error occcurs.
+     */
     @Test
     void testSendAsync() throws Exception {
         final AsynchronousSocketChannel socketChannel = AsynchronousSocketChannel.open();
         final SocketAddress remote = new InetSocketAddress(
-                getLocalHost(), ((InetSocketAddress) SERVER_SOCKET_ADDRESS).getPort());
+                getLocalHost(), ((InetSocketAddress) ADDRESS).getPort());
         socketChannel.connect(remote, null, new CompletionHandler<Void, Void>() {
             @Override
             public void completed(final Void result, final Void attachment) {
