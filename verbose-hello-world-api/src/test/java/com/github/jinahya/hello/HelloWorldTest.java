@@ -26,6 +26,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -50,10 +51,12 @@ import static java.nio.ByteBuffer.allocate;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentCaptor.forClass;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.quality.Strictness.LENIENT;
 
@@ -471,6 +474,44 @@ public class HelloWorldTest {
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
+     * Captures the sole argument of {@link HelloWorld#set(byte[])} method.
+     *
+     * @return the captured value of the argument.
+     */
+    byte[] captureArray() {
+        final ArgumentCaptor<byte[]> captor = forClass(byte[].class);
+        verify(helloWorld).set(captor.capture());
+        return captor.getValue();
+    }
+
+    /**
+     * Captures the sole argument of {@link HelloWorld#put(ByteBuffer)} method.
+     *
+     * @return the captured value of the argument.
+     */
+    ByteBuffer captureBuffer() {
+        final ArgumentCaptor<ByteBuffer> captor = forClass(ByteBuffer.class);
+        verify(helloWorld).put(captor.capture());
+        return captor.getValue();
+    }
+
+    /**
+     * Intercepts the result of {@link HelloWorld#set(byte[])} method.
+     */
+    @BeforeEach
+    private void interceptTheResultOfSetArray() {
+        doAnswer(arrayPeeper).when(helloWorld).set(any(byte[].class));
+    }
+
+    /**
+     * Intercepts the result of {@link HelloWorld#put(ByteBuffer)} method.
+     */
+    @BeforeEach
+    private void interceptTheResultOfPutBuffer() {
+        doAnswer(bufferPeeper).when(helloWorld).put(any(ByteBuffer.class));
+    }
+
+    /**
      * Stubs {@link HelloWorld#set(byte[], int)} method of {@link Spy spied} {@code helloWorld} instance to return
      * specified {@code array}.
      */
@@ -480,21 +521,11 @@ public class HelloWorldTest {
                 .thenAnswer(i -> i.getArgument(0));       // <2>
     }
 
-    @BeforeEach
-    private void peepTheResultOfSetArray() {
-        doAnswer(arrayPeeper).when(helloWorld).set(any(byte[].class));
-    }
-
-    @BeforeEach
-    private void peepTheResultOfPutBuffer() {
-        doAnswer(bufferPeeper).when(helloWorld).put(any(ByteBuffer.class));
-    }
-
     // -----------------------------------------------------------------------------------------------------------------
+    final ResultInterceptor<byte[]> arrayPeeper = new ResultInterceptor<>();
+
+    final ResultInterceptor<ByteBuffer> bufferPeeper = new ResultInterceptor<>();
+
     @Spy
     HelloWorld helloWorld;
-
-    final ResultPeeper<byte[]> arrayPeeper = new ResultPeeper<>();
-
-    final ResultPeeper<ByteBuffer> bufferPeeper = new ResultPeeper<>();
 }

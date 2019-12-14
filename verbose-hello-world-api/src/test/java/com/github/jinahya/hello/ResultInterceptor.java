@@ -24,12 +24,12 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 /**
- * An answer for peeping the invocation result.
+ * An answer for intercepting an invocation result.
  *
  * @param <T> result type parameter.
  * @see <a href="https://stackoverflow.com/a/25694262/330457">Jeff Fairley's answoer on StackOverflow</a>
  */
-class ResultPeeper<T> implements Answer<T> {
+class ResultInterceptor<T> implements Answer<T> {
 
     // -----------------------------------------------------------------------------------------------------------------
     @Override
