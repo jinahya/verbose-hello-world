@@ -52,6 +52,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.quality.Strictness.LENIENT;
@@ -467,6 +468,8 @@ public class HelloWorldTest {
         return newValidationProxy(HelloWorld.class, helloWorld);
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
+
     /**
      * Stubs {@link HelloWorld#set(byte[], int)} method of {@link Spy spied} {@code helloWorld} instance to return
      * specified {@code array}.
@@ -477,7 +480,21 @@ public class HelloWorldTest {
                 .thenAnswer(i -> i.getArgument(0));       // <2>
     }
 
+    @BeforeEach
+    private void peepTheResultOfSetArray() {
+        doAnswer(arrayPeeper).when(helloWorld).set(any(byte[].class));
+    }
+
+    @BeforeEach
+    private void peepTheResultOfPutBuffer() {
+        doAnswer(bufferPeeper).when(helloWorld).put(any(ByteBuffer.class));
+    }
+
     // -----------------------------------------------------------------------------------------------------------------
     @Spy
     HelloWorld helloWorld;
+
+    final ResultPeeper<byte[]> arrayPeeper = new ResultPeeper<>();
+
+    final ResultPeeper<ByteBuffer> bufferPeeper = new ResultPeeper<>();
 }
