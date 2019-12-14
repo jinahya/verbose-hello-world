@@ -36,14 +36,30 @@ class ResultCaptor<T> implements Answer<T> {
     public T answer(final InvocationOnMock invocationOnMock) throws Throwable {
         @SuppressWarnings({"unchecked"})
         final T result = (T) invocationOnMock.callRealMethod();
-        return (this.result = result);
-    }
-
-    // -----------------------------------------------------------------------------------------------------------------
-    public T getResult() {
+        this.result = result;
+        this.captured = true;
         return result;
     }
 
     // -----------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Returns the captured value of the invocation.
+     *
+     * @return the captured value of the invocation.
+     */
+    public T getResult() {
+        if (!captured) {
+            throw new IllegalStateException("not captured yet");
+        }
+        return result;
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    boolean captured;
+
+    /**
+     * The captured value of the invocation.
+     */
     private T result;
 }
