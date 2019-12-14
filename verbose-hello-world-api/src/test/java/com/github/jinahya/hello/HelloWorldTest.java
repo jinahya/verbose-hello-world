@@ -502,7 +502,7 @@ public class HelloWorldTest {
      */
     @BeforeEach
     private void interceptTheResultOfSetArray() {
-        doAnswer(arrayPeeper).when(helloWorld).set(any(byte[].class));
+        doAnswer(arrayInterceptor).when(helloWorld).set(any(byte[].class));
     }
 
     /**
@@ -510,7 +510,7 @@ public class HelloWorldTest {
      */
     @BeforeEach
     private void interceptTheResultOfPutBuffer() {
-        doAnswer(bufferPeeper).when(helloWorld).put(any(ByteBuffer.class));
+        doAnswer(bufferInterceptor).when(helloWorld).put(any(ByteBuffer.class));
     }
 
     /**
@@ -524,9 +524,9 @@ public class HelloWorldTest {
     }
 
     // -----------------------------------------------------------------------------------------------------------------
-    final ResultInterceptor<byte[]> arrayPeeper = new ResultInterceptor<>();
+    private final ResultInterceptor<byte[]> arrayInterceptor = new ResultInterceptor<>();
 
-    final ResultInterceptor<ByteBuffer> bufferPeeper = new ResultInterceptor<>();
+    private final ResultInterceptor<ByteBuffer> bufferInterceptor = new ResultInterceptor<>();
 
     @Spy
     HelloWorld helloWorld;
