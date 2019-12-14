@@ -502,7 +502,7 @@ public class HelloWorldTest {
      */
     @BeforeEach
     private void interceptTheResultOfSetArray() {
-        doAnswer(arrayInterceptor).when(helloWorld).set(any(byte[].class));
+        doAnswer(arrayCaptor).when(helloWorld).set(any(byte[].class));
     }
 
     /**
@@ -510,7 +510,7 @@ public class HelloWorldTest {
      */
     @BeforeEach
     private void interceptTheResultOfPutBuffer() {
-        doAnswer(bufferInterceptor).when(helloWorld).put(any(ByteBuffer.class));
+        doAnswer(bufferCaptor).when(helloWorld).put(any(ByteBuffer.class));
     }
 
     /**
@@ -524,10 +524,20 @@ public class HelloWorldTest {
     }
 
     // -----------------------------------------------------------------------------------------------------------------
-    private final ResultInterceptor<byte[]> arrayInterceptor = new ResultInterceptor<>();
 
-    private final ResultInterceptor<ByteBuffer> bufferInterceptor = new ResultInterceptor<>();
+    /**
+     * A result captor for capturing the argument of {@link HelloWorld#set(byte[])} method.
+     */
+    private final ResultCaptor<byte[]> arrayCaptor = new ResultCaptor<>();
 
+    /**
+     * A result captor for capturing the argument of {@link HelloWorld#put(ByteBuffer)} method.
+     */
+    private final ResultCaptor<ByteBuffer> bufferCaptor = new ResultCaptor<>();
+
+    /**
+     * An injected spy of {@link HelloWorld} interface.
+     */
     @Spy
     HelloWorld helloWorld;
 }

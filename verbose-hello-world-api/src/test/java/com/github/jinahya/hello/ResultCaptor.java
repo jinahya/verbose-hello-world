@@ -29,7 +29,7 @@ import org.mockito.stubbing.Answer;
  * @param <T> result type parameter.
  * @see <a href="https://stackoverflow.com/a/25694262/330457">Jeff Fairley's answoer on StackOverflow</a>
  */
-class ResultInterceptor<T> implements Answer<T> {
+class ResultCaptor<T> implements Answer<T> {
 
     // -----------------------------------------------------------------------------------------------------------------
     @Override
