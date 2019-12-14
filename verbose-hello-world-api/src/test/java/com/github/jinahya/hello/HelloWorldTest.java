@@ -26,7 +26,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -51,12 +50,10 @@ import static java.nio.ByteBuffer.allocate;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentCaptor.forClass;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.quality.Strictness.LENIENT;
 
@@ -474,30 +471,6 @@ public class HelloWorldTest {
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
-     * Captures the sole argument of {@link HelloWorld#set(byte[])} method.
-     *
-     * @return the captured value of the argument.
-     */
-    byte[] capturedArray() {
-        final ArgumentCaptor<byte[]> captor = forClass(byte[].class);
-        verify(helloWorld).set(captor.capture());
-        return captor.getValue();
-    }
-
-    /**
-     * Captures the sole argument of {@link HelloWorld#put(ByteBuffer)} method.
-     *
-     * @return the captured value of the argument.
-     */
-    ByteBuffer capturedBuffer() {
-        final ArgumentCaptor<ByteBuffer> captor = forClass(ByteBuffer.class);
-        verify(helloWorld).put(captor.capture());
-        return captor.getValue();
-    }
-
-    // -----------------------------------------------------------------------------------------------------------------
-
-    /**
      * Intercepts the result of {@link HelloWorld#set(byte[])} method.
      */
     @BeforeEach
@@ -528,12 +501,12 @@ public class HelloWorldTest {
     /**
      * A result captor for capturing the argument of {@link HelloWorld#set(byte[])} method.
      */
-    private final ResultCaptor<byte[]> arrayCaptor = new ResultCaptor<>();
+    final ResultCaptor<byte[]> arrayCaptor = new ResultCaptor<>();
 
     /**
      * A result captor for capturing the argument of {@link HelloWorld#put(ByteBuffer)} method.
      */
-    private final ResultCaptor<ByteBuffer> bufferCaptor = new ResultCaptor<>();
+    final ResultCaptor<ByteBuffer> bufferCaptor = new ResultCaptor<>();
 
     /**
      * An injected spy of {@link HelloWorld} interface.
