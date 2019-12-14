@@ -475,6 +475,7 @@ public class HelloWorldTest {
      */
     @BeforeEach
     private void interceptTheResultOfSetArray() {
+        arrayCaptor.captured = false;
         doAnswer(arrayCaptor).when(helloWorld).set(any(byte[].class));
     }
 
@@ -483,6 +484,7 @@ public class HelloWorldTest {
      */
     @BeforeEach
     private void interceptTheResultOfPutBuffer() {
+        bufferCaptor.captured = false;
         doAnswer(bufferCaptor).when(helloWorld).put(any(ByteBuffer.class));
     }
 
