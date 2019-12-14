@@ -478,7 +478,7 @@ public class HelloWorldTest {
      *
      * @return the captured value of the argument.
      */
-    byte[] captureArray() {
+    byte[] capturedArray() {
         final ArgumentCaptor<byte[]> captor = forClass(byte[].class);
         verify(helloWorld).set(captor.capture());
         return captor.getValue();
@@ -489,11 +489,13 @@ public class HelloWorldTest {
      *
      * @return the captured value of the argument.
      */
-    ByteBuffer captureBuffer() {
+    ByteBuffer capturedBuffer() {
         final ArgumentCaptor<ByteBuffer> captor = forClass(ByteBuffer.class);
         verify(helloWorld).put(captor.capture());
         return captor.getValue();
     }
+
+    // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * Intercepts the result of {@link HelloWorld#set(byte[])} method.
