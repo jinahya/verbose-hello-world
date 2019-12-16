@@ -58,8 +58,7 @@ interface AsynchronousHelloWorld extends HelloWorld {
             throw new IllegalArgumentException("position(" + position + ") < 0L");
         }
         for (final ByteBuffer buffer = put(); buffer.hasRemaining(); ) {
-            final Future<Integer> future = channel.write(buffer, position);
-            position += future.get();
+            position += channel.write(buffer, position).get();
         }
         return channel;
     }
@@ -130,6 +129,7 @@ interface AsynchronousHelloWorld extends HelloWorld {
         final CompletableFuture<T> future = new CompletableFuture<>();
         final ByteBuffer buffer = put();
         channel.write(buffer, null, new CompletionHandler<Integer, Void>() {
+
             @Override
             public void completed(final Integer result, final Void attachment) {
                 if (!buffer.hasRemaining()) {
