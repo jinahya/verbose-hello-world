@@ -41,6 +41,15 @@ import static java.nio.ByteBuffer.allocate;
 interface AsynchronousHelloWorld extends HelloWorld {
 
     // -----------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Returns a byte buffer contains the {@code hello-world-bytes}. The result buffer's {@code position} is {@code 0}
+     * and the {@code limit} is {@value com.github.jinahya.hello.HelloWorld#BYTES}. This method invokes {@link
+     * #put(ByteBuffer)} with an empty byte buffer of {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and
+     * returns the buffer after {@link ByteBuffer#flip() flips} it.
+     *
+     * @return a byte buffer contains the {@code hello-world-bytes}.
+     */
     default ByteBuffer put() {
         final ByteBuffer buffer = allocate(BYTES); // position = 0, limit,capacity = 12
         put(buffer); // position -> 12
