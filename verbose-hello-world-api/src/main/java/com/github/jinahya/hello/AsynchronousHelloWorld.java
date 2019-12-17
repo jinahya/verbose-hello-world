@@ -49,6 +49,17 @@ interface AsynchronousHelloWorld extends HelloWorld {
     }
 
     // ----------------------------------------------------------------------------------------- AsynchronousFileChannel
+
+    /**
+     * Writes the {@code hello-world-bytes} to specified channel starting at the specified file position.
+     *
+     * @param channel the channel to be appended.
+     * @param <T>     channel type parameter
+     * @return specified channel
+     * @throws InterruptedException if interrupted while {@link Future#get() getting} the result from a {@code Future}.
+     * @throws ExecutionException   if failed to {@link Future#get() get} the result from a {@code Future}.
+     * @see AsynchronousFileChannel#write(ByteBuffer, long)
+     */
     default <T extends AsynchronousFileChannel> @NotNull T write(@NotNull final T channel, long position)
             throws InterruptedException, ExecutionException {
         if (channel == null) {
@@ -63,6 +74,19 @@ interface AsynchronousHelloWorld extends HelloWorld {
         return channel;
     }
 
+    /**
+     * Appends the {@code hello-world-bytes} to the end of specified channel. This method invokes {@link
+     * #write(AsynchronousFileChannel, long)} method with given {@code channel} and the value of {@link
+     * AsynchronousFileChannel#size() size(channel)} and returns the result.
+     *
+     * @param channel the channel to be appended.
+     * @param <T>     channel type parameter
+     * @return specified channel
+     * @throws IOException          if an I/O error occurs.
+     * @throws InterruptedException if interrupted while working.
+     * @throws ExecutionException   if failed to execute.
+     * @see #write(AsynchronousFileChannel, long)
+     */
     default <T extends AsynchronousFileChannel> @NotNull T append(@NotNull final T channel)
             throws IOException, InterruptedException, ExecutionException {
         if (channel == null) {
