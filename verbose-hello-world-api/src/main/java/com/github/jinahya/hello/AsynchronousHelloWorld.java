@@ -78,7 +78,7 @@ interface AsynchronousHelloWorld extends HelloWorld {
         if (position < 0L) {
             throw new IllegalArgumentException("position(" + position + ") < 0L");
         }
-        for (final ByteBuffer buffer = put(); buffer.hasRemaining(); ) {
+        for (final ByteBuffer buffer = (ByteBuffer) put(allocate(BYTES)).flip(); buffer.hasRemaining(); ) {
             position += channel.write(buffer, position).get();
         }
         return channel;
