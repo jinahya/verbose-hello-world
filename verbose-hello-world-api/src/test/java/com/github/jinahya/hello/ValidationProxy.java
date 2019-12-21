@@ -51,7 +51,7 @@ final class ValidationProxy {
             throw new NullPointerException("type is null");
         }
         if (!type.isInterface()) {
-            throw new IllegalArgumentException("type is not an interface");
+            throw new IllegalArgumentException("type(" + type + ") is not an interface");
         }
         if (instance == null) {
             throw new NullPointerException("instance is null");
