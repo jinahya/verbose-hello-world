@@ -41,33 +41,20 @@ import static java.util.Objects.requireNonNull;
  */
 interface AsynchronousHelloWorld extends HelloWorld {
 
-    // -----------------------------------------------------------------------------------------------------------------
-
-    /**
-     * Returns a byte buffer contains the {@code hello-world-bytes}. The result buffer's {@code position} is {@code 0}
-     * and the {@code limit} is {@value com.github.jinahya.hello.HelloWorld#BYTES}. This method invokes {@link
-     * #put(ByteBuffer)} with a newly allocated byte buffer of {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes
-     * and returns the buffer after {@link ByteBuffer#flip() flips} it.
-     *
-     * @return a byte buffer contains the {@code hello-world-bytes}.
-     * @see HelloWorld#put(ByteBuffer)
-     */
-    default ByteBuffer put() {
-        return (ByteBuffer) put(allocate(BYTES)).flip();
-    }
-
     // ----------------------------------------------------------------------------------------- AsynchronousFileChannel
 
     /**
      * Writes the {@code hello-world-bytes} to specified channel starting at the given file position. This method
-     * invokes {@link #put()} and writes all remaining bytes of the result buffer starting at the given file position.
+     * invokes {@link #put(ByteBuffer)}} with a byte buffer of {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes
+     * and, after flips it, writes all remaining bytes of the buffer ot specified asynchronous file channel starting at
+     * the given file position.
      *
      * @param channel the channel to be appended.
      * @param <T>     channel type parameter
      * @return specified channel.
      * @throws InterruptedException if interrupted while {@link Future#get() getting} the result from a {@code Future}.
      * @throws ExecutionException   if failed to {@link Future#get() get} the result from a {@code Future}.
-     * @see #put()
+     * @see #put(ByteBuffer)
      * @see AsynchronousFileChannel#write(ByteBuffer, long)
      */
     default <T extends AsynchronousFileChannel> @NotNull T write(@NotNull final T channel, long position)
@@ -120,7 +107,7 @@ interface AsynchronousHelloWorld extends HelloWorld {
             throw new IllegalArgumentException("position(" + position + ") < 0L");
         }
         final CompletableFuture<T> future = new CompletableFuture<>();
-        final ByteBuffer buffer = put();
+        final ByteBuffer buffer = (ByteBuffer) put(allocate(BYTES)).flip();
         channel.write(buffer, position, position, new CompletionHandler<Integer, Long>() {
 
             @Override
@@ -129,8 +116,8 @@ interface AsynchronousHelloWorld extends HelloWorld {
                     future.complete(channel);
                     return;
                 }
-                final long newPosition = attachment + result;
-                channel.write(buffer, newPosition, newPosition, this);
+                final long position = attachment + result;
+                channel.write(buffer, position, position, this);
             }
 
             @Override
@@ -170,7 +157,7 @@ interface AsynchronousHelloWorld extends HelloWorld {
         if (channel == null) {
             throw new NullPointerException("channel is null");
         }
-        for (final ByteBuffer buffer = put(); buffer.hasRemaining(); ) {
+        for (final ByteBuffer buffer = (ByteBuffer) put(allocate(BYTES)).flip(); buffer.hasRemaining(); ) {
             final Future<Integer> future = channel.write(buffer);
             final int written = future.get();
         }
@@ -190,7 +177,7 @@ interface AsynchronousHelloWorld extends HelloWorld {
             throw new NullPointerException("channel is null");
         }
         final CompletableFuture<T> future = new CompletableFuture<>();
-        final ByteBuffer buffer = put();
+        final ByteBuffer buffer = (ByteBuffer) put(allocate(BYTES)).flip();
         channel.write(buffer, null, new CompletionHandler<Integer, Void>() {
 
             @Override
