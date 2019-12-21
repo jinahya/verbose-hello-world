@@ -56,8 +56,7 @@ public interface HelloWorld {
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
-     * The number of bytes of the "{@code hello, world}" string in {@code US-ASCII} character set. The value is
-     * {@value}.
+     * The length of the <a href="#hello-world-bytes">hello-world-bytes</a>. The value is {@value}.
      *
      * @see <a href="#hello-world-bytes">hello-world-bytes</a>
      */
@@ -81,7 +80,7 @@ public interface HelloWorld {
      * @param array the array on which bytes are set.
      * @param index the starting index of the {@code array}.
      * @return specified array.
-     * @throws NullPointerException      if the {@code array} is {@code null}.
+     * @throws NullPointerException      if {@code array} is {@code null}.
      * @throws IndexOutOfBoundsException if {@code index} is negative or ({@code index} + {@value #BYTES}) is greater
      *                                   than {@code array.length}.
      */
@@ -138,7 +137,7 @@ public interface HelloWorld {
     }
 
     /**
-     * Appends <a href="#hello-world-bytes">hello-world-bytes</a> to the end of specified file and returns the file.
+     * Appends <a href="#hello-world-bytes">hello-world-bytes</a> to specified file and returns the file.
      * <p>
      * This method creates an instance of {@link FileOutputStream}, as {@link FileOutputStream#FileOutputStream(File,
      * boolean) appending mode}, from specified file and invokes {@link #write(OutputStream)} method with it.
@@ -272,7 +271,7 @@ public interface HelloWorld {
      *     byte[] array = buffer.array();
      *     int index = buffer.arrayOffset() + buffer.position();
      *     set(array, index);
-     *     buffer.position(buffer.position() + BYTES); // increment by hand
+     *     buffer.position(buffer.position() + BYTES); // increment the position manually
      * } else {
      *     byte[] array = new byte[BYTES];
      *     set(array);
@@ -286,11 +285,7 @@ public interface HelloWorld {
      * @return specified byte buffer.
      * @throws NullPointerException    if {@code buffer} is {@code null}.
      * @throws BufferOverflowException if {@link ByteBuffer#remaining() buffer.remaining} is less than {@value #BYTES}.
-     * @see ByteBuffer#hasArray()
-     * @see ByteBuffer#array()
-     * @see ByteBuffer#arrayOffset()
-     * @see ByteBuffer#position()
-     * @see ByteBuffer#position(int)
+     * @see #set(byte[], int)
      * @see #set(byte[])
      * @see ByteBuffer#put(byte[])
      */
@@ -306,14 +301,14 @@ public interface HelloWorld {
      * Writes <a href="#hello-world-bytes">hello-world-bytes</a> to specified channel.
      * <p>
      * This method invokes {@link #put(ByteBuffer)} method with a newly allocated byte buffer of {@value #BYTES} bytes
-     * and, after flips it, writes all remaining bytes in the returned buffer to specified channel using {@link
-     * WritableByteChannel#write(ByteBuffer)} method.
+     * and, after {@link ByteBuffer#flip() flips} it, writes all remaining bytes in the returned buffer to specified
+     * channel using {@link WritableByteChannel#write(ByteBuffer)} method.
      * <blockquote><pre>{@code
      * ByteBuffer buffer = ByteBuffer.allocate(BYTES); // position = 0, limit,capacity = 12
      * put(buffer); // position -> 12
      * buffer.flip(); // limit -> position(12), position -> 0
-     * while (buffer.hasRemaining()) {
-     *     channel.write(buffer); // not all remaining bytes may be written at once
+     * while (buffer.hasRemaining()) { // not all remaining bytes may be written at once
+     *     channel.write(buffer);
      * }
      * }</pre></blockquote>
      *
@@ -323,6 +318,7 @@ public interface HelloWorld {
      * @throws NullPointerException if {@code channel} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @see #put(ByteBuffer)
+     * @see ByteBuffer#flip()
      * @see WritableByteChannel#write(ByteBuffer)
      */
     default <T extends WritableByteChannel> @NotNull T write(@NotNull final T channel) throws IOException {
@@ -336,10 +332,11 @@ public interface HelloWorld {
     /**
      * Appends <a href="#hello-world-bytes">hello-world-bytes</a> to the end of specified path and returns the path.
      * <p>
-     * This method opens a file channel, with {@link StandardOpenOption#APPEND}, from specified {@code path} and invokes
-     * {@link #write(WritableByteChannel)} method with it.
+     * This method {@link FileChannel#open(Path, OpenOption...)} opens} a file channel, with an {@link
+     * StandardOpenOption#APPEND appending option}, from specified {@code path} and invokes {@link
+     * #write(WritableByteChannel)} method with it.
      * <blockquote><pre>{@code
-     * FileChannel channel = FileChannel.open(path, StandardOpenOption.APPEND);
+     * FileChannel channel = FileChannel.open(path, StandardOpenOption.APPEND); // appends
      * try {
      *     write(channel);
      *     channel.force(false);
