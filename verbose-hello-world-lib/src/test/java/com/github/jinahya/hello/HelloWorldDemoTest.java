@@ -30,7 +30,7 @@ public class HelloWorldDemoTest extends AbstractHelloWorldTest {
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
-     * {@inheritDoc} The {@code helloWorld()} method of {@code HelloWorldImplTest} class returns a new instance of
+     * {@inheritDoc} The {@code helloWorld()} method of {@code HelloWorldDemoTest} class returns a new instance of
      * {@link HelloWorldDemo} class.
      *
      * @return {@inheritDoc}

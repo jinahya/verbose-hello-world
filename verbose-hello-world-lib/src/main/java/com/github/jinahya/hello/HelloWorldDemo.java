@@ -33,7 +33,8 @@ class HelloWorldDemo implements HelloWorld {
     // -----------------------------------------------------------------------------------------------------------------
     @Override
     public byte[] set(byte[] array, final int index) {
-        arraycopy("hello, world".getBytes(US_ASCII), 0, array, index, BYTES); // <1>
-        return array;                                                         // <2>
+        final byte[] source = "hello, world".getBytes(US_ASCII); // <1>
+        arraycopy(source, 0, array, index, source.length);       // <2>
+        return array;                                            // <3>
     }
 }
