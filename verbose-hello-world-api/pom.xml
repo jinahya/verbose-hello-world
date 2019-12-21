@@ -15,54 +15,49 @@
 
   <name>${project.artifactId}</name>
   <description>Verbose Hello World API</description>
-  <url>https://github.com/jinahya/verbose-hello-world/verbose-hello-world-api</url>
+  <url>https://github.com/jinahya/${project.parent.artifactId}/${project.artifactId}</url>
 
   <dependencies>
-    <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.hibernate.validator</groupId>
-      <artifactId>hibernate-validator</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.hibernate.validator</groupId>
-      <artifactId>hibernate-validator-test-utils</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-api</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-engine</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-params</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-junit-jupiter</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.projectlombok</groupId>
-      <artifactId>lombok</artifactId>
-      <scope>test</scope>
-    </dependency>
+<!--    <dependency>-->
+<!--      <groupId>ch.qos.logback</groupId>-->
+<!--      <artifactId>logback-classic</artifactId>-->
+<!--      <scope>test</scope>-->
+<!--    </dependency>-->
+<!--    <dependency>-->
+<!--      <groupId>org.hibernate.validator</groupId>-->
+<!--      <artifactId>hibernate-validator</artifactId>-->
+<!--      <scope>provided</scope>-->
+<!--    </dependency>-->
+<!--    <dependency>-->
+<!--      <groupId>org.junit.jupiter</groupId>-->
+<!--      <artifactId>junit-jupiter-api</artifactId>-->
+<!--      <scope>test</scope>-->
+<!--    </dependency>-->
+<!--    <dependency>-->
+<!--      <groupId>org.junit.jupiter</groupId>-->
+<!--      <artifactId>junit-jupiter-engine</artifactId>-->
+<!--      <scope>test</scope>-->
+<!--    </dependency>-->
+<!--    <dependency>-->
+<!--      <groupId>org.junit.jupiter</groupId>-->
+<!--      <artifactId>junit-jupiter-params</artifactId>-->
+<!--      <scope>test</scope>-->
+<!--    </dependency>-->
+<!--    <dependency>-->
+<!--      <groupId>org.mockito</groupId>-->
+<!--      <artifactId>mockito-core</artifactId>-->
+<!--      <scope>test</scope>-->
+<!--    </dependency>-->
+<!--    <dependency>-->
+<!--      <groupId>org.mockito</groupId>-->
+<!--      <artifactId>mockito-junit-jupiter</artifactId>-->
+<!--      <scope>test</scope>-->
+<!--    </dependency>-->
+<!--    <dependency>-->
+<!--      <groupId>org.projectlombok</groupId>-->
+<!--      <artifactId>lombok</artifactId>-->
+<!--      <scope>test</scope>-->
+<!--    </dependency>-->
   </dependencies>
 
   <build>
@@ -122,18 +117,4 @@
       </plugin>
     </plugins>
   </reporting>
-
-  <profiles>
-    <profile>
-      <id>umlgraph</id>
-      <properties>
-        <additionalparam>
-          -all -hide java.*
-          -collapsible -horizontal
-          -inferdep -inferdepinpackage -inferrel
-          -outputencoding UTF-8
-        </additionalparam>
-      </properties>
-    </profile>
-  </profiles>
 </project>
