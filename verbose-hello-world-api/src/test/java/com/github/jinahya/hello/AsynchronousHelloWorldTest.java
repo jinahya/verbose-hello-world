@@ -41,6 +41,7 @@ import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.channels.FileChannel;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -50,8 +51,6 @@ import static com.github.jinahya.hello.ValidationProxy.newValidationProxy;
 import static java.net.InetAddress.getLocalHost;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.charset.StandardCharsets.US_ASCII;
-import static java.nio.file.Files.createTempFile;
-import static java.nio.file.Files.size;
 import static java.nio.file.StandardOpenOption.APPEND;
 import static java.nio.file.StandardOpenOption.WRITE;
 import static java.util.concurrent.ThreadLocalRandom.current;
@@ -91,11 +90,13 @@ class AsynchronousHelloWorldTest {
         log.debug("server socket channel is open: {}", CHANNEL);
         ADDRESS = CHANNEL.getLocalAddress();
         CHANNEL.accept(null, new CompletionHandler<AsynchronousSocketChannel, Void>() {
+
             @Override
             public void completed(final AsynchronousSocketChannel channel, final Void attachment) {
                 log.debug("accepted: {}", channel);
                 final ByteBuffer buffer = allocate(BYTES);
                 channel.read(buffer, null, new CompletionHandler<Integer, Void>() {
+
                     @Override
                     public void completed(final Integer read, final Void attachment) {
                         assert read != null;
@@ -147,7 +148,7 @@ class AsynchronousHelloWorldTest {
      */
     @AfterAll
     private static void closeServerSocketChannel() throws InterruptedException, IOException {
-        final boolean broken = LATCH.await(20L, TimeUnit.SECONDS);
+        final boolean broken = LATCH.await(10L, TimeUnit.SECONDS);
         if (!broken) {
             log.error("times up while awaiting the latch to be broken");
         }
@@ -165,16 +166,16 @@ class AsynchronousHelloWorldTest {
      */
     @Test
     void testAppend(@TempDir final Path tempDir) throws Exception {
-        final Path path = createTempFile(tempDir, null, null);
+        final Path path = Files.createTempFile(tempDir, null, null);
         try (FileChannel channel = FileChannel.open(path, APPEND)) {
             channel.write(allocate(current().nextInt(1, 8)));
             channel.force(false);
         }
-        final long size = size(path);
+        final long size = Files.size(path);
         try (AsynchronousFileChannel channel = AsynchronousFileChannel.open(path, WRITE)) {
             assertSame(channel, helloWorld.append(channel));
         }
-        assertEquals(size + BYTES, size(path));
+        assertEquals(size + BYTES, Files.size(path));
     }
 
     /**
@@ -185,16 +186,16 @@ class AsynchronousHelloWorldTest {
      */
     @Test
     void testAppendAsync(@TempDir final Path tempDir) throws Exception {
-        final Path path = createTempFile(tempDir, null, null);
+        final Path path = Files.createTempFile(tempDir, null, null);
         try (FileChannel channel = FileChannel.open(path, APPEND)) {
             channel.write(allocate(current().nextInt(1, 8)));
             channel.force(false);
         }
-        final long size = size(path);
+        final long size = Files.size(path);
         try (AsynchronousFileChannel channel = AsynchronousFileChannel.open(path, WRITE)) {
             assertEquals(channel, helloWorld.appendAsync(channel).get());
         }
-        assertEquals(size + BYTES, size(path));
+        assertEquals(size + BYTES, Files.size(path));
     }
 
     // --------------------------------------------------------------------------------------- AsynchronousSocketChannel
@@ -210,6 +211,7 @@ class AsynchronousHelloWorldTest {
         final SocketAddress remote = new InetSocketAddress(
                 getLocalHost(), ((InetSocketAddress) ADDRESS).getPort());
         socketChannel.connect(remote, null, new CompletionHandler<Void, Void>() {
+
             @Override
             public void completed(final Void result, final Void attachment) {
                 try {
@@ -245,6 +247,7 @@ class AsynchronousHelloWorldTest {
         final SocketAddress remote = new InetSocketAddress(
                 getLocalHost(), ((InetSocketAddress) ADDRESS).getPort());
         socketChannel.connect(remote, null, new CompletionHandler<Void, Void>() {
+
             @Override
             public void completed(final Void result, final Void attachment) {
                 try {
@@ -285,12 +288,13 @@ class AsynchronousHelloWorldTest {
      * buffer.
      */
     @BeforeEach
-    private void stubPutBufferReturnsTheBuffer() throws IOException {
+    private void stubPutBufferReturnsTheBuffer() {
         doAnswer(i -> {
             final ByteBuffer buffer = i.getArgument(0, ByteBuffer.class);
             buffer.position(buffer.position() + BYTES);
             return buffer;
-        }).when(helloWorld).put(any(ByteBuffer.class));
+        })
+                .when(helloWorld).put(any(ByteBuffer.class));
     }
 
     // -----------------------------------------------------------------------------------------------------------------

@@ -78,7 +78,7 @@ interface AsynchronousHelloWorld extends HelloWorld {
      *
      * @param channel the channel to be appended.
      * @param <T>     channel type parameter
-     * @return specified channel
+     * @return specified channel.
      * @throws IOException          if an I/O error occurs.
      * @throws InterruptedException if interrupted while working.
      * @throws ExecutionException   if failed to execute.
