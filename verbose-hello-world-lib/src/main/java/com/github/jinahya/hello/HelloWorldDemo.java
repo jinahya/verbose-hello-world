@@ -20,6 +20,8 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -31,7 +33,7 @@ class HelloWorldDemo implements HelloWorld {
 
     // -----------------------------------------------------------------------------------------------------------------
     @Override
-    public byte[] set(byte[] array, final int index) {
+    public @NotNull byte[] set(@NotNull final byte[] array, @Positive final int index) {
         final byte[] source = "hello, world".getBytes(StandardCharsets.US_ASCII); // <1>
         assert source.length == BYTES;
         System.arraycopy(
