@@ -20,8 +20,7 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import static java.lang.System.arraycopy;
-import static java.nio.charset.StandardCharsets.US_ASCII;
+import java.nio.charset.StandardCharsets;
 
 /**
  * A class implements the {@link HelloWorld} interface.
@@ -33,8 +32,15 @@ class HelloWorldDemo implements HelloWorld {
     // -----------------------------------------------------------------------------------------------------------------
     @Override
     public byte[] set(byte[] array, final int index) {
-        final byte[] source = "hello, world".getBytes(US_ASCII); // <1>
-        arraycopy(source, 0, array, index, source.length);       // <2>
-        return array;                                            // <3>
+        final byte[] source = "hello, world".getBytes(StandardCharsets.US_ASCII); // <1>
+        assert source.length == BYTES;
+        System.arraycopy(
+                source,       // <1>
+                0,            // <2>
+                array,        // <3>
+                index,        // <4>
+                source.length // <5>
+        );
+        return array; // <1>
     }
 }
