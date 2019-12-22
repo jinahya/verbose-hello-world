@@ -23,8 +23,12 @@ package com.github.jinahya.hello;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static com.github.jinahya.hello.HelloWorld.BYTES;
+import static java.lang.Integer.max;
 import static java.util.concurrent.ThreadLocalRandom.current;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * An abstract class for unit-testing classes implement {@link HelloWorld} interface.
@@ -73,7 +77,10 @@ public abstract class AbstractHelloWorldTest {
     @DisplayName("set(array, index) throws IndexOutOfBoundsException when index + BYTES > array.length")
     @Test
     public void assertSetArrayIndexThrowsIndexOutOfBoundsExceptionWhenSpaceIsNotEnough() {
-        // TODO: implement!
+        final byte[] array = new byte[current().nextInt(BYTES << 1)];
+        final int index = max(0, current().nextInt(array.length - BYTES + 1, array.length + BYTES));
+        assertTrue(index + BYTES > array.length);
+        assertThrows(IndexOutOfBoundsException.class, () -> helloWorld().set(array, index));
     }
 
     /**
@@ -92,6 +99,8 @@ public abstract class AbstractHelloWorldTest {
     @DisplayName("set(array, index) returns specified array")
     @Test
     public void assertSetArrayIndexReturnsArray() {
-        // TODO: implement!
+        final byte[] expected = new byte[BYTES];
+        final byte[] actual = helloWorld().set(expected, 0);
+        assertEquals(expected, actual);
     }
 }
