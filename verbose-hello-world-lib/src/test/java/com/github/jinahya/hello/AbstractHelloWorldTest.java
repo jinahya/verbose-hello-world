@@ -65,7 +65,7 @@ public abstract class AbstractHelloWorldTest {
      * Asserts {@link HelloWorld#set(byte[], int)} method throws an {@code IndexOutOfBoundsException} when ({@code
      * index} + {@link HelloWorld#BYTES}) is greater than {@code array.length}.
      */
-    @DisplayName("set(array, index) throws IndexOutOfBoundsException when space is not enough")
+    @DisplayName("set(array, index) throws IndexOutOfBoundsException when index + BYTES > array.length")
     @Test
     public void assertSetArrayIndexThrowsIndexOutOfBoundsExceptionWhenSpaceIsNotEnough() {
         // TODO: implement!
@@ -86,7 +86,7 @@ public abstract class AbstractHelloWorldTest {
      */
     @DisplayName("set(array, index) returns specified array")
     @Test
-    public void assertSetArrayIndexReturnsSpecifiedArray() {
+    public void assertSetArrayIndexReturnsArray() {
         // TODO: implement!
     }
 }
