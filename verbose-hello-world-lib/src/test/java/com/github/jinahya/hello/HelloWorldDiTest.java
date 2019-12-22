@@ -23,6 +23,8 @@ package com.github.jinahya.hello;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import static java.util.concurrent.ThreadLocalRandom.current;
+
 /**
  * An abstract class for testing {@link HelloWorld} implementations using Dependency Injection.
  *
@@ -45,8 +47,16 @@ public abstract class HelloWorldDiTest extends AbstractHelloWorldTest {
     // -----------------------------------------------------------------------------------------------------------------
     @Override
     HelloWorld helloWorld() {
-        // TODO: implement!
-        return null;
+        switch (current().nextInt(4)) {
+            case 0:
+                return namedDemo;
+            case 1:
+                return namedImpl;
+            case 2:
+                return qualifiedDemo;
+            default: // 3
+                return qualifiedImpl;
+        }
     }
 
     // -----------------------------------------------------------------------------------------------------------------
