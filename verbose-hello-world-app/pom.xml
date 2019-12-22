@@ -14,8 +14,8 @@
   <packaging>pom</packaging>
 
   <name>${project.artifactId}</name>
-  <description>a verbose hello world</description>
-  <url>https://github.com/jinahya/verbose-hello-world/${project.artifactId}</url>
+  <description>Verbose Hello World App</description>
+  <url>https://github.com/jinahya/${project.parent.artifactId}/${project.artifactId}</url>
 
   <modules>
     <module>verbose-hello-world-app1</module>
@@ -27,20 +27,23 @@
     <module>verbose-hello-world-srv4</module>
   </modules>
 
+  <properties>
+    <mainClass>com.github.jinahya.hello.HelloWorldMain</mainClass>
+  </properties>
+
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>com.github.jinahya</groupId>
+        <artifactId>verbose-hello-world-api</artifactId>
+        <version>0.1.0-SNAPSHOT</version>
+      </dependency>
       <dependency>
         <groupId>com.github.jinahya</groupId>
         <artifactId>verbose-hello-world-lib</artifactId>
         <version>0.1.0-SNAPSHOT</version>
       </dependency>
-      <dependency>
-        <groupId>com.github.jinahya</groupId>
-        <artifactId>verbose-hello-world-spi</artifactId>
-        <version>0.1.0-SNAPSHOT</version>
-      </dependency>
     </dependencies>
-
   </dependencyManagement>
 
   <build>

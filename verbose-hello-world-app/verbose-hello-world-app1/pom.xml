@@ -17,10 +17,6 @@
   <description>Verbose Hello World App1</description>
   <url>https://github.com/jinahya/verbose-hello-world/verbose-hello-world-app/${project.artifactId}</url>
 
-  <properties>
-    <mainClass>com.github.jinahya.hello.HelloWorldMain</mainClass>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>com.github.jinahya</groupId>
