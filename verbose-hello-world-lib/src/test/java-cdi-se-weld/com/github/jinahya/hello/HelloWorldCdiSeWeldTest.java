@@ -20,6 +20,9 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 class HelloWorldCdiSeWeldTest extends HelloWorldCdiSeTest {
 
 }
