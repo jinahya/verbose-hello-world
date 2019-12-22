@@ -4,6 +4,20 @@ A fairly verbose project for `hello, world`.
 
 ## Modules
 
+```
+verbose-hello-world                    the parent module
+|-- verbose-hello-world-api            defines the HelloWorld interface
+|-- verbose-hello-world-lib            implements the HelloWorld interface
+`-- verbose-hello-world-app            a seond level parent for apps
+    |-- verbose-hello-world-app1
+    |-- verbose-hello-world-app2
+    |-- verbose-hello-world-app3
+    |-- verbose-hello-world-srv1
+    |-- verbose-hello-world-srv2
+    |-- verbose-hello-world-srv3
+    `-- verbose-hello-world-srv4
+```
+
 |artifact id                   |description                          |
 |------------------------------|-------------------------------------|
 |`verbose-hello-world`         |the parent module                    |
