@@ -26,7 +26,6 @@ import org.junit.jupiter.api.Test;
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.lang.Integer.max;
 import static java.util.concurrent.ThreadLocalRandom.current;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -99,8 +98,6 @@ public abstract class AbstractHelloWorldTest {
     @DisplayName("set(array, index) returns specified array")
     @Test
     public void assertSetArrayIndexReturnsArray() {
-        final byte[] expected = new byte[BYTES];
-        final byte[] actual = helloWorld().set(expected, 0);
-        assertEquals(expected, actual);
+        // TODO: Implement!
     }
 }
