@@ -23,6 +23,9 @@ package com.github.jinahya.hello;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static java.util.concurrent.ThreadLocalRandom.current;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 /**
  * An abstract class for unit-testing classes implement {@link HelloWorld} interface.
  *
@@ -48,7 +51,7 @@ public abstract class AbstractHelloWorldTest {
     @DisplayName("set(array, index) throws NullPointerException when array is null")
     @Test
     public void assertSetArrayIndexThrowsNullPointerExceptionWhenArrayIsNull() {
-        // TODO: implement!
+        assertThrows(NullPointerException.class, () -> helloWorld().set(null, 0));
     }
 
     /**
@@ -58,7 +61,9 @@ public abstract class AbstractHelloWorldTest {
     @DisplayName("set(array, index) throws IndexOutOfBoundsException when index is negative")
     @Test
     public void assertSetArrayIndexThrowsIndexOutOfBoundsExceptionWhenIndexIsNegative() {
-        // TODO: implement!
+        final byte[] array = new byte[0];
+        final int index = current().nextInt() | Integer.MIN_VALUE;
+        assertThrows(IndexOutOfBoundsException.class, () -> helloWorld().set(array, index));
     }
 
     /**
