@@ -18,7 +18,7 @@
   <url>https://github.com/jinahya/verbose-hello-world/${project.parent.artifactId}/${project.artifactId}</url>
 
   <properties>
-    <mainClass>com.github.jinahya.hello.HelloWorldMain</mainClass>
+    <mainClass>com.github.jinahya.hello.HelloWorldMainCli</mainClass>
   </properties>
 
   <dependencies>

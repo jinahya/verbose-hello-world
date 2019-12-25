@@ -22,14 +22,11 @@ package com.github.jinahya.hello;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.DataInputStream;
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.SocketAddress;
-import java.nio.charset.StandardCharsets;
+import java.net.InetAddress;
+import java.net.ServerSocket;
 
-import static java.lang.Integer.parseInt;
+import static java.util.ServiceLoader.load;
 
 /**
  * A class whose {@link #main(String[])} method accepts socket connections and sends {@code hello, world} to clients.
@@ -37,24 +34,24 @@ import static java.lang.Integer.parseInt;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-public class HelloWorldMain {
+public class HelloWorldMainSrv extends AbstractHelloWorldMainSrv {
 
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * The main method of this program which accepts socket connections and sends {@code hello, world} to clients.
      *
-     * @param args an array of command line arguments
+     * @param args an array of command line arguments.
      * @throws IOException if an I/O error occurs.
      */
     public static void main(final String... args) throws IOException {
-        final String host = args[0];
-        final int port = parseInt(args[1]);
-        try(Socket socket = new Socket(host, port)) {
-            final byte[] array = new byte[HelloWorld.BYTES];
-            new DataInputStream(socket.getInputStream()).readFully(array);
-            System.out.printf("%s%n", new String(array, StandardCharsets.US_ASCII));
-        }
+        final HelloWorld helloWorld = load(HelloWorld.class).iterator().next();
+        log.info("localhost: {}", InetAddress.getLocalHost());
+        final ServerSocket server = new ServerSocket(0);
+        readAndClose(server);
+        log.info("bound to {}", server.getLocalSocketAddress());
+        connectAndPrint(server.getLocalPort());
+        // TODO: implement!
     }
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -62,7 +59,7 @@ public class HelloWorldMain {
     /**
      * Creates a new instance.
      */
-    private HelloWorldMain() {
+    private HelloWorldMainSrv() {
         super();
     }
 }

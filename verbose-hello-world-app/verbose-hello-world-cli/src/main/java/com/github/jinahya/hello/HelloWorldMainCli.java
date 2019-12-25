@@ -24,13 +24,12 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.nio.charset.StandardCharsets;
 
-import static java.util.ServiceLoader.load;
+import static java.lang.Integer.parseInt;
 
 /**
  * A class whose {@link #main(String[])} method accepts socket connections and sends {@code hello, world} to clients.
@@ -38,40 +37,24 @@ import static java.util.ServiceLoader.load;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-public class HelloWorldMain {
+public class HelloWorldMainCli {
 
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
-     * Connects to localhost with specified port number and reads exactly {@value com.github.jinahya.hello.HelloWorld#BYTES}
-     * bytes and prints it as a {@link StandardCharsets#US_ASCII US-ASCII} string.
-     *
-     * @param port the local port number to connect.
-     */
-    private static void print(final int port) {
-        try {
-            try (Socket client = new Socket()) {
-                final SocketAddress endpoint = new InetSocketAddress(InetAddress.getLocalHost(), port);
-                client.connect(endpoint, 8192);
-                final byte[] array = new byte[HelloWorld.BYTES];
-                new DataInputStream(client.getInputStream()).readFully(array);
-                System.out.printf("%s%n", new String(array, StandardCharsets.US_ASCII));
-            }
-        } catch (final IOException ioe) {
-            log.error("failed to connect", ioe);
-        }
-    }
-
-    /**
      * The main method of this program which accepts socket connections and sends {@code hello, world} to clients.
      *
-     * @param args an array of command line arguments.
+     * @param args an array of command line arguments
      * @throws IOException if an I/O error occurs.
      */
     public static void main(final String... args) throws IOException {
-        final HelloWorld helloWorld = load(HelloWorld.class).iterator().next();
-        log.info("localhost: {}", InetAddress.getLocalHost());
-        // TODO: implement!
+        final String host = args[0];
+        final int port = parseInt(args[1]);
+        try(Socket socket = new Socket(host, port)) {
+            final byte[] array = new byte[HelloWorld.BYTES];
+            new DataInputStream(socket.getInputStream()).readFully(array);
+            System.out.printf("%s%n", new String(array, StandardCharsets.US_ASCII));
+        }
     }
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -79,7 +62,7 @@ public class HelloWorldMain {
     /**
      * Creates a new instance.
      */
-    private HelloWorldMain() {
+    private HelloWorldMainCli() {
         super();
     }
 }

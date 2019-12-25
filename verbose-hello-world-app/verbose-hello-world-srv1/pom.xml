@@ -18,19 +18,15 @@
   <url>https://github.com/jinahya/verbose-hello-world/${project.parent.artifactId}/${project.artifactId}</url>
 
   <properties>
-    <mainClass>com.github.jinahya.hello.HelloWorldMain</mainClass>
+    <mainClass>com.github.jinahya.hello.HelloWorldMainSrv</mainClass>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>com.github.jinahya</groupId>
-      <artifactId>verbose-hello-world-api</artifactId>
+      <artifactId>verbose-hello-world-srv</artifactId>
+      <version>0.1.0-SNAPSHOT</version>
       <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.github.jinahya</groupId>
-      <artifactId>verbose-hello-world-lib</artifactId>
-      <scope>runtime</scope>
     </dependency>
   </dependencies>
 
