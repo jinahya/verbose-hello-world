@@ -69,5 +69,6 @@ abstract class AbstractHelloWorldMain {
             }
         });
         thread.setDaemon(true);
+        thread.start();
     }
 }
