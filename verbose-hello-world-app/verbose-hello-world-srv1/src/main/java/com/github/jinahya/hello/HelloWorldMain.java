@@ -25,7 +25,9 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.nio.charset.StandardCharsets;
 
 import static java.util.ServiceLoader.load;
@@ -39,11 +41,17 @@ import static java.util.ServiceLoader.load;
 public class HelloWorldMain {
 
     // -----------------------------------------------------------------------------------------------------------------
-    private static void connect(final int port) throws IOException {
-        try (Socket client = new Socket(InetAddress.getLocalHost(), port)) {
-            final byte[] array = new byte[HelloWorld.BYTES];
-            new DataInputStream(client.getInputStream()).readFully(array);
-            System.out.printf("%s%n", new String(array, StandardCharsets.US_ASCII));
+    private static void connect(final int port) {
+        try {
+            try (Socket client = new Socket()) {
+                final SocketAddress endpoint = new InetSocketAddress(InetAddress.getLocalHost(), port);
+                client.connect(endpoint, 10000);
+                final byte[] array = new byte[HelloWorld.BYTES];
+                new DataInputStream(client.getInputStream()).readFully(array);
+                System.out.printf("%s%n", new String(array, StandardCharsets.US_ASCII));
+            }
+        } catch (final IOException ioe) {
+            log.error("failed to connect", ioe);
         }
     }
 
