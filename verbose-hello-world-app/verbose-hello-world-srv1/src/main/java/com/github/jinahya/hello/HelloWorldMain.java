@@ -22,7 +22,11 @@ package com.github.jinahya.hello;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.DataInputStream;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 
 import static java.util.ServiceLoader.load;
 
@@ -35,6 +39,13 @@ import static java.util.ServiceLoader.load;
 public class HelloWorldMain {
 
     // -----------------------------------------------------------------------------------------------------------------
+    private static void connect(final int port) throws IOException {
+        try (Socket client = new Socket(InetAddress.getLocalHost(), port)) {
+            final byte[] array = new byte[HelloWorld.BYTES];
+            new DataInputStream(client.getInputStream()).readFully(array);
+            System.out.printf("%s%n", new String(array, StandardCharsets.US_ASCII));
+        }
+    }
 
     /**
      * The main method of this program which accepts socket connections and sends {@code hello, world} to clients.
