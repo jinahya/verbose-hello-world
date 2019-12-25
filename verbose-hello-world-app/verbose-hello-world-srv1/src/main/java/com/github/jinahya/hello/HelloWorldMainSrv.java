@@ -51,7 +51,9 @@ public class HelloWorldMainSrv extends AbstractHelloWorldMainSrv {
         readAndClose(server);
         log.info("bound to {}", server.getLocalSocketAddress());
         connectAndPrint(server.getLocalPort());
-        // TODO: implement!
+        while (!server.isClosed()) {
+            // TODO: implement!
+        }
     }
 
     // -----------------------------------------------------------------------------------------------------------------
