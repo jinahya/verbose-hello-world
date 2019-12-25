@@ -15,7 +15,7 @@
 
   <name>${project.artifactId}</name>
   <description>Verbose Hello World Srv3</description>
-  <url>https://github.com/jinahya/verbose-hello-world/verbose-hello-world-app/${project.artifactId}</url>
+  <url>https://github.com/jinahya/verbose-hello-world/${project.parent.artifactId}/${project.artifactId}</url>
 
   <properties>
     <mainClass>com.github.jinahya.hello.HelloWorldMain</mainClass>

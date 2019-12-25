@@ -15,7 +15,7 @@
 
   <name>${project.artifactId}</name>
   <description>Verbose Hello World App1</description>
-  <url>https://github.com/jinahya/verbose-hello-world/verbose-hello-world-app/${project.artifactId}</url>
+  <url>https://github.com/jinahya/verbose-hello-world/${project.parent.artifactId}/${project.artifactId}</url>
 
   <dependencies>
     <dependency>
@@ -27,10 +27,6 @@
 
   <build>
     <plugins>
-      <plugin><!--groupId>org.dstovall</groupId-->
-        <groupId>com.jolira</groupId>
-        <artifactId>onejar-maven-plugin</artifactId>
-      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
