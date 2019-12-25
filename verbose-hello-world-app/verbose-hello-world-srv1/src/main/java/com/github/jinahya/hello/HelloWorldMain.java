@@ -48,7 +48,7 @@ public class HelloWorldMain {
      *
      * @param port the local port number to connect.
      */
-    private static void connect(final int port) {
+    private static void print(final int port) {
         try {
             try (Socket client = new Socket()) {
                 final SocketAddress endpoint = new InetSocketAddress(InetAddress.getLocalHost(), port);
