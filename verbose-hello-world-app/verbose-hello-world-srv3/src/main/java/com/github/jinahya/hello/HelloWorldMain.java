@@ -23,6 +23,12 @@ package com.github.jinahya.hello;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import static java.util.ServiceLoader.load;
 
@@ -40,11 +46,30 @@ public class HelloWorldMain extends AbstractHelloWorldMain {
      * The main method of this program which accepts socket connections and sends {@code hello, world} to clients.
      *
      * @param args an array of command line arguments
-     * @throws IOException if an I/O error occurs.
+     * @throws IOException          if an I/O error occurs.
+     * @throws InterruptedException when interrupted while awaiting an executor service.
      */
-    public static void main(final String[] args) throws IOException {
-        final HelloWorld service = load(HelloWorld.class).iterator().next();
-        // TODO: implement!
+    public static void main(final String[] args) throws IOException, InterruptedException {
+        final HelloWorld helloWorld = load(HelloWorld.class).iterator().next();
+        log.info("localhost: {}", InetAddress.getLocalHost());
+        final ServerSocket server = new ServerSocket(0);
+        log.info("bound to {}", server.getLocalSocketAddress());
+        readAndClose(server);
+        connectAndPrint(server.getLocalPort());
+        final ExecutorService executorService = Executors.newCachedThreadPool();
+        while (!server.isClosed()) {
+            try {
+                final Socket client = server.accept();
+                // TODO: Implement!
+            } catch (final IOException ioe) {
+                if (server.isClosed()) {
+                    break;
+                }
+                throw ioe;
+            }
+        }
+        executorService.shutdown();
+        executorService.awaitTermination(10L, TimeUnit.SECONDS);
     }
 
     // -----------------------------------------------------------------------------------------------------------------
