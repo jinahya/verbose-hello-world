@@ -48,8 +48,8 @@ public class HelloWorldMain extends AbstractHelloWorldMain {
         final HelloWorld helloWorld = load(HelloWorld.class).iterator().next();
         log.info("localhost: {}", InetAddress.getLocalHost());
         final ServerSocket server = new ServerSocket(0);
-        readAndClose(server);
         log.info("bound to {}", server.getLocalSocketAddress());
+        readAndClose(server);
         connectAndPrint(server.getLocalPort());
         while (!server.isClosed()) {
             // TODO: implement!

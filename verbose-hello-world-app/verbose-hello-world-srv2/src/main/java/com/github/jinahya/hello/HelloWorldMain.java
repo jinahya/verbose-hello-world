@@ -23,6 +23,8 @@ package com.github.jinahya.hello;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.ServerSocket;
 
 import static java.util.ServiceLoader.load;
 
@@ -43,8 +45,15 @@ public class HelloWorldMain extends AbstractHelloWorldMain {
      * @throws IOException if an I/O error occurs.
      */
     public static void main(final String[] args) throws IOException {
-        final HelloWorld service = load(HelloWorld.class).iterator().next();
-        // TODO: implement!
+        final HelloWorld helloWorld = load(HelloWorld.class).iterator().next();
+        log.info("localhost: {}", InetAddress.getLocalHost());
+        final ServerSocket server = new ServerSocket(0);
+        log.info("bound to {}", server.getLocalSocketAddress());
+        readAndClose(server);
+        connectAndPrint(server.getLocalPort());
+        while (!server.isClosed()) {
+            // TODO: implement!
+        }
     }
 
     // -----------------------------------------------------------------------------------------------------------------
