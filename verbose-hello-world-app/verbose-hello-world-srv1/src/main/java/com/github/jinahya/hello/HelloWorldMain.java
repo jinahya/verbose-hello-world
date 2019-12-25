@@ -41,11 +41,18 @@ import static java.util.ServiceLoader.load;
 public class HelloWorldMain {
 
     // -----------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Connects to localhost with specified port number and reads exactly {@value com.github.jinahya.hello.HelloWorld#BYTES}
+     * bytes and prints it as a {@link StandardCharsets#US_ASCII US-ASCII} string.
+     *
+     * @param port the local port number to connect.
+     */
     private static void connect(final int port) {
         try {
             try (Socket client = new Socket()) {
                 final SocketAddress endpoint = new InetSocketAddress(InetAddress.getLocalHost(), port);
-                client.connect(endpoint, 10000);
+                client.connect(endpoint, 8192);
                 final byte[] array = new byte[HelloWorld.BYTES];
                 new DataInputStream(client.getInputStream()).readFully(array);
                 System.out.printf("%s%n", new String(array, StandardCharsets.US_ASCII));
@@ -63,6 +70,7 @@ public class HelloWorldMain {
      */
     public static void main(final String... args) throws IOException {
         final HelloWorld helloWorld = load(HelloWorld.class).iterator().next();
+        log.info("localhost: {}", InetAddress.getLocalHost());
         // TODO: implement!
     }
 
