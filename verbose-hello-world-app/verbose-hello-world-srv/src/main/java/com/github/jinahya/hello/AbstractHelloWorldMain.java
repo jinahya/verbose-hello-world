@@ -14,7 +14,7 @@ import java.net.SocketAddress;
 import java.nio.charset.StandardCharsets;
 
 @Slf4j
-abstract class AbstractHelloWorldMainSrv {
+abstract class AbstractHelloWorldMain {
 
     // -----------------------------------------------------------------------------------------------------------------
 

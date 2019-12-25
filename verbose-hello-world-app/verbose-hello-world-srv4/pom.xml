@@ -17,26 +17,10 @@
   <description>Verbose Hello World Srv4</description>
   <url>https://github.com/jinahya/verbose-hello-world/${project.parent.artifactId}/${project.artifactId}</url>
 
-  <properties>
-    <mainClass>com.github.jinahya.hello.HelloWorldMain</mainClass>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>com.github.jinahya</groupId>
-      <artifactId>verbose-hello-world-api</artifactId>
-      <version>0.1.0-SNAPSHOT</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.github.jinahya</groupId>
-      <artifactId>verbose-hello-world-lib</artifactId>
-      <version>0.1.0-SNAPSHOT</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.github.jinahya</groupId>
-      <artifactId>verbose-hello-world-spi</artifactId>
+      <artifactId>verbose-hello-world-srv</artifactId>
       <version>0.1.0-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>

@@ -32,7 +32,7 @@ import static java.util.ServiceLoader.load;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-public class HelloWorldMain extends AbstractHelloWorldMainSrv {
+public class HelloWorldMain extends AbstractHelloWorldMain {
 
     // -----------------------------------------------------------------------------------------------------------------
 

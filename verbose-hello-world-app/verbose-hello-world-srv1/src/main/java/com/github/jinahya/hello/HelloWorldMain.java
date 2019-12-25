@@ -34,7 +34,7 @@ import static java.util.ServiceLoader.load;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-public class HelloWorldMainSrv extends AbstractHelloWorldMainSrv {
+public class HelloWorldMain extends AbstractHelloWorldMain {
 
     // -----------------------------------------------------------------------------------------------------------------
 
@@ -61,7 +61,7 @@ public class HelloWorldMainSrv extends AbstractHelloWorldMainSrv {
     /**
      * Creates a new instance.
      */
-    private HelloWorldMainSrv() {
+    private HelloWorldMain() {
         super();
     }
 }
