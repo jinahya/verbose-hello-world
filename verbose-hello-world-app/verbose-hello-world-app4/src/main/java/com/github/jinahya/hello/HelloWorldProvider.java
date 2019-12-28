@@ -24,7 +24,9 @@ class HelloWorldProvider {
      */
     @Produces
     public HelloWorld provideHelloWorld() {
-        return load(HelloWorld.class).iterator().next();
+        final HelloWorld helloWorld = load(HelloWorld.class).iterator().next();
+//        log.debug("producing {}", helloWorld);
+        return helloWorld;
     }
 
     /**
@@ -33,6 +35,6 @@ class HelloWorldProvider {
      * @param helloWorld the instance of {@link HelloWorld} to dispose.
      */
     void disposeHelloWorld(@Disposes final HelloWorld helloWorld) {
-        // empty
+//        log.debug("disposing {}", helloWorld);
     }
 }
