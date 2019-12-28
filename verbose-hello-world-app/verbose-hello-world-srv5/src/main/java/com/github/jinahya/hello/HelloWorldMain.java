@@ -64,9 +64,10 @@ public class HelloWorldMain extends AbstractHelloWorldMain {
         readAndClose(server); // reads "quit" from System.in and closes the server.
         connectAndPrintNonBlocking(server); // connects to the server and prints received hello-world-bytes.
         final Selector selector = Selector.open();
-        final SelectionKey key = server.register(selector, OP_ACCEPT, null);
-        while (key.isValid()) {
-            final int keys = selector.select(100L);
+        while (server.register(selector, OP_ACCEPT, null).isValid()) {
+            if (selector.select(100L) == 0) {
+                continue;
+            };
             for (final Iterator<SelectionKey> i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
                 final SelectionKey selectionKey = i.next();
                 if (!selectionKey.isValid()) {
