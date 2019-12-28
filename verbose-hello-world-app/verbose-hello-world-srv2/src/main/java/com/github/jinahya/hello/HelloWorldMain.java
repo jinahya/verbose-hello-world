@@ -68,7 +68,7 @@ public class HelloWorldMain extends AbstractHelloWorldMain {
                 if (server.isClosed()) {
                     break;
                 }
-                throw ioe;
+                log.debug("failed to work", ioe);
             }
         }
     }
