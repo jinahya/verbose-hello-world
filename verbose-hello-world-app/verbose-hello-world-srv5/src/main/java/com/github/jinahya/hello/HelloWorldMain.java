@@ -74,7 +74,7 @@ public class HelloWorldMain extends AbstractHelloWorldMain {
                 }
                 if (selectionKey.isAcceptable()) {
                     final SocketChannel client = server.accept();
-                    assert client != null;
+                    assert client.isBlocking();
                     client.configureBlocking(false);
                     final ByteBuffer buffer = allocate(BYTES);
                     helloWorld.put(buffer);
@@ -84,7 +84,7 @@ public class HelloWorldMain extends AbstractHelloWorldMain {
                     final SocketChannel channel = (SocketChannel) selectionKey.channel();
                     final ByteBuffer buffer = (ByteBuffer) selectionKey.attachment();
                     final int written = channel.write(buffer);
-                    if (!buffer.hasRemaining()) { // all written
+                    if (!buffer.hasRemaining()) {
                         selectionKey.cancel();
                         channel.close();
                     }
