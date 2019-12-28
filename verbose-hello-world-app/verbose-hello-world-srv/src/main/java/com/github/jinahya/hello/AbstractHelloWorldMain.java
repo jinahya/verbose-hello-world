@@ -18,8 +18,9 @@ abstract class AbstractHelloWorldMain {
 
     // -----------------------------------------------------------------------------------------------------------------
 
+
     /**
-     * Starts a new thread which reads lines from {@link System#in} and closed specified server socket for "{@code
+     * Starts a new thread which reads lines from {@link System#in} and closes specified server socket for "{@code
      * quit}".
      *
      * @param server the server socket to close.
@@ -49,8 +50,9 @@ abstract class AbstractHelloWorldMain {
     }
 
     /**
-     * Starts a new thread which connects to localhost with specified port number and reads exactly {@value
-     * HelloWorld#BYTES} bytes and prints it as a {@link StandardCharsets#US_ASCII US-ASCII} string.
+     * Starts a new thread which connects to {@link InetAddress#getLocalHost() localhost} with specified port number and
+     * reads {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and prints it as a {@link
+     * StandardCharsets#US_ASCII US-ASCII} string followed by a new line character.
      *
      * @param port the local port number to connect.
      */
