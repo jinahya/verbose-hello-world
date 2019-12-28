@@ -59,16 +59,17 @@ public class HelloWorldMain {
     // -----------------------------------------------------------------------------------------------------------------
     @PostConstruct
     private void onPostConstruct() {
-        log.debug("constructed.");
-        log.debug("helloWorld: {}", helloWorld);
+//        log.debug("constructed.");
+//        log.debug("helloWorld: {}", helloWorld);
     }
 
     @PreDestroy
     private void onPreDestroy() {
-        log.debug("being destroyed.");
+//        log.debug("being destroyed.");
     }
 
     // -----------------------------------------------------------------------------------------------------------------
+
     /**
      * An injected instance of {@link HelloWorld}.
      */
