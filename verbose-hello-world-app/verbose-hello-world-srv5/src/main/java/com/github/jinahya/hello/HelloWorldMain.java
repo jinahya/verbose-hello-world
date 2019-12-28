@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
-import java.nio.channels.ClosedSelectorException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
@@ -67,14 +66,7 @@ public class HelloWorldMain extends AbstractHelloWorldMain {
         final Selector selector = Selector.open();
         final SelectionKey key = server.register(selector, OP_ACCEPT, null);
         while (key.isValid()) {
-            try {
-                final int keys = selector.select();
-            } catch (final ClosedSelectorException cse) {
-                if (!key.isValid()) {
-                    continue;
-                }
-                log.error("failed to select", cse);
-            }
+            final int keys = selector.select(100L);
             for (final Iterator<SelectionKey> i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
                 final SelectionKey selectionKey = i.next();
                 if (!selectionKey.isValid()) {
