@@ -33,8 +33,6 @@ import java.io.IOException;
 @Slf4j
 public class HelloWorldMain {
 
-    // -----------------------------------------------------------------------------------------------------------------
-
     /**
      * The main method of this program which prints {@code hello, world} followed by a new line character.
      *
@@ -45,16 +43,12 @@ public class HelloWorldMain {
         // TODO: implement!
     }
 
-    // -----------------------------------------------------------------------------------------------------------------
-
     /**
      * Creates a new instance.
      */
     private HelloWorldMain() {
         super();
     }
-
-    // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * An injected instance of {@link HelloWorld}.
