@@ -53,10 +53,9 @@ public class HelloWorldMain extends AbstractHelloWorldMain {
      * The main method of this program which accepts socket connections and sends {@code hello, world} to clients.
      *
      * @param args an array of command line arguments
-     * @throws IOException          if an I/O error occurs.
-     * @throws InterruptedException when interrupted while awaiting an executor.
+     * @throws IOException if an I/O error occurs.
      */
-    public static void main(final String[] args) throws IOException, InterruptedException {
+    public static void main(final String[] args) throws IOException {
         final HelloWorld helloWorld = load(HelloWorld.class).iterator().next();
         log.info("localhost: {}", InetAddress.getLocalHost());
         final ServerSocketChannel server = ServerSocketChannel.open();
