@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
+import java.net.Socket;
 
 import static java.util.ServiceLoader.load;
 
@@ -52,7 +53,16 @@ public class HelloWorldMain extends AbstractHelloWorldMain {
         readAndClose(server);
         connectAndPrint(server.getLocalPort());
         while (!server.isClosed()) {
-            // TODO: implement!
+            try {
+                try (Socket client = server.accept()) {
+                    // TODO: Implement!
+                }
+            } catch (final IOException ioe) {
+                if (server.isClosed()) {
+                    break;
+                }
+                log.debug("failed to work", ioe);
+            }
         }
     }
 
