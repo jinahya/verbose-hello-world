@@ -60,7 +60,15 @@ public class HelloWorldMain extends AbstractHelloWorldMain {
         while (!server.isClosed()) {
             try {
                 final Socket client = server.accept();
-                // TODO: Implement!
+                executorService.submit(() -> {
+                    try {
+                        try (Socket c = client) {
+                            // TODO: Implement!
+                        }
+                    } catch (final IOException ioe) {
+                        log.error("failed to send", ioe);
+                    }
+                });
             } catch (final IOException ioe) {
                 if (server.isClosed()) {
                     break;
