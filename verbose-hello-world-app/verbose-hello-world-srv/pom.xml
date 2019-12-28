@@ -17,6 +17,10 @@
   <description>Verbose Hello World Srv</description>
   <url>https://github.com/jinahya/verbose-hello-world/${project.parent.artifactId}/${project.artifactId}</url>
 
+  <properties>
+    <generateArchives>false</generateArchives>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>com.github.jinahya</groupId>
