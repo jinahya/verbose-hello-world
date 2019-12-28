@@ -31,7 +31,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
-import java.nio.channels.ClosedSelectorException;
+import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
@@ -171,42 +171,42 @@ abstract class AbstractHelloWorldMain {
      * @see Socket#getLocalAddress()
      */
     private static void connectAndPrintNonBlocking(final SocketAddress remote) throws IOException {
+        final Selector selector = Selector.open();
         try (SocketChannel client = SocketChannel.open()) {
             client.configureBlocking(false);
-            final Selector selector = Selector.open();
-            {
-                final boolean connected = client.connect(remote);
-                if (!connected) {
-                    client.register(selector, OP_CONNECT, null);
-                } else { // immediately connected; > as can happen with a local connection
-                    client.register(selector, OP_READ, allocate(BYTES));
-                }
+            final SelectionKey key;
+            if (client.connect(remote)) {
+                key = client.register(selector, OP_READ, allocate(BYTES));
+            } else {
+                key = client.register(selector, OP_CONNECT, null);
             }
-            while (true) {
-                try {
-                    if (selector.select() == 0) {
-                        continue;
-                    }
-                } catch (final ClosedSelectorException cse) {
-                    break;
-                }
+            while (key.isValid()) {
+                final int keys = selector.select();
                 for (final Iterator<SelectionKey> i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
                     final SelectionKey selectionKey = i.next();
-                    if (selectionKey.isConnectable()) { // connected
-                        client.register(selector, OP_READ, allocate(BYTES));
-                        selectionKey.cancel();
-                    } else if (selectionKey.isReadable()) { // ready to read
+                    if (selectionKey.isConnectable()) {
+                        if (client.finishConnect()) {
+                            selectionKey.attach(allocate(BYTES));
+                            selectionKey.interestOps(OP_READ);
+                        }
+                    } else if (selectionKey.isReadable()) {
+                        final ReadableByteChannel channel = (ReadableByteChannel) selectionKey.channel();
                         final ByteBuffer buffer = (ByteBuffer) selectionKey.attachment();
-                        final int read = client.read(buffer);
+                        if (channel.read(buffer) == -1) {
+                            log.error("reached to an unexpected end of stream");
+                            channel.close();
+                            continue;
+                        }
                         if (!buffer.hasRemaining()) { // all bytes has been read
                             System.out.printf("%s%n", US_ASCII.decode(buffer).toString());
                             selectionKey.cancel();
-                            selector.close();
+                            channel.close();
                         }
                     }
                 }
             }
         }
+        selector.close();
     }
 
     /**
