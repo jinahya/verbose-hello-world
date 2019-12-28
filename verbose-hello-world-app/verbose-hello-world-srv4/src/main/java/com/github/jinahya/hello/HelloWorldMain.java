@@ -57,14 +57,14 @@ public class HelloWorldMain extends AbstractHelloWorldMain {
         server.configureBlocking(true);
         server.bind(new InetSocketAddress(InetAddress.getLocalHost(), 0));
         log.info("bound to {}", server.socket().getLocalSocketAddress());
-        readAndClose(server);
-        connectAndPrintBlocking(server);
-        final ExecutorService executorService = newCachedThreadPool();
+        readAndClose(server); // reads "quit" from System.in and closes the server.
+        connectAndPrintBlocking(server); // connects to the server and prints received hello-world-bytes.
+        final ExecutorService executor = newCachedThreadPool();
         while (!server.socket().isClosed()) {
             try {
                 final SocketChannel client = server.accept();
                 assert client.isBlocking();
-                executorService.submit(() -> {
+                executor.submit(() -> {
                     try {
                         try (SocketChannel c = client) {
                             // TODO: Implement!
@@ -80,8 +80,8 @@ public class HelloWorldMain extends AbstractHelloWorldMain {
                 log.debug("failed to work", ioe);
             }
         }
-        executorService.shutdown();
-        executorService.awaitTermination(10L, TimeUnit.SECONDS);
+        executor.shutdown();
+        executor.awaitTermination(10L, TimeUnit.SECONDS);
     }
 
     // -----------------------------------------------------------------------------------------------------------------
