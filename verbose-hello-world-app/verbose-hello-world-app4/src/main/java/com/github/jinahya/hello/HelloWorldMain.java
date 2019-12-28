@@ -22,6 +22,8 @@ package com.github.jinahya.hello;
 
 import lombok.extern.slf4j.Slf4j;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import java.io.IOException;
 
@@ -33,6 +35,8 @@ import java.io.IOException;
 @Slf4j
 public class HelloWorldMain {
 
+    // -----------------------------------------------------------------------------------------------------------------
+
     /**
      * The main method of this program which prints {@code hello, world} followed by a new line character.
      *
@@ -43,6 +47,8 @@ public class HelloWorldMain {
         // TODO: implement!
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
+
     /**
      * Creates a new instance.
      */
@@ -50,6 +56,19 @@ public class HelloWorldMain {
         super();
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
+    @PostConstruct
+    private void onPostConstruct() {
+        log.debug("constructed.");
+        log.debug("helloWorld: {}", helloWorld);
+    }
+
+    @PreDestroy
+    private void onPreDestroy() {
+        log.debug("being destroyed.");
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
     /**
      * An injected instance of {@link HelloWorld}.
      */
