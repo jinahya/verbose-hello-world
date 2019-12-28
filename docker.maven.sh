@@ -10,8 +10,8 @@ version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
 tag="$1"
 shift
 docker run -it --rm \
-  --name verbose-hello-world \
-  -v "$HOME/.m2":/root/.m2 \
-  -v "$(pwd)":/usr/src/$groupId/$artifactId/$version \
-  -w /usr/src/$groupId/$artifactId/$version \
-  maven:"$tag" mvn "$@"
+--name verbose-hello-world \
+-v "$HOME/.m2":/root/.m2 \
+-v "$(pwd)":/usr/src/$groupId/$artifactId/$version \
+-w /usr/src/$groupId/$artifactId/$version \
+maven:"$tag" mvn "$@"
