@@ -25,12 +25,9 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import static java.util.ServiceLoader.load;
@@ -50,9 +47,10 @@ public class HelloWorldMain extends AbstractHelloWorldMain {
      * The main method of this program which accepts socket connections and sends {@code hello, world} to clients.
      *
      * @param args an array of command line arguments
-     * @throws IOException if an I/O error occurs.
+     * @throws IOException          if an I/O error occurs.
+     * @throws InterruptedException when interrupted while awaiting an executor.
      */
-    public static void main(final String[] args) throws IOException {
+    public static void main(final String[] args) throws IOException, InterruptedException {
         final HelloWorld helloWorld = load(HelloWorld.class).iterator().next();
         log.info("localhost: {}", InetAddress.getLocalHost());
         final ServerSocketChannel server = ServerSocketChannel.open();
