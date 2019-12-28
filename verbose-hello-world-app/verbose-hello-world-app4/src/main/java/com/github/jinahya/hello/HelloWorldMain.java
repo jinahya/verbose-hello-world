@@ -20,6 +20,7 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 import java.io.IOException;
 
