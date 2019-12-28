@@ -24,25 +24,23 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.SocketAddress;
 import java.nio.charset.StandardCharsets;
 
 import static java.lang.Integer.parseInt;
 
 /**
- * A class whose {@link #main(String[])} method accepts socket connections and sends {@code hello, world} to clients.
+ * A class whose {@link #main(String[])} method connects to a remote socket and prints the response.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-public class HelloWorldMainCli {
+public class HelloWorldMain {
 
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
-     * The main method of this program which accepts socket connections and sends {@code hello, world} to clients.
+     * The main method of this program which connects to a remote socket and prints the response.
      *
      * @param args an array of command line arguments
      * @throws IOException if an I/O error occurs.
@@ -50,7 +48,7 @@ public class HelloWorldMainCli {
     public static void main(final String... args) throws IOException {
         final String host = args[0];
         final int port = parseInt(args[1]);
-        try(Socket socket = new Socket(host, port)) {
+        try (Socket socket = new Socket(host, port)) {
             final byte[] array = new byte[HelloWorld.BYTES];
             new DataInputStream(socket.getInputStream()).readFully(array);
             System.out.printf("%s%n", new String(array, StandardCharsets.US_ASCII));
@@ -62,7 +60,7 @@ public class HelloWorldMainCli {
     /**
      * Creates a new instance.
      */
-    private HelloWorldMainCli() {
+    private HelloWorldMain() {
         super();
     }
 }
