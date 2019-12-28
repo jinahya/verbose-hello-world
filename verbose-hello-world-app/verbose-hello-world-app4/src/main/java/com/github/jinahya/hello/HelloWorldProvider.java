@@ -7,6 +7,11 @@ import javax.enterprise.inject.Produces;
 
 import static java.util.ServiceLoader.load;
 
+/**
+ * A class for producing (and disposing) instances of {@link HelloWorld}.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @Slf4j
 class HelloWorldProvider {
 
