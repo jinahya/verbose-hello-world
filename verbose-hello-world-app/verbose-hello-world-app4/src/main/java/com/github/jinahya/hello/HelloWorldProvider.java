@@ -23,7 +23,7 @@ class HelloWorldProvider {
      * @return an instance of {@link HelloWorld}.
      */
     @Produces
-    public HelloWorld provideHelloWorld() {
+    public HelloWorld produceHelloWorld() {
         final HelloWorld helloWorld = load(HelloWorld.class).iterator().next();
 //        log.debug("producing {}", helloWorld);
         return helloWorld;
