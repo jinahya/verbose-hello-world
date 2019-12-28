@@ -57,5 +57,5 @@ public class HelloWorldMain {
      * An injected instance of {@link HelloWorld}.
      */
     @Inject
-    HelloWorld helloWorld;
+    private HelloWorld helloWorld;
 }
