@@ -23,8 +23,18 @@ package com.github.jinahya.hello;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import static java.util.ServiceLoader.load;
+import static java.util.concurrent.Executors.newCachedThreadPool;
 
 /**
  * A class whose {@link #main(String[])} method accepts socket connections and sends {@code hello, world} to clients.
@@ -43,8 +53,37 @@ public class HelloWorldMain extends AbstractHelloWorldMain {
      * @throws IOException if an I/O error occurs.
      */
     public static void main(final String[] args) throws IOException {
-        final HelloWorld service = load(HelloWorld.class).iterator().next();
-        // TODO: implement!
+        final HelloWorld helloWorld = load(HelloWorld.class).iterator().next();
+        log.info("localhost: {}", InetAddress.getLocalHost());
+        final ServerSocketChannel server = ServerSocketChannel.open();
+        server.configureBlocking(true);
+        server.bind(new InetSocketAddress(InetAddress.getLocalHost(), 0));
+        log.info("bound to {}", server.socket().getLocalSocketAddress());
+        readAndClose(server);
+        connectAndPrintBlocking(server);
+        final ExecutorService executorService = newCachedThreadPool();
+        while (!server.socket().isClosed()) {
+            try {
+                final SocketChannel client = server.accept();
+                assert client.isBlocking();
+                executorService.submit(() -> {
+                    try {
+                        try (SocketChannel c = client) {
+                            // TODO: Implement!
+                        }
+                    } catch (final IOException ioe) {
+                        log.error("failed to send", ioe);
+                    }
+                });
+            } catch (final IOException ioe) {
+                if (server.socket().isClosed()) {
+                    break;
+                }
+                log.debug("failed to work", ioe);
+            }
+        }
+        executorService.shutdown();
+        executorService.awaitTermination(10L, TimeUnit.SECONDS);
     }
 
     // -----------------------------------------------------------------------------------------------------------------

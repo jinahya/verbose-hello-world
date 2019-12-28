@@ -55,7 +55,7 @@ public class HelloWorldMain extends AbstractHelloWorldMain {
         final ServerSocket server = new ServerSocket(0);
         log.info("bound to {}", server.getLocalSocketAddress());
         readAndClose(server);
-        connectAndPrint(server.getLocalPort());
+        connectAndPrint(server);
         final ExecutorService executorService = Executors.newCachedThreadPool();
         while (!server.isClosed()) {
             try {
