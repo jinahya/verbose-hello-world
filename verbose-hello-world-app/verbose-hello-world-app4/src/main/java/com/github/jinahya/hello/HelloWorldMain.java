@@ -20,7 +20,8 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import javax.enterprise.inject.spi.CDI;
+import lombok.extern.slf4j.Slf4j;
+
 import javax.inject.Inject;
 import java.io.IOException;
 
@@ -29,6 +30,7 @@ import java.io.IOException;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@Slf4j
 public class HelloWorldMain {
 
     // -----------------------------------------------------------------------------------------------------------------
