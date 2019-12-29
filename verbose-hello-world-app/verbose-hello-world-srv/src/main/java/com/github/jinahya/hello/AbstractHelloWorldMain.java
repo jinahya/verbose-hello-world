@@ -324,7 +324,7 @@ abstract class AbstractHelloWorldMain {
 
             @Override
             public void failed(final Throwable exc, final Void attachment) {
-                log.error("failed to connect to {}", remote, exc);
+                log.error("failed to connect", exc);
             }
         });
     }
