@@ -43,6 +43,7 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
@@ -249,13 +250,14 @@ abstract class AbstractHelloWorldMain {
      */
     private static void connectAndPrintAsynchronous(SocketAddress remote)
             throws IOException, InterruptedException, ExecutionException {
-        remote = new InetSocketAddress(InetAddress.getLocalHost(), ((InetSocketAddress)remote).getPort());
+        remote = new InetSocketAddress(InetAddress.getLocalHost(), ((InetSocketAddress) remote).getPort());
         final AsynchronousSocketChannel client = AsynchronousSocketChannel.open();
         final Void connected = client.connect(remote).get();
         final ByteBuffer buffer = allocate(BYTES);
         while (buffer.hasRemaining()) {
             final int read = client.read(buffer).get();
         }
+        buffer.flip();
         System.out.printf("%s%n", US_ASCII.decode(buffer).toString());
     }
 
@@ -268,21 +270,13 @@ abstract class AbstractHelloWorldMain {
      * @see #connectAndPrintAsynchronous(SocketAddress)
      */
     static void connectAndPrintAsynchronous(final AsynchronousServerSocketChannel server) {
-        final Thread thread = new Thread(() -> {
+        final CompletableFuture<Void> future = runAsync(() -> {
             try {
-                final Void result = runAsync(() -> {
-                    try {
-                        connectAndPrintAsynchronous(server.getLocalAddress());
-                    } catch (final Exception e) {
-                        log.error("failed to connect and print", e);
-                    }
-                }).get();
-            } catch (InterruptedException | ExecutionException e) {
-                log.error("failed to complete", e);
+                connectAndPrintAsynchronous(server.getLocalAddress());
+            } catch (final Exception e) {
+                log.error("failed to connect and print", e);
             }
         });
-        thread.setDaemon(true);
-        thread.start();
     }
 
     // -----------------------------------------------------------------------------------------------------------------
