@@ -78,6 +78,11 @@ public class HelloWorldMain extends AbstractHelloWorldMain {
                         log.error("failed to send", e);
                     }
                 }
+                try {
+                    client.close();
+                } catch (final IOException ioe) {
+                    log.error("failed to close: " + client, ioe);
+                }
             };
             final CompletableFuture<Void> future = runAsync(runnable, executor);
         }
