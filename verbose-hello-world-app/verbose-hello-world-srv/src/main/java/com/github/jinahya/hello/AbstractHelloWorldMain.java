@@ -269,8 +269,8 @@ abstract class AbstractHelloWorldMain {
      * @param server the server socket channel to connect.
      * @see #connectAndPrintAsynchronous(SocketAddress)
      */
-    static void connectAndPrintAsynchronous(final AsynchronousServerSocketChannel server) {
-        final CompletableFuture<Void> future = runAsync(() -> {
+    static CompletableFuture<Void> connectAndPrintAsynchronous(final AsynchronousServerSocketChannel server) {
+        return runAsync(() -> {
             try {
                 connectAndPrintAsynchronous(server.getLocalAddress());
             } catch (final Exception e) {
