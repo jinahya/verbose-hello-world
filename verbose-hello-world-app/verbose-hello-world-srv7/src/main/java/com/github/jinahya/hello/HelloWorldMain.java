@@ -51,7 +51,7 @@ public class HelloWorldMain extends AbstractHelloWorldMain {
      * The main method of this program which accepts socket connections and sends {@code hello, world} to clients.
      *
      * @param args an array of command line arguments
-     * @throws IOException if an I/O error occurs.
+     * @throws IOException          if an I/O error occurs.
      * @throws InterruptedException if interrupted while awaiting termination
      */
     public static void main(final String... args) throws IOException, InterruptedException {
