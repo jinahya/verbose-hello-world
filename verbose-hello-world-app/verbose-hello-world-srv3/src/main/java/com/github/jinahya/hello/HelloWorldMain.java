@@ -31,6 +31,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import static java.util.ServiceLoader.load;
+import static java.util.concurrent.Executors.newCachedThreadPool;
 
 /**
  * A class whose {@link #main(String[])} method accepts socket connections and sends {@code hello, world} to clients.
@@ -56,11 +57,11 @@ public class HelloWorldMain extends AbstractHelloWorldMain {
         log.info("bound to {}", server.getLocalSocketAddress());
         readAndClose(server);
         connectAndPrint(server);
-        final ExecutorService executorService = Executors.newCachedThreadPool();
+        final ExecutorService executor = newCachedThreadPool();
         while (!server.isClosed()) {
             try {
                 final Socket client = server.accept();
-                executorService.submit(() -> {
+                executor.submit(() -> {
                     try {
                         try (Socket c = client) {
                             // TODO: Implement!
@@ -76,8 +77,8 @@ public class HelloWorldMain extends AbstractHelloWorldMain {
                 log.debug("failed to work", ioe);
             }
         }
-        executorService.shutdown();
-        executorService.awaitTermination(10L, TimeUnit.SECONDS);
+        executor.shutdown();
+        executor.awaitTermination(10L, TimeUnit.SECONDS);
     }
 
     // -----------------------------------------------------------------------------------------------------------------
