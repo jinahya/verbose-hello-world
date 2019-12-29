@@ -31,6 +31,7 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.Iterator;
+import java.util.Set;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.nio.ByteBuffer.allocate;
@@ -64,30 +65,32 @@ public class HelloWorldMain extends AbstractHelloWorldMain {
         readAndClose(server); // reads "quit" from System.in and closes the server.
         connectAndPrintNonBlocking(server); // connects to the server and prints received hello-world-bytes.
         final Selector selector = Selector.open();
-        while (server.register(selector, OP_ACCEPT, null).isValid()) {
-            if (selector.select(100L) == 0) {
-                continue;
-            };
-            for (final Iterator<SelectionKey> i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
-                final SelectionKey selectionKey = i.next();
-                if (!selectionKey.isValid()) {
-                    continue;
+        final SelectionKey key = server.register(selector, OP_ACCEPT, null);
+        while (key.isValid()) {
+            final int keys = selector.select(1000L);
+            final Set<SelectionKey> selectionKeys = selector.selectedKeys();
+            try {
+                for (final SelectionKey selectionKey : selectionKeys) {
+                    if (selectionKey.isAcceptable()) {
+                        final ServerSocketChannel channel = (ServerSocketChannel) selectionKey.channel();
+                        final SocketChannel client = channel.accept();
+                        assert client.isBlocking();
+                        client.configureBlocking(false);
+                        final ByteBuffer buffer = allocate(BYTES);
+                        helloWorld.put(buffer);
+                        buffer.flip();
+                        client.register(selector, OP_WRITE, buffer);
+                    } else if (selectionKey.isWritable()) {
+                        final SocketChannel channel = (SocketChannel) selectionKey.channel();
+                        final ByteBuffer buffer = (ByteBuffer) selectionKey.attachment();
+                        // TODO: 2019-12-29 Implement!
+                    }
                 }
-                if (selectionKey.isAcceptable()) {
-                    final SocketChannel client = server.accept();
-                    assert client.isBlocking();
-                    client.configureBlocking(false);
-                    final ByteBuffer buffer = allocate(BYTES);
-                    helloWorld.put(buffer);
-                    buffer.flip();
-                    client.register(selector, OP_WRITE, buffer);
-                } else if (selectionKey.isWritable()) {
-                    final SocketChannel channel = (SocketChannel) selectionKey.channel();
-                    final ByteBuffer buffer = (ByteBuffer) selectionKey.attachment();
-                    // TODO: 2019-12-29 Implement!
-                }
+            } finally {
+                selectionKeys.clear();
             }
         }
+        selector.close();
     }
 
     // -----------------------------------------------------------------------------------------------------------------
