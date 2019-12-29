@@ -84,11 +84,7 @@ public class HelloWorldMain extends AbstractHelloWorldMain {
                 } else if (selectionKey.isWritable()) {
                     final SocketChannel channel = (SocketChannel) selectionKey.channel();
                     final ByteBuffer buffer = (ByteBuffer) selectionKey.attachment();
-                    final int written = channel.write(buffer);
-                    if (!buffer.hasRemaining()) {
-                        selectionKey.cancel();
-                        channel.close();
-                    }
+                    // TODO: 2019-12-29 Implement!
                 }
             }
         }
