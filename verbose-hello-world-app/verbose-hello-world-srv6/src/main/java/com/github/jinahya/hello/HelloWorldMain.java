@@ -63,10 +63,18 @@ public class HelloWorldMain extends AbstractHelloWorldMain {
         server.bind(null);
         log.info("bound to {}", server.getLocalAddress());
         readAndClose(server); // reads "quit" from System.in and closes the server.
-        final CompletableFuture<Void> printer = connectAndPrintAsynchronous(server);
+        connectAndPrintAsynchronous(server);
         final ExecutorService executor = newCachedThreadPool();
         while (server.isOpen()) {
-            final AsynchronousSocketChannel client = server.accept().get();
+            final AsynchronousSocketChannel client;
+            try {
+                client = server.accept().get();
+            } catch (final ExecutionException ee) {
+                if (server.isOpen()) {
+                    log.error("failed to accept", ee);
+                }
+                continue;
+            }
             final Runnable runnable = () -> {
                 final ByteBuffer buffer = allocate(BYTES);
                 helloWorld.put(buffer);
@@ -84,11 +92,10 @@ public class HelloWorldMain extends AbstractHelloWorldMain {
                     log.error("failed to close: " + client, ioe);
                 }
             };
-            final CompletableFuture<Void> writer = runAsync(runnable, executor);
+            final CompletableFuture<Void> future = runAsync(runnable, executor);
         }
         executor.shutdown();
         executor.awaitTermination(10L, TimeUnit.SECONDS);
-        final Void printed = printer.get();
     }
 
     // -----------------------------------------------------------------------------------------------------------------
