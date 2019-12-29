@@ -27,6 +27,8 @@ import java.io.Closeable;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketAddress;
@@ -245,8 +247,9 @@ abstract class AbstractHelloWorldMain {
      * @throws InterruptedException if interrupted while getting the result.
      * @throws ExecutionException   if failed to execute.
      */
-    private static void connectAndPrintAsynchronous(final SocketAddress remote)
+    private static void connectAndPrintAsynchronous(SocketAddress remote)
             throws IOException, InterruptedException, ExecutionException {
+        remote = new InetSocketAddress(InetAddress.getLocalHost(), ((InetSocketAddress)remote).getPort());
         final AsynchronousSocketChannel client = AsynchronousSocketChannel.open();
         final Void connected = client.connect(remote).get();
         final ByteBuffer buffer = allocate(BYTES);
