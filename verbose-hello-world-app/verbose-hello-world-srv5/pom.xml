@@ -14,7 +14,7 @@
   <packaging>jar</packaging>
 
   <name>${project.artifactId}</name>
-  <description>Verbose Hello World Srv4</description>
+  <description>Verbose Hello World Srv5</description>
   <url>https://github.com/jinahya/verbose-hello-world/${project.parent.artifactId}/${project.artifactId}</url>
 
   <dependencies>

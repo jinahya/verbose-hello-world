@@ -241,11 +241,59 @@ abstract class AbstractHelloWorldMain {
      * prints it as a {@link StandardCharsets#US_ASCII US-ASCII} string followed by a new line character.
      *
      * @param remote the server socket channel to connect.
+     * @throws IOException          if an I/O error occurs.
+     * @throws InterruptedException if interrupted while getting the result.
+     * @throws ExecutionException   if failed to execute.
+     */
+    private static void connectAndPrintAsynchronous(final SocketAddress remote)
+            throws IOException, InterruptedException, ExecutionException {
+        final AsynchronousSocketChannel client = AsynchronousSocketChannel.open();
+        final Void connected = client.connect(remote).get();
+        final ByteBuffer buffer = allocate(BYTES);
+        while (buffer.hasRemaining()) {
+            final int read = client.read(buffer).get();
+        }
+        System.out.printf("%s%n", US_ASCII.decode(buffer).toString());
+    }
+
+    /**
+     * Starts a new thread which connects to specified asynchronous server socket channel's local address and reads
+     * {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and prints it as a {@link StandardCharsets#US_ASCII
+     * US-ASCII} string followed by a new line character.
+     *
+     * @param server the server socket channel to connect.
+     * @see #connectAndPrintAsynchronous(SocketAddress)
+     */
+    static void connectAndPrintAsynchronous(final AsynchronousServerSocketChannel server) {
+        final Thread thread = new Thread(() -> {
+            try {
+                final Void result = runAsync(() -> {
+                    try {
+                        connectAndPrintAsynchronous(server.getLocalAddress());
+                    } catch (final Exception e) {
+                        log.error("failed to connect and print", e);
+                    }
+                }).get();
+            } catch (InterruptedException | ExecutionException e) {
+                log.error("failed to complete", e);
+            }
+        });
+        thread.setDaemon(true);
+        thread.start();
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Connects to specified socket address and reads {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and
+     * prints it as a {@link StandardCharsets#US_ASCII US-ASCII} string followed by a new line character.
+     *
+     * @param remote the server socket channel to connect.
      * @throws IOException if an I/O error occurs.
      * @see ServerSocketChannel#socket()
      * @see Socket#getLocalAddress()
      */
-    private static void connectAndPrintAsynchronous(final SocketAddress remote) throws IOException {
+    private static void connectAndPrintAsynchronous2(final SocketAddress remote) throws IOException {
         final AsynchronousSocketChannel client = AsynchronousSocketChannel.open();
         client.connect(remote, null, new CompletionHandler<Void, Void>() {
 
@@ -291,12 +339,12 @@ abstract class AbstractHelloWorldMain {
      * @param server the server socket channel to connect.
      * @see #connectAndPrintNonBlocking(SocketAddress)
      */
-    static void connectAndPrintAsynchronous(final AsynchronousServerSocketChannel server) {
+    static void connectAndPrintAsynchronous2(final AsynchronousServerSocketChannel server) {
         final Thread thread = new Thread(() -> {
             try {
                 final Void result = runAsync(() -> {
                     try {
-                        connectAndPrintAsynchronous(server.getLocalAddress());
+                        connectAndPrintAsynchronous2(server.getLocalAddress());
                     } catch (final IOException ioe) {
                         log.error("failed to connect and print", ioe);
                     }
@@ -308,6 +356,7 @@ abstract class AbstractHelloWorldMain {
         thread.setDaemon(true);
         thread.start();
     }
+
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
@@ -319,7 +368,7 @@ abstract class AbstractHelloWorldMain {
      * @see ServerSocketChannel#socket()
      * @see Socket#getLocalAddress()
      */
-    private static void connectAndPrintAsynchronous2(final SocketAddress remote) throws IOException {
+    private static void connectAndPrintAsynchronous3(final SocketAddress remote) throws IOException {
         final AsynchronousSocketChannel client = AsynchronousSocketChannel.open();
         client.connect(remote, null, new ConnectionCompletionHandler<Void>(
                 (v, a1) -> {
@@ -356,14 +405,14 @@ abstract class AbstractHelloWorldMain {
      * string followed by a new line character.
      *
      * @param server the server socket channel to connect.
-     * @see #connectAndPrintNonBlocking(SocketAddress)
+     * @see #connectAndPrintAsynchronous3(SocketAddress)
      */
-    static void connectAndPrintAsynchronous2(final AsynchronousServerSocketChannel server) {
+    static void connectAndPrintAsynchronous3(final AsynchronousServerSocketChannel server) {
         final Thread thread = new Thread(() -> {
             try {
                 final Void result = runAsync(() -> {
                     try {
-                        connectAndPrintAsynchronous2(server.getLocalAddress());
+                        connectAndPrintAsynchronous3(server.getLocalAddress());
                     } catch (final IOException ioe) {
                         log.error("failed to connect and print", ioe);
                     }

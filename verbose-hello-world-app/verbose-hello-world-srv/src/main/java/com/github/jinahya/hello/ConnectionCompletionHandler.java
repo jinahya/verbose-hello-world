@@ -8,8 +8,9 @@ import static java.util.Objects.requireNonNull;
 class ConnectionCompletionHandler<A> implements CompletionHandler<Void, A> {
 
     // -----------------------------------------------------------------------------------------------------------------
-    ConnectionCompletionHandler(final BiConsumer<Void, ? super A> completionConsumer,
-                                final BiConsumer<Throwable, ? super A> failureConsumer) {
+    ConnectionCompletionHandler(
+            final BiConsumer<Void, ? super CompletionHandlerAttachment<Void, A>> completionConsumer,
+            final BiConsumer<Throwable, ? super CompletionHandlerAttachment<Void, A>> failureConsumer) {
         super();
         this.completionConsumer = requireNonNull(completionConsumer, "completionConsumer is null");
         this.failureConsumer = requireNonNull(failureConsumer, "failureConsumer is null");
@@ -18,16 +19,16 @@ class ConnectionCompletionHandler<A> implements CompletionHandler<Void, A> {
     // -----------------------------------------------------------------------------------------------------------------
     @Override
     public void completed(final Void result, final A attachment) {
-        completionConsumer.accept(result, attachment);
+        completionConsumer.accept(result, CompletionHandlerAttachment.of(this, attachment));
     }
 
     @Override
     public void failed(final Throwable exc, final A attachment) {
-        failureConsumer.accept(exc, attachment);
+        failureConsumer.accept(exc, CompletionHandlerAttachment.of(this, attachment));
     }
 
     // -----------------------------------------------------------------------------------------------------------------
-    private final BiConsumer<Void, ? super A> completionConsumer;
+    private final BiConsumer<Void, ? super CompletionHandlerAttachment<Void, A>> completionConsumer;
 
-    private final BiConsumer<Throwable, ? super A> failureConsumer;
+    private final BiConsumer<Throwable, ? super CompletionHandlerAttachment<Void, A>> failureConsumer;
 }
