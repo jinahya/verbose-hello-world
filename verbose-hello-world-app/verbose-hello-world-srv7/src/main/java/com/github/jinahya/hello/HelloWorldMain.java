@@ -21,7 +21,6 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import sun.jvm.hotspot.HelloWorld;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -32,6 +31,7 @@ import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.concurrent.TimeUnit;
 
+import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.channels.AsynchronousChannelGroup.withCachedThreadPool;
 import static java.util.ServiceLoader.load;
