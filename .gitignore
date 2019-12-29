@@ -25,3 +25,5 @@ buildNumber.properties
 
 *.log
 
+venv
+
