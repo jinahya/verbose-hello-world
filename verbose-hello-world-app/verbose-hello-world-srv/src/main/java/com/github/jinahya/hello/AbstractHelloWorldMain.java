@@ -290,7 +290,8 @@ abstract class AbstractHelloWorldMain {
      * @see ServerSocketChannel#socket()
      * @see Socket#getLocalAddress()
      */
-    private static void connectAndPrintAsynchronous2(final SocketAddress remote) throws IOException {
+    private static void connectAndPrintAsynchronous2(SocketAddress remote) throws IOException {
+        remote = new InetSocketAddress(InetAddress.getLocalHost(), ((InetSocketAddress) remote).getPort());
         final AsynchronousSocketChannel client = AsynchronousSocketChannel.open();
         client.connect(remote, null, new CompletionHandler<Void, Void>() {
 

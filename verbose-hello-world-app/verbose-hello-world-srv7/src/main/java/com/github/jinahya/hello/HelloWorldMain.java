@@ -56,7 +56,7 @@ public class HelloWorldMain extends AbstractHelloWorldMain {
         server.bind(null);
         log.info("bound to {}", server.getLocalAddress());
         readAndClose(server); // reads "quit" from System.in and closes the server.
-        connectAndPrintAsynchronous(server); // connects to the server and prints received hello-world-bytes.
+        connectAndPrintAsynchronous2(server); // connects to the server and prints received hello-world-bytes.
         server.accept(null, new CompletionHandler<AsynchronousSocketChannel, Object>() {
             @Override
             public void completed(final AsynchronousSocketChannel client, final Object attachment) {
