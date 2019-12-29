@@ -55,7 +55,6 @@ public class HelloWorldMain extends AbstractHelloWorldMain {
         log.info("localhost: {}", InetAddress.getLocalHost());
         final ServerSocketChannel server = ServerSocketChannel.open();
         server.configureBlocking(true);
-        //server.bind(new InetSocketAddress(InetAddress.getLocalHost(), 0));
         server.bind(null);
         log.info("bound to {}", server.socket().getLocalSocketAddress());
         readAndClose(server); // reads "quit" from System.in and closes the server.

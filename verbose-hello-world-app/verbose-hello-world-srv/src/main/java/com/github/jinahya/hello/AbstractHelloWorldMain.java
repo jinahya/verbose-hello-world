@@ -31,6 +31,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
+import java.nio.channels.AsynchronousServerSocketChannel;
+import java.nio.channels.AsynchronousSocketChannel;
+import java.nio.channels.CompletionHandler;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -38,12 +41,14 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
+import java.util.concurrent.ExecutionException;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.channels.SelectionKey.OP_CONNECT;
 import static java.nio.channels.SelectionKey.OP_READ;
 import static java.nio.charset.StandardCharsets.US_ASCII;
+import static java.util.concurrent.CompletableFuture.runAsync;
 
 @Slf4j
 abstract class AbstractHelloWorldMain {
@@ -223,6 +228,148 @@ abstract class AbstractHelloWorldMain {
                 connectAndPrintNonBlocking(server.getLocalAddress());
             } catch (final IOException ioe) {
                 log.error("failed to connect and print", ioe);
+            }
+        });
+        thread.setDaemon(true);
+        thread.start();
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Connects to specified socket address and reads {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and
+     * prints it as a {@link StandardCharsets#US_ASCII US-ASCII} string followed by a new line character.
+     *
+     * @param remote the server socket channel to connect.
+     * @throws IOException if an I/O error occurs.
+     * @see ServerSocketChannel#socket()
+     * @see Socket#getLocalAddress()
+     */
+    private static void connectAndPrintAsynchronous(final SocketAddress remote) throws IOException {
+        final AsynchronousSocketChannel client = AsynchronousSocketChannel.open();
+        client.connect(remote, null, new CompletionHandler<Void, Void>() {
+
+            @Override
+            public void completed(final Void result, final Void attachment) {
+                final ByteBuffer buffer = allocate(BYTES);
+                client.read(buffer, buffer, new CompletionHandler<Integer, ByteBuffer>() {
+
+                    @Override
+                    public void completed(final Integer result, final ByteBuffer attachment) {
+                        if (!attachment.hasRemaining()) {
+                            attachment.flip();
+                            System.out.printf("%s%n", US_ASCII.decode(attachment).toString());
+                            try {
+                                client.close();
+                            } catch (final IOException ioe) {
+                                log.error("failed to close client", ioe);
+                            }
+                            return;
+                        }
+                        client.read(attachment, attachment, this);
+                    }
+
+                    @Override
+                    public void failed(final Throwable exc, final ByteBuffer attachment) {
+                        log.error("failed to read", exc);
+                    }
+                });
+            }
+
+            @Override
+            public void failed(final Throwable exc, final Void attachment) {
+                log.error("failed to connect to {}", remote, exc);
+            }
+        });
+    }
+
+    /**
+     * Starts a new thread which connects to specified server socket channel's local address and reads {@value
+     * com.github.jinahya.hello.HelloWorld#BYTES} bytes and prints it as a {@link StandardCharsets#US_ASCII US-ASCII}
+     * string followed by a new line character.
+     *
+     * @param server the server socket channel to connect.
+     * @see #connectAndPrintNonBlocking(SocketAddress)
+     */
+    static void connectAndPrintAsynchronous(final AsynchronousServerSocketChannel server) {
+        final Thread thread = new Thread(() -> {
+            try {
+                final Void result = runAsync(() -> {
+                    try {
+                        connectAndPrintAsynchronous(server.getLocalAddress());
+                    } catch (final IOException ioe) {
+                        log.error("failed to connect and print", ioe);
+                    }
+                }).get();
+            } catch (InterruptedException | ExecutionException e) {
+                log.error("failed to complete", e);
+            }
+        });
+        thread.setDaemon(true);
+        thread.start();
+    }
+    // -----------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Connects to specified socket address and reads {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and
+     * prints it as a {@link StandardCharsets#US_ASCII US-ASCII} string followed by a new line character.
+     *
+     * @param remote the server socket channel to connect.
+     * @throws IOException if an I/O error occurs.
+     * @see ServerSocketChannel#socket()
+     * @see Socket#getLocalAddress()
+     */
+    private static void connectAndPrintAsynchronous2(final SocketAddress remote) throws IOException {
+        final AsynchronousSocketChannel client = AsynchronousSocketChannel.open();
+        client.connect(remote, null, new ConnectionCompletionHandler<Void>(
+                (v, a1) -> {
+                    final ByteBuffer buffer = allocate(BYTES);
+                    client.read(buffer, buffer, new ReadingCompletionHandler<>(
+                            (r, a2) -> {
+                                final ByteBuffer attachment = a2.getAttachment();
+                                if (!attachment.hasRemaining()) {
+                                    attachment.flip();
+                                    System.out.printf("%s%n", US_ASCII.decode(attachment).toString());
+                                    try {
+                                        client.close();
+                                    } catch (final IOException ioe) {
+                                        log.error("failed to close client", ioe);
+                                    }
+                                    return;
+                                }
+                                client.read(attachment, attachment, a2.getHandler());
+                            },
+                            (t, a2) -> {
+                                log.error("failed to read", t);
+                            }
+                    ));
+                },
+                (t, a) -> {
+                    log.error("failed to read", t);
+                }
+        ));
+    }
+
+    /**
+     * Starts a new thread which connects to specified server socket channel's local address and reads {@value
+     * com.github.jinahya.hello.HelloWorld#BYTES} bytes and prints it as a {@link StandardCharsets#US_ASCII US-ASCII}
+     * string followed by a new line character.
+     *
+     * @param server the server socket channel to connect.
+     * @see #connectAndPrintNonBlocking(SocketAddress)
+     */
+    static void connectAndPrintAsynchronous2(final AsynchronousServerSocketChannel server) {
+        final Thread thread = new Thread(() -> {
+            try {
+                final Void result = runAsync(() -> {
+                    try {
+                        connectAndPrintAsynchronous2(server.getLocalAddress());
+                    } catch (final IOException ioe) {
+                        log.error("failed to connect and print", ioe);
+                    }
+                }).get();
+            } catch (InterruptedException | ExecutionException e) {
+                log.error("failed to complete", e);
             }
         });
         thread.setDaemon(true);

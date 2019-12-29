@@ -26,6 +26,9 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.nio.channels.AsynchronousServerSocketChannel;
+import java.nio.channels.AsynchronousSocketChannel;
+import java.nio.channels.CompletionHandler;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
@@ -55,15 +58,27 @@ public class HelloWorldMain extends AbstractHelloWorldMain {
      * @param args an array of command line arguments
      * @throws IOException if an I/O error occurs.
      */
-    public static void main(final String[] args) throws IOException {
+    public static void main(final String... args) throws IOException {
         final HelloWorld helloWorld = load(HelloWorld.class).iterator().next();
         log.info("localhost: {}", InetAddress.getLocalHost());
-        final ServerSocketChannel server = ServerSocketChannel.open();
-        server.configureBlocking(false);
+        final AsynchronousServerSocketChannel server = AsynchronousServerSocketChannel.open();
         server.bind(null);
-        log.info("bound to {}", server.socket().getLocalSocketAddress());
+        log.info("bound to {}", server.getLocalAddress());
         readAndClose(server); // reads "quit" from System.in and closes the server.
-        connectAndPrintNonBlocking(server); // connects to the server and prints received hello-world-bytes.
+        connectAndPrintAsynchronous(server); // connects to the server and prints received hello-world-bytes.
+        server.accept(null, new CompletionHandler<AsynchronousSocketChannel, Object>() {
+            @Override
+            public void completed(final AsynchronousSocketChannel result, final Object attachment) {
+            }
+
+            @Override
+            public void failed(final Throwable exc, final Object attachment) {
+                if (!server.isOpen()) {
+                    return;
+                }
+                log.error("failed to accept", exc);
+            }
+        });
         final Selector selector = Selector.open();
         final SelectionKey key = server.register(selector, OP_ACCEPT, null);
         while (key.isValid()) {

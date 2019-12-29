@@ -29,6 +29,7 @@
     <module>verbose-hello-world-srv3</module>
     <module>verbose-hello-world-srv4</module>
     <module>verbose-hello-world-srv5</module>
+    <module>verbose-hello-world-srv6</module>
   </modules>
 
   <properties>

@@ -23,11 +23,10 @@
 import socket
 import sys
 
-host = sys.argv[1]
-port = sys.argv[2]
+port = sys.argv[1]
+host = sys.argv[2] if len(sys.argv) > 2 else socket.gethostbyname(socket.gethostname())
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.connect((host, int(port)))
-    data = s.recv(12)
-    print(data.decode("ascii"))
+    print(s.recv(12).decode("ascii"))
     s.close()

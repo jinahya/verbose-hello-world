@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 
@@ -46,8 +47,8 @@ public class HelloWorldMain {
      * @throws IOException if an I/O error occurs.
      */
     public static void main(final String... args) throws IOException {
-        final String host = args[0];
-        final int port = parseInt(args[1]);
+        final int port = parseInt(args[0]);
+        final String host = args.length > 1 ? args[1] : InetAddress.getLocalHost().getHostAddress();
         try (Socket socket = new Socket(host, port)) {
             final byte[] array = new byte[HelloWorld.BYTES];
             new DataInputStream(socket.getInputStream()).readFully(array);
