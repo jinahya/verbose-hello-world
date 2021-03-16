@@ -44,13 +44,14 @@ import static java.util.Objects.requireNonNull;
  * An interface for generating <a href="#hello-world-bytes">hello-world-bytes</a> to various targets.
  *
  * <h2 id="hello-world-bytes">hello-world-bytes</h2>
- * A sequence of {@value #BYTES} bytes, representing the "{@code hello, world}" string encoded in {@code US-ASCII}
- * character set, which consists of {@code 0x68('h')} followed by {@code 0x65('e')}, {@code 0x6C('l')}, {@code
- * 0x6C('l')}, {@code 0x6F('o')}, {@code 0x2C(',')}, {@code 0x20(' ')}, {@code 0x77('w')}, {@code 0x6F('o')}, {@code
- * 0x72('r')}, {@code 0x6C('l')}, and {@code 0x64('d')}.
+ * A sequence of {@value #BYTES} bytes, representing the "{@code hello, world}" string encoded in {@link
+ * java.nio.charset.StandardCharsets#US_ASCII US-ASCII} character set, which consists of {@code 0x68('h')} followed by
+ * {@code 0x65('e')}, {@code 0x6C('l')}, {@code 0x6C('l')}, {@code 0x6F('o')}, {@code 0x2C(',')}, {@code 0x20(' ')},
+ * {@code 0x77('w')}, {@code 0x6F('o')}, {@code 0x72('r')}, {@code 0x6C('l')}, and {@code 0x64('d')}.
  *
  * @author Jin Kwon &lt;jinahya_at_gmail.com&gt;
  */
+@FunctionalInterface
 public interface HelloWorld {
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -74,14 +75,14 @@ public interface HelloWorld {
      *   |                                                               |
      * |   |...|'h'|'e'|'l'|'l'|'o'|','|' '|'w'|'o'|'r'|'l'|'d'|   |...|
      *           |                                               |
-     *           index                                           index + SIZE
+     *      0 <= index                                           index + SIZE <= array.length
      * }</pre></blockquote>
      *
      * @param array the array on which bytes are set.
      * @param index the starting index of the {@code array}.
      * @return specified array.
      * @throws NullPointerException      if {@code array} is {@code null}.
-     * @throws IndexOutOfBoundsException if {@code index} is negative or ({@code index} + {@value #BYTES}) is greater
+     * @throws IndexOutOfBoundsException if {@code index} is negative or ({@code index} + {@link #BYTES}) is greater
      *                                   than {@code array.length}.
      */
     @NotNull byte[] set(@NotNull byte[] array, @PositiveOrZero int index);
@@ -91,7 +92,7 @@ public interface HelloWorld {
      * array.
      * <p>
      * This method invokes {@link #set(byte[], int)} method with given {@code array} and {@code 0} for the {@code index}
-     * argument.
+     * parameter.
      * <blockquote><pre>{@code
      * set(array, 0);
      * return array;
@@ -100,11 +101,10 @@ public interface HelloWorld {
      * @param array the array on which bytes are set.
      * @return specified array.
      * @throws NullPointerException      if {@code array} is {@code null}.
-     * @throws IndexOutOfBoundsException if {@code array.length} is less than {@value #BYTES}.
+     * @throws IndexOutOfBoundsException if {@code array.length} is less than {@link #BYTES}.
      * @see #set(byte[], int)
      */
     default @NotNull byte[] set(@NotNull final byte[] array) {
-        // TODO: implement!
         return null;
     }
 
@@ -112,12 +112,14 @@ public interface HelloWorld {
      * Writes <a href="#hello-world-bytes">hello-world-bytes</a> to specified output stream and returns the output
      * stream.
      * <p>
-     * This method invokes {@link #set(byte[])} method with an array of {@link #BYTES} bytes and writes the returned
-     * array to specified output stream using {@link OutputStream#write(byte[])} method.
+     * This method invokes {@link #set(byte[])} method with an array of {@link #BYTES}({@value
+     * com.github.jinahya.hello.HelloWorld#BYTES}) bytes and writes the returned array to specified output stream using
+     * {@link OutputStream#write(byte[])} method.
      * <blockquote><pre>{@code
      * byte[] array = new byte[BYTES];
      * set(array);
      * stream.write(array);
+     * return stream;
      * }</pre></blockquote>
      *
      * @param stream the output stream to which bytes are written.
@@ -132,17 +134,17 @@ public interface HelloWorld {
         if (stream == null) {
             throw new NullPointerException("stream is null");
         }
-        // TODO: implement!
         return null;
     }
 
     /**
      * Appends <a href="#hello-world-bytes">hello-world-bytes</a> to specified file and returns the file.
      * <p>
-     * This method creates an instance of {@link FileOutputStream}, as {@link FileOutputStream#FileOutputStream(File,
-     * boolean) appending mode}, from specified file and invokes {@link #write(OutputStream)} method with it.
+     * This method creates an instance of {@link FileOutputStream}, in {@link FileOutputStream#FileOutputStream(File,
+     * boolean) append mode}, from specified file, invokes {@link #write(OutputStream)} method with it, and returns the
+     * file.
      * <blockquote><pre>{@code
-     * final OutputStream stream = new FileOutputStream(file, true); // appending mode
+     * OutputStream stream = new FileOutputStream(file, true); // in append mode
      * try {
      *     write(stream);
      *     stream.flush();
@@ -153,7 +155,7 @@ public interface HelloWorld {
      *
      * @param file the file to which bytes are appended.
      * @param <T>  file type parameter
-     * @return specified file.
+     * @return given {@code file}.
      * @throws NullPointerException if {@code file} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @see java.io.FileOutputStream#FileOutputStream(File, boolean)
@@ -163,7 +165,6 @@ public interface HelloWorld {
         if (file == null) {
             throw new NullPointerException("file is null");
         }
-        // TODO: implement!
         return null;
     }
 
@@ -175,11 +176,12 @@ public interface HelloWorld {
      * <blockquote><pre>{@code
      * OutputStream stream = socket.getOutputStream();
      * write(stream);
+     * return socket.
      * }</pre></blockquote>
      *
      * @param socket the socket to which bytes are sent.
      * @param <T>    socket type parameter
-     * @return specified socket.
+     * @return given {@code socket}.
      * @throws NullPointerException if {@code socket} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @see Socket#getOutputStream()
@@ -189,7 +191,6 @@ public interface HelloWorld {
         if (socket == null) {
             throw new NullPointerException("socket is null");
         }
-        // TODO: implement!
         return null;
     }
 
@@ -198,17 +199,18 @@ public interface HelloWorld {
     /**
      * Writes <a href="#hello-world-bytes">hello-world-bytes</a> to specified data output and returns the data output.
      * <p>
-     * This method invokes {@link #set(byte[])} method with an array of {@value #BYTES} bytes and writes the returned
-     * array to specified data output using {@link DataOutput#write(byte[])} method.
+     * This method invokes {@link #set(byte[])} method with an array of {@value #BYTES} bytes, writes the returned array
+     * to specified data output using {@link DataOutput#write(byte[])} method, and returns the data output.
      * <blockquote><pre>{@code
      * byte[] array = new byte[BYTES];
      * set(array);
      * data.write(array);
+     * return data;
      * }</pre></blockquote>
      *
      * @param data the data output to which bytes are written.
      * @param <T>  data output type parameter
-     * @return specified data output.
+     * @return given {@code data}.
      * @throws NullPointerException if {@code data} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @see #set(byte[])
@@ -218,7 +220,6 @@ public interface HelloWorld {
         if (data == null) {
             throw new NullPointerException("data is null");
         }
-        // TODO: implement!
         return null;
     }
 
@@ -228,17 +229,19 @@ public interface HelloWorld {
      * Writes <a href="#hello-world-bytes">hello-world-bytes</a> to specified random access file and returns the random
      * access file.
      * <p>
-     * This method invokes {@link #set(byte[])} method with an array of {@value #BYTES} bytes and writes the returned
-     * array to specified random access file using {@link RandomAccessFile#write(byte[])} method.
+     * This method invokes {@link #set(byte[])} method with an array of {@link #BYTES} bytes, writes the array to
+     * specified random access file using {@link RandomAccessFile#write(byte[])} method, and returns the random access
+     * file.
      * <blockquote><pre>{@code
      * byte[] array = new byte[BYTES];
      * set(array);
      * file.write(array);
+     * return file;
      * }</pre></blockquote>
      *
      * @param file the random access file to which bytes are written.
      * @param <T>  random access file type parameter
-     * @return specified random access file.
+     * @return given {@code file}.
      * @throws NullPointerException if {@code file} argument is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @see #set(byte[])
@@ -248,7 +251,6 @@ public interface HelloWorld {
         if (file == null) {
             throw new NullPointerException("file is null");
         }
-        // TODO: implement!
         return null;
     }
 
@@ -256,16 +258,15 @@ public interface HelloWorld {
 
     /**
      * Puts <a href="#hello-world-bytes">hello-world-bytes</a> on specified byte buffer. The buffer's position, on
-     * successful return, is incremented by {@value #BYTES}.
+     * successful return, is incremented by {@link #BYTES}.
      * <p>
      * This method, if specified buffer {@link ByteBuffer#hasArray() has a backing-array}, invokes {@link #set(byte[],
      * int)} with the buffer's {@link ByteBuffer#array() backing array} and ({@link ByteBuffer#arrayOffset()
      * buffer.arrayOffset} + {@link ByteBuffer#position() buffer.position}) and then manually increments the buffer's
      * {@link ByteBuffer#position(int) position} by {@value #BYTES}.
      * <p>
-     * Otherwise, this method invokes {@link #set(byte[])} method with an array of {@value #BYTES} bytes and puts the
-     * returned array on the buffer using {@link ByteBuffer#put(byte[])} method which increments the {@code position} by
-     * itself.
+     * Otherwise, this method invokes {@link #set(byte[])} method with an array of {@link #BYTES} bytes and puts the
+     * array on the buffer using {@link ByteBuffer#put(byte[])} method which increments the {@code position} by itself.
      * <blockquote><pre>{@code
      * if (buffer.hasArray()) {
      *     byte[] array = buffer.array();
@@ -282,7 +283,7 @@ public interface HelloWorld {
      *
      * @param buffer the byte buffer on which bytes are put.
      * @param <T>    byte buffer type parameter
-     * @return specified byte buffer.
+     * @return given {@code buffer}.
      * @throws NullPointerException    if {@code buffer} is {@code null}.
      * @throws BufferOverflowException if {@link ByteBuffer#remaining() buffer.remaining} is less than {@value #BYTES}.
      * @see #set(byte[], int)
@@ -293,20 +294,19 @@ public interface HelloWorld {
         if (buffer == null) {
             throw new NullPointerException("buffer is null");
         }
-        // TODO: implement!
         return null;
     }
 
     /**
      * Writes <a href="#hello-world-bytes">hello-world-bytes</a> to specified channel.
      * <p>
-     * This method invokes {@link #put(ByteBuffer)} method with a newly allocated byte buffer of {@value #BYTES} bytes
-     * and, after {@link ByteBuffer#flip() flips} it, writes all remaining bytes in the returned buffer to specified
-     * channel using {@link WritableByteChannel#write(ByteBuffer)} method.
+     * This method invokes {@link #put(ByteBuffer)} method with a newly allocated byte buffer of {@value
+     * com.github.jinahya.hello.HelloWorld#BYTES} bytes and, {@link ByteBuffer#flip() flips} it, writes all remaining
+     * bytes in the buffer to specified channel using {@link WritableByteChannel#write(ByteBuffer)} method.
      * <blockquote><pre>{@code
      * ByteBuffer buffer = ByteBuffer.allocate(BYTES); // position = 0, limit,capacity = 12
      * put(buffer); // position -> 12
-     * buffer.flip(); // limit -> position(12), position -> 0
+     * buffer.flip(); // limit -> 12(position), position -> 0
      * while (buffer.hasRemaining()) { // not all remaining bytes may be written at once
      *     channel.write(buffer);
      * }
@@ -314,18 +314,16 @@ public interface HelloWorld {
      *
      * @param channel the channel to which bytes are written.
      * @param <T>     channel type parameter
-     * @return specified channel.
+     * @return given {@code channel}.
      * @throws NullPointerException if {@code channel} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @see #put(ByteBuffer)
-     * @see ByteBuffer#flip()
      * @see WritableByteChannel#write(ByteBuffer)
      */
     default <T extends WritableByteChannel> @NotNull T write(@NotNull final T channel) throws IOException {
         if (channel == null) {
             throw new NullPointerException("channel is null");
         }
-        // TODO: implement!
         return null;
     }
 
@@ -333,8 +331,8 @@ public interface HelloWorld {
      * Appends <a href="#hello-world-bytes">hello-world-bytes</a> to the end of specified path and returns the path.
      * <p>
      * This method {@link FileChannel#open(Path, OpenOption...)} opens} a file channel, with an {@link
-     * StandardOpenOption#APPEND appending option}, from specified {@code path} and invokes {@link
-     * #write(WritableByteChannel)} method with it.
+     * StandardOpenOption#APPEND appending option}, from specified path and invokes {@link #write(WritableByteChannel)}
+     * method with it.
      * <blockquote><pre>{@code
      * FileChannel channel = FileChannel.open(path, StandardOpenOption.APPEND); // appends
      * try {
@@ -347,7 +345,7 @@ public interface HelloWorld {
      *
      * @param path the path to which bytes are written.
      * @param <T>  path type parameter
-     * @return specified path.
+     * @return given {path}.
      * @throws NullPointerException if {@code path} is {@code null}
      * @throws IOException          if an I/O error occurs.
      * @see FileChannel#open(Path, OpenOption...)
@@ -357,19 +355,19 @@ public interface HelloWorld {
         if (path == null) {
             throw new NullPointerException("path is null");
         }
-        // TODO: implement!
         return null;
     }
 
     /**
-     * Sends <a href="#hello-world-bytes">hello-world-bytes</a> through specified socket channel.
+     * Sends <a href="#hello-world-bytes">hello-world-bytes</a> through specified socket channel and returns the socket
+     * channel.
      * <p>
      * This method invokes {@link #write(WritableByteChannel)} method with specified socket channel and returns the
      * result.
      *
      * @param socket the socket channel to which bytes are sent.
      * @param <T>    socket channel type parameter
-     * @return specified socket.
+     * @return given {@code socket}.
      * @throws IOException if an I/O error occurs.
      * @see #write(WritableByteChannel)
      * @deprecated Use {@link #write(WritableByteChannel)}.
