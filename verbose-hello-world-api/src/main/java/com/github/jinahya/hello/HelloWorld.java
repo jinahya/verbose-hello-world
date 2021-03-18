@@ -159,20 +159,14 @@ public interface HelloWorld {
 
     /**
      * Sends <a href="#hello-world-bytes">hello-world-bytes</a> through specified socket.
-     * <p>
-     * This method invokes {@link #write(OutputStream)} method with specified socket's {@link Socket#getOutputStream()
-     * outputStream}.
-     * <blockquote><pre>{@code
-     * OutputStream stream = socket.getOutputStream();
-     * write(stream);
-     * return socket.
-     * }</pre></blockquote>
      *
      * @param socket the socket to which bytes are sent.
      * @param <T>    socket type parameter
      * @return given {@code socket}.
      * @throws NullPointerException if {@code socket} is {@code null}.
      * @throws IOException          if an I/O error occurs.
+     * @implSpec The implementation in this class invokes {@link #write(OutputStream)} method with {@link
+     * Socket#getOutputStream() socket.outputStream} and returns {@code socket}.
      * @see Socket#getOutputStream()
      * @see #write(OutputStream)
      */
