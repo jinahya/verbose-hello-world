@@ -105,22 +105,14 @@ public interface HelloWorld {
     /**
      * Writes <a href="#hello-world-bytes">hello-world-bytes</a> to specified output stream and returns the output
      * stream.
-     * <p>
-     * This method invokes {@link #set(byte[])} method with an array of {@link #BYTES}({@value
-     * com.github.jinahya.hello.HelloWorld#BYTES}) bytes and writes the returned array to specified output stream using
-     * {@link OutputStream#write(byte[])} method.
-     * <blockquote><pre>{@code
-     * byte[] array = new byte[BYTES];
-     * set(array);
-     * stream.write(array);
-     * return stream;
-     * }</pre></blockquote>
      *
      * @param stream the output stream to which bytes are written.
      * @param <T>    output stream type parameter
-     * @return specified output stream.
+     * @return given {@code stream}.
      * @throws NullPointerException if {@code stream} is {@code null}.
      * @throws IOException          if an I/O error occurs.
+     * @implSpec The implementation in this class invokes {@link #set(byte[])} method with an array of {@value
+     * com.github.jinahya.hello.HelloWorld#BYTES} bytes and writes the array to specified {@code stream}.
      * @see #set(byte[])
      * @see OutputStream#write(byte[])
      */
