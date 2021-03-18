@@ -20,8 +20,6 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PositiveOrZero;
 import java.io.DataOutput;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -86,7 +84,7 @@ public interface HelloWorld {
      *                                   com.github.jinahya.hello.HelloWorld#BYTES}) is greater than {@code
      *                                   array.length}.
      */
-    @NotNull byte[] set(@NotNull byte[] array, @PositiveOrZero int index);
+    byte[] set(byte[] array, int index);
 
     /**
      * Sets <a href="#hello-world-bytes">hello-world-bytes</a> on specified array starting at {@code 0} and returns the
@@ -100,7 +98,7 @@ public interface HelloWorld {
      * and {@code 0} and returns the result.
      * @see #set(byte[], int)
      */
-    default @NotNull byte[] set(final @NotNull byte[] array) {
+    default byte[] set(final byte[] array) {
         return null;
     }
 
@@ -126,7 +124,7 @@ public interface HelloWorld {
      * @see #set(byte[])
      * @see OutputStream#write(byte[])
      */
-    default <T extends OutputStream> @NotNull T write(@NotNull final T stream) throws IOException {
+    default <T extends OutputStream> T write(final T stream) throws IOException {
         if (stream == null) {
             throw new NullPointerException("stream is null");
         }
@@ -157,7 +155,7 @@ public interface HelloWorld {
      * @see java.io.FileOutputStream#FileOutputStream(File, boolean)
      * @see #write(OutputStream)
      */
-    default <T extends File> @NotNull T append(@NotNull final T file) throws IOException {
+    default <T extends File> T append(final T file) throws IOException {
         if (file == null) {
             throw new NullPointerException("file is null");
         }
@@ -183,7 +181,7 @@ public interface HelloWorld {
      * @see Socket#getOutputStream()
      * @see #write(OutputStream)
      */
-    default <T extends Socket> @NotNull T send(@NotNull final T socket) throws IOException {
+    default <T extends Socket> T send(final T socket) throws IOException {
         if (socket == null) {
             throw new NullPointerException("socket is null");
         }
@@ -212,7 +210,7 @@ public interface HelloWorld {
      * @see #set(byte[])
      * @see DataOutput#write(byte[])
      */
-    default <T extends DataOutput> @NotNull T write(@NotNull final T data) throws IOException {
+    default <T extends DataOutput> T write(final T data) throws IOException {
         if (data == null) {
             throw new NullPointerException("data is null");
         }
@@ -243,7 +241,7 @@ public interface HelloWorld {
      * @see #set(byte[])
      * @see RandomAccessFile#write(byte[])
      */
-    default <T extends RandomAccessFile> @NotNull T write(@NotNull final T file) throws IOException {
+    default <T extends RandomAccessFile> T write(final T file) throws IOException {
         if (file == null) {
             throw new NullPointerException("file is null");
         }
@@ -286,7 +284,7 @@ public interface HelloWorld {
      * @see #set(byte[])
      * @see ByteBuffer#put(byte[])
      */
-    default <T extends ByteBuffer> @NotNull T put(@NotNull final T buffer) {
+    default <T extends ByteBuffer> T put(final T buffer) {
         if (buffer == null) {
             throw new NullPointerException("buffer is null");
         }
@@ -316,7 +314,7 @@ public interface HelloWorld {
      * @see #put(ByteBuffer)
      * @see WritableByteChannel#write(ByteBuffer)
      */
-    default <T extends WritableByteChannel> @NotNull T write(@NotNull final T channel) throws IOException {
+    default <T extends WritableByteChannel> T write(final T channel) throws IOException {
         if (channel == null) {
             throw new NullPointerException("channel is null");
         }
@@ -347,7 +345,7 @@ public interface HelloWorld {
      * @see FileChannel#open(Path, OpenOption...)
      * @see #write(WritableByteChannel)
      */
-    default <T extends Path> @NotNull T append(@NotNull final T path) throws IOException {
+    default <T extends Path> T append(final T path) throws IOException {
         if (path == null) {
             throw new NullPointerException("path is null");
         }
@@ -369,7 +367,7 @@ public interface HelloWorld {
      * @deprecated Use {@link #write(WritableByteChannel)}.
      */
     @Deprecated
-    default <T extends SocketChannel> @NotNull T send(@NotNull final T socket) throws IOException {
+    default <T extends SocketChannel> T send(final T socket) throws IOException {
         return write(requireNonNull(socket, "socket is null"));
     }
 }

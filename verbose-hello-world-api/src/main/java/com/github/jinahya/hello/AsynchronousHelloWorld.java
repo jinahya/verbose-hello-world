@@ -57,7 +57,7 @@ interface AsynchronousHelloWorld extends HelloWorld {
      * @see #put(ByteBuffer)
      * @see AsynchronousFileChannel#write(ByteBuffer, long)
      */
-    default <T extends AsynchronousFileChannel> @NotNull T write(@NotNull final T channel, long position)
+    default <T extends AsynchronousFileChannel> T write(final T channel, long position)
             throws InterruptedException, ExecutionException {
         if (channel == null) {
             throw new NullPointerException("channel is null");
@@ -85,7 +85,7 @@ interface AsynchronousHelloWorld extends HelloWorld {
      * @see AsynchronousFileChannel#size()
      * @see #write(AsynchronousFileChannel, long)
      */
-    default <T extends AsynchronousFileChannel> @NotNull T append(@NotNull final T channel)
+    default <T extends AsynchronousFileChannel> T append(final T channel)
             throws IOException, InterruptedException, ExecutionException {
         return write(requireNonNull(channel, "channel is null"), channel.size());
     }
@@ -98,8 +98,7 @@ interface AsynchronousHelloWorld extends HelloWorld {
      * @param <T>      channel type parameter
      * @return a completable future of specified channel.
      */
-    default <T extends AsynchronousFileChannel> @NotNull CompletableFuture<T> writeAsync(@NotNull final T channel,
-                                                                                         final long position) {
+    default <T extends AsynchronousFileChannel> CompletableFuture<T> writeAsync(final T channel, final long position) {
         if (channel == null) {
             throw new NullPointerException("channel is null");
         }
@@ -135,7 +134,7 @@ interface AsynchronousHelloWorld extends HelloWorld {
      * @param <T>     channel type parameter
      * @return a completable future of specified channel.
      */
-    default <T extends AsynchronousFileChannel> @NotNull CompletableFuture<T> appendAsync(@NotNull final T channel)
+    default <T extends AsynchronousFileChannel> CompletableFuture<T> appendAsync(final T channel)
             throws IOException {
         return writeAsync(requireNonNull(channel, "channel is null"), channel.size());
     }
@@ -152,7 +151,7 @@ interface AsynchronousHelloWorld extends HelloWorld {
      * @throws ExecutionException   if failed to execute.
      * @see #writeAsync(AsynchronousByteChannel)
      */
-    default <T extends AsynchronousByteChannel> @NotNull T write(@NotNull final T channel)
+    default <T extends AsynchronousByteChannel> T write(final T channel)
             throws InterruptedException, ExecutionException {
         if (channel == null) {
             throw new NullPointerException("channel is null");
@@ -172,7 +171,7 @@ interface AsynchronousHelloWorld extends HelloWorld {
      * @return a completable future of given channel.
      * @see #write(AsynchronousByteChannel)
      */
-    default <T extends AsynchronousByteChannel> CompletableFuture<T> writeAsync(@NotNull final T channel) {
+    default <T extends AsynchronousByteChannel> CompletableFuture<T> writeAsync(final T channel) {
         if (channel == null) {
             throw new NullPointerException("channel is null");
         }
@@ -210,7 +209,7 @@ interface AsynchronousHelloWorld extends HelloWorld {
      * @throws ExecutionException   if failed to execute.
      * @see #write(AsynchronousByteChannel)
      */
-    default <T extends AsynchronousSocketChannel> @NotNull T send(@NotNull final T channel)
+    default <T extends AsynchronousSocketChannel> T send(final T channel)
             throws InterruptedException, ExecutionException {
         return write(requireNonNull(channel, "channel is null"));
     }
@@ -224,7 +223,7 @@ interface AsynchronousHelloWorld extends HelloWorld {
      * @return given channel.
      * @see #write(AsynchronousByteChannel)
      */
-    default <T extends AsynchronousSocketChannel> CompletableFuture<T> sendAsync(@NotNull final T channel) {
+    default <T extends AsynchronousSocketChannel> CompletableFuture<T> sendAsync(final T channel) {
         return writeAsync(requireNonNull(channel, "channel is null"));
     }
 }
