@@ -145,6 +145,8 @@ public interface HelloWorld {
      * @return given {@code file}.
      * @throws NullPointerException if {@code file} is {@code null}.
      * @throws IOException          if an I/O error occurs.
+     * @implSpec The implementation in this class creates a {@link FileOutputStream} from {@code file} as append mode,
+     * invokes {@link #write(OutputStream)} method with the stream and returns the {@code file}.
      * @see java.io.FileOutputStream#FileOutputStream(File, boolean)
      * @see #write(OutputStream)
      */
