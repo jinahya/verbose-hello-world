@@ -49,7 +49,6 @@ import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static com.github.jinahya.hello.ValidationProxy.newValidationProxy;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.charset.StandardCharsets.US_ASCII;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -81,7 +80,7 @@ public class HelloWorldTest {
     @Test
     void assertHelloWorldBytesEqualsToActualNumberOfHelloWorldBytes() {
         final int expected = "hello, world".getBytes(US_ASCII).length;
-        assertThat(BYTES).isEqualTo(expected);
+        Assertions.assertEquals(expected, BYTES);
     }
 
     // ------------------------------------------------------------------------------------------------------- set([B)[B
