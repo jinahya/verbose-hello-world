@@ -35,8 +35,7 @@ public class HelloWorldImplTest extends AbstractHelloWorldTest {
      *
      * @return {@inheritDoc}
      */
-    @Override
-    HelloWorld helloWorld() {
+    HelloWorld spy() {
         return new HelloWorldImpl();
     }
 }

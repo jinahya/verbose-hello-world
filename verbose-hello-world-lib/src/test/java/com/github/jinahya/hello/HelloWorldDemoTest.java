@@ -35,8 +35,7 @@ public class HelloWorldDemoTest extends AbstractHelloWorldTest {
      *
      * @return {@inheritDoc}
      */
-    @Override
-    HelloWorld helloWorld() {
+    HelloWorld spy() {
         return new HelloWorldDemo();
     }
 }

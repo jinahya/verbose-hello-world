@@ -49,7 +49,7 @@ import static java.util.Objects.requireNonNull;
  * {@code 0x65('e')}, {@code 0x6C('l')}, {@code 0x6C('l')}, {@code 0x6F('o')}, {@code 0x2C(',')}, {@code 0x20(' ')},
  * {@code 0x77('w')}, {@code 0x6F('o')}, {@code 0x72('r')}, {@code 0x6C('l')}, and {@code 0x64('d')}.
  *
- * @author Jin Kwon &lt;jinahya_at_gmail.com&gt;
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @FunctionalInterface
 public interface HelloWorld {
@@ -75,36 +75,32 @@ public interface HelloWorld {
      *   |                                                               |
      * |   |...|'h'|'e'|'l'|'l'|'o'|','|' '|'w'|'o'|'r'|'l'|'d'|   |...|
      *           |                                               |
-     *      0 <= index                                           index + SIZE <= array.length
+     *      0 <= index                                           (index + BYTES) <= array.length
      * }</pre></blockquote>
      *
      * @param array the array on which bytes are set.
      * @param index the starting index of the {@code array}.
-     * @return specified array.
+     * @return given {@code array}.
      * @throws NullPointerException      if {@code array} is {@code null}.
-     * @throws IndexOutOfBoundsException if {@code index} is negative or ({@code index} + {@link #BYTES}) is greater
-     *                                   than {@code array.length}.
+     * @throws IndexOutOfBoundsException if {@code index} is negative or ({@code index} + {@value
+     *                                   com.github.jinahya.hello.HelloWorld#BYTES}) is greater than {@code
+     *                                   array.length}.
      */
     @NotNull byte[] set(@NotNull byte[] array, @PositiveOrZero int index);
 
     /**
      * Sets <a href="#hello-world-bytes">hello-world-bytes</a> on specified array starting at {@code 0} and returns the
      * array.
-     * <p>
-     * This method invokes {@link #set(byte[], int)} method with given {@code array} and {@code 0} for the {@code index}
-     * parameter.
-     * <blockquote><pre>{@code
-     * set(array, 0);
-     * return array;
-     * }</pre></blockquote>
      *
      * @param array the array on which bytes are set.
-     * @return specified array.
+     * @return given {@code array}.
      * @throws NullPointerException      if {@code array} is {@code null}.
      * @throws IndexOutOfBoundsException if {@code array.length} is less than {@link #BYTES}.
+     * @implSpec The implementation in this class invokes {@link #set(byte[], int)} method with specified {@code array}
+     * and {@code 0} and returns the result.
      * @see #set(byte[], int)
      */
-    default @NotNull byte[] set(@NotNull final byte[] array) {
+    default @NotNull byte[] set(final @NotNull byte[] array) {
         return null;
     }
 

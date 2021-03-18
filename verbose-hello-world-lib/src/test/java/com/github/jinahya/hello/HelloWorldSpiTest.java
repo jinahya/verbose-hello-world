@@ -28,8 +28,7 @@ package com.github.jinahya.hello;
 class HelloWorldSpiTest extends AbstractHelloWorldTest {
 
     // -----------------------------------------------------------------------------------------------------------------
-    @Override
-    HelloWorld helloWorld() {
+    HelloWorld spy() {
         // TODO: fix!
         return new HelloWorldDemo();
     }

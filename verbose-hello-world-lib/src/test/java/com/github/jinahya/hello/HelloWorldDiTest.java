@@ -45,8 +45,7 @@ public abstract class HelloWorldDiTest extends AbstractHelloWorldTest {
     static final String IMPL = "impl";
 
     // -----------------------------------------------------------------------------------------------------------------
-    @Override
-    HelloWorld helloWorld() {
+    HelloWorld spy() {
         switch (current().nextInt(4)) {
             case 0:
                 return namedDemo;
