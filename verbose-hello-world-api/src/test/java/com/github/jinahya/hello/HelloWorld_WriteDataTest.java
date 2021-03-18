@@ -71,7 +71,6 @@ class HelloWorld_WriteDataTest extends AbstractHelloWorldTest {
      */
     @DisplayName("write(data) returns data")
     @Test
-    public void writeData_ReturnData_() throws IOException {
-        // TODO: implement!
+    void writeData_ReturnData_() throws IOException {
     }
 }
