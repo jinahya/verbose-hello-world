@@ -112,7 +112,8 @@ public interface HelloWorld {
      * @throws NullPointerException if {@code stream} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @implSpec The implementation in this class invokes {@link #set(byte[])} method with an array of {@value
-     * com.github.jinahya.hello.HelloWorld#BYTES} bytes and writes the array to specified {@code stream}.
+     * com.github.jinahya.hello.HelloWorld#BYTES} bytes and writes the array to specified {@code stream} using {@link
+     * OutputStream#write(byte[])} method.
      * @see #set(byte[])
      * @see OutputStream#write(byte[])
      */
