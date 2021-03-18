@@ -181,21 +181,15 @@ public interface HelloWorld {
 
     /**
      * Writes <a href="#hello-world-bytes">hello-world-bytes</a> to specified data output and returns the data output.
-     * <p>
-     * This method invokes {@link #set(byte[])} method with an array of {@value #BYTES} bytes, writes the returned array
-     * to specified data output using {@link DataOutput#write(byte[])} method, and returns the data output.
-     * <blockquote><pre>{@code
-     * byte[] array = new byte[BYTES];
-     * set(array);
-     * data.write(array);
-     * return data;
-     * }</pre></blockquote>
      *
      * @param data the data output to which bytes are written.
      * @param <T>  data output type parameter
      * @return given {@code data}.
      * @throws NullPointerException if {@code data} is {@code null}.
      * @throws IOException          if an I/O error occurs.
+     * @implSpec The implementation in this class invokes {@link #set(byte[])} with an array of {@value
+     * com.github.jinahya.hello.HelloWorld#BYTES} bytes and writes the array to specified data output using {@link
+     * DataOutput#write(byte[])} method.
      * @see #set(byte[])
      * @see DataOutput#write(byte[])
      */
