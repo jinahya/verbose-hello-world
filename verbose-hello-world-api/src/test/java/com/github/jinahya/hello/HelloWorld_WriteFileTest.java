@@ -26,7 +26,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 
@@ -74,12 +73,11 @@ class HelloWorld_WriteFileTest extends AbstractHelloWorldTest {
     /**
      * Asserts {@link HelloWorld#write(RandomAccessFile)} method returns specified {@code file}.
      *
-     * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
     @DisplayName("write(file) returns file")
     @Test
-    void writeFile_ReturnFile_(final @TempDir File tempDir) throws IOException {
+    void writeFile_ReturnFile_() throws IOException {
         final RandomAccessFile file = mock(RandomAccessFile.class);
     }
 }
