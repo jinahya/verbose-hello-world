@@ -299,7 +299,7 @@ public interface HelloWorld {
      * @param path the path to which bytes are appended.
      * @param <T>  path type parameter
      * @return given {path}.
-     * @throws NullPointerException if {@code path} is {@code null}
+     * @throws NullPointerException if {@code path} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @implSpec The implementation in this class opens a {@link FileChannel}, from specified path, as append mode and
      * invokes {@link #write(WritableByteChannel)} method with it.
