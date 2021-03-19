@@ -271,7 +271,7 @@ public interface HelloWorld {
         if (buffer == null) {
             throw new NullPointerException("buffer is null");
         }
-        return null;
+        return buffer;
     }
 
     /**
