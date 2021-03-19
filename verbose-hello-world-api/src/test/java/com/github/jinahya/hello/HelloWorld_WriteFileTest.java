@@ -25,9 +25,11 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
@@ -58,20 +60,22 @@ class HelloWorld_WriteFileTest extends AbstractHelloWorldTest {
      * {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and invokes {@link RandomAccessFile#write(byte[])}
      * method on {@code file} with the array.
      *
+     * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
     @DisplayName("write(file) invokes set(array) method and writes the array to file")
     @Test
-    void writeFile_InvokeSetArrayWriteArrayToFile_() throws IOException {
+    void writeFile_InvokeSetArrayWriteArrayToFile_(final @TempDir File tempDir) throws IOException {
     }
 
     /**
      * Asserts {@link HelloWorld#write(RandomAccessFile)} method returns specified {@code file}.
      *
+     * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
     @DisplayName("write(file) returns file")
     @Test
-    void writeFile_ReturnFile_() throws IOException {
+    void writeFile_ReturnFile_(final @TempDir File tempDir) throws IOException {
     }
 }
