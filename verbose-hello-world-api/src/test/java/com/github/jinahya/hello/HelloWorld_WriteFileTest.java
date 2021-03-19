@@ -26,6 +26,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 
@@ -33,6 +34,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
+import static org.mockito.Mockito.mock;
 import static org.mockito.quality.Strictness.LENIENT;
 
 /**
@@ -66,6 +68,7 @@ class HelloWorld_WriteFileTest extends AbstractHelloWorldTest {
     @DisplayName("write(file) invokes set(array) method and writes the array to file")
     @Test
     void writeFile_InvokeSetArrayWriteArrayToFile_(final @TempDir File tempDir) throws IOException {
+        final RandomAccessFile file = new RandomAccessFile(File.createTempFile("tmp", null, tempDir), "rw");
     }
 
     /**
@@ -77,5 +80,6 @@ class HelloWorld_WriteFileTest extends AbstractHelloWorldTest {
     @DisplayName("write(file) returns file")
     @Test
     void writeFile_ReturnFile_(final @TempDir File tempDir) throws IOException {
+        final RandomAccessFile file = mock(RandomAccessFile.class);
     }
 }
