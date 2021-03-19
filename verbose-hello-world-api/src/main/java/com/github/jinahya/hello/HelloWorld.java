@@ -301,7 +301,7 @@ public interface HelloWorld {
         if (channel == null) {
             throw new NullPointerException("channel is null");
         }
-        return null;
+        return channel;
     }
 
     /**
