@@ -139,7 +139,7 @@ class HelloWorld_PutBufferTest extends AbstractHelloWorldTest {
     @DisplayName("put(buffer-with-backing-array) invokes set(buffer.array, buffer.arrayOffset + buffer.position)")
     @MethodSource({"buffersHasBackingArray"})
     @ParameterizedTest
-    void putBuffer_InvokeSetArrayWithIndexAndIncrementPosition_BufferHasBackingArray(final ByteBuffer buffer) {
+    void putBuffer_InvokeSetArrayWithIndexAndIncrementPosition_BufferHasBackingArray(ByteBuffer buffer) {
     }
 
     /**
@@ -151,7 +151,7 @@ class HelloWorld_PutBufferTest extends AbstractHelloWorldTest {
     @DisplayName("put(buffer-with-no-backing-array) invokes set(array) and put the array to the buffer")
     @MethodSource({"buffersHasNoBackingArray"})
     @ParameterizedTest
-    void putBuffer_InvokeSetArrayPutArrayToBuffer_BufferHasNoBackingArray(final ByteBuffer buffer) {
+    void putBuffer_InvokeSetArrayPutArrayToBuffer_BufferHasNoBackingArray(ByteBuffer buffer) {
     }
 
     /**
