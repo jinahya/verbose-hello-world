@@ -32,10 +32,10 @@ import org.mockito.junit.jupiter.MockitoSettings;
 
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.quality.Strictness.LENIENT;
 
@@ -56,9 +56,9 @@ class HelloWorld_PutBufferTest extends AbstractHelloWorldTest {
      */
     private static Stream<ByteBuffer> buffersOfNotEnoughRemaining() {
         return Stream
-                .of(ByteBuffer.wrap(new byte[ThreadLocalRandom.current().nextInt(HelloWorld.BYTES)]),
-                    ByteBuffer.allocate(ThreadLocalRandom.current().nextInt(HelloWorld.BYTES)),
-                    ByteBuffer.allocateDirect(ThreadLocalRandom.current().nextInt(HelloWorld.BYTES)))
+                .of(ByteBuffer.wrap(new byte[current().nextInt(HelloWorld.BYTES)]),
+                    ByteBuffer.allocate(current().nextInt(HelloWorld.BYTES)),
+                    ByteBuffer.allocateDirect(current().nextInt(HelloWorld.BYTES)))
                 .peek(b -> {
                     Assertions.assertTrue(b.remaining() < HelloWorld.BYTES);
                 });
@@ -72,17 +72,23 @@ class HelloWorld_PutBufferTest extends AbstractHelloWorldTest {
     private static Stream<ByteBuffer> buffersHasBackingArray() {
         return IntStream.range(0, 8)
                 .mapToObj(i -> {
-                    final int capacity = ThreadLocalRandom.current().nextInt(HelloWorld.BYTES, HelloWorld.BYTES << 1);
-                    final ByteBuffer buffer = ByteBuffer.wrap(new byte[capacity]);
-                    Assertions.assertEquals(capacity, buffer.capacity());
-                    Assertions.assertEquals(capacity, buffer.limit());
-                    Assertions.assertEquals(0, buffer.position());
-                    Assertions.assertTrue(buffer.remaining() >= HelloWorld.BYTES);
-                    if (buffer.limit() > HelloWorld.BYTES) {
-                        buffer.position(ThreadLocalRandom.current().nextInt(buffer.limit() - HelloWorld.BYTES));
-                        Assertions.assertTrue(buffer.remaining() >= HelloWorld.BYTES);
+                    if (current().nextBoolean()) {
+                        final byte[] array = new byte[HelloWorld.BYTES * 3];
+                        final int offset = current().nextInt(HelloWorld.BYTES);
+                        final int length = current().nextInt(HelloWorld.BYTES, array.length - offset);
+                        return ByteBuffer.wrap(array, offset, length);
+                    } else {
+                        final ByteBuffer buffer = ByteBuffer.allocate(HelloWorld.BYTES * 3);
+                        Assertions.assertEquals(0, buffer.position());
+                        Assertions.assertEquals(buffer.capacity(), buffer.limit());
+                        buffer.position(current().nextInt(HelloWorld.BYTES));
+                        buffer.limit(current().nextInt(buffer.position() + HelloWorld.BYTES, buffer.limit()));
+                        return buffer;
                     }
-                    return buffer;
+                })
+                .peek(b -> {
+                    Assertions.assertTrue(b.remaining() >= HelloWorld.BYTES);
+                    Assertions.assertTrue(b.hasArray());
                 });
     }
 
@@ -94,18 +100,17 @@ class HelloWorld_PutBufferTest extends AbstractHelloWorldTest {
     private static Stream<ByteBuffer> buffersHasNoBackingArray() {
         return IntStream.range(0, 8)
                 .mapToObj(i -> {
-                    final int capacity = ThreadLocalRandom.current().nextInt(HelloWorld.BYTES, HelloWorld.BYTES << 1);
-                    final ByteBuffer buffer = ThreadLocalRandom.current().nextBoolean()
-                                              ? ByteBuffer.allocate(capacity) : ByteBuffer.allocateDirect(capacity);
-                    Assertions.assertEquals(capacity, buffer.capacity());
-                    Assertions.assertEquals(capacity, buffer.limit());
+                    final ByteBuffer buffer = ByteBuffer.allocateDirect(HelloWorld.BYTES * 3);
                     Assertions.assertEquals(0, buffer.position());
+                    Assertions.assertEquals(buffer.capacity(), buffer.limit());
                     Assertions.assertTrue(buffer.remaining() >= HelloWorld.BYTES);
-                    if (buffer.limit() > HelloWorld.BYTES) {
-                        buffer.position(ThreadLocalRandom.current().nextInt(buffer.limit() - HelloWorld.BYTES));
-                        Assertions.assertTrue(buffer.remaining() >= HelloWorld.BYTES);
-                    }
+                    buffer.position(current().nextInt(HelloWorld.BYTES));
+                    buffer.limit(current().nextInt(buffer.position() + HelloWorld.BYTES, buffer.limit()));
                     return buffer;
+                })
+                .peek(b -> {
+                    Assertions.assertTrue(b.remaining() >= HelloWorld.BYTES);
+                    Assertions.assertFalse(b.hasArray());
                 });
     }
 
