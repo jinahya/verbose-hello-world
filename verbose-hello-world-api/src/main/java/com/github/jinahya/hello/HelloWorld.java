@@ -30,13 +30,9 @@ import java.net.Socket;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.nio.channels.SocketChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
-
-import static java.util.Objects.requireNonNull;
 
 /**
  * An interface for generating <a href="#hello-world-bytes">hello-world-bytes</a> to various targets.
@@ -221,6 +217,9 @@ public interface HelloWorld {
      * @return given {@code file}.
      * @throws NullPointerException if {@code file} argument is {@code null}.
      * @throws IOException          if an I/O error occurs.
+     * @implSpec The implementation in this class invokes {@link #set(byte[])} with an array of {@value
+     * com.github.jinahya.hello.HelloWorld#BYTES} bytes and writes the array to specified random access file using
+     * {@link RandomAccessFile#write(byte[])} method.
      * @see #set(byte[])
      * @see RandomAccessFile#write(byte[])
      */
@@ -235,34 +234,21 @@ public interface HelloWorld {
 
     /**
      * Puts <a href="#hello-world-bytes">hello-world-bytes</a> on specified byte buffer. The buffer's position, on
-     * successful return, is incremented by {@link #BYTES}.
-     * <p>
-     * This method, if specified buffer {@link ByteBuffer#hasArray() has a backing-array}, invokes {@link #set(byte[],
-     * int)} with the buffer's {@link ByteBuffer#array() backing array} and ({@link ByteBuffer#arrayOffset()
-     * buffer.arrayOffset} + {@link ByteBuffer#position() buffer.position}) and then manually increments the buffer's
-     * {@link ByteBuffer#position(int) position} by {@value #BYTES}.
-     * <p>
-     * Otherwise, this method invokes {@link #set(byte[])} method with an array of {@link #BYTES} bytes and puts the
-     * array on the buffer using {@link ByteBuffer#put(byte[])} method which increments the {@code position} by itself.
-     * <blockquote><pre>{@code
-     * if (buffer.hasArray()) {
-     *     byte[] array = buffer.array();
-     *     int index = buffer.arrayOffset() + buffer.position();
-     *     set(array, index);
-     *     buffer.position(buffer.position() + BYTES); // increment the position manually
-     * } else {
-     *     byte[] array = new byte[BYTES];
-     *     set(array);
-     *     buffer.put(array); // increments the position by itself
-     * }
-     * return buffer;
-     * }</pre></blockquote>
+     * successful return, is incremented by {@value com.github.jinahya.hello.HelloWorld#BYTES}.
      *
      * @param buffer the byte buffer on which bytes are put.
      * @param <T>    byte buffer type parameter
      * @return given {@code buffer}.
      * @throws NullPointerException    if {@code buffer} is {@code null}.
-     * @throws BufferOverflowException if {@link ByteBuffer#remaining() buffer.remaining} is less than {@value #BYTES}.
+     * @throws BufferOverflowException if {@link ByteBuffer#remaining() buffer.remaining} is less than {@value
+     *                                 com.github.jinahya.hello.HelloWorld#BYTES}.
+     * @implSpec The implementation in this class, if specified buffer {@link ByteBuffer#hasArray() has a
+     * backing-array}, invokes {@link #set(byte[], int)} with the buffer's {@link ByteBuffer#array() backing array} and
+     * ({@link ByteBuffer#arrayOffset() buffer.arrayOffset} + {@link ByteBuffer#position() buffer.position}) and then
+     * manually increments the buffer's {@link ByteBuffer#position(int) position} by {@value
+     * com.github.jinahya.hello.HelloWorld#BYTES}. Otherwise, this method invokes {@link #set(byte[])} method with an
+     * array of {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and puts the array on the buffer using {@link
+     * ByteBuffer#put(byte[])} method which increments the {@code position} by itself.
      * @see #set(byte[], int)
      * @see #set(byte[])
      * @see ByteBuffer#put(byte[])
@@ -294,6 +280,8 @@ public interface HelloWorld {
      * @return given {@code channel}.
      * @throws NullPointerException if {@code channel} is {@code null}.
      * @throws IOException          if an I/O error occurs.
+     * @implSpec The implementation in this class invokes {@link #put(ByteBuffer)} with a buffer of {@value
+     * com.github.jinahya.hello.HelloWorld#BYTES} bytes and writes the buffer to {@code channel}.
      * @see #put(ByteBuffer)
      * @see WritableByteChannel#write(ByteBuffer)
      */
@@ -306,25 +294,14 @@ public interface HelloWorld {
 
     /**
      * Appends <a href="#hello-world-bytes">hello-world-bytes</a> to the end of specified path and returns the path.
-     * <p>
-     * This method {@link FileChannel#open(Path, OpenOption...)} opens} a file channel, with an {@link
-     * StandardOpenOption#APPEND appending option}, from specified path and invokes {@link #write(WritableByteChannel)}
-     * method with it.
-     * <blockquote><pre>{@code
-     * FileChannel channel = FileChannel.open(path, StandardOpenOption.APPEND); // appends
-     * try {
-     *     write(channel);
-     *     channel.force(false);
-     * } finally {
-     *     channel.close();
-     * }
-     * }</pre></blockquote>
      *
      * @param path the path to which bytes are written.
      * @param <T>  path type parameter
      * @return given {path}.
      * @throws NullPointerException if {@code path} is {@code null}
      * @throws IOException          if an I/O error occurs.
+     * @implSpec The implementation in this class opens a {@link FileChannel} as append mode and invokes {@link
+     * #write(WritableByteChannel)} method with it.
      * @see FileChannel#open(Path, OpenOption...)
      * @see #write(WritableByteChannel)
      */
@@ -333,24 +310,5 @@ public interface HelloWorld {
             throw new NullPointerException("path is null");
         }
         return null;
-    }
-
-    /**
-     * Sends <a href="#hello-world-bytes">hello-world-bytes</a> through specified socket channel and returns the socket
-     * channel.
-     * <p>
-     * This method invokes {@link #write(WritableByteChannel)} method with specified socket channel and returns the
-     * result.
-     *
-     * @param socket the socket channel to which bytes are sent.
-     * @param <T>    socket channel type parameter
-     * @return given {@code socket}.
-     * @throws IOException if an I/O error occurs.
-     * @see #write(WritableByteChannel)
-     * @deprecated Use {@link #write(WritableByteChannel)}.
-     */
-    @Deprecated
-    default <T extends SocketChannel> T send(final T socket) throws IOException {
-        return write(requireNonNull(socket, "socket is null"));
     }
 }
