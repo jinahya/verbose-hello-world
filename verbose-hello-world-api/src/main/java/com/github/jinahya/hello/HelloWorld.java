@@ -309,6 +309,6 @@ public interface HelloWorld {
         if (path == null) {
             throw new NullPointerException("path is null");
         }
-        return null;
+        return path;
     }
 }

@@ -428,26 +428,6 @@ public class HelloWorldTest {
         // TODO: implement!!
     }
 
-    // ---------------------------------------- send(Ljava.nio.channels.SocketChannel;)Ljava.nio.channels.SocketChannel;
-    @Deprecated
-    @Test
-    void testSendSocketChannel() throws IOException {
-        final SocketChannel expected = mock(SocketChannel.class);
-        when(expected.write(any(ByteBuffer.class))).then(i -> {
-            final ByteBuffer buffer = i.getArgument(0);
-            final int remaining = buffer.remaining();
-            buffer.position(buffer.position() + remaining); // drain all available bytes
-            return remaining;
-        });
-        when(helloWorld.write(expected)).thenAnswer(i -> {
-            final SocketChannel channel = i.getArgument(0, SocketChannel.class);
-            channel.write(allocate(BYTES));
-            return channel;
-        });
-        final SocketChannel actual = helloWorld.send(expected);
-        assertEquals(expected, actual);
-    }
-
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
