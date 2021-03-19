@@ -27,7 +27,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 
@@ -150,8 +149,9 @@ class HelloWorld_PutBufferTest extends AbstractHelloWorldTest {
      * buffer.
      */
     @DisplayName("put(buffer-with-no-backing-array) invokes set(array) and put the array to the buffer")
-    @Test
-    void putBuffer_InvokeSetArrayPutArrayToBuffer_BufferHasNoBackingArray() {
+    @MethodSource({"buffersHasNoBackingArray"})
+    @ParameterizedTest
+    void putBuffer_InvokeSetArrayPutArrayToBuffer_BufferHasNoBackingArray(final ByteBuffer buffer) {
     }
 
     /**
