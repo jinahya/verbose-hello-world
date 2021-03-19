@@ -30,7 +30,9 @@ import java.nio.channels.WritableByteChannel;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * A class for unit-testing {@link HelloWorld} interface.
@@ -71,6 +73,12 @@ class HelloWorld_WriteChannelTest extends AbstractHelloWorldTest {
     @Test
     void writeChannel_ReturnChannel_() throws IOException {
         final WritableByteChannel expected = mock(WritableByteChannel.class);
+        when(expected.write(any(ByteBuffer.class))).thenAnswer(i -> {
+            final ByteBuffer buffer = i.getArgument(0, ByteBuffer.class);
+            final int written = buffer.remaining();
+            buffer.position(buffer.limit());
+            return written;
+        });
         final WritableByteChannel actual = helloWorld.write(expected);
         assertSame(expected, actual);
     }
