@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.quality.Strictness.LENIENT;
 
 /**
@@ -67,7 +68,7 @@ class HelloWorld_WriteFileTest extends AbstractHelloWorldTest {
     @DisplayName("write(file) invokes set(array) method and writes the array to file")
     @Test
     void writeFile_InvokeSetArrayWriteArrayToFile_(final @TempDir File tempDir) throws IOException {
-        //final RandomAccessFile file = new RandomAccessFile(File.createTempFile("tmp", null, tempDir), "rw");
+        //final RandomAccessFile file = spy(new RandomAccessFile(File.createTempFile("tmp", null, tempDir), "rw"));
         final RandomAccessFile file = mock(RandomAccessFile.class);
     }
 
