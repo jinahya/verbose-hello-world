@@ -29,6 +29,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 /**
@@ -61,5 +62,5 @@ abstract class HelloWorldTest {
      * A spy instance of {@link HelloWorld} interface.
      */
     @Spy
-    protected final HelloWorld helloWorld = Mockito.spy(HelloWorld.class);
+    protected final HelloWorld helloWorld = spy(HelloWorld.class);
 }
