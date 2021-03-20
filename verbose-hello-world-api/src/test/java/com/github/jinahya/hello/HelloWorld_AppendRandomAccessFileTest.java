@@ -59,9 +59,8 @@ class HelloWorld_AppendRandomAccessFileTest extends AbstractHelloWorldTest {
     @DisplayName("append(file) invokes set(array) method and writes the array to file")
     @Test
     void appendFile_InvokeSetArrayWriteArrayToFile_(final @TempDir File tempDir) throws IOException {
-//        final RandomAccessFile file
-//                = Mockito.spy(new RandomAccessFile(File.createTempFile("tmp", null, tempDir), "rw"));
-        final RandomAccessFile file = Mockito.mock(RandomAccessFile.class);
+        final RandomAccessFile file
+                = Mockito.spy(new RandomAccessFile(File.createTempFile("tmp", null, tempDir), "rw"));
     }
 
     /**
@@ -73,8 +72,7 @@ class HelloWorld_AppendRandomAccessFileTest extends AbstractHelloWorldTest {
     @DisplayName("write(file) returns file")
     @Test
     void appendFile_ReturnFile_(final @TempDir File tempDir) throws IOException {
-//        final RandomAccessFile expected = new RandomAccessFile(File.createTempFile("tmp", null, tempDir), "rw");
-        final RandomAccessFile expected = Mockito.mock(RandomAccessFile.class);
+        final RandomAccessFile expected = new RandomAccessFile(File.createTempFile("tmp", null, tempDir), "rw");
         final RandomAccessFile actual = helloWorld.append(expected);
         Assertions.assertSame(expected, actual);
     }
