@@ -66,12 +66,12 @@ class HelloWorld_AppendRandomAccessFileTest extends AbstractHelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#write(RandomAccessFile)} method returns given {@code file}.
+     * Asserts {@link HelloWorld#append(RandomAccessFile)} method returns given {@code file}.
      *
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(file) returns file")
+    @DisplayName("append(file) returns file")
     @Test
     void appendFile_ReturnFile_(final @TempDir File tempDir) throws IOException {
         final RandomAccessFile expected = new RandomAccessFile(createTempFile("tmp", null, tempDir), "rw");
