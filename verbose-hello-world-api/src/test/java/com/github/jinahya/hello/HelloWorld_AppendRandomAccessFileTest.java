@@ -40,7 +40,7 @@ import static org.mockito.Mockito.spy;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorld_AppendRandomAccessFileTest extends AbstractHelloWorldTest {
+class HelloWorld_AppendRandomAccessFileTest extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#append(RandomAccessFile)} method throws a {@link NullPointerException} when {@code

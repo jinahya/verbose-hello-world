@@ -41,7 +41,7 @@ import static org.mockito.quality.Strictness.LENIENT;
 @MockitoSettings(strictness = LENIENT)
 @ExtendWith({MockitoExtension.class})
 @Slf4j
-class HelloWorld_WriteStreamTest extends AbstractHelloWorldTest {
+class HelloWorld_WriteStreamTest extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(OutputStream) write(stream)} method throws a {@link NullPointerException} when

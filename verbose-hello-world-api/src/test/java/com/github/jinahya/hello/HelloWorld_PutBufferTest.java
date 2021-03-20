@@ -47,7 +47,7 @@ import static org.mockito.quality.Strictness.LENIENT;
 @MockitoSettings(strictness = LENIENT)
 @ExtendWith({MockitoExtension.class})
 @Slf4j
-class HelloWorld_PutBufferTest extends AbstractHelloWorldTest {
+class HelloWorld_PutBufferTest extends HelloWorldTest {
 
     /**
      * Returns a stream of byte buffers which each remaining is less than {@link HelloWorld#BYTES}.

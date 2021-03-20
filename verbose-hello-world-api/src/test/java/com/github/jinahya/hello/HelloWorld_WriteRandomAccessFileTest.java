@@ -24,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.mockito.Mockito;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,7 +41,7 @@ import static org.mockito.Mockito.spy;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorld_WriteRandomAccessFileTest extends AbstractHelloWorldTest {
+class HelloWorld_WriteRandomAccessFileTest extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(RandomAccessFile)} method throws a {@link NullPointerException} when {@code file}

@@ -41,7 +41,7 @@ import static org.mockito.quality.Strictness.LENIENT;
 @MockitoSettings(strictness = LENIENT)
 @ExtendWith({MockitoExtension.class})
 @Slf4j
-class HelloWorld_WriteDataTest extends AbstractHelloWorldTest {
+class HelloWorld_WriteDataTest extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(DataOutput)} method throws a {@link NullPointerException} when {@code data}

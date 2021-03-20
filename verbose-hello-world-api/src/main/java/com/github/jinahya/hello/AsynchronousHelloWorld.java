@@ -20,7 +20,6 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;

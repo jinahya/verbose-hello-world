@@ -39,7 +39,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorld_AppendPathTest extends AbstractHelloWorldTest {
+class HelloWorld_AppendPathTest extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#append(Path)} method throws a {@link NullPointerException} when the {@code path}
