@@ -69,12 +69,12 @@ class HelloWorld_WriteSyncAsynchronousByteChannelTest extends HelloWorldTest {
     @Test
     void writeSync_InvokePutBufferWriteBufferToChannel_() throws ExecutionException, InterruptedException {
         final AsynchronousByteChannel channel = mock(AsynchronousByteChannel.class);
-        final LongAdder adder = new LongAdder();
+        final LongAdder writtenAdder = new LongAdder();
         when(channel.write(any(ByteBuffer.class))).thenAnswer(i -> {
             final ByteBuffer buffer = i.getArgument(0, ByteBuffer.class);
             final int written = current().nextInt(0, buffer.remaining() + 1);
             buffer.position(buffer.position() + written);
-            adder.add(written);
+            writtenAdder.add(written);
             @SuppressWarnings({"unchecked"})
             final Future<Integer> future = mock(Future.class);
             when(future.get()).thenReturn(written);
