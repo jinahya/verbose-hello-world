@@ -33,6 +33,7 @@ import java.io.RandomAccessFile;
 import static java.io.File.createTempFile;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 
 /**
@@ -77,8 +78,11 @@ class HelloWorld_WriteRandomAccessFileTest extends AbstractHelloWorldTest {
     @DisplayName("write(file) returns file")
     @Test
     void writeFile_ReturnFile_(final @TempDir File tempDir) throws IOException {
-//        final RandomAccessFile expected = new RandomAccessFile(createTempFile("tmp", null, tempDir), "rw");
-        final RandomAccessFile expected = Mockito.mock(RandomAccessFile.class);
+        try (RandomAccessFile expected = new RandomAccessFile(createTempFile("tmp", null, tempDir), "rw")) {
+            final RandomAccessFile actual = helloWorld.write(expected);
+            assertSame(expected, actual);
+        }
+        final RandomAccessFile expected = mock(RandomAccessFile.class);
         final RandomAccessFile actual = helloWorld.write(expected);
         assertSame(expected, actual);
     }
