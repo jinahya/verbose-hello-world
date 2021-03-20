@@ -31,8 +31,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-import static org.junit.jupiter.api.Assertions.assertSame;
-
 /**
  * A class for unit-testing {@link HelloWorld} interface.
  *
@@ -74,10 +72,10 @@ class HelloWorld_AppendRandomAccessFileTest extends AbstractHelloWorldTest {
      */
     @DisplayName("write(file) returns file")
     @Test
-    void writeFile_ReturnFile_(final @TempDir File tempDir) throws IOException {
+    void appendFile_ReturnFile_(final @TempDir File tempDir) throws IOException {
 //        final RandomAccessFile expected = new RandomAccessFile(File.createTempFile("tmp", null, tempDir), "rw");
         final RandomAccessFile expected = Mockito.mock(RandomAccessFile.class);
         final RandomAccessFile actual = helloWorld.write(expected);
-        assertSame(expected, actual);
+        Assertions.assertSame(expected, actual);
     }
 }
