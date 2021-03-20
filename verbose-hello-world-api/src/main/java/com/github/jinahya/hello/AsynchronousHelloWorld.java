@@ -40,19 +40,57 @@ import static java.util.Objects.requireNonNull;
  */
 interface AsynchronousHelloWorld extends HelloWorld {
 
+//
+//    /**
+//     * Writes, asynchronously, the {@code hello-world-bytes} to specified channel.
+//     *
+//     * @param channel the channel to which bytes are written.
+//     * @param <T>     channel type parameter
+//     * @return a completable future of given channel.
+//     * @see #write(AsynchronousByteChannel)
+//     */
+//    default <T extends AsynchronousByteChannel> CompletableFuture<T> writeCompletable(final T channel) {
+//        if (channel == null) {
+//            throw new NullPointerException("channel is null");
+//        }
+//        final CompletableFuture<T> future = new CompletableFuture<>();
+//        final ByteBuffer buffer = (ByteBuffer) put(allocate(BYTES)).flip();
+//        channel.write(buffer, null, new CompletionHandler<Integer, Void>() {
+//
+//            @Override
+//            public void completed(final Integer result, final Void attachment) {
+//                if (!buffer.hasRemaining()) {
+//                    future.complete(channel);
+//                    return;
+//                }
+//                channel.write(buffer, null, this);
+//            }
+//
+//            @Override
+//            public void failed(final Throwable exc, final Void attachment) {
+//                future.completeExceptionally(exc);
+//            }
+//        });
+//        return future;
+//    }
+
     // ----------------------------------------------------------------------------------------- AsynchronousFileChannel
 
     /**
-     * Writes the {@code hello-world-bytes} to specified channel starting at the given file position. This method
-     * invokes {@link #put(ByteBuffer)}} with a byte buffer of {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes
-     * and, after flips it, writes all remaining bytes of the buffer ot specified asynchronous file channel starting at
-     * the given file position.
+     * Writes the {@code hello-world-bytes} to specified channel starting at the given file position.
      *
-     * @param channel the channel to be appended.
-     * @param <T>     channel type parameter
-     * @return specified channel.
-     * @throws InterruptedException if interrupted while {@link Future#get() getting} the result from a {@code Future}.
-     * @throws ExecutionException   if failed to {@link Future#get() get} the result from a {@code Future}.
+     * @param channel  the channel to which bytes are written.
+     * @param position The file position at which bytes are written; must be non-negative.
+     * @param <T>      channel type parameter
+     * @return given {@code channel}.
+     * @throws NullPointerException     if {@code channel} is {@code null}.
+     * @throws IllegalArgumentException if {@code position} is negative.
+     * @throws InterruptedException     if interrupted while {@link Future#get() getting} the result from a {@code
+     *                                  Future}.
+     * @throws ExecutionException       if failed to {@link Future#get() get} the result from a {@code Future}.
+     * @implSpec The implementation is this class invokes {@link #put(ByteBuffer)}} with a byte buffer of {@value
+     * com.github.jinahya.hello.HelloWorld#BYTES} bytes and, after flips it, writes all remaining bytes of the buffer to
+     * specified asynchronous file channel starting at the given file position.
      * @see #put(ByteBuffer)
      * @see AsynchronousFileChannel#write(ByteBuffer, long)
      */
@@ -64,8 +102,12 @@ interface AsynchronousHelloWorld extends HelloWorld {
         if (position < 0L) {
             throw new IllegalArgumentException("position(" + position + ") < 0L");
         }
-        for (final ByteBuffer buffer = (ByteBuffer) put(allocate(BYTES)).flip(); buffer.hasRemaining(); ) {
-            position += channel.write(buffer, position).get();
+        final ByteBuffer buffer = allocate(BYTES);
+        put(buffer);
+        buffer.flip();
+        while (buffer.hasRemaining()) {
+            final Future<Integer> future = channel.write(buffer, position);
+            position += future.get();
         }
         return channel;
     }
@@ -136,93 +178,5 @@ interface AsynchronousHelloWorld extends HelloWorld {
     default <T extends AsynchronousFileChannel> CompletableFuture<T> appendAsync(final T channel)
             throws IOException {
         return writeAsync(requireNonNull(channel, "channel is null"), channel.size());
-    }
-
-    // ----------------------------------------------------------------------------------------- AsynchronousByteChannel
-
-    /**
-     * Writes the {@code hello-world-bytes} to specified channel.
-     *
-     * @param channel the channel to which bytes are written.
-     * @param <T>     channel type parameter
-     * @return given channel.
-     * @throws InterruptedException if interrupted while working.
-     * @throws ExecutionException   if failed to execute.
-     * @see #writeAsync(AsynchronousByteChannel)
-     */
-    default <T extends AsynchronousByteChannel> T write(final T channel)
-            throws InterruptedException, ExecutionException {
-        if (channel == null) {
-            throw new NullPointerException("channel is null");
-        }
-        for (final ByteBuffer buffer = (ByteBuffer) put(allocate(BYTES)).flip(); buffer.hasRemaining(); ) {
-            final Future<Integer> future = channel.write(buffer);
-            final int written = future.get();
-        }
-        return channel;
-    }
-
-    /**
-     * Writes, asynchronously, the {@code hello-world-bytes} to specified channel.
-     *
-     * @param channel the channel to which bytes are written.
-     * @param <T>     channel type parameter
-     * @return a completable future of given channel.
-     * @see #write(AsynchronousByteChannel)
-     */
-    default <T extends AsynchronousByteChannel> CompletableFuture<T> writeAsync(final T channel) {
-        if (channel == null) {
-            throw new NullPointerException("channel is null");
-        }
-        final CompletableFuture<T> future = new CompletableFuture<>();
-        final ByteBuffer buffer = (ByteBuffer) put(allocate(BYTES)).flip();
-        channel.write(buffer, null, new CompletionHandler<Integer, Void>() {
-
-            @Override
-            public void completed(final Integer result, final Void attachment) {
-                if (!buffer.hasRemaining()) {
-                    future.complete(channel);
-                    return;
-                }
-                channel.write(buffer, null, this);
-            }
-
-            @Override
-            public void failed(final Throwable exc, final Void attachment) {
-                future.completeExceptionally(exc);
-            }
-        });
-        return future;
-    }
-
-    // --------------------------------------------------------------------------------------- AsynchronousSocketChannel
-
-    /**
-     * Sends the {@code hello-world-bytes} to specified channel. This method simply invokes {@link
-     * #write(AsynchronousByteChannel)} method with specified channel and returns the result.
-     *
-     * @param channel the channel to which bytes are written.
-     * @param <T>     channel type parameter
-     * @return given channel.
-     * @throws InterruptedException if interrupted while working.
-     * @throws ExecutionException   if failed to execute.
-     * @see #write(AsynchronousByteChannel)
-     */
-    default <T extends AsynchronousSocketChannel> T send(final T channel)
-            throws InterruptedException, ExecutionException {
-        return write(requireNonNull(channel, "channel is null"));
-    }
-
-    /**
-     * Sends, asynchronously, the {@code hello-world-bytes} to specified channel. This method simply invokes {@link
-     * #writeAsync(AsynchronousByteChannel)} method with specified channel and returns the result.
-     *
-     * @param channel the channel to which bytes are written.
-     * @param <T>     channel type parameter
-     * @return given channel.
-     * @see #write(AsynchronousByteChannel)
-     */
-    default <T extends AsynchronousSocketChannel> CompletableFuture<T> sendAsync(final T channel) {
-        return writeAsync(requireNonNull(channel, "channel is null"));
     }
 }

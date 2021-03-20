@@ -29,10 +29,16 @@ import java.io.RandomAccessFile;
 import java.net.Socket;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
+import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+
+import static java.nio.ByteBuffer.allocate;
 
 /**
  * An interface for generating <a href="#hello-world-bytes">hello-world-bytes</a> to various targets.
@@ -326,5 +332,72 @@ public interface HelloWorld {
             throw new NullPointerException("path is null");
         }
         return path;
+    }
+
+    /**
+     * Writes, synchronously, the <a href="#hello-world-bytes">hello-world-bytes</a> to specified channel.
+     *
+     * @param channel the channel to which bytes are written.
+     * @param <T>     channel type parameter
+     * @return A future representing the result of the operation.
+     * @throws InterruptedException if interrupted while working.
+     * @throws ExecutionException   if failed to execute.
+     * @implSpec The implementation in this class invokes {@link #put(ByteBuffer)} method with a byte buffer of {@value
+     * com.github.jinahya.hello.HelloWorld#BYTES} bytes and writes the buffer to specified channel using {@link
+     * AsynchronousByteChannel#write(ByteBuffer)} method.
+     */
+    default <T extends AsynchronousByteChannel> T writeSync(final T channel)
+            throws InterruptedException, ExecutionException {
+        if (channel == null) {
+            throw new NullPointerException("channel is null");
+        }
+        final ByteBuffer buffer = allocate(BYTES);
+        put(buffer);
+        buffer.flip();
+        // TODO: implement!
+        return channel;
+    }
+
+    /**
+     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified channel.
+     *
+     * @param channel the channel to which bytes are written.
+     * @param <T>     channel type parameter
+     * @return A future representing the result of the operation.
+     * @throws InterruptedException if interrupted while working.
+     * @throws ExecutionException   if failed to execute.
+     * @see #writeCompletable(AsynchronousByteChannel)
+     */
+    default <T extends AsynchronousByteChannel> Future<Void> write(final T channel)
+            throws InterruptedException, ExecutionException {
+        if (channel == null) {
+            throw new NullPointerException("channel is null");
+        }
+        final ByteBuffer buffer = allocate(BYTES);
+        put(buffer);
+        buffer.flip();
+        while (buffer.hasRemaining()) {
+            final Future<Integer> future = channel.write(buffer);
+            final int written = future.get();
+        }
+        return null;
+    }
+
+    /**
+     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified channel.
+     *
+     * @param channel the channel to which bytes are written.
+     * @param <T>     channel type parameter
+     * @return a completable future.
+     * @see #write(AsynchronousByteChannel)
+     */
+    default <T extends AsynchronousByteChannel> CompletableFuture<T> writeCompletable(final T channel) {
+        if (channel == null) {
+            throw new NullPointerException("channel is null");
+        }
+        final ByteBuffer buffer = allocate(BYTES);
+        put(buffer);
+        buffer.flip();
+        return null;
     }
 }
