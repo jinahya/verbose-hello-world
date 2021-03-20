@@ -62,7 +62,8 @@ class HelloWorld_AppendRandomAccessFileTest extends AbstractHelloWorldTest {
     @DisplayName("append(file) invokes set(array) method and writes the array to file")
     @Test
     void appendFile_InvokeSetArrayWriteArrayToFile_(final @TempDir File tempDir) throws IOException {
-        final RandomAccessFile file = spy(new RandomAccessFile(createTempFile("tmp", null, tempDir), "rw"));
+        try (RandomAccessFile file = spy(new RandomAccessFile(createTempFile("tmp", null, tempDir), "rw"))) { // <1>
+        }
     }
 
     /**
@@ -74,8 +75,9 @@ class HelloWorld_AppendRandomAccessFileTest extends AbstractHelloWorldTest {
     @DisplayName("append(file) returns file")
     @Test
     void appendFile_ReturnFile_(final @TempDir File tempDir) throws IOException {
-        final RandomAccessFile expected = new RandomAccessFile(createTempFile("tmp", null, tempDir), "rw");
-        final RandomAccessFile actual = helloWorld.append(expected);
-        assertSame(expected, actual);
+        try (RandomAccessFile expected = new RandomAccessFile(createTempFile("tmp", null, tempDir), "rw")) {
+            final RandomAccessFile actual = helloWorld.append(expected);
+            assertSame(expected, actual);
+        }
     }
 }

@@ -21,7 +21,6 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -30,6 +29,11 @@ import org.mockito.Mockito;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+
+import static java.io.File.createTempFile;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.spy;
 
 /**
  * A class for unit-testing {@link HelloWorld} interface.
@@ -46,7 +50,7 @@ class HelloWorld_WriteRandomAccessFileTest extends AbstractHelloWorldTest {
     @DisplayName("write(file) throws NullPointerException when file is null")
     @Test
     void writeFile_NullPointerException_FileIsNull() {
-        Assertions.assertThrows(NullPointerException.class, () -> helloWorld.write((RandomAccessFile) null));
+        assertThrows(NullPointerException.class, () -> helloWorld.write((RandomAccessFile) null));
     }
 
     /**
@@ -60,9 +64,8 @@ class HelloWorld_WriteRandomAccessFileTest extends AbstractHelloWorldTest {
     @DisplayName("write(file) invokes set(array) method and writes the array to file")
     @Test
     void writeFile_InvokeSetArrayWriteArrayToFile_(final @TempDir File tempDir) throws IOException {
-//        final RandomAccessFile file
-//                = Mockito.spy(new RandomAccessFile(File.createTempFile("tmp", null, tempDir), "rw"));
-        final RandomAccessFile file = Mockito.mock(RandomAccessFile.class);
+        try (RandomAccessFile file = spy(new RandomAccessFile(createTempFile("tmp", null, tempDir), "rw"))) {
+        }
     }
 
     /**
@@ -74,10 +77,9 @@ class HelloWorld_WriteRandomAccessFileTest extends AbstractHelloWorldTest {
     @DisplayName("write(file) returns file")
     @Test
     void writeFile_ReturnFile_(final @TempDir File tempDir) throws IOException {
-//        final RandomAccessFile expected
-//                = new RandomAccessFile(File.createTempFile("tmp", null, tempDir), "rw");
+//        final RandomAccessFile expected = new RandomAccessFile(createTempFile("tmp", null, tempDir), "rw");
         final RandomAccessFile expected = Mockito.mock(RandomAccessFile.class);
         final RandomAccessFile actual = helloWorld.write(expected);
-        Assertions.assertSame(expected, actual);
+        assertSame(expected, actual);
     }
 }
