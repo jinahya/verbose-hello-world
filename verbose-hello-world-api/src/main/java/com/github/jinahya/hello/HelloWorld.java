@@ -217,7 +217,8 @@ public interface HelloWorld {
         if (file == null) {
             throw new NullPointerException("file is null");
         }
-        return null;
+        // TODO: implement!
+        return file;
     }
 
     /**
@@ -240,7 +241,8 @@ public interface HelloWorld {
         if (file == null) {
             throw new NullPointerException("file is null");
         }
-        return null;
+        // TODO: implement!
+        return file;
     }
 
     // -----------------------------------------------------------------------------------------------------------------

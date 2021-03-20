@@ -31,10 +31,8 @@ import org.mockito.junit.jupiter.MockitoSettings;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.io.OutputStream;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.quality.Strictness.LENIENT;
 
 /**
@@ -45,41 +43,39 @@ import static org.mockito.quality.Strictness.LENIENT;
 @MockitoSettings(strictness = LENIENT)
 @ExtendWith({MockitoExtension.class})
 @Slf4j
-class HelloWorld_WriteFileTest extends AbstractHelloWorldTest {
+class HelloWorld_AppendFileTest extends AbstractHelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#write(RandomAccessFile)} method throws a {@link NullPointerException} when {@code file}
-     * argument is {@code null}.
+     * Asserts {@link HelloWorld#append(File)} method throws a {@link NullPointerException} when {@code file} argument
+     * is {@code null}.
      */
-    @DisplayName("write(file) throws NullPointerException when file is null")
+    @DisplayName("append(file) throws a NullPointerException when the file is null")
     @Test
-    void writeFile_NullPointerException_FileIsNull() {
-        Assertions.assertThrows(NullPointerException.class, () -> helloWorld.write((RandomAccessFile) null));
+    void appendFile_NullPointerException_FileIsNull() {
+        Assertions.assertThrows(NullPointerException.class, () -> helloWorld.append((File) null));
     }
 
     /**
-     * Asserts {@link HelloWorld#write(RandomAccessFile)} invokes {@link HelloWorld#set(byte[])} method with an array of
-     * {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and invokes {@link RandomAccessFile#write(byte[])}
-     * method on {@code file} with the array.
+     * Asserts {@link HelloWorld#append(File)} method invokes {@link HelloWorld#write(OutputStream)} method.
      *
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(file) invokes set(array) method and writes the array to file")
+    @DisplayName("append(file) invokes write(stream)")
     @Test
-    void writeFile_InvokeSetArrayWriteArrayToFile_(final @TempDir File tempDir) throws IOException {
-        //final RandomAccessFile file = spy(new RandomAccessFile(File.createTempFile("tmp", null, tempDir), "rw"));
-        final RandomAccessFile file = mock(RandomAccessFile.class);
+    void appendFile_InvokeWriteStream_(final @TempDir File tempDir) throws IOException {
+        final File file = File.createTempFile("tmp", null, tempDir);
     }
 
     /**
-     * Asserts {@link HelloWorld#write(RandomAccessFile)} method returns specified {@code file}.
+     * Asserts {@link HelloWorld#append(File)} method returns given file.
      *
+     * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(file) returns file")
+    @DisplayName("append(file) returns given file")
     @Test
-    void writeFile_ReturnFile_() throws IOException {
-        final RandomAccessFile file = mock(RandomAccessFile.class);
+    void appendFile_ReturnFile_(final @TempDir File tempDir) throws IOException {
+        final File file = File.createTempFile("tmp", null, tempDir);
     }
 }

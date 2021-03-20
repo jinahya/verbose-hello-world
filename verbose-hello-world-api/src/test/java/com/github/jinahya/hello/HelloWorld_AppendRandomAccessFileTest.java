@@ -39,29 +39,28 @@ import static org.mockito.Mockito.mock;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorld_WriteRandomAccessFileTest extends AbstractHelloWorldTest {
+class HelloWorld_AppendRandomAccessFileTest extends AbstractHelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#write(RandomAccessFile)} method throws a {@link NullPointerException} when {@code file}
-     * argument is {@code null}.
+     * Asserts {@link HelloWorld#append(RandomAccessFile)} method throws a {@link NullPointerException} when {@code
+     * file} argument is {@code null}.
      */
-    @DisplayName("write(file) throws NullPointerException when file is null")
+    @DisplayName("append(file) throws NullPointerException when file is null")
     @Test
-    void writeFile_NullPointerException_FileIsNull() {
+    void appendFile_NullPointerException_FileIsNull() {
         assertThrows(NullPointerException.class, () -> helloWorld.write((RandomAccessFile) null));
     }
 
     /**
-     * Asserts {@link HelloWorld#write(RandomAccessFile)} invokes {@link HelloWorld#set(byte[])} method with an array of
-     * {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and invokes {@link RandomAccessFile#write(byte[])}
-     * method on {@code file} with the array.
+     * Asserts {@link HelloWorld#append(RandomAccessFile)} moves file pointer to the end of the file and invokes {@link
+     * HelloWorld#write(RandomAccessFile)} method.
      *
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(file) invokes set(array) method and writes the array to file")
+    @DisplayName("append(file) invokes set(array) method and writes the array to file")
     @Test
-    void writeFile_InvokeSetArrayWriteArrayToFile_(final @TempDir File tempDir) throws IOException {
+    void appendFile_InvokeSetArrayWriteArrayToFile_(final @TempDir File tempDir) throws IOException {
         //final RandomAccessFile file = spy(new RandomAccessFile(File.createTempFile("tmp", null, tempDir), "rw"));
         final RandomAccessFile file = mock(RandomAccessFile.class);
     }
@@ -69,11 +68,13 @@ class HelloWorld_WriteRandomAccessFileTest extends AbstractHelloWorldTest {
     /**
      * Asserts {@link HelloWorld#write(RandomAccessFile)} method returns specified {@code file}.
      *
+     * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
     @DisplayName("write(file) returns file")
     @Test
-    void writeFile_ReturnFile_() throws IOException {
+    void writeFile_ReturnFile_(final @TempDir File tempDir) throws IOException {
+        //final RandomAccessFile file = new RandomAccessFile(File.createTempFile("tmp", null, tempDir), "rw");
         final RandomAccessFile expected = mock(RandomAccessFile.class);
         final RandomAccessFile actual = helloWorld.write(expected);
         assertSame(expected, actual);
