@@ -199,23 +199,13 @@ public interface HelloWorld {
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
-     * Writes <a href="#hello-world-bytes">hello-world-bytes</a> to specified random access file and returns the random
-     * access file.
-     * <p>
-     * This method invokes {@link #set(byte[])} method with an array of {@link #BYTES} bytes, writes the array to
-     * specified random access file using {@link RandomAccessFile#write(byte[])} method, and returns the random access
-     * file.
-     * <blockquote><pre>{@code
-     * byte[] array = new byte[BYTES];
-     * set(array);
-     * file.write(array);
-     * return file;
-     * }</pre></blockquote>
+     * Writes <a href="#hello-world-bytes">hello-world-bytes</a> starting at the current file pointer of specified
+     * random access file and returns the random access file.
      *
      * @param file the random access file to which bytes are written.
      * @param <T>  random access file type parameter
      * @return given {@code file}.
-     * @throws NullPointerException if {@code file} argument is {@code null}.
+     * @throws NullPointerException if {@code randomAccessFile} argument is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @implSpec The implementation in this class invokes {@link #set(byte[])} with an array of {@value
      * com.github.jinahya.hello.HelloWorld#BYTES} bytes and writes the array to specified random access file using
@@ -224,6 +214,29 @@ public interface HelloWorld {
      * @see RandomAccessFile#write(byte[])
      */
     default <T extends RandomAccessFile> T write(final T file) throws IOException {
+        if (file == null) {
+            throw new NullPointerException("file is null");
+        }
+        return null;
+    }
+
+    /**
+     * Appends <a href="#hello-world-bytes">hello-world-bytes</a> at the end of specified random access file and returns
+     * the random access file.
+     *
+     * @param file the random access file to which bytes are written.
+     * @param <T>  random access file type parameter
+     * @return given {@code file}.
+     * @throws NullPointerException if {@code file} argument is {@code null}.
+     * @throws IOException          if an I/O error occurs.
+     * @implSpec The implementation in this class {@link RandomAccessFile#seek(long) moves the file-pointer} to {@link
+     * RandomAccessFile#length() the end} of specified random access file and invokes {@link #write(RandomAccessFile)}
+     * method with the file.
+     * @see RandomAccessFile#length()
+     * @see RandomAccessFile#seek(long)
+     * @see #write(RandomAccessFile)
+     */
+    default <T extends RandomAccessFile> T append(final T file) throws IOException {
         if (file == null) {
             throw new NullPointerException("file is null");
         }

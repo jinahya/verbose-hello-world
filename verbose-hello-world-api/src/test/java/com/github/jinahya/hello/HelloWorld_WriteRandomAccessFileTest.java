@@ -43,7 +43,7 @@ import static org.mockito.quality.Strictness.LENIENT;
 @MockitoSettings(strictness = LENIENT)
 @ExtendWith({MockitoExtension.class})
 @Slf4j
-class HelloWorld_AppendFileTest extends AbstractHelloWorldTest {
+class HelloWorld_WriteRandomAccessFileTest extends AbstractHelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#append(File)} method throws a {@link NullPointerException} when {@code file} argument
