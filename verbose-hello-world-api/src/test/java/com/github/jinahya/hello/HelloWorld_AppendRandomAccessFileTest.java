@@ -75,7 +75,7 @@ class HelloWorld_AppendRandomAccessFileTest extends AbstractHelloWorldTest {
     void appendFile_ReturnFile_(final @TempDir File tempDir) throws IOException {
 //        final RandomAccessFile expected = new RandomAccessFile(File.createTempFile("tmp", null, tempDir), "rw");
         final RandomAccessFile expected = Mockito.mock(RandomAccessFile.class);
-        final RandomAccessFile actual = helloWorld.write(expected);
+        final RandomAccessFile actual = helloWorld.append(expected);
         Assertions.assertSame(expected, actual);
     }
 }
