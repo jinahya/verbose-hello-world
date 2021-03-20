@@ -65,7 +65,7 @@ class HelloWorld_AppendRandomAccessFileTest extends AbstractHelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#write(RandomAccessFile)} method returns specified {@code file}.
+     * Asserts {@link HelloWorld#write(RandomAccessFile)} method returns given {@code file}.
      *
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
