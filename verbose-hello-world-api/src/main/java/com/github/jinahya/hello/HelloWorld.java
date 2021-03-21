@@ -287,7 +287,7 @@ public interface HelloWorld {
      * @return A future representing the result of the operation.
      */
     @SuppressWarnings({"unchecked"})
-    default Future<Void> writeAsync(final AsynchronousByteChannel channel, final ExecutorService service) {
+    default Future<Void> write(final AsynchronousByteChannel channel, final ExecutorService service) {
         if (channel == null) {
             throw new NullPointerException("channel is null");
         }

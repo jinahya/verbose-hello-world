@@ -44,33 +44,33 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * A class for testing {@link HelloWorld#writeAsync(AsynchronousByteChannel, ExecutorService)} method.
+ * A class for testing {@link HelloWorld#write(AsynchronousByteChannel, ExecutorService)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorld_WriteAsyncAsynchronousByteChannelExecutorServiceTest extends HelloWorldTest {
+class HelloWorld_WriteAsynchronousByteChannelExecutorServiceTest extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#writeAsync(AsynchronousByteChannel, ExecutorService)} method throws a {@link
+     * Asserts {@link HelloWorld#write(AsynchronousByteChannel, ExecutorService)} method throws a {@link
      * NullPointerException} when {@code channel} argument is {@code null}.
      */
     @DisplayName("writeSync(channel, service) throws NullPointerException when channel is null")
     @Test
-    void writeAsync_NullPointerException_ChannelIsNull() {
+    void write_NullPointerException_ChannelIsNull() {
         assertThrows(NullPointerException.class,
-                     () -> helloWorld.writeAsync((AsynchronousByteChannel) null, mock(ExecutorService.class)));
+                     () -> helloWorld.write((AsynchronousByteChannel) null, mock(ExecutorService.class)));
     }
 
     /**
-     * Asserts {@link HelloWorld#writeAsync(AsynchronousByteChannel, ExecutorService)} throws a {@link
+     * Asserts {@link HelloWorld#write(AsynchronousByteChannel, ExecutorService)} throws a {@link
      * NullPointerException} when {@code service} argument is {@code null}.
      */
     @DisplayName("writeSync(channel, service) throws NullPointerException when channel is null")
     @Test
-    void writeAsync_NullPointerException_ServiceIsNull() {
+    void write_NullPointerException_ServiceIsNull() {
         assertThrows(NullPointerException.class,
-                     () -> helloWorld.writeAsync(mock(AsynchronousByteChannel.class), null));
+                     () -> helloWorld.write(mock(AsynchronousByteChannel.class), null));
     }
 
     /**
@@ -82,7 +82,7 @@ class HelloWorld_WriteAsyncAsynchronousByteChannelExecutorServiceTest extends He
      */
     @DisplayName("write(channel, service) invokes put(buffer) writes the buffer to channel")
     @Test
-    void writeAsync_InvokePutBufferWriteBufferToChannel_() throws ExecutionException, InterruptedException {
+    void write_InvokePutBufferWriteBufferToChannel_() throws ExecutionException, InterruptedException {
         final AsynchronousByteChannel channel = mock(AsynchronousByteChannel.class);
         final LongAdder writtenSoFar = new LongAdder();
         when(channel.write(any(ByteBuffer.class))).thenAnswer(i -> {
@@ -103,7 +103,7 @@ class HelloWorld_WriteAsyncAsynchronousByteChannelExecutorServiceTest extends He
         })
                 .when(helloWorld)
                 .write(channel);
-        final Future<Void> future = helloWorld.writeAsync(channel, newSingleThreadExecutor());
+        final Future<Void> future = helloWorld.write(channel, newSingleThreadExecutor());
         assertNotNull(future);
         final Void got = future.get();
         assertNull(got);
@@ -111,7 +111,7 @@ class HelloWorld_WriteAsyncAsynchronousByteChannelExecutorServiceTest extends He
     }
 
     @Test
-    void writeAsync_InterruptedException_() throws ExecutionException, InterruptedException {
+    void write_InterruptedException_() throws ExecutionException, InterruptedException {
         final AsynchronousByteChannel channel = mock(AsynchronousByteChannel.class);
         final LongAdder writtenSoFar = new LongAdder();
         when(channel.write(any(ByteBuffer.class))).thenAnswer(i -> {
@@ -132,13 +132,13 @@ class HelloWorld_WriteAsyncAsynchronousByteChannelExecutorServiceTest extends He
         })
                 .when(helloWorld)
                 .write(channel);
-        final Future<Void> future = helloWorld.writeAsync(channel, newSingleThreadExecutor());
+        final Future<Void> future = helloWorld.write(channel, newSingleThreadExecutor());
         assertNotNull(future);
         final InterruptedException ie = assertThrows(InterruptedException.class, future::get);
     }
 
     @Test
-    void writeAsync_ExecutionException_() throws ExecutionException, InterruptedException {
+    void write_ExecutionException_() throws ExecutionException, InterruptedException {
         final AsynchronousByteChannel channel = mock(AsynchronousByteChannel.class);
         final LongAdder writtenSoFar = new LongAdder();
         when(channel.write(any(ByteBuffer.class))).thenAnswer(i -> {
@@ -159,7 +159,7 @@ class HelloWorld_WriteAsyncAsynchronousByteChannelExecutorServiceTest extends He
         })
                 .when(helloWorld)
                 .write(channel);
-        final Future<Void> future = helloWorld.writeAsync(channel, newSingleThreadExecutor());
+        final Future<Void> future = helloWorld.write(channel, newSingleThreadExecutor());
         assertNotNull(future);
         final ExecutionException ee = assertThrows(ExecutionException.class, future::get);
     }
