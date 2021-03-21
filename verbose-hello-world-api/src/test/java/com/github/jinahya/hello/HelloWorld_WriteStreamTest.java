@@ -55,22 +55,13 @@ class HelloWorld_WriteStreamTest extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(OutputStream)} method invokes {@link HelloWorld#set(byte[])} method with an array
-     * of {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and writes the array to given {@code stream}.
+     * of {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and invokes {@link OutputStream#write(byte[])} method
+     * on {@code stream} with the array.
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(stream) invokes set(byte[12]) and writes the array to the stream")
+    @DisplayName("write(stream) invokes set(byte[BYTES]) and writes the array to the stream")
     @Test
     void writeStream_InvokeSetArrayAndWriteArrayToStream_() throws IOException {
-    }
-
-    /**
-     * Asserts {@link HelloWorld#write(OutputStream)} method returns given {@code stream}.
-     *
-     * @throws IOException if an I/O error occurs.
-     */
-    @DisplayName("write(stream) returns the stream")
-    @Test
-    void writeStream_ReturnStream_() throws IOException {
     }
 }

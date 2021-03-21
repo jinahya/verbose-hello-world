@@ -24,22 +24,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
 
 import java.io.DataOutput;
 import java.io.IOException;
 
-import static org.mockito.quality.Strictness.LENIENT;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
- * A class for unit-testing {@link HelloWorld#write(DataOutput)} method.
+ * A class for testing {@link HelloWorld#write(DataOutput)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@MockitoSettings(strictness = LENIENT)
-@ExtendWith({MockitoExtension.class})
 @Slf4j
 class HelloWorld_WriteDataTest extends HelloWorldTest {
 
@@ -50,7 +45,7 @@ class HelloWorld_WriteDataTest extends HelloWorldTest {
     @DisplayName("write(data) method throws NullPointerException when data is null")
     @Test
     void writeData_NullPointerException_DataIsNull() {
-        Assertions.assertThrows(NullPointerException.class, () -> helloWorld.write((DataOutput) null));
+        assertThrows(NullPointerException.class, () -> helloWorld.write((DataOutput) null));
     }
 
     /**
@@ -62,15 +57,5 @@ class HelloWorld_WriteDataTest extends HelloWorldTest {
     @DisplayName("write(data) invokes set(array) and writes the array to data")
     @Test
     void writeData_InvokeSetArrayWriteArrayToData_() throws IOException {
-    }
-
-    /**
-     * Asserts {@link HelloWorld#write(DataOutput)} method returns given data output.
-     *
-     * @throws IOException if an I/O error occurs.
-     */
-    @DisplayName("write(data) returns data")
-    @Test
-    void writeData_ReturnData_() throws IOException {
     }
 }

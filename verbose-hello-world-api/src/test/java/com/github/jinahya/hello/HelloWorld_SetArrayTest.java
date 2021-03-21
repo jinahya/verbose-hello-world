@@ -65,12 +65,4 @@ class HelloWorld_SetArrayTest extends HelloWorldTest {
     @Test
     void setArray_InvokesSetArrayWithArrayAndZero() {
     }
-
-    /**
-     * Asserts {@link HelloWorld#set(byte[])} method returns given {@code array}.
-     */
-    @DisplayName("set(array) returns array")
-    @Test
-    void setArray_ReturnArray_() {
-    }
 }

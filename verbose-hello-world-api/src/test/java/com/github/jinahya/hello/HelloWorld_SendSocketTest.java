@@ -21,7 +21,6 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,6 +31,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.quality.Strictness.LENIENT;
 
 /**
@@ -45,33 +45,23 @@ import static org.mockito.quality.Strictness.LENIENT;
 class HelloWorld_SendSocketTest extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#send(Socket) send(socket)} method throws a {@link NullPointerException} when the {@code
-     * socket} argument is {@code null}.
+     * Asserts {@link HelloWorld#send(Socket)} method throws a {@link NullPointerException} when the {@code socket}
+     * argument is {@code null}.
      */
     @DisplayName("send(socket) throws NullPointerException when socket is null")
     @Test
     void sendSocket_NullPointerException_SocketIsNull() {
-        Assertions.assertThrows(NullPointerException.class, () -> helloWorld.send((Socket) null));
+        assertThrows(NullPointerException.class, () -> helloWorld.send(null));
     }
 
     /**
      * Asserts {@link HelloWorld#send(Socket)} method invokes the {@link HelloWorld#write(OutputStream)} method with
-     * what specified socket's {@link Socket#getOutputStream() outputStream}.
+     * what specified socket's {@link Socket#getOutputStream()} method returns.
      *
      * @throws IOException if an I/O error occurs.
      */
     @DisplayName("send(socket) invokes write(socket.outputStream)")
     @Test
     void sendSocket_InvokeWriteStreamWithSocketOutputStream_() throws IOException {
-    }
-
-    /**
-     * Asserts {@link HelloWorld#send(Socket)} method returns the specified socket.
-     *
-     * @throws IOException if an I/O error occurs.
-     */
-    @DisplayName("send(socket) returns socket")
-    @Test
-    void sendSocket_ReturnSocket_() throws IOException {
     }
 }

@@ -36,15 +36,15 @@ import static org.mockito.Mockito.when;
 @Slf4j
 abstract class HelloWorldTest {
 
-    /**
-     * Stubs {@link HelloWorld#set(byte[], int)} method of {@link #helloWorld} instance just to return given {@code
-     * array} argument.
-     */
-    @BeforeEach
-    private void stubSetArrayIndexToReturnGivenArray() {
-        when(helloWorld.set(any(byte[].class), anyInt()))  // <1>
-                .thenAnswer(i -> i.getArgument(0, byte[].class)); // <2>
-    }
+//    /**
+//     * Stubs {@link HelloWorld#set(byte[], int)} method of {@link #helloWorld} instance just to return given {@code
+//     * array} argument.
+//     */
+//    @BeforeEach
+//    private void stubSetArrayIndexToReturnGivenArray() {
+//        when(helloWorld.set(any(byte[].class), anyInt()))  // <1>
+//                .thenAnswer(i -> i.getArgument(0, byte[].class)); // <2>
+//    }
 
     /**
      * A spy instance of {@link HelloWorld} interface.

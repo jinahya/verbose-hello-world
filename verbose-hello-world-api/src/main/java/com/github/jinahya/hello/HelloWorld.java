@@ -54,8 +54,6 @@ import static java.nio.ByteBuffer.allocate;
 @FunctionalInterface
 public interface HelloWorld {
 
-    // -----------------------------------------------------------------------------------------------------------------
-
     /**
      * The length of the <a href="#hello-world-bytes">hello-world-bytes</a>. The value is {@value}.
      *
@@ -63,11 +61,8 @@ public interface HelloWorld {
      */
     int BYTES = 12;
 
-    // -----------------------------------------------------------------------------------------------------------------
-
     /**
-     * Sets <a href="#hello-world-bytes">hello-world-bytes</a> on specified array starting at specified position and
-     * returns the array.
+     * Sets <a href="#hello-world-bytes">hello-world-bytes</a> on specified array starting at specified position.
      * <p>
      * The elements in the array, on successful return, will be set as follows.
      * <blockquote><pre>{@code
@@ -80,37 +75,30 @@ public interface HelloWorld {
      *
      * @param array the array on which bytes are set.
      * @param index the starting index of the {@code array}.
-     * @return given {@code array}.
      * @throws NullPointerException      if {@code array} is {@code null}.
-     * @throws IndexOutOfBoundsException if {@code index} is negative or ({@code index} + {@value
-     *                                   com.github.jinahya.hello.HelloWorld#BYTES}) is greater than {@code
-     *                                   array.length}.
+     * @throws IndexOutOfBoundsException if {@code index} is negative or ({@code index} + {@link #BYTES}) is greater
+     *                                   than {@code array.length}.
      */
-    byte[] set(byte[] array, int index);
+    void set(byte[] array, int index);
 
     /**
-     * Sets <a href="#hello-world-bytes">hello-world-bytes</a> on specified array starting at {@code 0} and returns the
-     * array.
+     * Sets <a href="#hello-world-bytes">hello-world-bytes</a> on specified array starting at {@code 0}.
      *
      * @param array the array on which bytes are set.
-     * @return given {@code array}.
      * @throws NullPointerException      if {@code array} is {@code null}.
      * @throws IndexOutOfBoundsException if {@code array.length} is less than {@link #BYTES}.
      * @implSpec The implementation in this class invokes {@link #set(byte[], int)} method with specified {@code array}
-     * and {@code 0} and returns the result.
+     * and {@code 0}.
      * @see #set(byte[], int)
      */
-    default byte[] set(final byte[] array) {
-        return null;
+    default void set(final byte[] array) {
+        // TODO: implement!
     }
 
     /**
-     * Writes <a href="#hello-world-bytes">hello-world-bytes</a> to specified output stream and returns the output
-     * stream.
+     * Writes <a href="#hello-world-bytes">hello-world-bytes</a> to specified output stream.
      *
      * @param stream the output stream to which bytes are written.
-     * @param <T>    output stream type parameter
-     * @return given {@code stream}.
      * @throws NullPointerException if {@code stream} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @implSpec The implementation in this class invokes {@link #set(byte[])} method with an array of {@value
@@ -119,74 +107,53 @@ public interface HelloWorld {
      * @see #set(byte[])
      * @see OutputStream#write(byte[])
      */
-    default <T extends OutputStream> T write(final T stream) throws IOException {
+    default void write(final OutputStream stream) throws IOException {
         if (stream == null) {
             throw new NullPointerException("stream is null");
         }
-        return null;
+        // TODO: implement!
     }
 
     /**
-     * Appends <a href="#hello-world-bytes">hello-world-bytes</a> to specified file and returns the file.
-     * <p>
-     * This method creates an instance of {@link FileOutputStream}, in {@link FileOutputStream#FileOutputStream(File,
-     * boolean) append mode}, from specified file, invokes {@link #write(OutputStream)} method with it, and returns the
-     * file.
-     * <blockquote><pre>{@code
-     * OutputStream stream = new FileOutputStream(file, true); // in append mode
-     * try {
-     *     write(stream);
-     *     stream.flush();
-     * } finally {
-     *     stream.close();
-     * }
-     * }</pre></blockquote>
+     * Appends <a href="#hello-world-bytes">hello-world-bytes</a> to specified file.
      *
      * @param file the file to which bytes are appended.
-     * @param <T>  file type parameter
-     * @return given {@code file}.
      * @throws NullPointerException if {@code file} is {@code null}.
      * @throws IOException          if an I/O error occurs.
-     * @implSpec The implementation in this class creates a {@link FileOutputStream} from {@code file} as append mode,
-     * invokes {@link #write(OutputStream)} method with the stream and returns the {@code file}.
+     * @implSpec The implementation in this class creates a {@link FileOutputStream} from {@code file} as append mode
+     * and invokes {@link #write(OutputStream)} method with the stream.
      * @see java.io.FileOutputStream#FileOutputStream(File, boolean)
      * @see #write(OutputStream)
      */
-    default <T extends File> T append(final T file) throws IOException {
+    default void append(final File file) throws IOException {
         if (file == null) {
             throw new NullPointerException("file is null");
         }
-        return null;
+        // TODO: implement!
     }
 
     /**
      * Sends <a href="#hello-world-bytes">hello-world-bytes</a> through specified socket.
      *
-     * @param socket the socket to which bytes are sent.
-     * @param <T>    socket type parameter
-     * @return given {@code socket}.
+     * @param socket the socket through which bytes are sent.
      * @throws NullPointerException if {@code socket} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @implSpec The implementation in this class invokes {@link #write(OutputStream)} method with {@link
-     * Socket#getOutputStream() socket.outputStream} and returns {@code socket}.
+     * Socket#getOutputStream() socket.outputStream}.
      * @see Socket#getOutputStream()
      * @see #write(OutputStream)
      */
-    default <T extends Socket> T send(final T socket) throws IOException {
+    default void send(final Socket socket) throws IOException {
         if (socket == null) {
             throw new NullPointerException("socket is null");
         }
-        return null;
+        // TODO: implement!
     }
 
-    // -----------------------------------------------------------------------------------------------------------------
-
     /**
-     * Writes <a href="#hello-world-bytes">hello-world-bytes</a> to specified data output and returns the data output.
+     * Writes <a href="#hello-world-bytes">hello-world-bytes</a> to specified data output.
      *
      * @param data the data output to which bytes are written.
-     * @param <T>  data output type parameter
-     * @return given {@code data}.
      * @throws NullPointerException if {@code data} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @implSpec The implementation in this class invokes {@link #set(byte[])} with an array of {@value
@@ -195,11 +162,11 @@ public interface HelloWorld {
      * @see #set(byte[])
      * @see DataOutput#write(byte[])
      */
-    default <T extends DataOutput> T write(final T data) throws IOException {
+    default void write(final DataOutput data) throws IOException {
         if (data == null) {
             throw new NullPointerException("data is null");
         }
-        return null;
+        // TODO: implement!
     }
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -362,24 +329,16 @@ public interface HelloWorld {
      * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified channel.
      *
      * @param channel the channel to which bytes are written.
-     * @param <T>     channel type parameter
      * @return A future representing the result of the operation.
-     * @throws InterruptedException if interrupted while working.
-     * @throws ExecutionException   if failed to execute.
-     * @see #writeCompletable(AsynchronousByteChannel)
      */
-    default <T extends AsynchronousByteChannel> Future<Void> write(final T channel)
-            throws InterruptedException, ExecutionException {
+    default Future<Void> write(final AsynchronousByteChannel channel) {
         if (channel == null) {
             throw new NullPointerException("channel is null");
         }
         final ByteBuffer buffer = allocate(BYTES);
         put(buffer);
         buffer.flip();
-        while (buffer.hasRemaining()) {
-            final Future<Integer> future = channel.write(buffer);
-            final int written = future.get();
-        }
+        // TODO: implement!
         return null;
     }
 
