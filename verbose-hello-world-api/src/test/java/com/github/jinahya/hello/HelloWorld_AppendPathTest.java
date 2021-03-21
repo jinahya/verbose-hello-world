@@ -30,11 +30,10 @@ import java.nio.channels.WritableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
- * A class for unit-testing {@link HelloWorld#append(Path)} method.
+ * A class for testing {@link HelloWorld#append(Path)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -62,19 +61,5 @@ class HelloWorld_AppendPathTest extends HelloWorldTest {
     @Test
     void appendPath_InvokeWriteChannel12BytesWritten_(final @TempDir Path tempDir) throws IOException {
         final Path path = Files.createTempFile(tempDir, null, null);
-    }
-
-    /**
-     * Asserts {@link HelloWorld#append(Path)} method returns specified {@code path} argument.
-     *
-     * @param tempDir a temporary directory to test with.
-     * @throws IOException if an I/O error occurs.
-     */
-    @DisplayName("write(path) returns path")
-    @Test
-    void assertAppendPathReturnsPath(final @TempDir Path tempDir) throws IOException {
-        final Path expected = Files.createTempFile(tempDir, null, null);
-        final Path actual = helloWorld.append(expected);
-        assertSame(expected, actual);
     }
 }

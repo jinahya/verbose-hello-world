@@ -237,12 +237,10 @@ public interface HelloWorld {
     }
 
     /**
-     * Appends <a href="#hello-world-bytes">hello-world-bytes</a> to the end of specified path and returns the path. The
-     * size of specified path, on successful return, increases by {@value com.github.jinahya.hello.HelloWorld#BYTES}.
+     * Appends <a href="#hello-world-bytes">hello-world-bytes</a> to the end of specified path. The size of specified
+     * path, on successful return, is increased by {@value com.github.jinahya.hello.HelloWorld#BYTES}.
      *
      * @param path the path to which bytes are appended.
-     * @param <T>  path type parameter
-     * @return given {path}.
      * @throws NullPointerException if {@code path} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @implSpec The implementation in this class opens a {@link FileChannel}, from specified path, as append mode and
@@ -250,11 +248,11 @@ public interface HelloWorld {
      * @see FileChannel#open(Path, OpenOption...)
      * @see #write(WritableByteChannel)
      */
-    default <T extends Path> T append(final T path) throws IOException {
+    default void append(final Path path) throws IOException {
         if (path == null) {
             throw new NullPointerException("path is null");
         }
-        return path;
+        // TODO: implement!
     }
 
     /**
