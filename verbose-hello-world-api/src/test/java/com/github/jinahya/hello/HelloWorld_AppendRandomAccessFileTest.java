@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 
 import static java.io.File.createTempFile;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.spy;
 
@@ -62,6 +63,8 @@ class HelloWorld_AppendRandomAccessFileTest extends HelloWorldTest {
     @Test
     void appendFile_InvokeSetArrayWriteArrayToFile_(final @TempDir File tempDir) throws IOException {
         try (RandomAccessFile file = spy(new RandomAccessFile(createTempFile("tmp", null, tempDir), "rw"))) { // <1>
+            assertEquals(0L, file.length());
+            assertEquals(0L, file.getFilePointer());
         }
     }
 }
