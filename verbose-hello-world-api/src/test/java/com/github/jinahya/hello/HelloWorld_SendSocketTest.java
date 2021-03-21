@@ -32,6 +32,8 @@ import java.io.OutputStream;
 import java.net.Socket;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.mockito.quality.Strictness.LENIENT;
 
 /**
@@ -63,5 +65,8 @@ class HelloWorld_SendSocketTest extends HelloWorldTest {
     @DisplayName("send(socket) invokes write(socket.outputStream)")
     @Test
     void sendSocket_InvokeWriteStreamWithSocketOutputStream_() throws IOException {
+        final Socket socket = mock(Socket.class);             // <1>
+        final OutputStream stream = mock(OutputStream.class); // <2>
+        when(socket.getOutputStream()).thenReturn(stream);    // <3>
     }
 }
