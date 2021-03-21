@@ -41,7 +41,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * A class for testing {@link HelloWorld#writeSync(AsynchronousByteChannel)} method.
+ * A class for testing {@link HelloWorld#write(AsynchronousByteChannel)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -49,17 +49,17 @@ import static org.mockito.Mockito.when;
 class HelloWorld_WriteSyncAsynchronousByteChannelTest extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#writeSync(AsynchronousByteChannel)} method throws a {@link NullPointerException} when
+     * Asserts {@link HelloWorld#write(AsynchronousByteChannel)} method throws a {@link NullPointerException} when
      * {@code channel} argument is {@code null}.
      */
     @DisplayName("writeSync(channel) throws NullPointerException when channel is null")
     @Test
     void writeSync_NullPointerException_ChannelIsNull() {
-        assertThrows(NullPointerException.class, () -> helloWorld.writeSync((AsynchronousByteChannel) null));
+        assertThrows(NullPointerException.class, () -> helloWorld.write((AsynchronousByteChannel) null));
     }
 
     /**
-     * Asserts {@link HelloWorld#writeSync(AsynchronousByteChannel)} invokes {@link HelloWorld#put(ByteBuffer)} and
+     * Asserts {@link HelloWorld#write(AsynchronousByteChannel)} invokes {@link HelloWorld#put(ByteBuffer)} and
      * writes the buffer to {@code channel}.
      *
      * @throws ExecutionException   if failed to work.
@@ -80,7 +80,7 @@ class HelloWorld_WriteSyncAsynchronousByteChannelTest extends HelloWorldTest {
             when(future.get()).thenReturn(written);
             return future;
         });
-        helloWorld.writeSync(channel);
+        helloWorld.write(channel);
         final ArgumentCaptor<ByteBuffer> bufferCaptor1 = ArgumentCaptor.forClass(ByteBuffer.class);
         verify(helloWorld, times(1)).put(bufferCaptor1.capture());
         final ByteBuffer buffer1 = bufferCaptor1.getValue();

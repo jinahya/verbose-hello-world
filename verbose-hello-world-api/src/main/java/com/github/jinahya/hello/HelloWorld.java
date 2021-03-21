@@ -26,6 +26,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
+import java.lang.reflect.InvocationTargetException;
 import java.net.Socket;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
@@ -36,6 +37,7 @@ import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 import static java.nio.ByteBuffer.allocate;
@@ -107,7 +109,7 @@ public interface HelloWorld {
      * @see #set(byte[])
      * @see OutputStream#write(byte[])
      */
-    default void write(final OutputStream stream) throws IOException {
+    default void writeAsync(final OutputStream stream) throws IOException {
         if (stream == null) {
             throw new NullPointerException("stream is null");
         }
@@ -121,9 +123,9 @@ public interface HelloWorld {
      * @throws NullPointerException if {@code file} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @implSpec The implementation in this class creates a {@link FileOutputStream} from {@code file} as append mode
-     * and invokes {@link #write(OutputStream)} method with the stream.
+     * and invokes {@link #writeAsync(OutputStream)} method with the stream.
      * @see java.io.FileOutputStream#FileOutputStream(File, boolean)
-     * @see #write(OutputStream)
+     * @see #writeAsync(OutputStream)
      */
     default void append(final File file) throws IOException {
         if (file == null) {
@@ -138,10 +140,10 @@ public interface HelloWorld {
      * @param socket the socket through which bytes are sent.
      * @throws NullPointerException if {@code socket} is {@code null}.
      * @throws IOException          if an I/O error occurs.
-     * @implSpec The implementation in this class invokes {@link #write(OutputStream)} method with {@link
+     * @implSpec The implementation in this class invokes {@link #writeAsync(OutputStream)} method with {@link
      * Socket#getOutputStream() socket.outputStream}.
      * @see Socket#getOutputStream()
-     * @see #write(OutputStream)
+     * @see #writeAsync(OutputStream)
      */
     default void send(final Socket socket) throws IOException {
         if (socket == null) {
@@ -162,7 +164,7 @@ public interface HelloWorld {
      * @see #set(byte[])
      * @see DataOutput#write(byte[])
      */
-    default void write(final DataOutput data) throws IOException {
+    default void writeAsync(final DataOutput data) throws IOException {
         if (data == null) {
             throw new NullPointerException("data is null");
         }
@@ -182,7 +184,7 @@ public interface HelloWorld {
      * @see #set(byte[])
      * @see RandomAccessFile#write(byte[])
      */
-    default void write(final RandomAccessFile file) throws IOException {
+    default void writeAsync(final RandomAccessFile file) throws IOException {
         if (file == null) {
             throw new NullPointerException("file is null");
         }
@@ -229,7 +231,7 @@ public interface HelloWorld {
      * @see #put(ByteBuffer)
      * @see WritableByteChannel#write(ByteBuffer)
      */
-    default void write(final WritableByteChannel channel) throws IOException {
+    default void writeAsync(final WritableByteChannel channel) throws IOException {
         if (channel == null) {
             throw new NullPointerException("channel is null");
         }
@@ -244,9 +246,9 @@ public interface HelloWorld {
      * @throws NullPointerException if {@code path} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @implSpec The implementation in this class opens a {@link FileChannel}, from specified path, as append mode and
-     * invokes {@link #write(WritableByteChannel)} method with it.
+     * invokes {@link #writeAsync(WritableByteChannel)} method with it.
      * @see FileChannel#open(Path, OpenOption...)
-     * @see #write(WritableByteChannel)
+     * @see #writeAsync(WritableByteChannel)
      */
     default void append(final Path path) throws IOException {
         if (path == null) {
@@ -266,8 +268,7 @@ public interface HelloWorld {
      * com.github.jinahya.hello.HelloWorld#BYTES} bytes and writes the buffer to specified channel using {@link
      * AsynchronousByteChannel#write(ByteBuffer)} method.
      */
-    default void writeSync(final AsynchronousByteChannel channel)
-            throws InterruptedException, ExecutionException {
+    default void write(final AsynchronousByteChannel channel) throws InterruptedException, ExecutionException {
         if (channel == null) {
             throw new NullPointerException("channel is null");
         }
@@ -278,12 +279,53 @@ public interface HelloWorld {
     }
 
     /**
-     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified channel.
+     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified channel using specified executor
+     * service.
      *
      * @param channel the channel to which bytes are written.
+     * @param service the executor service to which a task is submitted.
      * @return A future representing the result of the operation.
      */
-    default Future<Void> write(final AsynchronousByteChannel channel) {
+    @SuppressWarnings({"unchecked"})
+    default Future<Void> writeAsync(final AsynchronousByteChannel channel, final ExecutorService service) {
+        if (channel == null) {
+            throw new NullPointerException("channel is null");
+        }
+        if (service == null) {
+            throw new NullPointerException("service is null");
+        }
+        final Future<Void> future = service.submit(() -> {
+            write(channel);
+            return null;
+        });
+        return (Future<Void>) java.lang.reflect.Proxy.newProxyInstance(
+                future.getClass().getClassLoader(),
+                new Class<?>[] {Future.class},
+                (p, m, a) -> {
+                    try {
+                        return m.invoke(future, a);
+                    } catch (final InvocationTargetException ite) {
+                        final Throwable cause = ite.getCause();
+                        if (m.getDeclaringClass() == Future.class && m.getName().equals("get")) {
+                            if (cause instanceof ExecutionException) {
+                                final Throwable cause2 = cause.getCause();
+                                if (cause2 instanceof InterruptedException) {
+                                    throw (InterruptedException) cause2;
+                                }
+                            }
+                        }
+                        throw cause;
+                    }
+                });
+    }
+
+    /**
+     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified channel.
+     *
+     * @param channel the channel to which bytes are written.
+     * @return a completable future representing the result of the operation.
+     */
+    default CompletableFuture<Void> writeAsync(final AsynchronousByteChannel channel) {
         if (channel == null) {
             throw new NullPointerException("channel is null");
         }
@@ -291,24 +333,6 @@ public interface HelloWorld {
         put(buffer);
         buffer.flip();
         // TODO: implement!
-        return null;
-    }
-
-    /**
-     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified channel.
-     *
-     * @param channel the channel to which bytes are written.
-     * @param <T>     channel type parameter
-     * @return a completable future.
-     * @see #write(AsynchronousByteChannel)
-     */
-    default <T extends AsynchronousByteChannel> CompletableFuture<T> writeCompletable(final T channel) {
-        if (channel == null) {
-            throw new NullPointerException("channel is null");
-        }
-        final ByteBuffer buffer = allocate(BYTES);
-        put(buffer);
-        buffer.flip();
         return null;
     }
 }

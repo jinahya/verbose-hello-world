@@ -27,7 +27,6 @@ import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
 import java.nio.channels.WritableByteChannel;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static java.nio.file.Files.createTempFile;
@@ -53,7 +52,7 @@ class HelloWorld_AppendPathTest extends HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#append(Path)} method invokes {@link HelloWorld#write(WritableByteChannel)} method with
+     * Asserts {@link HelloWorld#append(Path)} method invokes {@link HelloWorld#writeAsync(WritableByteChannel)} method with
      * a channel and asserts {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes are appended to the {@code path}.
      *
      * @param tempDir a temporary directory to test with.

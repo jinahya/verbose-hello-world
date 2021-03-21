@@ -30,7 +30,7 @@ import java.io.OutputStream;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
- * A class for testing {@link HelloWorld#write(OutputStream)} method.
+ * A class for testing {@link HelloWorld#writeAsync(OutputStream)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -38,17 +38,17 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class HelloWorld_WriteOutputStreamTest extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#write(OutputStream) write(stream)} method throws a {@link NullPointerException} when
+     * Asserts {@link HelloWorld#writeAsync(OutputStream) write(stream)} method throws a {@link NullPointerException} when
      * {@code stream} argument is {@code null}.
      */
     @DisplayName("write(stream) throws NullPointerException when stream is null")
     @Test
     void writeStream_NullPointerException_StreamIsNull() {
-        assertThrows(NullPointerException.class, () -> helloWorld.write((OutputStream) null));
+        assertThrows(NullPointerException.class, () -> helloWorld.writeAsync((OutputStream) null));
     }
 
     /**
-     * Asserts {@link HelloWorld#write(OutputStream)} method invokes {@link HelloWorld#set(byte[])} method with an array
+     * Asserts {@link HelloWorld#writeAsync(OutputStream)} method invokes {@link HelloWorld#set(byte[])} method with an array
      * of {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and invokes {@link OutputStream#write(byte[])} method
      * on {@code stream} with the array.
      *

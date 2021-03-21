@@ -38,7 +38,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.quality.Strictness.LENIENT;
 
 /**
- * A class for unit-testing {@link HelloWorld} interface.
+ * A class for testing {@link HelloWorld#send(Socket)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -58,8 +58,8 @@ class HelloWorld_SendSocketTest extends HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#send(Socket)} method invokes the {@link HelloWorld#write(OutputStream)} method with
-     * what specified socket's {@link Socket#getOutputStream()} method returns.
+     * Asserts {@link HelloWorld#send(Socket)} method invokes the {@link HelloWorld#writeAsync(OutputStream)} method
+     * with what specified socket's {@link Socket#getOutputStream()} method returns.
      *
      * @throws IOException if an I/O error occurs.
      */

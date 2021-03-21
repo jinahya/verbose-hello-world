@@ -51,7 +51,7 @@ class HelloWorld_AppendFileTest extends HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#append(File)} method invokes {@link HelloWorld#write(OutputStream)} method.
+     * Asserts {@link HelloWorld#append(File)} method invokes {@link HelloWorld#writeAsync(OutputStream)} method.
      *
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.

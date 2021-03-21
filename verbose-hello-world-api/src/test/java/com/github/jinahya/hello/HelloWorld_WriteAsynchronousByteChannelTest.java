@@ -54,7 +54,7 @@ class HelloWorld_WriteAsynchronousByteChannelTest extends HelloWorldTest {
     @DisplayName("writeSync(channel) throws NullPointerException when channel is null")
     @Test
     void write_NullPointerException_ChannelIsNull() {
-        assertThrows(NullPointerException.class, () -> helloWorld.writeSync((AsynchronousByteChannel) null));
+        assertThrows(NullPointerException.class, () -> helloWorld.write((AsynchronousByteChannel) null));
     }
 
     /**
@@ -79,7 +79,7 @@ class HelloWorld_WriteAsynchronousByteChannelTest extends HelloWorldTest {
             when(future.get()).thenReturn(written);
             return future;
         });
-        helloWorld.writeSync(channel);
+        helloWorld.write(channel);
         final ArgumentCaptor<ByteBuffer> bufferCaptor1 = ArgumentCaptor.forClass(ByteBuffer.class);
         verify(helloWorld, times(1)).put(bufferCaptor1.capture());
         final ByteBuffer buffer1 = bufferCaptor1.getValue();
