@@ -21,27 +21,21 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import static org.mockito.quality.Strictness.LENIENT;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * A class for unit-testing {@link HelloWorld} interface.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@MockitoSettings(strictness = LENIENT)
-@ExtendWith({MockitoExtension.class})
 @Slf4j
 class HelloWorld_AppendFileTest extends HelloWorldTest {
 
@@ -52,7 +46,7 @@ class HelloWorld_AppendFileTest extends HelloWorldTest {
     @DisplayName("append(file) throws a NullPointerException when the file is null")
     @Test
     void appendFile_NullPointerException_FileIsNull() {
-        Assertions.assertThrows(NullPointerException.class, () -> helloWorld.append((File) null));
+        assertThrows(NullPointerException.class, () -> helloWorld.append((File) null));
     }
 
     /**
@@ -65,17 +59,6 @@ class HelloWorld_AppendFileTest extends HelloWorldTest {
     @Test
     void appendFile_InvokeWriteStream_(final @TempDir File tempDir) throws IOException {
         final File file = File.createTempFile("tmp", null, tempDir);
-    }
-
-    /**
-     * Asserts {@link HelloWorld#append(File)} method returns given file.
-     *
-     * @param tempDir a temporary directory to test with.
-     * @throws IOException if an I/O error occurs.
-     */
-    @DisplayName("append(file) returns given file")
-    @Test
-    void appendFile_ReturnFile_(final @TempDir File tempDir) throws IOException {
-        final File file = File.createTempFile("tmp", null, tempDir);
+        final long length = file.length();
     }
 }
