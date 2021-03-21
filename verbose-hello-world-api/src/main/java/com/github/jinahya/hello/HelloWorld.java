@@ -164,7 +164,7 @@ public interface HelloWorld {
      * @see #set(byte[])
      * @see DataOutput#write(byte[])
      */
-    default void writeAsync(final DataOutput data) throws IOException {
+    default void write(final DataOutput data) throws IOException {
         if (data == null) {
             throw new NullPointerException("data is null");
         }
@@ -184,7 +184,7 @@ public interface HelloWorld {
      * @see #set(byte[])
      * @see RandomAccessFile#write(byte[])
      */
-    default void writeAsync(final RandomAccessFile file) throws IOException {
+    default void write(final RandomAccessFile file) throws IOException {
         if (file == null) {
             throw new NullPointerException("file is null");
         }
@@ -231,7 +231,7 @@ public interface HelloWorld {
      * @see #put(ByteBuffer)
      * @see WritableByteChannel#write(ByteBuffer)
      */
-    default void writeAsync(final WritableByteChannel channel) throws IOException {
+    default void write(final WritableByteChannel channel) throws IOException {
         if (channel == null) {
             throw new NullPointerException("channel is null");
         }
@@ -246,9 +246,9 @@ public interface HelloWorld {
      * @throws NullPointerException if {@code path} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @implSpec The implementation in this class opens a {@link FileChannel}, from specified path, as append mode and
-     * invokes {@link #writeAsync(WritableByteChannel)} method with it.
+     * invokes {@link #write(WritableByteChannel)} method with it.
      * @see FileChannel#open(Path, OpenOption...)
-     * @see #writeAsync(WritableByteChannel)
+     * @see #write(WritableByteChannel)
      */
     default void append(final Path path) throws IOException {
         if (path == null) {

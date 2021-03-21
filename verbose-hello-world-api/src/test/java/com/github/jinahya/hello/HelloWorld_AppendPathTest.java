@@ -52,7 +52,7 @@ class HelloWorld_AppendPathTest extends HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#append(Path)} method invokes {@link HelloWorld#writeAsync(WritableByteChannel)} method with
+     * Asserts {@link HelloWorld#append(Path)} method invokes {@link HelloWorld#write(WritableByteChannel)} method with
      * a channel and asserts {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes are appended to the {@code path}.
      *
      * @param tempDir a temporary directory to test with.

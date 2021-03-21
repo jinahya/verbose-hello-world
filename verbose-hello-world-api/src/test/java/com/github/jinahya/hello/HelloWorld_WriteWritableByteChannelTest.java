@@ -36,7 +36,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * A class for testing {@link HelloWorld#writeAsync(WritableByteChannel)} method.
+ * A class for testing {@link HelloWorld#write(WritableByteChannel)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -44,17 +44,17 @@ import static org.mockito.Mockito.when;
 class HelloWorld_WriteWritableByteChannelTest extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#writeAsync(WritableByteChannel)} method throws a {@link NullPointerException} when {@code
+     * Asserts {@link HelloWorld#write(WritableByteChannel)} method throws a {@link NullPointerException} when {@code
      * channel} argument is {@code null}.
      */
     @DisplayName("write(channel) throws NullPointerException when channel is null")
     @Test
     void writeChannel_NullPointerException_ChannelIsNull() {
-        assertThrows(NullPointerException.class, () -> helloWorld.writeAsync((WritableByteChannel) null));
+        assertThrows(NullPointerException.class, () -> helloWorld.write((WritableByteChannel) null));
     }
 
     /**
-     * Asserts {@link HelloWorld#writeAsync(WritableByteChannel)} method invokes {@link HelloWorld#put(ByteBuffer)} method
+     * Asserts {@link HelloWorld#write(WritableByteChannel)} method invokes {@link HelloWorld#put(ByteBuffer)} method
      * with a byte buffer of {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and writes the buffer to specified
      * channel.
      *
