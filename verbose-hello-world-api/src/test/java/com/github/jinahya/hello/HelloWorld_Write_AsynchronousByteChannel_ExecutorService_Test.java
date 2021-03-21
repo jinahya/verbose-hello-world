@@ -49,7 +49,7 @@ import static org.mockito.Mockito.when;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorld_Write_AsynchronousByteChannel_ExecutorServiceTest extends HelloWorldTest {
+class HelloWorld_Write_AsynchronousByteChannel_ExecutorService_Test extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(AsynchronousByteChannel, ExecutorService)} method throws a {@link

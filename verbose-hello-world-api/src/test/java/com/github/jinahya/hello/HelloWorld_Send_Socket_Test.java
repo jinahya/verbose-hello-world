@@ -42,10 +42,8 @@ import static org.mockito.quality.Strictness.LENIENT;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@MockitoSettings(strictness = LENIENT)
-@ExtendWith({MockitoExtension.class})
 @Slf4j
-class HelloWorld_SendSocketTest extends HelloWorldTest {
+class HelloWorld_Send_Socket_Test extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#send(Socket)} method throws a {@link NullPointerException} when the {@code socket}

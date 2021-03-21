@@ -24,38 +24,37 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.io.DataOutput;
 import java.io.IOException;
-import java.io.OutputStream;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
- * A class for testing {@link HelloWorld#write(OutputStream)} method.
+ * A class for testing {@link HelloWorld#write(DataOutput)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorld_Write_OutputStreamTest extends HelloWorldTest {
+class HelloWorld_Write_DataOutput_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#write(OutputStream) write(stream)} method throws a {@link NullPointerException} when
-     * {@code stream} argument is {@code null}.
+     * Asserts {@link HelloWorld#write(DataOutput)} method throws a {@link NullPointerException} when {@code data}
+     * argument is {@code null}.
      */
-    @DisplayName("write(stream) throws NullPointerException when stream is null")
+    @DisplayName("write(data) method throws NullPointerException when data is null")
     @Test
-    void writeStream_NullPointerException_StreamIsNull() {
-        assertThrows(NullPointerException.class, () -> helloWorld.write((OutputStream) null));
+    void writeData_NullPointerException_DataIsNull() {
+        assertThrows(NullPointerException.class, () -> helloWorld.write((DataOutput) null));
     }
 
     /**
-     * Asserts {@link HelloWorld#write(OutputStream)} method invokes {@link HelloWorld#set(byte[])} method with an array
-     * of {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and invokes {@link OutputStream#write(byte[])} method
-     * on {@code stream} with the array.
+     * Asserts {@link HelloWorld#write(DataOutput)} method invokes {@link HelloWorld#set(byte[])} method with an array
+     * of {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and writes the array to specified data output.
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(stream) invokes set(byte[BYTES]) and writes the array to the stream")
+    @DisplayName("write(data) invokes set(array) and writes the array to data")
     @Test
-    void writeStream_InvokeSetArrayAndWriteArrayToStream_() throws IOException {
+    void writeData_InvokeSetArrayWriteArrayToData_() throws IOException {
     }
 }

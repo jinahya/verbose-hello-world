@@ -45,7 +45,7 @@ import static org.mockito.Mockito.when;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorld_Write_AsynchronousByteChannelTest extends HelloWorldTest {
+class HelloWorld_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(AsynchronousByteChannel)} method throws a {@link NullPointerException} when

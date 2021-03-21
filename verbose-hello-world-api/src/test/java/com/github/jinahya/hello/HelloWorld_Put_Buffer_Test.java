@@ -47,7 +47,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorld_Put_BufferTest extends HelloWorldTest {
+class HelloWorld_Put_Buffer_Test extends HelloWorldTest {
 
     /**
      * Returns a stream of byte buffers which each remaining is less than {@link HelloWorld#BYTES}.
