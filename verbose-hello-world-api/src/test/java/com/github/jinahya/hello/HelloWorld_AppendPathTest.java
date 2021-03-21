@@ -27,9 +27,9 @@ import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
 import java.nio.channels.WritableByteChannel;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
+import static java.nio.file.Files.createTempFile;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
@@ -60,6 +60,6 @@ class HelloWorld_AppendPathTest extends HelloWorldTest {
     @DisplayName("append(path) invokes write(channel)")
     @Test
     void appendPath_InvokeWriteChannel12BytesWritten_(final @TempDir Path tempDir) throws IOException {
-        final Path path = Files.createTempFile(tempDir, null, null);
+        final Path path = createTempFile(tempDir, null, null);
     }
 }
