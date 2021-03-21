@@ -34,6 +34,7 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
+import java.util.RandomAccess;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -169,16 +170,12 @@ public interface HelloWorld {
         // TODO: implement!
     }
 
-    // -----------------------------------------------------------------------------------------------------------------
-
     /**
      * Writes <a href="#hello-world-bytes">hello-world-bytes</a> starting at the current file pointer of specified
-     * random access file and returns the random access file.
+     * random access file.
      *
      * @param file the random access file to which bytes are written.
-     * @param <T>  random access file type parameter
-     * @return given {@code file}.
-     * @throws NullPointerException if {@code randomAccessFile} argument is {@code null}.
+     * @throws NullPointerException if {@code file} argument is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @implSpec The implementation in this class invokes {@link #set(byte[])} with an array of {@value
      * com.github.jinahya.hello.HelloWorld#BYTES} bytes and writes the array to specified random access file using
@@ -186,21 +183,17 @@ public interface HelloWorld {
      * @see #set(byte[])
      * @see RandomAccessFile#write(byte[])
      */
-    default <T extends RandomAccessFile> T write(final T file) throws IOException {
+    default void write(final RandomAccessFile file) throws IOException {
         if (file == null) {
             throw new NullPointerException("file is null");
         }
         // TODO: implement!
-        return file;
     }
 
     /**
-     * Appends <a href="#hello-world-bytes">hello-world-bytes</a> at the end of specified random access file and returns
-     * the random access file.
+     * Appends <a href="#hello-world-bytes">hello-world-bytes</a> at the end of specified random access file.
      *
-     * @param file the random access file to which bytes are written.
-     * @param <T>  random access file type parameter
-     * @return given {@code file}.
+     * @param file the random access file to which bytes are appended.
      * @throws NullPointerException if {@code file} argument is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @implSpec The implementation in this class {@link RandomAccessFile#seek(long) moves the file-pointer} to {@link
@@ -210,12 +203,11 @@ public interface HelloWorld {
      * @see RandomAccessFile#seek(long)
      * @see #write(RandomAccessFile)
      */
-    default <T extends RandomAccessFile> T append(final T file) throws IOException {
+    default void append(final RandomAccessFile file) throws IOException {
         if (file == null) {
             throw new NullPointerException("file is null");
         }
         // TODO: implement!
-        return file;
     }
 
     // -----------------------------------------------------------------------------------------------------------------

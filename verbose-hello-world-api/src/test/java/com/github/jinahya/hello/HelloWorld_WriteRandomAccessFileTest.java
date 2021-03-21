@@ -36,7 +36,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 
 /**
- * A class for unit-testing {@link HelloWorld} interface.
+ * A class for testing {@link HelloWorld#write(RandomAccessFile)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -66,23 +66,5 @@ class HelloWorld_WriteRandomAccessFileTest extends HelloWorldTest {
     void writeFile_InvokeSetArrayWriteArrayToFile_(final @TempDir File tempDir) throws IOException {
         try (RandomAccessFile file = spy(new RandomAccessFile(createTempFile("tmp", null, tempDir), "rw"))) {
         }
-    }
-
-    /**
-     * Asserts {@link HelloWorld#write(RandomAccessFile)} method returns specified {@code file}.
-     *
-     * @param tempDir a temporary directory to test with.
-     * @throws IOException if an I/O error occurs.
-     */
-    @DisplayName("write(file) returns file")
-    @Test
-    void writeFile_ReturnFile_(final @TempDir File tempDir) throws IOException {
-        try (RandomAccessFile expected = new RandomAccessFile(createTempFile("tmp", null, tempDir), "rw")) {
-            final RandomAccessFile actual = helloWorld.write(expected);
-            assertSame(expected, actual);
-        }
-        final RandomAccessFile expected = mock(RandomAccessFile.class);
-        final RandomAccessFile actual = helloWorld.write(expected);
-        assertSame(expected, actual);
     }
 }

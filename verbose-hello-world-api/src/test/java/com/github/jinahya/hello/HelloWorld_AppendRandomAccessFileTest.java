@@ -30,12 +30,11 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 
 import static java.io.File.createTempFile;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.spy;
 
 /**
- * A class for unit-testing {@link HelloWorld} interface.
+ * A class for testing {@link HelloWorld#append(RandomAccessFile)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -53,8 +52,8 @@ class HelloWorld_AppendRandomAccessFileTest extends HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#append(RandomAccessFile)} moves file pointer to the end of the file and invokes {@link
-     * HelloWorld#write(RandomAccessFile)} method.
+     * Asserts {@link HelloWorld#append(RandomAccessFile)} moves the file pointer to the end of the file and invokes
+     * {@link HelloWorld#write(RandomAccessFile)} method with specified {@code file} argument.
      *
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
@@ -63,21 +62,6 @@ class HelloWorld_AppendRandomAccessFileTest extends HelloWorldTest {
     @Test
     void appendFile_InvokeSetArrayWriteArrayToFile_(final @TempDir File tempDir) throws IOException {
         try (RandomAccessFile file = spy(new RandomAccessFile(createTempFile("tmp", null, tempDir), "rw"))) { // <1>
-        }
-    }
-
-    /**
-     * Asserts {@link HelloWorld#append(RandomAccessFile)} method returns given {@code file}.
-     *
-     * @param tempDir a temporary directory to test with.
-     * @throws IOException if an I/O error occurs.
-     */
-    @DisplayName("append(file) returns file")
-    @Test
-    void appendFile_ReturnFile_(final @TempDir File tempDir) throws IOException {
-        try (RandomAccessFile expected = new RandomAccessFile(createTempFile("tmp", null, tempDir), "rw")) {
-            final RandomAccessFile actual = helloWorld.append(expected);
-            assertSame(expected, actual);
         }
     }
 }
