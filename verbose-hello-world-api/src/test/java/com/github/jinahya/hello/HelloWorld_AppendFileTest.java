@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import static java.io.File.createTempFile;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
@@ -58,7 +59,7 @@ class HelloWorld_AppendFileTest extends HelloWorldTest {
     @DisplayName("append(file) invokes write(stream)")
     @Test
     void appendFile_InvokeWriteStream_(final @TempDir File tempDir) throws IOException {
-        final File file = File.createTempFile("tmp", null, tempDir);
+        final File file = createTempFile("tmp", null, tempDir);
         final long length = file.length();
     }
 }
