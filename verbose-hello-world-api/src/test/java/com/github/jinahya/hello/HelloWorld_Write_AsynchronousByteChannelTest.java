@@ -32,7 +32,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.LongAdder;
 
 import static java.util.concurrent.ThreadLocalRandom.current;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -46,7 +45,7 @@ import static org.mockito.Mockito.when;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorld_WriteSyncAsynchronousByteChannelTest extends HelloWorldTest {
+class HelloWorld_Write_AsynchronousByteChannelTest extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(AsynchronousByteChannel)} method throws a {@link NullPointerException} when
@@ -54,27 +53,27 @@ class HelloWorld_WriteSyncAsynchronousByteChannelTest extends HelloWorldTest {
      */
     @DisplayName("writeSync(channel) throws NullPointerException when channel is null")
     @Test
-    void writeSync_NullPointerException_ChannelIsNull() {
+    void write_NullPointerException_ChannelIsNull() {
         assertThrows(NullPointerException.class, () -> helloWorld.write((AsynchronousByteChannel) null));
     }
 
     /**
-     * Asserts {@link HelloWorld#write(AsynchronousByteChannel)} invokes {@link HelloWorld#put(ByteBuffer)} and
-     * writes the buffer to {@code channel}.
+     * Asserts {@link HelloWorld#write(AsynchronousByteChannel)} invokes {@link HelloWorld#put(ByteBuffer)} and writes
+     * the buffer to {@code channel}.
      *
      * @throws ExecutionException   if failed to work.
      * @throws InterruptedException if interrupted while executing.
      */
     @DisplayName("writeSync(channel) invokes put(buffer) writes the buffer to channel")
     @Test
-    void writeSync_InvokePutBufferWriteBufferToChannel_() throws ExecutionException, InterruptedException {
+    void write_InvokePutBufferWriteBufferToChannel_() throws ExecutionException, InterruptedException {
         final AsynchronousByteChannel channel = mock(AsynchronousByteChannel.class);
-        final LongAdder writtenSoFar = new LongAdder();
+        final LongAdder writtenAdder = new LongAdder();
         when(channel.write(any(ByteBuffer.class))).thenAnswer(i -> {
             final ByteBuffer buffer = i.getArgument(0, ByteBuffer.class);
             final int written = current().nextInt(0, buffer.remaining() + 1);
             buffer.position(buffer.position() + written);
-            writtenSoFar.add(written);
+            writtenAdder.add(written);
             @SuppressWarnings({"unchecked"})
             final Future<Integer> future = mock(Future.class);
             when(future.get()).thenReturn(written);

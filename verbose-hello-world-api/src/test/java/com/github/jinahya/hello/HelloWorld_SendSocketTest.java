@@ -58,7 +58,7 @@ class HelloWorld_SendSocketTest extends HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#send(Socket)} method invokes the {@link HelloWorld#writeAsync(OutputStream)} method
+     * Asserts {@link HelloWorld#send(Socket)} method invokes the {@link HelloWorld#write(OutputStream)} method
      * with what specified socket's {@link Socket#getOutputStream()} method returns.
      *
      * @throws IOException if an I/O error occurs.

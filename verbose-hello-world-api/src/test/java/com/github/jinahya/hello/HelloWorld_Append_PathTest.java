@@ -25,41 +25,43 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.nio.channels.WritableByteChannel;
+import java.nio.file.Path;
 
-import static java.io.File.createTempFile;
+import static java.nio.file.Files.createTempFile;
+import static java.nio.file.Files.size;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
- * A class for unit-testing {@link HelloWorld} interface.
+ * A class for testing {@link HelloWorld#append(Path)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorld_AppendFileTest extends HelloWorldTest {
+class HelloWorld_Append_PathTest extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#append(File)} method throws a {@link NullPointerException} when {@code file} argument
-     * is {@code null}.
+     * Asserts {@link HelloWorld#append(Path)} method throws a {@link NullPointerException} when the {@code path}
+     * argument is {@code null}.
      */
-    @DisplayName("append(file) throws a NullPointerException when the file is null")
+    @DisplayName("append(path) throws NullPointerException when path is null")
     @Test
-    void appendFile_NullPointerException_FileIsNull() {
-        assertThrows(NullPointerException.class, () -> helloWorld.append((File) null));
+    void appendPath_NullPointerException_PathIsNull() {
+        assertThrows(NullPointerException.class, () -> helloWorld.append((Path) null));
     }
 
     /**
-     * Asserts {@link HelloWorld#append(File)} method invokes {@link HelloWorld#writeAsync(OutputStream)} method.
+     * Asserts {@link HelloWorld#append(Path)} method invokes {@link HelloWorld#write(WritableByteChannel)} method with
+     * a channel and asserts {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes are appended to the {@code path}.
      *
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("append(file) invokes write(stream)")
+    @DisplayName("append(path) invokes write(channel)")
     @Test
-    void appendFile_InvokeWriteStream_(final @TempDir File tempDir) throws IOException {
-        final File file = createTempFile("tmp", null, tempDir);
-        final long length = file.length();
+    void appendPath_InvokeWriteChannel12BytesWritten_(final @TempDir Path tempDir) throws IOException {
+        final Path path = createTempFile(tempDir, null, null);
+        final long size = size(path);
     }
 }
