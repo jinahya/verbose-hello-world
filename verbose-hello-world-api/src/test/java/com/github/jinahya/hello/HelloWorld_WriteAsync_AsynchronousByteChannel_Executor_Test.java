@@ -48,7 +48,7 @@ import static org.mockito.Mockito.mock;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorld_WriteAsync_AsynchronousByteChannelExecutorTest extends HelloWorldTest {
+class HelloWorld_WriteAsync_AsynchronousByteChannel_Executor_Test extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#writeAsync(AsynchronousByteChannel, Executor)} method throws a {@link
