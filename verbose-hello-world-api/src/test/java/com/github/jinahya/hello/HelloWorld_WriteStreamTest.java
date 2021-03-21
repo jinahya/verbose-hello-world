@@ -31,6 +31,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.quality.Strictness.LENIENT;
 
 /**
@@ -50,7 +51,7 @@ class HelloWorld_WriteStreamTest extends HelloWorldTest {
     @DisplayName("write(stream) throws NullPointerException when stream is null")
     @Test
     void writeStream_NullPointerException_StreamIsNull() {
-        Assertions.assertThrows(NullPointerException.class, () -> helloWorld.write((OutputStream) null));
+        assertThrows(NullPointerException.class, () -> helloWorld.write((OutputStream) null));
     }
 
     /**
