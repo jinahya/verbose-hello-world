@@ -34,7 +34,6 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
-import java.util.RandomAccess;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -221,22 +220,8 @@ public interface HelloWorld {
 
     /**
      * Writes <a href="#hello-world-bytes">hello-world-bytes</a> to specified channel.
-     * <p>
-     * This method invokes {@link #put(ByteBuffer)} method with a newly allocated byte buffer of {@value
-     * com.github.jinahya.hello.HelloWorld#BYTES} bytes and, {@link ByteBuffer#flip() flips} it, writes all remaining
-     * bytes in the buffer to specified channel using {@link WritableByteChannel#write(ByteBuffer)} method.
-     * <blockquote><pre>{@code
-     * ByteBuffer buffer = ByteBuffer.allocate(BYTES); // position = 0, limit,capacity = 12
-     * put(buffer); // position -> 12
-     * buffer.flip(); // limit -> 12(position), position -> 0
-     * while (buffer.hasRemaining()) { // not all remaining bytes may be written at once
-     *     channel.write(buffer);
-     * }
-     * }</pre></blockquote>
      *
      * @param channel the channel to which bytes are written.
-     * @param <T>     channel type parameter
-     * @return given {@code channel}.
      * @throws NullPointerException if {@code channel} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @implSpec The implementation in this class invokes {@link #put(ByteBuffer)} with a buffer of {@value
@@ -244,11 +229,11 @@ public interface HelloWorld {
      * @see #put(ByteBuffer)
      * @see WritableByteChannel#write(ByteBuffer)
      */
-    default <T extends WritableByteChannel> T write(final T channel) throws IOException {
+    default void write(final WritableByteChannel channel) throws IOException {
         if (channel == null) {
             throw new NullPointerException("channel is null");
         }
-        return channel;
+        // TODO: implement!
     }
 
     /**

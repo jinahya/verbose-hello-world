@@ -27,20 +27,21 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
+import java.util.concurrent.atomic.LongAdder;
 
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * A class for unit-testing {@link HelloWorld} interface.
+ * A class for testing {@link HelloWorld#write(WritableByteChannel)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorld_WriteChannelTest extends HelloWorldTest {
+class HelloWorld_WriteWritableByteChannelTest extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(WritableByteChannel)} method throws a {@link NullPointerException} when {@code
@@ -62,24 +63,14 @@ class HelloWorld_WriteChannelTest extends HelloWorldTest {
     @DisplayName("write(channel) invokes put(buffer) and writes the buffer to the channel")
     @Test
     void writeChannel_InvokePutBufferWriteBufferToChannel_() throws IOException {
-    }
-
-    /**
-     * Asserts {@link HelloWorld#write(WritableByteChannel)} method returns given channel.
-     *
-     * @throws IOException if an I/O error occurs.
-     */
-    @DisplayName("write(channel) returns channel")
-    @Test
-    void writeChannel_ReturnChannel_() throws IOException {
-        final WritableByteChannel expected = mock(WritableByteChannel.class);
-        when(expected.write(any(ByteBuffer.class))).thenAnswer(i -> {
+        final WritableByteChannel channel = mock(WritableByteChannel.class); // <1>
+        final LongAdder writtenSoFar = new LongAdder();                      // <2>
+        when(channel.write(any(ByteBuffer.class))).thenAnswer(i -> {         // <3>
             final ByteBuffer buffer = i.getArgument(0, ByteBuffer.class);
-            final int written = buffer.remaining();
-            buffer.position(buffer.limit());
+            final int written = current().nextInt(0, buffer.remaining() + 1);
+            writtenSoFar.add(written);
+            buffer.position(buffer.position() + written);
             return written;
         });
-        final WritableByteChannel actual = helloWorld.write(expected);
-        assertSame(expected, actual);
     }
 }
