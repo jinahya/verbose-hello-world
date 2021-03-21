@@ -24,28 +24,29 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.Mockito;
 
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static java.nio.ByteBuffer.allocate;
+import static java.nio.ByteBuffer.allocateDirect;
+import static java.nio.ByteBuffer.wrap;
 import static java.util.concurrent.ThreadLocalRandom.current;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.quality.Strictness.LENIENT;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * A class for unit-testing {@link HelloWorld} interface.
+ * A class for testing {@link HelloWorld#put(ByteBuffer)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@MockitoSettings(strictness = LENIENT)
-@ExtendWith({MockitoExtension.class})
 @Slf4j
 class HelloWorld_PutBufferTest extends HelloWorldTest {
 
@@ -56,11 +57,11 @@ class HelloWorld_PutBufferTest extends HelloWorldTest {
      */
     private static Stream<ByteBuffer> buffersOfNotEnoughRemaining() {
         return Stream
-                .of(ByteBuffer.wrap(new byte[current().nextInt(HelloWorld.BYTES)]),
-                    ByteBuffer.allocate(current().nextInt(HelloWorld.BYTES)),
-                    ByteBuffer.allocateDirect(current().nextInt(HelloWorld.BYTES)))
+                .of(wrap(new byte[current().nextInt(HelloWorld.BYTES)]),
+                    allocate(current().nextInt(HelloWorld.BYTES)),
+                    allocateDirect(current().nextInt(HelloWorld.BYTES)))
                 .peek(b -> {
-                    Assertions.assertTrue(b.remaining() < HelloWorld.BYTES);
+                    assertTrue(b.remaining() < HelloWorld.BYTES);
                 });
     }
 
@@ -76,20 +77,21 @@ class HelloWorld_PutBufferTest extends HelloWorldTest {
                         final byte[] array = new byte[HelloWorld.BYTES * 3];
                         final int offset = current().nextInt(HelloWorld.BYTES);
                         final int length = current().nextInt(HelloWorld.BYTES, array.length - offset);
-                        return ByteBuffer.wrap(array, offset, length);
+                        return wrap(array, offset, length);
                     } else {
-                        final ByteBuffer buffer = ByteBuffer.allocate(HelloWorld.BYTES * 3);
-                        Assertions.assertEquals(0, buffer.position());
-                        Assertions.assertEquals(buffer.capacity(), buffer.limit());
+                        final ByteBuffer buffer = allocate(HelloWorld.BYTES * 3);
+                        assertEquals(0, buffer.position());
+                        assertEquals(buffer.capacity(), buffer.limit());
                         buffer.position(current().nextInt(HelloWorld.BYTES));
                         buffer.limit(current().nextInt(buffer.position() + HelloWorld.BYTES, buffer.limit()));
                         return buffer;
                     }
                 })
                 .peek(b -> {
-                    Assertions.assertTrue(b.remaining() >= HelloWorld.BYTES);
-                    Assertions.assertTrue(b.hasArray());
-                });
+                    assertTrue(b.remaining() >= HelloWorld.BYTES);
+                    assertTrue(b.hasArray());
+                })
+                .map(Mockito::spy);
     }
 
     /**
@@ -100,18 +102,19 @@ class HelloWorld_PutBufferTest extends HelloWorldTest {
     private static Stream<ByteBuffer> buffersHasNoBackingArray() {
         return IntStream.range(0, 8)
                 .mapToObj(i -> {
-                    final ByteBuffer buffer = ByteBuffer.allocateDirect(HelloWorld.BYTES * 3);
-                    Assertions.assertEquals(0, buffer.position());
-                    Assertions.assertEquals(buffer.capacity(), buffer.limit());
-                    Assertions.assertTrue(buffer.remaining() >= HelloWorld.BYTES);
+                    final ByteBuffer buffer = allocateDirect(HelloWorld.BYTES * 3);
+                    assertEquals(0, buffer.position());
+                    assertEquals(buffer.capacity(), buffer.limit());
+                    assertTrue(buffer.remaining() >= HelloWorld.BYTES);
                     buffer.position(current().nextInt(HelloWorld.BYTES));
                     buffer.limit(current().nextInt(buffer.position() + HelloWorld.BYTES, buffer.limit()));
                     return buffer;
                 })
                 .peek(b -> {
-                    Assertions.assertTrue(b.remaining() >= HelloWorld.BYTES);
-                    Assertions.assertFalse(b.hasArray());
-                });
+                    assertTrue(b.remaining() >= HelloWorld.BYTES);
+                    assertFalse(b.hasArray());
+                })
+                .map(Mockito::spy);
     }
 
     /**
@@ -133,6 +136,7 @@ class HelloWorld_PutBufferTest extends HelloWorldTest {
     @MethodSource({"buffersOfNotEnoughRemaining"})
     @ParameterizedTest
     void putBuffer_BufferOverflowException_BufferRemainingIsNotEnough(final ByteBuffer buffer) {
+        assertThrows(BufferOverflowException.class, () -> helloWorld.put(buffer));
     }
 
     /**
@@ -140,11 +144,15 @@ class HelloWorld_PutBufferTest extends HelloWorldTest {
      * ByteBuffer#hasArray() backing array}, invokes {@link HelloWorld#set(byte[], int) set(buffer.array,
      * buffer.arrayOffset + buffer.position)} and increments the {@link ByteBuffer#position(int) buffer.position} by
      * {@value HelloWorld#BYTES}.
+     *
+     * @param buffer a spied byte buffer.
      */
-    @DisplayName("put(buffer-with-backing-array) invokes set(buffer.array, buffer.arrayOffset + buffer.position)")
+    @DisplayName("put(buffer-with-backing-array) invokes set(array, index) and increments position")
     @MethodSource({"buffersHasBackingArray"})
     @ParameterizedTest
-    void putBuffer_InvokeSetArrayWithIndexAndIncrementPosition_BufferHasBackingArray(ByteBuffer buffer) {
+    void putBuffer_InvokeSetArrayWithIndexAndIncrementPosition_BufferHasBackingArray(final ByteBuffer buffer) {
+        assert buffer.remaining() >= HelloWorld.BYTES;
+        assert buffer.hasArray();
     }
 
     /**
@@ -156,28 +164,8 @@ class HelloWorld_PutBufferTest extends HelloWorldTest {
     @DisplayName("put(buffer-with-no-backing-array) invokes set(array) and put the array to the buffer")
     @MethodSource({"buffersHasNoBackingArray"})
     @ParameterizedTest
-    void putBuffer_InvokeSetArrayPutArrayToBuffer_BufferHasNoBackingArray(ByteBuffer buffer) {
-    }
-
-    /**
-     * Asserts {@link HelloWorld#put(ByteBuffer)} method returns given buffer when the buffer has a backing array.
-     */
-    @DisplayName("put(buffer-with-backing-array) returns buffer")
-    @MethodSource({"buffersHasBackingArray"})
-    @ParameterizedTest
-    void putBuffer_ReturnBuffer_BufferHasBackingArray(final ByteBuffer expected) {
-        final ByteBuffer actual = helloWorld.put(expected);
-        Assertions.assertSame(expected, actual);
-    }
-
-    /**
-     * Asserts {@link HelloWorld#put(ByteBuffer)} method returns given buffer when the buffer has no backing array.
-     */
-    @DisplayName("put(buffer with no backing array) returns specified buffer")
-    @MethodSource({"buffersHasBackingArray"})
-    @ParameterizedTest
-    void putBuffer_ReturnBuffer_BufferHasNoBackingArray(final ByteBuffer expected) {
-        final ByteBuffer actual = helloWorld.put(expected);
-        Assertions.assertSame(expected, actual);
+    void putBuffer_InvokeSetArrayPutArrayToBuffer_BufferHasNoBackingArray(final ByteBuffer buffer) {
+        assert buffer.remaining() >= HelloWorld.BYTES;
+        assert !buffer.hasArray();
     }
 }

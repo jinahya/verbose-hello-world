@@ -195,8 +195,6 @@ public interface HelloWorld {
      * successful return, is incremented by {@value com.github.jinahya.hello.HelloWorld#BYTES}.
      *
      * @param buffer the byte buffer on which bytes are put.
-     * @param <T>    byte buffer type parameter
-     * @return given {@code buffer}.
      * @throws NullPointerException    if {@code buffer} is {@code null}.
      * @throws BufferOverflowException if {@link ByteBuffer#remaining() buffer.remaining} is less than {@value
      *                                 com.github.jinahya.hello.HelloWorld#BYTES}.
@@ -211,11 +209,14 @@ public interface HelloWorld {
      * @see #set(byte[])
      * @see ByteBuffer#put(byte[])
      */
-    default <T extends ByteBuffer> T put(final T buffer) {
+    default void put(final ByteBuffer buffer) {
         if (buffer == null) {
             throw new NullPointerException("buffer is null");
         }
-        return buffer;
+        if (buffer.remaining() < BYTES) {
+            throw new BufferOverflowException();
+        }
+        // TODO: implement!
     }
 
     /**
