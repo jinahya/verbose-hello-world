@@ -65,7 +65,6 @@ class HelloWorld_WriteRandomAccessFileTest extends HelloWorldTest {
         try (RandomAccessFile file = spy(new RandomAccessFile(createTempFile("tmp", null, tempDir), "rw"))) {
             assert file.length() == 0L;
             assert file.getFilePointer() == 0L;
-            final long length = file.length();
         }
     }
 }
