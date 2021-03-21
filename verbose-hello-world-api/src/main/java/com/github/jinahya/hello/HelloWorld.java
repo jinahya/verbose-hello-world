@@ -325,15 +325,11 @@ public interface HelloWorld {
      * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified channel.
      *
      * @param channel the channel to which bytes are written.
-     * @param executor an executor for running a task.
      * @return a completable future representing the result of the operation.
      */
-    default CompletableFuture<Void> writeAsync(final AsynchronousByteChannel channel, final Executor executor) {
+    default CompletableFuture<Void> writeAsync(final AsynchronousByteChannel channel) {
         if (channel == null) {
             throw new NullPointerException("channel is null");
-        }
-        if (executor == null) {
-            throw new NullPointerException("executor is null");
         }
         final ByteBuffer buffer = allocate(BYTES);
         put(buffer);

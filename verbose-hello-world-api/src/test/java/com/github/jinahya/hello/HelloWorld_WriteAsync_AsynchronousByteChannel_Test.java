@@ -43,41 +43,31 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 
 /**
- * A class for testing {@link HelloWorld#writeAsync(AsynchronousByteChannel, Executor)} method.
+ * A class for testing {@link HelloWorld#writeAsync(AsynchronousByteChannel)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorld_WriteAsync_AsynchronousByteChannel_Executor_Test extends HelloWorldTest {
+class HelloWorld_WriteAsync_AsynchronousByteChannel_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#writeAsync(AsynchronousByteChannel, Executor)} method throws a {@link
+     * Asserts {@link HelloWorld#writeAsync(AsynchronousByteChannel)} method throws a {@link
      * NullPointerException} when {@code channel} argument is {@code null}.
      */
-    @DisplayName("writeAsync(channel, executor) throws NullPointerException when channel is null")
+    @DisplayName("writeAsync(channel) throws NullPointerException when channel is null")
     @Test
     void writeAsync_NullPointerException_ChannelIsNull() {
         assertThrows(NullPointerException.class, () -> helloWorld.write((AsynchronousByteChannel) null));
     }
 
     /**
-     * Asserts {@link HelloWorld#writeAsync(AsynchronousByteChannel, Executor)} method throws a {@link
-     * NullPointerException} when {@code channel} argument is {@code null}.
-     */
-    @DisplayName("writeAsync(channel, executor) throws NullPointerException when executor is null")
-    @Test
-    void writeAsync_NullPointerException_ExecutorIsNull() {
-        assertThrows(NullPointerException.class, () -> helloWorld.write((AsynchronousByteChannel) null));
-    }
-
-    /**
-     * Asserts {@link HelloWorld#writeAsync(AsynchronousByteChannel, Executor)} method invokes {@link
+     * Asserts {@link HelloWorld#writeAsync(AsynchronousByteChannel)} method invokes {@link
      * HelloWorld#put(ByteBuffer)} and writes the buffer to {@code channel}.
      *
      * @throws ExecutionException   if failed to work.
      * @throws InterruptedException if interrupted while executing.
      */
-    @DisplayName("writeAsync(channel, executor) invokes put(buffer) writes the buffer to channel")
+    @DisplayName("writeAsync(channel) invokes put(buffer) writes the buffer to channel")
     @Test
     @SuppressWarnings({"unchecked"})
     void writeAsync_InvokePutBufferWriteBufferToChannel_() throws ExecutionException, InterruptedException {
