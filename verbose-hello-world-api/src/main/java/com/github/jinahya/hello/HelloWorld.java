@@ -256,18 +256,17 @@ public interface HelloWorld {
     }
 
     /**
-     * Writes, synchronously, the <a href="#hello-world-bytes">hello-world-bytes</a> to specified channel.
+     * Writes, synchronously, the <a href="#hello-world-bytes">hello-world-bytes</a> to specified asynchronous byte
+     * channel.
      *
-     * @param channel the channel to which bytes are written.
-     * @param <T>     channel type parameter
-     * @return A future representing the result of the operation.
+     * @param channel the asynchronous byte channel to which bytes are written.
      * @throws InterruptedException if interrupted while working.
      * @throws ExecutionException   if failed to execute.
      * @implSpec The implementation in this class invokes {@link #put(ByteBuffer)} method with a byte buffer of {@value
      * com.github.jinahya.hello.HelloWorld#BYTES} bytes and writes the buffer to specified channel using {@link
      * AsynchronousByteChannel#write(ByteBuffer)} method.
      */
-    default <T extends AsynchronousByteChannel> T writeSync(final T channel)
+    default void writeSync(final AsynchronousByteChannel channel)
             throws InterruptedException, ExecutionException {
         if (channel == null) {
             throw new NullPointerException("channel is null");
@@ -276,7 +275,6 @@ public interface HelloWorld {
         put(buffer);
         buffer.flip();
         // TODO: implement!
-        return channel;
     }
 
     /**

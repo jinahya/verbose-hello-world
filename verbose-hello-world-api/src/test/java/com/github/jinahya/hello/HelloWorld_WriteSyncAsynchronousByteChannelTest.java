@@ -69,12 +69,12 @@ class HelloWorld_WriteSyncAsynchronousByteChannelTest extends HelloWorldTest {
     @Test
     void writeSync_InvokePutBufferWriteBufferToChannel_() throws ExecutionException, InterruptedException {
         final AsynchronousByteChannel channel = mock(AsynchronousByteChannel.class);
-        final LongAdder writtenAdder = new LongAdder();
+        final LongAdder writtenSoFar = new LongAdder();
         when(channel.write(any(ByteBuffer.class))).thenAnswer(i -> {
             final ByteBuffer buffer = i.getArgument(0, ByteBuffer.class);
             final int written = current().nextInt(0, buffer.remaining() + 1);
             buffer.position(buffer.position() + written);
-            writtenAdder.add(written);
+            writtenSoFar.add(written);
             @SuppressWarnings({"unchecked"})
             final Future<Integer> future = mock(Future.class);
             when(future.get()).thenReturn(written);
@@ -84,19 +84,5 @@ class HelloWorld_WriteSyncAsynchronousByteChannelTest extends HelloWorldTest {
         final ArgumentCaptor<ByteBuffer> bufferCaptor1 = ArgumentCaptor.forClass(ByteBuffer.class);
         verify(helloWorld, times(1)).put(bufferCaptor1.capture());
         final ByteBuffer buffer1 = bufferCaptor1.getValue();
-    }
-
-    /**
-     * Asserts {@link HelloWorld#writeSync(AsynchronousByteChannel)} return given {@code channel}.
-     *
-     * @throws ExecutionException   if failed to work.
-     * @throws InterruptedException if interrupted while executing.
-     */
-    @DisplayName("writeSync(channel) returns channel")
-    @Test
-    void writeSync_ReturnChannel_() throws ExecutionException, InterruptedException {
-        final AsynchronousByteChannel expected = mock(AsynchronousByteChannel.class);
-        final AsynchronousByteChannel actual = helloWorld.writeSync(expected);
-        assertSame(expected, actual);
     }
 }
