@@ -65,6 +65,7 @@ class HelloWorld_AppendRandomAccessFileTest extends HelloWorldTest {
             assert file.length() == 0L;
             assert file.getFilePointer() == 0L;
             final long length = file.length();
+            final long filePointer = file.getFilePointer();
         }
     }
 }
