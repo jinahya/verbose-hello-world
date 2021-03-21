@@ -52,7 +52,7 @@ import static org.mockito.Mockito.when;
 class HelloWorld_WriteAsyncAsynchronousByteChannelExecutorServiceTest extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#writeAsync(AsynchronousByteChannel, ExecutorService)} throws a {@link
+     * Asserts {@link HelloWorld#writeAsync(AsynchronousByteChannel, ExecutorService)} method throws a {@link
      * NullPointerException} when {@code channel} argument is {@code null}.
      */
     @DisplayName("writeSync(channel, service) throws NullPointerException when channel is null")
@@ -74,8 +74,8 @@ class HelloWorld_WriteAsyncAsynchronousByteChannelExecutorServiceTest extends He
     }
 
     /**
-     * Asserts {@link HelloWorld#write(AsynchronousByteChannel)} invokes {@link HelloWorld#put(ByteBuffer)} and
-     * writes the buffer to {@code channel}.
+     * Asserts {@link HelloWorld#write(AsynchronousByteChannel)} invokes {@link HelloWorld#put(ByteBuffer)} and writes
+     * the buffer to {@code channel}.
      *
      * @throws ExecutionException   if failed to work.
      * @throws InterruptedException if interrupted while executing.
