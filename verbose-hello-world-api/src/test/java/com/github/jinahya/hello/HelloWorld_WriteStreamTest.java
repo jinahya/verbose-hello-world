@@ -35,12 +35,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.quality.Strictness.LENIENT;
 
 /**
- * A class for unit-testing {@link HelloWorld} interface.
+ * A class for testing {@link HelloWorld#write(OutputStream)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@MockitoSettings(strictness = LENIENT)
-@ExtendWith({MockitoExtension.class})
 @Slf4j
 class HelloWorld_WriteStreamTest extends HelloWorldTest {
 
