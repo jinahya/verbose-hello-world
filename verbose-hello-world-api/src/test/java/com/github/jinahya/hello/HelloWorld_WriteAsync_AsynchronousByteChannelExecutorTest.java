@@ -48,7 +48,7 @@ import static org.mockito.Mockito.mock;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorld_WriteAsync_AsynchronousByteChannelTest extends HelloWorldTest {
+class HelloWorld_WriteAsync_AsynchronousByteChannelExecutorTest extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#writeAsync(AsynchronousByteChannel, Executor)} method throws a {@link
@@ -96,10 +96,5 @@ class HelloWorld_WriteAsync_AsynchronousByteChannelTest extends HelloWorldTest {
         })
                 .when(channel)
                 .write(any(ByteBuffer.class), any(), any(CompletionHandler.class));
-//        final CompletableFuture<Void> future = helloWorld.writeAsync(channel, ForkJoinPool.commonPool());
-//        assertNotNull(future);
-//        final Void got = future.get();
-//        assertNull(got);
-//        assertEquals(HelloWorld.BYTES, writtenSoFar.sum());
     }
 }
