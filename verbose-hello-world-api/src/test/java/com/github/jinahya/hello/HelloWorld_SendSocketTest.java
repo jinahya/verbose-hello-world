@@ -32,9 +32,9 @@ import java.io.OutputStream;
 import java.net.Socket;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
 import static org.mockito.quality.Strictness.LENIENT;
 
 /**
@@ -68,6 +68,6 @@ class HelloWorld_SendSocketTest extends HelloWorldTest {
     void sendSocket_InvokeWriteStreamWithSocketOutputStream_() throws IOException {
         final Socket socket = spy(new Socket());              // <1>
         final OutputStream stream = mock(OutputStream.class); // <2>
-        when(socket.getOutputStream()).thenReturn(stream);    // <3>
+        doReturn(stream).when(socket).getOutputStream();      // <3>
     }
 }
