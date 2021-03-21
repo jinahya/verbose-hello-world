@@ -191,28 +191,6 @@ public interface HelloWorld {
     }
 
     /**
-     * Appends <a href="#hello-world-bytes">hello-world-bytes</a> at the end of specified random access file.
-     *
-     * @param file the random access file to which bytes are appended.
-     * @throws NullPointerException if {@code file} argument is {@code null}.
-     * @throws IOException          if an I/O error occurs.
-     * @implSpec The implementation in this class {@link RandomAccessFile#seek(long) moves the file-pointer} to {@link
-     * RandomAccessFile#length() the end} of specified random access file and invokes {@link #write(RandomAccessFile)}
-     * method with the file.
-     * @see RandomAccessFile#length()
-     * @see RandomAccessFile#seek(long)
-     * @see #write(RandomAccessFile)
-     */
-    default void append(final RandomAccessFile file) throws IOException {
-        if (file == null) {
-            throw new NullPointerException("file is null");
-        }
-        // TODO: implement!
-    }
-
-    // -----------------------------------------------------------------------------------------------------------------
-
-    /**
      * Puts <a href="#hello-world-bytes">hello-world-bytes</a> on specified byte buffer. The buffer's position, on
      * successful return, is incremented by {@value com.github.jinahya.hello.HelloWorld#BYTES}.
      *
