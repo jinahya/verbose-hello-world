@@ -30,17 +30,17 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.AsynchronousFileChannel;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.ExecutionException;
 
 import static java.nio.channels.AsynchronousFileChannel.open;
 import static java.nio.file.Files.createTempFile;
 import static java.nio.file.Files.size;
-import static java.nio.file.StandardOpenOption.APPEND;
 import static java.nio.file.StandardOpenOption.WRITE;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentCaptor.forClass;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -59,8 +59,20 @@ class HelloWorld_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
      */
     @DisplayName("write(channel, position) throws NullPointerException when channel is null")
     @Test
-    void append_NullPointerException_ChannelIsNull() {
+    void write_NullPointerException_ChannelIsNull() {
         assertThrows(NullPointerException.class, () -> helloWorld.write((AsynchronousFileChannel) null, 0L));
+    }
+
+    /**
+     * Asserts {@link HelloWorld#write(AsynchronousFileChannel, long)} throws an {@link IllegalArgumentException} when
+     * {@code position} argument is negative.
+     */
+    @DisplayName("write(channel, position) throws NullPointerException when position is negative")
+    @Test
+    void write_NullPointerException_PositionIsNegative() {
+        final long position = current().nextLong() | Long.MIN_VALUE;
+        assertThrows(IllegalArgumentException.class,
+                     () -> helloWorld.write(mock(AsynchronousFileChannel.class), position));
     }
 
     /**
@@ -79,9 +91,9 @@ class HelloWorld_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
         final long size = size(file);
         try (AsynchronousFileChannel channel = spy(open(file, WRITE))) { // APPEND not allowed!
             helloWorld.write(channel, channel.size());
-            final ArgumentCaptor<ByteBuffer> bufferCaptor1 = ArgumentCaptor.forClass(ByteBuffer.class);
-            verify(helloWorld, times(1)).put(bufferCaptor1.capture());
-            final ByteBuffer buffer1 = bufferCaptor1.getValue();
+            final ArgumentCaptor<ByteBuffer> bufferCaptor = forClass(ByteBuffer.class);
+            verify(helloWorld, times(1)).put(bufferCaptor.capture());
+            final ByteBuffer buffer = bufferCaptor.getValue();
         }
     }
 }
