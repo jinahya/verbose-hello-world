@@ -25,25 +25,15 @@ import lombok.extern.slf4j.Slf4j;
 import static org.mockito.Mockito.spy;
 
 /**
- * An abstract class for unit-testing {@link HelloWorld} interface.
+ * An abstract class for testing {@link HelloWorld} interface.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
 abstract class HelloWorldTest {
 
-//    /**
-//     * Stubs {@link HelloWorld#set(byte[], int)} method of {@link #helloWorld} instance just to return given {@code
-//     * array} argument.
-//     */
-//    @BeforeEach
-//    private void stubSetArrayIndexToReturnGivenArray() {
-//        when(helloWorld.set(any(byte[].class), anyInt()))  // <1>
-//                .thenAnswer(i -> i.getArgument(0, byte[].class)); // <2>
-//    }
-
     /**
      * A spy instance of {@link HelloWorld} interface.
      */
-    protected final HelloWorld helloWorld = spy(HelloWorld.class);
+    final HelloWorld helloWorld = spy(HelloWorld.class);
 }
