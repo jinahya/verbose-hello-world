@@ -78,8 +78,7 @@ class HelloWorld_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
         final Path file = createTempFile(tempDir, null, null);
         final long size = size(file);
         try (AsynchronousFileChannel channel = spy(open(file, WRITE))) { // APPEND not allowed!
-            final long position = current().nextLong(128L);
-            helloWorld.write(channel, position);
+            helloWorld.write(channel, channel.size());
             final ArgumentCaptor<ByteBuffer> bufferCaptor1 = ArgumentCaptor.forClass(ByteBuffer.class);
             verify(helloWorld, times(1)).put(bufferCaptor1.capture());
             final ByteBuffer buffer1 = bufferCaptor1.getValue();
