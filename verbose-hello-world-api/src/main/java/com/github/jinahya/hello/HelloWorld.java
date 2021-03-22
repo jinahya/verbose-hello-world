@@ -41,6 +41,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
+import static com.github.jinahya.hello.FutureInvocationHandler.newProxyInstanceFor;
+import static java.lang.reflect.Proxy.newProxyInstance;
 import static java.nio.ByteBuffer.allocate;
 
 /**
@@ -301,25 +303,7 @@ public interface HelloWorld {
             write(channel);
             return null;
         });
-        return (Future<Void>) java.lang.reflect.Proxy.newProxyInstance(
-                future.getClass().getClassLoader(),
-                new Class<?>[] {Future.class},
-                (p, m, a) -> {
-                    try {
-                        return m.invoke(future, a);
-                    } catch (final InvocationTargetException ite) {
-                        final Throwable cause = ite.getCause();
-                        if (m.getDeclaringClass() == Future.class && m.getName().equals("get")) {
-                            if (cause instanceof ExecutionException) {
-                                final Throwable cause2 = cause.getCause();
-                                if (cause2 instanceof InterruptedException) {
-                                    throw (InterruptedException) cause2;
-                                }
-                            }
-                        }
-                        throw cause;
-                    }
-                });
+        return newProxyInstanceFor(future);
     }
 
     /**
@@ -361,6 +345,9 @@ public interface HelloWorld {
         if (channel == null) {
             throw new NullPointerException("channel is null");
         }
+        if (position < 0L) {
+            throw new IllegalArgumentException("position(" + position + ") is negative");
+        }
         final ByteBuffer buffer = allocate(BYTES);
         put(buffer);
         buffer.flip();
@@ -368,45 +355,51 @@ public interface HelloWorld {
     }
 
     /**
-     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified asynchronous file channel, starting at
-     * the given file position.
+     * Writes, asynchronously, the <a href="#hello-world-bytes">hello-world-bytes</a> to specified asynchronous file
+     * channel, starting at the given file position.
      *
      * @param channel  the channel to which bytes are written.
      * @param position the file position at which the transfer is to begin; must be non-negative.
      * @param service  an executor service for submitting a task.
      * @return A future representing the result of the operation.
      */
-    @SuppressWarnings({"unchecked"})
-    default Future<Void> write(final AsynchronousFileChannel channel, final long position,
-                               final ExecutorService service) {
+    default Future<Void> writeAsync(final AsynchronousFileChannel channel, final long position,
+                                    final ExecutorService service) {
         if (channel == null) {
             throw new NullPointerException("channel is null");
+        }
+        if (position < 0L) {
+            throw new IllegalArgumentException("position(" + position + ") is negative");
         }
         if (service == null) {
             throw new NullPointerException("service is null");
         }
         final Future<Void> future = service.submit(() -> {
-            write(channel);
+            write(channel, position);
             return null;
         });
-        return (Future<Void>) java.lang.reflect.Proxy.newProxyInstance(
-                future.getClass().getClassLoader(),
-                new Class<?>[] {Future.class},
-                (p, m, a) -> {
-                    try {
-                        return m.invoke(future, a);
-                    } catch (final InvocationTargetException ite) {
-                        final Throwable cause = ite.getCause();
-                        if (m.getDeclaringClass() == Future.class && m.getName().equals("get")) {
-                            if (cause instanceof ExecutionException) {
-                                final Throwable cause2 = cause.getCause();
-                                if (cause2 instanceof InterruptedException) {
-                                    throw (InterruptedException) cause2;
-                                }
-                            }
-                        }
-                        throw cause;
-                    }
-                });
+        return newProxyInstanceFor(future);
+    }
+
+    /**
+     * Writes, asynchronously, the <a href="#hello-world-bytes">hello-world-bytes</a> to specified asynchronous file
+     * channel, starting at the given file position.
+     *
+     * @param channel  the channel to which bytes are written.
+     * @param position the file position at which the transfer is to begin; must be non-negative.
+     * @return A completable future representing the result of the operation.
+     */
+    default CompletableFuture<Void> writeAsync(final AsynchronousFileChannel channel, final long position) {
+        if (channel == null) {
+            throw new NullPointerException("channel is null");
+        }
+        if (position < 0L) {
+            throw new IllegalArgumentException("position(" + position + ") is negative");
+        }
+        final ByteBuffer buffer = allocate(BYTES);
+        put(buffer);
+        buffer.flip();
+        // TODO: implement!
+        return null;
     }
 }
