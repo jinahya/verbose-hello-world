@@ -156,7 +156,7 @@ public interface HelloWorld {
             throw new NullPointerException("socket is null");
         }
         // TODO: Implement!
-        return null;
+        return socket;
     }
 
     /**
@@ -198,7 +198,7 @@ public interface HelloWorld {
             throw new NullPointerException("file is null");
         }
         // TODO: Implement!
-        return null;
+        return file;
     }
 
     /**
@@ -286,8 +286,7 @@ public interface HelloWorld {
     default <T extends AsynchronousByteChannel> Future<T> writeAsync(final T channel, final ExecutorService service) {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(service, "service is null");
-        final ByteBuffer buffer = put(ByteBuffer.allocate(BYTES));
-        buffer.flip();
+        final ByteBuffer buffer = (ByteBuffer) put(ByteBuffer.allocate(BYTES)).flip();
         return service.submit(() -> {
             // TODO: Implement!
             return channel;
@@ -306,8 +305,7 @@ public interface HelloWorld {
                                                                                       final ExecutorService service) {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(service, "service is null");
-        final ByteBuffer buffer = put(ByteBuffer.allocate(HelloWorld.BYTES));
-        buffer.flip();
+        final ByteBuffer buffer = (ByteBuffer) put(ByteBuffer.allocate(BYTES)).flip();
         final CompletableFuture<T> future = new CompletableFuture<>();
         // TODO: Implement!
         return future;

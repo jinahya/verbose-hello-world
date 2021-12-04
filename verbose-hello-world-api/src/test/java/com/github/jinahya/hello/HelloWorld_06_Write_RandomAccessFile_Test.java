@@ -21,6 +21,7 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -46,7 +47,7 @@ class HelloWorld_06_Write_RandomAccessFile_Test extends HelloWorldTest {
      */
     @DisplayName("write(file) throws NullPointerException when file is null")
     @Test
-    void writeFile_NullPointerException_FileIsNull() {
+    void write_NullPointerException_FileIsNull() {
         assertThrows(NullPointerException.class, () -> helloWorld().write((RandomAccessFile) null));
     }
 
@@ -60,7 +61,7 @@ class HelloWorld_06_Write_RandomAccessFile_Test extends HelloWorldTest {
      */
     @DisplayName("write(file) invokes set(byte[BYTES]) method and writes the array to file")
     @Test
-    void writeFile_InvokeSetArrayWriteArrayToFile_(final @TempDir File tempDir) throws IOException {
+    void write_InvokeSetArrayWriteArrayToFile_(final @TempDir File tempDir) throws IOException {
         final File tempFile = File.createTempFile("tmp", null, tempDir);
         try (RandomAccessFile file = Mockito.spy(new RandomAccessFile(tempFile, "rw"))) {
             assert file.length() == 0L;
@@ -74,11 +75,11 @@ class HelloWorld_06_Write_RandomAccessFile_Test extends HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(file) invokes set(byte[BYTES]) method and writes the array to file")
+    @DisplayName("write(file) returns file")
     @Test
     void write_ReturnFile_() throws IOException {
-        final RandomAccessFile expected = Mockito.spy(RandomAccessFile.class);
+        final RandomAccessFile expected = Mockito.mock(RandomAccessFile.class);
         final RandomAccessFile actual = helloWorld().write(expected);
-        // TODO: Implement!
+        Assertions.assertSame(expected, actual);
     }
 }

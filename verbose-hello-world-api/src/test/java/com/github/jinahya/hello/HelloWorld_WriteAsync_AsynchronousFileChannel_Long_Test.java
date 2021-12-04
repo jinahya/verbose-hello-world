@@ -39,7 +39,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentCaptor.forClass;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 
@@ -85,17 +84,19 @@ class HelloWorld_WriteAsync_AsynchronousFileChannel_Long_Test extends HelloWorld
     void writeAsync_InvokePutBufferWriteBufferToChannel_() throws InterruptedException, ExecutionException {
         final AsynchronousFileChannel channel = mock(AsynchronousFileChannel.class);
         final LongAdder writtenSoFar = new LongAdder();
-        doAnswer(i -> {
-            final ByteBuffer src = i.getArgument(0);
-            final long position = i.getArgument(1);
-            final Object attachment = i.getArgument(2);
-            final CompletionHandler<Integer, Object> handler = i.getArgument(3);
-            final int written = current().nextInt(0, src.remaining() + 1);
-            src.position(src.position() + written);
-            writtenSoFar.add(written);
-            handler.completed(written, attachment);
-            return null;
-        }).when(channel).write(any(ByteBuffer.class), anyLong(), any(), any());
+        Mockito.lenient().doAnswer(i -> {
+                    final ByteBuffer src = i.getArgument(0);
+                    final long position = i.getArgument(1);
+                    final Object attachment = i.getArgument(2);
+                    final CompletionHandler<Integer, Object> handler = i.getArgument(3);
+                    final int written = current().nextInt(0, src.remaining() + 1);
+                    src.position(src.position() + written);
+                    writtenSoFar.add(written);
+                    handler.completed(written, attachment);
+                    return null;
+                })
+                .when(channel)
+                .write(any(ByteBuffer.class), anyLong(), any(), any());
         final CompletableFuture<Void> future = helloWorld().writeAsync(channel, 0L);
         final ArgumentCaptor<ByteBuffer> bufferCaptor = forClass(ByteBuffer.class);
         Mockito.verify(helloWorld(), times(1)).put(bufferCaptor.capture());

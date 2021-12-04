@@ -63,7 +63,7 @@ class HelloWorld_08_Write_WritableByteChannel_Test extends HelloWorldTest {
     void write_InvokePutBufferWriteBufferToChannel_() throws IOException {
         final WritableByteChannel channel = Mockito.mock(WritableByteChannel.class); // <1>
         final LongAdder writtenSoFar = new LongAdder();                              // <2>
-        Mockito.when(channel.write(ArgumentMatchers.any(ByteBuffer.class)))          // <3>
+        Mockito.lenient().when(channel.write(ArgumentMatchers.any(ByteBuffer.class)))          // <3>
                 .thenAnswer(i -> {
                     final ByteBuffer buffer = i.getArgument(0, ByteBuffer.class);
                     final int written = new Random().nextInt(buffer.remaining() + 1);
