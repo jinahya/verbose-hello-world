@@ -32,7 +32,7 @@ public class HelloWorldImpl implements HelloWorld {
 
     // -----------------------------------------------------------------------------------------------------------------
     @Override
-    public void set(@NotNull final byte[] array, @PositiveOrZero final int index) {
+    public byte[] set(@NotNull final byte[] array, @PositiveOrZero final int index) {
         if (array == null) {
             throw new NullPointerException("array is null");
         }
@@ -43,7 +43,6 @@ public class HelloWorldImpl implements HelloWorld {
             throw new ArrayIndexOutOfBoundsException(
                     "array.length(" + array.length + ") < index(" + index + ")" + BYTES);
         }
-        // TODO: implement!
-        //return null;
+        return null;
     }
 }

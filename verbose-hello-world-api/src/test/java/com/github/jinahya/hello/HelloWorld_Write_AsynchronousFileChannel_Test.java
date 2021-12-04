@@ -60,7 +60,7 @@ class HelloWorld_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
     @DisplayName("write(channel, position) throws NullPointerException when channel is null")
     @Test
     void write_NullPointerException_ChannelIsNull() {
-        assertThrows(NullPointerException.class, () -> helloWorld.write((AsynchronousFileChannel) null, 0L));
+        assertThrows(NullPointerException.class, () -> helloWorld().write((AsynchronousFileChannel) null, 0L));
     }
 
     /**
@@ -72,7 +72,7 @@ class HelloWorld_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
     void write_NullPointerException_PositionIsNegative() {
         final long position = current().nextLong() | Long.MIN_VALUE;
         assertThrows(IllegalArgumentException.class,
-                     () -> helloWorld.write(mock(AsynchronousFileChannel.class), position));
+                     () -> helloWorld().write(mock(AsynchronousFileChannel.class), position));
     }
 
     /**
@@ -90,9 +90,9 @@ class HelloWorld_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
         final Path file = createTempFile(tempDir, null, null);
         final long size = size(file);
         try (AsynchronousFileChannel channel = spy(open(file, WRITE))) { // APPEND not allowed!
-            helloWorld.write(channel, channel.size());
+            helloWorld().write(channel, channel.size());
             final ArgumentCaptor<ByteBuffer> bufferCaptor = forClass(ByteBuffer.class);
-            verify(helloWorld, times(1)).put(bufferCaptor.capture());
+            verify(helloWorld(), times(1)).put(bufferCaptor.capture());
             final ByteBuffer buffer = bufferCaptor.getValue();
         }
     }

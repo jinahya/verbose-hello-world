@@ -21,19 +21,37 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-
-import static org.mockito.Mockito.spy;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
- * An abstract class for testing {@link HelloWorld} interface.
+ * An abstract class for testing methods defined in {@link HelloWorld} interface.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@ExtendWith({MockitoExtension.class})
+@TestInstance(TestInstance.Lifecycle.PER_METHOD) // default, implicitly.
 @Slf4j
 abstract class HelloWorldTest {
 
-    /**
-     * A spy instance of {@link HelloWorld} interface.
-     */
-    final HelloWorld helloWorld = spy(HelloWorld.class);
+    @BeforeEach
+    void beforeEach() {
+        final byte[] array = ArgumentMatchers.any(byte[].class);
+        final int index = ArgumentMatchers.anyInt();
+        Mockito.lenient().when(helloWorld.set(array, index)) // <1>
+                .thenAnswer(i -> i.getArgument(0));          // <2>
+    }
+
+    HelloWorld helloWorld() {
+        return helloWorld;
+    }
+
+    @Spy
+    private HelloWorld helloWorld;
 }

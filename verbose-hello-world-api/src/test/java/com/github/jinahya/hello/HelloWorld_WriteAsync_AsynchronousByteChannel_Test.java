@@ -57,7 +57,7 @@ class HelloWorld_WriteAsync_AsynchronousByteChannel_Test extends HelloWorldTest 
     @DisplayName("writeAsync(channel) throws NullPointerException when channel is null")
     @Test
     void writeAsync_NullPointerException_ChannelIsNull() {
-        assertThrows(NullPointerException.class, () -> helloWorld.write((AsynchronousByteChannel) null));
+        assertThrows(NullPointerException.class, () -> helloWorld().write((AsynchronousByteChannel) null));
     }
 
     /**

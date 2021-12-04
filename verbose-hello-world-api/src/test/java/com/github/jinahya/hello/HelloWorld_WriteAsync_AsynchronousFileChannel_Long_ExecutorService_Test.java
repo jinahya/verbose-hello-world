@@ -63,7 +63,7 @@ class HelloWorld_WriteAsync_AsynchronousFileChannel_Long_ExecutorService_Test ex
     @Test
     void writeAsync_NullPointerException_ChannelIsNull() {
         assertThrows(NullPointerException.class,
-                     () -> helloWorld.writeAsync((AsynchronousFileChannel) null, 0L, mock(ExecutorService.class)));
+                     () -> helloWorld().writeAsync((AsynchronousFileChannel) null, 0L, mock(ExecutorService.class)));
     }
 
     /**
@@ -74,7 +74,7 @@ class HelloWorld_WriteAsync_AsynchronousFileChannel_Long_ExecutorService_Test ex
     @Test
     void writeAsync_IllegalArgumentException_PositionIsNegative() {
         assertThrows(NullPointerException.class,
-                     () -> helloWorld.writeAsync((AsynchronousFileChannel) null, 0L, mock(ExecutorService.class)));
+                     () -> helloWorld().writeAsync((AsynchronousFileChannel) null, 0L, mock(ExecutorService.class)));
     }
 
     /**
@@ -85,7 +85,7 @@ class HelloWorld_WriteAsync_AsynchronousFileChannel_Long_ExecutorService_Test ex
     @Test
     void writeAsync_NullPointerException_ServiceIsNull() {
         assertThrows(NullPointerException.class,
-                     () -> helloWorld.writeAsync(mock(AsynchronousFileChannel.class), 0L, null));
+                     () -> helloWorld().writeAsync(mock(AsynchronousFileChannel.class), 0L, null));
     }
 
     void stubWriteChannelPositionFor(final AsynchronousFileChannel channel)
@@ -98,7 +98,7 @@ class HelloWorld_WriteAsync_AsynchronousFileChannel_Long_ExecutorService_Test ex
             }
             return null;
         })
-                .when(helloWorld)
+                .when(helloWorld())
                 .write(same(channel), anyLong());
     }
 
@@ -127,7 +127,7 @@ class HelloWorld_WriteAsync_AsynchronousFileChannel_Long_ExecutorService_Test ex
             when(future.get()).thenReturn(written);
             return future;
         });
-        final Future<Void> future = helloWorld.writeAsync(channel, 0L, newSingleThreadExecutor());
+        final Future<Void> future = helloWorld().writeAsync(channel, 0L, newSingleThreadExecutor());
         assertNotNull(future);
         final Void got = future.get();
         assertNull(got);
@@ -146,7 +146,7 @@ class HelloWorld_WriteAsync_AsynchronousFileChannel_Long_ExecutorService_Test ex
             when(future.get()).thenThrow(new InterruptedException());
             return future;
         });
-        final Future<Void> future = helloWorld.writeAsync(channel, 0L, newSingleThreadExecutor());
+        final Future<Void> future = helloWorld().writeAsync(channel, 0L, newSingleThreadExecutor());
         assertNotNull(future);
         final InterruptedException ie = assertThrows(InterruptedException.class, future::get);
     }
@@ -163,7 +163,7 @@ class HelloWorld_WriteAsync_AsynchronousFileChannel_Long_ExecutorService_Test ex
             when(future.get()).thenThrow(new ExecutionException(new RuntimeException()));
             return future;
         });
-        final Future<Void> future = helloWorld.writeAsync(channel, 0L, newSingleThreadExecutor());
+        final Future<Void> future = helloWorld().writeAsync(channel, 0L, newSingleThreadExecutor());
         assertNotNull(future);
         final ExecutionException ee = assertThrows(ExecutionException.class, future::get);
     }

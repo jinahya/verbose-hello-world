@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
@@ -36,7 +37,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -54,7 +54,7 @@ class HelloWorld_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
     @DisplayName("writeSync(channel) throws NullPointerException when channel is null")
     @Test
     void write_NullPointerException_ChannelIsNull() {
-        assertThrows(NullPointerException.class, () -> helloWorld.write((AsynchronousByteChannel) null));
+        assertThrows(NullPointerException.class, () -> helloWorld().write((AsynchronousByteChannel) null));
     }
 
     /**
@@ -79,9 +79,9 @@ class HelloWorld_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
             when(future.get()).thenReturn(written);
             return future;
         });
-        helloWorld.write(channel);
+        helloWorld().write(channel);
         final ArgumentCaptor<ByteBuffer> bufferCaptor1 = ArgumentCaptor.forClass(ByteBuffer.class);
-        verify(helloWorld, times(1)).put(bufferCaptor1.capture());
+        Mockito.verify(helloWorld(), times(1)).put(bufferCaptor1.capture());
         final ByteBuffer buffer1 = bufferCaptor1.getValue();
     }
 }

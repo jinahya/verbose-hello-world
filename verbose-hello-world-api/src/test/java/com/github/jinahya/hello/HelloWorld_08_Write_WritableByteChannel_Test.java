@@ -1,0 +1,90 @@
+package com.github.jinahya.hello;
+
+/*-
+ * #%L
+ * verbose-hello-world-api
+ * %%
+ * Copyright (C) 2018 - 2019 Jinahya, Inc.
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
+
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.WritableByteChannel;
+import java.util.Random;
+import java.util.concurrent.atomic.LongAdder;
+
+/**
+ * A class for testing {@link HelloWorld#write(WritableByteChannel)} method.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
+@Slf4j
+class HelloWorld_08_Write_WritableByteChannel_Test extends HelloWorldTest {
+
+    /**
+     * Asserts {@link HelloWorld#write(WritableByteChannel) write(channel)} method throws a {@link NullPointerException}
+     * when {@code channel} argument is {@code null}.
+     */
+    @DisplayName("write((WritableByteChannel) channel) throws NullPointerException")
+    @Test
+    void write_NullPointerException_ChannelIsNull() {
+        Assertions.assertThrows(NullPointerException.class, () -> helloWorld().write((WritableByteChannel) null));
+    }
+
+    /**
+     * Asserts {@link HelloWorld#write(WritableByteChannel) write(channel)} method invokes {@link
+     * HelloWorld#put(ByteBuffer) put(buffer)} method with a byte buffer of {@value
+     * com.github.jinahya.hello.HelloWorld#BYTES} bytes and writes the buffer to specified channel.
+     *
+     * @throws IOException if an I/O error occurs.
+     */
+    @DisplayName("write(channel) invokes put(buffer) and writes the buffer to the channel")
+    @Test
+    void write_InvokePutBufferWriteBufferToChannel_() throws IOException {
+        final WritableByteChannel channel = Mockito.mock(WritableByteChannel.class); // <1>
+        final LongAdder writtenSoFar = new LongAdder();                              // <2>
+        Mockito.when(channel.write(ArgumentMatchers.any(ByteBuffer.class)))          // <3>
+                .thenAnswer(i -> {
+                    final ByteBuffer buffer = i.getArgument(0, ByteBuffer.class);
+                    final int written = new Random().nextInt(buffer.remaining() + 1);
+                    buffer.position(buffer.position() + written);
+                    writtenSoFar.add(written);
+                    return written;
+                });
+        // TODO: Implement!
+    }
+
+    /**
+     * Asserts {@link HelloWorld#write(WritableByteChannel) write(channel)} method returns the {@code channel}
+     * argument.
+     *
+     * @throws IOException if an I/O error occurs.
+     */
+    @DisplayName("write(channel) returns channel")
+    @Test
+    void write_ReturnChannel_() throws IOException {
+        final WritableByteChannel expected = Mockito.mock(WritableByteChannel.class); // <1>
+        final WritableByteChannel actual = helloWorld().write(expected);
+        Assertions.assertSame(expected, actual);
+    }
+}

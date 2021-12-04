@@ -33,7 +33,7 @@ class HelloWorldDemo implements HelloWorld {
 
     // -----------------------------------------------------------------------------------------------------------------
     @Override
-    public void set(@NotNull final byte[] array, @PositiveOrZero final int index) {
+    public byte[] set(@NotNull final byte[] array, @PositiveOrZero final int index) {
         final byte[] source = "hello, world".getBytes(StandardCharsets.US_ASCII); // <1>
         assert source.length == BYTES;
         System.arraycopy(
@@ -43,6 +43,6 @@ class HelloWorldDemo implements HelloWorld {
                 index,        // <4>
                 source.length // <5>
         );
-        //return array; // <1>
+        return array; // <1>
     }
 }

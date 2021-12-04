@@ -24,14 +24,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockito.Mockito;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-import static java.io.File.createTempFile;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.spy;
 
 /**
  * A class for testing {@link HelloWorld#write(RandomAccessFile)} method.
@@ -39,7 +38,7 @@ import static org.mockito.Mockito.spy;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorld_Write_RandomAccessFile_Test extends HelloWorldTest {
+class HelloWorld_06_Write_RandomAccessFile_Test extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(RandomAccessFile)} method throws a {@link NullPointerException} when {@code file}
@@ -48,24 +47,38 @@ class HelloWorld_Write_RandomAccessFile_Test extends HelloWorldTest {
     @DisplayName("write(file) throws NullPointerException when file is null")
     @Test
     void writeFile_NullPointerException_FileIsNull() {
-        assertThrows(NullPointerException.class, () -> helloWorld.write((RandomAccessFile) null));
+        assertThrows(NullPointerException.class, () -> helloWorld().write((RandomAccessFile) null));
     }
 
     /**
-     * Asserts {@link HelloWorld#write(RandomAccessFile)} invokes {@link HelloWorld#set(byte[])} method with an array of
-     * {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and invokes {@link RandomAccessFile#write(byte[])}
-     * method on {@code file} with the array.
+     * Asserts {@link HelloWorld#write(RandomAccessFile) write(file)} method invokes {@link HelloWorld#set(byte[])
+     * set(byte[])} method with an array of {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and invokes {@link
+     * RandomAccessFile#write(byte[]) write(byte[])} method on {@code file} argument with the array.
      *
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(file) invokes set(array) method and writes the array to file")
+    @DisplayName("write(file) invokes set(byte[BYTES]) method and writes the array to file")
     @Test
     void writeFile_InvokeSetArrayWriteArrayToFile_(final @TempDir File tempDir) throws IOException {
-        try (RandomAccessFile file = spy(new RandomAccessFile(createTempFile("tmp", null, tempDir), "rw"))) {
+        final File tempFile = File.createTempFile("tmp", null, tempDir);
+        try (RandomAccessFile file = Mockito.spy(new RandomAccessFile(tempFile, "rw"))) {
             assert file.length() == 0L;
-            assert file.getFilePointer() == 0L;
             final long filePointer = file.getFilePointer();
+            assert filePointer == 0L;
         }
+    }
+
+    /**
+     * Asserts {@link HelloWorld#write(RandomAccessFile) write(file)} method returns the {@code file} argument.
+     *
+     * @throws IOException if an I/O error occurs.
+     */
+    @DisplayName("write(file) invokes set(byte[BYTES]) method and writes the array to file")
+    @Test
+    void write_ReturnFile_() throws IOException {
+        final RandomAccessFile expected = Mockito.spy(RandomAccessFile.class);
+        final RandomAccessFile actual = helloWorld().write(expected);
+        // TODO: Implement!
     }
 }

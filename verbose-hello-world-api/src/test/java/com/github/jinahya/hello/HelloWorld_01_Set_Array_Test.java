@@ -24,13 +24,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Random;
+
 /**
  * A class for unit-testing {@link HelloWorld#set(byte[])} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorld_Set_Array_Test extends HelloWorldTest {
+class HelloWorld_01_Set_Array_Test extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#set(byte[])} method throws a {@link NullPointerException} when the {@code array}
@@ -38,7 +40,9 @@ class HelloWorld_Set_Array_Test extends HelloWorldTest {
      */
     @DisplayName("set(null) throws NullPointerException")
     @Test
-    void setArray_NullPointerException_ArrayIsNull() {
+    void set_NullPointerException_ArrayIsNull() {
+        final byte[] array = null;
+        // TODO: Implement!
     }
 
     /**
@@ -47,15 +51,31 @@ class HelloWorld_Set_Array_Test extends HelloWorldTest {
      */
     @DisplayName("set(array) throws IndexOutOfBoundsException when array.length is less than BYTES")
     @Test
-    void setArray_IndexOutOfBoundsException_ArrayLengthIsLessThanBYTES() {
+    void set_IndexOutOfBoundsException_ArrayLengthIsLessThanBYTES() {
+        final int length = new Random().nextInt(HelloWorld.BYTES);
+        final byte[] array = new byte[length];
+        // TODO: Implement!
     }
 
     /**
      * Asserts {@link HelloWorld#set(byte[])} method invokes {@link HelloWorld#set(byte[], int)} method with given
-     * {@code array} and {@code 0} and returns the result.
+     * {@code array} and {@code 0}.
      */
     @DisplayName("set(array) invokes set(array, 0)")
     @Test
-    void setArray_InvokesSetArrayWithArrayAndZero() {
+    void set_InvokesSetArrayWithArrayAndZero_() {
+        final byte[] array = new byte[HelloWorld.BYTES];
+        // TODO: Implement!
+    }
+
+    /**
+     * Asserts {@link HelloWorld#set(byte[])} method returns given {@code array} argument.
+     */
+    @DisplayName("set(array) returns array")
+    @Test
+    void set_ReturnArray_() {
+        final byte[] expected = new byte[HelloWorld.BYTES];
+        final byte[] actual = helloWorld().set(expected);
+        // TODO: Implement!
     }
 }

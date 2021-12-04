@@ -59,7 +59,7 @@ class HelloWorld_Write_AsynchronousByteChannel_ExecutorService_Test extends Hell
     @Test
     void write_NullPointerException_ChannelIsNull() {
         assertThrows(NullPointerException.class,
-                     () -> helloWorld.write((AsynchronousByteChannel) null, mock(ExecutorService.class)));
+                     () -> helloWorld().write((AsynchronousByteChannel) null, mock(ExecutorService.class)));
     }
 
     /**
@@ -70,7 +70,7 @@ class HelloWorld_Write_AsynchronousByteChannel_ExecutorService_Test extends Hell
     @Test
     void write_NullPointerException_ServiceIsNull() {
         assertThrows(NullPointerException.class,
-                     () -> helloWorld.write(mock(AsynchronousByteChannel.class), null));
+                     () -> helloWorld().write(mock(AsynchronousByteChannel.class), null));
     }
 
     /**
@@ -101,9 +101,9 @@ class HelloWorld_Write_AsynchronousByteChannel_ExecutorService_Test extends Hell
             }
             return null;
         })
-                .when(helloWorld)
+                .when(helloWorld())
                 .write(channel);
-        final Future<Void> future = helloWorld.write(channel, newSingleThreadExecutor());
+        final Future<Void> future = helloWorld().write(channel, newSingleThreadExecutor());
         assertNotNull(future);
         final Void got = future.get();
         assertNull(got);
@@ -130,9 +130,9 @@ class HelloWorld_Write_AsynchronousByteChannel_ExecutorService_Test extends Hell
             }
             return null;
         })
-                .when(helloWorld)
+                .when(helloWorld())
                 .write(channel);
-        final Future<Void> future = helloWorld.write(channel, newSingleThreadExecutor());
+        final Future<Void> future = helloWorld().write(channel, newSingleThreadExecutor());
         assertNotNull(future);
         final InterruptedException ie = assertThrows(InterruptedException.class, future::get);
     }
@@ -157,9 +157,9 @@ class HelloWorld_Write_AsynchronousByteChannel_ExecutorService_Test extends Hell
             }
             return null;
         })
-                .when(helloWorld)
+                .when(helloWorld())
                 .write(channel);
-        final Future<Void> future = helloWorld.write(channel, newSingleThreadExecutor());
+        final Future<Void> future = helloWorld().write(channel, newSingleThreadExecutor());
         assertNotNull(future);
         final ExecutionException ee = assertThrows(ExecutionException.class, future::get);
     }

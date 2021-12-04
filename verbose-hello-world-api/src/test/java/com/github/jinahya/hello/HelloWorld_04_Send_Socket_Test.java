@@ -21,21 +21,17 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
-import static org.mockito.quality.Strictness.LENIENT;
 
 /**
  * A class for testing {@link HelloWorld#send(Socket)} method.
@@ -43,7 +39,7 @@ import static org.mockito.quality.Strictness.LENIENT;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorld_Send_Socket_Test extends HelloWorldTest {
+class HelloWorld_04_Send_Socket_Test extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#send(Socket)} method throws a {@link NullPointerException} when the {@code socket}
@@ -51,21 +47,21 @@ class HelloWorld_Send_Socket_Test extends HelloWorldTest {
      */
     @DisplayName("send(socket) throws NullPointerException when socket is null")
     @Test
-    void sendSocket_NullPointerException_SocketIsNull() {
-        assertThrows(NullPointerException.class, () -> helloWorld.send(null));
+    void send_NullPointerException_SocketIsNull() {
+        Assertions.assertThrows(NullPointerException.class, () -> helloWorld().send(null));
     }
 
     /**
-     * Asserts {@link HelloWorld#send(Socket)} method invokes the {@link HelloWorld#write(OutputStream)} method
-     * with what specified socket's {@link Socket#getOutputStream()} method returns.
+     * Asserts {@link HelloWorld#send(Socket)} method invokes the {@link HelloWorld#write(OutputStream)} method with
+     * {@link Socket#getOutputStream() socket.outputStream}.
      *
      * @throws IOException if an I/O error occurs.
      */
     @DisplayName("send(socket) invokes write(socket.outputStream)")
     @Test
-    void sendSocket_InvokeWriteStreamWithSocketOutputStream_() throws IOException {
-        final Socket socket = spy(new Socket());              // <1>
-        final OutputStream stream = mock(OutputStream.class); // <2>
-        doReturn(stream).when(socket).getOutputStream();      // <3>
+    void send_InvokeWriteStreamWithSocketOutputStream_() throws IOException {
+        final Socket socket = spy(new Socket());                   // <1>
+        final OutputStream stream = mock(OutputStream.class);      // <2>
+        Mockito.when(socket.getOutputStream()).thenReturn(stream); // <3>
     }
 }

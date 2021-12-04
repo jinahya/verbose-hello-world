@@ -21,13 +21,15 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+import org.mockito.Mockito;
 
 import java.io.DataOutput;
+import java.io.File;
 import java.io.IOException;
-
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * A class for testing {@link HelloWorld#write(DataOutput)} method.
@@ -35,26 +37,41 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorld_Write_DataOutput_Test extends HelloWorldTest {
+class HelloWorld_05_Write_DataOutput_Test extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(DataOutput)} method throws a {@link NullPointerException} when {@code data}
      * argument is {@code null}.
      */
-    @DisplayName("write(data) method throws NullPointerException when data is null")
+    @DisplayName("write((DataOutput) null) method throws NullPointerException")
     @Test
-    void writeData_NullPointerException_DataIsNull() {
-        assertThrows(NullPointerException.class, () -> helloWorld.write((DataOutput) null));
+    void write_ThrowsNullPointerException_DataIsNull() {
+        Assertions.assertThrows(NullPointerException.class, () -> helloWorld().write((DataOutput) null));
     }
 
     /**
      * Asserts {@link HelloWorld#write(DataOutput)} method invokes {@link HelloWorld#set(byte[])} method with an array
      * of {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and writes the array to specified data output.
      *
+     * @param tempDir a temporary directory to test with.
+     * @throws IOException if an I/O error occurs.
+     */
+    @DisplayName("write(data) invokes set(byte[BYTES]) and writes the array to data")
+    @Test
+    void write_InvokeSetArrayWriteArrayToData_(@TempDir final File tempDir) throws IOException {
+        final DataOutput data = Mockito.mock(DataOutput.class);
+    }
+
+    /**
+     * Asserts {@link HelloWorld#write(DataOutput)} method returns given {@code data} argument.
+     *
      * @throws IOException if an I/O error occurs.
      */
     @DisplayName("write(data) invokes set(array) and writes the array to data")
     @Test
-    void writeData_InvokeSetArrayWriteArrayToData_() throws IOException {
+    void write_ReturnData_() throws IOException {
+        final DataOutput expected = Mockito.mock(DataOutput.class);
+        final DataOutput actual = helloWorld().write(expected);
+        // TODO: Implement!
     }
 }

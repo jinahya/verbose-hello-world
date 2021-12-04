@@ -23,6 +23,7 @@ package com.github.jinahya.hello;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -35,16 +36,16 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorld_Write_OutputStream_Test extends HelloWorldTest {
+class HelloWorld_02_Write_OutputStream_Test extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(OutputStream) write(stream)} method throws a {@link NullPointerException} when
-     * {@code stream} argument is {@code null}.
+     * the {@code stream} argument is {@code null}.
      */
-    @DisplayName("write(stream) throws NullPointerException when stream is null")
+    @DisplayName("write((OutputStream) null) throws NullPointerException")
     @Test
-    void writeStream_NullPointerException_StreamIsNull() {
-        assertThrows(NullPointerException.class, () -> helloWorld.write((OutputStream) null));
+    void write_ThrowNullPointerException_StreamIsNull() {
+        assertThrows(NullPointerException.class, () -> helloWorld().write((OutputStream) null));
     }
 
     /**
@@ -56,6 +57,19 @@ class HelloWorld_Write_OutputStream_Test extends HelloWorldTest {
      */
     @DisplayName("write(stream) invokes set(byte[BYTES]) and writes the array to the stream")
     @Test
-    void writeStream_InvokeSetArrayAndWriteArrayToStream_() throws IOException {
+    void write_InvokeSetArrayAndWriteArrayToStream_() throws IOException {
+    }
+
+    /**
+     * Asserts {@link HelloWorld#write(OutputStream)} method returns given {@code stream} argument.
+     *
+     * @throws IOException if an I/O error occurs.
+     */
+    @DisplayName("write(stream) returns stream")
+    @Test
+    void write_ReturnStream_() throws IOException {
+        final OutputStream expected = Mockito.mock(OutputStream.class);
+        final OutputStream actual = helloWorld().write(expected);
+        // TODO: Implement!
     }
 }

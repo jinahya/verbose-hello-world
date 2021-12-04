@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousFileChannel;
@@ -41,7 +42,6 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * A class for testing {@link HelloWorld#writeAsync(AsynchronousFileChannel, long)} method.
@@ -59,7 +59,7 @@ class HelloWorld_WriteAsync_AsynchronousFileChannel_Long_Test extends HelloWorld
     @Test
     void writeAsync_NullPointerException_ChannelIsNull() {
         assertThrows(NullPointerException.class,
-                     () -> helloWorld.writeAsync((AsynchronousFileChannel) null, 0L));
+                     () -> helloWorld().writeAsync((AsynchronousFileChannel) null, 0L));
     }
 
     /**
@@ -70,7 +70,7 @@ class HelloWorld_WriteAsync_AsynchronousFileChannel_Long_Test extends HelloWorld
     @Test
     void writeAsync_IllegalArgumentException_PositionIsNegative() {
         assertThrows(NullPointerException.class,
-                     () -> helloWorld.writeAsync((AsynchronousFileChannel) null, 0L, mock(ExecutorService.class)));
+                     () -> helloWorld().writeAsync((AsynchronousFileChannel) null, 0L, mock(ExecutorService.class)));
     }
 
     /**
@@ -96,9 +96,9 @@ class HelloWorld_WriteAsync_AsynchronousFileChannel_Long_Test extends HelloWorld
             handler.completed(written, attachment);
             return null;
         }).when(channel).write(any(ByteBuffer.class), anyLong(), any(), any());
-        final CompletableFuture<Void> future = helloWorld.writeAsync(channel, 0L);
+        final CompletableFuture<Void> future = helloWorld().writeAsync(channel, 0L);
         final ArgumentCaptor<ByteBuffer> bufferCaptor = forClass(ByteBuffer.class);
-        verify(helloWorld, times(1)).put(bufferCaptor.capture());
+        Mockito.verify(helloWorld(), times(1)).put(bufferCaptor.capture());
         final ByteBuffer buffer = bufferCaptor.getValue();
     }
 }

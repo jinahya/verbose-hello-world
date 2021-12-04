@@ -35,22 +35,23 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 import static com.github.jinahya.hello.FutureInvocationHandler.newProxyInstanceFor;
-import static java.nio.ByteBuffer.allocate;
 
 /**
  * An interface for generating <a href="#hello-world-bytes">hello-world-bytes</a> to various targets.
  *
  * <h2 id="hello-world-bytes">hello-world-bytes</h2>
- * A sequence of {@value #BYTES} bytes, representing the "{@code hello, world}" string encoded in {@link
- * java.nio.charset.StandardCharsets#US_ASCII US-ASCII} character set, which consists of {@code 0x68('h')} followed by
- * {@code 0x65('e')}, {@code 0x6C('l')}, {@code 0x6C('l')}, {@code 0x6F('o')}, {@code 0x2C(',')}, {@code 0x20(' ')},
- * {@code 0x77('w')}, {@code 0x6F('o')}, {@code 0x72('r')}, {@code 0x6C('l')}, and {@code 0x64('d')}.
+ * A sequence of {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes, representing the "{@code hello, world}"
+ * string encoded in {@link java.nio.charset.StandardCharsets#US_ASCII US-ASCII} character set, which consists of {@code
+ * 0x68('h')} followed by {@code 0x65('e')}, {@code 0x6C('l')}, {@code 0x6C('l')}, {@code 0x6F('o')}, {@code 0x2C(',')},
+ * {@code 0x20(' ')}, {@code 0x77('w')}, {@code 0x6F('o')}, {@code 0x72('r')}, {@code 0x6C('l')}, and {@code
+ * 0x64('d')}.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -76,24 +77,27 @@ public interface HelloWorld {
      *
      * @param array the array on which bytes are set.
      * @param index the starting index of the {@code array}.
+     * @return given {@code array}.
      * @throws NullPointerException      if {@code array} is {@code null}.
      * @throws IndexOutOfBoundsException if {@code index} is negative or ({@code index} + {@link #BYTES}) is greater
      *                                   than {@code array.length}.
      */
-    void set(byte[] array, int index);
+    byte[] set(byte[] array, int index);
 
     /**
      * Sets <a href="#hello-world-bytes">hello-world-bytes</a> on specified array starting at {@code 0}.
      *
      * @param array the array on which bytes are set.
+     * @return given {@code array}.
      * @throws NullPointerException      if {@code array} is {@code null}.
      * @throws IndexOutOfBoundsException if {@code array.length} is less than {@link #BYTES}.
      * @implSpec The implementation in this class invokes {@link #set(byte[], int)} method with specified {@code array}
      * and {@code 0}.
      * @see #set(byte[], int)
      */
-    default void set(final byte[] array) {
+    default byte[] set(final byte[] array) {
         // TODO: Implement!
+        return null;
     }
 
     /**
@@ -108,17 +112,19 @@ public interface HelloWorld {
      * @see #set(byte[])
      * @see OutputStream#write(byte[])
      */
-    default void write(final OutputStream stream) throws IOException {
+    default <T extends OutputStream> T write(final OutputStream stream) throws IOException {
         if (stream == null) {
             throw new NullPointerException("stream is null");
         }
         // TODO: implement!
+        return null;
     }
 
     /**
-     * Appends <a href="#hello-world-bytes">hello-world-bytes</a> to specified file.
+     * Appends <a href="#hello-world-bytes">hello-world-bytes</a> to the end of specified file.
      *
      * @param file the file to which bytes are appended.
+     * @return given {@code file}.
      * @throws NullPointerException if {@code file} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @implSpec The implementation in this class creates a {@link FileOutputStream} from {@code file} as append mode
@@ -126,11 +132,12 @@ public interface HelloWorld {
      * @see java.io.FileOutputStream#FileOutputStream(File, boolean)
      * @see #write(OutputStream)
      */
-    default void append(final File file) throws IOException {
+    default <T extends File> T append(final T file) throws IOException {
         if (file == null) {
             throw new NullPointerException("file is null");
         }
-        // TODO: implement!
+        // TODO: Implement!
+        return null;
     }
 
     /**
@@ -144,17 +151,19 @@ public interface HelloWorld {
      * @see Socket#getOutputStream()
      * @see #write(OutputStream)
      */
-    default void send(final Socket socket) throws IOException {
+    default <T extends Socket> T send(final T socket) throws IOException {
         if (socket == null) {
             throw new NullPointerException("socket is null");
         }
-        // TODO: implement!
+        // TODO: Implement!
+        return null;
     }
 
     /**
      * Writes <a href="#hello-world-bytes">hello-world-bytes</a> to specified data output.
      *
      * @param data the data output to which bytes are written.
+     * @return given {@code data}.
      * @throws NullPointerException if {@code data} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @implSpec The implementation in this class invokes {@link #set(byte[])} with an array of {@value
@@ -163,11 +172,12 @@ public interface HelloWorld {
      * @see #set(byte[])
      * @see DataOutput#write(byte[])
      */
-    default void write(final DataOutput data) throws IOException {
+    default <T extends DataOutput> T write(final T data) throws IOException {
         if (data == null) {
             throw new NullPointerException("data is null");
         }
-        // TODO: implement!
+        // TODO: Implement!
+        return null;
     }
 
     /**
@@ -183,11 +193,12 @@ public interface HelloWorld {
      * @see #set(byte[])
      * @see RandomAccessFile#write(byte[])
      */
-    default void write(final RandomAccessFile file) throws IOException {
+    default <T extends RandomAccessFile> T write(final T file) throws IOException {
         if (file == null) {
             throw new NullPointerException("file is null");
         }
-        // TODO: implement!
+        // TODO: Implement!
+        return null;
     }
 
     /**
@@ -195,28 +206,31 @@ public interface HelloWorld {
      * successful return, is incremented by {@value com.github.jinahya.hello.HelloWorld#BYTES}.
      *
      * @param buffer the byte buffer on which bytes are put.
+     * @return given {@code buffer}.
      * @throws NullPointerException    if {@code buffer} is {@code null}.
      * @throws BufferOverflowException if {@link ByteBuffer#remaining() buffer.remaining} is less than {@value
      *                                 com.github.jinahya.hello.HelloWorld#BYTES}.
      * @implSpec The implementation in this class, if specified buffer {@link ByteBuffer#hasArray() has a
-     * backing-array}, invokes {@link #set(byte[], int)} with the buffer's {@link ByteBuffer#array() backing array} and
+     * backing-array}, invokes {@link #set(byte[], int)} with the buffer's {@link ByteBuffer#array() backing-array} and
      * ({@link ByteBuffer#arrayOffset() buffer.arrayOffset} + {@link ByteBuffer#position() buffer.position}) and then
      * manually increments the buffer's {@link ByteBuffer#position(int) position} by {@value
      * com.github.jinahya.hello.HelloWorld#BYTES}. Otherwise, this method invokes {@link #set(byte[])} method with an
      * array of {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and puts the array on the buffer using {@link
      * ByteBuffer#put(byte[])} method which increments the {@code position} by itself.
+     * @see ByteBuffer#hasArray()
      * @see #set(byte[], int)
      * @see #set(byte[])
      * @see ByteBuffer#put(byte[])
      */
-    default void put(final ByteBuffer buffer) {
+    default <T extends ByteBuffer> T put(final T buffer) {
         if (buffer == null) {
             throw new NullPointerException("buffer is null");
         }
         if (buffer.remaining() < BYTES) {
             throw new BufferOverflowException();
         }
-        // TODO: implement!
+        // TODO: Implement!
+        return buffer;
     }
 
     /**
@@ -225,16 +239,17 @@ public interface HelloWorld {
      * @param channel the channel to which bytes are written.
      * @throws NullPointerException if {@code channel} is {@code null}.
      * @throws IOException          if an I/O error occurs.
-     * @implSpec The implementation in this class invokes {@link #put(ByteBuffer)} with a buffer of {@value
+     * @implSpec The default implementation invokes {@link #put(ByteBuffer)} method with a buffer of {@value
      * com.github.jinahya.hello.HelloWorld#BYTES} bytes and writes the buffer to {@code channel}.
      * @see #put(ByteBuffer)
      * @see WritableByteChannel#write(ByteBuffer)
      */
-    default void write(final WritableByteChannel channel) throws IOException {
+    default <T extends WritableByteChannel> T write(final T channel) throws IOException {
         if (channel == null) {
             throw new NullPointerException("channel is null");
         }
-        // TODO: implement!
+        // TODO: Implement!
+        return channel;
     }
 
     /**
@@ -242,6 +257,7 @@ public interface HelloWorld {
      * path, on successful return, is increased by {@value com.github.jinahya.hello.HelloWorld#BYTES}.
      *
      * @param path the path to which bytes are appended.
+     * @return given {@code path}.
      * @throws NullPointerException if {@code path} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @implSpec The implementation in this class opens a {@link FileChannel}, from specified path, as append mode and
@@ -249,35 +265,15 @@ public interface HelloWorld {
      * @see FileChannel#open(Path, OpenOption...)
      * @see #write(WritableByteChannel)
      */
-    default void append(final Path path) throws IOException {
+    default <T extends Path> T append(final T path) throws IOException {
         if (path == null) {
             throw new NullPointerException("path is null");
         }
-        // TODO: implement!
+        // TODO: Implement!
+        return path;
     }
 
     // ----------------------------------------------------------------------------------------- AsynchronousByteChannel
-
-    /**
-     * Writes, synchronously, the <a href="#hello-world-bytes">hello-world-bytes</a> to specified asynchronous byte
-     * channel.
-     *
-     * @param channel the asynchronous byte channel to which bytes are written.
-     * @throws InterruptedException if interrupted while working.
-     * @throws ExecutionException   if failed to execute.
-     * @implSpec The implementation in this class invokes {@link #put(ByteBuffer)} method with a byte buffer of {@value
-     * com.github.jinahya.hello.HelloWorld#BYTES} bytes and writes the buffer to specified channel using {@link
-     * AsynchronousByteChannel#write(ByteBuffer)} method.
-     */
-    default void write(final AsynchronousByteChannel channel) throws InterruptedException, ExecutionException {
-        if (channel == null) {
-            throw new NullPointerException("channel is null");
-        }
-        final ByteBuffer buffer = allocate(BYTES);
-        put(buffer);
-        buffer.flip();
-        // TODO: implement!
-    }
 
     /**
      * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified channel using specified executor
@@ -287,36 +283,34 @@ public interface HelloWorld {
      * @param service the executor service to which a task is submitted.
      * @return A future representing the result of the operation.
      */
-    @SuppressWarnings({"unchecked"})
-    default Future<Void> write(final AsynchronousByteChannel channel, final ExecutorService service) {
-        if (channel == null) {
-            throw new NullPointerException("channel is null");
-        }
-        if (service == null) {
-            throw new NullPointerException("service is null");
-        }
-        final Future<Void> future = service.submit(() -> {
-            write(channel);
-            return null;
+    default <T extends AsynchronousByteChannel> Future<T> writeAsync(final T channel, final ExecutorService service) {
+        Objects.requireNonNull(channel, "channel is null");
+        Objects.requireNonNull(service, "service is null");
+        final ByteBuffer buffer = put(ByteBuffer.allocate(BYTES));
+        buffer.flip();
+        return service.submit(() -> {
+            // TODO: Implement!
+            return channel;
         });
-        return newProxyInstanceFor(future);
     }
 
     /**
-     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified channel.
+     * Writes, asynchronously, the <a href="#hello-world-bytes">hello-world-bytes</a> to specified channel using
+     * specified service.
      *
      * @param channel the channel to which bytes are written.
-     * @return a completable future representing the result of the operation.
+     * @param service the service.
+     * @return a completable future of {@code channel}.
      */
-    default CompletableFuture<Void> writeAsync(final AsynchronousByteChannel channel) {
-        if (channel == null) {
-            throw new NullPointerException("channel is null");
-        }
-        final ByteBuffer buffer = allocate(BYTES);
-        put(buffer);
+    default <T extends AsynchronousByteChannel> CompletableFuture<T> writeCompletable(final T channel,
+                                                                                      final ExecutorService service) {
+        Objects.requireNonNull(channel, "channel is null");
+        Objects.requireNonNull(service, "service is null");
+        final ByteBuffer buffer = put(ByteBuffer.allocate(HelloWorld.BYTES));
         buffer.flip();
-        // TODO: implement!
-        return null;
+        final CompletableFuture<T> future = new CompletableFuture<>();
+        // TODO: Implement!
+        return future;
     }
 
     // ----------------------------------------------------------------------------------------- AsynchronousFileChannel
@@ -330,23 +324,19 @@ public interface HelloWorld {
      * @throws IOException          if an I/O error occurs.
      * @throws InterruptedException if interrupted while working.
      * @throws ExecutionException   if failed to execute.
-     * @implSpec The implementation in this class invokes invokes {@link #put(ByteBuffer)} with a bytes buffer of
-     * {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and invokes {@link AsynchronousFileChannel#write(ByteBuffer,
+     * @implSpec The implementation in this class invokes {@link #put(ByteBuffer)} method with a byte buffer of {@value
+     * com.github.jinahya.hello.HelloWorld#BYTES} bytes and invokes {@link AsynchronousFileChannel#write(ByteBuffer,
      * long)} method with the buffer and {@code position}.
      * @see #put(ByteBuffer)
      * @see AsynchronousFileChannel#write(ByteBuffer, long)
      */
     default void write(final AsynchronousFileChannel channel, long position)
             throws IOException, InterruptedException, ExecutionException {
-        if (channel == null) {
-            throw new NullPointerException("channel is null");
-        }
+        Objects.requireNonNull(channel, "channel is null");
         if (position < 0L) {
             throw new IllegalArgumentException("position(" + position + ") is negative");
         }
-        final ByteBuffer buffer = allocate(BYTES);
-        put(buffer);
-        buffer.flip();
+        final ByteBuffer buffer = (ByteBuffer) put(ByteBuffer.allocate(BYTES)).flip();
         // TODO: implement!
     }
 
@@ -359,7 +349,8 @@ public interface HelloWorld {
      * @param service  an executor service for submitting a task.
      * @return A future representing the result of the operation.
      */
-    default Future<Void> writeAsync(final AsynchronousFileChannel channel, final long position,
+    default Future<Void> writeAsync(final AsynchronousFileChannel channel,
+                                    final long position,
                                     final ExecutorService service) {
         if (channel == null) {
             throw new NullPointerException("channel is null");
@@ -392,10 +383,10 @@ public interface HelloWorld {
         if (position < 0L) {
             throw new IllegalArgumentException("position(" + position + ") is negative");
         }
-        final ByteBuffer buffer = allocate(BYTES);
+        final ByteBuffer buffer = ByteBuffer.allocate(BYTES);
         put(buffer);
         buffer.flip();
-        // TODO: implement!
+        // TODO: Implement!
         return null;
     }
 }
