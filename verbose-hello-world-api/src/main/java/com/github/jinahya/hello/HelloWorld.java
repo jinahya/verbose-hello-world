@@ -26,7 +26,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
-import java.lang.reflect.InvocationTargetException;
 import java.net.Socket;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
@@ -42,7 +41,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 import static com.github.jinahya.hello.FutureInvocationHandler.newProxyInstanceFor;
-import static java.lang.reflect.Proxy.newProxyInstance;
 import static java.nio.ByteBuffer.allocate;
 
 /**
@@ -60,9 +58,7 @@ import static java.nio.ByteBuffer.allocate;
 public interface HelloWorld {
 
     /**
-     * The length of the <a href="#hello-world-bytes">hello-world-bytes</a>. The value is {@value}.
-     *
-     * @see <a href="#hello-world-bytes">hello-world-bytes</a>
+     * The length of the <a href="#hello-world-bytes">hello-world-bytes</a> which is {@value}.
      */
     int BYTES = 12;
 
@@ -71,11 +67,11 @@ public interface HelloWorld {
      * <p>
      * The elements in the array, on successful return, will be set as follows.
      * <blockquote><pre>{@code
-     *   0                                                               array.length
-     *   |                                                               |
-     * |   |...|'h'|'e'|'l'|'l'|'o'|','|' '|'w'|'o'|'r'|'l'|'d'|   |...|
-     *           |                                               |
-     *      0 <= index                                           (index + BYTES) <= array.length
+     *   0                                                                    array.length
+     *   ↓                                                                    ↓
+     * |   |...|'h'|'e'|'l'|'l'|'o'|','|' '|'w'|'o'|'r'|'l'|'d'|   |...|   |
+     *           ↑                                                ↑
+     *      0 <= index                                            (index + BYTES) <= array.length
      * }</pre></blockquote>
      *
      * @param array the array on which bytes are set.
@@ -97,7 +93,7 @@ public interface HelloWorld {
      * @see #set(byte[], int)
      */
     default void set(final byte[] array) {
-        // TODO: implement!
+        // TODO: Implement!
     }
 
     /**
