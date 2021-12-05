@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockito.Mockito;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,24 +35,15 @@ import java.io.OutputStream;
  * A class for testing {@link HelloWorld#append(File)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ * @see HelloWorld_03_Append_File_Arguments_Test
  */
 @Slf4j
 class HelloWorld_03_Append_File_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#append(File)} method throws a {@link NullPointerException} when the {@code file}
-     * argument is {@code null}.
-     */
-    @DisplayName("append((File) null) throws a NullPointerException")
-    @Test
-    void append_NullPointerException_FileIsNull() {
-        Assertions.assertThrows(NullPointerException.class, () -> helloWorld().append((File) null));
-    }
-
-    /**
-     * Asserts {@link HelloWorld#append(File)} method invokes {@link HelloWorld#write(OutputStream)} method with an
-     * {@link java.io.FileOutputStream} and {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes are appended to the
-     * end of the {@code file}.
+     * Asserts {@link HelloWorld#append(File) append(file)} method invokes {@link HelloWorld#write(OutputStream)} method
+     * with an {@link java.io.FileOutputStream} and asserts {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes are
+     * appended to the end of the {@code file}.
      *
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
@@ -65,18 +57,15 @@ class HelloWorld_03_Append_File_Test extends HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#append(File)} method invokes {@link HelloWorld#write(OutputStream)} method with an
-     * {@link java.io.FileOutputStream} and {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes are appended to the
-     * end of the {@code file}.
+     * Asserts {@link HelloWorld#append(File) append(file)} returns given {@code file} arguments.
      *
-     * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("append(file) invokes write(stream) and 12 bytes are appended")
+    @DisplayName("append(file) returns file")
     @Test
-    void append_ReturnFile_(@TempDir final File tempDir) throws IOException {
-        final File expected = File.createTempFile("tmp", null, tempDir);
+    void append_ReturnFile_() throws IOException {
+        final File expected = Mockito.mock(File.class);
         final File actual = helloWorld().append(expected);
-        // TODO: Implement!
+        Assertions.assertSame(expected, actual);
     }
 }

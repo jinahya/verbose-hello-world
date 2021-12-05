@@ -24,34 +24,26 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.io.RandomAccessFile;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 /**
- * A class for unit-testing {@link HelloWorld#set(byte[])} method.
+ * A class for testing {@link HelloWorld#write(RandomAccessFile)} method regarding arguments verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_01_Set_Array_Arguments_Test
+ * @see HelloWorld_06_Write_RandomAccessFile_Test
  */
 @Slf4j
-class HelloWorld_01_Set_Array_Test extends HelloWorldTest {
+class HelloWorld_06_Write_RandomAccessFile_Arguments_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#set(byte[]) set(array)} method invokes {@link HelloWorld#set(byte[], int) set(array,
-     * index)} method with given {@code array} and {@code 0}.
+     * Asserts {@link HelloWorld#write(RandomAccessFile) write(file)} method throws a {@link NullPointerException} when
+     * {@code file} argument is {@code null}.
      */
-    @DisplayName("set(array) invokes set(array, 0)")
+    @DisplayName("write((RandomAccessFile) null) throws NullPointerException")
     @Test
-    void set_InvokesSetArrayWithArrayAndZero_() {
-        final byte[] array = new byte[HelloWorld.BYTES];
-        // TODO: Implement!
-    }
-
-    /**
-     * Asserts {@link HelloWorld#set(byte[]) set(array)} method returns given {@code array} argument.
-     */
-    @DisplayName("set(array) returns array")
-    @Test
-    void set_ReturnArray_() {
-        final byte[] expected = new byte[HelloWorld.BYTES];
-        final byte[] actual = helloWorld().set(expected);
-        // TODO: Implement!
+    void write_ThrowNullPointerException_FileIsNull() {
+        assertThrows(NullPointerException.class, () -> helloWorld().write((RandomAccessFile) null));
     }
 }

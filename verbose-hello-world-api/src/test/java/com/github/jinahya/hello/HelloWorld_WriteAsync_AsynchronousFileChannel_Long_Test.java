@@ -21,26 +21,8 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
 
-import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousFileChannel;
-import java.nio.channels.CompletionHandler;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.atomic.LongAdder;
-
-import static java.util.concurrent.ThreadLocalRandom.current;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentCaptor.forClass;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 
 /**
  * A class for testing {@link HelloWorld#writeAsync(AsynchronousFileChannel, long)} method.
@@ -49,57 +31,57 @@ import static org.mockito.Mockito.times;
  */
 @Slf4j
 class HelloWorld_WriteAsync_AsynchronousFileChannel_Long_Test extends HelloWorldTest {
-
-    /**
-     * Asserts {@link HelloWorld#writeAsync(AsynchronousFileChannel, long)} method throws a {@link NullPointerException}
-     * when {@code channel} argument is {@code null}.
-     */
-    @DisplayName("writeAsync(channel, position) throws NullPointerException when channel is null")
-    @Test
-    void writeAsync_NullPointerException_ChannelIsNull() {
-        assertThrows(NullPointerException.class,
-                     () -> helloWorld().writeAsync((AsynchronousFileChannel) null, 0L));
-    }
-
-    /**
-     * Asserts {@link HelloWorld#writeAsync(AsynchronousFileChannel, long)} method throws an {@link
-     * IllegalArgumentException} when {@code position} argument is negative.
-     */
-    @DisplayName("writeAsync(channel, position) throws IllegalArgumentException when position is negative")
-    @Test
-    void writeAsync_IllegalArgumentException_PositionIsNegative() {
-        assertThrows(NullPointerException.class,
-                     () -> helloWorld().writeAsync((AsynchronousFileChannel) null, 0L, mock(ExecutorService.class)));
-    }
-
-    /**
-     * Asserts {@link HelloWorld#writeAsync(AsynchronousFileChannel, long)} method invokes {@link
-     * HelloWorld#put(ByteBuffer)} and writes the buffer to {@code channel}.
-     *
-     * @throws InterruptedException if interrupted while working.
-     * @throws ExecutionException   if failed to work.
-     */
-    @DisplayName("write(channel, long) invokes put(buffer) writes the buffer to channel")
-    @Test
-    void writeAsync_InvokePutBufferWriteBufferToChannel_() throws InterruptedException, ExecutionException {
-        final AsynchronousFileChannel channel = mock(AsynchronousFileChannel.class);
-        final LongAdder writtenSoFar = new LongAdder();
-        Mockito.lenient().doAnswer(i -> {
-                    final ByteBuffer src = i.getArgument(0);
-                    final long position = i.getArgument(1);
-                    final Object attachment = i.getArgument(2);
-                    final CompletionHandler<Integer, Object> handler = i.getArgument(3);
-                    final int written = current().nextInt(0, src.remaining() + 1);
-                    src.position(src.position() + written);
-                    writtenSoFar.add(written);
-                    handler.completed(written, attachment);
-                    return null;
-                })
-                .when(channel)
-                .write(any(ByteBuffer.class), anyLong(), any(), any());
-        final CompletableFuture<Void> future = helloWorld().writeAsync(channel, 0L);
-        final ArgumentCaptor<ByteBuffer> bufferCaptor = forClass(ByteBuffer.class);
-        Mockito.verify(helloWorld(), times(1)).put(bufferCaptor.capture());
-        final ByteBuffer buffer = bufferCaptor.getValue();
-    }
+//
+//    /**
+//     * Asserts {@link HelloWorld#writeAsync(AsynchronousFileChannel, long)} method throws a {@link NullPointerException}
+//     * when {@code channel} argument is {@code null}.
+//     */
+//    @DisplayName("writeAsync(channel, position) throws NullPointerException when channel is null")
+//    @Test
+//    void writeAsync_NullPointerException_ChannelIsNull() {
+//        assertThrows(NullPointerException.class,
+//                     () -> helloWorld().writeAsync((AsynchronousFileChannel) null, 0L));
+//    }
+//
+//    /**
+//     * Asserts {@link HelloWorld#writeAsync(AsynchronousFileChannel, long)} method throws an {@link
+//     * IllegalArgumentException} when {@code position} argument is negative.
+//     */
+//    @DisplayName("writeAsync(channel, position) throws IllegalArgumentException when position is negative")
+//    @Test
+//    void writeAsync_IllegalArgumentException_PositionIsNegative() {
+//        assertThrows(NullPointerException.class,
+//                     () -> helloWorld().writeAsync((AsynchronousFileChannel) null, 0L, mock(ExecutorService.class)));
+//    }
+//
+//    /**
+//     * Asserts {@link HelloWorld#writeAsync(AsynchronousFileChannel, long)} method invokes {@link
+//     * HelloWorld#put(ByteBuffer)} and writes the buffer to {@code channel}.
+//     *
+//     * @throws InterruptedException if interrupted while working.
+//     * @throws ExecutionException   if failed to work.
+//     */
+//    @DisplayName("write(channel, long) invokes put(buffer) writes the buffer to channel")
+//    @Test
+//    void writeAsync_InvokePutBufferWriteBufferToChannel_() throws InterruptedException, ExecutionException {
+//        final AsynchronousFileChannel channel = mock(AsynchronousFileChannel.class);
+//        final LongAdder writtenSoFar = new LongAdder();
+//        Mockito.lenient().doAnswer(i -> {
+//                    final ByteBuffer src = i.getArgument(0);
+//                    final long position = i.getArgument(1);
+//                    final Object attachment = i.getArgument(2);
+//                    final CompletionHandler<Integer, Object> handler = i.getArgument(3);
+//                    final int written = current().nextInt(0, src.remaining() + 1);
+//                    src.position(src.position() + written);
+//                    writtenSoFar.add(written);
+//                    handler.completed(written, attachment);
+//                    return null;
+//                })
+//                .when(channel)
+//                .write(any(ByteBuffer.class), anyLong(), any(), any());
+//        final CompletableFuture<Void> future = helloWorld().writeAsync(channel, 0L);
+//        final ArgumentCaptor<ByteBuffer> bufferCaptor = forClass(ByteBuffer.class);
+//        Mockito.verify(helloWorld(), times(1)).put(bufferCaptor.capture());
+//        final ByteBuffer buffer = bufferCaptor.getValue();
+//    }
 }

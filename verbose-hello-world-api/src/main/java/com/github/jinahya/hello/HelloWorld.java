@@ -37,11 +37,8 @@ import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-
-import static com.github.jinahya.hello.FutureInvocationHandler.newProxyInstanceFor;
 
 /**
  * An interface for generating <a href="#hello-world-bytes">hello-world-bytes</a> to various targets.
@@ -113,9 +110,6 @@ public interface HelloWorld {
      * @see OutputStream#write(byte[])
      */
     default <T extends OutputStream> T write(final OutputStream stream) throws IOException {
-        if (stream == null) {
-            throw new NullPointerException("stream is null");
-        }
         // TODO: implement!
         return null;
     }
@@ -133,11 +127,9 @@ public interface HelloWorld {
      * @see #write(OutputStream)
      */
     default <T extends File> T append(final T file) throws IOException {
-        if (file == null) {
-            throw new NullPointerException("file is null");
-        }
+        Objects.requireNonNull(file, "file is null");
         // TODO: Implement!
-        return null;
+        return file;
     }
 
     /**
@@ -173,11 +165,10 @@ public interface HelloWorld {
      * @see DataOutput#write(byte[])
      */
     default <T extends DataOutput> T write(final T data) throws IOException {
-        if (data == null) {
-            throw new NullPointerException("data is null");
-        }
+        Objects.requireNonNull(data, "data is null");
+        final byte[] array = set(new byte[BYTES]);
         // TODO: Implement!
-        return null;
+        return data;
     }
 
     /**
@@ -194,16 +185,29 @@ public interface HelloWorld {
      * @see RandomAccessFile#write(byte[])
      */
     default <T extends RandomAccessFile> T write(final T file) throws IOException {
-        if (file == null) {
-            throw new NullPointerException("file is null");
-        }
-        // TODO: Implement!
+        Objects.requireNonNull(file, "file is null");
+        final byte[] array = new byte[BYTES];
+        set(array);
+        file.write(array);
         return file;
     }
 
     /**
      * Puts <a href="#hello-world-bytes">hello-world-bytes</a> on specified byte buffer. The buffer's position, on
      * successful return, is incremented by {@value com.github.jinahya.hello.HelloWorld#BYTES}.
+     * <pre>
+     * Given,
+     *               |------------------------ remaining ------------------------|
+     *   0        <= position                                                    <= limit    <= capacity
+     *   ↓           ↓                                                           ↓           ↓
+     *   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
+     *
+     * On successful return,
+     *   0                                                        <= position <= limit    <= capacity
+     *   ↓                                                           ↓           ↓           ↓
+     *   |   |   |   |'h'|'e'|'l'|'l'|'o'|','|' '|'w'|'o'|'r'|'l'|'d'|   |   |   |   |   |   |
+     *                                                               |-remaining-|
+     * </pre>
      *
      * @param buffer the byte buffer on which bytes are put.
      * @return given {@code buffer}.
@@ -286,8 +290,8 @@ public interface HelloWorld {
     default <T extends AsynchronousByteChannel> Future<T> writeAsync(final T channel, final ExecutorService service) {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(service, "service is null");
-        final ByteBuffer buffer = (ByteBuffer) put(ByteBuffer.allocate(BYTES)).flip();
-        return service.submit(() -> {
+        final ByteBuffer buffer = (ByteBuffer) put(ByteBuffer.allocate(BYTES)).flip(); // <1>
+        return service.submit(() -> {                                                  // <2>
             // TODO: Implement!
             return channel;
         });
@@ -305,38 +309,13 @@ public interface HelloWorld {
                                                                                       final ExecutorService service) {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(service, "service is null");
-        final ByteBuffer buffer = (ByteBuffer) put(ByteBuffer.allocate(BYTES)).flip();
-        final CompletableFuture<T> future = new CompletableFuture<>();
+        final ByteBuffer buffer = (ByteBuffer) put(ByteBuffer.allocate(BYTES)).flip(); // <1>
+        final CompletableFuture<T> future = new CompletableFuture<>();                 // <2>
         // TODO: Implement!
-        return future;
+        return future;                                                                 // <3>
     }
 
     // ----------------------------------------------------------------------------------------- AsynchronousFileChannel
-
-    /**
-     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified asynchronous file channel, starting at
-     * the given file position.
-     *
-     * @param channel  the asynchronous file channel to which bytes are written.
-     * @param position the file position at which the transfer is to begin; must be non-negative.
-     * @throws IOException          if an I/O error occurs.
-     * @throws InterruptedException if interrupted while working.
-     * @throws ExecutionException   if failed to execute.
-     * @implSpec The implementation in this class invokes {@link #put(ByteBuffer)} method with a byte buffer of {@value
-     * com.github.jinahya.hello.HelloWorld#BYTES} bytes and invokes {@link AsynchronousFileChannel#write(ByteBuffer,
-     * long)} method with the buffer and {@code position}.
-     * @see #put(ByteBuffer)
-     * @see AsynchronousFileChannel#write(ByteBuffer, long)
-     */
-    default void write(final AsynchronousFileChannel channel, long position)
-            throws IOException, InterruptedException, ExecutionException {
-        Objects.requireNonNull(channel, "channel is null");
-        if (position < 0L) {
-            throw new IllegalArgumentException("position(" + position + ") is negative");
-        }
-        final ByteBuffer buffer = (ByteBuffer) put(ByteBuffer.allocate(BYTES)).flip();
-        // TODO: implement!
-    }
 
     /**
      * Writes, asynchronously, the <a href="#hello-world-bytes">hello-world-bytes</a> to specified asynchronous file
@@ -347,23 +326,19 @@ public interface HelloWorld {
      * @param service  an executor service for submitting a task.
      * @return A future representing the result of the operation.
      */
-    default Future<Void> writeAsync(final AsynchronousFileChannel channel,
-                                    final long position,
-                                    final ExecutorService service) {
-        if (channel == null) {
-            throw new NullPointerException("channel is null");
-        }
+    default <T extends AsynchronousFileChannel> Future<T> writeAsync(final T channel,
+                                                                     final long position,
+                                                                     final ExecutorService service) {
+        Objects.requireNonNull(channel, "channel is null");
         if (position < 0L) {
             throw new IllegalArgumentException("position(" + position + ") is negative");
         }
-        if (service == null) {
-            throw new NullPointerException("service is null");
-        }
-        final Future<Void> future = service.submit(() -> {
-            write(channel, position);
-            return null;
+        Objects.requireNonNull(service, "service is null");
+        final ByteBuffer buffer = (ByteBuffer) put(ByteBuffer.allocate(BYTES)).flip();
+        return service.submit(() -> {
+            // TODO: Implement!
+            return channel;
         });
-        return newProxyInstanceFor(future);
     }
 
     /**
@@ -374,7 +349,7 @@ public interface HelloWorld {
      * @param position the file position at which the transfer is to begin; must be non-negative.
      * @return A completable future representing the result of the operation.
      */
-    default CompletableFuture<Void> writeAsync(final AsynchronousFileChannel channel, final long position) {
+    default CompletableFuture<Void> writeCompletable(final AsynchronousFileChannel channel, final long position) {
         if (channel == null) {
             throw new NullPointerException("channel is null");
         }

@@ -34,23 +34,14 @@ import java.net.Socket;
  * A class for testing {@link HelloWorld#send(Socket)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ * @see HelloWorld_04_Send_Socket_Arguments_Test
  */
 @Slf4j
 class HelloWorld_04_Send_Socket_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#send(Socket) send(socket)} method throws a {@link NullPointerException} when the {@code
-     * socket} argument is {@code null}.
-     */
-    @DisplayName("send(socket) throws NullPointerException when socket is null")
-    @Test
-    void send_NullPointerException_SocketIsNull() {
-        Assertions.assertThrows(NullPointerException.class, () -> helloWorld().send(null));
-    }
-
-    /**
-     * Asserts {@link HelloWorld#send(Socket) send(socket)} method invokes the {@link HelloWorld#write(OutputStream)}
-     * method with {@link Socket#getOutputStream() socket.outputStream}.
+     * Asserts {@link HelloWorld#send(Socket) send(socket)} method invokes the {@link HelloWorld#write(OutputStream)
+     * write(stream)} method with {@link Socket#getOutputStream() socket.outputStream}.
      *
      * @throws IOException if an I/O error occurs.
      */
@@ -59,13 +50,16 @@ class HelloWorld_04_Send_Socket_Test extends HelloWorldTest {
     void send_InvokeWriteStreamWithSocketOutputStream_() throws IOException {
         final Socket socket = Mockito.spy(new Socket());              // <1>
         final OutputStream stream = Mockito.mock(OutputStream.class); // <2>
-        Mockito.lenient().doReturn(stream).when(socket).getOutputStream();
-//        Mockito.when(socket.getOutputStream()).thenReturn(stream);    // <3>
-        helloWorld().send(socket);
+        Mockito.lenient()                                             // <3>
+                .doReturn(stream)
+                .when(socket)
+                .getOutputStream();
+        helloWorld().send(socket);                                    // <4>
+        // TODO: Implement!
     }
 
     /**
-     * Asserts {@link HelloWorld#send(Socket) send(socket)} returns the {@code socket} argument.
+     * Asserts {@link HelloWorld#send(Socket) send(socket)} method returns the {@code socket} argument.
      *
      * @throws IOException if an I/O error occurs.
      */
@@ -73,7 +67,10 @@ class HelloWorld_04_Send_Socket_Test extends HelloWorldTest {
     @Test
     void send_ReturnSocket_() throws IOException {
         final Socket expected = Mockito.spy(new Socket());
-        Mockito.lenient().doReturn(Mockito.mock(OutputStream.class)).when(expected).getOutputStream();
+        Mockito.lenient()
+                .doReturn(Mockito.mock(OutputStream.class))
+                .when(expected)
+                .getOutputStream();
         final Socket actual = helloWorld().send(expected);
         Assertions.assertSame(expected, actual);
     }

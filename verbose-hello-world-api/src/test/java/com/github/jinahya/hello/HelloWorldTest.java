@@ -20,15 +20,21 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import lombok.Getter;
+import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
+import org.mockito.Captor;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.io.OutputStream;
+import java.nio.ByteBuffer;
 
 /**
  * An abstract class for testing methods defined in {@link HelloWorld} interface.
@@ -45,13 +51,31 @@ abstract class HelloWorldTest {
         final byte[] array = ArgumentMatchers.any(byte[].class);
         final int index = ArgumentMatchers.anyInt();
         Mockito.lenient().when(helloWorld.set(array, index)) // <1>
-                .thenAnswer(i -> i.getArgument(0));          // <2>
-    }
-
-    HelloWorld helloWorld() {
-        return helloWorld;
+                .thenAnswer(i -> i.getArgument(0)); // <2>
     }
 
     @Spy
+    @Accessors(fluent = true)
+    @Getter
     private HelloWorld helloWorld;
+
+    @Captor
+    @Accessors(fluent = true)
+    @Getter
+    private ArgumentCaptor<byte[]> arrayCaptor;
+
+    @Captor
+    @Accessors(fluent = true)
+    @Getter
+    private ArgumentCaptor<Integer> indexCaptor;
+
+    @Captor
+    @Accessors(fluent = true)
+    @Getter
+    private ArgumentCaptor<OutputStream> streamCaptor;
+
+    @Captor
+    @Accessors(fluent = true)
+    @Getter
+    private ArgumentCaptor<ByteBuffer> bufferCaptor;
 }

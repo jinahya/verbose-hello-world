@@ -24,74 +24,76 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
+import java.nio.channels.CompletionHandler;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.atomic.LongAdder;
 
 /**
- * A class for testing {@link HelloWorld#writeAsync(AsynchronousByteChannel, ExecutorService)} method.
+ * A class for testing {@link HelloWorld#writeCompletable(AsynchronousByteChannel, ExecutorService)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorld_10_WriteAsync_AsynchronousByteChannel_Test extends HelloWorldTest {
+class HelloWorld_11_WriteCompletable_AsynchronousByteChannel_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#writeAsync(AsynchronousByteChannel, ExecutorService)} method throws a {@link
+     * Asserts {@link HelloWorld#writeCompletable(AsynchronousByteChannel, ExecutorService)} method throws a {@link
      * NullPointerException} when {@code channel} argument is {@code null}.
      */
-    @DisplayName("writeAsync((AsynchronousByteChannel) channel, ) throws NullPointerException when channel is null")
+    @DisplayName("writeCompletable(AsynchronousByteChannel) null, ) throws NullPointerException")
     @Test
     void writeAsync_NullPointerException_ChannelIsNull() {
         Assertions.assertThrows(NullPointerException.class,
-                                () -> helloWorld().writeAsync((AsynchronousByteChannel) null,
-                                                              Mockito.mock(ExecutorService.class)));
+                                () -> helloWorld().writeCompletable((AsynchronousByteChannel) null,
+                                                                    Mockito.mock(ExecutorService.class)));
     }
 
     /**
-     * Asserts {@link HelloWorld#writeAsync(AsynchronousByteChannel, ExecutorService)} method throws a {@link
-     * NullPointerException} when {@code channel} argument is {@code null}.
+     * Asserts {@link HelloWorld#writeCompletable(AsynchronousByteChannel, ExecutorService)} method throws a {@link
+     * NullPointerException} when {@code service} argument is {@code null}.
      */
-    @DisplayName("writeAsync(, null) throws NullPointerException when channel is null")
+    @DisplayName("writeCompletable(, null) throws NullPointerException")
     @Test
     void writeAsync_NullPointerException_ServiceIsNull() {
         Assertions.assertThrows(NullPointerException.class,
-                                () -> helloWorld().writeAsync(Mockito.mock(AsynchronousByteChannel.class), null));
+                                () -> helloWorld().writeCompletable(Mockito.mock(AsynchronousByteChannel.class), null));
     }
 
     /**
-     * Asserts {@link HelloWorld#writeAsync(AsynchronousByteChannel, ExecutorService)} method invokes {@link
+     * Asserts {@link HelloWorld#writeCompletable(AsynchronousByteChannel, ExecutorService)} method invokes {@link
      * HelloWorld#put(ByteBuffer) put(buffer)} and writes the buffer to {@code channel}.
      *
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
      */
-    @DisplayName("writeAsync(channel, service) invokes put(buffer) writes the buffer to channel")
+    @DisplayName("writeCompletable(channel, service) invokes put(buffer) and writes the buffer to channel")
     @Test
     void writeAsync_InvokePutBufferWriteBufferToChannel_() throws InterruptedException, ExecutionException {
-        final AsynchronousByteChannel channel = Mockito.mock(AsynchronousByteChannel.class);
         final LongAdder writtenSoFar = new LongAdder();
+        final AsynchronousByteChannel channel = Mockito.mock(AsynchronousByteChannel.class);
         Mockito.lenient()
-                .when(channel.write(ArgumentMatchers.any(ByteBuffer.class)))
-                .thenAnswer(i -> {
-                    final ByteBuffer buffer = i.getArgument(0, ByteBuffer.class);
-                    final int written = new Random().nextInt(buffer.remaining() + 1);
-                    buffer.position(buffer.position() + written);
+                .doAnswer(i -> {
+                    final ByteBuffer src = i.getArgument(0);
+                    final Void attachment = i.getArgument(1);
+                    final CompletionHandler<Integer, Void> handler = i.getArgument(2);
+                    final int written = new Random().nextInt(src.remaining() + 1);
+                    src.position(src.position() + written);
                     writtenSoFar.add(written);
-                    return CompletableFuture.completedFuture(written);
-                });
+                    handler.completed(written, attachment);
+                    return null;
+                })
+                .when(channel)
+                .write(Mockito.any(), Mockito.<Void>any(), Mockito.<CompletionHandler<Integer, Void>>any());
         final ExecutorService service = Executors.newSingleThreadExecutor();
-        final Future<AsynchronousByteChannel> future = helloWorld().writeAsync(channel, service);
-        final AsynchronousByteChannel actual = future.get();
+        final CompletableFuture<AsynchronousByteChannel> future = helloWorld().writeCompletable(channel, service);
         // TODO: Implement!
     }
 }

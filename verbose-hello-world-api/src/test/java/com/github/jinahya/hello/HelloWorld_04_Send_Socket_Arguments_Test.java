@@ -21,37 +21,28 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.net.Socket;
+
 /**
- * A class for unit-testing {@link HelloWorld#set(byte[])} method.
+ * A class for testing {@link HelloWorld#send(Socket)} method regarding arguments verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_01_Set_Array_Arguments_Test
+ * @see HelloWorld_04_Send_Socket_Test
  */
 @Slf4j
-class HelloWorld_01_Set_Array_Test extends HelloWorldTest {
+class HelloWorld_04_Send_Socket_Arguments_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#set(byte[]) set(array)} method invokes {@link HelloWorld#set(byte[], int) set(array,
-     * index)} method with given {@code array} and {@code 0}.
+     * Asserts {@link HelloWorld#send(Socket) send(socket)} method throws a {@link NullPointerException} when the {@code
+     * socket} argument is {@code null}.
      */
-    @DisplayName("set(array) invokes set(array, 0)")
+    @DisplayName("send(socket) throws NullPointerException when socket is null")
     @Test
-    void set_InvokesSetArrayWithArrayAndZero_() {
-        final byte[] array = new byte[HelloWorld.BYTES];
-        // TODO: Implement!
-    }
-
-    /**
-     * Asserts {@link HelloWorld#set(byte[]) set(array)} method returns given {@code array} argument.
-     */
-    @DisplayName("set(array) returns array")
-    @Test
-    void set_ReturnArray_() {
-        final byte[] expected = new byte[HelloWorld.BYTES];
-        final byte[] actual = helloWorld().set(expected);
-        // TODO: Implement!
+    void send_NullPointerException_SocketIsNull() {
+        Assertions.assertThrows(NullPointerException.class, () -> helloWorld().send(null));
     }
 }
