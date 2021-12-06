@@ -36,29 +36,20 @@ import java.nio.file.Path;
  * A class for testing {@link HelloWorld#append(Path)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ * @see HelloWorld_09_Append_Path_Arguments_Test
  */
 @Slf4j
 class HelloWorld_09_Append_Path_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#append(Path) append(path)} method throws a {@link NullPointerException} when the {@code
-     * path} argument is {@code null}.
-     */
-    @DisplayName("append((Path) null) throws NullPointerException")
-    @Test
-    void append_NullPointerException_PathIsNull() {
-        Assertions.assertThrows(NullPointerException.class, () -> helloWorld().append((Path) null));
-    }
-
-    /**
      * Asserts {@link HelloWorld#append(Path) append(path)} method invokes {@link HelloWorld#write(WritableByteChannel)
-     * write(channel)} method with a channel and asserts {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes are
-     * appended to the {@code path}.
+     * write(channel)} method and asserts {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes are appended to the
+     * {@code path}.
      *
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("append(path) invokes write(channel)")
+    @DisplayName("append(path) invokes write(channel), 12 bytes are appended")
     @Test
     void append_InvokeWriteChannel12BytesWritten_(final @TempDir Path tempDir) throws IOException {
         final Path path = Files.createTempFile(tempDir, null, null);
@@ -67,13 +58,11 @@ class HelloWorld_09_Append_Path_Test extends HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#append(Path) append(path)} method invokes {@link HelloWorld#write(WritableByteChannel)
-     * write(channel)} method with a channel and asserts {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes are
-     * appended to the {@code path}.
+     * Asserts {@link HelloWorld#append(Path) append(path)} method returns the {@code path} argument.
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("append(path) invokes write(channel)")
+    @DisplayName("append(path) returns path")
     @Test
     void append_ReturnPath_() throws IOException {
         final Path expected = Mockito.mock(Path.class);
