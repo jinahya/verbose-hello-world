@@ -26,54 +26,41 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.AsynchronousFileChannel;
 import java.util.Random;
-import java.util.concurrent.ExecutorService;
 
 /**
- * A class for testing {@link HelloWorld#writeAsync(AsynchronousFileChannel, long, ExecutorService)} method regarding
- * arguments verification.
+ * A class for testing {@link HelloWorld#writeCompletable(AsynchronousFileChannel, long)} method regarding arguments
+ * verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_12_WriteAsync_AsynchronousFileChannel_Test
+ * @see HelloWorld_13_WriteCompletable_AsynchronousFileChannel_Test
  */
 @Slf4j
-class HelloWorld_12_WriteAsync_AsynchronousFileChannel_Arguments_Test extends HelloWorldTest {
+class HelloWorld_13_WriteCompletable_AsynchronousFileChannel_Arguments_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#writeAsync(AsynchronousFileChannel, long, ExecutorService) writeAsync(channel,
-     * position, service)} method throws a {@link NullPointerException} when {@code channel} argument is {@code null}.
+     * Asserts {@link HelloWorld#writeCompletable(AsynchronousFileChannel, long) writeCompletable(channel, position)}
+     * method throws a {@link NullPointerException} when the {@code channel} argument is {@code null}.
      */
-    @DisplayName("writeAsync(null, , ) throws NullPointerException")
+    @DisplayName("writeCompletable(null, ) throws NullPointerException")
     @Test
-    void writeAsync_NullPointerException_ChannelIsNull() {
-        Assertions.assertThrows(NullPointerException.class,
-                                () -> helloWorld().writeAsync(null, 0L, Mockito.mock(ExecutorService.class)));
+    void writeCompletable_ThrowNullPointerException_ChannelIsNull() {
+        final AsynchronousFileChannel channel = null;
+        final long position = new Random().nextLong() & Long.MAX_VALUE;
+        Assertions.assertThrows(NullPointerException.class, () -> helloWorld().writeCompletable(channel, position));
     }
 
     /**
-     * Asserts {@link HelloWorld#writeAsync(AsynchronousFileChannel, long, ExecutorService) writeAsync(channel,
-     * position, service)} method throws an {@link IllegalArgumentException} when {@code position} argument is not
-     * positive.
+     * Asserts {@link HelloWorld#writeCompletable(AsynchronousFileChannel, long) writeCompletable(channel, position)}
+     * method throws an {@link IllegalArgumentException} when the {@code position} argument is negative.
      */
-    @DisplayName("writeAsync(, negative, ) throws IllegalArgumentException")
+    @DisplayName("writeCompletable(, negative) throws IllegalArgumentException")
     @Test
-    void writeAsync_ThrowIllegalArgumentException_PositionIsNegative() {
+    void writeCompletable_ThrowIllegalArgumentException_PositionIsNegative() {
+        final AsynchronousFileChannel channel = Mockito.mock(AsynchronousFileChannel.class);
+        final long position = new Random().nextLong() | Long.MIN_VALUE;
         Assertions.assertThrows(IllegalArgumentException.class,
-                                () -> helloWorld().writeAsync(Mockito.mock(AsynchronousFileChannel.class),
-                                                              new Random().nextInt() | Integer.MIN_VALUE,
-                                                              Mockito.mock(ExecutorService.class)));
-    }
-
-    /**
-     * Asserts {@link HelloWorld#writeAsync(AsynchronousByteChannel, ExecutorService) writeAsync(channel, position,
-     * service} method throws a {@link NullPointerException} when {@code channel} argument is {@code null}.
-     */
-    @DisplayName("writeAsync(, , null) throws NullPointerException")
-    @Test
-    void writeAsync_ThrowNullPointerException_ServiceIsNull() {
-        Assertions.assertThrows(NullPointerException.class,
-                                () -> helloWorld().writeAsync(Mockito.mock(AsynchronousFileChannel.class), 0L, null));
+                                () -> helloWorld().writeCompletable(channel, position));
     }
 }

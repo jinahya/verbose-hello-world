@@ -36,6 +36,7 @@ import java.util.concurrent.ExecutorService;
  * arguments verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ * @see HelloWorld_12_WriteAsync_AsynchronousFileChannel_Test
  */
 @Slf4j
 class HelloWorld_12_WriteAsync_AsynchronousFileChannel_Arguments_Test extends HelloWorldTest {
@@ -47,9 +48,10 @@ class HelloWorld_12_WriteAsync_AsynchronousFileChannel_Arguments_Test extends He
     @DisplayName("writeAsync(null, , ) throws NullPointerException")
     @Test
     void writeAsync_NullPointerException_ChannelIsNull() {
-        Assertions.assertThrows(NullPointerException.class,
-                                () -> helloWorld().writeAsync((AsynchronousFileChannel) null, 0L,
-                                                              Mockito.mock(ExecutorService.class)));
+        final AsynchronousFileChannel channel = null;
+        final long position = new Random().nextLong() & Integer.MAX_VALUE;
+        final ExecutorService service = Mockito.mock(ExecutorService.class);
+        Assertions.assertThrows(NullPointerException.class, () -> helloWorld().writeAsync(channel, position, service));
     }
 
     /**
@@ -60,10 +62,11 @@ class HelloWorld_12_WriteAsync_AsynchronousFileChannel_Arguments_Test extends He
     @DisplayName("writeAsync(, negative, ) throws IllegalArgumentException")
     @Test
     void writeAsync_ThrowIllegalArgumentException_PositionIsNegative() {
+        final AsynchronousFileChannel channel = Mockito.mock(AsynchronousFileChannel.class);
+        final long position = new Random().nextLong() | Integer.MIN_VALUE;
+        final ExecutorService service = Mockito.mock(ExecutorService.class);
         Assertions.assertThrows(IllegalArgumentException.class,
-                                () -> helloWorld().writeAsync(Mockito.mock(AsynchronousFileChannel.class),
-                                                              new Random().nextInt() | Integer.MIN_VALUE,
-                                                              Mockito.mock(ExecutorService.class)));
+                                () -> helloWorld().writeAsync(channel, position, service));
     }
 
     /**
@@ -73,7 +76,9 @@ class HelloWorld_12_WriteAsync_AsynchronousFileChannel_Arguments_Test extends He
     @DisplayName("writeAsync(, , null) throws NullPointerException")
     @Test
     void writeAsync_ThrowNullPointerException_ServiceIsNull() {
-        Assertions.assertThrows(NullPointerException.class,
-                                () -> helloWorld().writeAsync(Mockito.mock(AsynchronousFileChannel.class), 0L, null));
+        final AsynchronousFileChannel channel = Mockito.mock(AsynchronousFileChannel.class);
+        final long position = new Random().nextLong() & Integer.MAX_VALUE;
+        final ExecutorService service = null;
+        Assertions.assertThrows(NullPointerException.class, () -> helloWorld().writeAsync(channel, position, service));
     }
 }

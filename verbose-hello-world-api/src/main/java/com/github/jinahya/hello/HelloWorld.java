@@ -20,25 +20,20 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import java.io.DataOutput;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.RandomAccessFile;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PositiveOrZero;
+import java.io.*;
 import java.net.Socket;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
-import java.nio.channels.AsynchronousByteChannel;
-import java.nio.channels.AsynchronousFileChannel;
-import java.nio.channels.FileChannel;
-import java.nio.channels.WritableByteChannel;
+import java.nio.channels.*;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.LongAccumulator;
 
 /**
  * An interface for generating <a href="#hello-world-bytes">hello-world-bytes</a> to various targets.
@@ -197,16 +192,16 @@ public interface HelloWorld {
      * successful return, is incremented by {@value com.github.jinahya.hello.HelloWorld#BYTES}.
      * <pre>
      * Given,
-     *               |------------------------ remaining ------------------------|
-     *   0        <= position                                                    <= limit    <= capacity
-     *   ↓           ↓                                                           ↓           ↓
-     *   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
+     *           |------------------------ remaining ------------------------|
+     *   0    <= position                                                 <= limit    <= capacity
+     *   ↓       ↓                                                           ↓           ↓
+     *   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
      *
      * On successful return,
-     *   0                                                        <= position <= limit    <= capacity
-     *   ↓                                                           ↓           ↓           ↓
-     *   |   |   |   |'h'|'e'|'l'|'l'|'o'|','|' '|'w'|'o'|'r'|'l'|'d'|   |   |   |   |   |   |
-     *                                                               |-remaining-|
+     *   0                                                    <= position <= limit    <= capacity
+     *   ↓                                                       ↓           ↓           ↓
+     *   |   |   |'h'|'e'|'l'|'l'|'o'|','|' '|'w'|'o'|'r'|'l'|'d'|   |   |   |   |   |   |
+     *                                                           |-remaining-|
      * </pre>
      *
      * @param buffer the byte buffer on which bytes are put.
@@ -227,9 +222,7 @@ public interface HelloWorld {
      * @see ByteBuffer#put(byte[])
      */
     default <T extends ByteBuffer> T put(final T buffer) {
-        if (buffer == null) {
-            throw new NullPointerException("buffer is null");
-        }
+        Objects.requireNonNull(buffer, "buffer is null");
         if (buffer.remaining() < BYTES) {
             throw new BufferOverflowException();
         }
@@ -326,40 +319,63 @@ public interface HelloWorld {
      * @param service  an executor service for submitting a task.
      * @return A future representing the result of the operation.
      */
-    default <T extends AsynchronousFileChannel> Future<T> writeAsync(final T channel,
-                                                                     final long position,
-                                                                     final ExecutorService service) {
+    @NotNull
+    default <T extends AsynchronousFileChannel> Future<T> writeAsync(@NotNull final T channel,
+                                                                     @PositiveOrZero final long position,
+                                                                     @NotNull final ExecutorService service) {
         Objects.requireNonNull(channel, "channel is null");
         if (position < 0L) {
             throw new IllegalArgumentException("position(" + position + ") is negative");
         }
         Objects.requireNonNull(service, "service is null");
-        final ByteBuffer buffer = (ByteBuffer) put(ByteBuffer.allocate(BYTES)).flip();
         return service.submit(() -> {
-            // TODO: Implement!
+            final ByteBuffer buffer = (ByteBuffer) put(ByteBuffer.allocate(BYTES)).flip();
+            for (long p = position; buffer.hasRemaining(); ) {
+                p += channel.write(buffer, p).get();
+            }
             return channel;
         });
     }
 
     /**
-     * Writes, asynchronously, the <a href="#hello-world-bytes">hello-world-bytes</a> to specified asynchronous file
-     * channel, starting at the given file position.
+     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified asynchronous file channel, starting at
+     * the given file position, using specified executor service.
      *
-     * @param channel  the channel to which bytes are written.
+     * @param <T>      channel type parameter
+     * @param channel  the asynchronous file channel to which bytes are written.
      * @param position the file position at which the transfer is to begin; must be non-negative.
      * @return A completable future representing the result of the operation.
      */
-    default CompletableFuture<Void> writeCompletable(final AsynchronousFileChannel channel, final long position) {
-        if (channel == null) {
-            throw new NullPointerException("channel is null");
-        }
+    @NotNull
+    default <T extends AsynchronousFileChannel> CompletableFuture<T> writeCompletable(
+            @NotNull final T channel, @PositiveOrZero final long position) {
+        Objects.requireNonNull(channel, "channel is null");
         if (position < 0L) {
             throw new IllegalArgumentException("position(" + position + ") is negative");
         }
-        final ByteBuffer buffer = ByteBuffer.allocate(BYTES);
-        put(buffer);
-        buffer.flip();
-        // TODO: Implement!
-        return null;
+        final CompletableFuture<T> future = new CompletableFuture<>();
+        final ByteBuffer buffer = (ByteBuffer) put(ByteBuffer.allocate(BYTES)).flip();
+        channel.write(
+                buffer,
+                position,
+                position,
+                new CompletionHandler<Integer, Long>() {
+                    @Override
+                    public void completed(final Integer result, Long attachment) {
+                        if (!buffer.hasRemaining()) {
+                            future.complete(channel);
+                            return;
+                        }
+                        attachment += result;
+                        channel.write(buffer, attachment, attachment, this);
+                    }
+
+                    @Override
+                    public void failed(final Throwable exc, final Long attachment) {
+                        future.completeExceptionally(exc);
+                    }
+                }
+        );
+        return future;
     }
 }

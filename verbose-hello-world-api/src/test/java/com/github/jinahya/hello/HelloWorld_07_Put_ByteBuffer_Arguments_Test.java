@@ -24,8 +24,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 
+import java.nio.Buffer;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.util.Random;
@@ -46,7 +48,8 @@ class HelloWorld_07_Put_ByteBuffer_Arguments_Test extends HelloWorldTest {
     @DisplayName("put(null) throws NullPointerException")
     @Test
     void put_ThrowNullPointerException_BufferIsNull() {
-        Assertions.assertThrows(NullPointerException.class, () -> helloWorld().put(null));
+        final ByteBuffer buffer = null;
+        Assertions.assertThrows(NullPointerException.class, () -> helloWorld().put(buffer));
     }
 
     /**
@@ -56,8 +59,10 @@ class HelloWorld_07_Put_ByteBuffer_Arguments_Test extends HelloWorldTest {
     @DisplayName("put(buffer) throws BufferOverflowException when buffer.remaining is not enough")
     @Test
     void put_ThrowBufferOverflowException_BufferRemainingIsNotEnough() {
+        // mock-maker-inline
         final ByteBuffer buffer = Mockito.spy(ByteBuffer.allocate(0));
-        Mockito.when(buffer.remaining()).thenReturn(new Random().nextInt(HelloWorld.BYTES));
+        Mockito.when(buffer.remaining())
+                .thenReturn(new Random().nextInt(HelloWorld.BYTES));
         Assertions.assertThrows(BufferOverflowException.class, () -> helloWorld().put(buffer));
     }
 }

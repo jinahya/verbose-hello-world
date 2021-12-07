@@ -64,6 +64,7 @@ class HelloWorld_07_Put_ByteBuffer_Test extends HelloWorldTest {
     @DisplayName("put(buffer-with-no-backing-array) invokes set(array) and does buffer.put(array)")
     @Test
     void put_InvokeSetArrayPutArrayToBuffer_BufferHasNoBackingArray() {
+        // mock-maker-inline
         final ByteBuffer buffer = Mockito.spy(ByteBuffer.allocateDirect(HelloWorld.BYTES)); // <1>
         if (buffer.hasArray()) {                                                            // <2>
             log.info("a direct byte buffer has a backing array?");

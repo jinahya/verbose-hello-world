@@ -25,9 +25,7 @@ package com.github.jinahya.hello;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-public class HelloWorldImplTest extends AbstractHelloWorldTest {
-
-    // -----------------------------------------------------------------------------------------------------------------
+class HelloWorldImplTest extends HelloWorldTest {
 
     /**
      * {@inheritDoc} The {@code helloWorld()} method of {@code HelloWorldImplTest} class returns a new instance of
@@ -35,7 +33,7 @@ public class HelloWorldImplTest extends AbstractHelloWorldTest {
      *
      * @return {@inheritDoc}
      */
-    HelloWorld spy() {
+    HelloWorld helloWorld() {
         return new HelloWorldImpl();
     }
 }

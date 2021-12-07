@@ -20,19 +20,15 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PositiveOrZero;
-
 /**
  * A class implements the {@link HelloWorld} interface.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-public class HelloWorldImpl implements HelloWorld {
+class HelloWorldImpl implements HelloWorld {
 
-    // -----------------------------------------------------------------------------------------------------------------
     @Override
-    public byte[] set(@NotNull final byte[] array, @PositiveOrZero final int index) {
+    public byte[] set(final byte[] array, final int index) {
         if (array == null) {
             throw new NullPointerException("array is null");
         }
@@ -43,6 +39,7 @@ public class HelloWorldImpl implements HelloWorld {
             throw new ArrayIndexOutOfBoundsException(
                     "array.length(" + array.length + ") < index(" + index + ")" + BYTES);
         }
-        return null;
+        // TODO: Implement!
+        return array;
     }
 }

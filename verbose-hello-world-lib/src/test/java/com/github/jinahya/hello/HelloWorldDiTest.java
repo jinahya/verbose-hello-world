@@ -30,9 +30,7 @@ import static java.util.concurrent.ThreadLocalRandom.current;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-public abstract class HelloWorldDiTest extends AbstractHelloWorldTest {
-
-    // -----------------------------------------------------------------------------------------------------------------
+abstract class HelloWorldDiTest extends HelloWorldTest {
 
     /**
      * An injection qualifier for {@link HelloWorldDemo}.
@@ -44,8 +42,8 @@ public abstract class HelloWorldDiTest extends AbstractHelloWorldTest {
      */
     static final String IMPL = "impl";
 
-    // -----------------------------------------------------------------------------------------------------------------
-    HelloWorld spy() {
+    @Override
+    HelloWorld helloWorld() {
         switch (current().nextInt(4)) {
             case 0:
                 return namedDemo;
@@ -58,7 +56,6 @@ public abstract class HelloWorldDiTest extends AbstractHelloWorldTest {
         }
     }
 
-    // -----------------------------------------------------------------------------------------------------------------
     @Inject
     @Named(DEMO)
     HelloWorld namedDemo;

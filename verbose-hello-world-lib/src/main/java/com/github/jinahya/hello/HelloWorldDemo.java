@@ -20,29 +20,25 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PositiveOrZero;
 import java.nio.charset.StandardCharsets;
 
 /**
- * A class implements the {@link HelloWorld} interface.
+ * A class implements the {@link HelloWorld} interface for a demonstration purpose.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 class HelloWorldDemo implements HelloWorld {
 
-    // -----------------------------------------------------------------------------------------------------------------
     @Override
-    public byte[] set(@NotNull final byte[] array, @PositiveOrZero final int index) {
-        final byte[] source = "hello, world".getBytes(StandardCharsets.US_ASCII); // <1>
-        assert source.length == BYTES;
+    public byte[] set(final byte[] array, final int index) {
+        final byte[] source = "hello, world".getBytes(StandardCharsets.US_ASCII);
         System.arraycopy(
-                source,       // <1>
-                0,            // <2>
-                array,        // <3>
-                index,        // <4>
-                source.length // <5>
+                source,
+                0,
+                array,
+                index,
+                source.length
         );
-        return array; // <1>
+        return array;
     }
 }
