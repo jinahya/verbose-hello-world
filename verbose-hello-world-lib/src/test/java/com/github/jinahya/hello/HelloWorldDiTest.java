@@ -56,19 +56,19 @@ abstract class HelloWorldDiTest extends HelloWorldTest {
         }
     }
 
-    @Inject
     @Named(DEMO)
+    @Inject
     HelloWorld namedDemo;
 
-    @Inject
     @Named(IMPL)
+    @Inject
     HelloWorld namedImpl;
 
-    @Inject
     @QualifiedDemo
+    @Inject
     HelloWorld qualifiedDemo;
 
-    @Inject
     @QualifiedImpl
+    @Inject
     HelloWorld qualifiedImpl;
 }
