@@ -104,7 +104,7 @@ public interface HelloWorld {
      * @see #set(byte[])
      * @see OutputStream#write(byte[])
      */
-    default <T extends OutputStream> T write(final OutputStream stream) throws IOException {
+    default <T extends OutputStream> T write(final T stream) throws IOException {
         // TODO: implement!
         return null;
     }
@@ -122,7 +122,9 @@ public interface HelloWorld {
      * @see #write(OutputStream)
      */
     default <T extends File> T append(final T file) throws IOException {
-        Objects.requireNonNull(file, "file is null");
+        if (file == null) {
+            throw new NullPointerException("file is null");
+        }
         // TODO: Implement!
         return file;
     }

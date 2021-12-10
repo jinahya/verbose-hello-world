@@ -50,8 +50,8 @@ class HelloWorld_01_Set_Array_Test extends HelloWorldTest {
     @DisplayName("set(array) returns array")
     @Test
     void set_ReturnArray_() {
-        final byte[] expected = new byte[HelloWorld.BYTES];
-        final byte[] actual = helloWorld().set(expected);
+        final byte[] array = new byte[HelloWorld.BYTES];
+        final byte[] actual = helloWorld().set(array);
         // TODO: Implement!
     }
 }
