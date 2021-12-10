@@ -35,9 +35,9 @@ class HelloWorldImpl implements HelloWorld {
         if (index < 0) {
             throw new ArrayIndexOutOfBoundsException("index(" + index + ") < 0");
         }
-        if (array.length < index + BYTES) {
+        if (index + BYTES > array.length) {
             throw new ArrayIndexOutOfBoundsException(
-                    "array.length(" + array.length + ") < index(" + index + ")" + BYTES);
+                    "index(" + index + ")" + BYTES + " > array.length(" + array.length + ")");
         }
         // TODO: Implement!
         return array;
