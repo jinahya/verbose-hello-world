@@ -42,6 +42,7 @@ class HelloWorld_02_Write_OutputStream_Arguments_Test extends HelloWorldTest {
     @DisplayName("write((OutputStream) null) throws NullPointerException")
     @Test
     void write_ThrowNullPointerException_StreamIsNull() {
+        final OutputStream stream = null;
         // TODO: Implement!
     }
 }
