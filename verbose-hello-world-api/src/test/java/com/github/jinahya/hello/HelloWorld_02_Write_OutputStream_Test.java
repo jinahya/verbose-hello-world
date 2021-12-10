@@ -58,8 +58,8 @@ class HelloWorld_02_Write_OutputStream_Test extends HelloWorldTest {
     @DisplayName("write(stream) returns stream")
     @Test
     void write_ReturnStream_() throws IOException {
-        final OutputStream expected = Mockito.mock(OutputStream.class);
-        final OutputStream actual = helloWorld().write(expected);
+        final OutputStream stream = Mockito.mock(OutputStream.class);
+        final OutputStream actual = helloWorld().write(stream);
         // TODO: Implement!
     }
 }
