@@ -65,7 +65,7 @@ class HelloWorld_03_Append_File_Test extends HelloWorldTest {
     @DisplayName("append(file) returns file")
     @Test
     void append_ReturnFile_(@TempDir final File tempDir) throws IOException {
-        final File file = File.createTempFile("tmp", null);
+        final File file = File.createTempFile("tmp", null, tempDir);
         final File actual = helloWorld().append(file);
         Assertions.assertSame(file, actual);
     }
