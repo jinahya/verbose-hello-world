@@ -64,8 +64,8 @@ class HelloWorld_03_Append_File_Test extends HelloWorldTest {
     @DisplayName("append(file) returns file")
     @Test
     void append_ReturnFile_() throws IOException {
-        final File expected = Mockito.mock(File.class);
-        final File actual = helloWorld().append(expected);
-        Assertions.assertSame(expected, actual);
+        final File file = Mockito.mock(File.class);
+        final File actual = helloWorld().append(file);
+        Assertions.assertSame(file, actual);
     }
 }
