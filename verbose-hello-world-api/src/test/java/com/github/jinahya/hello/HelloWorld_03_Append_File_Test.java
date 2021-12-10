@@ -59,12 +59,13 @@ class HelloWorld_03_Append_File_Test extends HelloWorldTest {
     /**
      * Asserts {@link HelloWorld#append(File) append(file)} returns given {@code file} arguments.
      *
+     * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
     @DisplayName("append(file) returns file")
     @Test
-    void append_ReturnFile_() throws IOException {
-        final File file = Mockito.mock(File.class);
+    void append_ReturnFile_(@TempDir final File tempDir) throws IOException {
+        final File file = File.createTempFile("tmp", null);
         final File actual = helloWorld().append(file);
         Assertions.assertSame(file, actual);
     }
