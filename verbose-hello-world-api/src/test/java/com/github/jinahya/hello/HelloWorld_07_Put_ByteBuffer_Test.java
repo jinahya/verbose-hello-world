@@ -70,6 +70,7 @@ class HelloWorld_07_Put_ByteBuffer_Test extends HelloWorldTest {
             log.info("a direct byte buffer has a backing array?");
             Mockito.when(buffer.hasArray()).thenReturn(false);                              // <3>
         }
+        final int position = buffer.position();
         // TODO: Implement!
     }
 
