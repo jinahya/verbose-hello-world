@@ -21,6 +21,7 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -71,6 +72,7 @@ class HelloWorld_10_WriteAsync_AsynchronousByteChannel_Test extends HelloWorldTe
         final ExecutorService service = Executors.newSingleThreadExecutor();
         final Future<AsynchronousByteChannel> future = helloWorld().writeAsync(channel, service);
         final AsynchronousByteChannel actual = future.get();
+        Assertions.assertSame(channel, actual);
         // TODO: Implement!
     }
 }
