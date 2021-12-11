@@ -45,7 +45,7 @@ import java.util.concurrent.atomic.LongAdder;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorld_10_WriteAsync_AsynchronousByteChannel_Test extends HelloWorldTest {
+class HelloWorld_11_WriteAsync_AsynchronousByteChannel_Test extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#writeAsync(AsynchronousByteChannel, ExecutorService) writeAsync(channel, service)}
