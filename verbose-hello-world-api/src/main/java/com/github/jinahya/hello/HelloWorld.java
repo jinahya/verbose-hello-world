@@ -189,8 +189,12 @@ public interface HelloWorld {
      * @see RandomAccessFile#write(byte[])
      */
     default <T extends RandomAccessFile> T write(final T file) throws IOException {
-        Objects.requireNonNull(file, "file is null");
-        file.write(set(new byte[BYTES]));
+        if (file == null) {
+            throw new NullPointerException("file is null");
+        }
+        final byte[] array = new byte[BYTES];
+        set(array);
+        file.write(array);
         return file;
     }
 

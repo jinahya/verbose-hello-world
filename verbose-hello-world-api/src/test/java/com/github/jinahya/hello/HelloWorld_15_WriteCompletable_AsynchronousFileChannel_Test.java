@@ -30,7 +30,6 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.CompletionHandler;
@@ -111,21 +110,38 @@ class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Test extends HelloW
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
      */
-    @DisplayName("writeCompletable(channel, position, service) writes 12 bytes starting at position")
+    @DisplayName("writeCompletable(channel, position) writes 12 bytes starting at position")
     @Test
     void writeCompletable_Writes12BytesFromPosition_(@TempDir final Path tempDir)
             throws IOException, InterruptedException, ExecutionException {
         final Path file = Files.createTempFile(tempDir, null, null);
         final long position = new Random().nextInt(1024);
         try (AsynchronousFileChannel channel = AsynchronousFileChannel.open(file, StandardOpenOption.WRITE)) {
-            helloWorld().writeCompletable(channel, position).get().force(false);
+            helloWorld().writeCompletable(channel, position).get();
+            channel.force(false);
         }
-        try (RandomAccessFile f = new RandomAccessFile(file.toFile(), "r")) {
-            f.seek(position);
-            for (int i = 0; i < HelloWorld.BYTES; i++) {
-                final int r = f.read();
-                Assertions.assertNotEquals(-1, r);
-            }
+        try (AsynchronousFileChannel channel = AsynchronousFileChannel.open(file, StandardOpenOption.READ)) {
+            final ByteBuffer buffer = ByteBuffer.allocate(HelloWorld.BYTES);
+            channel.read(
+                    buffer, // buffer
+                    position, // position
+                    position, // attachment
+                    new CompletionHandler<Integer, Long>() { // handler
+                        @Override
+                        public void completed(final Integer result, Long attachment) {
+                            if (!buffer.hasRemaining()) {
+                                return;
+                            }
+                            attachment += result;
+                            channel.read(buffer, attachment, attachment, this);
+                        }
+
+                        @Override
+                        public void failed(final Throwable exc, final Long attachment) {
+                            log.error("failed to read from channel", exc);
+                        }
+                    }
+            );
         }
     }
 }

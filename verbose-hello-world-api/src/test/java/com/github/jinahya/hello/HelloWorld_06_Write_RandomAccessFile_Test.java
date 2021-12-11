@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import java.io.File;
@@ -57,7 +58,7 @@ class HelloWorld_06_Write_RandomAccessFile_Test extends HelloWorldTest {
         final byte[] array = arrayCaptor().getValue();
         Assertions.assertNotNull(array);
         Assertions.assertEquals(HelloWorld.BYTES, array.length);
-        Mockito.verify(file, Mockito.times(1)).write(array);
+        Mockito.verify(file, Mockito.times(1)).write(ArgumentMatchers.same(array));
     }
 
     /**
