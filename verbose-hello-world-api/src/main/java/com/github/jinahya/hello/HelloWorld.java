@@ -285,7 +285,7 @@ public interface HelloWorld {
      *
      * @param channel the channel to which bytes are written.
      * @return A future representing the result of the operation.
-     * @throws InterruptedException when interrupted while working.
+     * @throws InterruptedException if interrupted while working.
      * @throws ExecutionException   if failed to operate.
      */
     default <T extends AsynchronousByteChannel> T write(final T channel)
