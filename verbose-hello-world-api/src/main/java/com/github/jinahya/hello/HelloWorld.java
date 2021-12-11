@@ -287,6 +287,9 @@ public interface HelloWorld {
      * @return A future representing the result of the operation.
      * @throws InterruptedException if interrupted while working.
      * @throws ExecutionException   if failed to operate.
+     * @implSpec The default implementation in this interface invokes {@link #put(ByteBuffer) put(buffer)} method with a
+     * byte buffer of {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and write the buffer to specified
+     * channel
      */
     default <T extends AsynchronousByteChannel> T write(final T channel)
             throws InterruptedException, ExecutionException {
