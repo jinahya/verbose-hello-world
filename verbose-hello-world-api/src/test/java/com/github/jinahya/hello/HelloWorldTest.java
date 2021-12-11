@@ -26,7 +26,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Captor;
+import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.OutputStream;
@@ -47,7 +51,7 @@ abstract class HelloWorldTest {
         final byte[] array = ArgumentMatchers.any(byte[].class);
         final int index = ArgumentMatchers.anyInt();
         Mockito.lenient().when(helloWorld.set(array, index)) // <1>
-                .thenAnswer(i -> i.getArgument(0)); // <2>
+               .thenAnswer(i -> i.getArgument(0)); // <2>
     }
 
     @Spy

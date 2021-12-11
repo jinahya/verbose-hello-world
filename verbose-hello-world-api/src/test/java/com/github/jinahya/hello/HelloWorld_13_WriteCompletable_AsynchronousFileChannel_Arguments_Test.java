@@ -60,7 +60,6 @@ class HelloWorld_13_WriteCompletable_AsynchronousFileChannel_Arguments_Test exte
     void writeCompletable_ThrowIllegalArgumentException_PositionIsNegative() {
         final AsynchronousFileChannel channel = Mockito.mock(AsynchronousFileChannel.class);
         final long position = new Random().nextLong() | Long.MIN_VALUE;
-        Assertions.assertThrows(IllegalArgumentException.class,
-                                () -> helloWorld().writeCompletable(channel, position));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> helloWorld().writeCompletable(channel, position));
     }
 }

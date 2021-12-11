@@ -51,9 +51,7 @@ class HelloWorld_04_Send_Socket_Test extends HelloWorldTest {
         final Socket socket = Mockito.spy(new Socket());              // <1>
         final OutputStream stream = Mockito.mock(OutputStream.class); // <2>
         Mockito.lenient()                                             // <3>
-                .doReturn(stream)
-                .when(socket)
-                .getOutputStream();
+               .doReturn(stream).when(socket).getOutputStream();
         helloWorld().send(socket);                                    // <4>
         // TODO: Implement!
     }
@@ -67,10 +65,7 @@ class HelloWorld_04_Send_Socket_Test extends HelloWorldTest {
     @Test
     void send_ReturnSocket_() throws IOException {
         final Socket expected = Mockito.spy(new Socket());
-        Mockito.lenient()
-                .doReturn(Mockito.mock(OutputStream.class))
-                .when(expected)
-                .getOutputStream();
+        Mockito.lenient().doReturn(Mockito.mock(OutputStream.class)).when(expected).getOutputStream();
         final Socket actual = helloWorld().send(expected);
         Assertions.assertSame(expected, actual);
     }

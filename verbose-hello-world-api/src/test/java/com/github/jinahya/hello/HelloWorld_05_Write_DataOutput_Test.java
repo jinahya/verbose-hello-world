@@ -50,8 +50,7 @@ class HelloWorld_05_Write_DataOutput_Test extends HelloWorldTest {
     void write_InvokeSetArrayWriteArrayToData_() throws IOException {
         final DataOutput data = Mockito.mock(DataOutput.class);
         helloWorld().write(data);
-        Mockito.verify(helloWorld(), Mockito.times(1))
-                .set(arrayCaptor().capture());
+        Mockito.verify(helloWorld(), Mockito.times(1)).set(arrayCaptor().capture());
         final byte[] array = arrayCaptor().getValue();
         Assertions.assertNotNull(array);
         Assertions.assertEquals(HelloWorld.BYTES, array.length);

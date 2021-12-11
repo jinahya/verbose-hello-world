@@ -22,18 +22,26 @@ package com.github.jinahya.hello;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
-import java.io.*;
+import java.io.DataOutput;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.RandomAccessFile;
 import java.net.Socket;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
-import java.nio.channels.*;
+import java.nio.channels.AsynchronousByteChannel;
+import java.nio.channels.AsynchronousFileChannel;
+import java.nio.channels.CompletionHandler;
+import java.nio.channels.FileChannel;
+import java.nio.channels.WritableByteChannel;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.concurrent.atomic.LongAccumulator;
 
 /**
  * An interface for generating <a href="#hello-world-bytes">hello-world-bytes</a> to various targets.
@@ -349,35 +357,31 @@ public interface HelloWorld {
      * @return A completable future representing the result of the operation.
      */
     @NotNull
-    default <T extends AsynchronousFileChannel> CompletableFuture<T> writeCompletable(
-            @NotNull final T channel, @PositiveOrZero final long position) {
+    default <T extends AsynchronousFileChannel> CompletableFuture<T> writeCompletable(@NotNull final T channel,
+                                                                                      @PositiveOrZero
+                                                                                      final long position) {
         Objects.requireNonNull(channel, "channel is null");
         if (position < 0L) {
             throw new IllegalArgumentException("position(" + position + ") is negative");
         }
         final CompletableFuture<T> future = new CompletableFuture<>();
         final ByteBuffer buffer = (ByteBuffer) put(ByteBuffer.allocate(BYTES)).flip();
-        channel.write(
-                buffer,
-                position,
-                position,
-                new CompletionHandler<Integer, Long>() {
-                    @Override
-                    public void completed(final Integer result, Long attachment) {
-                        if (!buffer.hasRemaining()) {
-                            future.complete(channel);
-                            return;
-                        }
-                        attachment += result;
-                        channel.write(buffer, attachment, attachment, this);
-                    }
-
-                    @Override
-                    public void failed(final Throwable exc, final Long attachment) {
-                        future.completeExceptionally(exc);
-                    }
+        channel.write(buffer, position, position, new CompletionHandler<Integer, Long>() {
+            @Override
+            public void completed(final Integer result, Long attachment) {
+                if (!buffer.hasRemaining()) {
+                    future.complete(channel);
+                    return;
                 }
-        );
+                attachment += result;
+                channel.write(buffer, attachment, attachment, this);
+            }
+
+            @Override
+            public void failed(final Throwable exc, final Long attachment) {
+                future.completeExceptionally(exc);
+            }
+        });
         return future;
     }
 }
