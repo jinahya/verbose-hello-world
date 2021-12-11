@@ -66,6 +66,11 @@ class HelloWorld_10_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
             writtenSoFar.add(written);
             return CompletableFuture.completedFuture(written);
         });
+        helloWorld().write(channel);
+        Mockito.verify(helloWorld(), Mockito.times(1)).put(bufferCaptor().capture());
+        final ByteBuffer buffer = bufferCaptor().getValue();
+        Assertions.assertNotNull(buffer);
+        Assertions.assertEquals(HelloWorld.BYTES, buffer.capacity());
         // TODO: Implement!
     }
 
