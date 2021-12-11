@@ -34,10 +34,10 @@ import java.util.concurrent.ExecutorService;
  * arguments verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_11_WriteCompletable_AsynchronousByteChannel_Test
+ * @see HelloWorld_12_WriteCompletable_AsynchronousByteChannel_Test
  */
 @Slf4j
-class HelloWorld_11_WriteCompletable_AsynchronousByteChannel_Arguments_Test extends HelloWorldTest {
+class HelloWorld_12_WriteCompletable_AsynchronousByteChannel_Arguments_Test extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#writeCompletable(AsynchronousByteChannel, ExecutorService)} method throws a {@link

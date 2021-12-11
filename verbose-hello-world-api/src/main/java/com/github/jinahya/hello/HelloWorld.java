@@ -280,6 +280,19 @@ public interface HelloWorld {
     // ----------------------------------------------------------------------------------------- AsynchronousByteChannel
 
     /**
+     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified channel.
+     *
+     * @param channel the channel to which bytes are written.
+     * @return A future representing the result of the operation.
+     */
+    default <T extends AsynchronousByteChannel> T write(final T channel) {
+        Objects.requireNonNull(channel, "channel is null");
+        final ByteBuffer buffer = (ByteBuffer) put(ByteBuffer.allocate(BYTES)).flip();
+        // TODO: Implement!
+        return channel;
+    }
+
+    /**
      * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified channel using specified executor
      * service.
      *
@@ -326,8 +339,7 @@ public interface HelloWorld {
      * @param service  an executor service for submitting a task.
      * @return A future representing the result of the operation.
      */
-    default <T extends AsynchronousFileChannel> Future<T> writeAsync(final T channel,
-                                                                     final long position,
+    default <T extends AsynchronousFileChannel> Future<T> writeAsync(final T channel, final long position,
                                                                      final ExecutorService service) {
         Objects.requireNonNull(channel, "channel is null");
         if (position < 0L) {

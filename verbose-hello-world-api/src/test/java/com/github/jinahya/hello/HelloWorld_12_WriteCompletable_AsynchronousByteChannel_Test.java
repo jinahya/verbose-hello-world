@@ -39,10 +39,10 @@ import java.util.concurrent.atomic.LongAdder;
  * A class for testing {@link HelloWorld#writeCompletable(AsynchronousByteChannel, ExecutorService)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_11_WriteCompletable_AsynchronousByteChannel_Arguments_Test
+ * @see HelloWorld_12_WriteCompletable_AsynchronousByteChannel_Arguments_Test
  */
 @Slf4j
-class HelloWorld_11_WriteCompletable_AsynchronousByteChannel_Test extends HelloWorldTest {
+class HelloWorld_12_WriteCompletable_AsynchronousByteChannel_Test extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#writeCompletable(AsynchronousByteChannel, ExecutorService)} method invokes {@link

@@ -48,10 +48,10 @@ import java.util.concurrent.atomic.LongAdder;
  * A class for testing {@link HelloWorld#writeAsync(AsynchronousFileChannel, long, ExecutorService)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_12_WriteAsync_AsynchronousFileChannel_Arguments_Test
+ * @see HelloWorld_14_WriteAsync_AsynchronousFileChannel_Arguments_Test
  */
 @Slf4j
-class HelloWorld_12_WriteAsync_AsynchronousFileChannel_Test extends HelloWorldTest {
+class HelloWorld_14_WriteAsync_AsynchronousFileChannel_Test extends HelloWorldTest {
 
     // TODO: Remove following stubbing when you implemented the put(ByteBuffer) method!
     @BeforeEach
