@@ -333,6 +333,7 @@ public interface HelloWorld {
         final CompletableFuture<T> future = new CompletableFuture<>();                 // <1>
         final ByteBuffer buffer = (ByteBuffer) put(ByteBuffer.allocate(BYTES)).flip(); // <2>
         // TODO: Implement!
+        future.complete(channel); // // TODO: Remove!
         return future;                                                                 // <3>
     }
 
