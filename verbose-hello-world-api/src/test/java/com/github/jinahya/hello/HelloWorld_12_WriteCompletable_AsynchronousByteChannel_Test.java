@@ -21,6 +21,7 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -45,8 +46,9 @@ import java.util.concurrent.atomic.LongAdder;
 class HelloWorld_12_WriteCompletable_AsynchronousByteChannel_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#writeCompletable(AsynchronousByteChannel, ExecutorService)} method invokes {@link
-     * HelloWorld#put(ByteBuffer) put(buffer)} and writes the buffer to {@code channel}.
+     * Asserts {@link HelloWorld#writeCompletable(AsynchronousByteChannel, ExecutorService) writeCompletable(channel,
+     * service)} method invokes {@link HelloWorld#put(ByteBuffer) put(buffer)} method and writes the buffer to the
+     * {@code channel}.
      *
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
@@ -68,6 +70,8 @@ class HelloWorld_12_WriteCompletable_AsynchronousByteChannel_Test extends HelloW
         }).when(channel).write(Mockito.any(), Mockito.<Void>any(), Mockito.<CompletionHandler<Integer, Void>>any());
         final ExecutorService service = Executors.newSingleThreadExecutor();
         final CompletableFuture<AsynchronousByteChannel> future = helloWorld().writeCompletable(channel, service);
+        final AsynchronousByteChannel actual = future.get();
+        Assertions.assertSame(channel, actual);
         // TODO: Implement!
     }
 }
