@@ -86,8 +86,15 @@ class HelloWorld_08_Write_WritableByteChannel_Test extends HelloWorldTest {
     @DisplayName("write(channel) returns channel")
     @Test
     void write_ReturnChannel_() throws IOException {
-        final WritableByteChannel expected = Mockito.mock(WritableByteChannel.class); // <1>
-        final WritableByteChannel actual = helloWorld().write(expected);
-        Assertions.assertSame(expected, actual);
+        final WritableByteChannel channel = Mockito.mock(WritableByteChannel.class);
+        Mockito.lenient().when(channel.write(ArgumentMatchers.any(ByteBuffer.class)))
+               .thenAnswer(i -> {
+                   final ByteBuffer buffer = i.getArgument(0, ByteBuffer.class);
+                   final int written = new Random().nextInt(buffer.remaining() + 1);
+                   buffer.position(buffer.position() + written);
+                   return written;
+               });
+        final WritableByteChannel actual = helloWorld().write(channel);
+        Assertions.assertSame(channel, actual);
     }
 }
