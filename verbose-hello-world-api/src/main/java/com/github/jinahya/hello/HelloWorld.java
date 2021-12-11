@@ -330,8 +330,8 @@ public interface HelloWorld {
                                                                                       final ExecutorService service) {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(service, "service is null");
-        final ByteBuffer buffer = (ByteBuffer) put(ByteBuffer.allocate(BYTES)).flip(); // <1>
-        final CompletableFuture<T> future = new CompletableFuture<>();                 // <2>
+        final CompletableFuture<T> future = new CompletableFuture<>();                 // <1>
+        final ByteBuffer buffer = (ByteBuffer) put(ByteBuffer.allocate(BYTES)).flip(); // <2>
         // TODO: Implement!
         return future;                                                                 // <3>
     }
