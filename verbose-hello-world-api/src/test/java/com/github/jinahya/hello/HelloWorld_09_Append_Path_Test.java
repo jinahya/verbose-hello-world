@@ -60,13 +60,14 @@ class HelloWorld_09_Append_Path_Test extends HelloWorldTest {
     /**
      * Asserts {@link HelloWorld#append(Path) append(path)} method returns the {@code path} argument.
      *
+     * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
     @DisplayName("append(path) returns path")
     @Test
-    void append_ReturnPath_() throws IOException {
-        final Path expected = Mockito.mock(Path.class);
-        final Path actual = helloWorld().append(expected);
-        Assertions.assertSame(expected, actual);
+    void append_ReturnPath_(@TempDir final Path tempDir) throws IOException {
+        final Path path = Files.createTempFile(tempDir, null, null);
+        final Path actual = helloWorld().append(path);
+        Assertions.assertSame(path, actual);
     }
 }
