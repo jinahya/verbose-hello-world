@@ -42,7 +42,7 @@ class HelloWorld_03_Append_File_Arguments_Test extends HelloWorldTest {
      */
     @DisplayName("append((File) null) throws a NullPointerException")
     @Test
-    void append_NullPointerException_FileIsNull() {
+    void append_ThrowNullPointerException_FileIsNull() {
         Assertions.assertThrows(NullPointerException.class, () -> helloWorld().append((File) null));
     }
 }
