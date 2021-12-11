@@ -45,11 +45,12 @@ class HelloWorld_06_Write_RandomAccessFile_Test extends HelloWorldTest {
      * set(array)} method with an array of {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and invokes {@link
      * RandomAccessFile#write(byte[]) file.write(array)}.
      *
+     * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
     @DisplayName("write(file) invokes set(byte[BYTES]) method and writes the array to file")
     @Test
-    void write_InvokeSetArrayWriteArrayToFile_() throws IOException {
+    void write_InvokeSetArrayWriteArrayToFile_(@TempDir final File tempDir) throws IOException {
         final RandomAccessFile file = Mockito.mock(RandomAccessFile.class);
         helloWorld().write(file);
         Mockito.verify(helloWorld(), Mockito.times(1)).set(arrayCaptor().capture());
@@ -57,24 +58,6 @@ class HelloWorld_06_Write_RandomAccessFile_Test extends HelloWorldTest {
         Assertions.assertNotNull(array);
         Assertions.assertEquals(HelloWorld.BYTES, array.length);
         Mockito.verify(file, Mockito.times(1)).write(array);
-    }
-
-    /**
-     * Asserts {@link HelloWorld#write(RandomAccessFile) write(file)} method writes bytes at {@link
-     * RandomAccessFile#getFilePointer() file.filePointer}.
-     *
-     * @param tempDir a temporary directory to test with.
-     * @throws IOException if an I/O error occurs.
-     */
-    @DisplayName("write(file) writes 12 bytes starting from file.filePointer")
-    @Test
-    void write_Write12BytesStartingAtFilePointer_(final @TempDir File tempDir) throws IOException {
-        final File tempFile = File.createTempFile("tmp", null, tempDir);
-        try (RandomAccessFile file = Mockito.spy(new RandomAccessFile(tempFile, "rw"))) {
-            final long filePointer = file.getFilePointer();
-            helloWorld().write(file);
-            // TODO: Implement!
-        }
     }
 
     /**
