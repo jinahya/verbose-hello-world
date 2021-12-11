@@ -24,14 +24,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.nio.channels.AsynchronousByteChannel;
-import java.util.concurrent.ExecutorService;
 
 /**
- * A class for testing {@link HelloWorld#writeCompletable(AsynchronousByteChannel, ExecutorService)} method regarding
- * arguments verification.
+ * A class for testing {@link HelloWorld#writeCompletable(AsynchronousByteChannel)} method regarding arguments
+ * verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_12_WriteCompletable_AsynchronousByteChannel_Test
@@ -40,26 +38,13 @@ import java.util.concurrent.ExecutorService;
 class HelloWorld_12_WriteCompletable_AsynchronousByteChannel_Arguments_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#writeCompletable(AsynchronousByteChannel, ExecutorService) writeCompletable(channel,
-     * service)} method throws a {@link NullPointerException} when the {@code channel} argument is {@code null}.
+     * Asserts {@link HelloWorld#writeCompletable(AsynchronousByteChannel) writeCompletable(channel)} method throws a
+     * {@link NullPointerException} when the {@code channel} argument is {@code null}.
      */
-    @DisplayName("writeCompletable(AsynchronousByteChannel) null, ) throws NullPointerException")
+    @DisplayName("writeCompletable(null) throws NullPointerException")
     @Test
-    void writeAsync_NullPointerException_ChannelIsNull() {
+    void writeAsync_ThrowNullPointerException_ChannelIsNull() {
         final AsynchronousByteChannel channel = null;
-        final ExecutorService service = Mockito.mock(ExecutorService.class);
-        Assertions.assertThrows(NullPointerException.class, () -> helloWorld().writeCompletable(channel, service));
-    }
-
-    /**
-     * Asserts {@link HelloWorld#writeCompletable(AsynchronousByteChannel, ExecutorService) writeCompletable(channel,
-     * service)} method throws a {@link NullPointerException} when {@code service} argument is {@code null}.
-     */
-    @DisplayName("writeCompletable(, null) throws NullPointerException")
-    @Test
-    void writeAsync_NullPointerException_ServiceIsNull() {
-        final AsynchronousByteChannel channel = Mockito.mock(AsynchronousByteChannel.class);
-        final ExecutorService service = null;
-        Assertions.assertThrows(NullPointerException.class, () -> helloWorld().writeCompletable(channel, service));
+        Assertions.assertThrows(NullPointerException.class, () -> helloWorld().writeCompletable(channel));
     }
 }

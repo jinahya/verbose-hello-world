@@ -37,7 +37,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.LongAdder;
 
 /**
- * A class for testing {@link HelloWorld#writeCompletable(AsynchronousByteChannel, ExecutorService)} method.
+ * A class for testing {@link HelloWorld#writeCompletable(AsynchronousByteChannel)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_12_WriteCompletable_AsynchronousByteChannel_Arguments_Test
@@ -46,14 +46,13 @@ import java.util.concurrent.atomic.LongAdder;
 class HelloWorld_12_WriteCompletable_AsynchronousByteChannel_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#writeCompletable(AsynchronousByteChannel, ExecutorService) writeCompletable(channel,
-     * service)} method invokes {@link HelloWorld#put(ByteBuffer) put(buffer)} method and writes the buffer to the
-     * {@code channel}.
+     * Asserts {@link HelloWorld#writeCompletable(AsynchronousByteChannel) writeCompletable(channel)} method invokes
+     * {@link HelloWorld#put(ByteBuffer) put(buffer)} method and writes the buffer to the {@code channel}.
      *
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
      */
-    @DisplayName("writeCompletable(channel, service) invokes put(buffer) and writes the buffer to channel")
+    @DisplayName("writeCompletable(channel) invokes put(buffer) and writes the buffer to channel")
     @Test
     void writeAsync_InvokePutBufferWriteBufferToChannel_() throws InterruptedException, ExecutionException {
         final LongAdder writtenSoFar = new LongAdder();
@@ -68,8 +67,7 @@ class HelloWorld_12_WriteCompletable_AsynchronousByteChannel_Test extends HelloW
             handler.completed(written, attachment);
             return null;
         }).when(channel).write(Mockito.any(), Mockito.<Void>any(), Mockito.<CompletionHandler<Integer, Void>>any());
-        final ExecutorService service = Executors.newSingleThreadExecutor();
-        final CompletableFuture<AsynchronousByteChannel> future = helloWorld().writeCompletable(channel, service);
+        final CompletableFuture<AsynchronousByteChannel> future = helloWorld().writeCompletable(channel);
         final AsynchronousByteChannel actual = future.get();
         Assertions.assertSame(channel, actual);
         Mockito.verify(helloWorld(), Mockito.times(1)).put(bufferCaptor().capture());

@@ -323,18 +323,15 @@ public interface HelloWorld {
      * specified service.
      *
      * @param channel the channel to which bytes are written.
-     * @param service the service.
      * @return a completable future of {@code channel}.
      */
-    default <T extends AsynchronousByteChannel> CompletableFuture<T> writeCompletable(final T channel,
-                                                                                      final ExecutorService service) {
+    default <T extends AsynchronousByteChannel> CompletableFuture<T> writeCompletable(final T channel) {
         Objects.requireNonNull(channel, "channel is null");
-        Objects.requireNonNull(service, "service is null");
         final CompletableFuture<T> future = new CompletableFuture<>();                 // <1>
         final ByteBuffer buffer = (ByteBuffer) put(ByteBuffer.allocate(BYTES)).flip(); // <2>
         // TODO: Implement!
-        future.complete(channel); // // TODO: Remove!
-        return future;                                                                 // <3>
+        future.complete(channel);                                                      // <3> // TODO: Remove!
+        return future;                                                                 // <4>
     }
 
     // ----------------------------------------------------------------------------------------- AsynchronousFileChannel
