@@ -70,7 +70,6 @@ class HelloWorld_12_WriteCompletable_AsynchronousByteChannel_Test extends HelloW
         }).when(channel).write(Mockito.any(), Mockito.<Void>any(), Mockito.<CompletionHandler<Integer, Void>>any());
         final ExecutorService service = Executors.newSingleThreadExecutor();
         final CompletableFuture<AsynchronousByteChannel> future = helloWorld().writeCompletable(channel, service);
-        final AsynchronousByteChannel actual = future.get();
         // TODO: Implement!
     }
 }
