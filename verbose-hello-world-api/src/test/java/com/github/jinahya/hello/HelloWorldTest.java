@@ -35,6 +35,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
+import java.nio.channels.WritableByteChannel;
 
 /**
  * An abstract class for testing methods defined in {@link HelloWorld} interface.
@@ -78,4 +79,9 @@ abstract class HelloWorldTest {
     @Accessors(fluent = true)
     @Getter
     private ArgumentCaptor<ByteBuffer> bufferCaptor;
+
+    @Captor
+    @Accessors(fluent = true)
+    @Getter
+    private ArgumentCaptor<WritableByteChannel> channelCaptor;
 }
