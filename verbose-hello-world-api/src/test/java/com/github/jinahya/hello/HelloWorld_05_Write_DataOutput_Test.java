@@ -24,9 +24,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mockito;
 
 import java.io.DataOutput;
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -43,11 +45,12 @@ class HelloWorld_05_Write_DataOutput_Test extends HelloWorldTest {
      * method with an array of {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and writes the array to
      * specified data output.
      *
+     * @param tempDir a temporary directory to test with
      * @throws IOException if an I/O error occurs.
      */
     @DisplayName("write(data) invokes set(byte[BYTES]) and writes the array to data")
     @Test
-    void write_InvokeSetArrayWriteArrayToData_() throws IOException {
+    void write_InvokeSetArrayWriteArrayToData_(@TempDir final File tempDir) throws IOException {
         final DataOutput data = Mockito.mock(DataOutput.class);
         helloWorld().write(data);
         Mockito.verify(helloWorld(), Mockito.times(1)).set(arrayCaptor().capture());
