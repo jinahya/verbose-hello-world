@@ -326,10 +326,9 @@ public interface HelloWorld {
      * @param service  an executor service for submitting a task.
      * @return A future representing the result of the operation.
      */
-    @NotNull
-    default <T extends AsynchronousFileChannel> Future<T> writeAsync(@NotNull final T channel,
-                                                                     @PositiveOrZero final long position,
-                                                                     @NotNull final ExecutorService service) {
+    default <T extends AsynchronousFileChannel> Future<T> writeAsync(final T channel,
+                                                                     final long position,
+                                                                     final ExecutorService service) {
         Objects.requireNonNull(channel, "channel is null");
         if (position < 0L) {
             throw new IllegalArgumentException("position(" + position + ") is negative");

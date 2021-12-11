@@ -23,11 +23,13 @@ package com.github.jinahya.hello;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
+import java.nio.file.Path;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -49,12 +51,14 @@ class HelloWorld_10_WriteAsync_AsynchronousByteChannel_Test extends HelloWorldTe
      * method invokes {@link HelloWorld#put(ByteBuffer) put(buffer)} method and writes the buffer to the {@code
      * channel}.
      *
+     * @param tempDir a temporary directory to test with.
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
      */
     @DisplayName("writeAsync(channel, service) invokes put(buffer) writes the buffer to channel")
     @Test
-    void writeAsync_InvokePutBufferWriteBufferToChannel_() throws InterruptedException, ExecutionException {
+    void writeAsync_InvokePutBufferWriteBufferToChannel_(@TempDir final Path tempDir)
+            throws InterruptedException, ExecutionException {
         final AsynchronousByteChannel channel = Mockito.mock(AsynchronousByteChannel.class);
         final LongAdder writtenSoFar = new LongAdder();
         Mockito.lenient().when(channel.write(ArgumentMatchers.any(ByteBuffer.class))).thenAnswer(i -> {
