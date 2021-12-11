@@ -51,7 +51,7 @@ class HelloWorld_09_Append_Path_Test extends HelloWorldTest {
      */
     @DisplayName("append(path) invokes write(channel), 12 bytes are appended")
     @Test
-    void append_InvokeWriteChannel12BytesWritten_(final @TempDir Path tempDir) throws IOException {
+    void append_InvokeWriteChannel12BytesWritten_(@TempDir final Path tempDir) throws IOException {
         final Path path = Files.createTempFile(tempDir, null, null);
         final long size = Files.size(path);
         // TODO: Implement!
