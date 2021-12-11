@@ -45,8 +45,9 @@ import java.util.concurrent.atomic.LongAdder;
 class HelloWorld_10_WriteAsync_AsynchronousByteChannel_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#writeAsync(AsynchronousByteChannel, ExecutorService)} method invokes {@link
-     * HelloWorld#put(ByteBuffer) put(buffer)} and writes the buffer to {@code channel}.
+     * Asserts {@link HelloWorld#writeAsync(AsynchronousByteChannel, ExecutorService) writeAsync(channel, service)}
+     * method invokes {@link HelloWorld#put(ByteBuffer) put(buffer)} method and writes the buffer to the {@code
+     * channel}.
      *
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
