@@ -40,6 +40,7 @@ import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
@@ -284,8 +285,11 @@ public interface HelloWorld {
      *
      * @param channel the channel to which bytes are written.
      * @return A future representing the result of the operation.
+     * @throws InterruptedException when interrupted while working.
+     * @throws ExecutionException   if failed to operate.
      */
-    default <T extends AsynchronousByteChannel> T write(final T channel) {
+    default <T extends AsynchronousByteChannel> T write(final T channel)
+            throws InterruptedException, ExecutionException {
         Objects.requireNonNull(channel, "channel is null");
         final ByteBuffer buffer = (ByteBuffer) put(ByteBuffer.allocate(BYTES)).flip();
         // TODO: Implement!
