@@ -45,9 +45,9 @@ class HelloWorld_08_Write_WritableByteChannel_Test extends HelloWorldTest {
      * Asserts {@link HelloWorld#write(WritableByteChannel) write(channel)} method throws a {@link NullPointerException}
      * when {@code channel} argument is {@code null}.
      */
-    @DisplayName("write((WritableByteChannel) channel) throws NullPointerException")
+    @DisplayName("write((WritableByteChannel) null) throws NullPointerException")
     @Test
-    void write_NullPointerException_ChannelIsNull() {
+    void write_ThrowNullPointerException_ChannelIsNull() {
         Assertions.assertThrows(NullPointerException.class, () -> helloWorld().write((WritableByteChannel) null));
     }
 
@@ -61,9 +61,9 @@ class HelloWorld_08_Write_WritableByteChannel_Test extends HelloWorldTest {
     @DisplayName("write(channel) invokes put(buffer) and writes the buffer to the channel")
     @Test
     void write_InvokePutBufferWriteBufferToChannel_() throws IOException {
-        final WritableByteChannel channel = Mockito.mock(WritableByteChannel.class); // <1>
-        final LongAdder writtenSoFar = new LongAdder();                              // <2>
-        Mockito.lenient().when(channel.write(ArgumentMatchers.any(ByteBuffer.class)))          // <3>
+        final WritableByteChannel channel = Mockito.mock(WritableByteChannel.class);  // <1>
+        final LongAdder writtenSoFar = new LongAdder();                               // <2>
+        Mockito.lenient().when(channel.write(ArgumentMatchers.any(ByteBuffer.class))) // <3>
                .thenAnswer(i -> {
                    final ByteBuffer buffer = i.getArgument(0, ByteBuffer.class);
                    final int written = new Random().nextInt(buffer.remaining() + 1);
