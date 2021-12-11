@@ -49,7 +49,7 @@ class HelloWorld_03_Append_File_Test extends HelloWorldTest {
      */
     @DisplayName("append(file) invokes write(FileOutputStream) and 12 bytes are appended")
     @Test
-    void append_InvokeWriteStream_(@TempDir final File tempDir) throws IOException {
+    void append_InvokeWriteStreamAnd12BytesAppended_(@TempDir final File tempDir) throws IOException {
         final File file = File.createTempFile("tmp", null, tempDir);
         final long length = file.length();
         // TODO: Implement!
