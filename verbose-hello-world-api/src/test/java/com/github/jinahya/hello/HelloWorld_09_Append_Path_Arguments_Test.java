@@ -42,7 +42,7 @@ class HelloWorld_09_Append_Path_Arguments_Test extends HelloWorldTest {
      */
     @DisplayName("append((Path) null) throws NullPointerException")
     @Test
-    void append_NullPointerException_PathIsNull() {
+    void append_ThrowNullPointerException_PathIsNull() {
         Assertions.assertThrows(NullPointerException.class, () -> helloWorld().append((Path) null));
     }
 }
