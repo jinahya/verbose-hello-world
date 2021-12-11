@@ -37,19 +37,10 @@ import java.util.concurrent.atomic.LongAdder;
  * A class for testing {@link HelloWorld#write(WritableByteChannel)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ * @see HelloWorld_08_Write_WritableByteChannel_Arguments_Test
  */
 @Slf4j
 class HelloWorld_08_Write_WritableByteChannel_Test extends HelloWorldTest {
-
-    /**
-     * Asserts {@link HelloWorld#write(WritableByteChannel) write(channel)} method throws a {@link NullPointerException}
-     * when {@code channel} argument is {@code null}.
-     */
-    @DisplayName("write((WritableByteChannel) null) throws NullPointerException")
-    @Test
-    void write_ThrowNullPointerException_ChannelIsNull() {
-        Assertions.assertThrows(NullPointerException.class, () -> helloWorld().write((WritableByteChannel) null));
-    }
 
     /**
      * Asserts {@link HelloWorld#write(WritableByteChannel) write(channel)} method invokes {@link
