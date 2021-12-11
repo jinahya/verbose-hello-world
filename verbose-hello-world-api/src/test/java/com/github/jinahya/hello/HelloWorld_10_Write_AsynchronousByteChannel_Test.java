@@ -85,6 +85,12 @@ class HelloWorld_10_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
     @Test
     void write_ReturnChannel_() throws InterruptedException, ExecutionException {
         final AsynchronousByteChannel channel = Mockito.mock(AsynchronousByteChannel.class);
+        Mockito.lenient().when(channel.write(ArgumentMatchers.any(ByteBuffer.class))).thenAnswer(i -> {
+            final ByteBuffer buffer = i.getArgument(0, ByteBuffer.class);
+            final int written = new Random().nextInt(buffer.remaining() + 1);
+            buffer.position(buffer.position() + written);
+            return CompletableFuture.completedFuture(written);
+        });
         final AsynchronousByteChannel actual = helloWorld().write(channel);
         Assertions.assertSame(channel, actual);
     }
