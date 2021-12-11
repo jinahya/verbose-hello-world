@@ -36,7 +36,8 @@ import java.util.concurrent.ExecutorService;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorld_11_WriteAsync_AsynchronousByteChannel_Arguments_Test extends HelloWorldTest {
+class HelloWorld_11_WriteAsync_AsynchronousByteChannel_Arguments_Test
+        extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#writeAsync(AsynchronousByteChannel, ExecutorService) writeAsync(channel, service)}

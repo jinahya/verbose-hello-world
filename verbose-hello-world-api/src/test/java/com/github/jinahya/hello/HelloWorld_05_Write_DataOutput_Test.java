@@ -38,7 +38,8 @@ import java.io.IOException;
  * @see HelloWorld_05_Write_DataOutput_Arguments_Test
  */
 @Slf4j
-class HelloWorld_05_Write_DataOutput_Test extends HelloWorldTest {
+class HelloWorld_05_Write_DataOutput_Test
+        extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(DataOutput) write(data)} method invokes {@link HelloWorld#set(byte[]) set(array)}

@@ -39,7 +39,8 @@ import java.util.concurrent.ExecutorService;
  * @see HelloWorld_14_WriteAsync_AsynchronousFileChannel_Test
  */
 @Slf4j
-class HelloWorld_14_WriteAsync_AsynchronousFileChannel_Arguments_Test extends HelloWorldTest {
+class HelloWorld_14_WriteAsync_AsynchronousFileChannel_Arguments_Test
+        extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#writeAsync(AsynchronousFileChannel, long, ExecutorService) writeAsync(channel,

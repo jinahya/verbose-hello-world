@@ -45,7 +45,8 @@ import java.util.concurrent.atomic.LongAdder;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorld_11_WriteAsync_AsynchronousByteChannel_Test extends HelloWorldTest {
+class HelloWorld_11_WriteAsync_AsynchronousByteChannel_Test
+        extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#writeAsync(AsynchronousByteChannel, ExecutorService) writeAsync(channel, service)}
@@ -62,13 +63,15 @@ class HelloWorld_11_WriteAsync_AsynchronousByteChannel_Test extends HelloWorldTe
             throws InterruptedException, ExecutionException {
         final AsynchronousByteChannel channel = Mockito.mock(AsynchronousByteChannel.class);
         final LongAdder writtenSoFar = new LongAdder();
-        Mockito.lenient().when(channel.write(ArgumentMatchers.any(ByteBuffer.class))).thenAnswer(i -> {
-            final ByteBuffer buffer = i.getArgument(0, ByteBuffer.class);
-            final int written = new Random().nextInt(buffer.remaining() + 1);
-            buffer.position(buffer.position() + written);
-            writtenSoFar.add(written);
-            return CompletableFuture.completedFuture(written);
-        });
+        Mockito.lenient()
+                .when(channel.write(ArgumentMatchers.any(ByteBuffer.class)))
+                .thenAnswer(i -> {
+                    final ByteBuffer buffer = i.getArgument(0, ByteBuffer.class);
+                    final int written = new Random().nextInt(buffer.remaining() + 1);
+                    buffer.position(buffer.position() + written);
+                    writtenSoFar.add(written);
+                    return CompletableFuture.completedFuture(written);
+                });
         final ExecutorService service = Executors.newSingleThreadExecutor();
         final Future<AsynchronousByteChannel> future = helloWorld().writeAsync(channel, service);
         final AsynchronousByteChannel actual = future.get();

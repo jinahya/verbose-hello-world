@@ -39,7 +39,8 @@ import java.io.RandomAccessFile;
  * @see HelloWorld_06_Write_RandomAccessFile_Arguments_Test
  */
 @Slf4j
-class HelloWorld_06_Write_RandomAccessFile_Test extends HelloWorldTest {
+class HelloWorld_06_Write_RandomAccessFile_Test
+        extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(RandomAccessFile) write(file)} method invokes {@link HelloWorld#set(byte[])

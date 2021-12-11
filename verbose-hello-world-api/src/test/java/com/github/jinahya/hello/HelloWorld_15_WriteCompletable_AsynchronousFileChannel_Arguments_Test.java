@@ -37,7 +37,8 @@ import java.util.Random;
  * @see HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Test
  */
 @Slf4j
-class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Arguments_Test extends HelloWorldTest {
+class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Arguments_Test
+        extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#writeCompletable(AsynchronousFileChannel, long) writeCompletable(channel, position)}

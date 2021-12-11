@@ -35,7 +35,8 @@ import java.nio.channels.AsynchronousByteChannel;
  * @see HelloWorld_12_WriteCompletable_AsynchronousByteChannel_Test
  */
 @Slf4j
-class HelloWorld_12_WriteCompletable_AsynchronousByteChannel_Arguments_Test extends HelloWorldTest {
+class HelloWorld_12_WriteCompletable_AsynchronousByteChannel_Arguments_Test
+        extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#writeCompletable(AsynchronousByteChannel) writeCompletable(channel)} method throws a

@@ -31,7 +31,8 @@ import org.junit.jupiter.api.Test;
  * @see HelloWorld_01_Set_Array_Arguments_Test
  */
 @Slf4j
-class HelloWorld_01_Set_Array_Test extends HelloWorldTest {
+class HelloWorld_01_Set_Array_Test
+        extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#set(byte[]) set(array)} method invokes {@link HelloWorld#set(byte[], int) set(array,

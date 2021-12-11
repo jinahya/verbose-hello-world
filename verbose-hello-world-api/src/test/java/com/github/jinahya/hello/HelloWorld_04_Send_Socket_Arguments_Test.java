@@ -34,7 +34,8 @@ import java.net.Socket;
  * @see HelloWorld_04_Send_Socket_Test
  */
 @Slf4j
-class HelloWorld_04_Send_Socket_Arguments_Test extends HelloWorldTest {
+class HelloWorld_04_Send_Socket_Arguments_Test
+        extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#send(Socket) send(socket)} method throws a {@link NullPointerException} when the {@code

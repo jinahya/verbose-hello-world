@@ -48,17 +48,20 @@ import java.util.concurrent.atomic.LongAdder;
  * @see HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Arguments_Test
  */
 @Slf4j
-class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Test extends HelloWorldTest {
+class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Test
+        extends HelloWorldTest {
 
     // TODO: Remove following stubbing when you implemented the put(ByteBuffer) method!
     @BeforeEach
     void beforeEach() {
         // https://www.javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#13
         Mockito.doAnswer(i -> {
-            final ByteBuffer buffer = i.getArgument(0);
-            buffer.position(buffer.position() + HelloWorld.BYTES);
-            return buffer;
-        }).when(helloWorld()).put(ArgumentMatchers.any(ByteBuffer.class));
+                    final ByteBuffer buffer = i.getArgument(0);
+                    buffer.position(buffer.position() + HelloWorld.BYTES);
+                    return buffer;
+                })
+                .when(helloWorld())
+                .put(ArgumentMatchers.any(ByteBuffer.class));
     }
 
     /**
@@ -75,17 +78,19 @@ class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Test extends HelloW
         final LongAdder writtenSoFar = new LongAdder();
         final AsynchronousFileChannel channel = Mockito.mock(AsynchronousFileChannel.class);
         Mockito.doAnswer(i -> {
-            final ByteBuffer src = i.getArgument(0);
-            final long position = i.getArgument(1);
-            final Long attachment = i.getArgument(2);
-            final CompletionHandler<Integer, Long> handler = i.getArgument(3);
-            final int written = new Random().nextInt(src.remaining() + 1);
-            src.position(src.position() + written);
-            writtenSoFar.add(written);
-            handler.completed(written, attachment);
-            return null;
-        }).when(channel).write(ArgumentMatchers.any(ByteBuffer.class), ArgumentMatchers.longThat(a -> a >= 0L),
-                               ArgumentMatchers.anyLong(), ArgumentMatchers.<CompletionHandler<Integer, Long>>any());
+                    final ByteBuffer src = i.getArgument(0);
+                    final long position = i.getArgument(1);
+                    final Long attachment = i.getArgument(2);
+                    final CompletionHandler<Integer, Long> handler = i.getArgument(3);
+                    final int written = new Random().nextInt(src.remaining() + 1);
+                    src.position(src.position() + written);
+                    writtenSoFar.add(written);
+                    handler.completed(written, attachment);
+                    return null;
+                })
+                .when(channel)
+                .write(ArgumentMatchers.any(ByteBuffer.class), ArgumentMatchers.longThat(a -> a >= 0L),
+                       ArgumentMatchers.anyLong(), ArgumentMatchers.<CompletionHandler<Integer, Long>>any());
         final long position = 0L;
         final Future<AsynchronousFileChannel> future = helloWorld().writeCompletable(channel, position);
         final AsynchronousFileChannel actual = future.get();
@@ -94,8 +99,8 @@ class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Test extends HelloW
         Assertions.assertEquals(HelloWorld.BYTES, buffer.capacity());
         Assertions.assertFalse(buffer.hasRemaining());
         Mockito.verify(channel, Mockito.atLeast(1))
-               .write(ArgumentMatchers.same(buffer), ArgumentMatchers.longThat(a -> a >= 0L),
-                      ArgumentMatchers.anyLong(), ArgumentMatchers.<CompletionHandler<Integer, Long>>any());
+                .write(ArgumentMatchers.same(buffer), ArgumentMatchers.longThat(a -> a >= 0L),
+                       ArgumentMatchers.anyLong(), ArgumentMatchers.<CompletionHandler<Integer, Long>>any());
         Assertions.assertSame(channel, actual);
         Assertions.assertEquals(HelloWorld.BYTES, writtenSoFar.intValue());
     }

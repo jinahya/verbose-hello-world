@@ -44,17 +44,20 @@ import java.util.concurrent.Future;
  * @see HelloWorld_14_WriteAsync_AsynchronousFileChannel_Arguments_Test
  */
 @Slf4j
-class HelloWorld_14_WriteAsync_AsynchronousFileChannel_Test extends HelloWorldTest {
+class HelloWorld_14_WriteAsync_AsynchronousFileChannel_Test
+        extends HelloWorldTest {
 
     // TODO: Remove following stubbing the put(ByteBuffer) method implemented!
     @BeforeEach
     void beforeEach() {
         // https://www.javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#13
         Mockito.doAnswer(i -> {
-            final ByteBuffer buffer = i.getArgument(0);
-            buffer.position(buffer.position() + HelloWorld.BYTES);
-            return buffer;
-        }).when(helloWorld()).put(ArgumentMatchers.any(ByteBuffer.class));
+                    final ByteBuffer buffer = i.getArgument(0);
+                    buffer.position(buffer.position() + HelloWorld.BYTES);
+                    return buffer;
+                })
+                .when(helloWorld())
+                .put(ArgumentMatchers.any(ByteBuffer.class));
     }
 
     /**
@@ -69,13 +72,13 @@ class HelloWorld_14_WriteAsync_AsynchronousFileChannel_Test extends HelloWorldTe
     void writeAsync_InvokePutBufferWriteBufferToChannel_() throws InterruptedException, ExecutionException {
         final AsynchronousFileChannel channel = Mockito.mock(AsynchronousFileChannel.class);
         Mockito.when(channel.write(ArgumentMatchers.any(ByteBuffer.class), ArgumentMatchers.longThat(a -> a >= 0L)))
-               .thenAnswer(i -> {
-                   final ByteBuffer buffer = i.getArgument(0);
-                   final long position = i.getArgument(1);
-                   final int written = new Random().nextInt(buffer.remaining() + 1);
-                   buffer.position(buffer.position() + written);
-                   return CompletableFuture.completedFuture(written);
-               });
+                .thenAnswer(i -> {
+                    final ByteBuffer buffer = i.getArgument(0);
+                    final long position = i.getArgument(1);
+                    final int written = new Random().nextInt(buffer.remaining() + 1);
+                    buffer.position(buffer.position() + written);
+                    return CompletableFuture.completedFuture(written);
+                });
         final long position = 0L;
         final ExecutorService service = Executors.newSingleThreadExecutor();
         final Future<AsynchronousFileChannel> future = helloWorld().writeAsync(channel, position, service);

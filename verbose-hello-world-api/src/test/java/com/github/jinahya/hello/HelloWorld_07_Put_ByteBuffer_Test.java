@@ -35,7 +35,8 @@ import java.nio.ByteBuffer;
  * @see HelloWorld_07_Put_ByteBuffer_Arguments_Test
  */
 @Slf4j
-class HelloWorld_07_Put_ByteBuffer_Test extends HelloWorldTest {
+class HelloWorld_07_Put_ByteBuffer_Test
+        extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method, when invoked with a byte buffer which {@link

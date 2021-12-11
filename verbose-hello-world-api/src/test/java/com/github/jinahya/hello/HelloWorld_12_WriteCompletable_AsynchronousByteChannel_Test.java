@@ -32,8 +32,6 @@ import java.nio.channels.CompletionHandler;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.LongAdder;
 
 /**
@@ -43,7 +41,8 @@ import java.util.concurrent.atomic.LongAdder;
  * @see HelloWorld_12_WriteCompletable_AsynchronousByteChannel_Arguments_Test
  */
 @Slf4j
-class HelloWorld_12_WriteCompletable_AsynchronousByteChannel_Test extends HelloWorldTest {
+class HelloWorld_12_WriteCompletable_AsynchronousByteChannel_Test
+        extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#writeCompletable(AsynchronousByteChannel) writeCompletable(channel)} method invokes
@@ -57,16 +56,19 @@ class HelloWorld_12_WriteCompletable_AsynchronousByteChannel_Test extends HelloW
     void writeAsync_InvokePutBufferWriteBufferToChannel_() throws InterruptedException, ExecutionException {
         final LongAdder writtenSoFar = new LongAdder();
         final AsynchronousByteChannel channel = Mockito.mock(AsynchronousByteChannel.class);
-        Mockito.lenient().doAnswer(i -> {
-            final ByteBuffer src = i.getArgument(0);
-            final Void attachment = i.getArgument(1);
-            final CompletionHandler<Integer, Void> handler = i.getArgument(2);
-            final int written = new Random().nextInt(src.remaining() + 1);
-            src.position(src.position() + written);
-            writtenSoFar.add(written);
-            handler.completed(written, attachment);
-            return null;
-        }).when(channel).write(Mockito.any(), Mockito.<Void>any(), Mockito.<CompletionHandler<Integer, Void>>any());
+        Mockito.lenient()
+                .doAnswer(i -> {
+                    final ByteBuffer src = i.getArgument(0);
+                    final Void attachment = i.getArgument(1);
+                    final CompletionHandler<Integer, Void> handler = i.getArgument(2);
+                    final int written = new Random().nextInt(src.remaining() + 1);
+                    src.position(src.position() + written);
+                    writtenSoFar.add(written);
+                    handler.completed(written, attachment);
+                    return null;
+                })
+                .when(channel)
+                .write(Mockito.any(), Mockito.<Void>any(), Mockito.<CompletionHandler<Integer, Void>>any());
         final CompletableFuture<AsynchronousByteChannel> future = helloWorld().writeCompletable(channel);
         final AsynchronousByteChannel actual = future.get();
         Assertions.assertSame(channel, actual);

@@ -36,7 +36,8 @@ import java.util.Random;
  * @see HelloWorld_13_Write_AsynchronousFileChannel_Test
  */
 @Slf4j
-class HelloWorld_13_Write_AsynchronousFileChannel_Arguments_Test extends HelloWorldTest {
+class HelloWorld_13_Write_AsynchronousFileChannel_Arguments_Test
+        extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(AsynchronousFileChannel, long) write(channel, position)} method throws a {@link

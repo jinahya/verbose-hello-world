@@ -47,17 +47,20 @@ import java.util.concurrent.atomic.LongAdder;
  * @see HelloWorld_13_Write_AsynchronousFileChannel_Arguments_Test
  */
 @Slf4j
-class HelloWorld_13_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
+class HelloWorld_13_Write_AsynchronousFileChannel_Test
+        extends HelloWorldTest {
 
     // TODO: Remove when put(buffer) method implemented!
     @BeforeEach
     void stubPutBuffer() {
         // https://www.javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#13
         Mockito.doAnswer(i -> {
-            final ByteBuffer buffer = i.getArgument(0);
-            buffer.position(buffer.position() + HelloWorld.BYTES);
-            return buffer;
-        }).when(helloWorld()).put(ArgumentMatchers.any());
+                    final ByteBuffer buffer = i.getArgument(0);
+                    buffer.position(buffer.position() + HelloWorld.BYTES);
+                    return buffer;
+                })
+                .when(helloWorld())
+                .put(ArgumentMatchers.any());
     }
 
     /**
@@ -73,14 +76,14 @@ class HelloWorld_13_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
         final AsynchronousFileChannel channel = Mockito.mock(AsynchronousFileChannel.class);
         final LongAdder writtenSoFar = new LongAdder();
         Mockito.when(channel.write(ArgumentMatchers.any(ByteBuffer.class), ArgumentMatchers.longThat(a -> a >= 0L)))
-               .thenAnswer(i -> {
-                   final ByteBuffer buffer = i.getArgument(0);
-                   final long position = i.getArgument(1);
-                   final int written = new Random().nextInt(buffer.remaining() + 1);
-                   buffer.position(buffer.position() + written);
-                   writtenSoFar.add(written);
-                   return CompletableFuture.completedFuture(written);
-               });
+                .thenAnswer(i -> {
+                    final ByteBuffer buffer = i.getArgument(0);
+                    final long position = i.getArgument(1);
+                    final int written = new Random().nextInt(buffer.remaining() + 1);
+                    buffer.position(buffer.position() + written);
+                    writtenSoFar.add(written);
+                    return CompletableFuture.completedFuture(written);
+                });
         final long position = 0L;
         final AsynchronousFileChannel actual = helloWorld().write(channel, position);
         Assertions.assertSame(channel, actual);
@@ -89,7 +92,7 @@ class HelloWorld_13_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
         Assertions.assertNotNull(buffer);
         Assertions.assertEquals(HelloWorld.BYTES, buffer.capacity());
         Mockito.verify(channel, Mockito.atLeast(1))
-               .write(ArgumentMatchers.same(buffer), ArgumentMatchers.longThat(a -> a > position));
+                .write(ArgumentMatchers.same(buffer), ArgumentMatchers.longThat(a -> a > position));
     }
 
     /**
@@ -130,12 +133,12 @@ class HelloWorld_13_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
     void write_ReturnChannel_() throws InterruptedException, ExecutionException {
         final AsynchronousFileChannel channel = Mockito.mock(AsynchronousFileChannel.class);
         Mockito.when(channel.write(ArgumentMatchers.any(ByteBuffer.class), ArgumentMatchers.longThat(a -> a >= 0L)))
-               .thenAnswer(i -> {
-                   final ByteBuffer buffer = i.getArgument(0, ByteBuffer.class);
-                   final int written = new Random().nextInt(buffer.remaining() + 1);
-                   buffer.position(buffer.position() + written);
-                   return CompletableFuture.completedFuture(written);
-               });
+                .thenAnswer(i -> {
+                    final ByteBuffer buffer = i.getArgument(0, ByteBuffer.class);
+                    final int written = new Random().nextInt(buffer.remaining() + 1);
+                    buffer.position(buffer.position() + written);
+                    return CompletableFuture.completedFuture(written);
+                });
         final long position = new Random().nextLong() & Long.MAX_VALUE;
         final AsynchronousFileChannel actual = helloWorld().write(channel, position);
         Assertions.assertSame(channel, actual);

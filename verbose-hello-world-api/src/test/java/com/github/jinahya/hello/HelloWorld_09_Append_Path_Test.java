@@ -25,7 +25,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.nio.channels.WritableByteChannel;
@@ -39,7 +38,8 @@ import java.nio.file.Path;
  * @see HelloWorld_09_Append_Path_Arguments_Test
  */
 @Slf4j
-class HelloWorld_09_Append_Path_Test extends HelloWorldTest {
+class HelloWorld_09_Append_Path_Test
+        extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#append(Path) append(path)} method invokes {@link HelloWorld#write(WritableByteChannel)

@@ -41,17 +41,21 @@ import java.util.concurrent.atomic.LongAdder;
  * @see HelloWorld_08_Write_WritableByteChannel_Arguments_Test
  */
 @Slf4j
-class HelloWorld_08_Write_WritableByteChannel_Test extends HelloWorldTest {
+class HelloWorld_08_Write_WritableByteChannel_Test
+        extends HelloWorldTest {
 
     // TODO: Remove following stubbing the put(ByteBuffer) method implemented!
     @BeforeEach
     void beforeEach() {
         // https://www.javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#13
-        Mockito.doAnswer(i -> {
-            final ByteBuffer buffer = i.getArgument(0);
-            buffer.position(buffer.position() + HelloWorld.BYTES);
-            return buffer;
-        }).when(helloWorld()).put(ArgumentMatchers.any(ByteBuffer.class));
+        Mockito.lenient()
+                .doAnswer(i -> {
+                    final ByteBuffer buffer = i.getArgument(0);
+                    buffer.position(buffer.position() + HelloWorld.BYTES);
+                    return buffer;
+                })
+                .when(helloWorld())
+                .put(ArgumentMatchers.any(ByteBuffer.class));
     }
 
     /**
@@ -66,14 +70,15 @@ class HelloWorld_08_Write_WritableByteChannel_Test extends HelloWorldTest {
     void write_InvokePutBufferWriteBufferToChannel_() throws IOException {
         final WritableByteChannel channel = Mockito.mock(WritableByteChannel.class);  // <1>
         final LongAdder writtenSoFar = new LongAdder();                               // <2>
-        Mockito.lenient().when(channel.write(ArgumentMatchers.any(ByteBuffer.class))) // <3>
-               .thenAnswer(i -> {
-                   final ByteBuffer buffer = i.getArgument(0, ByteBuffer.class);
-                   final int written = new Random().nextInt(buffer.remaining() + 1);
-                   buffer.position(buffer.position() + written);
-                   writtenSoFar.add(written);
-                   return written;
-               });
+        Mockito.lenient()
+                .when(channel.write(ArgumentMatchers.any(ByteBuffer.class))) // <3>
+                .thenAnswer(i -> {
+                    final ByteBuffer buffer = i.getArgument(0, ByteBuffer.class);
+                    final int written = new Random().nextInt(buffer.remaining() + 1);
+                    buffer.position(buffer.position() + written);
+                    writtenSoFar.add(written);
+                    return written;
+                });
         // TODO: Implement!
     }
 
@@ -87,13 +92,14 @@ class HelloWorld_08_Write_WritableByteChannel_Test extends HelloWorldTest {
     @Test
     void write_ReturnChannel_() throws IOException {
         final WritableByteChannel channel = Mockito.mock(WritableByteChannel.class);
-        Mockito.lenient().when(channel.write(ArgumentMatchers.any(ByteBuffer.class)))
-               .thenAnswer(i -> {
-                   final ByteBuffer buffer = i.getArgument(0, ByteBuffer.class);
-                   final int written = new Random().nextInt(buffer.remaining() + 1);
-                   buffer.position(buffer.position() + written);
-                   return written;
-               });
+        Mockito.lenient()
+                .when(channel.write(ArgumentMatchers.any(ByteBuffer.class)))
+                .thenAnswer(i -> {
+                    final ByteBuffer buffer = i.getArgument(0, ByteBuffer.class);
+                    final int written = new Random().nextInt(buffer.remaining() + 1);
+                    buffer.position(buffer.position() + written);
+                    return written;
+                });
         final WritableByteChannel actual = helloWorld().write(channel);
         Assertions.assertSame(channel, actual);
     }

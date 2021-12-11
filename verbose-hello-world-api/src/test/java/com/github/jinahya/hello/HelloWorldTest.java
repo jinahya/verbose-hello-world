@@ -51,8 +51,9 @@ abstract class HelloWorldTest {
     void beforeEach() {
         final byte[] array = ArgumentMatchers.any(byte[].class);
         final int index = ArgumentMatchers.anyInt();
-        Mockito.lenient().when(helloWorld.set(array, index)) // <1>
-               .thenAnswer(i -> i.getArgument(0)); // <2>
+        Mockito.lenient()
+                .when(helloWorld.set(array, index)) // <1>
+                .thenAnswer(i -> i.getArgument(0));  // <2>
     }
 
     @Spy

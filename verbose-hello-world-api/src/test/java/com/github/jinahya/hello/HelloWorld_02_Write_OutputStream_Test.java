@@ -35,7 +35,8 @@ import java.io.OutputStream;
  * @see HelloWorld_02_Write_OutputStream_Arguments_Test
  */
 @Slf4j
-class HelloWorld_02_Write_OutputStream_Test extends HelloWorldTest {
+class HelloWorld_02_Write_OutputStream_Test
+        extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(OutputStream) write(stream)} method invokes {@link HelloWorld#set(byte[])
