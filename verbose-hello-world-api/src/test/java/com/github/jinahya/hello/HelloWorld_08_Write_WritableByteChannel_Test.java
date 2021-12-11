@@ -22,6 +22,7 @@ package com.github.jinahya.hello;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
@@ -41,6 +42,17 @@ import java.util.concurrent.atomic.LongAdder;
  */
 @Slf4j
 class HelloWorld_08_Write_WritableByteChannel_Test extends HelloWorldTest {
+
+    // TODO: Remove following stubbing the put(ByteBuffer) method implemented!
+    @BeforeEach
+    void beforeEach() {
+        // https://www.javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#13
+        Mockito.doAnswer(i -> {
+            final ByteBuffer buffer = i.getArgument(0);
+            buffer.position(buffer.position() + HelloWorld.BYTES);
+            return buffer;
+        }).when(helloWorld()).put(ArgumentMatchers.any(ByteBuffer.class));
+    }
 
     /**
      * Asserts {@link HelloWorld#write(WritableByteChannel) write(channel)} method invokes {@link
