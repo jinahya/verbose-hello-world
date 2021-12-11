@@ -40,9 +40,9 @@ class HelloWorld_04_Send_Socket_Arguments_Test extends HelloWorldTest {
      * Asserts {@link HelloWorld#send(Socket) send(socket)} method throws a {@link NullPointerException} when the {@code
      * socket} argument is {@code null}.
      */
-    @DisplayName("send(socket) throws NullPointerException when socket is null")
+    @DisplayName("send(null) throws NullPointerException")
     @Test
-    void send_NullPointerException_SocketIsNull() {
+    void send_ThrowNullPointerException_SocketIsNull() {
         Assertions.assertThrows(NullPointerException.class, () -> helloWorld().send(null));
     }
 }
