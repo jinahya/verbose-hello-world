@@ -20,8 +20,6 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PositiveOrZero;
 import java.io.DataOutput;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -337,6 +335,34 @@ public interface HelloWorld {
     // ----------------------------------------------------------------------------------------- AsynchronousFileChannel
 
     /**
+     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified channel, starting at the given file
+     * position.
+     *
+     * @param channel  the channel to which bytes are written.
+     * @param position the file position at which the transfer is to begin; must be non-negative.
+     * @return given {@code channel}.
+     * @throws InterruptedException if interrupted while working.
+     * @throws ExecutionException   if failed to operate.
+     * @implSpec The default implementation in this interface invokes {@link #put(ByteBuffer) put(buffer)} method with a
+     * byte buffer of {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and write the buffer to specified
+     * channel
+     */
+    default <T extends AsynchronousFileChannel> T write(final T channel, long position)
+            throws InterruptedException, ExecutionException {
+        Objects.requireNonNull(channel, "channel is null");
+        if (position < 0L) {
+            throw new IllegalArgumentException("position(" + position + ") is negative");
+        }
+        final ByteBuffer buffer = (ByteBuffer) put(ByteBuffer.allocate(BYTES)).flip();
+        while (buffer.hasRemaining()) {
+            final Future<Integer> future = channel.write(buffer, position);
+            final int written = future.get();
+            position += written;
+        }
+        return channel;
+    }
+
+    /**
      * Writes, asynchronously, the <a href="#hello-world-bytes">hello-world-bytes</a> to specified asynchronous file
      * channel, starting at the given file position.
      *
@@ -352,13 +378,7 @@ public interface HelloWorld {
             throw new IllegalArgumentException("position(" + position + ") is negative");
         }
         Objects.requireNonNull(service, "service is null");
-        return service.submit(() -> {
-            final ByteBuffer buffer = (ByteBuffer) put(ByteBuffer.allocate(BYTES)).flip();
-            for (long p = position; buffer.hasRemaining(); ) {
-                p += channel.write(buffer, p).get();
-            }
-            return channel;
-        });
+        return service.submit(() -> write(channel, position));
     }
 
     /**
@@ -370,9 +390,7 @@ public interface HelloWorld {
      * @param position the file position at which the transfer is to begin; must be non-negative.
      * @return A completable future representing the result of the operation.
      */
-    @NotNull
-    default <T extends AsynchronousFileChannel> CompletableFuture<T> writeCompletable(@NotNull final T channel,
-                                                                                      @PositiveOrZero
+    default <T extends AsynchronousFileChannel> CompletableFuture<T> writeCompletable(final T channel,
                                                                                       final long position) {
         Objects.requireNonNull(channel, "channel is null");
         if (position < 0L) {
