@@ -27,7 +27,6 @@ import org.springframework.context.support.GenericApplicationContext;
 
 class HelloWorldDiSpringTest extends HelloWorldDiTest {
 
-    // -----------------------------------------------------------------------------------------------------------------
     @BeforeEach
     private void inject() {
         final GenericApplicationContext context

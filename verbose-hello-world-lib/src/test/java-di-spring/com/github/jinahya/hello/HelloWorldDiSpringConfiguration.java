@@ -34,7 +34,6 @@ import static com.github.jinahya.hello.HelloWorldDiTest.IMPL;
 @Configuration
 class HelloWorldDiSpringConfiguration {
 
-    // -----------------------------------------------------------------------------------------------------------------
     @Named(DEMO)
     @Bean
     HelloWorld namedDemo() {
