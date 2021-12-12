@@ -52,6 +52,7 @@
     <maven.compiler.testSource>${maven.compiler.source}</maven.compiler.testSource>
     <maven.compiler.testTarget>${maven.compiler.testSource}</maven.compiler.testTarget>
     <version.com.google.dagger>2.40.5</version.com.google.dagger>
+    <version.com.google.inject>5.0.1</version.com.google.inject>
     <version.maven-surefire>3.0.0-M4</version.maven-surefire>
     <version.maven-failsafe>${version.maven-surefire}</version.maven-failsafe>
     <version.maven-javadoc-plugin>3.2.0</version.maven-javadoc-plugin>
@@ -87,7 +88,7 @@
       <dependency>
         <groupId>com.google.inject</groupId>
         <artifactId>guice</artifactId>
-        <version>4.2.2</version>
+        <version>${version.com.google.inject}</version>
       </dependency>
       <dependency>
         <groupId>jakarta.enterprise</groupId>
