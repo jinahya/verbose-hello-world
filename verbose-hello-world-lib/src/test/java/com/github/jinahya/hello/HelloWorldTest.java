@@ -21,6 +21,8 @@ package com.github.jinahya.hello;
  */
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -41,6 +43,11 @@ abstract class HelloWorldTest {
      * @return an instance of {@link HelloWorld} interface.
      */
     abstract HelloWorld helloWorld();
+
+    @BeforeEach
+    void assumeHelloWorldMethodReturnsNonNull() {
+        Assumptions.assumeTrue(helloWorld() != null);
+    }
 
     /**
      * Asserts {@link HelloWorld#set(byte[], int) set(array, index)} method throws a {@code NullPointerException} when
