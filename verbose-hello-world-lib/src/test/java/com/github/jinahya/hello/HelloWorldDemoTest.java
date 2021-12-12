@@ -21,7 +21,7 @@ package com.github.jinahya.hello;
  */
 
 /**
- * A class for unit-testing {@link HelloWorldDemo} class.
+ * A class for testing {@link HelloWorldDemo} class.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -33,6 +33,7 @@ class HelloWorldDemoTest extends HelloWorldTest {
      *
      * @return {@inheritDoc}
      */
+    @Override
     HelloWorld helloWorld() {
         return new HelloWorldDemo();
     }
