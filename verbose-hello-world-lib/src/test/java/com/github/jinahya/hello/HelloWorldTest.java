@@ -87,7 +87,7 @@ abstract class HelloWorldTest {
     void set_SetsHelloWorldBytesOnArrayStartingAtIndex_() {
         final byte[] array = new byte[HelloWorld.BYTES];
         final int index = 0;
-        helloWorld().set(array,index);
+        helloWorld().set(array, index);
         // TODO: implement!
     }
 
