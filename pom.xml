@@ -64,8 +64,8 @@
     <version.org.junit.jupiter>5.8.2</version.org.junit.jupiter>
     <version.org.mockito>4.1.0</version.org.mockito>
     <version.org.slf4j>1.7.25</version.org.slf4j>
-    <version.org.springframework>5.3.4</version.org.springframework>
-    <version.org.springframework.boot>2.4.3</version.org.springframework.boot>
+    <version.org.springframework>5.3.13</version.org.springframework>
+    <version.org.springframework.boot>2.6.1</version.org.springframework.boot>
   </properties>
 
   <dependencyManagement>
