@@ -32,7 +32,6 @@ import org.junit.jupiter.api.BeforeEach;
  */
 class HelloWorldDiHk2Test extends HelloWorldDiTest {
 
-    // -----------------------------------------------------------------------------------------------------------------
     @BeforeEach
     private void inject() {
         final Binder binder = new HelloWorldDiHk2Binder();
