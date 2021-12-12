@@ -103,7 +103,7 @@
 
   <profiles>
     <profile>
-      <id>cdi-se-openwebbeans</id>
+      <id>cdi-openwebbeans-se</id>
       <properties>
         <test>HelloWorldCdiSeOpenWebBeansTest</test>
       </properties>
@@ -160,7 +160,7 @@
       </build>
     </profile>
     <profile>
-      <id>cdi-se-weld</id>
+      <id>cdi-weld-se</id>
       <properties>
         <test>HelloWorldCdiSeWeldTest</test>
       </properties>
