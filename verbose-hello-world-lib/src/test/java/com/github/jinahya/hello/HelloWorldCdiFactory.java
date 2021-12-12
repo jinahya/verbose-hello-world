@@ -39,8 +39,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Slf4j
 class HelloWorldCdiFactory {
 
-    // -----------------------------------------------------------------------------------------------------------------
-
     /**
      * Produces an instance of {@link HelloWorld} for specified injection point annotated with {@link Named} whose
      * {@link Named#value() value} equals to {@link HelloWorldDiTest#DEMO}.
@@ -66,8 +64,6 @@ class HelloWorldCdiFactory {
         log.debug("disposing {}", helloWorld);
         assertTrue(helloWorld instanceof HelloWorldDemo);
     }
-
-    // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * Produces an instance of {@link HelloWorld} for specified injection point {@link Named named} with {@value
@@ -95,8 +91,6 @@ class HelloWorldCdiFactory {
         assertTrue(helloWorld instanceof HelloWorldImpl);
     }
 
-    // -----------------------------------------------------------------------------------------------------------------
-
     /**
      * Produces an instance of {@link HelloWorld} for specified injection point annotated with {@link QualifiedDemo}.
      *
@@ -121,8 +115,6 @@ class HelloWorldCdiFactory {
         log.debug("disposing {}", helloWorld);
         assertTrue(helloWorld instanceof HelloWorldDemo);
     }
-
-    // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * Produces an instance of {@link HelloWorld} for specified injection point annotated with {@link QualifiedImpl}
