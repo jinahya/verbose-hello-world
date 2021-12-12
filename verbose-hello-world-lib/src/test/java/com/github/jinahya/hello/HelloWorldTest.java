@@ -44,11 +44,6 @@ abstract class HelloWorldTest {
      */
     abstract HelloWorld helloWorld();
 
-    @BeforeEach
-    void beforeEach() {
-        Assumptions.assumeTrue(helloWorld() != null);
-    }
-
     /**
      * Asserts {@link HelloWorld#set(byte[], int) set(array, index)} method throws a {@code NullPointerException} when
      * the {@code array} argument is {@code null}.
@@ -56,9 +51,11 @@ abstract class HelloWorldTest {
     @DisplayName("set(null, index) throws NullPointerException")
     @Test
     void set_ThrowNullPointerException_ArrayIsNull() {
+        final HelloWorld helloWorld = helloWorld();
+        Assumptions.assumeTrue(helloWorld != null);
         final byte[] array = null;
         final int index = new Random().nextInt() & Integer.MAX_VALUE;
-        Assertions.assertThrows(NullPointerException.class, () -> helloWorld().set(array, index));
+        Assertions.assertThrows(NullPointerException.class, () -> helloWorld.set(array, index));
     }
 
     /**
@@ -68,9 +65,11 @@ abstract class HelloWorldTest {
     @DisplayName("set(array, !positive) throws IndexOutOfBoundsException")
     @Test
     void set_ThrowIndexOutOfBoundsException_IndexIsNegative() {
+        final HelloWorld helloWorld = helloWorld();
+        Assumptions.assumeTrue(helloWorld != null);
         final byte[] array = new byte[0];
         final int index = current().nextInt() | Integer.MIN_VALUE;
-        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> helloWorld().set(array, index));
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> helloWorld.set(array, index));
     }
 
     /**
@@ -80,9 +79,11 @@ abstract class HelloWorldTest {
     @DisplayName("set(array, index) throws IndexOutOfBoundsException when index + BYTES > array.length")
     @Test
     void set_ThrowsIndexOutOfBoundsException_SpaceIsNotEnough() {
+        final HelloWorld helloWorld = helloWorld();
+        Assumptions.assumeTrue(helloWorld != null);
         final byte[] array = new byte[HelloWorld.BYTES];
         final int index = new Random().nextInt(HelloWorld.BYTES - 1) + 1;
-        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> helloWorld().set(array, index));
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> helloWorld.set(array, index));
     }
 
     /**
@@ -92,9 +93,11 @@ abstract class HelloWorldTest {
     @DisplayName("set(array, index) sets \"hello, world\" bytes on array starting at index")
     @Test
     void set_SetsHelloWorldBytesOnArrayStartingAtIndex_() {
+        final HelloWorld helloWorld = helloWorld();
+        Assumptions.assumeTrue(helloWorld != null);
         final byte[] array = new byte[HelloWorld.BYTES];
         final int index = 0;
-        helloWorld().set(array, index);
+        helloWorld.set(array, index);
         // TODO: implement!
     }
 
@@ -104,9 +107,11 @@ abstract class HelloWorldTest {
     @DisplayName("set(array, index) returns array")
     @Test
     void set_ReturnArray_() {
+        final HelloWorld helloWorld = helloWorld();
+        Assumptions.assumeTrue(helloWorld != null);
         final byte[] array = new byte[HelloWorld.BYTES];
         final int index = 0;
-        final byte[] actual = helloWorld().set(array, index);
+        final byte[] actual = helloWorld.set(array, index);
         Assertions.assertSame(array, actual);
     }
 }
