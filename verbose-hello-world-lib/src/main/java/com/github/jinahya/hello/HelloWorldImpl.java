@@ -25,8 +25,8 @@ package com.github.jinahya.hello;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-class HelloWorldImpl
-        implements HelloWorld {
+// public for SPI
+public class HelloWorldImpl implements HelloWorld {
 
     @Override
     public byte[] set(final byte[] array, final int index) {
