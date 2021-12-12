@@ -33,7 +33,6 @@ import static com.google.inject.name.Names.named;
  */
 class HelloWorldDiGuiceModule extends AbstractModule {
 
-    // -----------------------------------------------------------------------------------------------------------------
     @Override
     protected void configure() {
         bind(HelloWorld.class).annotatedWith(named(DEMO)).to(HelloWorldDemo.class);
