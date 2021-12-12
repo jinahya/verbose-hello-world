@@ -26,7 +26,7 @@ import org.junit.jupiter.api.BeforeEach;
 class HelloWorldDiDaggerTest extends HelloWorldDiTest {
 
     @BeforeEach
-    private void inject() {
+    void inject() {
         final MembersInjector<HelloWorldDiDaggerTest> injector = DaggerHelloWorldDiDaggerComponent.create();
         injector.injectMembers(this);
     }

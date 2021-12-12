@@ -32,7 +32,7 @@ import org.junit.jupiter.api.BeforeEach;
 class HelloWorldDiGuiceTest extends HelloWorldDiTest {
 
     @BeforeEach
-    private void inject() {
+    void inject() {
         final Injector injector = Guice.createInjector(new HelloWorldDiGuiceModule());
         injector.injectMembers(this);
     }
