@@ -51,7 +51,7 @@
     <maven.compiler.target>${maven.compiler.source}</maven.compiler.target>
     <maven.compiler.testSource>${maven.compiler.source}</maven.compiler.testSource>
     <maven.compiler.testTarget>${maven.compiler.testSource}</maven.compiler.testTarget>
-    <version.com.google.dagger>2.25.4</version.com.google.dagger>
+    <version.com.google.dagger>2.40.5</version.com.google.dagger>
     <version.maven-surefire>3.0.0-M4</version.maven-surefire>
     <version.maven-failsafe>${version.maven-surefire}</version.maven-failsafe>
     <version.maven-javadoc-plugin>3.2.0</version.maven-javadoc-plugin>
