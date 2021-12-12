@@ -45,7 +45,7 @@ abstract class HelloWorldTest {
     abstract HelloWorld helloWorld();
 
     @BeforeEach
-    void assumeHelloWorldMethodReturnsNonNull() {
+    void beforeEach() {
         Assumptions.assumeTrue(helloWorld() != null);
     }
 
