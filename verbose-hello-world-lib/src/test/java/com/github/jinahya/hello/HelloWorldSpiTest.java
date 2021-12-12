@@ -30,6 +30,6 @@ class HelloWorldSpiTest extends HelloWorldTest {
     @Override
     HelloWorld helloWorld() {
         // TODO: Implement!
-        return null;
+        return new HelloWorldDemo();
     }
 }
