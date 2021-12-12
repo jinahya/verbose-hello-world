@@ -92,7 +92,7 @@ class HelloWorld_13_Write_AsynchronousFileChannel_Test
         Assertions.assertNotNull(buffer);
         Assertions.assertEquals(HelloWorld.BYTES, buffer.capacity());
         Mockito.verify(channel, Mockito.atLeast(1))
-                .write(ArgumentMatchers.same(buffer), ArgumentMatchers.longThat(a -> a > position));
+                .write(ArgumentMatchers.same(buffer), ArgumentMatchers.longThat(a -> a >= position));
     }
 
     /**
