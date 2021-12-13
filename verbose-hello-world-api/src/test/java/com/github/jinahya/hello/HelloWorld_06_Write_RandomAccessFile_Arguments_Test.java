@@ -44,6 +44,7 @@ class HelloWorld_06_Write_RandomAccessFile_Arguments_Test
     @DisplayName("write((RandomAccessFile) null) throws NullPointerException")
     @Test
     void write_ThrowNullPointerException_FileIsNull() {
-        Assertions.assertThrows(NullPointerException.class, () -> helloWorld().write((RandomAccessFile) null));
+        final RandomAccessFile file = null;
+        Assertions.assertThrows(NullPointerException.class, () -> helloWorld().write(file));
     }
 }

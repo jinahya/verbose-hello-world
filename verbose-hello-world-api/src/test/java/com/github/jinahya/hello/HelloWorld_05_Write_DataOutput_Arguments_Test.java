@@ -44,6 +44,7 @@ class HelloWorld_05_Write_DataOutput_Arguments_Test
     @DisplayName("write((DataOutput) null) method throws NullPointerException")
     @Test
     void write_ThrowsNullPointerException_DataIsNull() {
-        Assertions.assertThrows(NullPointerException.class, () -> helloWorld().write((DataOutput) null));
+        final DataOutput data = null;
+        Assertions.assertThrows(NullPointerException.class, () -> helloWorld().write(data));
     }
 }

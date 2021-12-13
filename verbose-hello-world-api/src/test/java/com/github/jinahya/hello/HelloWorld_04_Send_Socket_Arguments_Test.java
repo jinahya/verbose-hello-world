@@ -44,6 +44,7 @@ class HelloWorld_04_Send_Socket_Arguments_Test
     @DisplayName("send(null) throws NullPointerException")
     @Test
     void send_ThrowNullPointerException_SocketIsNull() {
-        Assertions.assertThrows(NullPointerException.class, () -> helloWorld().send(null));
+        final Socket socket = null;
+        Assertions.assertThrows(NullPointerException.class, () -> helloWorld().send(socket));
     }
 }

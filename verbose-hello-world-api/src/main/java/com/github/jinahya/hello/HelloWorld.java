@@ -242,7 +242,10 @@ public interface HelloWorld {
      * @see ByteBuffer#put(byte[])
      */
     default <T extends ByteBuffer> T put(final T buffer) {
-        if (Objects.requireNonNull(buffer, "buffer is null").remaining() < BYTES) {
+        if (buffer == null) {
+            throw new NullPointerException("buffer is null");
+        }
+        if (buffer.remaining() < BYTES) {
             throw new BufferOverflowException();
         }
         // TODO: Implement!
