@@ -171,7 +171,9 @@ public interface HelloWorld {
      * @see DataOutput#write(byte[])
      */
     default <T extends DataOutput> T write(final T data) throws IOException {
-        Objects.requireNonNull(data, "data is null");
+        if (data == null) {
+            throw new NullPointerException("data is null");
+        }
         final byte[] array = set(new byte[BYTES]);
         // TODO: Implement!
         return data;
@@ -306,7 +308,9 @@ public interface HelloWorld {
      */
     default <T extends AsynchronousByteChannel> T write(final T channel)
             throws InterruptedException, ExecutionException {
-        Objects.requireNonNull(channel, "channel is null");
+        if (channel == null) {
+            throw new NullPointerException("channel is null");
+        }
         final ByteBuffer buffer = (ByteBuffer) put(ByteBuffer.allocate(BYTES)).flip();
         // TODO: Implement!
         return channel;
@@ -323,8 +327,12 @@ public interface HelloWorld {
      * {@link #write(AsynchronousByteChannel) #write(channel)} method.
      */
     default <T extends AsynchronousByteChannel> Future<T> writeAsync(final T channel, final ExecutorService service) {
-        Objects.requireNonNull(channel, "channel is null");
-        Objects.requireNonNull(service, "service is null");
+        if (channel == null) {
+            throw new NullPointerException("channel is null");
+        }
+        if (service == null) {
+            throw new NullPointerException("service is null");
+        }
         return service.submit(() -> { // <1>
             // TODO: Implement!
             return channel;
@@ -338,7 +346,9 @@ public interface HelloWorld {
      * @return a completable future of {@code channel}.
      */
     default <T extends AsynchronousByteChannel> CompletableFuture<T> writeCompletable(final T channel) {
-        Objects.requireNonNull(channel, "channel is null");
+        if (channel == null) {
+            throw new NullPointerException("channel is null");
+        }
         final CompletableFuture<T> future = new CompletableFuture<>();                 // <1>
         final ByteBuffer buffer = (ByteBuffer) put(ByteBuffer.allocate(BYTES)).flip(); // <2>
         // TODO: Implement!
@@ -364,7 +374,9 @@ public interface HelloWorld {
      */
     default <T extends AsynchronousFileChannel> T write(final T channel, long position)
             throws InterruptedException, ExecutionException {
-        Objects.requireNonNull(channel, "channel is null");
+        if (channel == null) {
+            throw new NullPointerException("channel is null");
+        }
         if (position < 0L) {
             throw new IllegalArgumentException("position(" + position + ") is negative");
         }
@@ -391,7 +403,9 @@ public interface HelloWorld {
      */
     default <T extends AsynchronousFileChannel> Future<T> writeAsync(final T channel, final long position,
                                                                      final ExecutorService service) {
-        Objects.requireNonNull(channel, "channel is null");
+        if (channel == null) {
+            throw new NullPointerException("channel is null");
+        }
         if (position < 0L) {
             throw new IllegalArgumentException("position(" + position + ") is negative");
         }
@@ -415,7 +429,9 @@ public interface HelloWorld {
      */
     default <T extends AsynchronousFileChannel> CompletableFuture<T> writeCompletable(final T channel,
                                                                                       final long position) {
-        Objects.requireNonNull(channel, "channel is null");
+        if (channel == null) {
+            throw new NullPointerException("channel is null");
+        }
         if (position < 0L) {
             throw new IllegalArgumentException("position(" + position + ") is negative");
         }
