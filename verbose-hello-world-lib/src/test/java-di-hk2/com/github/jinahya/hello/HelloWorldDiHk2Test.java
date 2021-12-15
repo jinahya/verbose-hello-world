@@ -32,9 +32,8 @@ import org.junit.jupiter.api.BeforeEach;
  */
 class HelloWorldDiHk2Test extends HelloWorldDiTest {
 
-    // -----------------------------------------------------------------------------------------------------------------
     @BeforeEach
-    private void inject() {
+    void inject() {
         final Binder binder = new HelloWorldDiHk2Binder();
         final ServiceLocator locator = ServiceLocatorUtilities.bind(binder);
         locator.inject(this);

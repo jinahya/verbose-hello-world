@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import java.io.File;
@@ -38,43 +39,27 @@ import java.io.RandomAccessFile;
  * @see HelloWorld_06_Write_RandomAccessFile_Arguments_Test
  */
 @Slf4j
-class HelloWorld_06_Write_RandomAccessFile_Test extends HelloWorldTest {
+class HelloWorld_06_Write_RandomAccessFile_Test
+        extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(RandomAccessFile) write(file)} method invokes {@link HelloWorld#set(byte[])
      * set(array)} method with an array of {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and invokes {@link
      * RandomAccessFile#write(byte[]) file.write(array)}.
      *
+     * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
     @DisplayName("write(file) invokes set(byte[BYTES]) method and writes the array to file")
     @Test
-    void write_InvokeSetArrayWriteArrayToFile_() throws IOException {
+    void write_InvokeSetArrayWriteArrayToFile_(@TempDir final File tempDir) throws IOException {
         final RandomAccessFile file = Mockito.mock(RandomAccessFile.class);
         helloWorld().write(file);
         Mockito.verify(helloWorld(), Mockito.times(1)).set(arrayCaptor().capture());
         final byte[] array = arrayCaptor().getValue();
         Assertions.assertNotNull(array);
         Assertions.assertEquals(HelloWorld.BYTES, array.length);
-        Mockito.verify(file, Mockito.times(1)).write(array);
-    }
-
-    /**
-     * Asserts {@link HelloWorld#write(RandomAccessFile) write(file)} method writes bytes at {@link
-     * RandomAccessFile#getFilePointer() file.filePointer}.
-     *
-     * @param tempDir a temporary directory to test with.
-     * @throws IOException if an I/O error occurs.
-     */
-    @DisplayName("write(file) writes 12 bytes starting from file.filePointer")
-    @Test
-    void write_Write12BytesStartingAtFilePointer_(final @TempDir File tempDir) throws IOException {
-        final File tempFile = File.createTempFile("tmp", null, tempDir);
-        try (RandomAccessFile file = Mockito.spy(new RandomAccessFile(tempFile, "rw"))) {
-            final long filePointer = file.getFilePointer();
-            helloWorld().write(file);
-            // TODO: Implement!
-        }
+        Mockito.verify(file, Mockito.times(1)).write(ArgumentMatchers.same(array));
     }
 
     /**

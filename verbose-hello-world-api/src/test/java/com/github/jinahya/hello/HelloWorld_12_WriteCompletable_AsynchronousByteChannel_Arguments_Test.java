@@ -21,29 +21,31 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.io.OutputStream;
+import java.nio.channels.AsynchronousByteChannel;
 
 /**
- * A class for testing {@link HelloWorld#write(OutputStream)} method regarding argument verification.
+ * A class for testing {@link HelloWorld#writeCompletable(AsynchronousByteChannel)} method regarding arguments
+ * verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_02_Write_OutputStream_Test
+ * @see HelloWorld_12_WriteCompletable_AsynchronousByteChannel_Test
  */
 @Slf4j
-class HelloWorld_02_Write_OutputStream_Arguments_Test
+class HelloWorld_12_WriteCompletable_AsynchronousByteChannel_Arguments_Test
         extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#write(OutputStream) write(stream)} method throws a {@link NullPointerException} when
-     * the {@code stream} argument is {@code null}.
+     * Asserts {@link HelloWorld#writeCompletable(AsynchronousByteChannel) writeCompletable(channel)} method throws a
+     * {@link NullPointerException} when the {@code channel} argument is {@code null}.
      */
-    @DisplayName("write((OutputStream) null) throws NullPointerException")
+    @DisplayName("writeCompletable(null) throws NullPointerException")
     @Test
-    void write_ThrowNullPointerException_StreamIsNull() {
-        final OutputStream stream = null;
-        // TODO: Implement!
+    void writeAsync_ThrowNullPointerException_ChannelIsNull() {
+        final AsynchronousByteChannel channel = null;
+        Assertions.assertThrows(NullPointerException.class, () -> helloWorld().writeCompletable(channel));
     }
 }

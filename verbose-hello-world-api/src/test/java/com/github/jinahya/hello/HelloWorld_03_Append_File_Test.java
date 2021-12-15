@@ -25,7 +25,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.mockito.Mockito;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,7 +37,8 @@ import java.io.OutputStream;
  * @see HelloWorld_03_Append_File_Arguments_Test
  */
 @Slf4j
-class HelloWorld_03_Append_File_Test extends HelloWorldTest {
+class HelloWorld_03_Append_File_Test
+        extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#append(File) append(file)} method invokes {@link HelloWorld#write(OutputStream)} method
@@ -48,9 +48,9 @@ class HelloWorld_03_Append_File_Test extends HelloWorldTest {
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("append(file) invokes write(stream) and 12 bytes are appended")
+    @DisplayName("append(file) invokes write(FileOutputStream) and 12 bytes are appended")
     @Test
-    void append_InvokeWriteStream_(@TempDir final File tempDir) throws IOException {
+    void append_InvokeWriteStreamAnd12BytesAppended_(@TempDir final File tempDir) throws IOException {
         final File file = File.createTempFile("tmp", null, tempDir);
         final long length = file.length();
         // TODO: Implement!
@@ -59,13 +59,14 @@ class HelloWorld_03_Append_File_Test extends HelloWorldTest {
     /**
      * Asserts {@link HelloWorld#append(File) append(file)} returns given {@code file} arguments.
      *
+     * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
     @DisplayName("append(file) returns file")
     @Test
-    void append_ReturnFile_() throws IOException {
-        final File expected = Mockito.mock(File.class);
-        final File actual = helloWorld().append(expected);
-        Assertions.assertSame(expected, actual);
+    void append_ReturnFile_(@TempDir final File tempDir) throws IOException {
+        final File file = File.createTempFile("tmp", null, tempDir);
+        final File actual = helloWorld().append(file);
+        Assertions.assertSame(file, actual);
     }
 }

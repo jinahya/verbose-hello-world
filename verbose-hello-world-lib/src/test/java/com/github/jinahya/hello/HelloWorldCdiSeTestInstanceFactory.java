@@ -37,7 +37,6 @@ import javax.enterprise.inject.se.SeContainerInitializer;
 @Slf4j
 class HelloWorldCdiSeTestInstanceFactory implements TestInstanceFactory {
 
-    // -----------------------------------------------------------------------------------------------------------------
     @Override
     public Object createTestInstance(final TestInstanceFactoryContext testInstanceFactoryContext,
                                      final ExtensionContext extensionContext)

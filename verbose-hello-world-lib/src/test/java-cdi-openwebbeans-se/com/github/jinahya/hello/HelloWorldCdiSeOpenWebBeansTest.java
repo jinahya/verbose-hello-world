@@ -33,8 +33,6 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 @Slf4j
 class HelloWorldCdiSeOpenWebBeansTest extends HelloWorldCdiSeTest {
 
-    // -----------------------------------------------------------------------------------------------------------------
-
     /**
      * Removes handlers from the root logger and installs SLF4J bridge handler.
      *
@@ -44,8 +42,6 @@ class HelloWorldCdiSeOpenWebBeansTest extends HelloWorldCdiSeTest {
     @BeforeAll
     static void bridgetSlf4j() {
         SLF4JBridgeHandler.removeHandlersForRootLogger();
-        log.debug("handlers removed from the root logger");
         SLF4JBridgeHandler.install();
-        log.debug("bridget handler installed");
     }
 }

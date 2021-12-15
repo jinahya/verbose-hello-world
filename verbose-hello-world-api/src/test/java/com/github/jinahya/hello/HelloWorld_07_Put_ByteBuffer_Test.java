@@ -35,7 +35,8 @@ import java.nio.ByteBuffer;
  * @see HelloWorld_07_Put_ByteBuffer_Arguments_Test
  */
 @Slf4j
-class HelloWorld_07_Put_ByteBuffer_Test extends HelloWorldTest {
+class HelloWorld_07_Put_ByteBuffer_Test
+        extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method, when invoked with a byte buffer which {@link
@@ -64,11 +65,13 @@ class HelloWorld_07_Put_ByteBuffer_Test extends HelloWorldTest {
     @DisplayName("put(buffer-with-no-backing-array) invokes set(array) and does buffer.put(array)")
     @Test
     void put_InvokeSetArrayPutArrayToBuffer_BufferHasNoBackingArray() {
+        // mock-maker-inline
         final ByteBuffer buffer = Mockito.spy(ByteBuffer.allocateDirect(HelloWorld.BYTES)); // <1>
         if (buffer.hasArray()) {                                                            // <2>
             log.info("a direct byte buffer has a backing array?");
             Mockito.when(buffer.hasArray()).thenReturn(false);                              // <3>
         }
+        final int position = buffer.position();
         // TODO: Implement!
     }
 

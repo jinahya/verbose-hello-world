@@ -24,9 +24,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mockito;
 
 import java.io.DataOutput;
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -36,22 +38,23 @@ import java.io.IOException;
  * @see HelloWorld_05_Write_DataOutput_Arguments_Test
  */
 @Slf4j
-class HelloWorld_05_Write_DataOutput_Test extends HelloWorldTest {
+class HelloWorld_05_Write_DataOutput_Test
+        extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(DataOutput) write(data)} method invokes {@link HelloWorld#set(byte[]) set(array)}
      * method with an array of {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and writes the array to
      * specified data output.
      *
+     * @param tempDir a temporary directory to test with
      * @throws IOException if an I/O error occurs.
      */
     @DisplayName("write(data) invokes set(byte[BYTES]) and writes the array to data")
     @Test
-    void write_InvokeSetArrayWriteArrayToData_() throws IOException {
+    void write_InvokeSetArrayWriteArrayToData_(@TempDir final File tempDir) throws IOException {
         final DataOutput data = Mockito.mock(DataOutput.class);
         helloWorld().write(data);
-        Mockito.verify(helloWorld(), Mockito.times(1))
-                .set(arrayCaptor().capture());
+        Mockito.verify(helloWorld(), Mockito.times(1)).set(arrayCaptor().capture());
         final byte[] array = arrayCaptor().getValue();
         Assertions.assertNotNull(array);
         Assertions.assertEquals(HelloWorld.BYTES, array.length);

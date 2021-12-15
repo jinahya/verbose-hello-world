@@ -25,11 +25,11 @@ package com.github.jinahya.hello;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-class HelloWorldSpiTest extends AbstractHelloWorldTest {
+class HelloWorldSpiTest extends HelloWorldTest {
 
-    // -----------------------------------------------------------------------------------------------------------------
-    HelloWorld spy() {
-        // TODO: fix!
+    @Override
+    HelloWorld helloWorld() {
+        // TODO: Implement!
         return new HelloWorldDemo();
     }
 }

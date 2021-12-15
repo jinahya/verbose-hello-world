@@ -31,7 +31,8 @@ import org.junit.jupiter.api.Test;
  * @see HelloWorld_01_Set_Array_Arguments_Test
  */
 @Slf4j
-class HelloWorld_01_Set_Array_Test extends HelloWorldTest {
+class HelloWorld_01_Set_Array_Test
+        extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#set(byte[]) set(array)} method invokes {@link HelloWorld#set(byte[], int) set(array,
@@ -50,8 +51,8 @@ class HelloWorld_01_Set_Array_Test extends HelloWorldTest {
     @DisplayName("set(array) returns array")
     @Test
     void set_ReturnArray_() {
-        final byte[] expected = new byte[HelloWorld.BYTES];
-        final byte[] actual = helloWorld().set(expected);
+        final byte[] array = new byte[HelloWorld.BYTES];
+        final byte[] actual = helloWorld().set(array);
         // TODO: Implement!
     }
 }

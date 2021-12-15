@@ -37,7 +37,8 @@ import java.net.Socket;
  * @see HelloWorld_04_Send_Socket_Arguments_Test
  */
 @Slf4j
-class HelloWorld_04_Send_Socket_Test extends HelloWorldTest {
+class HelloWorld_04_Send_Socket_Test
+        extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#send(Socket) send(socket)} method invokes the {@link HelloWorld#write(OutputStream)
@@ -48,13 +49,13 @@ class HelloWorld_04_Send_Socket_Test extends HelloWorldTest {
     @DisplayName("send(socket) invokes write(socket.outputStream)")
     @Test
     void send_InvokeWriteStreamWithSocketOutputStream_() throws IOException {
-        final Socket socket = Mockito.spy(new Socket());              // <1>
-        final OutputStream stream = Mockito.mock(OutputStream.class); // <2>
-        Mockito.lenient()                                             // <3>
+        final Socket socket = Mockito.spy(new Socket());                   // <1>
+        final OutputStream stream = Mockito.mock(OutputStream.class);      // <2>
+        Mockito.lenient()
                 .doReturn(stream)
                 .when(socket)
-                .getOutputStream();
-        helloWorld().send(socket);                                    // <4>
+                .getOutputStream(); // <3>
+        helloWorld().send(socket);                                         // <4>
         // TODO: Implement!
     }
 

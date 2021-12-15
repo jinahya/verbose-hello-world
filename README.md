@@ -28,8 +28,6 @@ verbose-hello-world                    the parent module
 |`+-- verbose-hello-world-app2`|a second level parent module for apps|
 |`+-- verbose-hello-world-app3`|a second level parent module for apps|
 
-
-
 ## Miscellaneous
 
 ### Building with different JDKs using Dockert
@@ -39,6 +37,7 @@ $ sh ./docker.maven.sh <tag> <phase1> <phase2> ...
 ```
 
 e.g.
+
 ```shell script
 $ sh ./docker.maven.sh 3-jdk-11-openj9 clean install
 ```

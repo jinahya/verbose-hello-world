@@ -25,7 +25,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.nio.channels.WritableByteChannel;
@@ -39,19 +38,20 @@ import java.nio.file.Path;
  * @see HelloWorld_09_Append_Path_Arguments_Test
  */
 @Slf4j
-class HelloWorld_09_Append_Path_Test extends HelloWorldTest {
+class HelloWorld_09_Append_Path_Test
+        extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#append(Path) append(path)} method invokes {@link HelloWorld#write(WritableByteChannel)
-     * write(channel)} method and asserts {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes are appended to the
-     * {@code path}.
+     * write(channel)} method and asserts {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes are appended to
+     * specified {@code path}.
      *
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
     @DisplayName("append(path) invokes write(channel), 12 bytes are appended")
     @Test
-    void append_InvokeWriteChannel12BytesWritten_(final @TempDir Path tempDir) throws IOException {
+    void append_InvokeWriteChannel12BytesWritten_(@TempDir final Path tempDir) throws IOException {
         final Path path = Files.createTempFile(tempDir, null, null);
         final long size = Files.size(path);
         // TODO: Implement!
@@ -60,13 +60,14 @@ class HelloWorld_09_Append_Path_Test extends HelloWorldTest {
     /**
      * Asserts {@link HelloWorld#append(Path) append(path)} method returns the {@code path} argument.
      *
+     * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
     @DisplayName("append(path) returns path")
     @Test
-    void append_ReturnPath_() throws IOException {
-        final Path expected = Mockito.mock(Path.class);
-        final Path actual = helloWorld().append(expected);
-        Assertions.assertSame(expected, actual);
+    void append_ReturnPath_(@TempDir final Path tempDir) throws IOException {
+        final Path path = Files.createTempFile(tempDir, null, null);
+        final Path actual = helloWorld().append(path);
+        Assertions.assertSame(path, actual);
     }
 }

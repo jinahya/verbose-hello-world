@@ -34,7 +34,8 @@ import java.io.File;
  * @see HelloWorld_03_Append_File_Test
  */
 @Slf4j
-class HelloWorld_03_Append_File_Arguments_Test extends HelloWorldTest {
+class HelloWorld_03_Append_File_Arguments_Test
+        extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#append(File) append(file)} method throws a {@link NullPointerException} when the {@code
@@ -42,7 +43,8 @@ class HelloWorld_03_Append_File_Arguments_Test extends HelloWorldTest {
      */
     @DisplayName("append((File) null) throws a NullPointerException")
     @Test
-    void append_NullPointerException_FileIsNull() {
-        Assertions.assertThrows(NullPointerException.class, () -> helloWorld().append((File) null));
+    void append_ThrowNullPointerException_FileIsNull() {
+        final File file = null;
+        Assertions.assertThrows(NullPointerException.class, () -> helloWorld().append(file));
     }
 }

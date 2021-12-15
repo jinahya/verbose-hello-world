@@ -33,7 +33,6 @@ import static com.github.jinahya.hello.HelloWorldDiTest.IMPL;
  */
 class HelloWorldDiHk2Binder extends AbstractBinder {
 
-    // -----------------------------------------------------------------------------------------------------------------
     private static class QualifiedDemo_ extends AnnotationLiteral<QualifiedDemo> implements QualifiedDemo {
 
         private static final long serialVersionUID = 8947668889394516822L;
@@ -44,7 +43,6 @@ class HelloWorldDiHk2Binder extends AbstractBinder {
         private static final long serialVersionUID = 9084623087464727990L;
     }
 
-    // -----------------------------------------------------------------------------------------------------------------
     @Override
     protected void configure() {
         bind(HelloWorldDemo.class).named(DEMO).to(HelloWorld.class);
