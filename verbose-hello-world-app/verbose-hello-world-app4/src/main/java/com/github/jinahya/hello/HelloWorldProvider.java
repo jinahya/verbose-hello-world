@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
 
-import static java.util.ServiceLoader.load;
+import java.util.ServiceLoader;
 
 /**
  * A class for producing (and disposing) instances of {@link HelloWorld}.
@@ -35,26 +35,24 @@ import static java.util.ServiceLoader.load;
 @Slf4j
 class HelloWorldProvider {
 
-    // -----------------------------------------------------------------------------------------------------------------
-
     /**
-     * Produces an instance of {@link HelloWorld}.
+     * Produces an instance of {@link HelloWorld} interface.
      *
-     * @return an instance of {@link HelloWorld}.
+     * @return an instance of {@link HelloWorld} interface.
      */
     @Produces
     public HelloWorld produceHelloWorld() {
-        final HelloWorld helloWorld = load(HelloWorld.class).iterator().next();
-//        log.debug("producing {}", helloWorld);
+        final HelloWorld helloWorld = ServiceLoader.load(HelloWorld.class).iterator().next();
+        log.debug("producing {}", helloWorld);
         return helloWorld;
     }
 
     /**
-     * Disposes specified instance of {@link HelloWorld}.
+     * Disposes specified instance of {@link HelloWorld} interface.
      *
-     * @param helloWorld the instance of {@link HelloWorld} to dispose.
+     * @param helloWorld the instance of {@link HelloWorld} interfae to dispose.
      */
     void disposeHelloWorld(@Disposes final HelloWorld helloWorld) {
-//        log.debug("disposing {}", helloWorld);
+        log.debug("disposing {}", helloWorld);
     }
 }

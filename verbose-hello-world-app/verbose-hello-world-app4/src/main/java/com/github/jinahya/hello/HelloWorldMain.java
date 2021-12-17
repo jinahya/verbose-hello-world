@@ -35,19 +35,15 @@ import java.io.IOException;
 @Slf4j
 public class HelloWorldMain {
 
-    // -----------------------------------------------------------------------------------------------------------------
-
     /**
      * The main method of this program which prints {@code hello, world} followed by a new line character.
      *
      * @param args an array of command line arguments
      * @throws IOException if an I/O error occurs.
      */
-    public static void main(final String[] args) throws IOException {
+    public static void main(final String... args) throws IOException {
         // TODO: implement!
     }
-
-    // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * Creates a new instance.
@@ -56,22 +52,18 @@ public class HelloWorldMain {
         super();
     }
 
-    // -----------------------------------------------------------------------------------------------------------------
     @PostConstruct
     private void onPostConstruct() {
-//        log.debug("constructed.");
-//        log.debug("helloWorld: {}", helloWorld);
+        log.debug("constructed; helloWorld: {}", helloWorld);
     }
 
     @PreDestroy
     private void onPreDestroy() {
-//        log.debug("being destroyed.");
+        log.debug("being destroyed.");
     }
 
-    // -----------------------------------------------------------------------------------------------------------------
-
     /**
-     * An injected instance of {@link HelloWorld}.
+     * An injected instance of {@link HelloWorld} interface.
      */
     @Inject
     private HelloWorld helloWorld;
