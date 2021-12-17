@@ -34,7 +34,7 @@ import java.util.Objects;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorldServer {
+class HelloWorldServer implements IHelloWorldServer {
 
     static final ThreadLocal<SocketAddress> ENDPOINT = new ThreadLocal<>();
 
@@ -48,12 +48,7 @@ class HelloWorldServer {
         this.backlog = backlog;
     }
 
-    /**
-     * Starts this server.
-     *
-     * @throws IOException if an I/O error occurs.
-     */
-    synchronized void start() throws IOException {
+    public synchronized void open() throws IOException {
         if (serverSocket != null) {
             throw new IllegalStateException("already started");
         }
@@ -62,15 +57,17 @@ class HelloWorldServer {
             serverSocket.bind(endpoint, backlog);
         } catch (final IOException ioe) {
             log.error("failed to bind the server socket; endpoint: {}, backlog: {}", endpoint, backlog);
-            stop();
+            close();
             throw ioe;
         }
         ENDPOINT.set(serverSocket.getLocalSocketAddress());
+        log.info("server is open; {}", ENDPOINT.get());
         new Thread(() -> {
             while (!serverSocket.isClosed()) {
                 try (Socket socket = serverSocket.accept()) {
                     try {
-                        service.write(socket.getOutputStream()).flush();
+                        service.write(socket.getOutputStream());
+                        socket.getOutputStream().flush();
                     } catch (final IOException ioe) {
                         log.error("failed to write", ioe);
                     }
@@ -81,22 +78,17 @@ class HelloWorldServer {
                     log.error("failed to accept", ioe);
                 }
             }
+            ENDPOINT.remove();
         }).start();
     }
 
-    /**
-     * Stops this server.
-     *
-     * @throws IOException if an I/O error occurs.
-     */
-    synchronized void stop() throws IOException {
-        if (serverSocket == null) {
+    public synchronized void close() throws IOException {
+        if (serverSocket == null || serverSocket.isClosed()) {
             return;
         }
         try {
             serverSocket.close();
         } finally {
-            serverSocket = null;
             ENDPOINT.remove();
         }
     }

@@ -1,12 +1,9 @@
 package com.github.jinahya.hello;
 
+import java.io.Closeable;
 import java.io.IOException;
 
-public interface IHelloWorldServer {
+public interface IHelloWorldServer extends Closeable {
 
-    void start() throws IOException;
-
-    void stop() throws IOException;
-
-    boolean isStarted();
+    void open() throws IOException;
 }

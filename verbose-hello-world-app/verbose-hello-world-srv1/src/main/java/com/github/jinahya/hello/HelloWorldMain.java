@@ -35,7 +35,7 @@ import java.util.ServiceLoader;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-public class HelloWorldMain {//extends AbstractHelloWorldMain {
+public class HelloWorldMain {
 
     /**
      * The main method of this program which accepts socket connections and sends {@code hello, world} to clients.
@@ -43,23 +43,13 @@ public class HelloWorldMain {//extends AbstractHelloWorldMain {
      * @param args an array of command line arguments.
      * @throws IOException if an I/O error occurs.
      */
-    public static void main(final String... args) throws IOException {
-        final HelloWorld service = ServiceLoader.load(HelloWorld.class).iterator().next();
-        final ServerSocket server = new ServerSocket();
-        server.bind(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0));
-        log.info("bound to {}", server.getLocalSocketAddress());
-        while (!server.isClosed()) {
-            try {
-                try (Socket client = server.accept()) {
-                    // TODO: Implement!
-                }
-            } catch (final IOException ioe) {
-                if (server.isClosed()) {
-                    break;
-                }
-                log.debug("failed to work", ioe);
-            }
-        }
+    public static void main(final String... args) throws IOException, InterruptedException {
+        final HelloWorldServer server = new HelloWorldServer(
+                ServiceLoader.load(HelloWorld.class).iterator().next(),
+                new InetSocketAddress(InetAddress.getByName("0.0.0.0"), 0),
+                50);
+        server.open();
+        IHelloWorldServerUtils.readQuitToClose(server);
     }
 
     /**
