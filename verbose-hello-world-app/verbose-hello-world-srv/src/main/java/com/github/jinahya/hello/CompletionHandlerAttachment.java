@@ -29,7 +29,6 @@ import java.nio.channels.CompletionHandler;
 @Getter
 class CompletionHandlerAttachment<V, A> {
 
-    // -----------------------------------------------------------------------------------------------------------------
     static <V, A> CompletionHandlerAttachment<V, A> of(final CompletionHandler<V, ? super A> handler,
                                                        final A attachment) {
         final CompletionHandlerAttachment<V, A> instance = new CompletionHandlerAttachment<>();
@@ -38,12 +37,10 @@ class CompletionHandlerAttachment<V, A> {
         return instance;
     }
 
-    // -----------------------------------------------------------------------------------------------------------------
     private CompletionHandlerAttachment() {
         super();
     }
 
-    // -----------------------------------------------------------------------------------------------------------------
     private CompletionHandler<V, ? super A> handler;
 
     private A attachment;

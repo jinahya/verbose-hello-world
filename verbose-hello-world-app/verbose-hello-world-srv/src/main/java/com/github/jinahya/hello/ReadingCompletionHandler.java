@@ -27,7 +27,6 @@ import static java.util.Objects.requireNonNull;
 
 class ReadingCompletionHandler<A> implements CompletionHandler<Integer, A> {
 
-    // -----------------------------------------------------------------------------------------------------------------
     ReadingCompletionHandler(
             final BiConsumer<Integer, ? super CompletionHandlerAttachment<Integer, A>> completionConsumer,
             final BiConsumer<Throwable, ? super CompletionHandlerAttachment<Integer, A>> failureConsumer) {
@@ -36,7 +35,6 @@ class ReadingCompletionHandler<A> implements CompletionHandler<Integer, A> {
         this.failureConsumer = requireNonNull(failureConsumer, "failureConsumer is null");
     }
 
-    // -----------------------------------------------------------------------------------------------------------------
     @Override
     public void completed(final Integer result, final A attachment) {
         completionConsumer.accept(result, CompletionHandlerAttachment.of(this, attachment));
@@ -47,7 +45,6 @@ class ReadingCompletionHandler<A> implements CompletionHandler<Integer, A> {
         failureConsumer.accept(exc, CompletionHandlerAttachment.of(this, attachment));
     }
 
-    // -----------------------------------------------------------------------------------------------------------------
     private final BiConsumer<Integer, ? super CompletionHandlerAttachment<Integer, A>> completionConsumer;
 
     private final BiConsumer<Throwable, ? super CompletionHandlerAttachment<Integer, A>> failureConsumer;

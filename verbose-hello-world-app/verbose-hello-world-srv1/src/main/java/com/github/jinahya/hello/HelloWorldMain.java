@@ -24,10 +24,10 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-
-import static java.util.ServiceLoader.load;
+import java.util.ServiceLoader;
 
 /**
  * A class whose {@link #main(String[])} method accepts socket connections and sends {@code hello, world} to clients.
@@ -35,9 +35,7 @@ import static java.util.ServiceLoader.load;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-public class HelloWorldMain extends AbstractHelloWorldMain {
-
-    // -----------------------------------------------------------------------------------------------------------------
+public class HelloWorldMain {//extends AbstractHelloWorldMain {
 
     /**
      * The main method of this program which accepts socket connections and sends {@code hello, world} to clients.
@@ -46,12 +44,10 @@ public class HelloWorldMain extends AbstractHelloWorldMain {
      * @throws IOException if an I/O error occurs.
      */
     public static void main(final String... args) throws IOException {
-        final HelloWorld helloWorld = load(HelloWorld.class).iterator().next();
-        log.info("localhost: {}", InetAddress.getLocalHost());
-        final ServerSocket server = new ServerSocket(0);
+        final HelloWorld service = ServiceLoader.load(HelloWorld.class).iterator().next();
+        final ServerSocket server = new ServerSocket();
+        server.bind(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0));
         log.info("bound to {}", server.getLocalSocketAddress());
-        readAndClose(server);
-        connectAndPrint(server);
         while (!server.isClosed()) {
             try {
                 try (Socket client = server.accept()) {
@@ -66,12 +62,10 @@ public class HelloWorldMain extends AbstractHelloWorldMain {
         }
     }
 
-    // -----------------------------------------------------------------------------------------------------------------
-
     /**
      * Creates a new instance.
      */
     private HelloWorldMain() {
-        super();
+        throw new AssertionError("instantiation is not allowed");
     }
 }

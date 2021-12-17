@@ -38,8 +38,6 @@ import static java.lang.Integer.parseInt;
 @Slf4j
 public class HelloWorldMain {
 
-    // -----------------------------------------------------------------------------------------------------------------
-
     /**
      * The main method of this program which connects to a remote socket and prints the response.
      *
@@ -55,8 +53,6 @@ public class HelloWorldMain {
             System.out.printf("%s%n", new String(array, StandardCharsets.US_ASCII));
         }
     }
-
-    // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * Creates a new instance.

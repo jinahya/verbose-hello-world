@@ -10,18 +10,17 @@
   </parent>
 
   <artifactId>verbose-hello-world-srv1</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>${project.parent.version}</version>
   <packaging>jar</packaging>
 
   <name>${project.artifactId}</name>
-  <description>Verbose Hello World Srv4</description>
-  <url>https://github.com/jinahya/verbose-hello-world/${project.parent.artifactId}/${project.artifactId}</url>
+  <description>Verbose Hello World Srv1</description>
 
   <dependencies>
     <dependency>
       <groupId>com.github.jinahya</groupId>
       <artifactId>verbose-hello-world-srv</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
+      <version>${project.parent.version}</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>

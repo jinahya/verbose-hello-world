@@ -27,7 +27,6 @@ import static java.util.Objects.requireNonNull;
 
 class ConnectionCompletionHandler<A> implements CompletionHandler<Void, A> {
 
-    // -----------------------------------------------------------------------------------------------------------------
     ConnectionCompletionHandler(
             final BiConsumer<Void, ? super CompletionHandlerAttachment<Void, A>> completionConsumer,
             final BiConsumer<Throwable, ? super CompletionHandlerAttachment<Void, A>> failureConsumer) {
@@ -36,7 +35,6 @@ class ConnectionCompletionHandler<A> implements CompletionHandler<Void, A> {
         this.failureConsumer = requireNonNull(failureConsumer, "failureConsumer is null");
     }
 
-    // -----------------------------------------------------------------------------------------------------------------
     @Override
     public void completed(final Void result, final A attachment) {
         completionConsumer.accept(result, CompletionHandlerAttachment.of(this, attachment));
@@ -47,7 +45,6 @@ class ConnectionCompletionHandler<A> implements CompletionHandler<Void, A> {
         failureConsumer.accept(exc, CompletionHandlerAttachment.of(this, attachment));
     }
 
-    // -----------------------------------------------------------------------------------------------------------------
     private final BiConsumer<Void, ? super CompletionHandlerAttachment<Void, A>> completionConsumer;
 
     private final BiConsumer<Throwable, ? super CompletionHandlerAttachment<Void, A>> failureConsumer;

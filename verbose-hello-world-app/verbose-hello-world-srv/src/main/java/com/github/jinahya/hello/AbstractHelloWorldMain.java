@@ -56,8 +56,6 @@ import static java.util.concurrent.CompletableFuture.runAsync;
 @Slf4j
 abstract class AbstractHelloWorldMain {
 
-    // -----------------------------------------------------------------------------------------------------------------
-
     /**
      * Starts a new daemon thread which reads lines from {@link System#in} and closes specified closeable for "{@code
      * quit}".
@@ -87,8 +85,6 @@ abstract class AbstractHelloWorldMain {
         thread.setDaemon(true);
         thread.start();
     }
-
-    // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * Connects to specified socket address and reads {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and
@@ -124,8 +120,6 @@ abstract class AbstractHelloWorldMain {
         thread.setDaemon(true);
         thread.start();
     }
-
-    // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * Connects to specified socket address and reads {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and
@@ -166,8 +160,6 @@ abstract class AbstractHelloWorldMain {
         thread.setDaemon(true);
         thread.start();
     }
-
-    // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * Connects to specified socket address and reads {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and
@@ -237,8 +229,6 @@ abstract class AbstractHelloWorldMain {
         thread.start();
     }
 
-    // -----------------------------------------------------------------------------------------------------------------
-
     /**
      * Connects to specified socket address and reads {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and
      * prints it as a {@link StandardCharsets#US_ASCII US-ASCII} string followed by a new line character.
@@ -278,8 +268,6 @@ abstract class AbstractHelloWorldMain {
             }
         });
     }
-
-    // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * Connects to specified socket address and reads {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and
@@ -354,8 +342,6 @@ abstract class AbstractHelloWorldMain {
         thread.setDaemon(true);
         thread.start();
     }
-
-    // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * Connects to specified socket address and reads {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and
