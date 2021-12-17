@@ -29,8 +29,6 @@ import com.google.inject.AbstractModule;
  */
 class HelloWorldModule extends AbstractModule {
 
-    // -----------------------------------------------------------------------------------------------------------------
-
     /**
      * The fully qualified name of the {@code HelloWorldImpl} class.
      */
@@ -49,9 +47,8 @@ class HelloWorldModule extends AbstractModule {
         }
     }
 
-    // -----------------------------------------------------------------------------------------------------------------
     @Override
     protected void configure() {
-        // TODO: implement!
+        bind(HelloWorld.class).to(HELLO_WORLD_IMPL_CLASS);
     }
 }

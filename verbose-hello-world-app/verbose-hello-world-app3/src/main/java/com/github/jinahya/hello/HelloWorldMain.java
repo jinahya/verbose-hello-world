@@ -30,19 +30,16 @@ import java.io.IOException;
  */
 public class HelloWorldMain {
 
-    // -----------------------------------------------------------------------------------------------------------------
-
     /**
-     * The main method of this program which prints {@code hello, world} followed by a new line character.
+     * The main method of this program which prints {@code hello, world} to {@link System#out} followed by a new line
+     * character.
      *
      * @param args an array of command line arguments
      * @throws IOException if an I/O error occurs.
      */
-    public static void main(final String[] args) throws IOException {
+    public static void main(final String... args) throws IOException {
         // TODO: implement!
     }
-
-    // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * Creates a new instance.
@@ -51,10 +48,8 @@ public class HelloWorldMain {
         super();
     }
 
-    // -----------------------------------------------------------------------------------------------------------------
-
     /**
-     * An injected instance of {@link HelloWorld}.
+     * An injected instance of {@link HelloWorld} interface.
      */
     @Inject
     HelloWorld helloWorld;
