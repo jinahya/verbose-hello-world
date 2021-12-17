@@ -27,8 +27,7 @@ import java.nio.charset.StandardCharsets;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-// public for SPI
-class HelloWorldDemo implements HelloWorld {
+public class HelloWorldDemo implements HelloWorld {
 
     @Override
     public byte[] set(final byte[] array, final int index) {

@@ -29,6 +29,7 @@ import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
+import javax.validation.constraints.AssertTrue;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousFileChannel;
@@ -61,7 +62,7 @@ class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Test
                     return buffer;
                 })
                 .when(helloWorld())
-                .put(ArgumentMatchers.any(ByteBuffer.class));
+                .put(ArgumentMatchers.notNull());
     }
 
     /**
@@ -89,8 +90,8 @@ class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Test
                     return null;
                 })
                 .when(channel)
-                .write(ArgumentMatchers.any(ByteBuffer.class), ArgumentMatchers.longThat(a -> a >= 0L),
-                       ArgumentMatchers.anyLong(), ArgumentMatchers.<CompletionHandler<Integer, Long>>any());
+                .write(ArgumentMatchers.notNull(), ArgumentMatchers.longThat(a -> a >= 0L),
+                       ArgumentMatchers.notNull(), ArgumentMatchers.notNull());
         final long position = 0L;
         final Future<AsynchronousFileChannel> future = helloWorld().writeCompletable(channel, position);
         final AsynchronousFileChannel actual = future.get();
@@ -100,7 +101,7 @@ class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Test
         Assertions.assertFalse(buffer.hasRemaining());
         Mockito.verify(channel, Mockito.atLeast(1))
                 .write(ArgumentMatchers.same(buffer), ArgumentMatchers.longThat(a -> a >= 0L),
-                       ArgumentMatchers.anyLong(), ArgumentMatchers.<CompletionHandler<Integer, Long>>any());
+                       ArgumentMatchers.notNull(), ArgumentMatchers.notNull());
         Assertions.assertSame(channel, actual);
         Assertions.assertEquals(HelloWorld.BYTES, writtenSoFar.intValue());
     }
@@ -119,18 +120,20 @@ class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Test
     @Test
     void writeCompletable_Writes12BytesFromPosition_(@TempDir final Path tempDir)
             throws IOException, InterruptedException, ExecutionException {
-        final Path file = Files.createTempFile(tempDir, null, null);
+        final Path path = Files.createTempFile(tempDir, null, null);
         final long position = new Random().nextInt(1024);
-        try (AsynchronousFileChannel channel = AsynchronousFileChannel.open(file, StandardOpenOption.WRITE)) {
-            helloWorld().writeCompletable(channel, position).get();
-            channel.force(false);
+        try (AsynchronousFileChannel channel = AsynchronousFileChannel.open(path, StandardOpenOption.WRITE)) {
+            helloWorld().writeCompletable(channel, position)
+                    .get()
+                    .force(false);
         }
-        try (AsynchronousFileChannel channel = AsynchronousFileChannel.open(file, StandardOpenOption.READ)) {
+        Assertions.assertEquals(position + HelloWorld.BYTES, Files.size(path));
+        try (AsynchronousFileChannel channel = AsynchronousFileChannel.open(path, StandardOpenOption.READ)) {
             final ByteBuffer buffer = ByteBuffer.allocate(HelloWorld.BYTES);
             channel.read(
-                    buffer, // buffer
-                    position, // position
-                    position, // attachment
+                    buffer,                                  // buffer
+                    position,                                // position
+                    position,                                // attachment
                     new CompletionHandler<Integer, Long>() { // handler
                         @Override
                         public void completed(final Integer result, Long attachment) {
@@ -138,12 +141,17 @@ class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Test
                                 return;
                             }
                             attachment += result;
-                            channel.read(buffer, attachment, attachment, this);
+                            channel.read(
+                                    buffer,     // buffer
+                                    attachment, // position
+                                    attachment, // attachment
+                                    this        // handler
+                            );
                         }
 
                         @Override
                         public void failed(final Throwable exc, final Long attachment) {
-                            log.error("failed to read from channel", exc);
+                            log.error("failed to read from channel; attachment: {}", attachment, exc);
                         }
                     }
             );

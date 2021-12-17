@@ -25,7 +25,6 @@ package com.github.jinahya.hello;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-// public for SPI
 public class HelloWorldImpl implements HelloWorld {
 
     @Override
