@@ -23,8 +23,8 @@ package com.github.jinahya.hello;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.SocketAddress;
 import java.util.Objects;
 
@@ -34,49 +34,49 @@ import java.util.Objects;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorldServerTcp implements IHelloWorldServer {
+class HelloWorldServerUdp implements IHelloWorldServer {
 
     static final ThreadLocal<SocketAddress> ENDPOINT = new ThreadLocal<>();
 
     /**
      * Creates a new instance.
      *
-     * @param service  an instance of {@link HelloWorld} interface.
-     * @param endpoint a socket address to bind.
-     * @param backlog  a value of backlog.
+     * @param service an instance of {@link HelloWorld} interface.
+     * @param address a socket address to bind.
      */
-    HelloWorldServerTcp(final HelloWorld service, final SocketAddress endpoint, final int backlog) {
+    HelloWorldServerUdp(final HelloWorld service, final SocketAddress address) {
         super();
         this.service = Objects.requireNonNull(service, "service is null");
-        this.endpoint = Objects.requireNonNull(endpoint, "endpoint is null");
-        this.backlog = backlog;
+        this.address = Objects.requireNonNull(address, "address is null");
     }
 
     @Override
     public synchronized void open() throws IOException {
-        if (serverSocket != null) {
+        if (socket != null) {
             throw new IllegalStateException("already started");
         }
-        serverSocket = new ServerSocket();
+        socket = new DatagramSocket();
         try {
-            serverSocket.bind(endpoint, backlog);
+            socket.bind(address);
         } catch (final IOException ioe) {
-            log.error("failed to bind the server socket; endpoint: {}, backlog: {}", endpoint, backlog);
+            log.error("failed to bind the datagram socket; addr: {}", address);
             close();
             throw ioe;
         }
-        ENDPOINT.set(serverSocket.getLocalSocketAddress());
+        ENDPOINT.set(socket.getLocalSocketAddress());
         log.info("server is open; {}", ENDPOINT.get());
         new Thread(() -> {
-            while (!serverSocket.isClosed()) {
-                try (Socket socket = serverSocket.accept()) {
-                    service.write(socket.getOutputStream());
-                    socket.getOutputStream().flush();
+            while (!socket.isClosed()) {
+                final DatagramPacket packet = new DatagramPacket(new byte[0], 0);
+                try {
+                    socket.receive(packet);
+                    final byte[] array = service.set(new byte[HelloWorld.BYTES]);
+                    socket.send(new DatagramPacket(array, array.length, packet.getSocketAddress()));
                 } catch (final IOException ioe) {
-                    if (serverSocket.isClosed()) {
+                    if (socket.isClosed()) {
                         break;
                     }
-                    log.error("failed to accept/write", ioe);
+                    log.error("failed to receive/send", ioe);
                 }
             }
             ENDPOINT.remove();
@@ -85,17 +85,15 @@ class HelloWorldServerTcp implements IHelloWorldServer {
 
     @Override
     public synchronized void close() throws IOException {
-        if (serverSocket == null || serverSocket.isClosed()) {
+        if (socket == null || socket.isClosed()) {
             return;
         }
-        serverSocket.close();
+        socket.close();
     }
 
     private final HelloWorld service;
 
-    private final SocketAddress endpoint;
+    private final SocketAddress address;
 
-    private final int backlog;
-
-    private ServerSocket serverSocket;
+    private DatagramSocket socket;
 }
