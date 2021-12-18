@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.github.jinahya</groupId>
+    <artifactId>verbose-hello-world</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>verbose-hello-world-client</artifactId>
+  <version>${project.parent.version}</version>
+  <packaging>jar</packaging>
+
+  <name>${project.artifactId}</name>
+  <description>Verbose Hello World Client</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.github.jinahya</groupId>
+      <artifactId>verbose-hello-world-api</artifactId>
+      <version>${project.parent.version}</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
+
+  <profiles>
+    <profile>
+      <id>tcp</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <configuration>
+              <mainClass>com.github.jinahya.hello.HelloWorldClientTcp</mainClass>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>udp</id>
+    </profile>
+  </profiles>
+
+</project>

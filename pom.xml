@@ -30,9 +30,11 @@
   </licenses>
 
   <modules>
-    <module>verbose-hello-world-api</module>
-    <module>verbose-hello-world-lib</module>
-    <module>verbose-hello-world-app</module>
+    <module>verbose-hello-world-01-api</module>
+    <module>verbose-hello-world-02-lib</module>
+    <module>verbose-hello-world-03-app</module>
+    <module>verbose-hello-world-client</module>
+    <module>verbose-hello-world-04-srv</module>
   </modules>
 
   <scm>
