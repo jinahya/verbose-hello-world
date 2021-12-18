@@ -10,7 +10,7 @@
   </parent>
 
   <artifactId>verbose-hello-world-04-srv</artifactId>
-  <version>${project.parent.version}</version>
+<!--  <version>0.0.1-SNAPSHOT</version>-->
   <packaging>pom</packaging>
 
   <name>${project.artifactId}</name>

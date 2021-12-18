@@ -22,36 +22,38 @@ package com.github.jinahya.hello;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.DataInputStream;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.nio.charset.StandardCharsets;
+import java.util.ServiceLoader;
 
 /**
- * A class whose {@link #main(String[])} method connects to a remote socket and prints the response.
+ * A class whose {@link #main(String[])} method accepts socket connections and sends {@code hello, world} to clients.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-public class HelloWorldClientTcp extends HelloWorldClient {
+public class HelloWorldMainTcp {
 
     /**
-     * The main method of this program which connects to a remote socket and prints the response.
+     * The main method of this program which accepts socket connections and sends {@code hello, world} to clients.
      *
-     * @param args an array of command line arguments
+     * @param args an array of command line arguments.
      * @throws IOException if an I/O error occurs.
      */
     public static void main(final String... args) throws IOException {
-        try (Socket socket = new Socket()) {
-            socket.connect(new InetSocketAddress(host(), port()));
-            final byte[] array = new byte[HelloWorld.BYTES];
-            new DataInputStream(socket.getInputStream()).readFully(array);
-            System.out.printf("%s%n", new String(array, StandardCharsets.US_ASCII));
-        }
+        final HelloWorldServerTcp server = new HelloWorldServerTcp(
+                ServiceLoader.load(HelloWorld.class).iterator().next(),
+                new InetSocketAddress(InetAddress.getByName("0.0.0.0"), 0),
+                50);
+        server.open();
+        IHelloWorldServerUtils.readQuitToClose(server);
     }
 
-    private HelloWorldClientTcp() {
+    /**
+     * Creates a new instance.
+     */
+    private HelloWorldMainTcp() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

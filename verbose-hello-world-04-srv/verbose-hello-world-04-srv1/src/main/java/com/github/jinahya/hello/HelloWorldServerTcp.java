@@ -34,14 +34,14 @@ import java.util.Objects;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorldServer implements IHelloWorldServer {
+class HelloWorldServerTcp implements IHelloWorldServer {
 
     static final ThreadLocal<SocketAddress> ENDPOINT = new ThreadLocal<>();
 
     /**
      * Creates a new instance.
      */
-    HelloWorldServer(final HelloWorld service, final SocketAddress endpoint, final int backlog) {
+    HelloWorldServerTcp(final HelloWorld service, final SocketAddress endpoint, final int backlog) {
         super();
         this.service = Objects.requireNonNull(service, "service is null");
         this.endpoint = Objects.requireNonNull(endpoint, "endpoint is null");

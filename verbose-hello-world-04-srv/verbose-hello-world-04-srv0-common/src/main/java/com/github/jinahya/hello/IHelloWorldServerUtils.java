@@ -23,21 +23,26 @@ package com.github.jinahya.hello;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
-import java.io.Closeable;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
+import java.util.concurrent.Callable;
 
 @Slf4j
 final class IHelloWorldServerUtils {
 
     /**
-     * Starts a new daemon thread which reads lines from {@link System#in} and closes specified closeable for "{@code
-     * quit}".
+     * Starts a new {@link Thread#setDaemon(boolean) daemon} thread which reads '{@code quit}' from {@link System#in}
+     * and closes specified server.
      *
-     * @param closeable the closeable to close.
+     * @param server the server to close.
      */
-    static void readQuitToClose(final Closeable closeable) throws InterruptedException, IOException {
-        if (closeable == null) {
+    static void readQuitToClose(final IHelloWorldServer server) {
+        if (server == null) {
             throw new NullPointerException("closeable is null");
         }
         final Thread thread = new Thread(() -> {
@@ -48,14 +53,31 @@ final class IHelloWorldServerUtils {
                         break;
                     }
                 }
+                server.close();
             } catch (final IOException ioe) {
-                log.error("failed to read 'quit'", ioe);
+                log.error("failed to read 'quit' and/or close the server", ioe);
             }
         });
         thread.setDaemon(true);
         thread.start();
-        thread.join();
-        closeable.close();
+    }
+
+    static void writeQuitToClose(final Callable<Void> callable) throws IOException {
+        Objects.requireNonNull(callable, "runnable is null");
+        final InputStream in = System.in;
+        try {
+            final PipedOutputStream pos = new PipedOutputStream();
+            System.setIn(new PipedInputStream(pos));
+            try {
+                callable.call();
+            } catch (final Exception e) {
+                log.debug("failed to call {}", callable, e);
+            }
+            pos.write("quit\n".getBytes(StandardCharsets.US_ASCII));
+            pos.flush();
+        } finally {
+            System.setIn(in);
+        }
     }
 
     private IHelloWorldServerUtils() {
