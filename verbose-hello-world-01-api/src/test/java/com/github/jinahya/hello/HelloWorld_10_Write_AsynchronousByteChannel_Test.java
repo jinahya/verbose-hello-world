@@ -61,9 +61,9 @@ class HelloWorld_10_Write_AsynchronousByteChannel_Test
         final AsynchronousByteChannel channel = Mockito.mock(AsynchronousByteChannel.class);
         final LongAdder writtenSoFar = new LongAdder();
         Mockito.lenient()
-                .when(channel.write(ArgumentMatchers.any(ByteBuffer.class)))
+                .when(channel.write(ArgumentMatchers.notNull()))
                 .thenAnswer(i -> {
-                    final ByteBuffer buffer = i.getArgument(0, ByteBuffer.class);
+                    final ByteBuffer buffer = i.getArgument(0);
                     final int written = new Random().nextInt(buffer.remaining() + 1);
                     buffer.position(buffer.position() + written);
                     writtenSoFar.add(written);
@@ -72,7 +72,6 @@ class HelloWorld_10_Write_AsynchronousByteChannel_Test
         helloWorld().write(channel);
         Mockito.verify(helloWorld(), Mockito.times(1)).put(bufferCaptor().capture());
         final ByteBuffer buffer = bufferCaptor().getValue();
-        Assertions.assertNotNull(buffer);
         Assertions.assertEquals(HelloWorld.BYTES, buffer.capacity());
         // TODO: Implement!
     }
