@@ -52,12 +52,12 @@ class HelloWorld_05_Write_DataOutput_Test
     @DisplayName("write(data) invokes set(byte[BYTES]) and writes the array to data")
     @Test
     void write_InvokeSetArrayWriteArrayToData_(@TempDir final File tempDir) throws IOException {
-        final DataOutput data = Mockito.mock(DataOutput.class);
-        helloWorld().write(data);
-        Mockito.verify(helloWorld(), Mockito.times(1)).set(arrayCaptor().capture());
-        final byte[] array = arrayCaptor().getValue();
-        Assertions.assertNotNull(array);
-        Assertions.assertEquals(HelloWorld.BYTES, array.length);
+        final DataOutput data = Mockito.mock(DataOutput.class);                      // <1>
+        helloWorld().write(data);                                                    // <2>
+        Mockito.verify(helloWorld(), Mockito.times(1)).set(arrayCaptor().capture()); // <3>
+        final byte[] array = arrayCaptor().getValue();                               // <4>
+        Assertions.assertNotNull(array);                                             // <5>
+        Assertions.assertEquals(HelloWorld.BYTES, array.length);                     // <6>
         // TODO: Implement!
     }
 
