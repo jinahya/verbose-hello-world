@@ -72,6 +72,7 @@ class HelloWorld_07_Put_ByteBuffer_Test
             buffer = Mockito.spy(buffer);                                // <3>
             Mockito.when(buffer.hasArray()).thenReturn(false);           // <4>
         }
+        assert !buffer.hasArray();
         final int position = buffer.position();
         // TODO: Implement!
     }
