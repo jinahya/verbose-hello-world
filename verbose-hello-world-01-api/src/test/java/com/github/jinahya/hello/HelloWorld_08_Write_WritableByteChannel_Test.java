@@ -44,7 +44,7 @@ import java.util.concurrent.atomic.LongAdder;
 class HelloWorld_08_Write_WritableByteChannel_Test
         extends HelloWorldTest {
 
-    // TODO: Remove this stubbing method when the put(buffer) method is implemented!
+    // TODO: Remove this stubbing method when you implemented the put(buffer) method!
     @BeforeEach
     void beforeEach() {
         // https://www.javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#13

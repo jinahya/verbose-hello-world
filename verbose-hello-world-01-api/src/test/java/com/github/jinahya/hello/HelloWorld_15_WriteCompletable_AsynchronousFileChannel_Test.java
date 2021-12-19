@@ -29,7 +29,6 @@ import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import javax.validation.constraints.AssertTrue;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousFileChannel;
@@ -52,7 +51,7 @@ import java.util.concurrent.atomic.LongAdder;
 class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Test
         extends HelloWorldTest {
 
-    // TODO: Remove following stubbing when you implemented the put(ByteBuffer) method!
+    // TODO: Remove this stubbing method when you implemented the put(buffer) method!
     @BeforeEach
     void beforeEach() {
         // https://www.javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#13
@@ -130,31 +129,27 @@ class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Test
         Assertions.assertEquals(position + HelloWorld.BYTES, Files.size(path));
         try (AsynchronousFileChannel channel = AsynchronousFileChannel.open(path, StandardOpenOption.READ)) {
             final ByteBuffer buffer = ByteBuffer.allocate(HelloWorld.BYTES);
-            channel.read(
-                    buffer,                                  // buffer
-                    position,                                // position
-                    position,                                // attachment
-                    new CompletionHandler<Integer, Long>() { // handler
-                        @Override
-                        public void completed(final Integer result, Long attachment) {
-                            if (!buffer.hasRemaining()) {
-                                return;
-                            }
-                            attachment += result;
-                            channel.read(
-                                    buffer,     // buffer
-                                    attachment, // position
-                                    attachment, // attachment
-                                    this        // handler
-                            );
-                        }
+            channel.read(buffer,                                  // buffer
+                         position,                                // position
+                         position,                                // attachment
+                         new CompletionHandler<Integer, Long>() { // handler
+                             @Override
+                             public void completed(final Integer result, Long attachment) {
+                                 if (!buffer.hasRemaining()) {
+                                     return;
+                                 }
+                                 attachment += result;
+                                 channel.read(buffer,     // buffer
+                                              attachment, // position
+                                              attachment, // attachment
+                                              this);      // handler
+                             }
 
-                        @Override
-                        public void failed(final Throwable exc, final Long attachment) {
-                            log.error("failed to read from channel; attachment: {}", attachment, exc);
-                        }
-                    }
-            );
+                             @Override
+                             public void failed(final Throwable exc, final Long attachment) {
+                                 log.error("failed to read from channel; attachment: {}", attachment, exc);
+                             }
+                         });
         }
     }
 }

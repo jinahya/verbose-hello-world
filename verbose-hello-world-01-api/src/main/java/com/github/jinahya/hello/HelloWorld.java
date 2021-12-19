@@ -36,7 +36,6 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
-import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -407,8 +406,9 @@ public interface HelloWorld {
      * @param position the file position at which the transfer is to begin; must be non-negative.
      * @param service  an executor service for submitting a task.
      * @return A future representing the result of the operation.
-     * @implSpec The default implementation {@link ExecutorService#submit(Callable) submits} a task which simply returns
-     * the result of {@link #write(AsynchronousFileChannel, long) #write(channel, position)}.
+     * @implSpec The default implementation {@link ExecutorService#submit(Callable) submits}, to specified service, a
+     * task which simply returns the result of {@link #write(AsynchronousFileChannel, long) #write(channel, position)}
+     * method.
      * @see #write(AsynchronousFileChannel, long)
      */
     default <T extends AsynchronousFileChannel> Future<T> writeAsync(final T channel, final long position,
@@ -419,7 +419,9 @@ public interface HelloWorld {
         if (position < 0L) {
             throw new IllegalArgumentException("position(" + position + ") is negative");
         }
-        Objects.requireNonNull(service, "service is null");
+        if (service == null) {
+            throw new NullPointerException("service is null");
+        }
         return service.submit(() -> write(channel, position));
     }
 
@@ -432,9 +434,10 @@ public interface HelloWorld {
      * @param position the file position at which the transfer is to begin; must be non-negative.
      * @return A completable future representing the result of the operation.
      * @implSpec The default implementation invokes {@link #put(ByteBuffer) #put(buffer)} method with a byte buffer of
-     * {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes, {@link ByteBuffer#flip() flips} it, and invokes {@link
-     * AsynchronousFileChannel#write(ByteBuffer, long, Object, CompletionHandler) channel#write(buffer, position,
-     * position, repeatable-completion-handler)}.
+     * {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes, {@link ByteBuffer#flip() flips} it, and repeatedly
+     * invokes {@link AsynchronousFileChannel#write(ByteBuffer, long, Object, CompletionHandler) channel#write(buffer,
+     * position, position, self-invoking-handler)} method while the buffer has {@link ByteBuffer#remaining()
+     * remaining}.
      * @see #write(AsynchronousFileChannel, long)
      */
     default <T extends AsynchronousFileChannel> CompletableFuture<T> writeCompletable(final T channel,
@@ -446,32 +449,31 @@ public interface HelloWorld {
             throw new IllegalArgumentException("position(" + position + ") is negative");
         }
         final CompletableFuture<T> future = new CompletableFuture<>();
-        final ByteBuffer buffer = (ByteBuffer) put(ByteBuffer.allocate(BYTES)).flip();
-        channel.write(
-                buffer,                                  // buffer
-                position,                                // position
-                position,                                // attachment
-                new CompletionHandler<Integer, Long>() { // handler
-                    @Override
-                    public void completed(final Integer result, Long attachment) {
-                        if (!buffer.hasRemaining()) { // <1>
-                            future.complete(channel);
-                            return;
-                        }
-                        attachment += result;         // <2>
-                        channel.write(                // <3>
-                                                      buffer,     // buffer
-                                                      attachment, // position
-                                                      attachment, // attachment
-                                                      this        // handler
-                        );
-                    }
+        final ByteBuffer buffer = ByteBuffer.allocate(BYTES);
+        put(buffer);
+        buffer.flip();
+        channel.write(buffer,                                  // buffer
+                      position,                                // position
+                      position,                                // attachment
+                      new CompletionHandler<Integer, Long>() { // handler
+                          @Override
+                          public void completed(final Integer result, Long attachment) {
+                              if (!buffer.hasRemaining()) {            // <1>
+                                  future.complete(channel);
+                                  return;
+                              }
+                              attachment += result;                    // <2>
+                              channel.write(buffer,     // buffer      // <3>
+                                            attachment, // position
+                                            attachment, // attachment
+                                            this);      // handler
+                          }
 
-                    @Override
-                    public void failed(final Throwable exc, final Long attachment) {
-                        future.completeExceptionally(exc);
-                    }
-                });
+                          @Override
+                          public void failed(final Throwable exc, final Long attachment) {
+                              future.completeExceptionally(exc);
+                          }
+                      });
         return future;
     }
 }

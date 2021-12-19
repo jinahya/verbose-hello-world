@@ -36,6 +36,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.LongAdder;
 
 /**
  * A class for testing {@link HelloWorld#writeAsync(AsynchronousFileChannel, long, ExecutorService)} method.
@@ -47,7 +48,7 @@ import java.util.concurrent.Future;
 class HelloWorld_14_WriteAsync_AsynchronousFileChannel_Test
         extends HelloWorldTest {
 
-    // TODO: Remove following stubbing the put(ByteBuffer) method implemented!
+    // TODO: Remove this stubbing method when you implemented the put(buffer) method!
     @BeforeEach
     void beforeEach() {
         // https://www.javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#13
@@ -57,7 +58,7 @@ class HelloWorld_14_WriteAsync_AsynchronousFileChannel_Test
                     return buffer;
                 })
                 .when(helloWorld())
-                .put(ArgumentMatchers.any(ByteBuffer.class));
+                .put(ArgumentMatchers.notNull());
     }
 
     /**
@@ -70,19 +71,25 @@ class HelloWorld_14_WriteAsync_AsynchronousFileChannel_Test
     @DisplayName("writeAsync(channel, position, service) returns Future(channel)")
     @Test
     void writeAsync_InvokePutBufferWriteBufferToChannel_() throws InterruptedException, ExecutionException {
+        final LongAdder writtenSoFar = new LongAdder();
         final AsynchronousFileChannel channel = Mockito.mock(AsynchronousFileChannel.class);
-        Mockito.when(channel.write(ArgumentMatchers.any(ByteBuffer.class), ArgumentMatchers.longThat(a -> a >= 0L)))
+        Mockito.when(channel.write(ArgumentMatchers.notNull(), ArgumentMatchers.longThat(a -> a >= 0L)))
                 .thenAnswer(i -> {
                     final ByteBuffer buffer = i.getArgument(0);
                     final long position = i.getArgument(1);
                     final int written = new Random().nextInt(buffer.remaining() + 1);
                     buffer.position(buffer.position() + written);
-                    return CompletableFuture.completedFuture(written);
+                    writtenSoFar.add(written);
+                    @SuppressWarnings({"unchecked"})
+                    final Future<Integer> future = Mockito.mock(Future.class);
+                    Mockito.doReturn(written).when(future).get();
+                    return future;
                 });
         final long position = 0L;
         final ExecutorService service = Executors.newSingleThreadExecutor();
         final Future<AsynchronousFileChannel> future = helloWorld().writeAsync(channel, position, service);
         final AsynchronousFileChannel actual = future.get();
         Assertions.assertSame(channel, actual);
+        Assertions.assertEquals(HelloWorld.BYTES, writtenSoFar.intValue());
     }
 }
