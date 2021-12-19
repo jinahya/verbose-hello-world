@@ -32,6 +32,7 @@ import java.nio.channels.AsynchronousByteChannel;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.LongAdder;
 
 /**
@@ -63,7 +64,12 @@ class HelloWorld_10_Write_AsynchronousByteChannel_Test
                     final int written = new Random().nextInt(buffer.remaining() + 1);
                     buffer.position(buffer.position() + written);
                     writtenSoFar.add(written);
-                    return CompletableFuture.completedFuture(written);
+                    @SuppressWarnings({"unchecked"})
+                    final Future<Integer> future = Mockito.mock(Future.class);
+                    Mockito.doReturn(written)
+                            .when(future)
+                            .get();
+                    return future;
                 });
         helloWorld().write(channel);
         Mockito.verify(helloWorld(), Mockito.times(1)).put(bufferCaptor().capture());
