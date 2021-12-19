@@ -51,7 +51,7 @@ class HelloWorld_08_Write_WritableByteChannel_Test
         Mockito.lenient()
                 .doAnswer(i -> {
                     final ByteBuffer buffer = i.getArgument(0);
-                    assert buffer.remaining() > HelloWorld.BYTES;
+                    assert buffer.remaining() >= HelloWorld.BYTES;
                     buffer.position(buffer.position() + HelloWorld.BYTES);
                     return buffer;
                 })
