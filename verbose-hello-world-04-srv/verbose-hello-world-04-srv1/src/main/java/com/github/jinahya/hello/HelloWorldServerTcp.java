@@ -23,6 +23,7 @@ package com.github.jinahya.hello;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketAddress;
@@ -54,15 +55,15 @@ class HelloWorldServerTcp implements IHelloWorldServer {
 
     @Override
     public synchronized void open() throws IOException {
-        if (serverSocket != null) {
-            throw new IllegalStateException("already started");
-        }
+        close();
         serverSocket = new ServerSocket();
+        if (endpoint instanceof InetSocketAddress && ((InetSocketAddress) endpoint).getPort() > 0) {
+            serverSocket.setReuseAddress(true);
+        }
         try {
             serverSocket.bind(endpoint, backlog);
         } catch (final IOException ioe) {
-            log.error("failed to bind the server socket; endpoint: {}, backlog: {}", endpoint, backlog);
-            close();
+            log.error("failed to bind the server socket; endpoint: {}, backlog: {}", endpoint, backlog, ioe);
             throw ioe;
         }
         ENDPOINT.set(serverSocket.getLocalSocketAddress());
@@ -70,8 +71,7 @@ class HelloWorldServerTcp implements IHelloWorldServer {
         new Thread(() -> {
             while (!serverSocket.isClosed()) {
                 try (Socket socket = serverSocket.accept()) {
-                    service.write(socket.getOutputStream());
-                    socket.getOutputStream().flush();
+                    // TODO: Implement!
                 } catch (final IOException ioe) {
                     if (serverSocket.isClosed()) {
                         break;

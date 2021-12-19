@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.Objects;
 
@@ -41,26 +42,26 @@ class HelloWorldServerUdp implements IHelloWorldServer {
     /**
      * Creates a new instance.
      *
-     * @param service an instance of {@link HelloWorld} interface.
-     * @param address a socket address to bind.
+     * @param service  an instance of {@link HelloWorld} interface.
+     * @param endpoint a socket address to bind.
      */
-    HelloWorldServerUdp(final HelloWorld service, final SocketAddress address) {
+    HelloWorldServerUdp(final HelloWorld service, final SocketAddress endpoint) {
         super();
         this.service = Objects.requireNonNull(service, "service is null");
-        this.address = Objects.requireNonNull(address, "address is null");
+        this.endpoint = Objects.requireNonNull(endpoint, "endpoint is null");
     }
 
     @Override
     public synchronized void open() throws IOException {
-        if (socket != null) {
-            throw new IllegalStateException("already started");
+        close();
+        socket = new DatagramSocket(null);
+        if (endpoint instanceof InetSocketAddress && ((InetSocketAddress) endpoint).getPort() > 0) {
+            socket.setReuseAddress(true);
         }
-        socket = new DatagramSocket();
         try {
-            socket.bind(address);
+            socket.bind(endpoint);
         } catch (final IOException ioe) {
-            log.error("failed to bind the datagram socket; addr: {}", address);
-            close();
+            log.error("failed to bind the datagram socket; address: {}", endpoint, ioe);
             throw ioe;
         }
         ENDPOINT.set(socket.getLocalSocketAddress());
@@ -70,8 +71,7 @@ class HelloWorldServerUdp implements IHelloWorldServer {
                 final DatagramPacket packet = new DatagramPacket(new byte[0], 0);
                 try {
                     socket.receive(packet);
-                    final byte[] array = service.set(new byte[HelloWorld.BYTES]);
-                    socket.send(new DatagramPacket(array, array.length, packet.getSocketAddress()));
+                    // TODO: Implement!
                 } catch (final IOException ioe) {
                     if (socket.isClosed()) {
                         break;
@@ -93,7 +93,7 @@ class HelloWorldServerUdp implements IHelloWorldServer {
 
     private final HelloWorld service;
 
-    private final SocketAddress address;
+    private final SocketAddress endpoint;
 
     private DatagramSocket socket;
 }

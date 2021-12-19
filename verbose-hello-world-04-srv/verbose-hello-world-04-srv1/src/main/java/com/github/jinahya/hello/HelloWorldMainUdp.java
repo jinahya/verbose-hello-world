@@ -34,7 +34,7 @@ import java.util.ServiceLoader;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-public class HelloWorldMainTcp {
+public class HelloWorldMainUdp {
 
     /**
      * The main method of this program which accepts socket connections and sends {@code hello, world} to clients.
@@ -45,8 +45,7 @@ public class HelloWorldMainTcp {
     public static void main(final String... args) throws IOException {
         final HelloWorld service = ServiceLoader.load(HelloWorld.class).iterator().next();
         final SocketAddress endpoint = new InetSocketAddress(InetAddress.getByName("0.0.0.0"), 0);
-        final int backlog = 50;
-        final IHelloWorldServer server = new HelloWorldServerTcp(service, endpoint, backlog);
+        final IHelloWorldServer server = new HelloWorldServerUdp(service, endpoint);
         server.open();
         IHelloWorldServerUtils.readQuitToClose(server);
     }
@@ -54,7 +53,7 @@ public class HelloWorldMainTcp {
     /**
      * Creates a new instance.
      */
-    private HelloWorldMainTcp() {
+    private HelloWorldMainUdp() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

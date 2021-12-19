@@ -6,13 +6,13 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 
 @Slf4j
-class HelloWorldMainTcpTest {
+class HelloWorldMainUdpTest {
 
     @Test
     void main__() throws IOException {
         IHelloWorldServerUtils.writeQuitToClose(() -> {
-            HelloWorldMainTcp.main();
-            HelloWorldServerTcpTest.connect(16);
+            HelloWorldMainUdp.main();
+            HelloWorldServerUdpTest.connect(16);
             return null;
         });
     }
