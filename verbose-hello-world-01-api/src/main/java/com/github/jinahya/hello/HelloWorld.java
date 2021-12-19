@@ -358,11 +358,13 @@ public interface HelloWorld {
         if (channel == null) {
             throw new NullPointerException("channel is null");
         }
-        final CompletableFuture<T> future = new CompletableFuture<>();                 // <1>
-        final ByteBuffer buffer = (ByteBuffer) put(ByteBuffer.allocate(BYTES)).flip(); // <2>
+        final CompletableFuture<T> future = new CompletableFuture<>(); // <1>
+        final ByteBuffer buffer = ByteBuffer.allocate(BYTES);          // <2>
+        put(buffer);
+        buffer.flip();
         // TODO: Implement!
-        future.complete(channel);                                                      // <3> // TODO: Remove!
-        return future;                                                                 // <4>
+        future.complete(channel);                                      // <3> // TODO: Remove!
+        return future;                                                 // <4>
     }
 
     /**

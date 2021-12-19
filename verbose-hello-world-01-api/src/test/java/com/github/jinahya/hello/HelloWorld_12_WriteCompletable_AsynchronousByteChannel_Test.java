@@ -74,7 +74,6 @@ class HelloWorld_12_WriteCompletable_AsynchronousByteChannel_Test
         Assertions.assertSame(channel, actual);
         Mockito.verify(helloWorld(), Mockito.times(1)).put(bufferCaptor().capture());
         final ByteBuffer buffer = bufferCaptor().getValue();
-        Assertions.assertNotNull(buffer);
         Assertions.assertEquals(HelloWorld.BYTES, buffer.capacity());
         // TODO: Implement!
     }
