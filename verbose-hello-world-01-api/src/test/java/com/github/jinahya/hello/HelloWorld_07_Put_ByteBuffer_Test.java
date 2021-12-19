@@ -57,9 +57,9 @@ class HelloWorld_07_Put_ByteBuffer_Test
     }
 
     /**
-     * Asserts {@link HelloWorld#put(ByteBuffer)} method, when invoked with a byte buffer which does not have a {@link
-     * ByteBuffer#hasArray() backing array}, invokes {@link HelloWorld#set(byte[]) set(array)} method with an array of
-     * {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and does {@link ByteBuffer#put(byte[])
+     * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method, when invoked with a byte buffer which does not
+     * have a {@link ByteBuffer#hasArray() backing array}, invokes {@link HelloWorld#set(byte[]) set(array)} method with
+     * an array of {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and invokes {@link ByteBuffer#put(byte[])
      * buffer.put(array)}.
      */
     @DisplayName("put(buffer-with-no-backing-array) invokes set(array) and does buffer.put(array)")
