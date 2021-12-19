@@ -20,11 +20,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 class HelloWorldServerUdpTest {
 
-    static void connect(final int count) throws InterruptedException {
-        final SocketAddress endpoint = HelloWorldServerUdp.ENDPOINT.get();
-        if (endpoint == null) {
-            throw new IllegalStateException("no endpoint; is the server running?");
-        }
+    static void connect(final SocketAddress endpoint, final int count) throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(count);
         for (int i = 0; i < count; i++) {
             new Thread(() -> {
@@ -56,7 +52,7 @@ class HelloWorldServerUdpTest {
         final SocketAddress endpoint = new InetSocketAddress(InetAddress.getLoopbackAddress(), 0);
         final IHelloWorldServer server = new HelloWorldServerUdp(service, endpoint);
         server.open();
-        connect(8);
+        connect(HelloWorldServerUdp.ENDPOINT.get(), 8);
         server.close();
     }
 }
