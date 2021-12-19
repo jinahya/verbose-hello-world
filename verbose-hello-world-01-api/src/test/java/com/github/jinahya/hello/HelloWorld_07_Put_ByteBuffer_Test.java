@@ -62,7 +62,7 @@ class HelloWorld_07_Put_ByteBuffer_Test
      * an array of {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and invokes {@link ByteBuffer#put(byte[])
      * buffer.put(array)}.
      */
-    @DisplayName("put(buffer-with-no-backing-array) invokes set(array) and does buffer.put(array)")
+    @DisplayName("put(buffer-with-no-backing-array) invokes set(array) and invokes buffer.put(array)")
     @Test
     void put_InvokeSetArrayPutArrayToBuffer_BufferHasNoBackingArray() {
         // mock-maker-inline
