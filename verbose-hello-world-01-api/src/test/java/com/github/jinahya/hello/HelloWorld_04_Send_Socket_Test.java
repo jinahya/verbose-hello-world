@@ -51,10 +51,10 @@ class HelloWorld_04_Send_Socket_Test
     void send_InvokeWriteStreamWithSocketOutputStream_() throws IOException {
         final Socket socket = Mockito.spy(new Socket());                   // <1>
         final OutputStream stream = Mockito.mock(OutputStream.class);      // <2>
-        Mockito.lenient()
+        Mockito.lenient()                                                  // <3>
                 .doReturn(stream)
                 .when(socket)
-                .getOutputStream(); // <3>
+                .getOutputStream();
         helloWorld().send(socket);                                         // <4>
         // TODO: Implement!
     }
