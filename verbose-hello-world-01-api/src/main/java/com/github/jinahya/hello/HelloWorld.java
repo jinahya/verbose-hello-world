@@ -459,11 +459,11 @@ public interface HelloWorld {
                           @Override
                           public void completed(final Integer result, Long attachment) {
                               if (!buffer.hasRemaining()) {            // <1>
-                                  future.complete(channel);
+                                  future.complete(channel);            // <2>
                                   return;
                               }
-                              attachment += result;                    // <2>
-                              channel.write(buffer,     // buffer      // <3>
+                              attachment += result;                    // <3>
+                              channel.write(buffer,     // buffer      // <4>
                                             attachment, // position
                                             attachment, // attachment
                                             this);      // handler
