@@ -332,7 +332,7 @@ public interface HelloWorld {
      * @param channel the channel to which bytes are written.
      * @param service the executor service to which a task is submitted.
      * @return A future representing the result of the operation.
-     * @implSpec The default implementation submits a task, to specified channel, which simply returns the result of
+     * @implSpec The default implementation submits a task, to specified service, which simply returns the result of
      * {@link #write(AsynchronousByteChannel) #write(channel)} method.
      */
     default <T extends AsynchronousByteChannel> Future<T> writeAsync(final T channel, final ExecutorService service) {
@@ -459,10 +459,10 @@ public interface HelloWorld {
                         }
                         attachment += result;         // <2>
                         channel.write(                // <3>
-                                buffer,     // buffer
-                                attachment, // position
-                                attachment, // attachment
-                                this        // handler
+                                                      buffer,     // buffer
+                                                      attachment, // position
+                                                      attachment, // attachment
+                                                      this        // handler
                         );
                     }
 
