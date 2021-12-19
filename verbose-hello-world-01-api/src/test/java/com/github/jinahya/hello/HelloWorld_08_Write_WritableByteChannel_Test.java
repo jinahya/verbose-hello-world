@@ -51,11 +51,12 @@ class HelloWorld_08_Write_WritableByteChannel_Test
         Mockito.lenient()
                 .doAnswer(i -> {
                     final ByteBuffer buffer = i.getArgument(0);
+                    assert buffer.remaining() > HelloWorld.BYTES;
                     buffer.position(buffer.position() + HelloWorld.BYTES);
                     return buffer;
                 })
                 .when(helloWorld())
-                .put(ArgumentMatchers.any(ByteBuffer.class));
+                .put(ArgumentMatchers.notNull());
     }
 
     /**
