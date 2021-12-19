@@ -64,13 +64,18 @@ class HelloWorld_11_WriteAsync_AsynchronousByteChannel_Test
         final AsynchronousByteChannel channel = Mockito.mock(AsynchronousByteChannel.class);
         final LongAdder writtenSoFar = new LongAdder();
         Mockito.lenient()
-                .when(channel.write(ArgumentMatchers.any(ByteBuffer.class)))
+                .when(channel.write(ArgumentMatchers.notNull()))
                 .thenAnswer(i -> {
                     final ByteBuffer buffer = i.getArgument(0, ByteBuffer.class);
                     final int written = new Random().nextInt(buffer.remaining() + 1);
                     buffer.position(buffer.position() + written);
                     writtenSoFar.add(written);
-                    return CompletableFuture.completedFuture(written);
+                    @SuppressWarnings({"unchecked"})
+                    final Future<Integer> future = Mockito.mock(Future.class);
+                    Mockito.doReturn(written)
+                            .when(future)
+                            .get();
+                    return future;
                 });
         final ExecutorService service = Executors.newSingleThreadExecutor();
         final Future<AsynchronousByteChannel> future = helloWorld().writeAsync(channel, service);
