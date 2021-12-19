@@ -342,7 +342,7 @@ public interface HelloWorld {
         if (service == null) {
             throw new NullPointerException("service is null");
         }
-        return service.submit(() -> { // <1>
+        return service.submit(() -> {
             // TODO: Implement!
             return channel;
         });
