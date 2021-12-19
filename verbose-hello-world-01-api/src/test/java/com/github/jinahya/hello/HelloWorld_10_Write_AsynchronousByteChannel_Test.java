@@ -24,13 +24,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
-import java.nio.file.Path;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -50,14 +48,12 @@ class HelloWorld_10_Write_AsynchronousByteChannel_Test
      * Asserts {@link HelloWorld#write(AsynchronousByteChannel) write(channel)} method invokes {@link
      * HelloWorld#put(ByteBuffer) put(buffer)} method and writes the buffer to the {@code channel}.
      *
-     * @param tempDir a temporary directory to test with.
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
      */
     @DisplayName("write(channel) invokes put(buffer) writes the buffer to channel")
     @Test
-    void write_InvokePutBufferWriteBufferToChannel_(@TempDir final Path tempDir)
-            throws InterruptedException, ExecutionException {
+    void write_InvokePutBufferWriteBufferToChannel_() throws InterruptedException, ExecutionException {
         final AsynchronousByteChannel channel = Mockito.mock(AsynchronousByteChannel.class);
         final LongAdder writtenSoFar = new LongAdder();
         Mockito.lenient()
