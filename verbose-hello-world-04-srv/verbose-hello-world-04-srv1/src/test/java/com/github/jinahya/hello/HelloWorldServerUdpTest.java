@@ -31,10 +31,12 @@ class HelloWorldServerUdpTest {
                 try (DatagramSocket socket = new DatagramSocket()) {
                     DatagramPacket packet = new DatagramPacket(new byte[0], 0, endpoint);
                     socket.send(packet);
+                    log.debug("sent to {}", endpoint);
                     final byte[] array = new byte[HelloWorld.BYTES];
                     packet = new DatagramPacket(array, array.length);
                     socket.setSoTimeout(1000); // 1 sec
                     socket.receive(packet);
+                    log.debug("received from {}", packet.getSocketAddress());
                     Assertions.assertArrayEquals("hello, world".getBytes(StandardCharsets.US_ASCII), array);
                 } catch (final IOException ioe) {
                     log.error("failed to send/receive", ioe);
