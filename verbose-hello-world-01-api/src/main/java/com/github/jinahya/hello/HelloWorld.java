@@ -248,7 +248,11 @@ public interface HelloWorld {
         if (buffer.remaining() < BYTES) {
             throw new BufferOverflowException();
         }
-        // TODO: Implement!
+        if (buffer.hasArray()) {
+            // TODO: Implement!
+        } else {
+            // TODO: Implement!
+        }
         return buffer;
     }
 
