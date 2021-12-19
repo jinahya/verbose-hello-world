@@ -44,7 +44,7 @@ import java.util.concurrent.atomic.LongAdder;
 class HelloWorld_08_Write_WritableByteChannel_Test
         extends HelloWorldTest {
 
-    // TODO: Remove following stubbing the put(ByteBuffer) method implemented!
+    // TODO: Remove this stubbing method when the put(buffer) method is implemented!
     @BeforeEach
     void beforeEach() {
         // https://www.javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#13
@@ -74,7 +74,7 @@ class HelloWorld_08_Write_WritableByteChannel_Test
         Mockito.lenient()
                 .when(channel.write(ArgumentMatchers.notNull()))                      // <3>
                 .thenAnswer(i -> {
-                    final ByteBuffer buffer = i.getArgument(0, ByteBuffer.class);     // <4>
+                    final ByteBuffer buffer = i.getArgument(0);                       // <4>
                     final int written = new Random().nextInt(buffer.remaining() + 1); // <5>
                     buffer.position(buffer.position() + written);                     // <6>
                     writtenSoFar.add(written);                                        // <7>
@@ -94,11 +94,11 @@ class HelloWorld_08_Write_WritableByteChannel_Test
     void write_ReturnChannel_() throws IOException {
         final WritableByteChannel channel = Mockito.mock(WritableByteChannel.class);
         Mockito.lenient()
-                .when(channel.write(ArgumentMatchers.any(ByteBuffer.class)))
+                .when(channel.write(ArgumentMatchers.notNull()))
                 .thenAnswer(i -> {
-                    final ByteBuffer buffer = i.getArgument(0, ByteBuffer.class);
-                    final int written = new Random().nextInt(buffer.remaining() + 1);
-                    buffer.position(buffer.position() + written);
+                    final ByteBuffer buffer = i.getArgument(0);
+                    final int written = buffer.remaining();
+                    buffer.position(buffer.limit());
                     return written;
                 });
         final WritableByteChannel actual = helloWorld().write(channel);
