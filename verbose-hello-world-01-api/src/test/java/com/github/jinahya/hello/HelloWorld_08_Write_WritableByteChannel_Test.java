@@ -72,13 +72,13 @@ class HelloWorld_08_Write_WritableByteChannel_Test
         final WritableByteChannel channel = Mockito.mock(WritableByteChannel.class);  // <1>
         final LongAdder writtenSoFar = new LongAdder();                               // <2>
         Mockito.lenient()
-                .when(channel.write(ArgumentMatchers.any(ByteBuffer.class))) // <3>
+                .when(channel.write(ArgumentMatchers.notNull()))                      // <3>
                 .thenAnswer(i -> {
-                    final ByteBuffer buffer = i.getArgument(0, ByteBuffer.class);
-                    final int written = new Random().nextInt(buffer.remaining() + 1);
-                    buffer.position(buffer.position() + written);
-                    writtenSoFar.add(written);
-                    return written;
+                    final ByteBuffer buffer = i.getArgument(0, ByteBuffer.class);     // <4>
+                    final int written = new Random().nextInt(buffer.remaining() + 1); // <5>
+                    buffer.position(buffer.position() + written);                     // <6>
+                    writtenSoFar.add(written);                                        // <7>
+                    return written;                                                   // <8>
                 });
         // TODO: Implement!
     }
