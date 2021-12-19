@@ -62,14 +62,12 @@ class HelloWorld_11_WriteAsync_AsynchronousByteChannel_Test
     void writeAsync_InvokePutBufferWriteBufferToChannel_(@TempDir final Path tempDir)
             throws InterruptedException, ExecutionException {
         final AsynchronousByteChannel channel = Mockito.mock(AsynchronousByteChannel.class);
-        final LongAdder writtenSoFar = new LongAdder();
         Mockito.lenient()
                 .when(channel.write(ArgumentMatchers.notNull()))
                 .thenAnswer(i -> {
                     final ByteBuffer buffer = i.getArgument(0, ByteBuffer.class);
                     final int written = new Random().nextInt(buffer.remaining() + 1);
                     buffer.position(buffer.position() + written);
-                    writtenSoFar.add(written);
                     @SuppressWarnings({"unchecked"})
                     final Future<Integer> future = Mockito.mock(Future.class);
                     Mockito.doReturn(written)
