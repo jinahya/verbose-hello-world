@@ -43,7 +43,7 @@ class HelloWorld_13_Write_AsynchronousFileChannel_Arguments_Test
      * Asserts {@link HelloWorld#write(AsynchronousFileChannel, long) write(channel, position)} method throws a {@link
      * NullPointerException} when {@code channel} argument is {@code null}.
      */
-    @DisplayName("write((AsynchronousFileChannel) null, ) throws NullPointerException")
+    @DisplayName("write(null, ) throws NullPointerException")
     @Test
     void write_ThrowNullPointerException_ChannelIsNull() {
         final AsynchronousFileChannel channel = null;
