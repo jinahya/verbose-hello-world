@@ -511,34 +511,4 @@
     </plugins>
   </reporting>
 
-  <profiles>
-    <profile>
-      <id>umlgraph</id>
-      <build>
-        <pluginManagement>
-          <plugins>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-javadoc-plugin</artifactId>
-              <version>${version.maven-javadoc-plugin}</version>
-              <configuration>
-                <doclint>all</doclint>
-                <additionalOptions>
-                  <additionalOption>-all</additionalOption>
-                  <additionalOption>-collapsible</additionalOption>
-                  <additionalOption>-hide java.*</additionalOption>
-                  <additionalOption>-hide javax.*</additionalOption>
-                  <additionalOption>-horizontal</additionalOption>
-                  <additionalOption>-inferdep</additionalOption>
-                  <additionalOption>-inferdepinpackage</additionalOption>
-                  <additionalOption>-inferrel</additionalOption>
-                  <additionalOption>-outputencoding ${project.reporting.outputEncoding}</additionalOption>
-                </additionalOptions>
-              </configuration>
-            </plugin>
-          </plugins>
-        </pluginManagement>
-      </build>
-    </profile>
-  </profiles>
 </project>
