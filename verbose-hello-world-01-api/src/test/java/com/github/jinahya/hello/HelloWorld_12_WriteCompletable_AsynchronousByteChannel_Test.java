@@ -68,7 +68,11 @@ class HelloWorld_12_WriteCompletable_AsynchronousByteChannel_Test
                     return null;
                 })
                 .when(channel)
-                .write(Mockito.notNull(), Mockito.any(), Mockito.any());
+                .write(
+                        Mockito.notNull(), // buffer
+                        Mockito.any(),     // attachment
+                        Mockito.notNull()  // handler
+                );
         final CompletableFuture<AsynchronousByteChannel> future = helloWorld().writeCompletable(channel);
         final AsynchronousByteChannel actual = future.get();
         Assertions.assertSame(channel, actual);
