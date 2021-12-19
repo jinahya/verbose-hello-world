@@ -66,11 +66,10 @@ class HelloWorld_07_Put_ByteBuffer_Test
     @Test
     void put_InvokeSetArrayPutArrayToBuffer_BufferHasNoBackingArray() {
         // mock-maker-inline
-        ByteBuffer buffer = ByteBuffer.allocateDirect(HelloWorld.BYTES); // <1>
-        if (buffer.hasArray()) {                                         // <2>
+        final ByteBuffer buffer = Mockito.spy(ByteBuffer.allocateDirect(HelloWorld.BYTES)); // <1>
+        if (buffer.hasArray()) {                                                            // <2>
             log.info("a direct byte buffer has a backing array?");
-            buffer = Mockito.spy(buffer);                                // <3>
-            Mockito.when(buffer.hasArray()).thenReturn(false);           // <4>
+            Mockito.when(buffer.hasArray()).thenReturn(false);                              // <3>
         }
         assert !buffer.hasArray();
         final int position = buffer.position();
