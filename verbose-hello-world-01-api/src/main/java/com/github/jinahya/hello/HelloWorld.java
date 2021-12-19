@@ -318,7 +318,9 @@ public interface HelloWorld {
         if (channel == null) {
             throw new NullPointerException("channel is null");
         }
-        final ByteBuffer buffer = (ByteBuffer) put(ByteBuffer.allocate(BYTES)).flip();
+        final ByteBuffer buffer = ByteBuffer.allocate(BYTES);
+        put(buffer);
+        buffer.flip();
         // TODO: Implement!
         return channel;
     }
