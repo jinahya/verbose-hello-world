@@ -43,13 +43,13 @@ class HelloWorld_09_Append_Path_Test
 
     /**
      * Asserts {@link HelloWorld#append(Path) append(path)} method invokes {@link HelloWorld#write(WritableByteChannel)
-     * write(channel)} method and asserts {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes are appended to
-     * specified {@code path}.
+     * write(channel)} method with a {@link java.nio.channels.FileChannel} and asserts {@value
+     * com.github.jinahya.hello.HelloWorld#BYTES} bytes are appended to specified {@code path}.
      *
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("append(path) invokes write(channel), 12 bytes are appended")
+    @DisplayName("append(path) invokes write(FileChannel), 12 bytes are appended")
     @Test
     void append_InvokeWriteChannel12BytesWritten_(@TempDir final Path tempDir) throws IOException {
         final Path path = Files.createTempFile(tempDir, null, null);
