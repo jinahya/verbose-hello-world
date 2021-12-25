@@ -9,11 +9,11 @@
     <version>0.0.1-SNAPSHOT</version>
   </parent>
 
-  <artifactId>verbose-hello-world-04-srv1</artifactId>
+  <artifactId>verbose-hello-world-04-srv2</artifactId>
   <packaging>jar</packaging>
 
   <name>${project.artifactId}</name>
-  <description>Verbose Hello World Srv1</description>
+  <description>Verbose Hello World Srv2</description>
 
   <dependencies>
     <dependency>

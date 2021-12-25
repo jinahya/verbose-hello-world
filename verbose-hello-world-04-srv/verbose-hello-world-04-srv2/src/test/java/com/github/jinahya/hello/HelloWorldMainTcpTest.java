@@ -9,16 +9,16 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 
 @Slf4j
-class HelloWorldMainUdpTest {
+class HelloWorldMainTcpTest {
 
     @Test
     void main__() throws IOException {
         IHelloWorldServerUtils.writeQuitToClose(() -> {
             HelloWorldMainTcp.main("0.0.0.0", "0");
             final InetAddress host = InetAddress.getLocalHost();
-            final int port = HelloWorldServerUdp.LOCAL_PORT.get();
+            final int port = HelloWorldServerTcp.LOCAL_PORT.get();
             final SocketAddress endpoint = new InetSocketAddress(host, port);
-            HelloWorldClientUdp.clients(endpoint, 8, array -> {
+            HelloWorldClientTcp.clients(8, endpoint, b -> {
                 // TODO: Verify array!
             });
             return null;

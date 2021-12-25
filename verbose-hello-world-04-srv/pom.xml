@@ -19,7 +19,7 @@
   <modules>
     <module>verbose-hello-world-04-srv0-common</module>
     <module>verbose-hello-world-04-srv1</module>
-<!--    <module>verbose-hello-world-srv2</module>-->
+    <module>verbose-hello-world-04-srv2</module>
 <!--    <module>verbose-hello-world-srv3</module>-->
 <!--    <module>verbose-hello-world-srv4</module>-->
 <!--    <module>verbose-hello-world-srv5</module>-->
