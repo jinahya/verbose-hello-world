@@ -18,7 +18,7 @@ class HelloWorldMainUdpTest {
             final InetAddress host = InetAddress.getLocalHost();
             final int port = HelloWorldServerTcp.LOCAL_PORT.get();
             final SocketAddress endpoint = new InetSocketAddress(host, port);
-            HelloWorldClientUdp.clients(endpoint, 16, array -> {
+            HelloWorldClientUdp.clients(endpoint, 8, array -> {
                 // TODO: Verify array!
             });
             return null;

@@ -18,7 +18,7 @@ class HelloWorldMainTcpTest {
             final InetAddress host = InetAddress.getLocalHost();
             final int port = HelloWorldServerTcp.LOCAL_PORT.get();
             final SocketAddress endpoint = new InetSocketAddress(host, port);
-            HelloWorldClientTcp.clients(16, endpoint, b -> {
+            HelloWorldClientTcp.clients(8, endpoint, b -> {
                 // TODO: Verify array!
             });
             return null;

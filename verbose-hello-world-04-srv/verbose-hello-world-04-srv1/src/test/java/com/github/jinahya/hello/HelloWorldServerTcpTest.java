@@ -25,7 +25,7 @@ class HelloWorldServerTcpTest {
         server.open();
         final int port = HelloWorldServerTcp.LOCAL_PORT.get();
         final SocketAddress endpoint = new InetSocketAddress(host, port);
-        HelloWorldClientTcp.clients(8, endpoint, b -> {
+        HelloWorldClientTcp.clients(4, endpoint, b -> {
             // TODO: Implement!
         });
         server.close();
