@@ -37,14 +37,17 @@ import java.util.ServiceLoader;
 public class HelloWorldMainTcp {
 
     /**
-     * The main method of this program which accepts socket connections and sends {@code hello, world} to clients.
+     * The main method of this program which accepts socket connections and sends {@code hello, world} bytes to
+     * clients.
      *
      * @param args an array of command line arguments.
      * @throws IOException if an I/O error occurs.
      */
     public static void main(final String... args) throws IOException {
         final HelloWorld service = ServiceLoader.load(HelloWorld.class).iterator().next();
-        final SocketAddress endpoint = new InetSocketAddress(InetAddress.getByName("0.0.0.0"), 0);
+        final InetAddress host = InetAddress.getByName(args[0]);
+        final int port = Integer.parseInt(args[1]);
+        final SocketAddress endpoint = new InetSocketAddress(host, port);
         final int backlog = 50;
         final IHelloWorldServer server = new HelloWorldServerTcp(service, endpoint, backlog);
         server.open();

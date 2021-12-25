@@ -37,7 +37,7 @@ import java.util.Objects;
 @Slf4j
 class HelloWorldServerTcp implements IHelloWorldServer {
 
-    static final ThreadLocal<SocketAddress> ENDPOINT = new ThreadLocal<>();
+    static final ThreadLocal<Integer> LOCAL_PORT = new ThreadLocal<>();
 
     /**
      * Creates a new instance.
@@ -63,24 +63,24 @@ class HelloWorldServerTcp implements IHelloWorldServer {
         try {
             serverSocket.bind(endpoint, backlog);
         } catch (final IOException ioe) {
-            log.error("failed to bind the server socket; endpoint: {}, backlog: {}", endpoint, backlog, ioe);
+            log.error("failed to bind; endpoint: {}, backlog: {}", endpoint, backlog, ioe);
             throw ioe;
         }
-        ENDPOINT.set(serverSocket.getLocalSocketAddress());
-        log.info("server is open; {}", ENDPOINT.get());
+        log.info("server is open; {}", serverSocket.getLocalSocketAddress());
+        LOCAL_PORT.set(serverSocket.getLocalPort());
         new Thread(() -> {
             while (!serverSocket.isClosed()) {
                 try (Socket socket = serverSocket.accept()) {
                     log.debug("connected from {}", socket.getRemoteSocketAddress());
-                    // TODO: Implement!
+                    // TODO: Send 'hello, world' bytes through the socket!
                 } catch (final IOException ioe) {
                     if (serverSocket.isClosed()) {
                         break;
                     }
-                    log.error("failed to accept/write", ioe);
+                    log.error("failed to accept/send", ioe);
                 }
             }
-            ENDPOINT.remove();
+            LOCAL_PORT.remove();
         }).start();
     }
 

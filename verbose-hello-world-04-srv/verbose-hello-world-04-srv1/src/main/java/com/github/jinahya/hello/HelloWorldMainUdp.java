@@ -44,7 +44,9 @@ public class HelloWorldMainUdp {
      */
     public static void main(final String... args) throws IOException {
         final HelloWorld service = ServiceLoader.load(HelloWorld.class).iterator().next();
-        final SocketAddress endpoint = new InetSocketAddress(InetAddress.getByName("0.0.0.0"), 0);
+        final InetAddress host = InetAddress.getByName(args[0]);
+        final int port = Integer.parseInt(args[1]);
+        final SocketAddress endpoint = new InetSocketAddress(host, port);
         final IHelloWorldServer server = new HelloWorldServerUdp(service, endpoint);
         server.open();
         IHelloWorldServerUtils.readQuitToClose(server);

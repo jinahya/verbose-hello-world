@@ -14,11 +14,13 @@ class HelloWorldMainUdpTest {
     @Test
     void main__() throws IOException {
         IHelloWorldServerUtils.writeQuitToClose(() -> {
-            HelloWorldMainUdp.main();
-            final SocketAddress endpoint = new InetSocketAddress(
-                    InetAddress.getLoopbackAddress(),
-                    ((InetSocketAddress) HelloWorldServerUdp.ENDPOINT.get()).getPort());
-            HelloWorldServerUdpTest.connect(endpoint, 16);
+            HelloWorldMainTcp.main("0.0.0.0", "0");
+            final InetAddress host = InetAddress.getLocalHost();
+            final int port = HelloWorldServerTcp.LOCAL_PORT.get();
+            final SocketAddress endpoint = new InetSocketAddress(host, port);
+            HelloWorldClientUdp.clients(endpoint, 16, array -> {
+                // TODO: Verify array!
+            });
             return null;
         });
     }

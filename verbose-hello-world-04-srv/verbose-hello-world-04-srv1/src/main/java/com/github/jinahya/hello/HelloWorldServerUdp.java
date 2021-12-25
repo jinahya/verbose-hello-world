@@ -23,7 +23,6 @@ package com.github.jinahya.hello;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -37,7 +36,7 @@ import java.util.Objects;
 @Slf4j
 class HelloWorldServerUdp implements IHelloWorldServer {
 
-    static final ThreadLocal<SocketAddress> ENDPOINT = new ThreadLocal<>();
+    static final ThreadLocal<Integer> LOCAL_PORT = new ThreadLocal<>();
 
     /**
      * Creates a new instance.
@@ -61,26 +60,16 @@ class HelloWorldServerUdp implements IHelloWorldServer {
         try {
             socket.bind(endpoint);
         } catch (final IOException ioe) {
-            log.error("failed to bind the datagram socket; address: {}", endpoint, ioe);
+            log.error("failed to bind; endpoint: {}", endpoint, ioe);
             throw ioe;
         }
-        ENDPOINT.set(socket.getLocalSocketAddress());
-        log.info("server is open; {}", ENDPOINT.get());
+        log.info("server is open; {}", socket.getLocalSocketAddress());
+        LOCAL_PORT.set(socket.getLocalPort());
         new Thread(() -> {
             while (!socket.isClosed()) {
-                final DatagramPacket packet = new DatagramPacket(new byte[0], 0);
-                try {
-                    socket.receive(packet);
-                    log.debug("received from {}", packet.getSocketAddress());
-                    // TODO: Implement!
-                } catch (final IOException ioe) {
-                    if (socket.isClosed()) {
-                        break;
-                    }
-                    log.error("failed to receive/send", ioe);
-                }
+                // TODO: Receive an empty packet and send 'hello, world' bytes back to the client!
             }
-            ENDPOINT.remove();
+            LOCAL_PORT.remove();
         }).start();
     }
 
