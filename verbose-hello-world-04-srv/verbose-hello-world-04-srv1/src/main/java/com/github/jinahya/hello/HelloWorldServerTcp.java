@@ -68,7 +68,7 @@ class HelloWorldServerTcp implements IHelloWorldServer {
         }
         log.info("server is open; {}", serverSocket.getLocalSocketAddress());
         LOCAL_PORT.set(serverSocket.getLocalPort());
-        new Thread(() -> {
+        final Thread thread = new Thread(() -> {
             while (!serverSocket.isClosed()) {
                 try (Socket socket = serverSocket.accept()) {
                     log.debug("connected from {}", socket.getRemoteSocketAddress());
@@ -81,7 +81,9 @@ class HelloWorldServerTcp implements IHelloWorldServer {
                 }
             }
             LOCAL_PORT.remove();
-        }).start();
+        });
+        thread.setDaemon(true);
+        thread.start();
     }
 
     @Override

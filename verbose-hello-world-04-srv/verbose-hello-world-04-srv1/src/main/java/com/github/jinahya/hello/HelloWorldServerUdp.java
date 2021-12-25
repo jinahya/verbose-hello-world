@@ -65,12 +65,14 @@ class HelloWorldServerUdp implements IHelloWorldServer {
         }
         log.info("server is open; {}", socket.getLocalSocketAddress());
         LOCAL_PORT.set(socket.getLocalPort());
-        new Thread(() -> {
+        final Thread thread = new Thread(() -> {
             while (!socket.isClosed()) {
                 // TODO: Receive an empty packet and send 'hello, world' bytes back to the client!
             }
             LOCAL_PORT.remove();
-        }).start();
+        });
+        thread.setDaemon(true);
+        thread.start();
     }
 
     @Override
