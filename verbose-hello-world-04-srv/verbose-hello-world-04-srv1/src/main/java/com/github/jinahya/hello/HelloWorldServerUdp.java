@@ -23,6 +23,7 @@ package com.github.jinahya.hello;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -67,7 +68,16 @@ class HelloWorldServerUdp implements IHelloWorldServer {
         LOCAL_PORT.set(socket.getLocalPort());
         final Thread thread = new Thread(() -> {
             while (!socket.isClosed()) {
-                // TODO: Receive an empty packet and send 'hello, world' bytes back to the client!
+                final DatagramPacket packet = new DatagramPacket(new byte[0], 0);
+                try {
+                    socket.receive(packet);
+                    // TODO: Send 'hello, world' bytes back to the client!
+                } catch (final IOException ioe) {
+                    if (socket.isClosed()) {
+                        break;
+                    }
+                    log.debug("failed to receive packet", ioe);
+                }
             }
             LOCAL_PORT.remove();
         });
