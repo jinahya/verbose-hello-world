@@ -34,7 +34,7 @@ class HelloWorldServerUdpTest {
         server.open();
         final int port = HelloWorldServerUdp.LOCAL_PORT.get();
         final SocketAddress endpoint = new InetSocketAddress(host, port);
-        HelloWorldClientUdp.clients(endpoint, 4, b -> {
+        HelloWorldClientUdp.clients(4, endpoint, b -> {
             Assertions.assertArrayEquals("hello, world".getBytes(StandardCharsets.US_ASCII), b);
         });
         server.close();

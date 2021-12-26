@@ -14,7 +14,7 @@ import java.util.function.Consumer;
 @Slf4j
 public class HelloWorldClientUdp implements Callable<byte[]> {
 
-    static void clients(final SocketAddress endpoint, final int count, final Consumer<byte[]> consumer)
+    static void clients(final int count, final SocketAddress endpoint, final Consumer<byte[]> consumer)
             throws InterruptedException {
         Objects.requireNonNull(endpoint, "endpoint is null");
         if (count <= 0) {
