@@ -38,8 +38,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 
 /**
- * An abstract class for testing methods defined in {@link HelloWorld}
- * interface.
+ * An abstract class for testing methods defined in {@link HelloWorld} interface.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */

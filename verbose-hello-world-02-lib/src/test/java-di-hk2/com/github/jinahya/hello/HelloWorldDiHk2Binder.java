@@ -47,9 +47,7 @@ class HelloWorldDiHk2Binder extends AbstractBinder {
     protected void configure() {
         bind(HelloWorldDemo.class).named(DEMO).to(HelloWorld.class);
         bind(HelloWorldImpl.class).named(IMPL).to(HelloWorld.class);
-        bind(HelloWorldImpl.class).qualifiedBy(new QualifiedDemo_()).to(
-                HelloWorld.class);
-        bind(HelloWorldImpl.class).qualifiedBy(new QualifiedImpl_()).to(
-                HelloWorld.class);
+        bind(HelloWorldImpl.class).qualifiedBy(new QualifiedDemo_()).to(HelloWorld.class);
+        bind(HelloWorldImpl.class).qualifiedBy(new QualifiedImpl_()).to(HelloWorld.class);
     }
 }

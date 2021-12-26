@@ -28,8 +28,7 @@ import javax.inject.Inject;
 import java.io.IOException;
 
 /**
- * A class whose {@link #main(String[])} method prints {@code hello, world} to
- * {@link System#out}.
+ * A class whose {@link #main(String[])} method prints {@code hello, world} to {@link System#out}.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -37,8 +36,8 @@ import java.io.IOException;
 public class HelloWorldMain {
 
     /**
-     * The main method of this program which prints {@code hello, world} to
-     * {@link System#out} followed by a new line character.
+     * The main method of this program which prints {@code hello, world} to {@link System#out}
+     * followed by a new line character.
      *
      * @param args an array of main arguments
      * @throws IOException if an I/O error occurs.

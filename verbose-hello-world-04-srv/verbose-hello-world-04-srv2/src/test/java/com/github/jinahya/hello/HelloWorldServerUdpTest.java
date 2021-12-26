@@ -9,9 +9,9 @@ package com.github.jinahya.hello;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -40,12 +40,11 @@ class HelloWorldServerUdpTest {
         final InetAddress host = InetAddress.getLoopbackAddress();
         final IHelloWorldServer server;
         {
-            final HelloWorld service = Mockito.spy(ServiceLoader.load(
-                    HelloWorld.class).iterator().next());
+            final HelloWorld service = Mockito.spy(ServiceLoader.load(HelloWorld.class).iterator()
+                                                           .next());
             Mockito.when(service.set(Mockito.notNull())).thenAnswer(i -> {
                 final byte[] array = i.getArgument(0);
-                final byte[] src = "hello, world".getBytes(
-                        StandardCharsets.US_ASCII);
+                final byte[] src = "hello, world".getBytes(StandardCharsets.US_ASCII);
                 System.arraycopy(src, 0, array, 0, src.length);
                 return array;
             });
@@ -56,8 +55,7 @@ class HelloWorldServerUdpTest {
         final int port = HelloWorldServerUdp.LOCAL_PORT.get();
         final SocketAddress endpoint = new InetSocketAddress(host, port);
         HelloWorldClientUdp.clients(4, endpoint, b -> {
-            Assertions.assertArrayEquals(
-                    "hello, world".getBytes(StandardCharsets.US_ASCII), b);
+            Assertions.assertArrayEquals("hello, world".getBytes(StandardCharsets.US_ASCII), b);
         });
         server.close();
     }

@@ -35,8 +35,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.LongAdder;
 
 /**
- * A class for testing {@link HelloWorld#writeCompletable(AsynchronousByteChannel)}
- * method.
+ * A class for testing {@link HelloWorld#writeCompletable(AsynchronousByteChannel)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_12_WriteCompletable_AsynchronousByteChannel_Arguments_Test
@@ -46,20 +45,18 @@ class HelloWorld_12_WriteCompletable_AsynchronousByteChannel_Test extends HelloW
 
     /**
      * Asserts {@link HelloWorld#writeCompletable(AsynchronousByteChannel)
-     * writeCompletable(channel)} method invokes {@link HelloWorld#put(ByteBuffer)
-     * put(buffer)} method and writes the buffer to the {@code channel}.
+     * writeCompletable(channel)} method invokes {@link HelloWorld#put(ByteBuffer) put(buffer)}
+     * method and writes the buffer to the {@code channel}.
      *
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
      */
-    @DisplayName(
-            "writeCompletable(channel) invokes put(buffer) and writes the buffer to channel")
+    @DisplayName("writeCompletable(channel) invokes put(buffer) and writes the buffer to channel")
     @Test
     void writeAsync_InvokePutBufferWriteBufferToChannel_()
             throws InterruptedException, ExecutionException {
         final LongAdder writtenSoFar = new LongAdder();
-        final AsynchronousByteChannel channel = Mockito.mock(
-                AsynchronousByteChannel.class);
+        final AsynchronousByteChannel channel = Mockito.mock(AsynchronousByteChannel.class);
         Mockito.lenient().doAnswer(i -> {
             final ByteBuffer src = i.getArgument(0);
             final Void attachment = i.getArgument(1);
@@ -73,12 +70,11 @@ class HelloWorld_12_WriteCompletable_AsynchronousByteChannel_Test extends HelloW
                                Mockito.any(),     // attachment
                                Mockito.notNull()  // handler
         );
-        final CompletableFuture<AsynchronousByteChannel> future =
-                helloWorld().writeCompletable(channel);
+        final CompletableFuture<AsynchronousByteChannel> future = helloWorld().writeCompletable(
+                channel);
         final AsynchronousByteChannel actual = future.get();
         Assertions.assertSame(channel, actual);
-        Mockito.verify(helloWorld(), Mockito.times(1)).put(
-                bufferCaptor().capture());
+        Mockito.verify(helloWorld(), Mockito.times(1)).put(bufferCaptor().capture());
         final ByteBuffer buffer = bufferCaptor().getValue();
         Assertions.assertEquals(HelloWorld.BYTES, buffer.capacity());
         // TODO: Implement!

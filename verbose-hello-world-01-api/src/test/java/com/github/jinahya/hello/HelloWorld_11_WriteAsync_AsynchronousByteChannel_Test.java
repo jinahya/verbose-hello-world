@@ -38,8 +38,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 /**
- * A class for testing {@link HelloWorld#writeAsync(AsynchronousByteChannel,
- * ExecutorService)} method.
+ * A class for testing {@link HelloWorld#writeAsync(AsynchronousByteChannel, ExecutorService)}
+ * method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -47,38 +47,30 @@ import java.util.concurrent.Future;
 class HelloWorld_11_WriteAsync_AsynchronousByteChannel_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#writeAsync(AsynchronousByteChannel,
-     * ExecutorService) writeAsync(channel, service)} method invokes {@link
-     * HelloWorld#put(ByteBuffer) put(buffer)} method and writes the buffer to
-     * the {@code channel}.
+     * Asserts {@link HelloWorld#writeAsync(AsynchronousByteChannel, ExecutorService)
+     * writeAsync(channel, service)} method invokes {@link HelloWorld#put(ByteBuffer) put(buffer)}
+     * method and writes the buffer to the {@code channel}.
      *
      * @param tempDir a temporary directory to test with.
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
      */
-    @DisplayName(
-            "writeAsync(channel, service) invokes put(buffer) writes the buffer to channel")
+    @DisplayName("writeAsync(channel, service) invokes put(buffer) writes the buffer to channel")
     @Test
-    void writeAsync_InvokePutBufferWriteBufferToChannel_(
-            @TempDir final Path tempDir)
+    void writeAsync_InvokePutBufferWriteBufferToChannel_(@TempDir final Path tempDir)
             throws InterruptedException, ExecutionException {
-        final AsynchronousByteChannel channel = Mockito.mock(
-                AsynchronousByteChannel.class);
-        Mockito.lenient().when(channel.write(ArgumentMatchers.notNull()))
-                .thenAnswer(i -> {
-                    final ByteBuffer buffer = i.getArgument(0,
-                                                            ByteBuffer.class);
-                    final int written = new Random().nextInt(
-                            buffer.remaining() + 1);
-                    buffer.position(buffer.position() + written);
-                    @SuppressWarnings({"unchecked"})
-                    final Future<Integer> future = Mockito.mock(Future.class);
-                    Mockito.doReturn(written).when(future).get();
-                    return future;
-                });
+        final AsynchronousByteChannel channel = Mockito.mock(AsynchronousByteChannel.class);
+        Mockito.lenient().when(channel.write(ArgumentMatchers.notNull())).thenAnswer(i -> {
+            final ByteBuffer buffer = i.getArgument(0, ByteBuffer.class);
+            final int written = new Random().nextInt(buffer.remaining() + 1);
+            buffer.position(buffer.position() + written);
+            @SuppressWarnings({"unchecked"})
+            final Future<Integer> future = Mockito.mock(Future.class);
+            Mockito.doReturn(written).when(future).get();
+            return future;
+        });
         final ExecutorService service = Executors.newSingleThreadExecutor();
-        final Future<AsynchronousByteChannel> future = helloWorld().writeAsync(
-                channel, service);
+        final Future<AsynchronousByteChannel> future = helloWorld().writeAsync(channel, service);
         final AsynchronousByteChannel actual = future.get();
         Assertions.assertSame(channel, actual);
         // TODO: Implement!

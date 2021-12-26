@@ -46,8 +46,7 @@ class HelloWorldServerTcp implements IHelloWorldServer {
      * @param endpoint a socket address to bind.
      * @param backlog  a value of backlog.
      */
-    HelloWorldServerTcp(final HelloWorld service, final SocketAddress endpoint,
-                        final int backlog) {
+    HelloWorldServerTcp(final HelloWorld service, final SocketAddress endpoint, final int backlog) {
         super();
         this.service = Objects.requireNonNull(service, "service is null");
         this.endpoint = Objects.requireNonNull(endpoint, "endpoint is null");
@@ -58,15 +57,13 @@ class HelloWorldServerTcp implements IHelloWorldServer {
     public synchronized void open() throws IOException {
         close();
         serverSocket = new ServerSocket();
-        if (endpoint instanceof InetSocketAddress &&
-            ((InetSocketAddress) endpoint).getPort() > 0) {
+        if (endpoint instanceof InetSocketAddress && ((InetSocketAddress) endpoint).getPort() > 0) {
             serverSocket.setReuseAddress(true);
         }
         try {
             serverSocket.bind(endpoint, backlog);
         } catch (final IOException ioe) {
-            log.error("failed to bind; endpoint: {}, backlog: {}", endpoint,
-                      backlog, ioe);
+            log.error("failed to bind; endpoint: {}, backlog: {}", endpoint, backlog, ioe);
             throw ioe;
         }
         log.info("server is open; {}", serverSocket.getLocalSocketAddress());
@@ -77,16 +74,14 @@ class HelloWorldServerTcp implements IHelloWorldServer {
                     final Socket socket = serverSocket.accept();
                     new Thread(() -> {
                         try (Socket s = socket) {
-                            log.debug("[S] connected from {} <- {}",
-                                      socket.getLocalSocketAddress(),
+                            log.debug("[S] connected from {} <- {}", socket.getLocalSocketAddress(),
                                       socket.getRemoteSocketAddress());
                             final byte[] array = new byte[HelloWorld.BYTES];
                             service.set(array);
                             s.getOutputStream().write(array);
                             s.getOutputStream().flush();
                         } catch (final IOException ioe) {
-                            log.error("failed to send to {}",
-                                      socket.getRemoteSocketAddress(), ioe);
+                            log.error("failed to send to {}", socket.getRemoteSocketAddress(), ioe);
                         }
                     }).start();
                 } catch (final IOException ioe) {

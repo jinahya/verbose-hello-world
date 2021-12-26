@@ -40,29 +40,26 @@ import java.net.Socket;
 class HelloWorld_04_Send_Socket_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#send(Socket) send(socket)} method invokes the
-     * {@link HelloWorld#write(OutputStream) write(stream)} method with {@link
-     * Socket#getOutputStream() socket.outputStream}.
+     * Asserts {@link HelloWorld#send(Socket) send(socket)} method invokes the {@link
+     * HelloWorld#write(OutputStream) write(stream)} method with {@link Socket#getOutputStream()
+     * socket.outputStream}.
      *
      * @throws IOException if an I/O error occurs.
      */
     @DisplayName("send(socket) invokes write(socket.outputStream)")
     @Test
     void send_InvokeWriteStreamWithSocketOutputStream_() throws IOException {
-        final Socket socket = Mockito.spy(
-                new Socket());                   // <1>
-        final OutputStream stream = Mockito.mock(
-                OutputStream.class);      // <2>
+        final Socket socket = Mockito.spy(new Socket());                   // <1>
+        final OutputStream stream = Mockito.mock(OutputStream.class);      // <2>
         Mockito.lenient()                                                  // <3>
                 .doReturn(stream).when(socket).getOutputStream();
-        helloWorld().send(
-                socket);                                         // <4>
+        helloWorld().send(socket);                                         // <4>
         // TODO: Implement!
     }
 
     /**
-     * Asserts {@link HelloWorld#send(Socket) send(socket)} method returns the
-     * {@code socket} argument.
+     * Asserts {@link HelloWorld#send(Socket) send(socket)} method returns the {@code socket}
+     * argument.
      *
      * @throws IOException if an I/O error occurs.
      */
@@ -70,8 +67,8 @@ class HelloWorld_04_Send_Socket_Test extends HelloWorldTest {
     @Test
     void send_ReturnSocket_() throws IOException {
         final Socket expected = Mockito.spy(new Socket());
-        Mockito.lenient().doReturn(Mockito.mock(OutputStream.class)).when(
-                expected).getOutputStream();
+        Mockito.lenient().doReturn(Mockito.mock(OutputStream.class)).when(expected)
+                .getOutputStream();
         final Socket actual = helloWorld().send(expected);
         Assertions.assertSame(expected, actual);
     }

@@ -33,8 +33,7 @@ class HelloWorldDiGuiceTest extends HelloWorldDiTest {
 
     @BeforeEach
     void inject() {
-        final Injector injector = Guice.createInjector(
-                new HelloWorldDiGuiceModule());
+        final Injector injector = Guice.createInjector(new HelloWorldDiGuiceModule());
         injector.injectMembers(this);
     }
 }

@@ -56,55 +56,45 @@ class HelloWorld_08_Write_WritableByteChannel_Test extends HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#write(WritableByteChannel) write(channel)}
-     * method invokes {@link HelloWorld#put(ByteBuffer) put(buffer)} method with
-     * a byte buffer of {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes
-     * and writes the buffer to specified channel.
+     * Asserts {@link HelloWorld#write(WritableByteChannel) write(channel)} method invokes {@link
+     * HelloWorld#put(ByteBuffer) put(buffer)} method with a byte buffer of {@value
+     * com.github.jinahya.hello.HelloWorld#BYTES} bytes and writes the buffer to specified channel.
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName(
-            "write(channel) invokes put(buffer) and writes the buffer to the channel")
+    @DisplayName("write(channel) invokes put(buffer) and writes the buffer to the channel")
     @Test
     void write_InvokePutBufferWriteBufferToChannel_() throws IOException {
-        final WritableByteChannel channel = Mockito.mock(
-                WritableByteChannel.class);  // <1>
-        final LongAdder writtenSoFar =
-                new LongAdder();                               // <2>
-        Mockito.lenient().when(channel.write(
-                        ArgumentMatchers.notNull()))                      // <3>
+        final WritableByteChannel channel = Mockito.mock(WritableByteChannel.class);  // <1>
+        final LongAdder writtenSoFar = new LongAdder();                               // <2>
+        Mockito.lenient().when(
+                        channel.write(ArgumentMatchers.notNull()))                      // <3>
                 .thenAnswer(i -> {
-                    final ByteBuffer buffer = i.getArgument(
-                            0);                       // <4>
-                    final int written = new Random().nextInt(
-                            buffer.remaining() + 1); // <5>
-                    buffer.position(buffer.position() +
-                                    written);                     // <6>
-                    writtenSoFar.add(
-                            written);                                        // <7>
+                    final ByteBuffer buffer = i.getArgument(0);                       // <4>
+                    final int written = new Random().nextInt(buffer.remaining() + 1); // <5>
+                    buffer.position(buffer.position() + written);                     // <6>
+                    writtenSoFar.add(written);                                        // <7>
                     return written;                                                   // <8>
                 });
         // TODO: Implement!
     }
 
     /**
-     * Asserts {@link HelloWorld#write(WritableByteChannel) write(channel)}
-     * method returns the {@code channel} argument.
+     * Asserts {@link HelloWorld#write(WritableByteChannel) write(channel)} method returns the
+     * {@code channel} argument.
      *
      * @throws IOException if an I/O error occurs.
      */
     @DisplayName("write(channel) returns channel")
     @Test
     void write_ReturnChannel_() throws IOException {
-        final WritableByteChannel channel = Mockito.mock(
-                WritableByteChannel.class);
-        Mockito.lenient().when(channel.write(ArgumentMatchers.notNull()))
-                .thenAnswer(i -> {
-                    final ByteBuffer buffer = i.getArgument(0);
-                    final int written = buffer.remaining();
-                    buffer.position(buffer.limit());
-                    return written;
-                });
+        final WritableByteChannel channel = Mockito.mock(WritableByteChannel.class);
+        Mockito.lenient().when(channel.write(ArgumentMatchers.notNull())).thenAnswer(i -> {
+            final ByteBuffer buffer = i.getArgument(0);
+            final int written = buffer.remaining();
+            buffer.position(buffer.limit());
+            return written;
+        });
         final WritableByteChannel actual = helloWorld().write(channel);
         Assertions.assertSame(channel, actual);
     }

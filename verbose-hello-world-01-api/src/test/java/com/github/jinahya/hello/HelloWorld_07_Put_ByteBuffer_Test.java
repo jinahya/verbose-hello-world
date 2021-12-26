@@ -38,15 +38,13 @@ import java.nio.ByteBuffer;
 class HelloWorld_07_Put_ByteBuffer_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method, when
-     * invoked with a byte buffer which {@link ByteBuffer#hasArray() has a
-     * backing array}, invokes {@link HelloWorld#set(byte[], int)
-     * set(buffer.array, buffer.arrayOffset + buffer.position)} and increments
-     * the {@link ByteBuffer#position(int) buffer.position} by {@value
+     * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method, when invoked with a byte
+     * buffer which {@link ByteBuffer#hasArray() has a backing array}, invokes {@link
+     * HelloWorld#set(byte[], int) set(buffer.array, buffer.arrayOffset + buffer.position)} and
+     * increments the {@link ByteBuffer#position(int) buffer.position} by {@value
      * com.github.jinahya.hello.HelloWorld#BYTES}.
      */
-    @DisplayName(
-            "put(buffer-with-backing-array) invokes set(array, index) and increments position")
+    @DisplayName("put(buffer-with-backing-array) invokes set(array, index) and increments position")
     @Test
     void putBuffer_InvokeSetArrayIndexAndIncrementPosition_BufferHasBackingArray() {
         final ByteBuffer buffer = ByteBuffer.wrap(new byte[HelloWorld.BYTES]);
@@ -59,24 +57,21 @@ class HelloWorld_07_Put_ByteBuffer_Test extends HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method, when
-     * invoked with a byte buffer which does not have a {@link
-     * ByteBuffer#hasArray() backing array}, invokes {@link
+     * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method, when invoked with a byte
+     * buffer which does not have a {@link ByteBuffer#hasArray() backing array}, invokes {@link
      * HelloWorld#set(byte[]) set(array)} method with an array of {@value
-     * com.github.jinahya.hello.HelloWorld#BYTES} bytes and invokes {@link
-     * ByteBuffer#put(byte[]) buffer.put(array)}.
+     * com.github.jinahya.hello.HelloWorld#BYTES} bytes and invokes {@link ByteBuffer#put(byte[])
+     * buffer.put(array)}.
      */
     @DisplayName(
             "put(buffer-with-no-backing-array) invokes set(array) and invokes buffer.put(array)")
     @Test
     void put_InvokeSetArrayPutArrayToBuffer_BufferHasNoBackingArray() {
         // mock-maker-inline
-        final ByteBuffer buffer = Mockito.spy(
-                ByteBuffer.allocateDirect(HelloWorld.BYTES)); // <1>
+        final ByteBuffer buffer = Mockito.spy(ByteBuffer.allocateDirect(HelloWorld.BYTES)); // <1>
         if (buffer.hasArray()) {                                                            // <2>
             log.info("a direct byte buffer has a backing array?");
-            Mockito.when(buffer.hasArray()).thenReturn(
-                    false);                              // <3>
+            Mockito.when(buffer.hasArray()).thenReturn(false);                              // <3>
         }
         assert !buffer.hasArray();
         final int position = buffer.position();
@@ -84,8 +79,8 @@ class HelloWorld_07_Put_ByteBuffer_Test extends HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method returns
-     * given {@code buffer} argument.
+     * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method returns given {@code buffer}
+     * argument.
      */
     @DisplayName("put(buffer) returns buffer")
     @Test

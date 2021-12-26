@@ -28,9 +28,8 @@ package com.github.jinahya.hello;
 class HelloWorldDemoTest extends HelloWorldTest {
 
     /**
-     * {@inheritDoc} The {@code helloWorld()} method of {@code
-     * HelloWorldDemoTest} class returns a new instance of {@link
-     * HelloWorldDemo} class.
+     * {@inheritDoc} The {@code helloWorld()} method of {@code HelloWorldDemoTest} class returns a
+     * new instance of {@link HelloWorldDemo} class.
      *
      * @return {@inheritDoc}
      */

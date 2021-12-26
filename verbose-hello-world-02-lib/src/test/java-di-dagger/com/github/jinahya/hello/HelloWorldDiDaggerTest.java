@@ -27,8 +27,7 @@ class HelloWorldDiDaggerTest extends HelloWorldDiTest {
 
     @BeforeEach
     void inject() {
-        final MembersInjector<HelloWorldDiDaggerTest> injector =
-                DaggerHelloWorldDiDaggerComponent.create();
+        final MembersInjector<HelloWorldDiDaggerTest> injector = DaggerHelloWorldDiDaggerComponent.create();
         injector.injectMembers(this);
     }
 }

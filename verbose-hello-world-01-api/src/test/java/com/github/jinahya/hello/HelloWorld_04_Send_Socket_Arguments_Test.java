@@ -28,8 +28,7 @@ import org.junit.jupiter.api.Test;
 import java.net.Socket;
 
 /**
- * A class for testing {@link HelloWorld#send(Socket)} method regarding
- * arguments verification.
+ * A class for testing {@link HelloWorld#send(Socket)} method regarding arguments verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_04_Send_Socket_Test
@@ -38,15 +37,13 @@ import java.net.Socket;
 class HelloWorld_04_Send_Socket_Arguments_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#send(Socket) send(socket)} method throws a
-     * {@link NullPointerException} when the {@code socket} argument is {@code
-     * null}.
+     * Asserts {@link HelloWorld#send(Socket) send(socket)} method throws a {@link
+     * NullPointerException} when the {@code socket} argument is {@code null}.
      */
     @DisplayName("send(null) throws NullPointerException")
     @Test
     void send_ThrowNullPointerException_SocketIsNull() {
         final Socket socket = null;
-        Assertions.assertThrows(NullPointerException.class,
-                                () -> helloWorld().send(socket));
+        Assertions.assertThrows(NullPointerException.class, () -> helloWorld().send(socket));
     }
 }

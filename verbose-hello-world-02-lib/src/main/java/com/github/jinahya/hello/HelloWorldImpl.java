@@ -33,13 +33,11 @@ public class HelloWorldImpl implements HelloWorld {
             throw new NullPointerException("array is null");
         }
         if (index < 0) {
-            throw new ArrayIndexOutOfBoundsException(
-                    "index(" + index + ") < 0");
+            throw new ArrayIndexOutOfBoundsException("index(" + index + ") < 0");
         }
         if (index + BYTES > array.length) {
             throw new ArrayIndexOutOfBoundsException(
-                    "index(" + index + ")" + BYTES + " > array.length(" +
-                    array.length + ")");
+                    "index(" + index + ")" + BYTES + " > array.length(" + array.length + ")");
         }
         // TODO: Implement!
         return array;

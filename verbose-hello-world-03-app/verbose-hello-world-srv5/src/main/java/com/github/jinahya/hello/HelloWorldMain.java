@@ -38,8 +38,8 @@ import static java.nio.channels.SelectionKey.OP_WRITE;
 import static java.util.ServiceLoader.load;
 
 /**
- * A class whose {@link #main(String[])} method accepts socket connections and
- * sends {@code hello, world} to clients.
+ * A class whose {@link #main(String[])} method accepts socket connections and sends {@code hello,
+ * world} to clients.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -49,8 +49,8 @@ public class HelloWorldMain extends AbstractHelloWorldMain {
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
-     * The main method of this program which accepts socket connections and
-     * sends {@code hello, world} to clients.
+     * The main method of this program which accepts socket connections and sends {@code hello,
+     * world} to clients.
      *
      * @param args an array of command line arguments
      * @throws IOException if an I/O error occurs.
@@ -62,8 +62,7 @@ public class HelloWorldMain extends AbstractHelloWorldMain {
         server.configureBlocking(false);
         server.bind(null);
         log.info("bound to {}", server.socket().getLocalSocketAddress());
-        readAndClose(
-                server); // reads "quit" from System.in and closes the server.
+        readAndClose(server); // reads "quit" from System.in and closes the server.
         connectAndPrintNonBlocking(
                 server); // connects to the server and prints received hello-world-bytes.
         final Selector selector = Selector.open();
@@ -74,8 +73,7 @@ public class HelloWorldMain extends AbstractHelloWorldMain {
             try {
                 for (final SelectionKey selectionKey : selectionKeys) {
                     if (selectionKey.isAcceptable()) {
-                        final ServerSocketChannel channel =
-                                (ServerSocketChannel) selectionKey.channel();
+                        final ServerSocketChannel channel = (ServerSocketChannel) selectionKey.channel();
                         final SocketChannel client = channel.accept();
                         assert client.isBlocking();
                         client.configureBlocking(false);
@@ -84,10 +82,8 @@ public class HelloWorldMain extends AbstractHelloWorldMain {
                         buffer.flip();
                         client.register(selector, OP_WRITE, buffer);
                     } else if (selectionKey.isWritable()) {
-                        final SocketChannel channel =
-                                (SocketChannel) selectionKey.channel();
-                        final ByteBuffer buffer =
-                                (ByteBuffer) selectionKey.attachment();
+                        final SocketChannel channel = (SocketChannel) selectionKey.channel();
+                        final ByteBuffer buffer = (ByteBuffer) selectionKey.attachment();
                         // TODO: 2019-12-29 Implement!
                     }
                 }
