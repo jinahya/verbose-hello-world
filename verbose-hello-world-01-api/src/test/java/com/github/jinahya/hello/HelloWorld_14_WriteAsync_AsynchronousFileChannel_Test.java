@@ -52,10 +52,12 @@ class HelloWorld_14_WriteAsync_AsynchronousFileChannel_Test extends HelloWorldTe
     void beforeEach() {
         // https://www.javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#13
         Mockito.doAnswer(i -> {
-            final ByteBuffer buffer = i.getArgument(0);
-            buffer.position(buffer.position() + HelloWorld.BYTES);
-            return buffer;
-        }).when(helloWorld()).put(ArgumentMatchers.notNull());
+                    final ByteBuffer buffer = i.getArgument(0);
+                    buffer.position(buffer.position() + HelloWorld.BYTES);
+                    return buffer;
+                })
+                .when(helloWorld())
+                .put(ArgumentMatchers.notNull());
     }
 
     /**
@@ -71,8 +73,8 @@ class HelloWorld_14_WriteAsync_AsynchronousFileChannel_Test extends HelloWorldTe
             throws InterruptedException, ExecutionException {
         final LongAdder writtenSoFar = new LongAdder();
         final AsynchronousFileChannel channel = Mockito.mock(AsynchronousFileChannel.class);
-        Mockito.when(
-                        channel.write(ArgumentMatchers.notNull(), ArgumentMatchers.longThat(a -> a >= 0L)))
+        Mockito.when(channel.write(ArgumentMatchers.notNull(),
+                                   ArgumentMatchers.longThat(a -> a >= 0L)))
                 .thenAnswer(i -> {
                     final ByteBuffer buffer = i.getArgument(0);
                     final long position = i.getArgument(1);
@@ -86,8 +88,8 @@ class HelloWorld_14_WriteAsync_AsynchronousFileChannel_Test extends HelloWorldTe
                 });
         final long position = 0L;
         final ExecutorService service = Executors.newSingleThreadExecutor();
-        final Future<AsynchronousFileChannel> future = helloWorld().writeAsync(channel, position,
-                                                                               service);
+        final Future<AsynchronousFileChannel> future
+                = helloWorld().writeAsync(channel, position, service);
         final AsynchronousFileChannel actual = future.get();
         Assertions.assertSame(channel, actual);
         Assertions.assertEquals(HelloWorld.BYTES, writtenSoFar.intValue());
