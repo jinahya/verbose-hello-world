@@ -31,37 +31,42 @@ import java.nio.ByteBuffer;
 import java.util.Random;
 
 /**
- * A class for testing {@link HelloWorld#put(ByteBuffer)} method regarding arguments verification.
+ * A class for testing {@link HelloWorld#put(ByteBuffer)} method regarding
+ * arguments verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_07_Put_ByteBuffer_Test
  */
 @Slf4j
-class HelloWorld_07_Put_ByteBuffer_Arguments_Test
-        extends HelloWorldTest {
+class HelloWorld_07_Put_ByteBuffer_Arguments_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method throws a {@link NullPointerException} when the
-     * {@code buffer} argument is {@code null}.
+     * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method throws a
+     * {@link NullPointerException} when the {@code buffer} argument is {@code
+     * null}.
      */
     @DisplayName("put(null) throws NullPointerException")
     @Test
     void put_ThrowNullPointerException_BufferIsNull() {
         final ByteBuffer buffer = null;
-        Assertions.assertThrows(NullPointerException.class, () -> helloWorld().put(buffer));
+        Assertions.assertThrows(NullPointerException.class,
+                                () -> helloWorld().put(buffer));
     }
 
     /**
-     * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method throws a {@link BufferOverflowException} when
-     * {@link ByteBuffer#remaining() buffer.remaining} is less than {@value com.github.jinahya.hello.HelloWorld#BYTES}.
+     * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method throws a
+     * {@link BufferOverflowException} when {@link ByteBuffer#remaining()
+     * buffer.remaining} is less than {@value com.github.jinahya.hello.HelloWorld#BYTES}.
      */
-    @DisplayName("put(buffer) throws BufferOverflowException when buffer.remaining is not enough")
+    @DisplayName(
+            "put(buffer) throws BufferOverflowException when buffer.remaining is not enough")
     @Test
     void put_ThrowBufferOverflowException_BufferRemainingIsNotEnough() {
         // mock-maker-inline
         final ByteBuffer buffer = Mockito.spy(ByteBuffer.allocate(0));
-        Mockito.when(buffer.remaining())
-                .thenReturn(new Random().nextInt(HelloWorld.BYTES));
-        Assertions.assertThrows(BufferOverflowException.class, () -> helloWorld().put(buffer));
+        Mockito.when(buffer.remaining()).thenReturn(
+                new Random().nextInt(HelloWorld.BYTES));
+        Assertions.assertThrows(BufferOverflowException.class,
+                                () -> helloWorld().put(buffer));
     }
 }

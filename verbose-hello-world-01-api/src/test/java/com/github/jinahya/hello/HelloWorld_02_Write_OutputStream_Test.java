@@ -35,24 +35,27 @@ import java.io.OutputStream;
  * @see HelloWorld_02_Write_OutputStream_Arguments_Test
  */
 @Slf4j
-class HelloWorld_02_Write_OutputStream_Test
-        extends HelloWorldTest {
+class HelloWorld_02_Write_OutputStream_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#write(OutputStream) write(stream)} method invokes {@link HelloWorld#set(byte[])
-     * set(array)} method with an array of {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and invokes {@link
-     * OutputStream#write(byte[])} method on {@code stream} with the array.
+     * Asserts {@link HelloWorld#write(OutputStream) write(stream)} method
+     * invokes {@link HelloWorld#set(byte[]) set(array)} method with an array of
+     * {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and invokes
+     * {@link OutputStream#write(byte[])} method on {@code stream} with the
+     * array.
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(stream) invokes set(byte[BYTES]) and writes the array to the stream")
+    @DisplayName(
+            "write(stream) invokes set(byte[BYTES]) and writes the array to the stream")
     @Test
     void write_InvokeSetArrayAndWriteArrayToStream_() throws IOException {
         // TODO: Implement!
     }
 
     /**
-     * Asserts {@link HelloWorld#write(OutputStream) write(stream)} method returns given {@code stream} argument.
+     * Asserts {@link HelloWorld#write(OutputStream) write(stream)} method
+     * returns given {@code stream} argument.
      *
      * @throws IOException if an I/O error occurs.
      */

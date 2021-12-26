@@ -24,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
-
 import java.util.Iterator;
 import java.util.ServiceLoader;
 
@@ -43,7 +42,8 @@ class HelloWorldProvider {
      */
     @Produces
     public HelloWorld produceHelloWorld() {
-        final ServiceLoader<HelloWorld> serviceLoader = ServiceLoader.load(HelloWorld.class);
+        final ServiceLoader<HelloWorld> serviceLoader = ServiceLoader.load(
+                HelloWorld.class);
         final Iterator<HelloWorld> iterator = serviceLoader.iterator();
         final HelloWorld helloWorld = iterator.next();
 //        log.debug("producing {}", helloWorld);
@@ -53,7 +53,8 @@ class HelloWorldProvider {
     /**
      * Disposes specified instance of {@link HelloWorld} interface.
      *
-     * @param helloWorld the instance of {@link HelloWorld} interface to dispose.
+     * @param helloWorld the instance of {@link HelloWorld} interface to
+     *                   dispose.
      */
     void disposeHelloWorld(@Disposes final HelloWorld helloWorld) {
 //        log.debug("disposing {}", helloWorld);

@@ -38,7 +38,8 @@ import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 
 /**
- * An abstract class for testing methods defined in {@link HelloWorld} interface.
+ * An abstract class for testing methods defined in {@link HelloWorld}
+ * interface.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -51,8 +52,7 @@ abstract class HelloWorldTest {
     void beforeEach() {
         final byte[] array = ArgumentMatchers.any(byte[].class);
         final int index = ArgumentMatchers.anyInt();
-        Mockito.lenient()
-                .when(helloWorld.set(array, index)) // <1>
+        Mockito.lenient().when(helloWorld.set(array, index)) // <1>
                 .thenAnswer(i -> i.getArgument(0));  // <2>
     }
 

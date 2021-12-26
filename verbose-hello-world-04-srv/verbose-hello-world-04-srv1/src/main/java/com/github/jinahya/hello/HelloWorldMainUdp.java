@@ -29,7 +29,8 @@ import java.net.SocketAddress;
 import java.util.ServiceLoader;
 
 /**
- * A class whose {@link #main(String[])} method accepts socket connections and sends {@code hello, world} to clients.
+ * A class whose {@link #main(String[])} method accepts socket connections and
+ * sends {@code hello, world} to clients.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -37,17 +38,20 @@ import java.util.ServiceLoader;
 public class HelloWorldMainUdp {
 
     /**
-     * The main method of this program which accepts socket connections and sends {@code hello, world} to clients.
+     * The main method of this program which accepts socket connections and
+     * sends {@code hello, world} to clients.
      *
      * @param args an array of command line arguments.
      * @throws IOException if an I/O error occurs.
      */
     public static void main(final String... args) throws IOException {
-        final HelloWorld service = ServiceLoader.load(HelloWorld.class).iterator().next();
+        final HelloWorld service = ServiceLoader.load(HelloWorld.class)
+                .iterator().next();
         final InetAddress host = InetAddress.getByName(args[0]);
         final int port = Integer.parseInt(args[1]);
         final SocketAddress endpoint = new InetSocketAddress(host, port);
-        final IHelloWorldServer server = new HelloWorldServerUdp(service, endpoint);
+        final IHelloWorldServer server = new HelloWorldServerUdp(service,
+                                                                 endpoint);
         server.open();
         IHelloWorldServerUtils.readQuitToClose(server);
     }

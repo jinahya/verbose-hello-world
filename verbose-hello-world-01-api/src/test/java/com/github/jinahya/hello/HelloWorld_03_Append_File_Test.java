@@ -37,27 +37,30 @@ import java.io.OutputStream;
  * @see HelloWorld_03_Append_File_Arguments_Test
  */
 @Slf4j
-class HelloWorld_03_Append_File_Test
-        extends HelloWorldTest {
+class HelloWorld_03_Append_File_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#append(File) append(file)} method invokes {@link HelloWorld#write(OutputStream)} method
-     * with an {@link java.io.FileOutputStream} and asserts {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes are
-     * appended to the end of the {@code file}.
+     * Asserts {@link HelloWorld#append(File) append(file)} method invokes
+     * {@link HelloWorld#write(OutputStream)} method with an {@link
+     * java.io.FileOutputStream} and asserts {@value com.github.jinahya.hello.HelloWorld#BYTES}
+     * bytes are appended to the end of the {@code file}.
      *
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("append(file) invokes write(FileOutputStream) and 12 bytes are appended")
+    @DisplayName(
+            "append(file) invokes write(FileOutputStream) and 12 bytes are appended")
     @Test
-    void append_InvokeWriteStreamAnd12BytesAppended_(@TempDir final File tempDir) throws IOException {
+    void append_InvokeWriteStreamAnd12BytesAppended_(
+            @TempDir final File tempDir) throws IOException {
         final File file = File.createTempFile("tmp", null, tempDir);
         final long length = file.length();
         // TODO: Implement!
     }
 
     /**
-     * Asserts {@link HelloWorld#append(File) append(file)} returns given {@code file} arguments.
+     * Asserts {@link HelloWorld#append(File) append(file)} returns given {@code
+     * file} arguments.
      *
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.

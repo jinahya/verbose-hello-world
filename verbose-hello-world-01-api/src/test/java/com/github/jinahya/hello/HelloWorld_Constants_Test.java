@@ -37,8 +37,9 @@ import java.nio.charset.StandardCharsets;
 class HelloWorld_Constants_Test {
 
     /**
-     * Asserts the value of {@link HelloWorld#BYTES} constant equals to the actual number of bytes of "{@code hello,
-     * world}" string encoded in {@link StandardCharsets#US_ASCII US-ASCII} character set.
+     * Asserts the value of {@link HelloWorld#BYTES} constant equals to the
+     * actual number of bytes of "{@code hello, world}" string encoded in {@link
+     * StandardCharsets#US_ASCII US-ASCII} character set.
      *
      * @see StandardCharsets#US_ASCII
      * @see String#getBytes(Charset)
@@ -46,7 +47,8 @@ class HelloWorld_Constants_Test {
     @DisplayName("BYTES equals to the actual number of \"hello, world\" bytes")
     @Test
     void BYTES_EqualsToActualNumberOfHelloWorldBytes_() {
-        final int expected = "hello, world".getBytes(StandardCharsets.US_ASCII).length;
+        final int expected = "hello, world".getBytes(
+                StandardCharsets.US_ASCII).length;
         Assertions.assertEquals(expected, HelloWorld.BYTES);
     }
 }

@@ -51,23 +51,29 @@ import java.util.concurrent.Callable;
 final class IHelloWorldServerUtils {
 
     /**
-     * Parses specified command line arguments and returns a socket address to bind.
+     * Parses specified command line arguments and returns a socket address to
+     * bind.
      *
      * @param args the command line arguments.
      * @return a socket address to bind.
      * @throws UnknownHostException if the {@code host} part is unknown.
      */
-    static InetSocketAddress parseSocketAddressToBind(final String[] args) throws UnknownHostException {
+    static InetSocketAddress parseSocketAddressToBind(final String[] args)
+            throws UnknownHostException {
         Objects.requireNonNull(args, "args is null");
         final Options options = new Options();
-        options.addOption(Option.builder("h").longOpt("host").desc("local host to bind").type(String.class)
-                                  .required(false).build());
-        options.addOption(Option.builder("p").longOpt("port").desc("local port to bind").type(int.class).required(false)
+        options.addOption(Option.builder("h").longOpt("host").desc(
+                        "local host to bind").type(String.class).required(false)
                                   .build());
+        options.addOption(Option.builder("p").longOpt("port").desc(
+                "local port to bind").type(int.class).required(false).build());
         try {
             final CommandLine values = new DefaultParser().parse(options, args);
-            final String host = Optional.ofNullable(values.getOptionValue("h")).orElse("0.0.0.0");
-            final int port = Integer.parseInt(Optional.ofNullable(values.getOptionValue("p")).orElse("0"));
+            final String host = Optional.ofNullable(values.getOptionValue("h"))
+                    .orElse("0.0.0.0");
+            final int port = Integer.parseInt(
+                    Optional.ofNullable(values.getOptionValue("p"))
+                            .orElse("0"));
             return new InetSocketAddress(InetAddress.getByName(host), port);
         } catch (final ParseException pe) {
             throw new RuntimeException("failed to parse args", pe);
@@ -75,8 +81,9 @@ final class IHelloWorldServerUtils {
     }
 
     /**
-     * Starts a new {@link Thread#setDaemon(boolean) daemon} thread which reads '{@code quit\n}' from {@link System#in}
-     * and {@link Closeable#close() closes} specified server instance.
+     * Starts a new {@link Thread#setDaemon(boolean) daemon} thread which reads
+     * '{@code quit\n}' from {@link System#in} and {@link Closeable#close()
+     * closes} specified server instance.
      *
      * @param server the server to close.
      */
@@ -85,7 +92,8 @@ final class IHelloWorldServerUtils {
             throw new NullPointerException("closeable is null");
         }
         final Thread thread = new Thread(() -> {
-            final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+            final BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(System.in));
             try {
                 for (String line; (line = reader.readLine()) != null; ) {
                     if (line.equalsIgnoreCase("quit")) {
@@ -102,13 +110,14 @@ final class IHelloWorldServerUtils {
     }
 
     /**
-     * {@link Callable#call() calls} specified callable and writes '{@code quit\n}' to a pipe connected to {@link
-     * System#in}.
+     * {@link Callable#call() calls} specified callable and writes '{@code
+     * quit\n}' to a pipe connected to {@link System#in}.
      *
      * @param callable the callable to call.
      * @throws IOException if an I/O error occurs.
      */
-    static void writeQuitToClose(final Callable<Void> callable) throws IOException {
+    static void writeQuitToClose(final Callable<Void> callable)
+            throws IOException {
         Objects.requireNonNull(callable, "runnable is null");
         final InputStream in = System.in;
         try {

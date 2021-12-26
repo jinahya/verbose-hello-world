@@ -22,7 +22,6 @@ package com.github.jinahya.hello;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Assumptions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -31,7 +30,8 @@ import java.util.Random;
 import static java.util.concurrent.ThreadLocalRandom.current;
 
 /**
- * An abstract class for testing classes implement {@link HelloWorld} interface.
+ * An abstract class for testing classes implement {@link HelloWorld}
+ * interface.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -45,8 +45,9 @@ abstract class HelloWorldTest {
     abstract HelloWorld helloWorld();
 
     /**
-     * Asserts {@link HelloWorld#set(byte[], int) set(array, index)} method throws a {@code NullPointerException} when
-     * the {@code array} argument is {@code null}.
+     * Asserts {@link HelloWorld#set(byte[], int) set(array, index)} method
+     * throws a {@code NullPointerException} when the {@code array} argument is
+     * {@code null}.
      */
     @DisplayName("set(null, index) throws NullPointerException")
     @Test
@@ -55,12 +56,14 @@ abstract class HelloWorldTest {
         Assumptions.assumeTrue(helloWorld != null);
         final byte[] array = null;
         final int index = new Random().nextInt() & Integer.MAX_VALUE;
-        Assertions.assertThrows(NullPointerException.class, () -> helloWorld.set(array, index));
+        Assertions.assertThrows(NullPointerException.class,
+                                () -> helloWorld.set(array, index));
     }
 
     /**
-     * Asserts {@link HelloWorld#set(byte[], int) set(array, index)} method throws an {@code IndexOutOfBoundsException}
-     * when {@code index} argument is negative.
+     * Asserts {@link HelloWorld#set(byte[], int) set(array, index)} method
+     * throws an {@code IndexOutOfBoundsException} when {@code index} argument
+     * is negative.
      */
     @DisplayName("set(array, !positive) throws IndexOutOfBoundsException")
     @Test
@@ -69,28 +72,35 @@ abstract class HelloWorldTest {
         Assumptions.assumeTrue(helloWorld != null);
         final byte[] array = new byte[0];
         final int index = current().nextInt() | Integer.MIN_VALUE;
-        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> helloWorld.set(array, index));
+        Assertions.assertThrows(IndexOutOfBoundsException.class,
+                                () -> helloWorld.set(array, index));
     }
 
     /**
-     * Asserts {@link HelloWorld#set(byte[], int) set(array, index)} method throws an {@code IndexOutOfBoundsException}
-     * when ({@code index} + {@value com.github.jinahya.hello.HelloWorld#BYTES}) is greater than {@code array.length}.
+     * Asserts {@link HelloWorld#set(byte[], int) set(array, index)} method
+     * throws an {@code IndexOutOfBoundsException} when ({@code index} + {@value
+     * com.github.jinahya.hello.HelloWorld#BYTES}) is greater than {@code
+     * array.length}.
      */
-    @DisplayName("set(array, index) throws IndexOutOfBoundsException when index + BYTES > array.length")
+    @DisplayName(
+            "set(array, index) throws IndexOutOfBoundsException when index + BYTES > array.length")
     @Test
     void set_ThrowsIndexOutOfBoundsException_SpaceIsNotEnough() {
         final HelloWorld helloWorld = helloWorld();
         Assumptions.assumeTrue(helloWorld != null);
         final byte[] array = new byte[HelloWorld.BYTES];
         final int index = new Random().nextInt(HelloWorld.BYTES - 1) + 1;
-        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> helloWorld.set(array, index));
+        Assertions.assertThrows(IndexOutOfBoundsException.class,
+                                () -> helloWorld.set(array, index));
     }
 
     /**
-     * Asserts {@link HelloWorld#set(byte[], int) set(array, index)} method sets "{@code hello, world}" bytes on
-     * specified array starting at specified index.
+     * Asserts {@link HelloWorld#set(byte[], int) set(array, index)} method sets
+     * "{@code hello, world}" bytes on specified array starting at specified
+     * index.
      */
-    @DisplayName("set(array, index) sets \"hello, world\" bytes on array starting at index")
+    @DisplayName(
+            "set(array, index) sets \"hello, world\" bytes on array starting at index")
     @Test
     void set_SetsHelloWorldBytesOnArrayStartingAtIndex_() {
         final HelloWorld helloWorld = helloWorld();
@@ -102,7 +112,8 @@ abstract class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#set(byte[], int) set(array, index)} method returns specified array.
+     * Asserts {@link HelloWorld#set(byte[], int) set(array, index)} method
+     * returns specified array.
      */
     @DisplayName("set(array, index) returns array")
     @Test

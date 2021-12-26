@@ -27,18 +27,19 @@ import org.junit.jupiter.api.Test;
 import java.io.OutputStream;
 
 /**
- * A class for testing {@link HelloWorld#write(OutputStream)} method regarding argument verification.
+ * A class for testing {@link HelloWorld#write(OutputStream)} method regarding
+ * argument verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_02_Write_OutputStream_Test
  */
 @Slf4j
-class HelloWorld_02_Write_OutputStream_Arguments_Test
-        extends HelloWorldTest {
+class HelloWorld_02_Write_OutputStream_Arguments_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#write(OutputStream) write(stream)} method throws a {@link NullPointerException} when
-     * the {@code stream} argument is {@code null}.
+     * Asserts {@link HelloWorld#write(OutputStream) write(stream)} method
+     * throws a {@link NullPointerException} when the {@code stream} argument is
+     * {@code null}.
      */
     @DisplayName("write((OutputStream) null) throws NullPointerException")
     @Test

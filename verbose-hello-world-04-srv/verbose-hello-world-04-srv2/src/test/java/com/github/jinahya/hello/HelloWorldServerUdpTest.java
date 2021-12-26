@@ -1,5 +1,25 @@
 package com.github.jinahya.hello;
 
+/*-
+ * #%L
+ * verbose-hello-world-04-srv2
+ * %%
+ * Copyright (C) 2018 - 2021 Jinahya, Inc.
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -20,14 +40,15 @@ class HelloWorldServerUdpTest {
         final InetAddress host = InetAddress.getLoopbackAddress();
         final IHelloWorldServer server;
         {
-            final HelloWorld service = Mockito.spy(ServiceLoader.load(HelloWorld.class).iterator().next());
-            Mockito.when(service.set(Mockito.notNull()))
-                    .thenAnswer(i -> {
-                        final byte[] array = i.getArgument(0);
-                        final byte[] src = "hello, world".getBytes(StandardCharsets.US_ASCII);
-                        System.arraycopy(src, 0, array, 0, src.length);
-                        return array;
-                    });
+            final HelloWorld service = Mockito.spy(ServiceLoader.load(
+                    HelloWorld.class).iterator().next());
+            Mockito.when(service.set(Mockito.notNull())).thenAnswer(i -> {
+                final byte[] array = i.getArgument(0);
+                final byte[] src = "hello, world".getBytes(
+                        StandardCharsets.US_ASCII);
+                System.arraycopy(src, 0, array, 0, src.length);
+                return array;
+            });
             final SocketAddress endpoint = new InetSocketAddress(host, 0);
             server = new HelloWorldServerUdp(service, endpoint);
         }
@@ -35,7 +56,8 @@ class HelloWorldServerUdpTest {
         final int port = HelloWorldServerUdp.LOCAL_PORT.get();
         final SocketAddress endpoint = new InetSocketAddress(host, port);
         HelloWorldClientUdp.clients(4, endpoint, b -> {
-            Assertions.assertArrayEquals("hello, world".getBytes(StandardCharsets.US_ASCII), b);
+            Assertions.assertArrayEquals(
+                    "hello, world".getBytes(StandardCharsets.US_ASCII), b);
         });
         server.close();
     }

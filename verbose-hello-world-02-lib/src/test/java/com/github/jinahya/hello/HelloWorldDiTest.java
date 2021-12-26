@@ -26,7 +26,8 @@ import javax.inject.Named;
 import static java.util.concurrent.ThreadLocalRandom.current;
 
 /**
- * An abstract class for testing {@link HelloWorld} implementations using Dependency Injection.
+ * An abstract class for testing {@link HelloWorld} implementations using
+ * Dependency Injection.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */

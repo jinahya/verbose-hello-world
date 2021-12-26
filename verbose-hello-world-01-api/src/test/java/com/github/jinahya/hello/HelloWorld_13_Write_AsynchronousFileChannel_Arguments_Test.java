@@ -30,36 +30,41 @@ import java.nio.channels.AsynchronousFileChannel;
 import java.util.Random;
 
 /**
- * A class for testing {@link HelloWorld#write(AsynchronousFileChannel, long)} method regarding arguments verification.
+ * A class for testing {@link HelloWorld#write(AsynchronousFileChannel, long)}
+ * method regarding arguments verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_13_Write_AsynchronousFileChannel_Test
  */
 @Slf4j
-class HelloWorld_13_Write_AsynchronousFileChannel_Arguments_Test
-        extends HelloWorldTest {
+class HelloWorld_13_Write_AsynchronousFileChannel_Arguments_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#write(AsynchronousFileChannel, long) write(channel, position)} method throws a {@link
-     * NullPointerException} when {@code channel} argument is {@code null}.
+     * Asserts {@link HelloWorld#write(AsynchronousFileChannel, long)
+     * write(channel, position)} method throws a {@link NullPointerException}
+     * when {@code channel} argument is {@code null}.
      */
     @DisplayName("write(null, ) throws NullPointerException")
     @Test
     void write_ThrowNullPointerException_ChannelIsNull() {
         final AsynchronousFileChannel channel = null;
         final long position = new Random().nextLong() & Long.MAX_VALUE;
-        Assertions.assertThrows(NullPointerException.class, () -> helloWorld().write(channel, position));
+        Assertions.assertThrows(NullPointerException.class,
+                                () -> helloWorld().write(channel, position));
     }
 
     /**
-     * Asserts {@link HelloWorld#write(AsynchronousFileChannel, long) write(channel, position)} method throws a {@link
-     * IllegalArgumentException} when the {@code position} argument is negative.
+     * Asserts {@link HelloWorld#write(AsynchronousFileChannel, long)
+     * write(channel, position)} method throws a {@link IllegalArgumentException}
+     * when the {@code position} argument is negative.
      */
     @DisplayName("write(, negative) throws IllegalArgumentException")
     @Test
     void write_ThrowIllegalArgumentException_PositionIsNegative() {
-        final AsynchronousFileChannel channel = Mockito.mock(AsynchronousFileChannel.class);
+        final AsynchronousFileChannel channel = Mockito.mock(
+                AsynchronousFileChannel.class);
         final long position = new Random().nextLong() | Long.MIN_VALUE;
-        Assertions.assertThrows(IllegalArgumentException.class, () -> helloWorld().write(channel, position));
+        Assertions.assertThrows(IllegalArgumentException.class,
+                                () -> helloWorld().write(channel, position));
     }
 }

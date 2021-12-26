@@ -30,37 +30,44 @@ import java.nio.channels.AsynchronousFileChannel;
 import java.util.Random;
 
 /**
- * A class for testing {@link HelloWorld#writeCompletable(AsynchronousFileChannel, long)} method regarding arguments
- * verification.
+ * A class for testing {@link HelloWorld#writeCompletable(AsynchronousFileChannel,
+ * long)} method regarding arguments verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Test
  */
 @Slf4j
-class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Arguments_Test
-        extends HelloWorldTest {
+class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Arguments_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#writeCompletable(AsynchronousFileChannel, long) writeCompletable(channel, position)}
-     * method throws a {@link NullPointerException} when the {@code channel} argument is {@code null}.
+     * Asserts {@link HelloWorld#writeCompletable(AsynchronousFileChannel, long)
+     * writeCompletable(channel, position)} method throws a {@link
+     * NullPointerException} when the {@code channel} argument is {@code null}.
      */
     @DisplayName("writeCompletable(null, ) throws NullPointerException")
     @Test
     void writeCompletable_ThrowNullPointerException_ChannelIsNull() {
         final AsynchronousFileChannel channel = null;
         final long position = new Random().nextLong() & Long.MAX_VALUE;
-        Assertions.assertThrows(NullPointerException.class, () -> helloWorld().writeCompletable(channel, position));
+        Assertions.assertThrows(NullPointerException.class,
+                                () -> helloWorld().writeCompletable(channel,
+                                                                    position));
     }
 
     /**
-     * Asserts {@link HelloWorld#writeCompletable(AsynchronousFileChannel, long) writeCompletable(channel, position)}
-     * method throws an {@link IllegalArgumentException} when the {@code position} argument is negative.
+     * Asserts {@link HelloWorld#writeCompletable(AsynchronousFileChannel, long)
+     * writeCompletable(channel, position)} method throws an {@link
+     * IllegalArgumentException} when the {@code position} argument is
+     * negative.
      */
     @DisplayName("writeCompletable(, negative) throws IllegalArgumentException")
     @Test
     void writeCompletable_ThrowIllegalArgumentException_PositionIsNegative() {
-        final AsynchronousFileChannel channel = Mockito.mock(AsynchronousFileChannel.class);
+        final AsynchronousFileChannel channel = Mockito.mock(
+                AsynchronousFileChannel.class);
         final long position = new Random().nextLong() | Long.MIN_VALUE;
-        Assertions.assertThrows(IllegalArgumentException.class, () -> helloWorld().writeCompletable(channel, position));
+        Assertions.assertThrows(IllegalArgumentException.class,
+                                () -> helloWorld().writeCompletable(channel,
+                                                                    position));
     }
 }

@@ -38,27 +38,31 @@ import java.nio.file.Path;
  * @see HelloWorld_09_Append_Path_Arguments_Test
  */
 @Slf4j
-class HelloWorld_09_Append_Path_Test
-        extends HelloWorldTest {
+class HelloWorld_09_Append_Path_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#append(Path) append(path)} method invokes {@link HelloWorld#write(WritableByteChannel)
-     * write(channel)} method with a {@link java.nio.channels.FileChannel} and asserts {@value
-     * com.github.jinahya.hello.HelloWorld#BYTES} bytes are appended to specified {@code path}.
+     * Asserts {@link HelloWorld#append(Path) append(path)} method invokes
+     * {@link HelloWorld#write(WritableByteChannel) write(channel)} method with
+     * a {@link java.nio.channels.FileChannel} and asserts {@value
+     * com.github.jinahya.hello.HelloWorld#BYTES} bytes are appended to
+     * specified {@code path}.
      *
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("append(path) invokes write(FileChannel), 12 bytes are appended")
+    @DisplayName(
+            "append(path) invokes write(FileChannel), 12 bytes are appended")
     @Test
-    void append_InvokeWriteChannel12BytesWritten_(@TempDir final Path tempDir) throws IOException {
+    void append_InvokeWriteChannel12BytesWritten_(@TempDir final Path tempDir)
+            throws IOException {
         final Path path = Files.createTempFile(tempDir, null, null);
         final long size = Files.size(path);
         // TODO: Implement!
     }
 
     /**
-     * Asserts {@link HelloWorld#append(Path) append(path)} method returns the {@code path} argument.
+     * Asserts {@link HelloWorld#append(Path) append(path)} method returns the
+     * {@code path} argument.
      *
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.

@@ -39,7 +39,8 @@ import static java.util.concurrent.CompletableFuture.runAsync;
 import static java.util.concurrent.Executors.newCachedThreadPool;
 
 /**
- * A class whose {@link #main(String[])} method accepts socket connections and sends {@code hello, world} to clients.
+ * A class whose {@link #main(String[])} method accepts socket connections and
+ * sends {@code hello, world} to clients.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -49,20 +50,24 @@ public class HelloWorldMain extends AbstractHelloWorldMain {
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
-     * The main method of this program which accepts socket connections and sends {@code hello, world} to clients.
+     * The main method of this program which accepts socket connections and
+     * sends {@code hello, world} to clients.
      *
      * @param args an array of command line arguments
      * @throws IOException          if an I/O error occurs.
      * @throws InterruptedException if interrupted while getting result.
      * @throws ExecutionException   if failed to to execute.
      */
-    public static void main(final String... args) throws IOException, InterruptedException, ExecutionException {
+    public static void main(final String... args)
+            throws IOException, InterruptedException, ExecutionException {
         final HelloWorld helloWorld = load(HelloWorld.class).iterator().next();
         log.info("localhost: {}", InetAddress.getLocalHost());
-        final AsynchronousServerSocketChannel server = AsynchronousServerSocketChannel.open();
+        final AsynchronousServerSocketChannel server =
+                AsynchronousServerSocketChannel.open();
         server.bind(null);
         log.info("bound to {}", server.getLocalAddress());
-        readAndClose(server); // reads "quit" from System.in and closes the server.
+        readAndClose(
+                server); // reads "quit" from System.in and closes the server.
         connectAndPrintAsynchronous(server);
         final ExecutorService executor = newCachedThreadPool();
         while (server.isOpen()) {

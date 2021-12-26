@@ -28,23 +28,25 @@ import org.junit.jupiter.api.Test;
 import java.io.DataOutput;
 
 /**
- * A class for testing {@link HelloWorld#write(DataOutput)} method regarding arguments verification.
+ * A class for testing {@link HelloWorld#write(DataOutput)} method regarding
+ * arguments verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_05_Write_DataOutput_Test
  */
 @Slf4j
-class HelloWorld_05_Write_DataOutput_Arguments_Test
-        extends HelloWorldTest {
+class HelloWorld_05_Write_DataOutput_Arguments_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#write(DataOutput) write(data)} method throws a {@link NullPointerException} when the
-     * {@code data} argument is {@code null}.
+     * Asserts {@link HelloWorld#write(DataOutput) write(data)} method throws a
+     * {@link NullPointerException} when the {@code data} argument is {@code
+     * null}.
      */
     @DisplayName("write((DataOutput) null) method throws NullPointerException")
     @Test
     void write_ThrowsNullPointerException_DataIsNull() {
         final DataOutput data = null;
-        Assertions.assertThrows(NullPointerException.class, () -> helloWorld().write(data));
+        Assertions.assertThrows(NullPointerException.class,
+                                () -> helloWorld().write(data));
     }
 }

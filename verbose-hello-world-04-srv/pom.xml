@@ -10,7 +10,7 @@
   </parent>
 
   <artifactId>verbose-hello-world-04-srv</artifactId>
-<!--  <version>0.0.1-SNAPSHOT</version>-->
+  <!--  <version>0.0.1-SNAPSHOT</version>-->
   <packaging>pom</packaging>
 
   <name>${project.artifactId}</name>
@@ -20,11 +20,11 @@
     <module>verbose-hello-world-04-srv0-common</module>
     <module>verbose-hello-world-04-srv1</module>
     <module>verbose-hello-world-04-srv2</module>
-<!--    <module>verbose-hello-world-srv3</module>-->
-<!--    <module>verbose-hello-world-srv4</module>-->
-<!--    <module>verbose-hello-world-srv5</module>-->
-<!--    <module>verbose-hello-world-srv6</module>-->
-<!--    <module>verbose-hello-world-srv7</module>-->
+    <!--    <module>verbose-hello-world-srv3</module>-->
+    <!--    <module>verbose-hello-world-srv4</module>-->
+    <!--    <module>verbose-hello-world-srv5</module>-->
+    <!--    <module>verbose-hello-world-srv6</module>-->
+    <!--    <module>verbose-hello-world-srv7</module>-->
   </modules>
 
   <properties>

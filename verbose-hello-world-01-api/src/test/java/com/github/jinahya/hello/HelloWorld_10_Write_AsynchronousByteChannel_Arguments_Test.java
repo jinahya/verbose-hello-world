@@ -28,23 +28,26 @@ import org.junit.jupiter.api.Test;
 import java.nio.channels.AsynchronousByteChannel;
 
 /**
- * A class for testing {@link HelloWorld#write(AsynchronousByteChannel)} method regarding arguments verification.
+ * A class for testing {@link HelloWorld#write(AsynchronousByteChannel)} method
+ * regarding arguments verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_10_Write_AsynchronousByteChannel_Test
  */
 @Slf4j
-class HelloWorld_10_Write_AsynchronousByteChannel_Arguments_Test
-        extends HelloWorldTest {
+class HelloWorld_10_Write_AsynchronousByteChannel_Arguments_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#write(AsynchronousByteChannel) write(channel)} method throws a {@link
-     * NullPointerException} when {@code channel} argument is {@code null}.
+     * Asserts {@link HelloWorld#write(AsynchronousByteChannel) write(channel)}
+     * method throws a {@link NullPointerException} when {@code channel}
+     * argument is {@code null}.
      */
-    @DisplayName("write((AsynchronousByteChannel) null) throws NullPointerException")
+    @DisplayName(
+            "write((AsynchronousByteChannel) null) throws NullPointerException")
     @Test
     void writeAsync_ThrowNullPointerException_ChannelIsNull() {
         final AsynchronousByteChannel channel = null;
-        Assertions.assertThrows(NullPointerException.class, () -> helloWorld().write(channel));
+        Assertions.assertThrows(NullPointerException.class,
+                                () -> helloWorld().write(channel));
     }
 }

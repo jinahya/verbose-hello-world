@@ -26,7 +26,8 @@ import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.jupiter.api.BeforeEach;
 
 /**
- * An extended {@link HelloWorldDiTest} which uses {@link HelloWorldDiHk2Binder} as a binder.
+ * An extended {@link HelloWorldDiTest} which uses {@link HelloWorldDiHk2Binder}
+ * as a binder.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */

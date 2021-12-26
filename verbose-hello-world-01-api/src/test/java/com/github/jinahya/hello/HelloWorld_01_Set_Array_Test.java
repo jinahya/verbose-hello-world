@@ -31,12 +31,12 @@ import org.junit.jupiter.api.Test;
  * @see HelloWorld_01_Set_Array_Arguments_Test
  */
 @Slf4j
-class HelloWorld_01_Set_Array_Test
-        extends HelloWorldTest {
+class HelloWorld_01_Set_Array_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#set(byte[]) set(array)} method invokes {@link HelloWorld#set(byte[], int) set(array,
-     * index)} method with given {@code array} and {@code 0}.
+     * Asserts {@link HelloWorld#set(byte[]) set(array)} method invokes {@link
+     * HelloWorld#set(byte[], int) set(array, index)} method with given {@code
+     * array} and {@code 0}.
      */
     @DisplayName("set(array) invokes set(array, 0)")
     @Test
@@ -46,7 +46,8 @@ class HelloWorld_01_Set_Array_Test
     }
 
     /**
-     * Asserts {@link HelloWorld#set(byte[]) set(array)} method returns given {@code array} argument.
+     * Asserts {@link HelloWorld#set(byte[]) set(array)} method returns given
+     * {@code array} argument.
      */
     @DisplayName("set(array) returns array")
     @Test

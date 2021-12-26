@@ -38,12 +38,14 @@ import javax.enterprise.inject.se.SeContainerInitializer;
 class HelloWorldCdiSeTestInstanceFactory implements TestInstanceFactory {
 
     @Override
-    public Object createTestInstance(final TestInstanceFactoryContext testInstanceFactoryContext,
-                                     final ExtensionContext extensionContext)
+    public Object createTestInstance(
+            final TestInstanceFactoryContext testInstanceFactoryContext,
+            final ExtensionContext extensionContext)
             throws TestInstantiationException {
         final Class<?> testClass = testInstanceFactoryContext.getTestClass();
-        final SeContainerInitializer seContainerInitializer = SeContainerInitializer.newInstance()
-                .addBeanClasses(HelloWorldCdiFactory.class, testClass);
+        final SeContainerInitializer seContainerInitializer =
+                SeContainerInitializer.newInstance().addBeanClasses(
+                        HelloWorldCdiFactory.class, testClass);
         try (SeContainer container = seContainerInitializer.initialize()) {
             return container.select(testClass).get();
         }
