@@ -81,6 +81,9 @@ class HelloWorldServerUdp implements IHelloWorldServer {
                         }
                     }).start();
                 } catch (final IOException ioe) {
+                    if (socket.isClosed()) {
+                        break;
+                    }
                     log.error("failed to receive", ioe);
                 }
             }

@@ -14,7 +14,7 @@ class HelloWorldMainUdpTest {
     @Test
     void main__() throws IOException {
         IHelloWorldServerUtils.writeQuitToClose(() -> {
-            HelloWorldMainTcp.main("0.0.0.0", "0");
+            HelloWorldMainUdp.main("0.0.0.0", "0");
             final InetAddress host = InetAddress.getLocalHost();
             final int port = HelloWorldServerUdp.LOCAL_PORT.get();
             final SocketAddress endpoint = new InetSocketAddress(host, port);
