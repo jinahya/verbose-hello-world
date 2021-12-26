@@ -70,8 +70,7 @@ class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Test extends HelloW
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
      */
-    @DisplayName(
-            "writeCompletable(channel, position) invokes put(buffer) and writes the buffer to channel")
+    @DisplayName("writeCompletable(channel, position) invokes put(buffer) and writes to channel")
     @Test
     void writeCompletable_InvokePutBufferWriteBufferToChannel_()
             throws InterruptedException, ExecutionException {
@@ -97,10 +96,9 @@ class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Test extends HelloW
         final ByteBuffer buffer = bufferCaptor().getValue();
         Assertions.assertEquals(HelloWorld.BYTES, buffer.capacity());
         Assertions.assertFalse(buffer.hasRemaining());
-        Mockito.verify(channel, Mockito.atLeast(1)).write(ArgumentMatchers.same(buffer),
-                                                          ArgumentMatchers.longThat(a -> a >= 0L),
-                                                          ArgumentMatchers.notNull(),
-                                                          ArgumentMatchers.notNull());
+        Mockito.verify(channel, Mockito.atLeast(1))
+                .write(ArgumentMatchers.same(buffer), ArgumentMatchers.longThat(a -> a >= 0L),
+                       ArgumentMatchers.notNull(), ArgumentMatchers.notNull());
         Assertions.assertSame(channel, actual);
         Assertions.assertEquals(HelloWorld.BYTES, writtenSoFar.intValue());
     }
@@ -121,13 +119,13 @@ class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Test extends HelloW
             throws IOException, InterruptedException, ExecutionException {
         final Path path = Files.createTempFile(tempDir, null, null);
         final long position = new Random().nextInt(1024);
-        try (AsynchronousFileChannel channel = AsynchronousFileChannel.open(path,
-                                                                            StandardOpenOption.WRITE)) {
+        try (AsynchronousFileChannel channel
+                     = AsynchronousFileChannel.open(path, StandardOpenOption.WRITE)) {
             helloWorld().writeCompletable(channel, position).get().force(false);
         }
         Assertions.assertEquals(position + HelloWorld.BYTES, Files.size(path));
-        try (AsynchronousFileChannel channel = AsynchronousFileChannel.open(path,
-                                                                            StandardOpenOption.READ)) {
+        try (AsynchronousFileChannel channel
+                     = AsynchronousFileChannel.open(path, StandardOpenOption.READ)) {
             final ByteBuffer buffer = ByteBuffer.allocate(HelloWorld.BYTES);
             channel.read(buffer,                                  // buffer
                          position,                                // position

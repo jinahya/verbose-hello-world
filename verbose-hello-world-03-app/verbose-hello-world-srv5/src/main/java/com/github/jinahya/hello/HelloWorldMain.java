@@ -73,7 +73,8 @@ public class HelloWorldMain extends AbstractHelloWorldMain {
             try {
                 for (final SelectionKey selectionKey : selectionKeys) {
                     if (selectionKey.isAcceptable()) {
-                        final ServerSocketChannel channel = (ServerSocketChannel) selectionKey.channel();
+                        final ServerSocketChannel channel
+                                = (ServerSocketChannel) selectionKey.channel();
                         final SocketChannel client = channel.accept();
                         assert client.isBlocking();
                         client.configureBlocking(false);
