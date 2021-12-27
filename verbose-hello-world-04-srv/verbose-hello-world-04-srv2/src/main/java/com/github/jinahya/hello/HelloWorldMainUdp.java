@@ -45,7 +45,6 @@ public class HelloWorldMainUdp {
      * @throws IOException if an I/O error occurs.
      */
     public static void main(final String... args) throws IOException {
-        final SocketAddress endpoint = IHelloWorldServerUtils.parseEndpointToBind(args);
         final HelloWorld service = ServiceLoader.load(HelloWorld.class).iterator().next();
         final InetAddress host = InetAddress.getByName(args[0]);
         final int port = Integer.parseInt(args[1]);
