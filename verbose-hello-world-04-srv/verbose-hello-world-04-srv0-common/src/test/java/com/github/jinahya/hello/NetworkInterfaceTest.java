@@ -13,6 +13,13 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+/**
+ * A class for testing {@link NetworkInterface}.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ * @see <a href="https://www.baeldung.com/java-network-interfaces">Working with Network Interfaces
+ * in Java (Bealdung)</a>
+ */
 @Slf4j
 class NetworkInterfaceTest {
 
@@ -46,7 +53,7 @@ class NetworkInterfaceTest {
     }
 
     @Test
-    void getNetworkInterfaces__() throws SocketException {
+    void printNetworkInterfaces() throws SocketException {
         final Enumeration<NetworkInterface> nie = NetworkInterface.getNetworkInterfaces();
         while (nie.hasMoreElements()) {
             final NetworkInterface ni = nie.nextElement();
