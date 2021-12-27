@@ -40,14 +40,16 @@ class HelloWorldServerUdpTest {
         final InetAddress host = InetAddress.getLoopbackAddress();
         final IHelloWorldServer server;
         {
-            final HelloWorld service = Mockito.spy(ServiceLoader.load(HelloWorld.class).iterator()
-                                                           .next());
-            Mockito.when(service.set(Mockito.notNull())).thenAnswer(i -> {
-                final byte[] array = i.getArgument(0);
-                final byte[] src = "hello, world".getBytes(StandardCharsets.US_ASCII);
-                System.arraycopy(src, 0, array, 0, src.length);
-                return array;
-            });
+            HelloWorld service = ServiceLoader.load(HelloWorld.class).iterator().next();
+            if (true) { // TODO: Remove when HelloWorld#set(array) method is implemented!
+                service = Mockito.spy(service);
+                Mockito.when(service.set(Mockito.notNull())).thenAnswer(i -> {
+                    final byte[] array = i.getArgument(0);
+                    final byte[] src = "hello, world".getBytes(StandardCharsets.US_ASCII);
+                    System.arraycopy(src, 0, array, 0, src.length);
+                    return array;
+                });
+            }
             final SocketAddress endpoint = new InetSocketAddress(host, 0);
             server = new HelloWorldServerUdp(service, endpoint);
         }

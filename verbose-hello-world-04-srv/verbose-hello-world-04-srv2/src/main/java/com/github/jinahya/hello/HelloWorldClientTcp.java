@@ -75,7 +75,7 @@ public class HelloWorldClientTcp implements Callable<byte[]> {
         try (Socket socket = new Socket()) {
             socket.setSoTimeout(10000); // 10 secs
             socket.connect(endpoint);
-            log.debug("[C] connected to {} <- {}", socket.getRemoteSocketAddress(),
+            log.debug("[C] connected to {}; local: {}", socket.getRemoteSocketAddress(),
                       socket.getLocalSocketAddress());
             for (int offset = 0; (offset < array.length); ) {
                 final int length = array.length - offset;

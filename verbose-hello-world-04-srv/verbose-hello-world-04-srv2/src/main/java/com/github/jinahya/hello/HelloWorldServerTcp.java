@@ -28,6 +28,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.util.Objects;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * A class serves {@code hello, world} to clients.
@@ -54,55 +56,68 @@ class HelloWorldServerTcp implements IHelloWorldServer {
     }
 
     @Override
-    public synchronized void open() throws IOException {
-        close();
-        serverSocket = new ServerSocket();
-        if (endpoint instanceof InetSocketAddress && ((InetSocketAddress) endpoint).getPort() > 0) {
-            serverSocket.setReuseAddress(true);
-        }
+    public void open() throws IOException {
         try {
-            serverSocket.bind(endpoint, backlog);
-        } catch (final IOException ioe) {
-            log.error("failed to bind; endpoint: {}, backlog: {}", endpoint, backlog, ioe);
-            throw ioe;
-        }
-        log.info("server is open; {}", serverSocket.getLocalSocketAddress());
-        LOCAL_PORT.set(serverSocket.getLocalPort());
-        final Thread thread = new Thread(() -> {
-            while (!serverSocket.isClosed()) {
-                try {
-                    final Socket socket = serverSocket.accept();
-                    new Thread(() -> {
-                        try (Socket s = socket) {
-                            log.debug("[S] connected from {} <- {}", socket.getLocalSocketAddress(),
-                                      socket.getRemoteSocketAddress());
-                            final byte[] array = new byte[HelloWorld.BYTES];
-                            service.set(array);
-                            s.getOutputStream().write(array);
-                            s.getOutputStream().flush();
-                        } catch (final IOException ioe) {
-                            log.error("failed to send to {}", socket.getRemoteSocketAddress(), ioe);
-                        }
-                    }).start();
-                } catch (final IOException ioe) {
-                    if (serverSocket.isClosed()) {
-                        break;
-                    }
-                    log.error("failed to accept", ioe);
-                }
+            lock.lock();
+            close();
+            serverSocket = new ServerSocket();
+            if (endpoint instanceof InetSocketAddress &&
+                ((InetSocketAddress) endpoint).getPort() > 0) {
+                serverSocket.setReuseAddress(true);
             }
-            LOCAL_PORT.remove();
-        });
-        thread.setDaemon(true);
-        thread.start();
+            try {
+                serverSocket.bind(endpoint, backlog);
+            } catch (final IOException ioe) {
+                log.error("failed to bind; endpoint: {}, backlog: {}", endpoint, backlog, ioe);
+                throw ioe;
+            }
+            log.info("server is open; {}", serverSocket.getLocalSocketAddress());
+            LOCAL_PORT.set(serverSocket.getLocalPort());
+            final Thread thread = new Thread(() -> {
+                while (!serverSocket.isClosed()) {
+                    try {
+                        final Socket socket = serverSocket.accept();
+                        new Thread(() -> {
+                            try (Socket s = socket) {
+                                log.debug("[S] connected from {}; local: {}",
+                                          socket.getRemoteSocketAddress(),
+                                          socket.getLocalSocketAddress());
+                                final byte[] array = new byte[HelloWorld.BYTES];
+                                service.set(array);
+                                s.getOutputStream().write(array);
+                                s.getOutputStream().flush();
+                            } catch (final IOException ioe) {
+                                log.error("failed to send to {}", socket.getRemoteSocketAddress(),
+                                          ioe);
+                            }
+                        }).start();
+                    } catch (final IOException ioe) {
+                        if (serverSocket.isClosed()) {
+                            break;
+                        }
+                        log.error("failed to accept", ioe);
+                    }
+                }
+                LOCAL_PORT.remove();
+            });
+            thread.setDaemon(true);
+            thread.start();
+        } finally {
+            lock.unlock();
+        }
     }
 
     @Override
-    public synchronized void close() throws IOException {
-        if (serverSocket == null || serverSocket.isClosed()) {
-            return;
+    public void close() throws IOException {
+        try {
+            lock.lock();
+            if (serverSocket == null || serverSocket.isClosed()) {
+                return;
+            }
+            serverSocket.close();
+        } finally {
+            lock.unlock();
         }
-        serverSocket.close();
     }
 
     private final HelloWorld service;
@@ -110,6 +125,8 @@ class HelloWorldServerTcp implements IHelloWorldServer {
     private final SocketAddress endpoint;
 
     private final int backlog;
+
+    private final Lock lock = new ReentrantLock();
 
     private ServerSocket serverSocket;
 }

@@ -71,6 +71,7 @@ class HelloWorldServerUdp implements IHelloWorldServer {
                 final DatagramPacket packet = new DatagramPacket(new byte[0], 0);
                 try {
                     socket.receive(packet);
+                    log.debug("[S] received from {}", packet.getSocketAddress());
                     // TODO: Send 'hello, world' bytes back to the client!
                 } catch (final IOException ioe) {
                     if (socket.isClosed()) {

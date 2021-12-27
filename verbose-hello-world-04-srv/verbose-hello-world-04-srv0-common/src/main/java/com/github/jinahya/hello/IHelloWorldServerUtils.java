@@ -50,6 +50,10 @@ import java.util.concurrent.Callable;
 @Slf4j
 final class IHelloWorldServerUtils {
 
+    static boolean isLocal(InetAddress address) {
+        return true;
+    }
+
     /**
      * Parses specified command line arguments and returns a socket address to bind.
      *
@@ -57,14 +61,43 @@ final class IHelloWorldServerUtils {
      * @return a socket address to bind.
      * @throws UnknownHostException if the {@code host} part is unknown.
      */
-    static InetSocketAddress parseSocketAddressToBind(final String[] args)
-            throws UnknownHostException {
+    static InetSocketAddress parseEndpointToBind(final String[] args) throws UnknownHostException {
         Objects.requireNonNull(args, "args is null");
+//        int port = 0;
+//        InetAddress host = InetAddress.getByName("0.0.0.0");
+//        if (args.length > 0) {
+//            try {
+//                port = Integer.parseInt(args[0]);
+//                if (port < 0 || port > 65535) {
+//                    throw new IllegalArgumentException("illegal port number: " + port);
+//                }
+//            } catch (final NumberFormatException nfe) {
+//                throw new IllegalArgumentException("unable to parse port number from " + args[0]);
+//            }
+//            if (args.length > 1) {
+//                try {
+//                    host = InetAddress.getByName(args[1]);
+//                    host.loca
+//                    if (host.isAnyLocalAddress()) {
+//                    }
+//                } catch (final UnknownHostException uhe) {
+//                    log.error("unable to parse binding address from " + args[1]);
+//                }
+//            }
+//        }
         final Options options = new Options();
-        options.addOption(Option.builder("h").longOpt("host").desc("local host to bind").type(
-                String.class).required(false).build());
-        options.addOption(Option.builder("p").longOpt("port").desc("local port to bind").type(
-                int.class).required(false).build());
+        options.addOption(Option.builder("h")
+                                  .longOpt("host")
+                                  .desc("local host to bind")
+                                  .type(String.class)
+                                  .required(false)
+                                  .build());
+        options.addOption(Option.builder("p")
+                                  .longOpt("port")
+                                  .desc("local port to bind")
+                                  .type(int.class)
+                                  .required(false)
+                                  .build());
         try {
             final CommandLine values = new DefaultParser().parse(options, args);
             final String host = Optional.ofNullable(values.getOptionValue("h")).orElse("0.0.0.0");

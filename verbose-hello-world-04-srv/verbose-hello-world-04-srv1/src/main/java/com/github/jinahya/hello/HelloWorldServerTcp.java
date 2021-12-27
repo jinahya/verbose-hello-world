@@ -71,7 +71,8 @@ class HelloWorldServerTcp implements IHelloWorldServer {
         final Thread thread = new Thread(() -> {
             while (!serverSocket.isClosed()) {
                 try (Socket socket = serverSocket.accept()) {
-                    log.debug("[S] connected from {}", socket.getRemoteSocketAddress());
+                    log.debug("[S] connected from {}; local: {}", socket.getRemoteSocketAddress(),
+                              socket.getLocalSocketAddress());
                     // TODO: Send 'hello, world' bytes through the socket!
                 } catch (final IOException ioe) {
                     if (serverSocket.isClosed()) {
