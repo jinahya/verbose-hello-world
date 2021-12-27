@@ -1,6 +1,7 @@
 package com.github.jinahya.hello;
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.net.InetAddress;
@@ -52,6 +53,7 @@ class NetworkInterfaceTest {
         log.debug("{}site local address: {}", indent, address.isSiteLocalAddress());
     }
 
+    @Disabled
     @Test
     void printNetworkInterfaces() throws SocketException {
         final Enumeration<NetworkInterface> nie = NetworkInterface.getNetworkInterfaces();
