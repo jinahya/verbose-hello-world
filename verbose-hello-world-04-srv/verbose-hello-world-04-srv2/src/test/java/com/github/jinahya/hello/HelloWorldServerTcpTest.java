@@ -37,7 +37,7 @@ class HelloWorldServerTcpTest {
 
     @Test
     void test() throws IOException, InterruptedException {
-        final InetAddress host = InetAddress.getLocalHost();
+        final InetAddress host = InetAddress.getLoopbackAddress();
         final IHelloWorldServer server;
         {
             HelloWorld service = ServiceLoader.load(HelloWorld.class).iterator().next();
