@@ -9,7 +9,7 @@
     <version>0.0.1-SNAPSHOT</version>
   </parent>
 
-  <artifactId>verbose-hello-world-00-api</artifactId>
+  <artifactId>verbose-hello-world-01-api</artifactId>
   <packaging>jar</packaging>
 
   <name>${project.artifactId}</name>
