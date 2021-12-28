@@ -46,6 +46,13 @@ class HelloWorldServerTcpTest {
                 service = Mockito.spy(service);
                 Mockito.when(service.set(ArgumentMatchers.notNull())).thenAnswer(i -> {
                     final byte[] array = i.getArgument(0);
+                    if (array == null) {
+                        throw new NullPointerException("array is null");
+                    }
+                    if (array.length < HelloWorld.BYTES) {
+                        throw new ArrayIndexOutOfBoundsException(
+                                "array.length(" + array.length + ") < " + HelloWorld.BYTES);
+                    }
                     final byte[] src = "hello, world".getBytes(StandardCharsets.US_ASCII);
                     System.arraycopy(src, 0, array, 0, src.length);
                     return array;
