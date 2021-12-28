@@ -42,21 +42,17 @@ class HelloWorldServerUdpTest {
         final IHelloWorldServer server;
         {
             HelloWorld service = ServiceLoader.load(HelloWorld.class).iterator().next();
-            if (true) { // TODO: Remove when HelloWorld#set(array) method is implemented!
+            if (true) { // TODO: falsify or remove when HelloWorld#set(array) method is implemented!
                 service = Mockito.spy(service);
-                Mockito.when(service.set(ArgumentMatchers.notNull())).thenAnswer(i -> {
-                    final byte[] array = i.getArgument(0);
-                    if (array == null) {
-                        throw new NullPointerException("array is null");
-                    }
-                    if (array.length < HelloWorld.BYTES) {
-                        throw new ArrayIndexOutOfBoundsException(
-                                "array.length(" + array.length + ") < " + HelloWorld.BYTES);
-                    }
-                    final byte[] src = "hello, world".getBytes(StandardCharsets.US_ASCII);
-                    System.arraycopy(src, 0, array, 0, src.length);
-                    return array;
-                });
+                // https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#13
+                Mockito.doAnswer(i -> {
+                            final byte[] array = i.getArgument(0);
+                            final byte[] src = "hello, world".getBytes(StandardCharsets.US_ASCII);
+                            System.arraycopy(src, 0, array, 0, src.length);
+                            return array;
+                        })
+                        .when(service)
+                        .set(ArgumentMatchers.notNull());
             }
             final SocketAddress endpoint = new InetSocketAddress(host, 0);
             server = new HelloWorldServerUdp(service, endpoint);
