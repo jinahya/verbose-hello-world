@@ -9,13 +9,11 @@
     <version>0.0.1-SNAPSHOT</version>
   </parent>
 
-  <artifactId>verbose-hello-world-api</artifactId>
-  <!--  <version>0.0.1-SNAPSHOT</version>-->
+  <artifactId>verbose-hello-world-00-api</artifactId>
   <packaging>jar</packaging>
 
   <name>${project.artifactId}</name>
   <description>Verbose Hello World API</description>
-  <url>https://github.com/jinahya/${project.parent.artifactId}/${project.artifactId}</url>
 
   <dependencies>
     <dependency>
@@ -23,11 +21,6 @@
       <artifactId>logback-classic</artifactId>
       <scope>test</scope>
     </dependency>
-    <!--    <dependency>-->
-    <!--      <groupId>org.assertj</groupId>-->
-    <!--      <artifactId>assertj-core</artifactId>-->
-    <!--      <scope>test</scope>-->
-    <!--    </dependency>-->
   </dependencies>
 
   <build>
@@ -43,48 +36,4 @@
     </plugins>
   </build>
 
-  <reporting>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jxr-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-pmd-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>versions-maven-plugin</artifactId>
-        <reportSets>
-          <reportSet>
-            <reports>
-              <report>dependency-updates-report</report>
-              <report>plugin-updates-report</report>
-              <report>property-updates-report</report>
-            </reports>
-          </reportSet>
-        </reportSets>
-      </plugin>
-      <plugin>
-        <groupId>org.jacoco</groupId>
-        <artifactId>jacoco-maven-plugin</artifactId>
-        <reportSets>
-          <reportSet>
-            <reports>
-              <report>report</report>
-            </reports>
-          </reportSet>
-        </reportSets>
-      </plugin>
-    </plugins>
-  </reporting>
 </project>
