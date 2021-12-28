@@ -23,6 +23,7 @@ package com.github.jinahya.hello;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import java.io.IOException;
@@ -43,7 +44,7 @@ class HelloWorldServerTcpTest {
             HelloWorld service = ServiceLoader.load(HelloWorld.class).iterator().next();
             if (true) { // TODO: Remove when HelloWorld#set(array) method is implemented!
                 service = Mockito.spy(service);
-                Mockito.when(service.set(Mockito.notNull())).thenAnswer(i -> {
+                Mockito.when(service.set(ArgumentMatchers.notNull())).thenAnswer(i -> {
                     final byte[] array = i.getArgument(0);
                     final byte[] src = "hello, world".getBytes(StandardCharsets.US_ASCII);
                     System.arraycopy(src, 0, array, 0, src.length);
