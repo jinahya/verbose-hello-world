@@ -52,6 +52,8 @@
     <maven.compiler.target>${maven.compiler.source}</maven.compiler.target>
     <maven.compiler.testSource>${maven.compiler.source}</maven.compiler.testSource>
     <maven.compiler.testTarget>${maven.compiler.testSource}</maven.compiler.testTarget>
+    <version.asciidoctorj>2.5.2</version.asciidoctorj>
+    <version.asciidoctorj-pdf>1.6.0</version.asciidoctorj-pdf>
     <version.com.google.dagger>2.40.5</version.com.google.dagger>
     <version.com.google.inject>5.0.1</version.com.google.inject>
     <version.maven-surefire>3.0.0-M4</version.maven-surefire>
@@ -125,6 +127,16 @@
         <groupId>org.apache.openwebbeans</groupId>
         <artifactId>openwebbeans-se</artifactId>
         <version>${version.org.apache.openwebbeans}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.asciidoctor</groupId>
+        <artifactId>asciidoctorj</artifactId>
+        <version>${version.asciidoctorj}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.asciidoctor</groupId>
+        <artifactId>asciidoctorj-pdf</artifactId>
+        <version>${version.asciidoctorj-pdf}</version>
       </dependency>
       <dependency>
         <groupId>org.assertj</groupId>
@@ -378,6 +390,11 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-report-plugin</artifactId>
           <version>${version.maven-surefire}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.asciidoctor</groupId>
+          <artifactId>asciidoctor-maven-plugin</artifactId>
+          <version>2.2.1</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
