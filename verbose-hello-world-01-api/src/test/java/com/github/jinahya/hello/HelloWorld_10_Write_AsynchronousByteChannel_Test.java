@@ -43,7 +43,8 @@ import java.util.concurrent.atomic.LongAdder;
  * @see HelloWorld_10_Write_AsynchronousByteChannel_Arguments_Test
  */
 @Slf4j
-class HelloWorld_10_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
+class HelloWorld_10_Write_AsynchronousByteChannel_Test
+        extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(AsynchronousByteChannel) write(channel)}
@@ -53,8 +54,8 @@ class HelloWorld_10_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
      */
-    @DisplayName(
-            "write(channel) invokes put(buffer) writes the buffer to channel")
+    @DisplayName("write(channel) invokes put(buffer)"
+                 + " and writes the buffer to channel")
     @Test
     void write_InvokePutBufferWriteBufferToChannel_()
             throws InterruptedException, ExecutionException {
@@ -64,8 +65,8 @@ class HelloWorld_10_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
         Mockito.lenient().when(channel.write(ArgumentMatchers.notNull()))
                 .thenAnswer(i -> {
                     final ByteBuffer buffer = i.getArgument(0);
-                    final int written = new Random().nextInt(
-                            buffer.remaining() + 1);
+                    final int written
+                            = new Random().nextInt(buffer.remaining() + 1);
                     buffer.position(buffer.position() + written);
                     writtenSoFar.add(written);
                     @SuppressWarnings({"unchecked"})
@@ -99,8 +100,7 @@ class HelloWorld_10_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
                 .when(channel.write(ArgumentMatchers.any(ByteBuffer.class)))
                 .thenAnswer(
                         i -> {
-                            final ByteBuffer buffer = i.getArgument(0,
-                                                                    ByteBuffer.class);
+                            final ByteBuffer buffer = i.getArgument(0);
                             final int written = new Random().nextInt(
                                     buffer.remaining() + 1);
                             buffer.position(buffer.position() + written);

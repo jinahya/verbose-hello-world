@@ -47,8 +47,8 @@ class HelloWorld_Constants_Test {
     @DisplayName("BYTES equals to the actual number of \"hello, world\" bytes")
     @Test
     void BYTES_EqualsToActualNumberOfHelloWorldBytes_() {
-        final int expected = "hello, world".getBytes(
-                StandardCharsets.US_ASCII).length;
+        final int expected
+                = "hello, world".getBytes(StandardCharsets.US_ASCII).length;
         Assertions.assertEquals(expected, HelloWorld.BYTES);
     }
 }

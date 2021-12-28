@@ -37,7 +37,8 @@ import java.util.Random;
  * @see HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Test
  */
 @Slf4j
-class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Arguments_Test extends HelloWorldTest {
+class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Arguments_Test
+        extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#writeCompletable(AsynchronousFileChannel, long)
@@ -49,9 +50,9 @@ class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Arguments_Test exte
     void writeCompletable_ThrowNullPointerException_ChannelIsNull() {
         final AsynchronousFileChannel channel = null;
         final long position = new Random().nextLong() & Long.MAX_VALUE;
-        Assertions.assertThrows(NullPointerException.class,
-                                () -> helloWorld().writeCompletable(channel,
-                                                                    position));
+        Assertions.assertThrows(
+                NullPointerException.class,
+                () -> helloWorld().writeCompletable(channel, position));
     }
 
     /**
@@ -66,8 +67,8 @@ class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Arguments_Test exte
         final AsynchronousFileChannel channel = Mockito.mock(
                 AsynchronousFileChannel.class);
         final long position = new Random().nextLong() | Long.MIN_VALUE;
-        Assertions.assertThrows(IllegalArgumentException.class,
-                                () -> helloWorld().writeCompletable(channel,
-                                                                    position));
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> helloWorld().writeCompletable(channel, position));
     }
 }

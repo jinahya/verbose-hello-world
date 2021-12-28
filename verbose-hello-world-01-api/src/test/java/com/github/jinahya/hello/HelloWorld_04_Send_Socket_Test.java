@@ -49,14 +49,12 @@ class HelloWorld_04_Send_Socket_Test extends HelloWorldTest {
     @DisplayName("send(socket) invokes write(socket.outputStream)")
     @Test
     void send_InvokeWriteStreamWithSocketOutputStream_() throws IOException {
-        final Socket socket = Mockito.spy(
-                new Socket());                   // <1>
-        final OutputStream stream = Mockito.mock(
-                OutputStream.class);      // <2>
-        Mockito.lenient()                                                  // <3>
-                .doReturn(stream).when(socket).getOutputStream();
-        helloWorld().send(
-                socket);                                         // <4>
+        final Socket socket = Mockito.spy(new Socket());              // <1>
+        final OutputStream stream = Mockito.mock(OutputStream.class); // <2>
+        Mockito.lenient().doReturn(stream)                            // <3>
+                .when(socket)
+                .getOutputStream();
+        helloWorld().send(socket);                                    // <4>
         // TODO: Implement!
     }
 

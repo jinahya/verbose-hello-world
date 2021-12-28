@@ -44,7 +44,8 @@ import java.util.concurrent.Future;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorld_11_WriteAsync_AsynchronousByteChannel_Test extends HelloWorldTest {
+class HelloWorld_11_WriteAsync_AsynchronousByteChannel_Test
+        extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#writeAsync(AsynchronousByteChannel,
@@ -56,8 +57,8 @@ class HelloWorld_11_WriteAsync_AsynchronousByteChannel_Test extends HelloWorldTe
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
      */
-    @DisplayName(
-            "writeAsync(channel, service) invokes put(buffer) writes the buffer to channel")
+    @DisplayName("writeAsync(channel, service) invokes put(buffer)"
+                 + " and writes the buffer to channel")
     @Test
     void writeAsync_InvokePutBufferWriteBufferToChannel_(
             @TempDir final Path tempDir)
@@ -66,10 +67,9 @@ class HelloWorld_11_WriteAsync_AsynchronousByteChannel_Test extends HelloWorldTe
                 AsynchronousByteChannel.class);
         Mockito.lenient().when(channel.write(ArgumentMatchers.notNull()))
                 .thenAnswer(i -> {
-                    final ByteBuffer buffer = i.getArgument(0,
-                                                            ByteBuffer.class);
-                    final int written = new Random().nextInt(
-                            buffer.remaining() + 1);
+                    final ByteBuffer buffer = i.getArgument(0);
+                    final int written
+                            = new Random().nextInt(buffer.remaining() + 1);
                     buffer.position(buffer.position() + written);
                     @SuppressWarnings({"unchecked"})
                     final Future<Integer> future = Mockito.mock(Future.class);
@@ -77,8 +77,8 @@ class HelloWorld_11_WriteAsync_AsynchronousByteChannel_Test extends HelloWorldTe
                     return future;
                 });
         final ExecutorService service = Executors.newSingleThreadExecutor();
-        final Future<AsynchronousByteChannel> future = helloWorld().writeAsync(
-                channel, service);
+        final Future<AsynchronousByteChannel> future
+                = helloWorld().writeAsync(channel, service);
         final AsynchronousByteChannel actual = future.get();
         Assertions.assertSame(channel, actual);
         // TODO: Implement!

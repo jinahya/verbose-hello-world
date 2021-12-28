@@ -42,7 +42,7 @@ class HelloWorld_03_Append_File_Arguments_Test extends HelloWorldTest {
      * {@link NullPointerException} when the {@code file} argument is {@code
      * null}.
      */
-    @DisplayName("append((File) null) throws a NullPointerException")
+    @DisplayName("append(null) throws a NullPointerException")
     @Test
     void append_ThrowNullPointerException_FileIsNull() {
         final File file = null;

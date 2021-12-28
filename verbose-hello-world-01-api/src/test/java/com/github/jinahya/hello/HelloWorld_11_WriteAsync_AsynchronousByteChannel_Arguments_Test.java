@@ -36,7 +36,8 @@ import java.util.concurrent.ExecutorService;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorld_11_WriteAsync_AsynchronousByteChannel_Arguments_Test extends HelloWorldTest {
+class HelloWorld_11_WriteAsync_AsynchronousByteChannel_Arguments_Test
+        extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#writeAsync(AsynchronousByteChannel,
@@ -48,9 +49,9 @@ class HelloWorld_11_WriteAsync_AsynchronousByteChannel_Arguments_Test extends He
     void writeAsync_ThrowNullPointerException_ChannelIsNull() {
         final AsynchronousByteChannel channel = null;
         final ExecutorService service = Mockito.mock(ExecutorService.class);
-        Assertions.assertThrows(NullPointerException.class,
-                                () -> helloWorld().writeAsync(channel,
-                                                              service));
+        Assertions.assertThrows(
+                NullPointerException.class,
+                () -> helloWorld().writeAsync(channel, service));
     }
 
     /**
@@ -58,15 +59,14 @@ class HelloWorld_11_WriteAsync_AsynchronousByteChannel_Arguments_Test extends He
      * ExecutorService) writeAsync(channel, service)} method throws a {@link
      * NullPointerException} when {@code service} argument is {@code null}.
      */
-    @DisplayName(
-            "writeAsync(, null) throws NullPointerException when channel is null")
+    @DisplayName("writeAsync(, null) throws NullPointerException")
     @Test
     void writeAsync_NullPointerException_ServiceIsNull() {
         final AsynchronousByteChannel channel = Mockito.mock(
                 AsynchronousByteChannel.class);
         final ExecutorService service = null;
-        Assertions.assertThrows(NullPointerException.class,
-                                () -> helloWorld().writeAsync(channel,
-                                                              service));
+        Assertions.assertThrows(
+                NullPointerException.class,
+                () -> helloWorld().writeAsync(channel, service));
     }
 }

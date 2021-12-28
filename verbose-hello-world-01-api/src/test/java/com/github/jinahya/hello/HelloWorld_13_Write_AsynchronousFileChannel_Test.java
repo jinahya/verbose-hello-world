@@ -48,7 +48,8 @@ import java.util.concurrent.atomic.LongAdder;
  * @see HelloWorld_13_Write_AsynchronousFileChannel_Arguments_Test
  */
 @Slf4j
-class HelloWorld_13_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
+class HelloWorld_13_Write_AsynchronousFileChannel_Test
+        extends HelloWorldTest {
 
     // TODO: Remove this stubbing method when you implemented the put(buffer) method!
     @BeforeEach
@@ -69,17 +70,16 @@ class HelloWorld_13_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
      */
-    @DisplayName(
-            "write(channel) invokes put(buffer) writes the buffer to channel")
+    @DisplayName("write(channel) invokes put(buffer)"
+                 + " and writes the buffer to channel")
     @Test
     void write_InvokePutBufferWriteBufferToChannel_()
             throws InterruptedException, ExecutionException {
         final LongAdder writtenSoFar = new LongAdder();
-        final AsynchronousFileChannel channel = Mockito.mock(
-                AsynchronousFileChannel.class);
-        Mockito.when(
-                        channel.write(ArgumentMatchers.notNull(),
-                                      ArgumentMatchers.longThat(a -> a >= 0L)))
+        final AsynchronousFileChannel channel
+                = Mockito.mock(AsynchronousFileChannel.class);
+        Mockito.when(channel.write(ArgumentMatchers.notNull(),
+                                   ArgumentMatchers.longThat(a -> a >= 0L)))
                 .thenAnswer(i -> {
                     final ByteBuffer buffer = i.getArgument(0);
                     final long position = i.getArgument(1);
@@ -93,8 +93,8 @@ class HelloWorld_13_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
                     return future;
                 });
         final long position = 0L;
-        final AsynchronousFileChannel actual = helloWorld().write(channel,
-                                                                  position);
+        final AsynchronousFileChannel actual
+                = helloWorld().write(channel, position);
         Assertions.assertSame(channel, actual);
         Mockito.verify(helloWorld(), Mockito.times(1))
                 .put(bufferCaptor().capture());
@@ -102,37 +102,34 @@ class HelloWorld_13_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
         Assertions.assertEquals(HelloWorld.BYTES, buffer.capacity());
         Mockito.verify(channel, Mockito.atLeast(1))
                 .write(ArgumentMatchers.same(buffer),
-                       ArgumentMatchers.longThat(
-                               a -> a >= position));
+                       ArgumentMatchers.longThat(a -> a >= position));
     }
 
     /**
      * Asserts {@link HelloWorld#write(AsynchronousFileChannel, long)
-     * write(channel, position)} method {@link com.github.jinahya.hello.HelloWorld#BYTES}
-     * bytes starting at specified {@code position}.
+     * write(channel, position)} method {@link HelloWorld#BYTES} bytes starting
+     * at specified {@code position}.
      *
      * @param tempDir a temporary directory to test with.
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
      * @throws IOException          when an I/O error occurs.
      */
-    @DisplayName(
-            "write(channel) invokes put(buffer) writes the buffer to channel")
+    @DisplayName("write(channel) invokes put(buffer)"
+                 + " and writes the buffer to channel")
     @Test
     void write_Write12Bytes_(@TempDir final Path tempDir)
             throws InterruptedException, ExecutionException, IOException {
         final Path path = Files.createTempFile(tempDir, null, null);
         final long writePosition = new Random().nextLong() & 1024L;
         try (AsynchronousFileChannel channel = AsynchronousFileChannel.open(
-                path,
-                StandardOpenOption.WRITE)) {
+                path, StandardOpenOption.WRITE)) {
             helloWorld().write(channel, writePosition);
             channel.force(false);
         }
         long readPosition = writePosition;
         try (AsynchronousFileChannel channel = AsynchronousFileChannel.open(
-                path,
-                StandardOpenOption.READ)) {
+                path, StandardOpenOption.READ)) {
             final ByteBuffer buffer = ByteBuffer.allocate(HelloWorld.BYTES);
             while (buffer.hasRemaining()) {
                 readPosition += channel.read(buffer, readPosition).get();
@@ -152,11 +149,10 @@ class HelloWorld_13_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
     @Test
     void write_ReturnChannel_()
             throws InterruptedException, ExecutionException {
-        final AsynchronousFileChannel channel = Mockito.mock(
-                AsynchronousFileChannel.class);
-        Mockito.when(
-                        channel.write(ArgumentMatchers.notNull(),
-                                      ArgumentMatchers.longThat(a -> a >= 0L)))
+        final AsynchronousFileChannel channel
+                = Mockito.mock(AsynchronousFileChannel.class);
+        Mockito.when(channel.write(ArgumentMatchers.notNull(),
+                                   ArgumentMatchers.longThat(a -> a >= 0L)))
                 .thenAnswer(i -> {
                     final ByteBuffer buffer = i.getArgument(0);
                     final long position = i.getArgument(1);
@@ -168,8 +164,8 @@ class HelloWorld_13_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
                     return future;
                 });
         final long position = new Random().nextLong() & Long.MAX_VALUE;
-        final AsynchronousFileChannel actual = helloWorld().write(channel,
-                                                                  position);
+        final AsynchronousFileChannel actual
+                = helloWorld().write(channel, position);
         Assertions.assertSame(channel, actual);
     }
 }

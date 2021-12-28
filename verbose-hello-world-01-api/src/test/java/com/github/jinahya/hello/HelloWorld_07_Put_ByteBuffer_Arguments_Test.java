@@ -38,7 +38,8 @@ import java.util.Random;
  * @see HelloWorld_07_Put_ByteBuffer_Test
  */
 @Slf4j
-class HelloWorld_07_Put_ByteBuffer_Arguments_Test extends HelloWorldTest {
+class HelloWorld_07_Put_ByteBuffer_Arguments_Test
+        extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method throws a
@@ -58,8 +59,8 @@ class HelloWorld_07_Put_ByteBuffer_Arguments_Test extends HelloWorldTest {
      * {@link BufferOverflowException} when {@link ByteBuffer#remaining()
      * buffer.remaining} is less than {@link HelloWorld#BYTES}.
      */
-    @DisplayName(
-            "put(buffer) throws BufferOverflowException when buffer.remaining is not enough")
+    @DisplayName("put(buffer) throws BufferOverflowException"
+                 + " when buffer.remaining is not enough")
     @Test
     void put_ThrowBufferOverflowException_BufferRemainingIsNotEnough() {
         // mock-maker-inline

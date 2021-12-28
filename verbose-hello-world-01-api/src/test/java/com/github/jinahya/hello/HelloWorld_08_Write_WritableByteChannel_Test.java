@@ -41,7 +41,8 @@ import java.util.concurrent.atomic.LongAdder;
  * @see HelloWorld_08_Write_WritableByteChannel_Arguments_Test
  */
 @Slf4j
-class HelloWorld_08_Write_WritableByteChannel_Test extends HelloWorldTest {
+class HelloWorld_08_Write_WritableByteChannel_Test
+        extends HelloWorldTest {
 
     // TODO: Remove this stubbing method when you implemented the put(buffer) method!
     @BeforeEach
@@ -63,27 +64,21 @@ class HelloWorld_08_Write_WritableByteChannel_Test extends HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName(
-            "write(channel) invokes put(buffer) and writes the buffer to the channel")
+    @DisplayName("write(channel) invokes put(buffer)"
+                 + " and writes the buffer to the channel")
     @Test
     void write_InvokePutBufferWriteBufferToChannel_() throws IOException {
-        final WritableByteChannel channel = Mockito.mock(
-                WritableByteChannel.class);  // <1>
-        final LongAdder writtenSoFar
-                = new LongAdder();                               // <2>
-        Mockito.lenient().when(
-                        channel.write(
-                                ArgumentMatchers.notNull()))                      // <3>
+        final WritableByteChannel channel
+                = Mockito.mock(WritableByteChannel.class);                // <1>
+        final LongAdder writtenSoFar = new LongAdder();                   // <2>
+        Mockito.lenient().when(channel.write(ArgumentMatchers.notNull())) // <3>
                 .thenAnswer(i -> {
-                    final ByteBuffer buffer = i.getArgument(
-                            0);                       // <4>
+                    final ByteBuffer buffer = i.getArgument(0);           // <4>
                     final int written = new Random().nextInt(
-                            buffer.remaining() + 1); // <5>
-                    buffer.position(buffer.position() +
-                                    written);                     // <6>
-                    writtenSoFar.add(
-                            written);                                        // <7>
-                    return written;                                                   // <8>
+                            buffer.remaining() + 1);                      // <5>
+                    buffer.position(buffer.position() + written);         // <6>
+                    writtenSoFar.add(written);                            // <7>
+                    return written;                                       // <8>
                 });
         // TODO: Implement!
     }

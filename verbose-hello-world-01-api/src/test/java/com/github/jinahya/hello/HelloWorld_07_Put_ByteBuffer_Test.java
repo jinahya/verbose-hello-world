@@ -35,7 +35,8 @@ import java.nio.ByteBuffer;
  * @see HelloWorld_07_Put_ByteBuffer_Arguments_Test
  */
 @Slf4j
-class HelloWorld_07_Put_ByteBuffer_Test extends HelloWorldTest {
+class HelloWorld_07_Put_ByteBuffer_Test
+        extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method, when
@@ -45,10 +46,10 @@ class HelloWorld_07_Put_ByteBuffer_Test extends HelloWorldTest {
      * the {@link ByteBuffer#position(int) buffer.position} by {@link
      * HelloWorld#BYTES}.
      */
-    @DisplayName(
-            "put(buffer-with-backing-array) invokes set(array, index) and increments position")
+    @DisplayName("put(buffer-with-backing-array) invokes set(array, index)"
+                 + " and increments position")
     @Test
-    void putBuffer_InvokeSetArrayIndexAndIncrementPosition_BufferHasBackingArray() {
+    void put_InvokeSetArrayIndexAndIncrementPosition_BufferHasBackingArray() {
         final ByteBuffer buffer = ByteBuffer.wrap(new byte[HelloWorld.BYTES]);
         assert buffer.remaining() >= HelloWorld.BYTES;
         assert buffer.hasArray();
@@ -66,17 +67,16 @@ class HelloWorld_07_Put_ByteBuffer_Test extends HelloWorldTest {
      * HelloWorld#BYTES} bytes and invokes {@link ByteBuffer#put(byte[])
      * buffer.put(array)}.
      */
-    @DisplayName(
-            "put(buffer-with-no-backing-array) invokes set(array) and invokes buffer.put(array)")
+    @DisplayName("put(buffer-with-no-backing-array) invokes set(array)"
+                 + " and invokes buffer.put(array)")
     @Test
     void put_InvokeSetArrayPutArrayToBuffer_BufferHasNoBackingArray() {
         // mock-maker-inline
         final ByteBuffer buffer = Mockito.spy(
-                ByteBuffer.allocateDirect(HelloWorld.BYTES)); // <1>
-        if (buffer.hasArray()) {                                                            // <2>
+                ByteBuffer.allocateDirect(HelloWorld.BYTES));  // <1>
+        if (buffer.hasArray()) {                               // <2>
             log.info("a direct byte buffer has a backing array?");
-            Mockito.when(buffer.hasArray())
-                    .thenReturn(false);                              // <3>
+            Mockito.when(buffer.hasArray()).thenReturn(false); // <3>
         }
         assert !buffer.hasArray();
         final int position = buffer.position();

@@ -48,23 +48,17 @@ class HelloWorld_05_Write_DataOutput_Test extends HelloWorldTest {
      * @param tempDir a temporary directory to test with
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName(
-            "write(data) invokes set(byte[BYTES]) and writes the array to data")
+    @DisplayName("write(data) invokes set(byte[BYTES])"
+                 + " and writes the array to data")
     @Test
     void write_InvokeSetArrayWriteArrayToData_(@TempDir final File tempDir)
             throws IOException {
-        final DataOutput data = Mockito.mock(
-                DataOutput.class);                      // <1>
-        helloWorld().write(
-                data);                                                    // <2>
-        Mockito.verify(helloWorld(), Mockito.times(1))
-                .set(arrayCaptor().capture()); // <3>
-        final byte[] array
-                = arrayCaptor().getValue();                               // <4>
-        Assertions.assertNotNull(
-                array);                                             // <5>
-        Assertions.assertEquals(HelloWorld.BYTES,
-                                array.length);                     // <6>
+        final DataOutput data = Mockito.mock(DataOutput.class);  // <1>
+        helloWorld().write(data);                                // <2>
+        Mockito.verify(helloWorld(), Mockito.times(1))           // <3>
+                .set(arrayCaptor().capture());
+        final byte[] array = arrayCaptor().getValue();           // <4>
+        Assertions.assertEquals(HelloWorld.BYTES, array.length); // <5>
         // TODO: Implement!
     }
 

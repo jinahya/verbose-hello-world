@@ -35,15 +35,15 @@ import java.nio.channels.AsynchronousByteChannel;
  * @see HelloWorld_10_Write_AsynchronousByteChannel_Test
  */
 @Slf4j
-class HelloWorld_10_Write_AsynchronousByteChannel_Arguments_Test extends HelloWorldTest {
+class HelloWorld_10_Write_AsynchronousByteChannel_Arguments_Test
+        extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(AsynchronousByteChannel) write(channel)}
      * method throws a {@link NullPointerException} when {@code channel}
      * argument is {@code null}.
      */
-    @DisplayName(
-            "write((AsynchronousByteChannel) null) throws NullPointerException")
+    @DisplayName("write(null) throws NullPointerException")
     @Test
     void writeAsync_ThrowNullPointerException_ChannelIsNull() {
         final AsynchronousByteChannel channel = null;

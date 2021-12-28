@@ -52,8 +52,7 @@ class HelloWorld_01_Set_Array_Arguments_Test extends HelloWorldTest {
      * IndexOutOfBoundsException} when {@code array.length} is less than {@link
      * HelloWorld#BYTES}.
      */
-    @DisplayName(
-            "set(array) throws IndexOutOfBoundsException when array.length is less than BYTES")
+    @DisplayName("set(array:not-long-enough) throws IndexOutOfBoundsException")
     @Test
     void set_ThrowIndexOutOfBoundsException_ArrayIsNotLongEnough() {
         final int length = new Random().nextInt(HelloWorld.BYTES);

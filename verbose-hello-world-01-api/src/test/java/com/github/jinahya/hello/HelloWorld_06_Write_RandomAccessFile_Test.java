@@ -39,7 +39,8 @@ import java.io.RandomAccessFile;
  * @see HelloWorld_06_Write_RandomAccessFile_Arguments_Test
  */
 @Slf4j
-class HelloWorld_06_Write_RandomAccessFile_Test extends HelloWorldTest {
+class HelloWorld_06_Write_RandomAccessFile_Test
+        extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(RandomAccessFile) write(file)} method
@@ -50,8 +51,8 @@ class HelloWorld_06_Write_RandomAccessFile_Test extends HelloWorldTest {
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName(
-            "write(file) invokes set(byte[BYTES]) method and writes the array to file")
+    @DisplayName("write(file) invokes set(byte[BYTES]) method"
+                 + " and writes the array to file")
     @Test
     void write_InvokeSetArrayWriteArrayToFile_(@TempDir final File tempDir)
             throws IOException {

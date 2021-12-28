@@ -37,7 +37,8 @@ import java.util.Random;
  * @see HelloWorld_13_Write_AsynchronousFileChannel_Test
  */
 @Slf4j
-class HelloWorld_13_Write_AsynchronousFileChannel_Arguments_Test extends HelloWorldTest {
+class HelloWorld_13_Write_AsynchronousFileChannel_Arguments_Test
+        extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(AsynchronousFileChannel, long)
@@ -61,8 +62,8 @@ class HelloWorld_13_Write_AsynchronousFileChannel_Arguments_Test extends HelloWo
     @DisplayName("write(, negative) throws IllegalArgumentException")
     @Test
     void write_ThrowIllegalArgumentException_PositionIsNegative() {
-        final AsynchronousFileChannel channel = Mockito.mock(
-                AsynchronousFileChannel.class);
+        final AsynchronousFileChannel channel
+                = Mockito.mock(AsynchronousFileChannel.class);
         final long position = new Random().nextLong() | Long.MIN_VALUE;
         Assertions.assertThrows(IllegalArgumentException.class,
                                 () -> helloWorld().write(channel, position));

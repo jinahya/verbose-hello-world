@@ -35,15 +35,15 @@ import java.nio.channels.WritableByteChannel;
  * @see HelloWorld_08_Write_WritableByteChannel_Test
  */
 @Slf4j
-class HelloWorld_08_Write_WritableByteChannel_Arguments_Test extends HelloWorldTest {
+class HelloWorld_08_Write_WritableByteChannel_Arguments_Test
+        extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(WritableByteChannel) write(channel)}
      * method throws a {@link NullPointerException} when {@code channel}
      * argument is {@code null}.
      */
-    @DisplayName(
-            "write((WritableByteChannel) null) throws NullPointerException")
+    @DisplayName("write(null) throws NullPointerException")
     @Test
     void write_ThrowNullPointerException_ChannelIsNull() {
         final WritableByteChannel channel = null;
