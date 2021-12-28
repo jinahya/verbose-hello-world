@@ -38,8 +38,8 @@ import static java.util.ServiceLoader.load;
 import static java.util.concurrent.Executors.newCachedThreadPool;
 
 /**
- * A class whose {@link #main(String[])} method accepts socket connections and sends {@code hello,
- * world} to clients.
+ * A class whose {@link #main(String[])} method accepts socket connections and
+ * sends {@code hello, world} to clients.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -49,60 +49,78 @@ public class HelloWorldMain extends AbstractHelloWorldMain {
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
-     * The main method of this program which accepts socket connections and sends {@code hello,
-     * world} to clients.
+     * The main method of this program which accepts socket connections and
+     * sends {@code hello, world} to clients.
      *
      * @param args an array of command line arguments
      * @throws IOException          if an I/O error occurs.
      * @throws InterruptedException if interrupted while awaiting termination
      */
-    public static void main(final String... args) throws IOException, InterruptedException {
+    public static void main(final String... args)
+            throws IOException, InterruptedException {
         final HelloWorld helloWorld = load(HelloWorld.class).iterator().next();
         log.info("localhost: {}", InetAddress.getLocalHost());
-        final AsynchronousChannelGroup group = withCachedThreadPool(newCachedThreadPool(), 10);
-        final AsynchronousServerSocketChannel server = AsynchronousServerSocketChannel.open();
+        final AsynchronousChannelGroup group = withCachedThreadPool(
+                newCachedThreadPool(), 10);
+        final AsynchronousServerSocketChannel server
+                = AsynchronousServerSocketChannel.open();
         server.bind(null);
         log.info("bound to {}", server.getLocalAddress());
-        readAndClose(server); // reads "quit" from System.in and closes the server.
+        readAndClose(
+                server); // reads "quit" from System.in and closes the server.
         connectAndPrintAsynchronous2(
                 server); // connects to the server and prints received hello-world-bytes.
-        server.accept(null, new CompletionHandler<AsynchronousSocketChannel, Object>() {
-            @Override
-            public void completed(final AsynchronousSocketChannel client, final Object attachment) {
-                server.accept(null, this);
-                final ByteBuffer buffer = allocate(BYTES);
-                helloWorld.put(buffer);
-                buffer.flip();
-                client.write(buffer, buffer, new CompletionHandler<Integer, ByteBuffer>() {
-                    @Override
-                    public void completed(final Integer written, final ByteBuffer attachment) {
-                        if (!attachment.hasRemaining()) {
-                            try {
-                                client.close();
-                            } catch (final IOException ioe) {
-                                log.error("failed to close client", ioe);
-                            }
-                            return;
-                        }
-                        client.write(buffer, buffer, this);
-                    }
+        server.accept(null,
+                      new CompletionHandler<AsynchronousSocketChannel, Object>() {
+                          @Override
+                          public void completed(
+                                  final AsynchronousSocketChannel client,
+                                  final Object attachment) {
+                              server.accept(null, this);
+                              final ByteBuffer buffer = allocate(BYTES);
+                              helloWorld.put(buffer);
+                              buffer.flip();
+                              client.write(buffer, buffer,
+                                           new CompletionHandler<Integer, ByteBuffer>() {
+                                               @Override
+                                               public void completed(
+                                                       final Integer written,
+                                                       final ByteBuffer attachment) {
+                                                   if (!attachment.hasRemaining()) {
+                                                       try {
+                                                           client.close();
+                                                       } catch (final IOException ioe) {
+                                                           log.error(
+                                                                   "failed to close client",
+                                                                   ioe);
+                                                       }
+                                                       return;
+                                                   }
+                                                   client.write(buffer, buffer,
+                                                                this);
+                                               }
 
-                    @Override
-                    public void failed(final Throwable exc, final ByteBuffer attachment) {
-                        log.error("failed to write", exc);
-                    }
-                });
-            }
+                                               @Override
+                                               public void failed(
+                                                       final Throwable exc,
+                                                       final ByteBuffer attachment) {
+                                                   log.error("failed to write",
+                                                             exc);
+                                               }
+                                           });
+                          }
 
-            @Override
-            public void failed(final Throwable exc, final Object attachment) {
-                if (!server.isOpen()) {
-                    return;
-                }
-                log.error("failed to accept", exc);
-            }
-        });
-        final boolean terminated = group.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
+                          @Override
+                          public void failed(final Throwable exc,
+                                             final Object attachment) {
+                              if (!server.isOpen()) {
+                                  return;
+                              }
+                              log.error("failed to accept", exc);
+                          }
+                      });
+        final boolean terminated = group.awaitTermination(Long.MAX_VALUE,
+                                                          TimeUnit.SECONDS);
     }
 
     // -----------------------------------------------------------------------------------------------------------------

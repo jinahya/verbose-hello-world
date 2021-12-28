@@ -34,9 +34,11 @@ import java.util.function.Consumer;
 public class HelloWorldClientTcp implements Callable<byte[]> {
 
     static void clients(final int count, final SocketAddress endpoint,
-                        final Consumer<byte[]> consumer) throws InterruptedException {
+                        final Consumer<byte[]> consumer)
+            throws InterruptedException {
         if (count <= 0) {
-            throw new IllegalArgumentException("count(" + count + ") is not positive");
+            throw new IllegalArgumentException(
+                    "count(" + count + ") is not positive");
         }
         Objects.requireNonNull(endpoint, "endpoint is null");
         Objects.requireNonNull(consumer, "consumer is null");

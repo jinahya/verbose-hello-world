@@ -41,13 +41,15 @@ class HelloWorldServerTcpTest {
         final InetAddress host = InetAddress.getLoopbackAddress();
         final IHelloWorldServer server;
         {
-            HelloWorld service = ServiceLoader.load(HelloWorld.class).iterator().next();
+            HelloWorld service = ServiceLoader.load(HelloWorld.class).iterator()
+                    .next();
             if (true) { // TODO: falsify or remove when HelloWorld#set(array) method is implemented!
                 service = Mockito.mock(HelloWorld.class);
                 // https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#13
                 Mockito.doAnswer(i -> {
                             final byte[] array = i.getArgument(0);
-                            final byte[] src = "hello, world".getBytes(StandardCharsets.US_ASCII);
+                            final byte[] src = "hello, world".getBytes(
+                                    StandardCharsets.US_ASCII);
                             System.arraycopy(src, 0, array, 0, src.length);
                             return array;
                         })
@@ -62,7 +64,8 @@ class HelloWorldServerTcpTest {
         final int port = HelloWorldServerTcp.LOCAL_PORT.get();
         final SocketAddress endpoint = new InetSocketAddress(host, port);
         HelloWorldClientTcp.clients(4, endpoint, b -> {
-            Assertions.assertArrayEquals("hello, world".getBytes(StandardCharsets.US_ASCII), b);
+            Assertions.assertArrayEquals(
+                    "hello, world".getBytes(StandardCharsets.US_ASCII), b);
         });
         server.close();
     }

@@ -33,8 +33,8 @@ import static java.util.ServiceLoader.load;
 import static java.util.concurrent.Executors.newCachedThreadPool;
 
 /**
- * A class whose {@link #main(String[])} method accepts socket connections and sends {@code hello,
- * world} to clients.
+ * A class whose {@link #main(String[])} method accepts socket connections and
+ * sends {@code hello, world} to clients.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -44,14 +44,16 @@ public class HelloWorldMain extends AbstractHelloWorldMain {
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
-     * The main method of this program which accepts socket connections and sends {@code hello,
-     * world} to clients.
+     * The main method of this program which accepts socket connections and
+     * sends {@code hello, world} to clients.
      *
      * @param args an array of command line arguments
      * @throws IOException          if an I/O error occurs.
-     * @throws InterruptedException when interrupted while awaiting an executor service.
+     * @throws InterruptedException when interrupted while awaiting an executor
+     *                              service.
      */
-    public static void main(final String[] args) throws IOException, InterruptedException {
+    public static void main(final String[] args)
+            throws IOException, InterruptedException {
         final HelloWorld helloWorld = load(HelloWorld.class).iterator().next();
         log.info("localhost: {}", InetAddress.getLocalHost());
         final ServerSocket server = new ServerSocket(0);

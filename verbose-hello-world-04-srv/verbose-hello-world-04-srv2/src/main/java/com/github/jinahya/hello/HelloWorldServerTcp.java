@@ -48,7 +48,8 @@ class HelloWorldServerTcp implements IHelloWorldServer {
      * @param endpoint a socket address to bind.
      * @param backlog  a value of backlog.
      */
-    HelloWorldServerTcp(final HelloWorld service, final SocketAddress endpoint, final int backlog) {
+    HelloWorldServerTcp(final HelloWorld service, final SocketAddress endpoint,
+                        final int backlog) {
         super();
         this.service = Objects.requireNonNull(service, "service is null");
         this.endpoint = Objects.requireNonNull(endpoint, "endpoint is null");
@@ -68,10 +69,12 @@ class HelloWorldServerTcp implements IHelloWorldServer {
             try {
                 serverSocket.bind(endpoint, backlog);
             } catch (final IOException ioe) {
-                log.error("failed to bind; endpoint: {}, backlog: {}", endpoint, backlog, ioe);
+                log.error("failed to bind; endpoint: {}, backlog: {}", endpoint,
+                          backlog, ioe);
                 throw ioe;
             }
-            log.info("server is open; {}", serverSocket.getLocalSocketAddress());
+            log.info("server is open; {}",
+                     serverSocket.getLocalSocketAddress());
             LOCAL_PORT.set(serverSocket.getLocalPort());
             final Thread thread = new Thread(() -> {
                 while (!serverSocket.isClosed()) {
@@ -87,7 +90,8 @@ class HelloWorldServerTcp implements IHelloWorldServer {
                                 s.getOutputStream().write(array);
                                 s.getOutputStream().flush();
                             } catch (final IOException ioe) {
-                                log.error("failed to send to {}", socket.getRemoteSocketAddress(),
+                                log.error("failed to send to {}",
+                                          socket.getRemoteSocketAddress(),
                                           ioe);
                             }
                         }).start();

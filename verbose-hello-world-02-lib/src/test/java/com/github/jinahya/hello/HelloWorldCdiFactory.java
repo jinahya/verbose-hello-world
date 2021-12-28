@@ -40,8 +40,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class HelloWorldCdiFactory {
 
     /**
-     * Produces an instance of {@link HelloWorld} for specified injection point annotated with
-     * {@link Named} whose {@link Named#value() value} equals to {@link HelloWorldDiTest#DEMO}.
+     * Produces an instance of {@link HelloWorld} for specified injection point
+     * annotated with {@link Named} whose {@link Named#value() value} equals to
+     * {@link HelloWorldDiTest#DEMO}.
      *
      * @param injectionPoint the injection point to be injected
      * @return an instance of {@link HelloWorld}.
@@ -55,9 +56,9 @@ class HelloWorldCdiFactory {
     }
 
     /**
-     * Disposes specified {@link HelloWorld} instance produced for those injection points which each
-     * annotated with {@link Named} whose {@link Named#value() value} equals to {@link
-     * HelloWorldDiTest#DEMO}.
+     * Disposes specified {@link HelloWorld} instance produced for those
+     * injection points which each annotated with {@link Named} whose {@link
+     * Named#value() value} equals to {@link HelloWorldDiTest#DEMO}.
      *
      * @param helloWorld the {@link HelloWorld} instance to dispose
      */
@@ -67,8 +68,8 @@ class HelloWorldCdiFactory {
     }
 
     /**
-     * Produces an instance of {@link HelloWorld} for specified injection point {@link Named named}
-     * with {@value com.github.jinahya.hello.HelloWorldDiTest#IMPL}.
+     * Produces an instance of {@link HelloWorld} for specified injection point
+     * {@link Named named} with {@link HelloWorldDiTest#IMPL}.
      *
      * @param injectionPoint the injection point to be injected.
      * @return an instance of {@link HelloWorldImpl}
@@ -82,8 +83,8 @@ class HelloWorldCdiFactory {
     }
 
     /**
-     * Disposes specified {@link HelloWorld} instance produced for injection points {@link Named
-     * named} with {@value com.github.jinahya.hello.HelloWorldDiTest#IMPL}.
+     * Disposes specified {@link HelloWorld} instance produced for injection
+     * points {@link Named named} with {@link HelloWorldDiTest#IMPL}.
      *
      * @param helloWorld the {@link HelloWorld} instance to dispose.
      */
@@ -93,8 +94,8 @@ class HelloWorldCdiFactory {
     }
 
     /**
-     * Produces an instance of {@link HelloWorld} for specified injection point annotated with
-     * {@link QualifiedDemo}.
+     * Produces an instance of {@link HelloWorld} for specified injection point
+     * annotated with {@link QualifiedDemo}.
      *
      * @param injectionPoint the injection point
      * @return an instance of {@link HelloWorld}
@@ -108,19 +109,20 @@ class HelloWorldCdiFactory {
     }
 
     /**
-     * Disposes specified {@link HelloWorld} instance produced for those injection points which each
-     * annoatated with {@link QualifiedDemo}.
+     * Disposes specified {@link HelloWorld} instance produced for those
+     * injection points which each annoatated with {@link QualifiedDemo}.
      *
      * @param helloWorld the {@link HelloWorld} instance to dispose
      */
-    void disposeQualifiedDemo(@Disposes @QualifiedDemo final HelloWorld helloWorld) {
+    void disposeQualifiedDemo(
+            @Disposes @QualifiedDemo final HelloWorld helloWorld) {
         log.debug("disposing {}", helloWorld);
         assertTrue(helloWorld instanceof HelloWorldDemo);
     }
 
     /**
-     * Produces an instance of {@link HelloWorld} for specified injection point annotated with
-     * {@link QualifiedImpl}
+     * Produces an instance of {@link HelloWorld} for specified injection point
+     * annotated with {@link QualifiedImpl}
      *
      * @param injectionPoint the injection point
      * @return an instance of {@link HelloWorld}
@@ -134,12 +136,13 @@ class HelloWorldCdiFactory {
     }
 
     /**
-     * Disposes specified {@link HelloWorld} instance produced for those injection points which each
-     * annotated with {@link QualifiedImpl}.
+     * Disposes specified {@link HelloWorld} instance produced for those
+     * injection points which each annotated with {@link QualifiedImpl}.
      *
      * @param helloWorld the {@link HelloWorld} instance to dispose
      */
-    void disposeQualifiedImpl(@Disposes @QualifiedImpl final HelloWorld helloWorld) {
+    void disposeQualifiedImpl(
+            @Disposes @QualifiedImpl final HelloWorld helloWorld) {
         log.debug("disposing {}", helloWorld);
         assertTrue(helloWorld instanceof HelloWorldImpl);
     }

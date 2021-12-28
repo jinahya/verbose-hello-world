@@ -35,10 +35,12 @@ import java.util.function.Consumer;
 public class HelloWorldClientUdp implements Callable<byte[]> {
 
     static void clients(final int count, final SocketAddress endpoint,
-                        final Consumer<byte[]> consumer) throws InterruptedException {
+                        final Consumer<byte[]> consumer)
+            throws InterruptedException {
         Objects.requireNonNull(endpoint, "endpoint is null");
         if (count <= 0) {
-            throw new IllegalArgumentException("count(" + count + ") is not positive");
+            throw new IllegalArgumentException(
+                    "count(" + count + ") is not positive");
         }
         Objects.requireNonNull(consumer, "consumer is null");
         final CountDownLatch latch = new CountDownLatch(count);
@@ -76,7 +78,8 @@ public class HelloWorldClientUdp implements Callable<byte[]> {
             socket.setSoTimeout(10000); // 10 sec
             socket.send(new DatagramPacket(new byte[0], 0, endpoint));
             log.debug("[C] send to {}", endpoint);
-            final DatagramPacket packet = new DatagramPacket(array, array.length);
+            final DatagramPacket packet = new DatagramPacket(array,
+                                                             array.length);
             socket.receive(packet);
             log.debug("[C] received from {}", packet.getSocketAddress());
         }

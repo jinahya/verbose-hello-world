@@ -34,10 +34,12 @@ import java.util.function.Consumer;
 public class HelloWorldClientUdp implements Callable<byte[]> {
 
     static void clients(final int count, final SocketAddress endpoint,
-                        final Consumer<byte[]> consumer) throws InterruptedException {
+                        final Consumer<byte[]> consumer)
+            throws InterruptedException {
         Objects.requireNonNull(endpoint, "endpoint is null");
         if (count <= 0) {
-            throw new IllegalArgumentException("count(" + count + ") is not positive");
+            throw new IllegalArgumentException(
+                    "count(" + count + ") is not positive");
         }
         Objects.requireNonNull(consumer, "consumer is null");
         final CountDownLatch latch = new CountDownLatch(count);

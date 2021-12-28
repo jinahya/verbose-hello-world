@@ -48,15 +48,18 @@ class HelloWorldServerUdp implements IHelloWorldServer {
     /**
      * Creates a new instance.
      *
-     * @param helloWorld              an instance of {@link HelloWorld} interface.
+     * @param helloWorld              an instance of {@link HelloWorld}
+     *                                interface.
      * @param socketAddress           a socket address to bind.
      * @param executorServiceSupplier a supplier for an executor service.
      */
-    HelloWorldServerUdp(final HelloWorld helloWorld, final SocketAddress socketAddress,
+    HelloWorldServerUdp(final HelloWorld helloWorld,
+                        final SocketAddress socketAddress,
                         final Supplier<? extends ExecutorService> executorServiceSupplier) {
         super();
         this.helloWorld = Objects.requireNonNull(helloWorld, "service is null");
-        this.socketAddress = Objects.requireNonNull(socketAddress, "endpoint is null");
+        this.socketAddress = Objects.requireNonNull(socketAddress,
+                                                    "endpoint is null");
         this.executorServiceSupplier = Objects.requireNonNull(
                 executorServiceSupplier, "executorServiceSupplier is null");
     }
@@ -77,24 +80,33 @@ class HelloWorldServerUdp implements IHelloWorldServer {
                 log.error("failed to bind; endpoint: {}", socketAddress, ioe);
                 throw ioe;
             }
-            log.info("server is open; {}", datagramSocket.getLocalSocketAddress());
+            log.info("server is open; {}",
+                     datagramSocket.getLocalSocketAddress());
             LOCAL_PORT.set(datagramSocket.getLocalPort());
             final Thread thread = new Thread(() -> {
-                final ExecutorService executorService = executorServiceSupplier.get();
+                final ExecutorService executorService
+                        = executorServiceSupplier.get();
                 while (!datagramSocket.isClosed()) {
-                    final DatagramPacket packet = new DatagramPacket(new byte[0], 0);
+                    final DatagramPacket packet = new DatagramPacket(
+                            new byte[0], 0);
                     try {
                         datagramSocket.receive(packet);
-                        final Future<Void> future = executorService.submit(() -> {
-                            final SocketAddress clientAddress = packet.getSocketAddress();
-                            log.debug("[S] received from {}", clientAddress);
-                            final byte[] array = new byte[HelloWorld.BYTES];
-                            helloWorld.set(array);
-                            datagramSocket.send(
-                                    new DatagramPacket(array, array.length, clientAddress));
-                            log.debug("[S] sent to {}", clientAddress);
-                            return null;
-                        });
+                        final Future<Void> future = executorService.submit(
+                                () -> {
+                                    final SocketAddress clientAddress
+                                            = packet.getSocketAddress();
+                                    log.debug("[S] received from {}",
+                                              clientAddress);
+                                    final byte[] array
+                                            = new byte[HelloWorld.BYTES];
+                                    helloWorld.set(array);
+                                    datagramSocket.send(
+                                            new DatagramPacket(array,
+                                                               array.length,
+                                                               clientAddress));
+                                    log.debug("[S] sent to {}", clientAddress);
+                                    return null;
+                                });
                     } catch (final IOException ioe) {
                         if (datagramSocket.isClosed()) {
                             break;
@@ -108,7 +120,9 @@ class HelloWorldServerUdp implements IHelloWorldServer {
                             8L, TimeUnit.SECONDS);
                     log.debug("executor service terminated: {}", terminated);
                 } catch (final InterruptedException ie) {
-                    log.error("interrupted while awaiting executor service to be terminated", ie);
+                    log.error(
+                            "interrupted while awaiting executor service to be terminated",
+                            ie);
                 }
                 LOCAL_PORT.remove();
             });

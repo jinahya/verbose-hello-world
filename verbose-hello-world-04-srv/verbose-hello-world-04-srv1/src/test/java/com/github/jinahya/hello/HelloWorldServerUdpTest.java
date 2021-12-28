@@ -37,7 +37,8 @@ class HelloWorldServerUdpTest {
         final InetAddress host = InetAddress.getLoopbackAddress();
         final IHelloWorldServer server;
         {
-            final HelloWorld service = ServiceLoader.load(HelloWorld.class).iterator().next();
+            final HelloWorld service = ServiceLoader.load(HelloWorld.class)
+                    .iterator().next();
             final SocketAddress endpoint = new InetSocketAddress(host, 0);
             server = new HelloWorldServerUdp(service, endpoint);
         }

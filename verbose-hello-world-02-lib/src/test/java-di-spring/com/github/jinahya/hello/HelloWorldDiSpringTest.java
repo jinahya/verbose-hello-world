@@ -29,9 +29,11 @@ class HelloWorldDiSpringTest extends HelloWorldDiTest {
 
     @BeforeEach
     void inject() {
-        final GenericApplicationContext context = new AnnotationConfigApplicationContext(
+        final GenericApplicationContext context
+                = new AnnotationConfigApplicationContext(
                 HelloWorldDiSpringConfiguration.class);
-        final AutowireCapableBeanFactory factory = context.getAutowireCapableBeanFactory();
+        final AutowireCapableBeanFactory factory
+                = context.getAutowireCapableBeanFactory();
         factory.autowireBean(this);
     }
 }

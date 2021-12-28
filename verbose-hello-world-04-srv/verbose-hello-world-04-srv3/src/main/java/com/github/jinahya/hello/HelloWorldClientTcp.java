@@ -35,9 +35,11 @@ import java.util.function.Consumer;
 public class HelloWorldClientTcp implements Callable<byte[]> {
 
     static void clients(final int count, final SocketAddress endpoint,
-                        final Consumer<byte[]> consumer) throws InterruptedException {
+                        final Consumer<byte[]> consumer)
+            throws InterruptedException {
         if (count <= 0) {
-            throw new IllegalArgumentException("count(" + count + ") is not positive");
+            throw new IllegalArgumentException(
+                    "count(" + count + ") is not positive");
         }
         Objects.requireNonNull(endpoint, "endpoint is null");
         Objects.requireNonNull(consumer, "consumer is null");
@@ -75,11 +77,13 @@ public class HelloWorldClientTcp implements Callable<byte[]> {
         try (Socket socket = new Socket()) {
             socket.setSoTimeout(10000); // 10 secs
             socket.connect(endpoint);
-            log.debug("[C] connected to {}; local: {}", socket.getRemoteSocketAddress(),
+            log.debug("[C] connected to {}; local: {}",
+                      socket.getRemoteSocketAddress(),
                       socket.getLocalSocketAddress());
             for (int offset = 0; (offset < array.length); ) {
                 final int length = array.length - offset;
-                final int bytes = socket.getInputStream().read(array, offset, length);
+                final int bytes = socket.getInputStream()
+                        .read(array, offset, length);
                 if (bytes == -1) {
                     throw new EOFException("unexpected end-of-stream");
                 }

@@ -18,7 +18,8 @@ import java.util.stream.IntStream;
  * A class for testing {@link NetworkInterface}.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see <a href="https://www.baeldung.com/java-network-interfaces">Working with Network Interfaces
+ * @see <a href="https://www.baeldung.com/java-network-interfaces">Working with
+ * Network Interfaces
  * in Java (Bealdung)</a>
  */
 @Slf4j
@@ -33,36 +34,50 @@ class NetworkInterfaceTest {
                 .collect(Collectors.joining(delimiter));
     }
 
-    private static void inetAddress(final String indent, final InetAddress address) {
+    private static void inetAddress(final String indent,
+                                    final InetAddress address) {
         Objects.requireNonNull(indent, "indent is null");
         Objects.requireNonNull(address, "address is null");
-        log.debug("{}address: {}", indent, Optional.ofNullable(address.getAddress())
-                .map(v -> hexadecimal(v, "%02X", "")).orElse("null"));
-        log.debug("{}canonical host name: {}", indent, address.getCanonicalHostName());
+        log.debug("{}address: {}", indent,
+                  Optional.ofNullable(address.getAddress())
+                          .map(v -> hexadecimal(v, "%02X", "")).orElse("null"));
+        log.debug("{}canonical host name: {}", indent,
+                  address.getCanonicalHostName());
         log.debug("{}host address: {}", indent, address.getHostAddress());
         log.debug("{}host name: {}", indent, address.getHostName());
-        log.debug("{}any local address: {}", indent, address.isAnyLocalAddress());
-        log.debug("{}link local address: {}", indent, address.isLinkLocalAddress());
-        log.debug("{}loopback address: {}", indent, address.isLoopbackAddress());
+        log.debug("{}any local address: {}", indent,
+                  address.isAnyLocalAddress());
+        log.debug("{}link local address: {}", indent,
+                  address.isLinkLocalAddress());
+        log.debug("{}loopback address: {}", indent,
+                  address.isLoopbackAddress());
         log.debug("{}multicast global: {}", indent, address.isMCGlobal());
-        log.debug("{}multicast link local: {}", indent, address.isMCLinkLocal());
-        log.debug("{}multicast node local: {}", indent, address.isMCNodeLocal());
+        log.debug("{}multicast link local: {}", indent,
+                  address.isMCLinkLocal());
+        log.debug("{}multicast node local: {}", indent,
+                  address.isMCNodeLocal());
         log.debug("{}multicast org local: {}", indent, address.isMCOrgLocal());
-        log.debug("{}multicast site local: {}", indent, address.isMCSiteLocal());
-        log.debug("{}multicast address: {}", indent, address.isMulticastAddress());
-        log.debug("{}site local address: {}", indent, address.isSiteLocalAddress());
+        log.debug("{}multicast site local: {}", indent,
+                  address.isMCSiteLocal());
+        log.debug("{}multicast address: {}", indent,
+                  address.isMulticastAddress());
+        log.debug("{}site local address: {}", indent,
+                  address.isSiteLocalAddress());
     }
 
     @Disabled
     @Test
     void printNetworkInterfaces() throws SocketException {
-        final Enumeration<NetworkInterface> nie = NetworkInterface.getNetworkInterfaces();
+        final Enumeration<NetworkInterface> nie
+                = NetworkInterface.getNetworkInterfaces();
         while (nie.hasMoreElements()) {
             final NetworkInterface ni = nie.nextElement();
             log.debug("network interface: {}", ni);
             log.debug("\tdisplay name: {}", ni.getDisplayName());
-            log.debug("\thardware address: {}", Optional.ofNullable(ni.getHardwareAddress())
-                    .map(v -> hexadecimal(v, "%02x", ":")).orElse(null));
+            log.debug("\thardware address: {}",
+                      Optional.ofNullable(ni.getHardwareAddress())
+                              .map(v -> hexadecimal(v, "%02x", ":"))
+                              .orElse(null));
             log.debug("\tindex: {}", ni.getIndex());
             for (final Enumeration<InetAddress> iae = ni.getInetAddresses();
                  iae.hasMoreElements(); ) {
@@ -80,12 +95,14 @@ class NetworkInterfaceTest {
                 if (broadcast != null) {
                     inetAddress("\t\t\t", broadcast);
                 }
-                log.debug("\t\tnetwork prefix length: {}", ia.getNetworkPrefixLength());
+                log.debug("\t\tnetwork prefix length: {}",
+                          ia.getNetworkPrefixLength());
             }
             log.debug("\tmtu: " + ni.getMTU());
             log.debug("\tname: " + ni.getName());
             log.debug("\tparent: " + ni.getParent());
-            for (final Enumeration<NetworkInterface> sie = ni.getSubInterfaces();
+            for (final Enumeration<NetworkInterface> sie
+                 = ni.getSubInterfaces();
                  sie.hasMoreElements(); ) {
                 final NetworkInterface si = sie.nextElement();
                 log.debug("\tsub interface: {}", si);

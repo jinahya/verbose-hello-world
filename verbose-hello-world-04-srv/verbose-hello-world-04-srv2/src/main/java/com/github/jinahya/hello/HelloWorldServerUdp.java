@@ -47,7 +47,8 @@ class HelloWorldServerUdp implements IHelloWorldServer {
      * @param service  an instance of {@link HelloWorld} interface.
      * @param endpoint a socket address to bind.
      */
-    HelloWorldServerUdp(final HelloWorld service, final SocketAddress endpoint) {
+    HelloWorldServerUdp(final HelloWorld service,
+                        final SocketAddress endpoint) {
         super();
         this.service = Objects.requireNonNull(service, "service is null");
         this.endpoint = Objects.requireNonNull(endpoint, "endpoint is null");
@@ -73,16 +74,19 @@ class HelloWorldServerUdp implements IHelloWorldServer {
             LOCAL_PORT.set(socket.getLocalPort());
             final Thread thread = new Thread(() -> {
                 while (!socket.isClosed()) {
-                    final DatagramPacket packet = new DatagramPacket(new byte[0], 0);
+                    final DatagramPacket packet = new DatagramPacket(
+                            new byte[0], 0);
                     try {
                         socket.receive(packet);
-                        log.debug("[S] received from {}", packet.getSocketAddress());
+                        log.debug("[S] received from {}",
+                                  packet.getSocketAddress());
                         new Thread(() -> {
                             final byte[] array = new byte[HelloWorld.BYTES];
                             service.set(array);
                             try {
-                                socket.send(new DatagramPacket(array, array.length,
-                                                               packet.getSocketAddress()));
+                                socket.send(
+                                        new DatagramPacket(array, array.length,
+                                                           packet.getSocketAddress()));
                             } catch (final IOException ioe) {
                                 log.error("failed to send", ioe);
                             }

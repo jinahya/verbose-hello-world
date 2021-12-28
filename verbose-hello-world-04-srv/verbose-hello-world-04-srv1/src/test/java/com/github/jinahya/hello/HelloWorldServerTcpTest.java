@@ -37,7 +37,8 @@ class HelloWorldServerTcpTest {
         final InetAddress host = InetAddress.getLocalHost();
         final IHelloWorldServer server;
         {
-            final HelloWorld service = ServiceLoader.load(HelloWorld.class).iterator().next();
+            final HelloWorld service = ServiceLoader.load(HelloWorld.class)
+                    .iterator().next();
             final SocketAddress endpoint = new InetSocketAddress(host, 0);
             final int backlog = 50;
             server = new HelloWorldServerTcp(service, endpoint, backlog);

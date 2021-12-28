@@ -48,17 +48,20 @@ class HelloWorldServerTcp implements IHelloWorldServer {
     /**
      * Creates a new instance.
      *
-     * @param helloWorld              an instance of {@link HelloWorld} interface.
+     * @param helloWorld              an instance of {@link HelloWorld}
+     *                                interface.
      * @param socketAddress           a socket address to bind.
      * @param backlog                 a value of backlog.
      * @param executorServiceSupplier a supplier for an executor service.
      */
-    HelloWorldServerTcp(final HelloWorld helloWorld, final SocketAddress socketAddress,
+    HelloWorldServerTcp(final HelloWorld helloWorld,
+                        final SocketAddress socketAddress,
                         final int backlog,
                         final Supplier<? extends ExecutorService> executorServiceSupplier) {
         super();
         this.service = Objects.requireNonNull(helloWorld, "helloWorld is null");
-        this.endpoint = Objects.requireNonNull(socketAddress, "socketAddress is null");
+        this.endpoint = Objects.requireNonNull(socketAddress,
+                                               "socketAddress is null");
         this.backlog = backlog;
         this.executorServiceSupplier = Objects.requireNonNull(
                 executorServiceSupplier, "executorServiceSupplier is null");
@@ -77,28 +80,34 @@ class HelloWorldServerTcp implements IHelloWorldServer {
             try {
                 serverSocket.bind(endpoint, backlog);
             } catch (final IOException ioe) {
-                log.error("failed to bind; endpoint: {}, backlog: {}", endpoint, backlog, ioe);
+                log.error("failed to bind; endpoint: {}, backlog: {}", endpoint,
+                          backlog, ioe);
                 throw ioe;
             }
-            log.info("server is open; {}", serverSocket.getLocalSocketAddress());
+            log.info("server is open; {}",
+                     serverSocket.getLocalSocketAddress());
             LOCAL_PORT.set(serverSocket.getLocalPort());
             final Thread thread = new Thread(() -> {
-                final ExecutorService executorService = executorServiceSupplier.get();
+                final ExecutorService executorService
+                        = executorServiceSupplier.get();
                 while (!serverSocket.isClosed()) {
                     try {
                         final Socket socket = serverSocket.accept();
-                        final Future<Void> futurue = executorService.submit(() -> {
-                            try (Socket s = socket) {
-                                log.debug("[S] connected from {}; local: {}",
-                                          socket.getRemoteSocketAddress(),
-                                          socket.getLocalSocketAddress());
-                                final byte[] array = new byte[HelloWorld.BYTES];
-                                service.set(array);
-                                s.getOutputStream().write(array);
-                                s.getOutputStream().flush();
-                            }
-                            return null;
-                        });
+                        final Future<Void> futurue = executorService.submit(
+                                () -> {
+                                    try (Socket s = socket) {
+                                        log.debug(
+                                                "[S] connected from {}; local: {}",
+                                                socket.getRemoteSocketAddress(),
+                                                socket.getLocalSocketAddress());
+                                        final byte[] array
+                                                = new byte[HelloWorld.BYTES];
+                                        service.set(array);
+                                        s.getOutputStream().write(array);
+                                        s.getOutputStream().flush();
+                                    }
+                                    return null;
+                                });
                     } catch (final IOException ioe) {
                         if (serverSocket.isClosed()) {
                             break;
@@ -109,10 +118,13 @@ class HelloWorldServerTcp implements IHelloWorldServer {
                 executorService.shutdown();
                 try {
                     final boolean terminated
-                            = executorService.awaitTermination(8L, TimeUnit.SECONDS);
+                            = executorService.awaitTermination(8L,
+                                                               TimeUnit.SECONDS);
                     log.debug("executor service terminated: {}", terminated);
                 } catch (final InterruptedException ie) {
-                    log.error("interrupted while awaiting executor service to be terminated", ie);
+                    log.error(
+                            "interrupted while awaiting executor service to be terminated",
+                            ie);
                 }
                 LOCAL_PORT.remove();
             });

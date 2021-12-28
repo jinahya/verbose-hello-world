@@ -42,13 +42,15 @@ class HelloWorldServerUdpTest {
         final InetAddress host = InetAddress.getLoopbackAddress();
         final IHelloWorldServer server;
         {
-            HelloWorld service = ServiceLoader.load(HelloWorld.class).iterator().next();
+            HelloWorld service = ServiceLoader.load(HelloWorld.class).iterator()
+                    .next();
             if (true) { // TODO: falsify or remove when HelloWorld#set(array) method is implemented!
                 service = Mockito.spy(service);
                 // https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#13
                 Mockito.doAnswer(i -> {
                             final byte[] array = i.getArgument(0);
-                            final byte[] src = "hello, world".getBytes(StandardCharsets.US_ASCII);
+                            final byte[] src = "hello, world".getBytes(
+                                    StandardCharsets.US_ASCII);
                             System.arraycopy(src, 0, array, 0, src.length);
                             return array;
                         })
@@ -56,13 +58,15 @@ class HelloWorldServerUdpTest {
                         .set(ArgumentMatchers.notNull());
             }
             final SocketAddress endpoint = new InetSocketAddress(host, 0);
-            server = new HelloWorldServerUdp(service, endpoint, Executors::newCachedThreadPool);
+            server = new HelloWorldServerUdp(service, endpoint,
+                                             Executors::newCachedThreadPool);
         }
         server.open();
         final int port = HelloWorldServerUdp.LOCAL_PORT.get();
         final SocketAddress endpoint = new InetSocketAddress(host, port);
         HelloWorldClientUdp.clients(4, endpoint, b -> {
-            Assertions.assertArrayEquals("hello, world".getBytes(StandardCharsets.US_ASCII), b);
+            Assertions.assertArrayEquals(
+                    "hello, world".getBytes(StandardCharsets.US_ASCII), b);
         });
         server.close();
     }
