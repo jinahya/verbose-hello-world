@@ -41,29 +41,36 @@ import java.io.IOException;
 class HelloWorld_05_Write_DataOutput_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#write(DataOutput) write(data)} method invokes {@link
-     * HelloWorld#set(byte[]) set(array)} method with an array of {@value
-     * com.github.jinahya.hello.HelloWorld#BYTES} bytes and writes the array to specified data
-     * output.
+     * Asserts {@link HelloWorld#write(DataOutput) write(data)} method invokes
+     * {@link HelloWorld#set(byte[]) set(array)} method with an array of {@link
+     * HelloWorld#BYTES} bytes and writes the array to specified data output.
      *
      * @param tempDir a temporary directory to test with
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(data) invokes set(byte[BYTES]) and writes the array to data")
+    @DisplayName(
+            "write(data) invokes set(byte[BYTES]) and writes the array to data")
     @Test
-    void write_InvokeSetArrayWriteArrayToData_(@TempDir final File tempDir) throws IOException {
-        final DataOutput data = Mockito.mock(DataOutput.class);                      // <1>
-        helloWorld().write(data);                                                    // <2>
-        Mockito.verify(helloWorld(), Mockito.times(1)).set(arrayCaptor().capture()); // <3>
-        final byte[] array = arrayCaptor().getValue();                               // <4>
-        Assertions.assertNotNull(array);                                             // <5>
-        Assertions.assertEquals(HelloWorld.BYTES, array.length);                     // <6>
+    void write_InvokeSetArrayWriteArrayToData_(@TempDir final File tempDir)
+            throws IOException {
+        final DataOutput data = Mockito.mock(
+                DataOutput.class);                      // <1>
+        helloWorld().write(
+                data);                                                    // <2>
+        Mockito.verify(helloWorld(), Mockito.times(1))
+                .set(arrayCaptor().capture()); // <3>
+        final byte[] array
+                = arrayCaptor().getValue();                               // <4>
+        Assertions.assertNotNull(
+                array);                                             // <5>
+        Assertions.assertEquals(HelloWorld.BYTES,
+                                array.length);                     // <6>
         // TODO: Implement!
     }
 
     /**
-     * Asserts {@link HelloWorld#write(DataOutput) write(data)} method returns the {@code data}
-     * argument.
+     * Asserts {@link HelloWorld#write(DataOutput) write(data)} method returns
+     * the {@code data} argument.
      *
      * @throws IOException if an I/O error occurs.
      */

@@ -38,8 +38,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.LongAdder;
 
 /**
- * A class for testing {@link HelloWorld#writeAsync(AsynchronousFileChannel, long, ExecutorService)}
- * method.
+ * A class for testing {@link HelloWorld#writeAsync(AsynchronousFileChannel,
+ * long, ExecutorService)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_14_WriteAsync_AsynchronousFileChannel_Arguments_Test
@@ -61,24 +61,28 @@ class HelloWorld_14_WriteAsync_AsynchronousFileChannel_Test extends HelloWorldTe
     }
 
     /**
-     * Asserts {@link HelloWorld#writeAsync(AsynchronousFileChannel, long, ExecutorService)
-     * writeAsync(channel, posotion, service)} method returns a future of {@code channel}.
+     * Asserts {@link HelloWorld#writeAsync(AsynchronousFileChannel, long,
+     * ExecutorService) writeAsync(channel, posotion, service)} method returns a
+     * future of {@code channel}.
      *
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
      */
-    @DisplayName("writeAsync(channel, position, service) returns Future(channel)")
+    @DisplayName(
+            "writeAsync(channel, position, service) returns Future(channel)")
     @Test
     void writeAsync_InvokePutBufferWriteBufferToChannel_()
             throws InterruptedException, ExecutionException {
         final LongAdder writtenSoFar = new LongAdder();
-        final AsynchronousFileChannel channel = Mockito.mock(AsynchronousFileChannel.class);
+        final AsynchronousFileChannel channel = Mockito.mock(
+                AsynchronousFileChannel.class);
         Mockito.when(channel.write(ArgumentMatchers.notNull(),
                                    ArgumentMatchers.longThat(a -> a >= 0L)))
                 .thenAnswer(i -> {
                     final ByteBuffer buffer = i.getArgument(0);
                     final long position = i.getArgument(1);
-                    final int written = new Random().nextInt(buffer.remaining() + 1);
+                    final int written = new Random().nextInt(
+                            buffer.remaining() + 1);
                     buffer.position(buffer.position() + written);
                     writtenSoFar.add(written);
                     @SuppressWarnings({"unchecked"})

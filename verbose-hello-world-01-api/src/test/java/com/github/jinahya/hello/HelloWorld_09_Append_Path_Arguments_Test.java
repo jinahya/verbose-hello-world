@@ -28,7 +28,8 @@ import org.junit.jupiter.api.Test;
 import java.nio.file.Path;
 
 /**
- * A class for testing {@link HelloWorld#append(Path)} method regarding arguments verification.
+ * A class for testing {@link HelloWorld#append(Path)} method regarding
+ * arguments verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_09_Append_Path_Test
@@ -37,13 +38,15 @@ import java.nio.file.Path;
 class HelloWorld_09_Append_Path_Arguments_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#append(Path) append(path)} method throws a {@link
-     * NullPointerException} when the {@code path} argument is {@code null}.
+     * Asserts {@link HelloWorld#append(Path) append(path)} method throws a
+     * {@link NullPointerException} when the {@code path} argument is {@code
+     * null}.
      */
     @DisplayName("append((Path) null) throws NullPointerException")
     @Test
     void append_ThrowNullPointerException_PathIsNull() {
         final Path path = null;
-        Assertions.assertThrows(NullPointerException.class, () -> helloWorld().append(path));
+        Assertions.assertThrows(NullPointerException.class,
+                                () -> helloWorld().append(path));
     }
 }

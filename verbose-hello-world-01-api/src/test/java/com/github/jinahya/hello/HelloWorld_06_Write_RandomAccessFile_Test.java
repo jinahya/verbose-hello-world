@@ -42,29 +42,33 @@ import java.io.RandomAccessFile;
 class HelloWorld_06_Write_RandomAccessFile_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#write(RandomAccessFile) write(file)} method invokes {@link
-     * HelloWorld#set(byte[]) set(array)} method with an array of {@value
-     * com.github.jinahya.hello.HelloWorld#BYTES} bytes and invokes {@link
+     * Asserts {@link HelloWorld#write(RandomAccessFile) write(file)} method
+     * invokes {@link HelloWorld#set(byte[]) set(array)} method with an array of
+     * {@link HelloWorld#BYTES} bytes and invokes {@link
      * RandomAccessFile#write(byte[]) file.write(array)}.
      *
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(file) invokes set(byte[BYTES]) method and writes the array to file")
+    @DisplayName(
+            "write(file) invokes set(byte[BYTES]) method and writes the array to file")
     @Test
-    void write_InvokeSetArrayWriteArrayToFile_(@TempDir final File tempDir) throws IOException {
+    void write_InvokeSetArrayWriteArrayToFile_(@TempDir final File tempDir)
+            throws IOException {
         final RandomAccessFile file = Mockito.mock(RandomAccessFile.class);
         helloWorld().write(file);
-        Mockito.verify(helloWorld(), Mockito.times(1)).set(arrayCaptor().capture());
+        Mockito.verify(helloWorld(), Mockito.times(1))
+                .set(arrayCaptor().capture());
         final byte[] array = arrayCaptor().getValue();
         Assertions.assertNotNull(array);
         Assertions.assertEquals(HelloWorld.BYTES, array.length);
-        Mockito.verify(file, Mockito.times(1)).write(ArgumentMatchers.same(array));
+        Mockito.verify(file, Mockito.times(1))
+                .write(ArgumentMatchers.same(array));
     }
 
     /**
-     * Asserts {@link HelloWorld#write(RandomAccessFile) write(file)} method returns the {@code
-     * file} argument.
+     * Asserts {@link HelloWorld#write(RandomAccessFile) write(file)} method
+     * returns the {@code file} argument.
      *
      * @throws IOException if an I/O error occurs.
      */

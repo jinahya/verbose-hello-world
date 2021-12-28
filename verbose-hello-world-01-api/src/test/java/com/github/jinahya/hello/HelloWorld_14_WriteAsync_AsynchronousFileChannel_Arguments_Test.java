@@ -32,8 +32,8 @@ import java.util.Random;
 import java.util.concurrent.ExecutorService;
 
 /**
- * A class for testing {@link HelloWorld#writeAsync(AsynchronousFileChannel, long, ExecutorService)}
- * method regarding arguments verification.
+ * A class for testing {@link HelloWorld#writeAsync(AsynchronousFileChannel,
+ * long, ExecutorService)} method regarding arguments verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_14_WriteAsync_AsynchronousFileChannel_Test
@@ -42,9 +42,10 @@ import java.util.concurrent.ExecutorService;
 class HelloWorld_14_WriteAsync_AsynchronousFileChannel_Arguments_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#writeAsync(AsynchronousFileChannel, long, ExecutorService)
-     * writeAsync(channel, position, service)} method throws a {@link NullPointerException} when
-     * {@code channel} argument is {@code null}.
+     * Asserts {@link HelloWorld#writeAsync(AsynchronousFileChannel, long,
+     * ExecutorService) writeAsync(channel, position, service)} method throws a
+     * {@link NullPointerException} when {@code channel} argument is {@code
+     * null}.
      */
     @DisplayName("writeAsync(null, , ) throws NullPointerException")
     @Test
@@ -53,36 +54,43 @@ class HelloWorld_14_WriteAsync_AsynchronousFileChannel_Arguments_Test extends He
         final long position = new Random().nextLong() & Integer.MAX_VALUE;
         final ExecutorService service = Mockito.mock(ExecutorService.class);
         Assertions.assertThrows(NullPointerException.class,
-                                () -> helloWorld().writeAsync(channel, position, service));
+                                () -> helloWorld().writeAsync(channel, position,
+                                                              service));
     }
 
     /**
-     * Asserts {@link HelloWorld#writeAsync(AsynchronousFileChannel, long, ExecutorService)
-     * writeAsync(channel, position, service)} method throws an {@link IllegalArgumentException}
-     * when {@code position} argument is not positive.
+     * Asserts {@link HelloWorld#writeAsync(AsynchronousFileChannel, long,
+     * ExecutorService) writeAsync(channel, position, service)} method throws an
+     * {@link IllegalArgumentException} when {@code position} argument is not
+     * positive.
      */
     @DisplayName("writeAsync(, negative, ) throws IllegalArgumentException")
     @Test
     void writeAsync_ThrowIllegalArgumentException_PositionIsNegative() {
-        final AsynchronousFileChannel channel = Mockito.mock(AsynchronousFileChannel.class);
+        final AsynchronousFileChannel channel = Mockito.mock(
+                AsynchronousFileChannel.class);
         final long position = new Random().nextLong() | Integer.MIN_VALUE;
         final ExecutorService service = Mockito.mock(ExecutorService.class);
         Assertions.assertThrows(IllegalArgumentException.class,
-                                () -> helloWorld().writeAsync(channel, position, service));
+                                () -> helloWorld().writeAsync(channel, position,
+                                                              service));
     }
 
     /**
-     * Asserts {@link HelloWorld#writeAsync(AsynchronousByteChannel, ExecutorService)
-     * writeAsync(channel, position, service} method throws a {@link NullPointerException} when
-     * {@code channel} argument is {@code null}.
+     * Asserts {@link HelloWorld#writeAsync(AsynchronousByteChannel,
+     * ExecutorService) writeAsync(channel, position, service} method throws a
+     * {@link NullPointerException} when {@code channel} argument is {@code
+     * null}.
      */
     @DisplayName("writeAsync(, , null) throws NullPointerException")
     @Test
     void writeAsync_ThrowNullPointerException_ServiceIsNull() {
-        final AsynchronousFileChannel channel = Mockito.mock(AsynchronousFileChannel.class);
+        final AsynchronousFileChannel channel = Mockito.mock(
+                AsynchronousFileChannel.class);
         final long position = new Random().nextLong() & Integer.MAX_VALUE;
         final ExecutorService service = null;
         Assertions.assertThrows(NullPointerException.class,
-                                () -> helloWorld().writeAsync(channel, position, service));
+                                () -> helloWorld().writeAsync(channel, position,
+                                                              service));
     }
 }
