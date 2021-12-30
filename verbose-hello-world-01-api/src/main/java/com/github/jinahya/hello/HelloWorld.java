@@ -71,8 +71,8 @@ public interface HelloWorld {
      * <p>
      * The elements in the array, on successful return, will be set as follows.
      * <pre>
-     * 0    <= index                                (index + 12)    <= array.length
-     * ↓       ↓                                               ↓       ↓
+     *   0    <= index                                  index + 12    <= array.length
+     *   ↓       ↓                                               ↓       ↓
      * |   |...|'h'|'e'|'l'|'l'|'o'|','|' '|'w'|'o'|'r'|'l'|'d'|...|   |
      * </pre>
      *

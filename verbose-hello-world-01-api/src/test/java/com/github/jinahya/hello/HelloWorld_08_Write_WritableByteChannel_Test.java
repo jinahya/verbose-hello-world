@@ -46,7 +46,7 @@ class HelloWorld_08_Write_WritableByteChannel_Test
 
     // TODO: Remove this stubbing method when you implemented the put(buffer) method!
     @BeforeEach
-    void beforeEach() {
+    void stub_SetArrayIndex_ReturnArray() {
         // https://www.javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#13
         Mockito.lenient().doAnswer(i -> {
             final ByteBuffer buffer = i.getArgument(0);

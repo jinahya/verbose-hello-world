@@ -48,12 +48,16 @@ import java.nio.channels.WritableByteChannel;
 @Slf4j
 abstract class HelloWorldTest {
 
+    /**
+     * Stubs that {@link HelloWorld#set(byte[], int)} method returns the {@code
+     * array} argument.
+     */
     @BeforeEach
-    void beforeEach() {
-        final byte[] array = ArgumentMatchers.any(byte[].class);
-        final int index = ArgumentMatchers.anyInt();
-        Mockito.lenient().when(helloWorld.set(array, index)) // <1>
-                .thenAnswer(i -> i.getArgument(0));  // <2>
+    void stub_SetArrayIndex_ReturnArray() {
+        Mockito.lenient()                                        // <1>
+                .when(helloWorld.set(ArgumentMatchers.any(),     // <2>
+                                     ArgumentMatchers.anyInt()))
+                .thenAnswer(i -> i.getArgument(0));              // <3>
     }
 
     @Spy
@@ -61,26 +65,31 @@ abstract class HelloWorldTest {
     @Getter
     private HelloWorld helloWorld;
 
+    // for capturing byte[] argument with set(byte[], int) or set(byte[])
     @Captor
     @Accessors(fluent = true)
     @Getter
     private ArgumentCaptor<byte[]> arrayCaptor;
 
+    // for capturing index argument with set(byte[], index)
     @Captor
     @Accessors(fluent = true)
     @Getter
     private ArgumentCaptor<Integer> indexCaptor;
 
+    // for capturing stream argument with write(OutputStream)
     @Captor
     @Accessors(fluent = true)
     @Getter
     private ArgumentCaptor<OutputStream> streamCaptor;
 
+    // for capturing buffer argument with put(ByteBuffer)
     @Captor
     @Accessors(fluent = true)
     @Getter
     private ArgumentCaptor<ByteBuffer> bufferCaptor;
 
+    // for capturing channel argument with write(WritableByteChannel)
     @Captor
     @Accessors(fluent = true)
     @Getter
