@@ -54,10 +54,10 @@ abstract class HelloWorldTest {
      */
     @BeforeEach
     void stub_SetArrayIndex_ReturnArray() {
-        Mockito.lenient()                                        // <1>
-                .when(helloWorld.set(ArgumentMatchers.any(),     // <2>
+        Mockito.lenient()
+                .when(helloWorld.set(ArgumentMatchers.any(),     // <1>
                                      ArgumentMatchers.anyInt()))
-                .thenAnswer(i -> i.getArgument(0));              // <3>
+                .thenAnswer(i -> i.getArgument(0));              // <2>
     }
 
     @Spy
