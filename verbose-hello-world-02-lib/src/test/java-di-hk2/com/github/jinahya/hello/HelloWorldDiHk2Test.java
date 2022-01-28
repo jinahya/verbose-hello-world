@@ -31,7 +31,8 @@ import org.junit.jupiter.api.BeforeEach;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-class HelloWorldDiHk2Test extends HelloWorldDiTest {
+class HelloWorldDiHk2Test
+        extends HelloWorldDiTest {
 
     @BeforeEach
     void inject() {

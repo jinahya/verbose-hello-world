@@ -29,8 +29,7 @@ import java.net.SocketAddress;
 import java.util.ServiceLoader;
 
 /**
- * A class whose {@link #main(String[])} method accepts socket connections and
- * sends {@code hello, world} to clients.
+ * A class whose {@link #main(String[])} method accepts socket connections and sends {@code hello, world} to clients.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -38,8 +37,8 @@ import java.util.ServiceLoader;
 public class HelloWorldMainTcp {
 
     /**
-     * The main method of this program which accepts socket connections and
-     * sends {@code hello, world} bytes to clients.
+     * The main method of this program which accepts socket connections and sends {@code hello, world} bytes to
+     * clients.
      *
      * @param args an array of command line arguments.
      * @throws IOException if an I/O error occurs.

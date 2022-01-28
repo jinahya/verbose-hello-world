@@ -21,10 +21,8 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 /**
  * A class for unit-testing {@link HelloWorld#set(byte[])} method.
@@ -33,7 +31,8 @@ import org.mockito.Mockito;
  * @see HelloWorld_01_Set_Array_Arguments_Test
  */
 @Slf4j
-class HelloWorld_01_Set_Array_Test extends HelloWorldTest {
+class HelloWorld_01_Set_Array_Test
+        extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#set(byte[]) set(array)} method invokes {@link

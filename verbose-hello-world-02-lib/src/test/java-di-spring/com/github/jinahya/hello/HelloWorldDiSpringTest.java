@@ -25,7 +25,8 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 
-class HelloWorldDiSpringTest extends HelloWorldDiTest {
+class HelloWorldDiSpringTest
+        extends HelloWorldDiTest {
 
     @BeforeEach
     void inject() {

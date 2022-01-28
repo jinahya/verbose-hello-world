@@ -32,7 +32,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 @Slf4j
-public class HelloWorldClientTcp implements Callable<byte[]> {
+public class HelloWorldClientTcp
+        implements Callable<byte[]> {
 
     static void clients(final int count, final SocketAddress endpoint,
                         final Consumer<byte[]> consumer)

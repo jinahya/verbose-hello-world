@@ -31,7 +31,8 @@ import static java.util.concurrent.ThreadLocalRandom.current;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-abstract class HelloWorldDiTest extends HelloWorldTest {
+abstract class HelloWorldDiTest
+        extends HelloWorldTest {
 
     /**
      * An injection qualifier for {@link HelloWorldDemo}.

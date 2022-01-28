@@ -37,7 +37,8 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorldServerTcp implements IHelloWorldServer {
+class HelloWorldServerTcp
+        implements IHelloWorldServer {
 
     static final ThreadLocal<Integer> LOCAL_PORT = new ThreadLocal<>();
 

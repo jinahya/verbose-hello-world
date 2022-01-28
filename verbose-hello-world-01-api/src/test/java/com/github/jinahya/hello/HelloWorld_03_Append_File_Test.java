@@ -37,7 +37,8 @@ import java.io.OutputStream;
  * @see HelloWorld_03_Append_File_Arguments_Test
  */
 @Slf4j
-class HelloWorld_03_Append_File_Test extends HelloWorldTest {
+class HelloWorld_03_Append_File_Test
+        extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#append(File) append(file)} method invokes

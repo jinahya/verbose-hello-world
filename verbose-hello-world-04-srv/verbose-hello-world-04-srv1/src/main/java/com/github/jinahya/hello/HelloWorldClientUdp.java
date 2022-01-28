@@ -31,7 +31,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 @Slf4j
-public class HelloWorldClientUdp implements Callable<byte[]> {
+public class HelloWorldClientUdp
+        implements Callable<byte[]> {
 
     static void clients(final int count, final SocketAddress endpoint,
                         final Consumer<byte[]> consumer)

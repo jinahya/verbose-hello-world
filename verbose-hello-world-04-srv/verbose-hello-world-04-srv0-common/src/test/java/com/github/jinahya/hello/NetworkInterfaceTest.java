@@ -19,8 +19,7 @@ import java.util.stream.IntStream;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see <a href="https://www.baeldung.com/java-network-interfaces">Working with
- * Network Interfaces
- * in Java (Bealdung)</a>
+ * Network Interfaces in Java (Bealdung)</a>
  */
 @Slf4j
 class NetworkInterfaceTest {

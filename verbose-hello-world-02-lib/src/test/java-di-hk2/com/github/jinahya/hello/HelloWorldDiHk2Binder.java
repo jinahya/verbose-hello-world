@@ -31,14 +31,19 @@ import static com.github.jinahya.hello.HelloWorldDiTest.IMPL;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-class HelloWorldDiHk2Binder extends AbstractBinder {
+class HelloWorldDiHk2Binder
+        extends AbstractBinder {
 
-    private static class QualifiedDemo_ extends AnnotationLiteral<QualifiedDemo> implements QualifiedDemo {
+    private static class QualifiedDemo_
+            extends AnnotationLiteral<QualifiedDemo>
+            implements QualifiedDemo {
 
         private static final long serialVersionUID = 8947668889394516822L;
     }
 
-    private static class QualifiedImpl_ extends AnnotationLiteral<QualifiedImpl> implements QualifiedImpl {
+    private static class QualifiedImpl_
+            extends AnnotationLiteral<QualifiedImpl>
+            implements QualifiedImpl {
 
         private static final long serialVersionUID = 9084623087464727990L;
     }

@@ -37,7 +37,8 @@ import java.net.Socket;
  * @see HelloWorld_04_Send_Socket_Arguments_Test
  */
 @Slf4j
-class HelloWorld_04_Send_Socket_Test extends HelloWorldTest {
+class HelloWorld_04_Send_Socket_Test
+        extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#send(Socket) send(socket)} method invokes the

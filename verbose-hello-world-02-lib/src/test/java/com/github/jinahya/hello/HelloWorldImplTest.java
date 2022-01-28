@@ -25,7 +25,8 @@ package com.github.jinahya.hello;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-class HelloWorldImplTest extends HelloWorldTest {
+class HelloWorldImplTest
+        extends HelloWorldTest {
 
     /**
      * {@inheritDoc} The {@code helloWorld()} method of {@code

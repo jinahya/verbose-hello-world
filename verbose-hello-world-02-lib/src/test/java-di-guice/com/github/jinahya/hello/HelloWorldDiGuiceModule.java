@@ -31,7 +31,8 @@ import static com.google.inject.name.Names.named;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-class HelloWorldDiGuiceModule extends AbstractModule {
+class HelloWorldDiGuiceModule
+        extends AbstractModule {
 
     @Override
     protected void configure() {

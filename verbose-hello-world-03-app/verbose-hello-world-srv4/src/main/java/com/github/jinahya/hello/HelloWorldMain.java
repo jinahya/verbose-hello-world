@@ -39,7 +39,8 @@ import static java.util.concurrent.Executors.newCachedThreadPool;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-public class HelloWorldMain extends AbstractHelloWorldMain {
+public class HelloWorldMain
+        extends AbstractHelloWorldMain {
 
     // -----------------------------------------------------------------------------------------------------------------
 

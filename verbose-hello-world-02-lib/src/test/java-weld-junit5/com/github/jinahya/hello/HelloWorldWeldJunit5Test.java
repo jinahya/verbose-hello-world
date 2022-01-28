@@ -28,6 +28,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @AddBeanClasses({HelloWorldCdiFactory.class})
 @ExtendWith({WeldJunit5Extension.class})
 @Slf4j
-class HelloWorldWeldJunit5Test extends HelloWorldDiTest {
+class HelloWorldWeldJunit5Test
+        extends HelloWorldDiTest {
 
 }

@@ -23,6 +23,7 @@ package com.github.jinahya.hello;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-class HelloWorldCdiSeWeldTest extends HelloWorldCdiSeTest {
+class HelloWorldCdiSeWeldTest
+        extends HelloWorldCdiSeTest {
 
 }

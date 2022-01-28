@@ -29,7 +29,8 @@ import org.junit.jupiter.api.BeforeEach;
  *
  * @see <a href="https://github.com/google/guice">Guice</a>
  */
-class HelloWorldDiGuiceTest extends HelloWorldDiTest {
+class HelloWorldDiGuiceTest
+        extends HelloWorldDiTest {
 
     @BeforeEach
     void inject() {

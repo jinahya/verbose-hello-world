@@ -23,7 +23,8 @@ package com.github.jinahya.hello;
 import dagger.MembersInjector;
 import org.junit.jupiter.api.BeforeEach;
 
-class HelloWorldDiDaggerTest extends HelloWorldDiTest {
+class HelloWorldDiDaggerTest
+        extends HelloWorldDiTest {
 
     @BeforeEach
     void inject() {

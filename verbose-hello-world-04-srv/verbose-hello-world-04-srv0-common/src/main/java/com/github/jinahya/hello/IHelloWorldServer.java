@@ -28,7 +28,8 @@ import java.io.IOException;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-public interface IHelloWorldServer extends Closeable {
+public interface IHelloWorldServer
+        extends Closeable {
 
     /**
      * Opens this server instance.
