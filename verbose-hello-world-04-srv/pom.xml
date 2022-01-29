@@ -10,7 +10,6 @@
   </parent>
 
   <artifactId>verbose-hello-world-04-srv</artifactId>
-  <!--  <version>0.0.1-SNAPSHOT</version>-->
   <packaging>pom</packaging>
 
   <name>${project.artifactId}</name>
@@ -37,12 +36,12 @@
     <dependencies>
       <dependency>
         <groupId>com.github.jinahya</groupId>
-        <artifactId>verbose-hello-world-api</artifactId>
+        <artifactId>verbose-hello-world-01-api</artifactId>
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
         <groupId>com.github.jinahya</groupId>
-        <artifactId>verbose-hello-world-lib</artifactId>
+        <artifactId>verbose-hello-world-02-lib</artifactId>
         <version>${project.parent.version}</version>
       </dependency>
     </dependencies>

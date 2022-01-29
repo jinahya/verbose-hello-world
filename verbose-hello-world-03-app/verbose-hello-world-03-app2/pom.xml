@@ -10,7 +10,6 @@
   </parent>
 
   <artifactId>verbose-hello-world-03-app2</artifactId>
-  <!--  <version>0.0.1-SNAPSHOT</version>-->
   <packaging>jar</packaging>
 
   <name>${project.artifactId}</name>
@@ -19,13 +18,13 @@
   <dependencies>
     <dependency>
       <groupId>com.github.jinahya</groupId>
-      <artifactId>verbose-hello-world-lib</artifactId>
-      <scope>runtime</scope>
+      <artifactId>verbose-hello-world-01-api</artifactId>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.github.jinahya</groupId>
-      <artifactId>verbose-hello-world-api</artifactId>
-      <scope>compile</scope>
+      <artifactId>verbose-hello-world-02-lib</artifactId>
+      <scope>runtime</scope>
     </dependency>
   </dependencies>
 </project>

@@ -10,7 +10,6 @@
   </parent>
 
   <artifactId>verbose-hello-world-03-app</artifactId>
-  <!--  <version>0.0.1-SNAPSHOT</version>-->
   <packaging>pom</packaging>
 
   <name>${project.artifactId}</name>
@@ -21,15 +20,6 @@
     <module>verbose-hello-world-03-app2</module>
     <module>verbose-hello-world-03-app3</module>
     <module>verbose-hello-world-03-app4</module>
-    <!--    <module>verbose-hello-world-cli</module>-->
-    <!--    <module>verbose-hello-world-srv</module>-->
-    <!--    <module>verbose-hello-world-srv1</module>-->
-    <!--    <module>verbose-hello-world-srv2</module>-->
-    <!--    <module>verbose-hello-world-srv3</module>-->
-    <!--    <module>verbose-hello-world-srv4</module>-->
-    <!--    <module>verbose-hello-world-srv5</module>-->
-    <!--    <module>verbose-hello-world-srv6</module>-->
-    <!--    <module>verbose-hello-world-srv7</module>-->
   </modules>
 
   <properties>
@@ -41,12 +31,12 @@
     <dependencies>
       <dependency>
         <groupId>com.github.jinahya</groupId>
-        <artifactId>verbose-hello-world-api</artifactId>
+        <artifactId>verbose-hello-world-01-api</artifactId>
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
         <groupId>com.github.jinahya</groupId>
-        <artifactId>verbose-hello-world-lib</artifactId>
+        <artifactId>verbose-hello-world-02-lib</artifactId>
         <version>${project.parent.version}</version>
       </dependency>
     </dependencies>
