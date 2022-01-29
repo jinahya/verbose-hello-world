@@ -39,7 +39,8 @@ class NetworkInterfaceTest {
         Objects.requireNonNull(address, "address is null");
         log.debug("{}address: {}", indent,
                   Optional.ofNullable(address.getAddress())
-                          .map(v -> hexadecimal(v, "%02X", "")).orElse("null"));
+                          .map(v -> hexadecimal(v, "%02X", ""))
+                          .orElse("null"));
         log.debug("{}canonical host name: {}", indent,
                   address.getCanonicalHostName());
         log.debug("{}host address: {}", indent, address.getHostAddress());

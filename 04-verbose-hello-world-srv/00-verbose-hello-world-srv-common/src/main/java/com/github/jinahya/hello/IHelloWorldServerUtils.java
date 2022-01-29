@@ -122,14 +122,14 @@ final class IHelloWorldServerUtils {
      */
     static void readQuitToClose(final IHelloWorldServer server) {
         if (server == null) {
-            throw new NullPointerException("closeable is null");
+            throw new NullPointerException("server is null");
         }
         final Thread thread = new Thread(() -> {
-            final BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(System.in));
+            final BufferedReader reader
+                    = new BufferedReader(new InputStreamReader(System.in));
             try {
                 for (String line; (line = reader.readLine()) != null; ) {
-                    if (line.equalsIgnoreCase("quit")) {
+                    if (line.trim().equalsIgnoreCase("quit")) {
                         break;
                     }
                 }
@@ -143,15 +143,15 @@ final class IHelloWorldServerUtils {
     }
 
     /**
-     * {@link Callable#call() calls} specified callable and writes '{@code
-     * quit\n}' to a pipe connected to {@link System#in}.
+     * Invokes {@link Callable#call()} method on specified callable and writes
+     * '{@code quit\n}' to a pipe connected to {@link System#in}.
      *
      * @param callable the callable to call.
      * @throws IOException if an I/O error occurs.
      */
     static void writeQuitToClose(final Callable<Void> callable)
             throws IOException {
-        Objects.requireNonNull(callable, "runnable is null");
+        Objects.requireNonNull(callable, "callable is null");
         final InputStream in = System.in;
         try {
             final PipedOutputStream pos = new PipedOutputStream();
