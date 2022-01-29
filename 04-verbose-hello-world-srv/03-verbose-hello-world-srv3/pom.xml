@@ -5,20 +5,21 @@
 
   <parent>
     <groupId>com.github.jinahya</groupId>
-    <artifactId>verbose-hello-world-03-app</artifactId>
+    <artifactId>verbose-hello-world-srv</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
 
-  <artifactId>verbose-hello-world-03-app1</artifactId>
+  <artifactId>verbose-hello-world-srv3</artifactId>
   <packaging>jar</packaging>
 
   <name>${project.artifactId}</name>
-  <description>Verbose Hello World App1</description>
+  <description>Verbose Hello World Srv3</description>
 
   <dependencies>
     <dependency>
       <groupId>com.github.jinahya</groupId>
-      <artifactId>verbose-hello-world-02-lib</artifactId>
+      <artifactId>verbose-hello-world-srv-common</artifactId>
+      <version>${project.parent.version}</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>

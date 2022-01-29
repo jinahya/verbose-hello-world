@@ -5,11 +5,11 @@
 
   <parent>
     <groupId>com.github.jinahya</groupId>
-    <artifactId>verbose-hello-world-04-srv</artifactId>
+    <artifactId>verbose-hello-world-srv</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
 
-  <artifactId>verbose-hello-world-04-srv1</artifactId>
+  <artifactId>verbose-hello-world-srv1</artifactId>
   <packaging>jar</packaging>
 
   <name>${project.artifactId}</name>
@@ -18,7 +18,7 @@
   <dependencies>
     <dependency>
       <groupId>com.github.jinahya</groupId>
-      <artifactId>verbose-hello-world-04-srv0-common</artifactId>
+      <artifactId>verbose-hello-world-srv-common</artifactId>
       <version>${project.parent.version}</version>
       <scope>compile</scope>
     </dependency>

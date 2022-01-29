@@ -5,11 +5,11 @@
 
   <parent>
     <groupId>com.github.jinahya</groupId>
-    <artifactId>verbose-hello-world-03-app</artifactId>
+    <artifactId>verbose-hello-world-app</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
 
-  <artifactId>verbose-hello-world-03-app3</artifactId>
+  <artifactId>verbose-hello-world-app4</artifactId>
   <packaging>jar</packaging>
 
   <name>${project.artifactId}</name>
@@ -18,18 +18,32 @@
   <dependencies>
     <dependency>
       <groupId>com.github.jinahya</groupId>
-      <artifactId>verbose-hello-world-01-api</artifactId>
+      <artifactId>verbose-hello-world-api</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.github.jinahya</groupId>
-      <artifactId>verbose-hello-world-02-lib</artifactId>
+      <artifactId>verbose-hello-world-lib</artifactId>
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>com.google.inject</groupId>
-      <artifactId>guice</artifactId>
+      <groupId>jakarta.enterprise</groupId>
+      <artifactId>jakarta.enterprise.cdi-api</artifactId>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.jboss.weld.se</groupId>
+      <artifactId>weld-se-core</artifactId>
+      <scope>runtime</scope>
+    </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
 </project>

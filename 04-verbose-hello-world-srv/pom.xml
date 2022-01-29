@@ -9,17 +9,22 @@
     <version>0.0.1-SNAPSHOT</version>
   </parent>
 
-  <artifactId>verbose-hello-world-03-app</artifactId>
+  <artifactId>verbose-hello-world-srv</artifactId>
   <packaging>pom</packaging>
 
   <name>${project.artifactId}</name>
-  <description>Verbose Hello World App</description>
+  <description>Verbose Hello World Server</description>
 
   <modules>
-    <module>verbose-hello-world-03-app1</module>
-    <module>verbose-hello-world-03-app2</module>
-    <module>verbose-hello-world-03-app3</module>
-    <module>verbose-hello-world-03-app4</module>
+    <module>00-verbose-hello-world-srv-common</module>
+    <module>01-verbose-hello-world-srv1</module>
+    <module>02-verbose-hello-world-srv2</module>
+    <module>03-verbose-hello-world-srv3</module>
+    <!--    <module>verbose-hello-world-srv3</module>-->
+    <!--    <module>verbose-hello-world-srv4</module>-->
+    <!--    <module>verbose-hello-world-srv5</module>-->
+    <!--    <module>verbose-hello-world-srv6</module>-->
+    <!--    <module>verbose-hello-world-srv7</module>-->
   </modules>
 
   <properties>
@@ -31,12 +36,12 @@
     <dependencies>
       <dependency>
         <groupId>com.github.jinahya</groupId>
-        <artifactId>verbose-hello-world-01-api</artifactId>
+        <artifactId>verbose-hello-world-api</artifactId>
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
         <groupId>com.github.jinahya</groupId>
-        <artifactId>verbose-hello-world-02-lib</artifactId>
+        <artifactId>verbose-hello-world-lib</artifactId>
         <version>${project.parent.version}</version>
       </dependency>
     </dependencies>
@@ -46,6 +51,11 @@
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
       <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-cli</groupId>
+      <artifactId>commons-cli</artifactId>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.projectlombok</groupId>

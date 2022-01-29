@@ -9,22 +9,17 @@
     <version>0.0.1-SNAPSHOT</version>
   </parent>
 
-  <artifactId>verbose-hello-world-04-srv</artifactId>
+  <artifactId>verbose-hello-world-app</artifactId>
   <packaging>pom</packaging>
 
   <name>${project.artifactId}</name>
-  <description>Verbose Hello World Server</description>
+  <description>Verbose Hello World App</description>
 
   <modules>
-    <module>verbose-hello-world-04-srv0-common</module>
-    <module>verbose-hello-world-04-srv1</module>
-    <module>verbose-hello-world-04-srv2</module>
-    <module>verbose-hello-world-04-srv3</module>
-    <!--    <module>verbose-hello-world-srv3</module>-->
-    <!--    <module>verbose-hello-world-srv4</module>-->
-    <!--    <module>verbose-hello-world-srv5</module>-->
-    <!--    <module>verbose-hello-world-srv6</module>-->
-    <!--    <module>verbose-hello-world-srv7</module>-->
+    <module>01-verbose-hello-world-app1</module>
+    <module>02-verbose-hello-world-app2</module>
+    <module>03-verbose-hello-world-app3</module>
+    <module>04-verbose-hello-world-app4</module>
   </modules>
 
   <properties>
@@ -36,12 +31,12 @@
     <dependencies>
       <dependency>
         <groupId>com.github.jinahya</groupId>
-        <artifactId>verbose-hello-world-01-api</artifactId>
+        <artifactId>verbose-hello-world-api</artifactId>
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
         <groupId>com.github.jinahya</groupId>
-        <artifactId>verbose-hello-world-02-lib</artifactId>
+        <artifactId>verbose-hello-world-lib</artifactId>
         <version>${project.parent.version}</version>
       </dependency>
     </dependencies>
@@ -51,11 +46,6 @@
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
       <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>commons-cli</groupId>
-      <artifactId>commons-cli</artifactId>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.projectlombok</groupId>
