@@ -432,12 +432,10 @@ public interface HelloWorld {
         put(buffer);
         buffer.flip();
         while (buffer.hasRemaining()) {
-            final Future<Integer> future = channel.write(buffer,
-                                                         position); // <1>
-            final int written
-                    = future.get();                               // <2>
-            position
-                    += written;                                            // <3>
+            final Future<Integer> future
+                    = channel.write(buffer, position); // <1>
+            final int written = future.get();          // <2>
+            position += written;                       // <3>
         }
         return channel;
     }

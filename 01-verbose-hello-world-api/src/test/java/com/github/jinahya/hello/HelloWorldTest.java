@@ -53,7 +53,7 @@ abstract class HelloWorldTest {
      * array} argument.
      */
     @BeforeEach
-    void stub_SetArrayIndex_ReturnArray() {
+    void stub_PutBuffer_FillBuffer() {
         Mockito.lenient()
                 .when(helloWorld.set(ArgumentMatchers.any(),     // <1>
                                      ArgumentMatchers.anyInt()))

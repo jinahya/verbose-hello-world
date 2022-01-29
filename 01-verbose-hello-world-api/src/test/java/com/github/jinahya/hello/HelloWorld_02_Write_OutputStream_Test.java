@@ -46,7 +46,8 @@ class HelloWorld_02_Write_OutputStream_Test
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(stream) invokes set(byte[BYTES])"
+    @DisplayName("write(stream)"
+                 + " invokes set(byte[BYTES])"
                  + " and writes the array to the stream")
     @Test
     void write_InvokeSetArrayAndWriteArrayToStream_() throws IOException {

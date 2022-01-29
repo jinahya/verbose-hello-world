@@ -25,7 +25,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import java.nio.ByteBuffer;
@@ -36,6 +35,16 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.LongAdder;
+
+import static java.util.concurrent.Executors.newSingleThreadExecutor;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.ArgumentMatchers.longThat;
+import static org.mockito.ArgumentMatchers.notNull;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * A class for testing {@link HelloWorld#writeAsync(AsynchronousFileChannel,
@@ -50,15 +59,13 @@ class HelloWorld_14_WriteAsync_AsynchronousFileChannel_Test
 
     // TODO: Remove this stubbing method when you implemented the put(buffer) method!
     @BeforeEach
-    void stub_SetArrayIndex_ReturnArray() {
+    void stub_PutBuffer_FillBuffer() {
         // https://www.javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#13
-        Mockito.doAnswer(i -> {
-                    final ByteBuffer buffer = i.getArgument(0);
-                    buffer.position(buffer.position() + HelloWorld.BYTES);
-                    return buffer;
-                })
-                .when(helloWorld())
-                .put(ArgumentMatchers.notNull());
+        doAnswer(i -> {
+            final ByteBuffer buffer = i.getArgument(0);
+            buffer.position(buffer.position() + HelloWorld.BYTES);
+            return buffer;
+        }).when(helloWorld()).put(notNull());
     }
 
     /**
@@ -76,9 +83,8 @@ class HelloWorld_14_WriteAsync_AsynchronousFileChannel_Test
             throws InterruptedException, ExecutionException {
         final LongAdder writtenSoFar = new LongAdder();
         final AsynchronousFileChannel channel
-                = Mockito.mock(AsynchronousFileChannel.class);
-        Mockito.when(channel.write(ArgumentMatchers.notNull(),
-                                   ArgumentMatchers.longThat(a -> a >= 0L)))
+                = mock(AsynchronousFileChannel.class);
+        when(channel.write(notNull(), longThat(a -> a >= 0L)))
                 .thenAnswer(i -> {
                     final ByteBuffer buffer = i.getArgument(0);
                     final long position = i.getArgument(1);
@@ -87,16 +93,16 @@ class HelloWorld_14_WriteAsync_AsynchronousFileChannel_Test
                     buffer.position(buffer.position() + written);
                     writtenSoFar.add(written);
                     @SuppressWarnings({"unchecked"})
-                    final Future<Integer> future = Mockito.mock(Future.class);
-                    Mockito.doReturn(written).when(future).get();
+                    final Future<Integer> future = mock(Future.class);
+                    doReturn(written).when(future).get();
                     return future;
                 });
         final long position = 0L;
-        final ExecutorService service = Executors.newSingleThreadExecutor();
+        final ExecutorService service = newSingleThreadExecutor();
         final Future<AsynchronousFileChannel> future
                 = helloWorld().writeAsync(channel, position, service);
         final AsynchronousFileChannel actual = future.get();
-        Assertions.assertSame(channel, actual);
-        Assertions.assertEquals(HelloWorld.BYTES, writtenSoFar.intValue());
+        assertSame(channel, actual);
+        assertEquals(HelloWorld.BYTES, writtenSoFar.intValue());
     }
 }
