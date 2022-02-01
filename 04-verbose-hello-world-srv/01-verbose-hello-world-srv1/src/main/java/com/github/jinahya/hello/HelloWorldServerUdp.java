@@ -77,13 +77,15 @@ class HelloWorldServerUdp
                     socket.receive(packet);
                     log.debug("[S] received from {}",
                               packet.getSocketAddress());
-                    // TODO: Send 'hello, world' bytes back to the client!
                 } catch (final IOException ioe) {
                     if (socket.isClosed()) {
                         break;
                     }
                     log.debug("failed to receive packet", ioe);
                 }
+                final SocketAddress clientAddress = packet.getSocketAddress();
+                log.debug("[S] received from {}", clientAddress);
+                // TODO: Send 'hello, world' bytes back to the client!
             }
             LOCAL_PORT.remove();
         });
