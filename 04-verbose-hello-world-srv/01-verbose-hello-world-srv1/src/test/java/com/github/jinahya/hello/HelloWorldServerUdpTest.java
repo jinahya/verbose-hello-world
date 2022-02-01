@@ -27,7 +27,12 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.ServiceLoader;
+
+import static com.github.jinahya.hello.HelloWorldClientUdp.clients;
+import static com.github.jinahya.hello.HelloWorldServerUdp.LOCAL_PORT;
+import static java.nio.charset.StandardCharsets.US_ASCII;
 
 @Slf4j
 class HelloWorldServerUdpTest {
@@ -43,9 +48,10 @@ class HelloWorldServerUdpTest {
         }
         try {
             server.open();
-            final int port = HelloWorldServerUdp.LOCAL_PORT.get();
+            final int port = LOCAL_PORT.get();
             final SocketAddress endpoint = new InetSocketAddress(host, port);
-            HelloWorldClientUdp.clients(4, endpoint, b -> {
+            final byte[] expected = "hello, world".getBytes(US_ASCII);
+            clients(4, endpoint, b -> {
                 // TODO: Implement!
             });
         } finally {
