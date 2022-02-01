@@ -75,8 +75,6 @@ class HelloWorldServerUdp
                         = new DatagramPacket(new byte[0], 0);
                 try {
                     socket.receive(packet);
-                    log.debug("[S] received from {}",
-                              packet.getSocketAddress());
                 } catch (final IOException ioe) {
                     if (socket.isClosed()) {
                         break;
