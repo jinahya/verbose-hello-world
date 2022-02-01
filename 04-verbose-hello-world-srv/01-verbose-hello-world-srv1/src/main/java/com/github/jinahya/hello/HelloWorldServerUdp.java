@@ -82,6 +82,7 @@ class HelloWorldServerUdp
                         break;
                     }
                     log.debug("failed to receive packet", ioe);
+                    continue;
                 }
                 final SocketAddress clientAddress = packet.getSocketAddress();
                 log.debug("[S] received from {}", clientAddress);
