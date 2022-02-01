@@ -89,7 +89,6 @@ class HelloWorldServerUdp
             LOCAL_PORT.remove();
             socket = null;
         });
-//        thread.setDaemon(true);
         thread.start();
     }
 
