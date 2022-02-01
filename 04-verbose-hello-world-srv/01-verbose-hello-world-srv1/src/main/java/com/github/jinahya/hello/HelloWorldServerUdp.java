@@ -43,40 +43,40 @@ class HelloWorldServerUdp
     /**
      * Creates a new instance.
      *
-     * @param service  an instance of {@link HelloWorld} interface.
-     * @param endpoint a socket address to bind.
+     * @param helloWorld  an instance of {@link HelloWorld} interface.
+     * @param socketAddress a socket address to bind.
      */
-    HelloWorldServerUdp(final HelloWorld service,
-                        final SocketAddress endpoint) {
+    HelloWorldServerUdp(final HelloWorld helloWorld,
+                        final SocketAddress socketAddress) {
         super();
-        this.service = Objects.requireNonNull(service, "service is null");
-        this.endpoint = Objects.requireNonNull(endpoint, "endpoint is null");
+        this.helloWorld = Objects.requireNonNull(helloWorld, "service is null");
+        this.socketAddress = Objects.requireNonNull(socketAddress, "endpoint is null");
     }
 
     @Override
     public synchronized void open() throws IOException {
         close();
-        socket = new DatagramSocket(null);
-        if (endpoint instanceof InetSocketAddress &&
-            ((InetSocketAddress) endpoint).getPort() > 0) {
-            socket.setReuseAddress(true);
+        datagramSocket = new DatagramSocket(null);
+        if (socketAddress instanceof InetSocketAddress &&
+            ((InetSocketAddress) socketAddress).getPort() > 0) {
+            datagramSocket.setReuseAddress(true);
         }
         try {
-            socket.bind(endpoint);
+            datagramSocket.bind(socketAddress);
         } catch (final IOException ioe) {
-            log.error("failed to bind; endpoint: {}", endpoint, ioe);
+            log.error("failed to bind; endpoint: {}", socketAddress, ioe);
             throw ioe;
         }
-        log.info("server is open; {}", socket.getLocalSocketAddress());
-        LOCAL_PORT.set(socket.getLocalPort());
+        log.info("server is open; {}", datagramSocket.getLocalSocketAddress());
+        LOCAL_PORT.set(datagramSocket.getLocalPort());
         final Thread thread = new Thread(() -> {
-            while (!socket.isClosed()) {
+            while (!datagramSocket.isClosed()) {
                 final DatagramPacket packet
                         = new DatagramPacket(new byte[0], 0);
                 try {
-                    socket.receive(packet);
+                    datagramSocket.receive(packet);
                 } catch (final IOException ioe) {
-                    if (socket.isClosed()) {
+                    if (datagramSocket.isClosed()) {
                         break;
                     }
                     log.debug("failed to receive packet", ioe);
@@ -87,22 +87,22 @@ class HelloWorldServerUdp
                 // TODO: Send 'hello, world' bytes back to the client!
             }
             LOCAL_PORT.remove();
-            socket = null;
+            datagramSocket = null;
         });
         thread.start();
     }
 
     @Override
     public synchronized void close() throws IOException {
-        if (socket == null || socket.isClosed()) {
+        if (datagramSocket == null || datagramSocket.isClosed()) {
             return;
         }
-        socket.close();
+        datagramSocket.close();
     }
 
-    private final HelloWorld service;
+    private final HelloWorld helloWorld;
 
-    private final SocketAddress endpoint;
+    private final SocketAddress socketAddress;
 
-    private DatagramSocket socket;
+    private DatagramSocket datagramSocket;
 }
