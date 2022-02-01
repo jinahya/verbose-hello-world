@@ -40,6 +40,7 @@ import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.ServiceLoader;
 import java.util.concurrent.Callable;
 
 /**
@@ -116,12 +117,12 @@ final class IHelloWorldServerUtils {
     /**
      * Starts a new {@link Thread#setDaemon(boolean) daemon} thread which reads
      * '{@code quit\n}' from {@link System#in} and {@link Closeable#close()
-     * closes} specified server instance.
+     * closes} specified closeable.
      *
-     * @param server the server to close.
+     * @param closeable the closeable to close.
      */
-    static void readQuitToClose(final IHelloWorldServer server) {
-        if (server == null) {
+    static void readQuitAndClose(final Closeable closeable) {
+        if (closeable == null) {
             throw new NullPointerException("server is null");
         }
         final Thread thread = new Thread(() -> {
@@ -133,9 +134,13 @@ final class IHelloWorldServerUtils {
                         break;
                     }
                 }
-                server.close();
             } catch (final IOException ioe) {
-                log.error("failed to read 'quit' and/or close the server", ioe);
+                log.error("failed to read 'quit'", ioe);
+            }
+            try {
+                closeable.close();
+            } catch (final IOException ioe) {
+                log.error("failed to close {}", closeable, ioe);
             }
         });
         thread.setDaemon(true);
@@ -152,22 +157,36 @@ final class IHelloWorldServerUtils {
     static void writeQuitToClose(final Callable<Void> callable)
             throws IOException {
         Objects.requireNonNull(callable, "callable is null");
+        try {
+            callable.call();
+        } catch (final Exception e) {
+            log.debug("failed to call {}", callable, e);
+        }
         final InputStream in = System.in;
         try {
-            final PipedOutputStream pos = new PipedOutputStream();
-            System.setIn(new PipedInputStream(pos));
-            try {
-                callable.call();
-            } catch (final Exception e) {
-                log.debug("failed to call {}", callable, e);
+            try (PipedOutputStream pos = new PipedOutputStream();
+                 PipedInputStream pis = new PipedInputStream(pos)) {
+                System.setIn(pis);
+                pos.write("quit\n".getBytes(StandardCharsets.US_ASCII));
+                pos.flush();
             }
-            pos.write("quit\n".getBytes(StandardCharsets.US_ASCII));
-            pos.flush();
         } finally {
             System.setIn(in);
         }
     }
 
+    /**
+     * Loads and returns an instance of {@link HelloWorld} interface.
+     *
+     * @return an instance of {@link HelloWorld} interface.
+     */
+    static HelloWorld loadHelloWorld() {
+        return ServiceLoader.load(HelloWorld.class).iterator().next();
+    }
+
+    /**
+     * Creates a new instance which is impossible.
+     */
     private IHelloWorldServerUtils() {
         throw new AssertionError("instantiation is not allowed");
     }

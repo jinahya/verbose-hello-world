@@ -37,17 +37,19 @@ class HelloWorldServerUdpTest {
         final InetAddress host = InetAddress.getLoopbackAddress();
         final IHelloWorldServer server;
         {
-            final HelloWorld service = ServiceLoader.load(HelloWorld.class)
-                    .iterator().next();
+            final HelloWorld service = IHelloWorldServerUtils.loadHelloWorld();
             final SocketAddress endpoint = new InetSocketAddress(host, 0);
             server = new HelloWorldServerUdp(service, endpoint);
         }
-        server.open();
-        final int port = HelloWorldServerUdp.LOCAL_PORT.get();
-        final SocketAddress endpoint = new InetSocketAddress(host, port);
-        HelloWorldClientUdp.clients(4, endpoint, b -> {
-            // TODO: Implement!
-        });
-        server.close();
+        try {
+            server.open();
+            final int port = HelloWorldServerUdp.LOCAL_PORT.get();
+            final SocketAddress endpoint = new InetSocketAddress(host, port);
+            HelloWorldClientUdp.clients(4, endpoint, b -> {
+                // TODO: Implement!
+            });
+        } finally {
+            server.close();
+        }
     }
 }

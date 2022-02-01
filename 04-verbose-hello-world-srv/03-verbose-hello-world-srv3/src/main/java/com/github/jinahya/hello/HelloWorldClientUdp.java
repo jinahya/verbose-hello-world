@@ -78,9 +78,10 @@ public class HelloWorldClientUdp
         try (DatagramSocket socket = new DatagramSocket()) {
             socket.setSoTimeout(10000); // 10 sec
             socket.send(new DatagramPacket(new byte[0], 0, endpoint));
-            log.debug("[C] send to {}", endpoint);
-            final DatagramPacket packet = new DatagramPacket(array,
-                                                             array.length);
+            log.debug("[C] sent to {} via {}", endpoint,
+                      socket.getLocalSocketAddress());
+            final DatagramPacket packet
+                    = new DatagramPacket(array, array.length);
             socket.receive(packet);
             log.debug("[C] received from {}", packet.getSocketAddress());
         }

@@ -28,17 +28,20 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 
+import static com.github.jinahya.hello.HelloWorldClientUdp.clients;
+import static com.github.jinahya.hello.IHelloWorldServerUtils.writeQuitToClose;
+
 @Slf4j
 class HelloWorldMainUdpTest {
 
     @Test
     void main__() throws IOException {
-        IHelloWorldServerUtils.writeQuitToClose(() -> {
+        writeQuitToClose(() -> {
             HelloWorldMainUdp.main("0.0.0.0", "0");
             final InetAddress host = InetAddress.getLocalHost();
             final int port = HelloWorldServerUdp.LOCAL_PORT.get();
             final SocketAddress endpoint = new InetSocketAddress(host, port);
-            HelloWorldClientUdp.clients(8, endpoint, array -> {
+            clients(8, endpoint, array -> {
                 // TODO: Verify array!
             });
             return null;

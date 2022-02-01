@@ -76,7 +76,7 @@ public class HelloWorldClientTcp
         final byte[] array = new byte[HelloWorld.BYTES];
         try (Socket socket = new Socket()) {
             socket.setSoTimeout(10000); // 10 secs
-            // TODO: Connect to the endpoint and read 'hello, world' bytes into array!
+            // TODO: Connect to the endpoint and read 'hello, world' bytes into the array!
         }
         return array;
     }

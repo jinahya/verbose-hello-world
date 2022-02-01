@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.util.ServiceLoader;
 import java.util.concurrent.Executors;
 
 /**
@@ -46,8 +45,7 @@ public class HelloWorldMainTcp {
      * @throws IOException if an I/O error occurs.
      */
     public static void main(final String... args) throws IOException {
-        final HelloWorld service = ServiceLoader.load(HelloWorld.class)
-                .iterator().next();
+        final HelloWorld service = IHelloWorldServerUtils.loadHelloWorld();
         final InetAddress host = InetAddress.getByName(args[0]);
         final int port = Integer.parseInt(args[1]);
         final SocketAddress endpoint = new InetSocketAddress(host, port);
@@ -55,7 +53,7 @@ public class HelloWorldMainTcp {
         final IHelloWorldServer server = new HelloWorldServerTcp(
                 service, endpoint, backlog, Executors::newCachedThreadPool);
         server.open();
-        IHelloWorldServerUtils.readQuitToClose(server);
+        IHelloWorldServerUtils.readQuitAndClose(server);
     }
 
     /**

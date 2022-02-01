@@ -41,8 +41,7 @@ class HelloWorldServerTcpTest {
         final InetAddress host = InetAddress.getLoopbackAddress();
         final IHelloWorldServer server;
         {
-            HelloWorld service = ServiceLoader.load(HelloWorld.class).iterator()
-                    .next();
+            HelloWorld service = IHelloWorldServerUtils.loadHelloWorld();
             if (true) { // TODO: falsify or remove when HelloWorld#set(array) method is implemented!
                 service = Mockito.mock(HelloWorld.class);
                 // https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#13

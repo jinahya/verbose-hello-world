@@ -65,7 +65,7 @@ class NetworkInterfaceTest {
                   address.isSiteLocalAddress());
     }
 
-    @Disabled
+    @Disabled("takes too long")
     @Test
     void printNetworkInterfaces() throws SocketException {
         final Enumeration<NetworkInterface> nie

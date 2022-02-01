@@ -29,11 +29,7 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Supplier;
 
 /**
  * A class serves {@code hello, world} to clients.
@@ -49,111 +45,94 @@ class HelloWorldServerUdp
     /**
      * Creates a new instance.
      *
-     * @param helloWorld              an instance of {@link HelloWorld}
-     *                                interface.
-     * @param socketAddress           a socket address to bind.
-     * @param executorServiceSupplier a supplier for an executor service.
+     * @param helloWorld      an instance of {@link HelloWorld} interface.
+     * @param socketAddress   a socket address to bind.
+     * @param executorService a supplier for an executor service.
      */
     HelloWorldServerUdp(final HelloWorld helloWorld,
                         final SocketAddress socketAddress,
-                        final Supplier<? extends ExecutorService> executorServiceSupplier) {
+                        final ExecutorService executorService) {
         super();
         this.helloWorld = Objects.requireNonNull(helloWorld, "service is null");
-        this.socketAddress = Objects.requireNonNull(socketAddress,
-                                                    "endpoint is null");
-        this.executorServiceSupplier = Objects.requireNonNull(
-                executorServiceSupplier, "executorServiceSupplier is null");
+        this.socketAddress = Objects.requireNonNull(
+                socketAddress, "endpoint is null");
+        this.executorService = Objects.requireNonNull(
+                executorService, "executorService is null");
     }
 
     @Override
     public void open() throws IOException {
-        try {
-            lock.lock();
-            close();
-            datagramSocket = new DatagramSocket(null);
-            if (socketAddress instanceof InetSocketAddress &&
-                ((InetSocketAddress) socketAddress).getPort() > 0) {
-                datagramSocket.setReuseAddress(true);
-            }
-            try {
-                datagramSocket.bind(socketAddress);
-            } catch (final IOException ioe) {
-                log.error("failed to bind; endpoint: {}", socketAddress, ioe);
-                throw ioe;
-            }
-            log.info("server is open; {}",
-                     datagramSocket.getLocalSocketAddress());
-            LOCAL_PORT.set(datagramSocket.getLocalPort());
-            final Thread thread = new Thread(() -> {
-                final ExecutorService executorService
-                        = executorServiceSupplier.get();
-                while (!datagramSocket.isClosed()) {
-                    final DatagramPacket packet = new DatagramPacket(
-                            new byte[0], 0);
-                    try {
-                        datagramSocket.receive(packet);
-                        final Future<Void> future = executorService.submit(
-                                () -> {
-                                    final SocketAddress clientAddress
-                                            = packet.getSocketAddress();
-                                    log.debug("[S] received from {}",
-                                              clientAddress);
-                                    final byte[] array
-                                            = new byte[HelloWorld.BYTES];
-                                    helloWorld.set(array);
-                                    datagramSocket.send(
-                                            new DatagramPacket(array,
-                                                               array.length,
-                                                               clientAddress));
-                                    log.debug("[S] sent to {}", clientAddress);
-                                    return null;
-                                });
-                    } catch (final IOException ioe) {
-                        if (datagramSocket.isClosed()) {
-                            break;
-                        }
-                        log.error("failed to receive", ioe);
-                    }
-                }
-                executorService.shutdown();
-                try {
-                    final boolean terminated = executorService.awaitTermination(
-                            8L, TimeUnit.SECONDS);
-                    log.debug("executor service terminated: {}", terminated);
-                } catch (final InterruptedException ie) {
-                    log.error(
-                            "interrupted while awaiting executor service to be terminated",
-                            ie);
-                }
-                LOCAL_PORT.remove();
-            });
-            thread.setDaemon(true);
-            thread.start();
-        } finally {
-            lock.unlock();
+        close();
+        datagramSocket = new DatagramSocket(null);
+        if (socketAddress instanceof InetSocketAddress &&
+            ((InetSocketAddress) socketAddress).getPort() > 0) {
+            datagramSocket.setReuseAddress(true);
         }
+        try {
+            datagramSocket.bind(socketAddress);
+        } catch (final IOException ioe) {
+            log.error("failed to bind to {}", socketAddress, ioe);
+            throw ioe;
+        }
+        log.info("server is open; {}", datagramSocket.getLocalSocketAddress());
+        LOCAL_PORT.set(datagramSocket.getLocalPort());
+        final Thread thread = new Thread(() -> {
+            while (!datagramSocket.isClosed()) {
+                final DatagramPacket clientPacket
+                        = new DatagramPacket(new byte[0], 0);
+                try {
+                    datagramSocket.receive(clientPacket);
+                } catch (final IOException ioe) {
+                    if (datagramSocket.isClosed()) {
+                        break;
+                    }
+                    log.error("failed to receive", ioe);
+                    continue;
+                }
+                executorService.submit(() -> {
+                    final SocketAddress clientAddress
+                            = clientPacket.getSocketAddress();
+                    log.debug("[S] received from {}", clientAddress);
+                    final byte[] array = new byte[HelloWorld.BYTES];
+                    helloWorld.set(array);
+                    final DatagramPacket serverPacket = new DatagramPacket(
+                            array, array.length, clientAddress);
+                    datagramSocket.send(serverPacket);
+                    log.debug("[S] sent to {}", clientAddress);
+                    return null;
+                });
+            }
+            log.debug("shutting down {}", executorService);
+            executorService.shutdown();
+            log.debug("awaiting {} to be terminated", executorService);
+            try {
+                final boolean terminated = executorService.awaitTermination(
+                        8L, TimeUnit.SECONDS);
+                log.debug("terminated: {}", terminated);
+            } catch (final InterruptedException ie) {
+                log.error("interrupted", ie);
+                Thread.currentThread().interrupt();
+            }
+            LOCAL_PORT.remove();
+        });
+        thread.setDaemon(true);
+        thread.start();
     }
 
     @Override
     public void close() throws IOException {
-        try {
-            lock.lock();
-            if (datagramSocket == null || datagramSocket.isClosed()) {
-                return;
-            }
-            datagramSocket.close();
-        } finally {
-            lock.unlock();
+        if (datagramSocket == null || datagramSocket.isClosed()) {
+            return;
         }
+        log.debug("closing {}", datagramSocket);
+        datagramSocket.close();
     }
 
     private final HelloWorld helloWorld;
 
     private final SocketAddress socketAddress;
 
-    private final Lock lock = new ReentrantLock();
-
-    private final Supplier<? extends ExecutorService> executorServiceSupplier;
+    private final ExecutorService executorService;
 
     private DatagramSocket datagramSocket;
 }

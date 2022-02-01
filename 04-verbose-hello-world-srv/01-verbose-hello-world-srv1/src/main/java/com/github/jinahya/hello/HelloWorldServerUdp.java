@@ -71,8 +71,8 @@ class HelloWorldServerUdp
         LOCAL_PORT.set(socket.getLocalPort());
         final Thread thread = new Thread(() -> {
             while (!socket.isClosed()) {
-                final DatagramPacket packet = new DatagramPacket(new byte[0],
-                                                                 0);
+                final DatagramPacket packet
+                        = new DatagramPacket(new byte[0], 0);
                 try {
                     socket.receive(packet);
                     log.debug("[S] received from {}",
@@ -87,7 +87,7 @@ class HelloWorldServerUdp
             }
             LOCAL_PORT.remove();
         });
-        thread.setDaemon(true);
+//        thread.setDaemon(true);
         thread.start();
     }
 

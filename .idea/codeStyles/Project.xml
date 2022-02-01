@@ -41,7 +41,6 @@
       <option name="TERNARY_OPERATION_WRAP" value="1" />
       <option name="FOR_STATEMENT_WRAP" value="1" />
       <option name="ARRAY_INITIALIZER_WRAP" value="1" />
-      <option name="ASSIGNMENT_WRAP" value="1" />
       <option name="PLACE_ASSIGNMENT_SIGN_ON_NEXT_LINE" value="true" />
       <option name="WRAP_COMMENTS" value="true" />
       <option name="DOWHILE_BRACE_FORCE" value="3" />
