@@ -43,9 +43,9 @@ class HelloWorldServerUdpTest {
         final InetAddress host = InetAddress.getLoopbackAddress();
         final IHelloWorldServer server;
         {
-            final HelloWorld service = loadHelloWorld();
-            final SocketAddress endpoint = new InetSocketAddress(host, 0);
-            server = new HelloWorldServerUdp(service, endpoint);
+            final HelloWorld helloWorld = loadHelloWorld();
+            final SocketAddress socketAddress = new InetSocketAddress(host, 0);
+            server = new HelloWorldServerUdp(helloWorld, socketAddress);
         }
         try {
             server.open();
