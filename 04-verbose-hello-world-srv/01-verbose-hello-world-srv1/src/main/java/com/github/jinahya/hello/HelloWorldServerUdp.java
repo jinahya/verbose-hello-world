@@ -43,14 +43,16 @@ class HelloWorldServerUdp
     /**
      * Creates a new instance.
      *
-     * @param helloWorld  an instance of {@link HelloWorld} interface.
+     * @param helloWorld    an instance of {@link HelloWorld} interface.
      * @param socketAddress a socket address to bind.
      */
     HelloWorldServerUdp(final HelloWorld helloWorld,
                         final SocketAddress socketAddress) {
         super();
-        this.helloWorld = Objects.requireNonNull(helloWorld, "service is null");
-        this.socketAddress = Objects.requireNonNull(socketAddress, "endpoint is null");
+        this.helloWorld = Objects.requireNonNull(helloWorld,
+                                                 "helloWorld is null");
+        this.socketAddress = Objects.requireNonNull(socketAddress,
+                                                    "socketAddress is null");
     }
 
     @Override
