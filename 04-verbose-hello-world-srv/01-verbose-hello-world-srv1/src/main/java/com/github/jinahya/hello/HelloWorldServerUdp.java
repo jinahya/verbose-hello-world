@@ -87,6 +87,7 @@ class HelloWorldServerUdp
                 // TODO: Send 'hello, world' bytes back to the client!
             }
             LOCAL_PORT.remove();
+            socket = null;
         });
 //        thread.setDaemon(true);
         thread.start();
