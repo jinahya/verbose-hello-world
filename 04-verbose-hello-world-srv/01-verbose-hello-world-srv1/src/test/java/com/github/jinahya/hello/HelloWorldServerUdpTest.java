@@ -32,6 +32,7 @@ import java.util.ServiceLoader;
 
 import static com.github.jinahya.hello.HelloWorldClientUdp.clients;
 import static com.github.jinahya.hello.HelloWorldServerUdp.LOCAL_PORT;
+import static com.github.jinahya.hello.IHelloWorldServerUtils.loadHelloWorld;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 
 @Slf4j
@@ -42,7 +43,7 @@ class HelloWorldServerUdpTest {
         final InetAddress host = InetAddress.getLoopbackAddress();
         final IHelloWorldServer server;
         {
-            final HelloWorld service = IHelloWorldServerUtils.loadHelloWorld();
+            final HelloWorld service = loadHelloWorld();
             final SocketAddress endpoint = new InetSocketAddress(host, 0);
             server = new HelloWorldServerUdp(service, endpoint);
         }
