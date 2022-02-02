@@ -48,6 +48,7 @@ class HelloWorldServerUdpTest {
             server = new HelloWorldServerUdp(helloWorld, socketAddress);
         }
         try {
+            log.debug("opening the server...");
             server.open();
             final int port = LOCAL_PORT.get();
             final SocketAddress endpoint = new InetSocketAddress(host, port);
@@ -56,6 +57,7 @@ class HelloWorldServerUdpTest {
                 // TODO: Implement!
             });
         } finally {
+            log.debug("closing the server...");
             server.close();
         }
     }

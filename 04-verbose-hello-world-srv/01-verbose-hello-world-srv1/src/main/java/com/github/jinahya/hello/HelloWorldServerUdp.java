@@ -49,10 +49,10 @@ class HelloWorldServerUdp
     HelloWorldServerUdp(final HelloWorld helloWorld,
                         final SocketAddress socketAddress) {
         super();
-        this.helloWorld = Objects.requireNonNull(helloWorld,
-                                                 "helloWorld is null");
-        this.socketAddress = Objects.requireNonNull(socketAddress,
-                                                    "socketAddress is null");
+        this.helloWorld = Objects.requireNonNull(
+                helloWorld, "helloWorld is null");
+        this.socketAddress = Objects.requireNonNull(
+                socketAddress, "socketAddress is null");
     }
 
     @Override
@@ -81,7 +81,7 @@ class HelloWorldServerUdp
                     if (datagramSocket.isClosed()) {
                         break;
                     }
-                    log.debug("failed to receive packet", ioe);
+                    log.debug("failed to receive", ioe);
                     continue;
                 }
                 final SocketAddress clientAddress = packet.getSocketAddress();
