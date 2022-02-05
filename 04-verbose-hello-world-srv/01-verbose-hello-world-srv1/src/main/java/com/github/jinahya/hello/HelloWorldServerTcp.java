@@ -43,39 +43,37 @@ class HelloWorldServerTcp
     /**
      * Creates a new instance.
      *
-     * @param service  an instance of {@link HelloWorld} interface.
-     * @param endpoint a socket address to bind.
-     * @param backlog  a value of backlog.
+     * @param helloWorld    an instance of {@link HelloWorld} interface.
+     * @param socketAddress a socket address to bind.
      */
-    HelloWorldServerTcp(final HelloWorld service, final SocketAddress endpoint,
-                        final int backlog) {
+    HelloWorldServerTcp(final HelloWorld helloWorld,
+                        final SocketAddress socketAddress) {
         super();
-        this.service = Objects.requireNonNull(service, "service is null");
-        this.endpoint = Objects.requireNonNull(endpoint, "endpoint is null");
-        this.backlog = backlog;
+        this.helloWorld = Objects.requireNonNull(helloWorld, "service is null");
+        this.socketAddress = Objects.requireNonNull(socketAddress,
+                                                    "endpoint is null");
     }
 
     @Override
     public synchronized void open() throws IOException {
         close();
         serverSocket = new ServerSocket();
-        if (endpoint instanceof InetSocketAddress &&
-            ((InetSocketAddress) endpoint).getPort() > 0) {
+        if (socketAddress instanceof InetSocketAddress
+            && ((InetSocketAddress) socketAddress).getPort() > 0) {
             serverSocket.setReuseAddress(true);
         }
         try {
-            serverSocket.bind(endpoint, backlog);
+            serverSocket.bind(socketAddress);
         } catch (final IOException ioe) {
-            log.error("failed to bind; endpoint: {}, backlog: {}", endpoint,
-                      backlog, ioe);
+            log.error("failed to bind to {}", socketAddress, ioe);
             throw ioe;
         }
-        log.info("server is open; {}", serverSocket.getLocalSocketAddress());
+        log.info("server bound to {}", serverSocket.getLocalSocketAddress());
         LOCAL_PORT.set(serverSocket.getLocalPort());
         final Thread thread = new Thread(() -> {
             while (!serverSocket.isClosed()) {
                 try (Socket socket = serverSocket.accept()) {
-                    log.debug("[S] connected from {}; local: {}",
+                    log.debug("[S] connected; remote: {}; local: {}",
                               socket.getRemoteSocketAddress(),
                               socket.getLocalSocketAddress());
                     // TODO: Send 'hello, world' bytes through the socket!
@@ -87,9 +85,10 @@ class HelloWorldServerTcp
                 }
             }
             LOCAL_PORT.remove();
+            serverSocket = null;
         });
-        thread.setDaemon(true);
         thread.start();
+        log.debug("server thread started");
     }
 
     @Override
@@ -100,11 +99,9 @@ class HelloWorldServerTcp
         serverSocket.close();
     }
 
-    private final HelloWorld service;
+    private final HelloWorld helloWorld;
 
-    private final SocketAddress endpoint;
-
-    private final int backlog;
+    private final SocketAddress socketAddress;
 
     private ServerSocket serverSocket;
 }

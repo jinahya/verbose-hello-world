@@ -28,27 +28,33 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 
+import static com.github.jinahya.hello.HelloWorldClientTcp.clients;
+import static com.github.jinahya.hello.HelloWorldServerTcp.LOCAL_PORT;
+import static com.github.jinahya.hello.IHelloWorldServerUtils.loadHelloWorld;
+import static java.net.InetAddress.getLoopbackAddress;
+
 @Slf4j
 class HelloWorldServerTcpTest {
 
     @Test
     void test() throws IOException, InterruptedException {
-        final InetAddress host = InetAddress.getLocalHost();
+        final InetAddress host = getLoopbackAddress();
         final IHelloWorldServer server;
         {
-            final HelloWorld service = IHelloWorldServerUtils.loadHelloWorld();
+            final HelloWorld service = loadHelloWorld();
             final SocketAddress endpoint = new InetSocketAddress(host, 0);
-            final int backlog = 50;
-            server = new HelloWorldServerTcp(service, endpoint, backlog);
+            server = new HelloWorldServerTcp(service, endpoint);
         }
         try {
+            log.debug("opening the server...");
             server.open();
-            final int port = HelloWorldServerTcp.LOCAL_PORT.get();
+            final int port = LOCAL_PORT.get();
             final SocketAddress endpoint = new InetSocketAddress(host, port);
-            HelloWorldClientTcp.clients(4, endpoint, b -> {
-                // TODO: Implement!
+            clients(4, endpoint, string -> {
+                log.debug("received: {}", string);
             });
         } finally {
+            log.debug("closing the server...");
             server.close();
         }
     }

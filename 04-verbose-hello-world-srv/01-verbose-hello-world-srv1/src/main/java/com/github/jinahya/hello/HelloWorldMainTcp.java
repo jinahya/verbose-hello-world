@@ -44,16 +44,12 @@ public class HelloWorldMainTcp {
      * @throws IOException if an I/O error occurs.
      */
     public static void main(final String... args) throws IOException {
-        final HelloWorld service = IHelloWorldServerUtils.loadHelloWorld();
-        final InetAddress host = InetAddress.getByName(args[0]);
-        final int port = Integer.parseInt(args[1]);
-        final SocketAddress endpoint = new InetSocketAddress(host, port);
-        final int backlog = 50;
-        final IHelloWorldServer server
-                = new HelloWorldServerTcp(service, endpoint, backlog);
-        try {
+        final HelloWorld helloWorld = IHelloWorldServerUtils.loadHelloWorld();
+        final SocketAddress socketAddress
+                = IHelloWorldServerUtils.parseSocketAddress(args);
+        try (IHelloWorldServer server
+                     = new HelloWorldServerTcp(helloWorld, socketAddress)) {
             server.open();
-        } finally {
             IHelloWorldServerUtils.readQuitAndClose(server);
         }
     }

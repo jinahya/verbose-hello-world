@@ -29,20 +29,23 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 
 import static com.github.jinahya.hello.HelloWorldClientTcp.clients;
+import static com.github.jinahya.hello.HelloWorldMainTcp.main;
+import static com.github.jinahya.hello.HelloWorldServerTcp.LOCAL_PORT;
 import static com.github.jinahya.hello.IHelloWorldServerUtils.writeQuitToClose;
+import static java.net.InetAddress.getLoopbackAddress;
 
 @Slf4j
 class HelloWorldMainTcpTest {
 
     @Test
     void main__() throws InterruptedException, IOException {
+        final InetAddress addr = getLoopbackAddress();
         writeQuitToClose(() -> {
-            HelloWorldMainTcp.main("0.0.0.0", "0");
-            final InetAddress host = InetAddress.getLocalHost();
-            final int port = HelloWorldServerTcp.LOCAL_PORT.get();
-            final SocketAddress endpoint = new InetSocketAddress(host, port);
-            clients(8, endpoint, b -> {
-                // TODO: Verify array!
+            main("0", addr.getHostAddress());
+            final int port = LOCAL_PORT.get();
+            final SocketAddress endpoint = new InetSocketAddress(addr, port);
+            clients(8, endpoint, string -> {
+                log.debug("received: {}", string);
             });
             return null;
         });

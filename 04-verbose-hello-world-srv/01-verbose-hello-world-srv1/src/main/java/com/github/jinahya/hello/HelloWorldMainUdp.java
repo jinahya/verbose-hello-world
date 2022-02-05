@@ -46,10 +46,11 @@ public class HelloWorldMainUdp {
                 = IHelloWorldServerUtils.loadHelloWorld();
         final SocketAddress socketAddress
                 = IHelloWorldServerUtils.parseSocketAddress(args);
-        final IHelloWorldServer server
-                = new HelloWorldServerUdp(helloWorld, socketAddress);
-        server.open();
-        IHelloWorldServerUtils.readQuitAndClose(server);
+        try (IHelloWorldServer server
+                = new HelloWorldServerUdp(helloWorld, socketAddress)) {
+            server.open();
+            IHelloWorldServerUtils.readQuitAndClose(server);
+        }
     }
 
     /**

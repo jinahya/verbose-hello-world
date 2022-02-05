@@ -38,18 +38,18 @@ class HelloWorldServerUdpTest {
 
     @Test
     void test() throws IOException, InterruptedException {
-        final InetAddress host = getLoopbackAddress();
+        final InetAddress addr = getLoopbackAddress();
         final IHelloWorldServer server;
         {
             final HelloWorld helloWorld = loadHelloWorld();
-            final SocketAddress socketAddress = new InetSocketAddress(host, 0);
+            final SocketAddress socketAddress = new InetSocketAddress(addr, 0);
             server = new HelloWorldServerUdp(helloWorld, socketAddress);
         }
         try {
             log.debug("opening the server...");
             server.open();
             final int port = LOCAL_PORT.get();
-            final SocketAddress endpoint = new InetSocketAddress(host, port);
+            final SocketAddress endpoint = new InetSocketAddress(addr, port);
             clients(4, endpoint, string -> {
                 log.debug("received: {}", string);
             });
