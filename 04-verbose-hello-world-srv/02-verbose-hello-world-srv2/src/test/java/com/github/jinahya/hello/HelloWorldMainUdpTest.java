@@ -32,7 +32,7 @@ import java.net.SocketAddress;
 class HelloWorldMainUdpTest {
 
     @Test
-    void main__() throws IOException {
+    void main__() throws InterruptedException, IOException {
         IHelloWorldServerUtils.writeQuitToClose(() -> {
             HelloWorldMainUdp.main("0.0.0.0", "0");
             final InetAddress host = InetAddress.getLocalHost();

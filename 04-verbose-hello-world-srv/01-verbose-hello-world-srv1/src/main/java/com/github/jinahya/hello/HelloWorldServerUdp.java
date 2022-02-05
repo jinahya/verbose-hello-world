@@ -49,39 +49,37 @@ class HelloWorldServerUdp
     HelloWorldServerUdp(final HelloWorld helloWorld,
                         final SocketAddress socketAddress) {
         super();
-        this.helloWorld = Objects.requireNonNull(
-                helloWorld, "helloWorld is null");
-        this.socketAddress = Objects.requireNonNull(
-                socketAddress, "socketAddress is null");
+        this.helloWorld = Objects.requireNonNull(helloWorld);
+        this.socketAddress = Objects.requireNonNull(socketAddress);
     }
 
     @Override
     public synchronized void open() throws IOException {
         close();
         datagramSocket = new DatagramSocket(null);
-        if (socketAddress instanceof InetSocketAddress &&
-            ((InetSocketAddress) socketAddress).getPort() > 0) {
+        if (socketAddress instanceof InetSocketAddress
+            && ((InetSocketAddress) socketAddress).getPort() > 0) {
             datagramSocket.setReuseAddress(true);
         }
         try {
             datagramSocket.bind(socketAddress);
-        } catch (final IOException ioe) {
-            log.error("failed to bind; endpoint: {}", socketAddress, ioe);
+        } catch (IOException ioe) {
+            log.error("failed to bind to {}", socketAddress, ioe);
             throw ioe;
         }
-        log.info("server is open; {}", datagramSocket.getLocalSocketAddress());
+        log.info("server bound to {}", datagramSocket.getLocalSocketAddress());
         LOCAL_PORT.set(datagramSocket.getLocalPort());
         final Thread thread = new Thread(() -> {
             while (!datagramSocket.isClosed()) {
                 final DatagramPacket packet
-                        = new DatagramPacket(new byte[0], 0);
+                        = new DatagramPacket(new byte[1], 1);
                 try {
                     datagramSocket.receive(packet);
                 } catch (final IOException ioe) {
                     if (datagramSocket.isClosed()) {
                         break;
                     }
-                    log.debug("failed to receive", ioe);
+                    log.error("failed to receive", ioe);
                     continue;
                 }
                 final SocketAddress clientAddress = packet.getSocketAddress();
@@ -92,6 +90,7 @@ class HelloWorldServerUdp
             datagramSocket = null;
         });
         thread.start();
+        log.debug("server thread started.");
     }
 
     @Override

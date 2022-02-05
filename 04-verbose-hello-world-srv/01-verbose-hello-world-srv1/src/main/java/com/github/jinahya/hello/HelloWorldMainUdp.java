@@ -23,13 +23,11 @@ package com.github.jinahya.hello;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 
 /**
- * A class whose {@link #main(String[])} method accepts socket connections and
- * sends {@code hello, world} to clients.
+ * A class whose {@link #main(String[])} method serves {@code hello, world} to
+ * clients.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -37,24 +35,21 @@ import java.net.SocketAddress;
 public class HelloWorldMainUdp {
 
     /**
-     * The main method of this program which accepts socket connections and
-     * sends {@code hello, world} to clients.
+     * The main method of this program which serves {@code hello, world} to
+     * clients.
      *
      * @param args an array of command line arguments.
      * @throws IOException if an I/O error occurs.
      */
     public static void main(final String... args) throws IOException {
-        final HelloWorld service = IHelloWorldServerUtils.loadHelloWorld();
-        final InetAddress host = InetAddress.getByName(args[0]);
-        final int port = Integer.parseInt(args[1]);
-        final SocketAddress endpoint = new InetSocketAddress(host, port);
+        final HelloWorld helloWorld
+                = IHelloWorldServerUtils.loadHelloWorld();
+        final SocketAddress socketAddress
+                = IHelloWorldServerUtils.parseSocketAddress(args);
         final IHelloWorldServer server
-                = new HelloWorldServerUdp(service, endpoint);
-        try {
-            server.open();
-        } finally {
-            IHelloWorldServerUtils.readQuitAndClose(server);
-        }
+                = new HelloWorldServerUdp(helloWorld, socketAddress);
+        server.open();
+        IHelloWorldServerUtils.readQuitAndClose(server);
     }
 
     /**

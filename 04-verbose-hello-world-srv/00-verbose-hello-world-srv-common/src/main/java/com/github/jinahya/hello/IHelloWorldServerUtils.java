@@ -21,11 +21,6 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
 
 import java.io.BufferedReader;
 import java.io.Closeable;
@@ -36,12 +31,14 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.concurrent.Callable;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 /**
  * A utility class for Hello World servers.
@@ -51,73 +48,84 @@ import java.util.concurrent.Callable;
 @Slf4j
 final class IHelloWorldServerUtils {
 
-    static boolean isLocal(InetAddress address) {
-        return true;
-    }
-
     /**
      * Parses specified command line arguments and returns a socket address to
      * bind.
      *
      * @param args the command line arguments.
      * @return a socket address to bind.
-     * @throws UnknownHostException if the {@code host} part is unknown.
+     * @throws UnknownHostException if {@code args[1]} is not known as an
+     *                              address.
      */
-    static InetSocketAddress parseEndpointToBind(final String[] args)
+    static SocketAddress parseSocketAddress(final String[] args)
             throws UnknownHostException {
         Objects.requireNonNull(args, "args is null");
-//        int port = 0;
-//        InetAddress host = InetAddress.getByName("0.0.0.0");
-//        if (args.length > 0) {
-//            try {
-//                port = Integer.parseInt(args[0]);
-//                if (port < 0 || port > 65535) {
-//                    throw new IllegalArgumentException("illegal port number: " + port);
-//                }
-//            } catch (final NumberFormatException nfe) {
-//                throw new IllegalArgumentException("unable to parse port number from " + args[0]);
-//            }
-//            if (args.length > 1) {
-//                try {
-//                    host = InetAddress.getByName(args[1]);
-//                    host.loca
-//                    if (host.isAnyLocalAddress()) {
-//                    }
-//                } catch (final UnknownHostException uhe) {
-//                    log.error("unable to parse binding address from " + args[1]);
-//                }
-//            }
-//        }
-        final Options options = new Options();
-        options.addOption(Option.builder("h")
-                                  .longOpt("host")
-                                  .desc("local host to bind")
-                                  .type(String.class)
-                                  .required(false)
-                                  .build());
-        options.addOption(Option.builder("p")
-                                  .longOpt("port")
-                                  .desc("local port to bind")
-                                  .type(int.class)
-                                  .required(false)
-                                  .build());
-        try {
-            final CommandLine values = new DefaultParser().parse(options, args);
-            final String host = Optional.ofNullable(values.getOptionValue("h"))
-                    .orElse("0.0.0.0");
-            final int port = Integer.parseInt(
-                    Optional.ofNullable(values.getOptionValue("p"))
-                            .orElse("0"));
-            return new InetSocketAddress(InetAddress.getByName(host), port);
-        } catch (final ParseException pe) {
-            throw new RuntimeException("failed to parse args", pe);
+        int port = 0;
+        if (args.length > 0) {
+            port = Integer.parseInt(args[0]);
         }
+        InetAddress addr = InetAddress.getLoopbackAddress();
+        if (args.length > 1) {
+            addr = InetAddress.getByName(args[1]);
+        }
+        return new InetSocketAddress(addr, port);
     }
 
     /**
-     * Starts a new {@link Thread#setDaemon(boolean) daemon} thread which reads
-     * '{@code quit\n}' from {@link System#in} and {@link Closeable#close()
-     * closes} specified closeable.
+     * Parses specified command line arguments and applies them to specified
+     * function.
+     *
+     * @param args     the command line arguments.
+     * @param function the function to apply.
+     * @param <R>      result type parameter
+     * @return the result of the {@code function}.
+     * @throws UnknownHostException if {@code args[1]} is not known as an
+     *                              address.
+     */
+    static <R> R applySocketAddress(
+            final String[] args,
+            final Function<
+                    ? super Integer,
+                    ? extends Function<
+                            ? super InetAddress,
+                            ? extends R>> function)
+            throws UnknownHostException {
+        Objects.requireNonNull(args, "args is null");
+        Objects.requireNonNull(function, "function is null");
+        int port = 0;
+        if (args.length > 0) {
+            port = Integer.parseInt(args[0]);
+        }
+        InetAddress addr = InetAddress.getLoopbackAddress();
+        if (args.length > 1) {
+            addr = InetAddress.getByName(args[1]);
+        }
+        return function.apply(port).apply(addr);
+    }
+
+    /**
+     * Parses specified command line arguments and applies them to specified
+     * function.
+     *
+     * @param args     the command line arguments.
+     * @param function the function to apply.
+     * @param <R>      result type parameter
+     * @return the result of the {@code function}.
+     * @throws UnknownHostException if {@code args[1]} is not known as an
+     *                              address.
+     */
+    static <R> R applySocketAddress(
+            final String[] args,
+            final BiFunction<
+                    ? super Integer,
+                    ? super InetAddress, ? extends R> function)
+            throws UnknownHostException {
+        return applySocketAddress(args, p -> a -> function.apply(p, a));
+    }
+
+    /**
+     * Starts a new thread which reads '{@code quit\n}' from {@link System#in}
+     * and {@link Closeable#close() closes} specified closeable.
      *
      * @param closeable the closeable to close.
      */
@@ -131,20 +139,22 @@ final class IHelloWorldServerUtils {
             try {
                 for (String line; (line = reader.readLine()) != null; ) {
                     if (line.trim().equalsIgnoreCase("quit")) {
+                        log.debug("read 'quit'. breaking out...");
                         break;
                     }
                 }
             } catch (final IOException ioe) {
                 log.error("failed to read 'quit'", ioe);
             }
+            log.debug("closing {}", closeable);
             try {
                 closeable.close();
             } catch (final IOException ioe) {
                 log.error("failed to close {}", closeable, ioe);
             }
         });
-        thread.setDaemon(true);
         thread.start();
+        log.debug("thread for reading 'quit' started");
     }
 
     /**
@@ -152,26 +162,33 @@ final class IHelloWorldServerUtils {
      * '{@code quit\n}' to a pipe connected to {@link System#in}.
      *
      * @param callable the callable to call.
-     * @throws IOException if an I/O error occurs.
+     * @throws InterruptedException when interrupted while executing {@code
+     *                              callable}.
+     * @throws IOException          if an I/O error occurs.
      */
     static void writeQuitToClose(final Callable<Void> callable)
-            throws IOException {
+            throws InterruptedException, IOException {
         Objects.requireNonNull(callable, "callable is null");
-        try {
-            callable.call();
-        } catch (final Exception e) {
-            log.debug("failed to call {}", callable, e);
-        }
-        final InputStream in = System.in;
-        try {
-            try (PipedOutputStream pos = new PipedOutputStream();
-                 PipedInputStream pis = new PipedInputStream(pos)) {
+        final Thread thread = new Thread(() -> {
+            try {
+                callable.call();
+            } catch (final Exception e) {
+                log.debug("failed to call {}", callable, e);
+            }
+        });
+        thread.start();
+        thread.join();
+        try (PipedOutputStream pos = new PipedOutputStream();
+             PipedInputStream pis = new PipedInputStream(pos)) {
+            final InputStream in = System.in;
+            try {
                 System.setIn(pis);
+                log.debug("writing 'quit'...");
                 pos.write("quit\n".getBytes(StandardCharsets.US_ASCII));
                 pos.flush();
+            } finally {
+                System.setIn(in);
             }
-        } finally {
-            System.setIn(in);
         }
     }
 

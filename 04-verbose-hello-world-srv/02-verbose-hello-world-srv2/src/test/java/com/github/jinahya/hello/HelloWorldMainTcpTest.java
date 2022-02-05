@@ -28,12 +28,14 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 
+import static com.github.jinahya.hello.IHelloWorldServerUtils.writeQuitToClose;
+
 @Slf4j
 class HelloWorldMainTcpTest {
 
     @Test
-    void main__() throws IOException {
-        IHelloWorldServerUtils.writeQuitToClose(() -> {
+    void main__() throws InterruptedException, IOException {
+        writeQuitToClose(() -> {
             HelloWorldMainTcp.main("0.0.0.0", "0");
             final InetAddress host = InetAddress.getLocalHost();
             final int port = HelloWorldServerTcp.LOCAL_PORT.get();

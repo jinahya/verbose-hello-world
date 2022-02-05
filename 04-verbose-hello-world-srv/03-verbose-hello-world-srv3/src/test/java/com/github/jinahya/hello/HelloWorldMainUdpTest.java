@@ -35,7 +35,7 @@ import static com.github.jinahya.hello.IHelloWorldServerUtils.writeQuitToClose;
 class HelloWorldMainUdpTest {
 
     @Test
-    void main__() throws IOException {
+    void main__() throws InterruptedException, IOException {
         writeQuitToClose(() -> {
             HelloWorldMainUdp.main("0.0.0.0", "0");
             final InetAddress host = InetAddress.getLocalHost();

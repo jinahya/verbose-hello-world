@@ -27,20 +27,18 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.nio.charset.StandardCharsets;
-import java.util.ServiceLoader;
 
 import static com.github.jinahya.hello.HelloWorldClientUdp.clients;
 import static com.github.jinahya.hello.HelloWorldServerUdp.LOCAL_PORT;
 import static com.github.jinahya.hello.IHelloWorldServerUtils.loadHelloWorld;
-import static java.nio.charset.StandardCharsets.US_ASCII;
+import static java.net.InetAddress.getLoopbackAddress;
 
 @Slf4j
 class HelloWorldServerUdpTest {
 
     @Test
     void test() throws IOException, InterruptedException {
-        final InetAddress host = InetAddress.getLoopbackAddress();
+        final InetAddress host = getLoopbackAddress();
         final IHelloWorldServer server;
         {
             final HelloWorld helloWorld = loadHelloWorld();
@@ -52,9 +50,8 @@ class HelloWorldServerUdpTest {
             server.open();
             final int port = LOCAL_PORT.get();
             final SocketAddress endpoint = new InetSocketAddress(host, port);
-            final byte[] expected = "hello, world".getBytes(US_ASCII);
-            clients(4, endpoint, b -> {
-                // TODO: Implement!
+            clients(4, endpoint, string -> {
+                log.debug("received: {}", string);
             });
         } finally {
             log.debug("closing the server...");

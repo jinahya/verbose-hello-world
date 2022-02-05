@@ -28,18 +28,24 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 
+import static com.github.jinahya.hello.HelloWorldClientUdp.clients;
+import static com.github.jinahya.hello.HelloWorldMainUdp.main;
+import static com.github.jinahya.hello.HelloWorldServerUdp.LOCAL_PORT;
+import static com.github.jinahya.hello.IHelloWorldServerUtils.writeQuitToClose;
+import static java.net.InetAddress.getLoopbackAddress;
+
 @Slf4j
 class HelloWorldMainUdpTest {
 
     @Test
-    void main__() throws IOException {
-        IHelloWorldServerUtils.writeQuitToClose(() -> {
-            HelloWorldMainUdp.main("0.0.0.0", "0");
-            final InetAddress host = InetAddress.getLocalHost();
-            final int port = HelloWorldServerUdp.LOCAL_PORT.get();
+    void main__() throws InterruptedException, IOException {
+        writeQuitToClose(() -> {
+            final InetAddress host = getLoopbackAddress();
+            main("0", host.getHostAddress());
+            final int port = LOCAL_PORT.get();
             final SocketAddress endpoint = new InetSocketAddress(host, port);
-            HelloWorldClientUdp.clients(8, endpoint, array -> {
-                // TODO: Verify array!
+            clients(8, endpoint, string -> {
+                log.debug("received: {}", string);
             });
             return null;
         });
