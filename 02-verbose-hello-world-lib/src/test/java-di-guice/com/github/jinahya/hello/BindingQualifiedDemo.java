@@ -20,7 +20,7 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import jakarta.inject.Qualifier;
+import com.google.inject.BindingAnnotation;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
@@ -33,14 +33,14 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * An injection qualifier for {@link HelloWorldImpl}.
+ * An injection qualifier for {@link HelloWorldDemo}.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@javax.inject.Qualifier // Guice
-@Qualifier
+@BindingAnnotation
+@QualifiedDemo
 @Retention(RUNTIME)
 @Target({FIELD, METHOD, PARAMETER, TYPE, ANNOTATION_TYPE})
-@interface QualifiedImpl {
+@interface BindingQualifiedDemo {
 
 }

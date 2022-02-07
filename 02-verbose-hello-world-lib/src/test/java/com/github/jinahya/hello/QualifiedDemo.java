@@ -20,10 +20,12 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import javax.inject.Qualifier;
+import jakarta.inject.Qualifier;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.PARAMETER;
@@ -35,9 +37,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@javax.inject.Qualifier // Guice
 @Qualifier
 @Retention(RUNTIME)
-@Target({FIELD, METHOD, PARAMETER, TYPE})
+@Target({FIELD, METHOD, PARAMETER, TYPE, ANNOTATION_TYPE})
 @interface QualifiedDemo {
 
 }

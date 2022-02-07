@@ -20,13 +20,14 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
 import org.junit.jupiter.api.BeforeEach;
 
+import static com.google.inject.Guice.createInjector;
+
 /**
- * An injection test for Google Guice.
+ * A test class injects using Guice.
  *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see <a href="https://github.com/google/guice">Guice</a>
  */
 class HelloWorldDiGuiceTest
@@ -34,8 +35,7 @@ class HelloWorldDiGuiceTest
 
     @BeforeEach
     void inject() {
-        final Injector injector = Guice.createInjector(
-                new HelloWorldDiGuiceModule());
+        final var injector = createInjector(new HelloWorldDiGuiceModule());
         injector.injectMembers(this);
     }
 }

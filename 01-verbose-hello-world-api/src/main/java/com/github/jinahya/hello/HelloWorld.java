@@ -49,10 +49,10 @@ import java.util.concurrent.Future;
  * <h2 id="hello-world-bytes">hello-world-bytes</h2>
  * A sequence of {@link #BYTES} bytes, representing the "{@code hello, world}"
  * string encoded in {@link java.nio.charset.StandardCharsets#US_ASCII US-ASCII}
- * character set, which consists of {@code 0x68('h')} followed by {@code
- * 0x65('e')}, {@code 0x6C('l')}, {@code 0x6C('l')}, {@code 0x6F('o')}, {@code
- * 0x2C(',')}, {@code 0x20(' ')}, {@code 0x77('w')}, {@code 0x6F('o')}, {@code
- * 0x72('r')}, {@code 0x6C('l')}, and {@code 0x64('d')}.
+ * character set, which consists of {@code 0x68("h")} followed by {@code
+ * 0x65("e")}, {@code 0x6C("l")}, {@code 0x6C("l")}, {@code 0x6F("o")}, {@code
+ * 0x2C(",")}, {@code 0x20(" ")}, {@code 0x77("w")}, {@code 0x6F("o")}, {@code
+ * 0x72("r")}, {@code 0x6C("l")}, and {@code 0x64("d")}.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -73,7 +73,7 @@ public interface HelloWorld {
      * <pre>
      *   0    <= index                                  index + 12    <= array.length
      *   ↓       ↓                                               ↓       ↓
-     * |   |...|'h'|'e'|'l'|'l'|'o'|','|' '|'w'|'o'|'r'|'l'|'d'|...|   |
+     * |   |...|"h"|"e"|"l"|"l"|"o"|","|" "|"w"|"o"|"r"|"l"|"d"|...|   |
      * </pre>
      *
      * @param array the array on which bytes are set.
@@ -221,7 +221,7 @@ public interface HelloWorld {
 
     /**
      * Puts <a href="#hello-world-bytes">hello-world-bytes</a> on specified byte
-     * buffer. The buffer's position, on successful return, is incremented by
+     * buffer. The buffer"s position, on successful return, is incremented by
      * {@link #BYTES}.
      * <pre>
      * Given,
@@ -233,7 +233,7 @@ public interface HelloWorld {
      * On successful return,
      *   0                                                    <= position <= limit    <= capacity
      *   ↓                                                       ↓           ↓           ↓
-     *   |   |   |'h'|'e'|'l'|'l'|'o'|','|' '|'w'|'o'|'r'|'l'|'d'|   |   |   |   |   |   |
+     *   |   |   |"h"|"e"|"l"|"l"|"o"|","|" "|"w"|"o"|"r"|"l"|"d"|   |   |   |   |   |   |
      *                                                           |-remaining-|
      * </pre>
      *
@@ -245,10 +245,10 @@ public interface HelloWorld {
      *                                 #BYTES}.
      * @implSpec The default implementation, if specified buffer {@link
      * ByteBuffer#hasArray() has a backing-array}, invokes {@link #set(byte[],
-     * int) #set(array, index)} with the buffer's {@link ByteBuffer#array()
+     * int) #set(array, index)} with the buffer"s {@link ByteBuffer#array()
      * backing-array} and ({@link ByteBuffer#arrayOffset() buffer.arrayOffset} +
      * {@link ByteBuffer#position() buffer.position}) and then manually
-     * increments the buffer's {@link ByteBuffer#position(int) position} by
+     * increments the buffer"s {@link ByteBuffer#position(int) position} by
      * {@link #BYTES}. Otherwise, this method invokes {@link #set(byte[])
      * #set(array)} method with an array of {@link #BYTES} bytes and puts the
      * array on the buffer by invoking {@link ByteBuffer#put(byte[])

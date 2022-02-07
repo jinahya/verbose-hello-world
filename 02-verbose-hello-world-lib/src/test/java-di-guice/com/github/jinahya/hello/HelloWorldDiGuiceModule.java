@@ -36,13 +36,23 @@ class HelloWorldDiGuiceModule
 
     @Override
     protected void configure() {
-        bind(HelloWorld.class).annotatedWith(named(DEMO))
+        bind(HelloWorld.class)
+                .annotatedWith(named(DEMO))
                 .to(HelloWorldDemo.class);
-        bind(HelloWorld.class).annotatedWith(named(IMPL))
+        bind(HelloWorld.class)
+                .annotatedWith(named(IMPL))
                 .to(HelloWorldImpl.class);
-        bind((HelloWorld.class)).annotatedWith(QualifiedDemo.class)
+        bind((HelloWorld.class))
+                .annotatedWith(QualifiedDemo.class)
                 .to(HelloWorldDemo.class);
-        bind((HelloWorld.class)).annotatedWith(QualifiedImpl.class)
+        bind((HelloWorld.class))
+                .annotatedWith(QualifiedImpl.class)
+                .to(HelloWorldImpl.class);
+        bind((HelloWorld.class))
+                .annotatedWith(BindingQualifiedDemo.class)
+                .to(HelloWorldDemo.class);
+        bind((HelloWorld.class))
+                .annotatedWith(BindingQualifiedImpl.class)
                 .to(HelloWorldImpl.class);
     }
 }

@@ -20,8 +20,8 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 import static java.util.concurrent.ThreadLocalRandom.current;
 
@@ -58,18 +58,24 @@ abstract class HelloWorldDiTest
         }
     }
 
+    @javax.inject.Named(DEMO) // Guice
+    @javax.inject.Inject // Guice
     @Named(DEMO)
     @Inject
     HelloWorld namedDemo;
 
+    @javax.inject.Named(IMPL) // Guice
+    @javax.inject.Inject // Guice
     @Named(IMPL)
     @Inject
     HelloWorld namedImpl;
 
+    @javax.inject.Inject // Guice
     @QualifiedDemo
     @Inject
     HelloWorld qualifiedDemo;
 
+    @javax.inject.Inject // Guice
     @QualifiedImpl
     @Inject
     HelloWorld qualifiedImpl;

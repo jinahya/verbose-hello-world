@@ -84,7 +84,7 @@ class HelloWorldServerUdp
                 }
                 final SocketAddress clientAddress = packet.getSocketAddress();
                 log.debug("[S] received from {}", clientAddress);
-                // TODO: Send 'hello, world' bytes back to the client!
+                // TODO: Send "hello, world" bytes back to the client!
             }
             LOCAL_PORT.remove();
             datagramSocket = null;

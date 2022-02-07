@@ -39,11 +39,11 @@ class HelloWorldMainTcpTest {
 
     @Test
     void main__() throws InterruptedException, IOException {
-        final InetAddress addr = getLoopbackAddress();
+        final var addr = getLoopbackAddress();
         writeQuitToClose(() -> {
             main("0", addr.getHostAddress());
-            final int port = LOCAL_PORT.get();
-            final SocketAddress endpoint = new InetSocketAddress(addr, port);
+            final var port = LOCAL_PORT.get();
+            final var endpoint = new InetSocketAddress(addr, port);
             clients(8, endpoint, string -> {
                 log.debug("received: {}", string);
             });

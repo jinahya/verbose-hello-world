@@ -76,7 +76,7 @@ class HelloWorldServerTcp
                     log.debug("[S] connected; remote: {}; local: {}",
                               socket.getRemoteSocketAddress(),
                               socket.getLocalSocketAddress());
-                    // TODO: Send 'hello, world' bytes through the socket!
+                    // TODO: Send "hello, world" bytes through the socket!
                 } catch (final IOException ioe) {
                     if (serverSocket.isClosed()) {
                         break;

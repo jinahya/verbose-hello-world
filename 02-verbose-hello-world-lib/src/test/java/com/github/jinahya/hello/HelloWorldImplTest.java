@@ -29,11 +29,11 @@ class HelloWorldImplTest
         extends HelloWorldTest {
 
     /**
-     * {@inheritDoc} The {@code helloWorld()} method of {@code
-     * HelloWorldImplTest} class returns a new instance of {@link
-     * HelloWorldImpl} class.
+     * {@inheritDoc}
      *
      * @return {@inheritDoc}
+     * @implNote This implementation returns a new instance of {@link
+     * HelloWorldImpl} class.
      */
     @Override
     HelloWorld helloWorld() {

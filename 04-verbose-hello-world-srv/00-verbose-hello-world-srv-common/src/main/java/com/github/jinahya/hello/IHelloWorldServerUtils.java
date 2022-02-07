@@ -124,7 +124,7 @@ final class IHelloWorldServerUtils {
     }
 
     /**
-     * Starts a new thread which reads '{@code quit\n}' from {@link System#in}
+     * Starts a new thread which reads "{@code quit\n}" from {@link System#in}
      * and {@link Closeable#close() closes} specified closeable.
      *
      * @param closeable the closeable to close.
@@ -159,7 +159,7 @@ final class IHelloWorldServerUtils {
 
     /**
      * Invokes {@link Callable#call()} method on specified callable and writes
-     * '{@code quit\n}' to a pipe connected to {@link System#in}.
+     * "{@code quit\n}" to a pipe connected to {@link System#in}.
      *
      * @param callable the callable to call.
      * @throws InterruptedException when interrupted while executing {@code

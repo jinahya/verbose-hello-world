@@ -20,10 +20,10 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import jakarta.enterprise.inject.Disposes;
+import jakarta.enterprise.inject.Produces;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.enterprise.inject.Disposes;
-import javax.enterprise.inject.Produces;
 import java.util.Iterator;
 import java.util.ServiceLoader;
 

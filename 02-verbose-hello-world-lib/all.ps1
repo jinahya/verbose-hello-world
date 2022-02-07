@@ -5,7 +5,7 @@ $profilesAndTests = [ordered]@{
     "di-guide" = "HelloWorldDiGuiceTest"
     "di-hk2" = "HelloWorldDiHk2Test"
     "di-spring" = "HelloWorldDiSpringTest"
-    "weld-junit5" = "HelloWorldWeldJunit5Test"
+#     "weld-junit5" = "HelloWorldWeldJunit5Test"
 }
 Write-Host "at: $PSScriptRoot"
 foreach ($profile in $profilesAndTests.keys)

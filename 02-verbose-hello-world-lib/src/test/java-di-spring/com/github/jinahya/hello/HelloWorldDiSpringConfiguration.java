@@ -20,10 +20,9 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import jakarta.inject.Named;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import javax.inject.Named;
 
 import static com.github.jinahya.hello.HelloWorldDiTest.DEMO;
 import static com.github.jinahya.hello.HelloWorldDiTest.IMPL;
@@ -34,12 +33,14 @@ import static com.github.jinahya.hello.HelloWorldDiTest.IMPL;
 @Configuration
 class HelloWorldDiSpringConfiguration {
 
+    @javax.inject.Named(DEMO)
     @Named(DEMO)
     @Bean
     HelloWorld namedDemo() {
         return new HelloWorldDemo();
     }
 
+    @javax.inject.Named(IMPL)
     @Named(IMPL)
     @Bean
     HelloWorld namedImpl() {

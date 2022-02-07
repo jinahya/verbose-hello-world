@@ -50,11 +50,17 @@ class HelloWorldDiHk2Binder
 
     @Override
     protected void configure() {
-        bind(HelloWorldDemo.class).named(DEMO).to(HelloWorld.class);
-        bind(HelloWorldImpl.class).named(IMPL).to(HelloWorld.class);
-        bind(HelloWorldImpl.class).qualifiedBy(new QualifiedDemo_())
+        bind(HelloWorldDemo.class)
+                .named(DEMO)
                 .to(HelloWorld.class);
-        bind(HelloWorldImpl.class).qualifiedBy(new QualifiedImpl_())
+        bind(HelloWorldImpl.class)
+                .named(IMPL)
+                .to(HelloWorld.class);
+        bind(HelloWorldImpl.class)
+                .qualifiedBy(new QualifiedDemo_())
+                .to(HelloWorld.class);
+        bind(HelloWorldImpl.class)
+                .qualifiedBy(new QualifiedImpl_())
                 .to(HelloWorld.class);
     }
 }

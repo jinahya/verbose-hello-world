@@ -20,10 +20,9 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.utilities.Binder;
-import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.jupiter.api.BeforeEach;
+
+import static org.glassfish.hk2.utilities.ServiceLocatorUtilities.bind;
 
 /**
  * An extended {@link HelloWorldDiTest} which uses {@link HelloWorldDiHk2Binder}
@@ -36,8 +35,8 @@ class HelloWorldDiHk2Test
 
     @BeforeEach
     void inject() {
-        final Binder binder = new HelloWorldDiHk2Binder();
-        final ServiceLocator locator = ServiceLocatorUtilities.bind(binder);
+        final var binder = new HelloWorldDiHk2Binder();
+        final var locator = bind(binder);
         locator.inject(this);
     }
 }

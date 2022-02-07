@@ -20,14 +20,12 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import lombok.extern.slf4j.Slf4j;
 import org.jboss.weld.junit5.WeldJunit5Extension;
 import org.jboss.weld.junit5.auto.AddBeanClasses;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 @AddBeanClasses({HelloWorldCdiFactory.class})
 @ExtendWith({WeldJunit5Extension.class})
-@Slf4j
 class HelloWorldWeldJunit5Test
         extends HelloWorldDiTest {
 
