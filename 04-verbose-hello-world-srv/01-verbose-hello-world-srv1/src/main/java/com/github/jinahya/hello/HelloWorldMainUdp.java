@@ -47,7 +47,7 @@ public class HelloWorldMainUdp {
         final SocketAddress socketAddress
                 = IHelloWorldServerUtils.parseSocketAddress(args);
         try (IHelloWorldServer server
-                = new HelloWorldServerUdp(helloWorld, socketAddress)) {
+                     = new HelloWorldServerUdp(helloWorld, socketAddress)) {
             server.open();
             IHelloWorldServerUtils.readQuitAndClose(server);
         }
