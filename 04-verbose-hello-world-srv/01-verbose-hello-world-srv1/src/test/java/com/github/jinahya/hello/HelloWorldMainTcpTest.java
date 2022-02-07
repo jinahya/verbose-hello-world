@@ -42,8 +42,8 @@ class HelloWorldMainTcpTest {
             main("0", addr.getHostAddress());
             final var port = LOCAL_PORT.get();
             final var endpoint = new InetSocketAddress(addr, port);
-            clients(8, endpoint, string -> {
-                log.debug("received: {}", string);
+            clients(8, endpoint, s -> {
+                log.debug("received: {}", s);
             });
             return null;
         });

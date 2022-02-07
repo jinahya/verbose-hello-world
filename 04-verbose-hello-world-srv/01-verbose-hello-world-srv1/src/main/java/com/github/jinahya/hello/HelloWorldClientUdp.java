@@ -24,11 +24,12 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramSocket;
 import java.net.SocketAddress;
-import java.nio.charset.StandardCharsets;
-import java.util.Objects;
 import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+
+import static java.nio.charset.StandardCharsets.US_ASCII;
+import static java.util.Objects.requireNonNull;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 @Slf4j
 public class HelloWorldClientUdp
@@ -37,16 +38,16 @@ public class HelloWorldClientUdp
     static void clients(final int count, final SocketAddress endpoint,
                         final Consumer<? super String> consumer)
             throws InterruptedException {
-        Objects.requireNonNull(endpoint, "endpoint is null");
+        requireNonNull(endpoint, "endpoint is null");
         if (count <= 0) {
             throw new IllegalArgumentException(
                     "count(" + count + ") is not positive");
         }
-        Objects.requireNonNull(consumer, "consumer is null");
+        requireNonNull(consumer, "consumer is null");
         for (int i = 0; i < count; i++) {
             try {
-                final byte[] b = new HelloWorldClientUdp(endpoint).call();
-                consumer.accept(new String(b, StandardCharsets.US_ASCII));
+                final var bytes = new HelloWorldClientUdp(endpoint).call();
+                consumer.accept(new String(bytes, US_ASCII));
             } catch (final Exception e) {
                 log.error("failed to call for {}", endpoint, e);
             }
@@ -60,21 +61,20 @@ public class HelloWorldClientUdp
      */
     HelloWorldClientUdp(final SocketAddress endpoint) {
         super();
-        this.endpoint = Objects.requireNonNull(endpoint, "endpoint is null");
+        this.endpoint = requireNonNull(endpoint, "endpoint is null");
     }
 
     @Override
     public byte[] call() throws Exception {
-        final byte[] array = new byte[HelloWorld.BYTES];
-        try (DatagramSocket socket = new DatagramSocket()) {
-            socket.setSoTimeout((int) TimeUnit.SECONDS.toMillis(10L));
-            // TODO: Send and receive to/from endpoint!
+        try (var socket = new DatagramSocket()) {
+            socket.setSoTimeout((int) SECONDS.toMillis(8L));
+            // TODO: Connect to the endpoint, read 12 bytes, and return it.
+            return new byte[0];
         }
-        return array;
     }
 
     /**
-     * The endpoint on which the server is listening.
+     * The server endpoint.
      */
     private final SocketAddress endpoint;
 }

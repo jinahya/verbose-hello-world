@@ -2,9 +2,9 @@ package com.github.jinahya.hello;
 
 /*-
  * #%L
- * verbose-hello-world-srv-common
+ * verbose-hello-world-04-srv0-common
  * %%
- * Copyright (C) 2018 - 2022 Jinahya, Inc.
+ * Copyright (C) 2018 - 2021 Jinahya, Inc.
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,27 +20,14 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-
-import static com.github.jinahya.hello.IHelloWorldServerUtils.loadHelloWorld;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import java.util.concurrent.Callable;
 
 /**
- * A class for testing {@link IHelloWorldServerUtils} class.
+ * An interface for Hello World clients.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-class IHelloWorldServerUtilsTest {
+public interface IHelloWorldClient
+        extends Callable<byte[]> {
 
-    /**
-     * Asserts {@link IHelloWorldServerUtils#loadHelloWorld()} returns non-null
-     * instance.
-     */
-    @DisplayName("load() return non-null")
-    @Test
-    void load_NotNull_() {
-        final var helloWorld = loadHelloWorld();
-        assertNotNull(helloWorld);
-    }
 }

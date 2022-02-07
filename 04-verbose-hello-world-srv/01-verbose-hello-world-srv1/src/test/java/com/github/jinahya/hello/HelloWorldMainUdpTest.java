@@ -24,9 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.SocketAddress;
 
 import static com.github.jinahya.hello.HelloWorldClientUdp.clients;
 import static com.github.jinahya.hello.HelloWorldMainUdp.main;
@@ -40,12 +38,12 @@ class HelloWorldMainUdpTest {
     @Test
     void main__() throws InterruptedException, IOException {
         writeQuitToClose(() -> {
-            final InetAddress host = getLoopbackAddress();
-            main("0", host.getHostAddress());
+            final var addr = getLoopbackAddress();
+            main("0", addr.getHostAddress());
             final int port = LOCAL_PORT.get();
-            final SocketAddress endpoint = new InetSocketAddress(host, port);
-            clients(8, endpoint, string -> {
-                log.debug("received: {}", string);
+            final var endpoint = new InetSocketAddress(addr, port);
+            clients(8, endpoint, s -> {
+                log.debug("received: {}", s);
             });
             return null;
         });

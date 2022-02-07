@@ -27,7 +27,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.util.Objects;
 
 /**
  * A class serves {@code hello, world} to clients.
@@ -36,21 +35,17 @@ import java.util.Objects;
  */
 @Slf4j
 class HelloWorldServerUdp
-        implements IHelloWorldServer {
+        extends AbstractHelloWorldServer {
 
     static final ThreadLocal<Integer> LOCAL_PORT = new ThreadLocal<>();
 
     /**
      * Creates a new instance.
      *
-     * @param helloWorld    an instance of {@link HelloWorld} interface.
      * @param socketAddress a socket address to bind.
      */
-    HelloWorldServerUdp(final HelloWorld helloWorld,
-                        final SocketAddress socketAddress) {
-        super();
-        this.helloWorld = Objects.requireNonNull(helloWorld);
-        this.socketAddress = Objects.requireNonNull(socketAddress);
+    HelloWorldServerUdp(final SocketAddress socketAddress) {
+        super(socketAddress);
     }
 
     @Override
@@ -69,10 +64,9 @@ class HelloWorldServerUdp
         }
         log.info("server bound to {}", datagramSocket.getLocalSocketAddress());
         LOCAL_PORT.set(datagramSocket.getLocalPort());
-        final Thread thread = new Thread(() -> {
+        final var thread = new Thread(() -> {
             while (!datagramSocket.isClosed()) {
-                final DatagramPacket packet
-                        = new DatagramPacket(new byte[1], 1);
+                final var packet = new DatagramPacket(new byte[0], 0);
                 try {
                     datagramSocket.receive(packet);
                 } catch (final IOException ioe) {
@@ -82,7 +76,7 @@ class HelloWorldServerUdp
                     log.error("failed to receive", ioe);
                     continue;
                 }
-                final SocketAddress clientAddress = packet.getSocketAddress();
+                final var clientAddress = packet.getSocketAddress();
                 log.debug("[S] received from {}", clientAddress);
                 // TODO: Send "hello, world" bytes back to the client!
             }
@@ -100,10 +94,6 @@ class HelloWorldServerUdp
         }
         datagramSocket.close();
     }
-
-    private final HelloWorld helloWorld;
-
-    private final SocketAddress socketAddress;
 
     private DatagramSocket datagramSocket;
 }

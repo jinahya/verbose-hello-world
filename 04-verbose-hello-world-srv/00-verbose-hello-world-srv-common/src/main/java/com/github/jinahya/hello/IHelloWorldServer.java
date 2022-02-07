@@ -32,7 +32,7 @@ public interface IHelloWorldServer
         extends Closeable {
 
     /**
-     * Opens this server instance.
+     * Opens this server.
      *
      * @throws IOException if an I/O error occurs.
      */

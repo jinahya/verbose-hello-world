@@ -25,9 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.net.SocketAddress;
-import java.util.Objects;
 
 /**
  * A class serves {@code hello, world} to clients.
@@ -36,22 +34,17 @@ import java.util.Objects;
  */
 @Slf4j
 class HelloWorldServerTcp
-        implements IHelloWorldServer {
+        extends AbstractHelloWorldServer {
 
     static final ThreadLocal<Integer> LOCAL_PORT = new ThreadLocal<>();
 
     /**
      * Creates a new instance.
      *
-     * @param helloWorld    an instance of {@link HelloWorld} interface.
      * @param socketAddress a socket address to bind.
      */
-    HelloWorldServerTcp(final HelloWorld helloWorld,
-                        final SocketAddress socketAddress) {
-        super();
-        this.helloWorld = Objects.requireNonNull(helloWorld, "service is null");
-        this.socketAddress = Objects.requireNonNull(socketAddress,
-                                                    "endpoint is null");
+    HelloWorldServerTcp(final SocketAddress socketAddress) {
+        super(socketAddress);
     }
 
     @Override
@@ -70,9 +63,9 @@ class HelloWorldServerTcp
         }
         log.info("server bound to {}", serverSocket.getLocalSocketAddress());
         LOCAL_PORT.set(serverSocket.getLocalPort());
-        final Thread thread = new Thread(() -> {
+        final var thread = new Thread(() -> {
             while (!serverSocket.isClosed()) {
-                try (Socket socket = serverSocket.accept()) {
+                try (var socket = serverSocket.accept()) {
                     log.debug("[S] connected; remote: {}; local: {}",
                               socket.getRemoteSocketAddress(),
                               socket.getLocalSocketAddress());
@@ -98,10 +91,6 @@ class HelloWorldServerTcp
         }
         serverSocket.close();
     }
-
-    private final HelloWorld helloWorld;
-
-    private final SocketAddress socketAddress;
 
     private ServerSocket serverSocket;
 }

@@ -26,25 +26,27 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
-import java.util.concurrent.TimeUnit;
 
+import static java.lang.Thread.currentThread;
+import static java.lang.Thread.sleep;
 import static java.net.InetAddress.getLoopbackAddress;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 // 2022-02-07 Windows 와 MacOS 에서 다른 행태를 보인다!!
 @Slf4j
-class DatagramServer {
+class SimpleDatagramServer {
 
     public static void main(final String[] args) throws IOException {
-        final DatagramSocket socket = new DatagramSocket(null);
+        final var socket = new DatagramSocket(null);
         socket.bind(new InetSocketAddress(getLoopbackAddress(), 0));
         log.debug("bound to {}", socket.getLocalSocketAddress());
         new Thread(() -> {
             try {
-                Thread.sleep(TimeUnit.SECONDS.toMillis(4L));
+                sleep(SECONDS.toMillis(4L));
                 socket.close();
             } catch (final InterruptedException ie) {
                 log.error("interrupted", ie);
-                Thread.currentThread().interrupt();
+                currentThread().interrupt();
             }
         }).start();
         while (!socket.isClosed()) {

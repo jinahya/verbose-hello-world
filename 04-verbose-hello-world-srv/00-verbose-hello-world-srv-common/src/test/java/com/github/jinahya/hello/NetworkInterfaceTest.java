@@ -25,14 +25,15 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.net.InetAddress;
-import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.util.Enumeration;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+
+import static java.lang.String.format;
+import static java.net.NetworkInterface.getNetworkInterfaces;
+import static java.util.Objects.requireNonNull;
+import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.IntStream.range;
 
 /**
  * A class for testing {@link NetworkInterface}.
@@ -46,19 +47,19 @@ class NetworkInterfaceTest {
 
     private static String hexadecimal(final byte[] bytes, final String format,
                                       final String delimiter) {
-        Objects.requireNonNull(bytes, "bytes is null");
-        Objects.requireNonNull(delimiter, "delimiter is null");
-        return IntStream.range(0, bytes.length)
-                .mapToObj(i -> String.format(format, bytes[i]))
-                .collect(Collectors.joining(delimiter));
+        requireNonNull(bytes, "bytes is null");
+        requireNonNull(delimiter, "delimiter is null");
+        return range(0, bytes.length)
+                .mapToObj(i -> format(format, bytes[i]))
+                .collect(joining(delimiter));
     }
 
     private static void inetAddress(final String indent,
                                     final InetAddress address) {
-        Objects.requireNonNull(indent, "indent is null");
-        Objects.requireNonNull(address, "address is null");
+        requireNonNull(indent, "indent is null");
+        requireNonNull(address, "address is null");
         log.debug("{}address: {}", indent,
-                  Optional.ofNullable(address.getAddress())
+                  ofNullable(address.getAddress())
                           .map(v -> hexadecimal(v, "%02X", ""))
                           .orElse("null"));
         log.debug("{}canonical host name: {}", indent,
@@ -88,29 +89,28 @@ class NetworkInterfaceTest {
     @Disabled("takes too long")
     @Test
     void printNetworkInterfaces() throws SocketException {
-        final Enumeration<NetworkInterface> nie
-                = NetworkInterface.getNetworkInterfaces();
+        final var nie = getNetworkInterfaces();
         while (nie.hasMoreElements()) {
-            final NetworkInterface ni = nie.nextElement();
+            final var ni = nie.nextElement();
             log.debug("network interface: {}", ni);
             log.debug("\tdisplay name: {}", ni.getDisplayName());
             log.debug("\thardware address: {}",
-                      Optional.ofNullable(ni.getHardwareAddress())
+                      ofNullable(ni.getHardwareAddress())
                               .map(v -> hexadecimal(v, "%02x", ":"))
                               .orElse(null));
             log.debug("\tindex: {}", ni.getIndex());
-            for (final Enumeration<InetAddress> iae = ni.getInetAddresses();
+            for (final var iae = ni.getInetAddresses();
                  iae.hasMoreElements(); ) {
-                final InetAddress ia = iae.nextElement();
+                final var ia = iae.nextElement();
                 log.debug("\tinet address: {}", ia);
                 inetAddress("\t\t", ia);
             }
-            for (final InterfaceAddress ia : ni.getInterfaceAddresses()) {
+            for (final var ia : ni.getInterfaceAddresses()) {
                 log.debug("\tinterface address: {}", ia);
-                final InetAddress address = ia.getAddress();
+                final var address = ia.getAddress();
                 log.debug("\t\taddress: {}", address);
                 inetAddress("\t\t\t", address);
-                final InetAddress broadcast = ia.getBroadcast();
+                final var broadcast = ia.getBroadcast();
                 log.debug("\t\tbroadcast: {}", broadcast);
                 if (broadcast != null) {
                     inetAddress("\t\t\t", broadcast);
@@ -121,10 +121,9 @@ class NetworkInterfaceTest {
             log.debug("\tmtu: " + ni.getMTU());
             log.debug("\tname: " + ni.getName());
             log.debug("\tparent: " + ni.getParent());
-            for (final Enumeration<NetworkInterface> sie
-                 = ni.getSubInterfaces();
+            for (final var sie = ni.getSubInterfaces();
                  sie.hasMoreElements(); ) {
-                final NetworkInterface si = sie.nextElement();
+                final var si = sie.nextElement();
                 log.debug("\tsub interface: {}", si);
             }
             log.debug("\tloopback: {}", ni.isLoopback());

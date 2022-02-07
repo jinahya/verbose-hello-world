@@ -25,7 +25,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
@@ -33,12 +32,16 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
-import java.util.Objects;
-import java.util.ServiceLoader;
 import java.util.concurrent.Callable;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+
+import static java.lang.System.in;
+import static java.net.InetAddress.getByName;
+import static java.net.InetAddress.getLocalHost;
+import static java.nio.charset.StandardCharsets.US_ASCII;
+import static java.util.Objects.requireNonNull;
+import static java.util.ServiceLoader.load;
 
 /**
  * A utility class for Hello World servers.
@@ -59,14 +62,14 @@ final class IHelloWorldServerUtils {
      */
     static SocketAddress parseSocketAddress(final String[] args)
             throws UnknownHostException {
-        Objects.requireNonNull(args, "args is null");
-        int port = 0;
+        requireNonNull(args, "args is null");
+        var port = 0;
         if (args.length > 0) {
             port = Integer.parseInt(args[0]);
         }
-        InetAddress addr = InetAddress.getLoopbackAddress();
+        var addr = getLocalHost();
         if (args.length > 1) {
-            addr = InetAddress.getByName(args[1]);
+            addr = getByName(args[1]);
         }
         return new InetSocketAddress(addr, port);
     }
@@ -90,16 +93,10 @@ final class IHelloWorldServerUtils {
                             ? super InetAddress,
                             ? extends R>> function)
             throws UnknownHostException {
-        Objects.requireNonNull(args, "args is null");
-        Objects.requireNonNull(function, "function is null");
-        int port = 0;
-        if (args.length > 0) {
-            port = Integer.parseInt(args[0]);
-        }
-        InetAddress addr = InetAddress.getLoopbackAddress();
-        if (args.length > 1) {
-            addr = InetAddress.getByName(args[1]);
-        }
+        requireNonNull(function, "function is null");
+        final var parsed = parseSocketAddress(args);
+        final var port = ((InetSocketAddress) parsed).getPort();
+        final var addr = ((InetSocketAddress) parsed).getAddress();
         return function.apply(port).apply(addr);
     }
 
@@ -133,9 +130,8 @@ final class IHelloWorldServerUtils {
         if (closeable == null) {
             throw new NullPointerException("server is null");
         }
-        final Thread thread = new Thread(() -> {
-            final BufferedReader reader
-                    = new BufferedReader(new InputStreamReader(System.in));
+        new Thread(() -> {
+            final var reader = new BufferedReader(new InputStreamReader(in));
             try {
                 for (String line; (line = reader.readLine()) != null; ) {
                     if (line.trim().equalsIgnoreCase("quit")) {
@@ -152,8 +148,7 @@ final class IHelloWorldServerUtils {
             } catch (final IOException ioe) {
                 log.error("failed to close {}", closeable, ioe);
             }
-        });
-        thread.start();
+        }).start();
         log.debug("thread for reading 'quit' started");
     }
 
@@ -168,8 +163,8 @@ final class IHelloWorldServerUtils {
      */
     static void writeQuitToClose(final Callable<Void> callable)
             throws InterruptedException, IOException {
-        Objects.requireNonNull(callable, "callable is null");
-        final Thread thread = new Thread(() -> {
+        requireNonNull(callable, "callable is null");
+        final var thread = new Thread(() -> {
             try {
                 callable.call();
             } catch (final Exception e) {
@@ -178,13 +173,13 @@ final class IHelloWorldServerUtils {
         });
         thread.start();
         thread.join();
-        try (PipedOutputStream pos = new PipedOutputStream();
-             PipedInputStream pis = new PipedInputStream(pos)) {
-            final InputStream in = System.in;
+        try (var pos = new PipedOutputStream();
+             var pis = new PipedInputStream(pos)) {
+            final var in = System.in;
             try {
                 System.setIn(pis);
                 log.debug("writing 'quit'...");
-                pos.write("quit\n".getBytes(StandardCharsets.US_ASCII));
+                pos.write("quit\n".getBytes(US_ASCII));
                 pos.flush();
             } finally {
                 System.setIn(in);
@@ -196,10 +191,35 @@ final class IHelloWorldServerUtils {
      * Loads and returns an instance of {@link HelloWorld} interface.
      *
      * @return an instance of {@link HelloWorld} interface.
+     * @deprecated do not use this!
      */
+    @Deprecated
     static HelloWorld loadHelloWorld() {
-        return ServiceLoader.load(HelloWorld.class).iterator().next();
+        return load(HelloWorld.class).iterator().next();
     }
+
+//    static void clients(final int count,
+//                        final Supplier<? extends IHelloWorldClient> supplier,
+//                        final Consumer<? super String> consumer)
+//            throws InterruptedException {
+//        if (count <= 0) {
+//            throw new IllegalArgumentException(
+//                    "count(" + count + ") is not positive");
+//        }
+//        requireNonNull(supplier, "supplier is null");
+//        requireNonNull(consumer, "consumer is null");
+//        for (int i = 0; i < count; i++) {
+//            final var client = supplier.get();
+//            final byte[] bytes;
+//            try {
+//                bytes = client.call();
+//            } catch (final Exception e) {
+//                log.error("failed to call {}", client, e);
+//            }
+//            final var string = new String(bytes, US_ASCII);
+//            consumer.accept(string);
+//        }
+//    }
 
     /**
      * Creates a new instance which is impossible.

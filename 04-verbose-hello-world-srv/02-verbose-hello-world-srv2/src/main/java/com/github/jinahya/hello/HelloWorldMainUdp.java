@@ -23,9 +23,9 @@ package com.github.jinahya.hello;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
+
+import static com.github.jinahya.hello.IHelloWorldServerUtils.parseSocketAddress;
+import static com.github.jinahya.hello.IHelloWorldServerUtils.readQuitAndClose;
 
 /**
  * A class whose {@link #main(String[])} method accepts socket connections and
@@ -44,14 +44,11 @@ public class HelloWorldMainUdp {
      * @throws IOException if an I/O error occurs.
      */
     public static void main(final String... args) throws IOException {
-        final HelloWorld service = IHelloWorldServerUtils.loadHelloWorld();
-        final InetAddress host = InetAddress.getByName(args[0]);
-        final int port = Integer.parseInt(args[1]);
-        final SocketAddress endpoint = new InetSocketAddress(host, port);
-        final IHelloWorldServer server = new HelloWorldServerUdp(service,
-                                                                 endpoint);
-        server.open();
-        IHelloWorldServerUtils.readQuitAndClose(server);
+        final var socketAddress = parseSocketAddress(args);
+        try (var server = new HelloWorldServerUdp(socketAddress)) {
+            server.open();
+            readQuitAndClose(server);
+        }
     }
 
     /**

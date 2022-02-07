@@ -21,7 +21,6 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
@@ -31,7 +30,10 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.charset.StandardCharsets;
-import java.util.ServiceLoader;
+
+import static com.github.jinahya.hello.HelloWorldClientTcp.clients;
+import static com.github.jinahya.hello.HelloWorldServerTcp.LOCAL_PORT;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @Slf4j
 class HelloWorldServerTcpTest {
@@ -56,15 +58,14 @@ class HelloWorldServerTcpTest {
                         .set(ArgumentMatchers.notNull());
             }
             final SocketAddress endpoint = new InetSocketAddress(host, 0);
-            final int backlog = 50;
-            server = new HelloWorldServerTcp(service, endpoint, backlog);
+            server = new HelloWorldServerTcp(endpoint);
         }
         server.open();
-        final int port = HelloWorldServerTcp.LOCAL_PORT.get();
-        final SocketAddress endpoint = new InetSocketAddress(host, port);
-        HelloWorldClientTcp.clients(4, endpoint, b -> {
-            Assertions.assertArrayEquals(
-                    "hello, world".getBytes(StandardCharsets.US_ASCII), b);
+        final int port = LOCAL_PORT.get();
+        final var endpoint = new InetSocketAddress(host, port);
+        clients(4, endpoint, s -> {
+            assertNotNull(s);
+            // TODO: assert more!
         });
         server.close();
     }
