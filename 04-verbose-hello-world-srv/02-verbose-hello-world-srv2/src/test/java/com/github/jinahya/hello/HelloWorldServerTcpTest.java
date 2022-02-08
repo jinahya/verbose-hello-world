@@ -22,17 +22,13 @@ package com.github.jinahya.hello;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-import java.nio.charset.StandardCharsets;
 
 import static com.github.jinahya.hello.HelloWorldClientTcp.clients;
-import static com.github.jinahya.hello.HelloWorldServerTcp.LOCAL_PORT;
+import static com.github.jinahya.hello.HelloWorldServerTcp.PORT;
+import static java.net.InetAddress.getLoopbackAddress;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @Slf4j
@@ -40,33 +36,14 @@ class HelloWorldServerTcpTest {
 
     @Test
     void test() throws IOException, InterruptedException {
-        final InetAddress host = InetAddress.getLoopbackAddress();
-        final IHelloWorldServer server;
-        {
-            HelloWorld service = IHelloWorldServerUtils.loadHelloWorld();
-            if (true) { // TODO: falsify or remove when HelloWorld#set(array) method is implemented!
-                service = Mockito.mock(HelloWorld.class);
-                // https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#13
-                Mockito.doAnswer(i -> {
-                            final byte[] array = i.getArgument(0);
-                            final byte[] src = "hello, world".getBytes(
-                                    StandardCharsets.US_ASCII);
-                            System.arraycopy(src, 0, array, 0, src.length);
-                            return array;
-                        })
-                        .when(service)
-                        .set(ArgumentMatchers.notNull());
-            }
-            final SocketAddress endpoint = new InetSocketAddress(host, 0);
-            server = new HelloWorldServerTcp(endpoint);
+        final var host = getLoopbackAddress();
+        final var endpoint = new InetSocketAddress(host, 0);
+        try (var server = new HelloWorldServerTcp(endpoint)) {
+            server.open();
+            clients(4, new InetSocketAddress(host, PORT.get()), s -> {
+                log.debug("[C] received: {}", s);
+                assertNotNull(s);
+            });
         }
-        server.open();
-        final int port = LOCAL_PORT.get();
-        final var endpoint = new InetSocketAddress(host, port);
-        clients(4, endpoint, s -> {
-            assertNotNull(s);
-            // TODO: assert more!
-        });
-        server.close();
     }
 }

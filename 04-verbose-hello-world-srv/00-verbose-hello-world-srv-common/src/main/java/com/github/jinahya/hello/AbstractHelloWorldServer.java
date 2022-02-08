@@ -37,13 +37,13 @@ abstract class AbstractHelloWorldServer
         implements IHelloWorldServer {
 
     /**
-     * Creates a new instance with given arguments.
+     * Creates a new instance with specified local socket address to bind.
      *
-     * @param socketAddress a socket address to bind.
+     * @param endpoint the local socket address to bind.
      */
-    AbstractHelloWorldServer(final SocketAddress socketAddress) {
+    AbstractHelloWorldServer(final SocketAddress endpoint) {
         super();
-        this.socketAddress = requireNonNull(socketAddress);
+        this.endpoint = requireNonNull(endpoint);
     }
 
     /**
@@ -58,7 +58,10 @@ abstract class AbstractHelloWorldServer
         return helloWorld;
     }
 
-    final SocketAddress socketAddress;
+    /**
+     * The local socket address to bind.
+     */
+    final SocketAddress endpoint;
 
     private HelloWorld helloWorld;
 }

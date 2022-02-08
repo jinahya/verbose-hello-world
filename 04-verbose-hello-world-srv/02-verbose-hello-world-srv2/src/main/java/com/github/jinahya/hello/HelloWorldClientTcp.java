@@ -22,7 +22,6 @@ package com.github.jinahya.hello;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.EOFException;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.util.concurrent.Callable;
@@ -33,6 +32,7 @@ import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.TimeUnit.MINUTES;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 @Slf4j
 public class HelloWorldClientTcp
@@ -51,8 +51,8 @@ public class HelloWorldClientTcp
         for (int i = 0; i < count; i++) {
             new Thread(() -> {
                 try {
-                    final var b = new HelloWorldClientTcp(endpoint).call();
-                    consumer.accept(new String(b, US_ASCII));
+                    final var bytes = new HelloWorldClientTcp(endpoint).call();
+                    consumer.accept(new String(bytes, US_ASCII));
                 } catch (final Exception e) {
                     log.error("failed to call for {}", endpoint, e);
                 } finally {
@@ -78,20 +78,10 @@ public class HelloWorldClientTcp
     @Override
     public byte[] call() throws Exception {
         try (var socket = new Socket()) {
-            socket.setSoTimeout(10000); // 10 secs
+            socket.setSoTimeout((int) SECONDS.toMillis(8L));
             socket.connect(endpoint);
             log.debug("[C] connected to {}", socket.getRemoteSocketAddress());
-            final var array = new byte[BYTES];
-            for (var offset = 0; (offset < array.length); ) {
-                final var length = array.length - offset;
-                final var bytes = socket.getInputStream().read(
-                        array, offset, length);
-                if (bytes == -1) {
-                    throw new EOFException("unexpected end-of-stream");
-                }
-                offset += bytes;
-            }
-            return array;
+            return socket.getInputStream().readNBytes(BYTES);
         }
     }
 

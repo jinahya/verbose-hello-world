@@ -26,27 +26,26 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.SocketAddress;
 
 import static com.github.jinahya.hello.HelloWorldClientUdp.clients;
 import static com.github.jinahya.hello.HelloWorldMainUdp.main;
-import static com.github.jinahya.hello.HelloWorldServerUdp.LOCAL_PORT;
-import static com.github.jinahya.hello.IHelloWorldServerUtils.writeQuitToClose;
+import static com.github.jinahya.hello.HelloWorldServerUdp.PORT;
+import static com.github.jinahya.hello.IHelloWorldServerUtils.callAndWriteQuit;
 import static java.net.InetAddress.getLoopbackAddress;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @Slf4j
 class HelloWorldMainUdpTest {
 
     @Test
     void main__() throws InterruptedException, IOException {
-        final InetAddress addr = getLoopbackAddress();
-        writeQuitToClose(() -> {
-            main("0", addr.getHostAddress());
-            final int port = LOCAL_PORT.get();
-            final SocketAddress endpoint = new InetSocketAddress(addr, port);
-            clients(8, endpoint, s -> {
-                assertEquals("hello, world", s);
+        final InetAddress host = getLoopbackAddress();
+        callAndWriteQuit(() -> {
+            main("0", host.getHostAddress());
+            final var port = PORT.get();
+            clients(4, new InetSocketAddress(host, port), s -> {
+                assertNotNull(s);
+                log.debug("[C] received: {}", s);
             });
             return null;
         });

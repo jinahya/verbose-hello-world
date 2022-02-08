@@ -28,22 +28,23 @@ import java.net.InetSocketAddress;
 
 import static com.github.jinahya.hello.HelloWorldClientUdp.clients;
 import static com.github.jinahya.hello.HelloWorldMainUdp.main;
-import static com.github.jinahya.hello.HelloWorldServerUdp.LOCAL_PORT;
-import static com.github.jinahya.hello.IHelloWorldServerUtils.writeQuitToClose;
+import static com.github.jinahya.hello.HelloWorldServerUdp.PORT;
+import static com.github.jinahya.hello.IHelloWorldServerUtils.callAndWriteQuit;
 import static java.net.InetAddress.getLoopbackAddress;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @Slf4j
 class HelloWorldMainUdpTest {
 
     @Test
     void main__() throws InterruptedException, IOException {
-        writeQuitToClose(() -> {
-            final var addr = getLoopbackAddress();
-            main("0", addr.getHostAddress());
-            final int port = LOCAL_PORT.get();
-            final var endpoint = new InetSocketAddress(addr, port);
-            clients(8, endpoint, s -> {
-                log.debug("received: {}", s);
+        final var host = getLoopbackAddress();
+        callAndWriteQuit(() -> {
+            main("0", host.getHostAddress());
+            final int port = PORT.get();
+            clients(8, new InetSocketAddress(host, port), s -> {
+                assertNotNull(s);
+                log.debug("[C] received: {}", s);
             });
             return null;
         });

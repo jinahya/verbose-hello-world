@@ -36,7 +36,7 @@ import java.net.SocketAddress;
 class HelloWorldServerTcp
         extends AbstractHelloWorldServer {
 
-    static final ThreadLocal<Integer> LOCAL_PORT = new ThreadLocal<>();
+    static final ThreadLocal<Integer> PORT = new ThreadLocal<>();
 
     /**
      * Creates a new instance.
@@ -50,47 +50,45 @@ class HelloWorldServerTcp
     @Override
     public synchronized void open() throws IOException {
         close();
-        serverSocket = new ServerSocket();
-        if (socketAddress instanceof InetSocketAddress
-            && ((InetSocketAddress) socketAddress).getPort() > 0) {
-            serverSocket.setReuseAddress(true);
+        server = new ServerSocket();
+        if (endpoint instanceof InetSocketAddress
+            && ((InetSocketAddress) endpoint).getPort() > 0) {
+            server.setReuseAddress(true);
         }
         try {
-            serverSocket.bind(socketAddress);
+            server.bind(endpoint);
         } catch (final IOException ioe) {
-            log.error("failed to bind to {}", socketAddress, ioe);
+            log.error("failed to bind to {}", endpoint, ioe);
             throw ioe;
         }
-        log.info("server bound to {}", serverSocket.getLocalSocketAddress());
-        LOCAL_PORT.set(serverSocket.getLocalPort());
-        final var thread = new Thread(() -> {
-            while (!serverSocket.isClosed()) {
-                try (var socket = serverSocket.accept()) {
-                    log.debug("[S] connected; remote: {}; local: {}",
-                              socket.getRemoteSocketAddress(),
-                              socket.getLocalSocketAddress());
+        log.info("server bound to {}", server.getLocalSocketAddress());
+        PORT.set(server.getLocalPort());
+        new Thread(() -> {
+            while (!server.isClosed()) {
+                try (var client = server.accept()) {
+                    log.debug("[S] connected from {}",
+                              client.getRemoteSocketAddress());
                     // TODO: Send "hello, world" bytes through the socket!
                 } catch (final IOException ioe) {
-                    if (serverSocket.isClosed()) {
+                    if (server.isClosed()) {
                         break;
                     }
                     log.error("failed to accept/send", ioe);
                 }
             }
-            LOCAL_PORT.remove();
-            serverSocket = null;
-        });
-        thread.start();
+            PORT.remove();
+            server = null;
+        }).start();
         log.debug("server thread started");
     }
 
     @Override
     public synchronized void close() throws IOException {
-        if (serverSocket == null || serverSocket.isClosed()) {
+        if (server == null || server.isClosed()) {
             return;
         }
-        serverSocket.close();
+        server.close();
     }
 
-    private ServerSocket serverSocket;
+    private ServerSocket server;
 }

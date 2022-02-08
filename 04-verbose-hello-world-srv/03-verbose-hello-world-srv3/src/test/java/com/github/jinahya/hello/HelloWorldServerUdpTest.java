@@ -62,7 +62,7 @@ class HelloWorldServerUdpTest {
         }
         try {
             server.open();
-            final int port = HelloWorldServerUdp.LOCAL_PORT.get();
+            final int port = HelloWorldServerUdp.PORT.get();
             final SocketAddress endpoint = new InetSocketAddress(host, port);
             final byte[] expected = "hello, world".getBytes(US_ASCII);
             clients(4, endpoint, b -> assertArrayEquals(expected, b));

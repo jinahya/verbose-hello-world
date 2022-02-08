@@ -30,6 +30,9 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
+import static com.github.jinahya.hello.IHelloWorldServerUtils.shutdownAndAwaitTermination;
+import static java.util.concurrent.Executors.newCachedThreadPool;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
  * A class serves {@code hello, world} to clients.
@@ -40,59 +43,60 @@ import static com.github.jinahya.hello.HelloWorld.BYTES;
 class HelloWorldServerTcp
         extends AbstractHelloWorldServer {
 
-    static final ThreadLocal<Integer> LOCAL_PORT = new ThreadLocal<>();
+    static final ThreadLocal<Integer> PORT = new ThreadLocal<>();
 
     /**
-     * Creates a new instance.
+     * Creates a new instance with specified local socket address.
      *
-     * @param socketAddress a socket address to bind.
+     * @param endpoint the local socket address to bind.
      */
-    HelloWorldServerTcp(final SocketAddress socketAddress) {
-        super(socketAddress);
+    HelloWorldServerTcp(final SocketAddress endpoint) {
+        super(endpoint);
     }
 
     private void open_() throws IOException {
         close();
-        serverSocket = new ServerSocket();
-        if (socketAddress instanceof InetSocketAddress &&
-            ((InetSocketAddress) socketAddress).getPort() > 0) {
-            serverSocket.setReuseAddress(true);
+        server = new ServerSocket();
+        if (endpoint instanceof InetSocketAddress &&
+            ((InetSocketAddress) endpoint).getPort() > 0) {
+            server.setReuseAddress(true);
         }
         try {
-            serverSocket.bind(socketAddress);
+            server.bind(endpoint);
         } catch (final IOException ioe) {
-            log.error("failed to bind to {}", socketAddress);
+            log.error("failed to bind to {}", endpoint);
             throw ioe;
         }
-        log.info("[S] server is open; {}",
-                 serverSocket.getLocalSocketAddress());
-        LOCAL_PORT.set(serverSocket.getLocalPort());
+        log.info("[S] server bound to {}", server.getLocalSocketAddress());
+        PORT.set(server.getLocalPort());
         new Thread(() -> {
-            while (!serverSocket.isClosed()) {
+            var executor = newCachedThreadPool();
+            while (!server.isClosed()) {
                 try {
-                    final var socket = serverSocket.accept();
-                    log.debug("[S] connected from {}",
-                              socket.getRemoteSocketAddress());
-                    new Thread(() -> {
-                        try (socket) {
+                    final var client = server.accept();
+                    executor.submit(() -> {
+                        log.debug("[S] connected from {}",
+                                  client.getRemoteSocketAddress());
+                        try (client) {
                             final byte[] array = new byte[BYTES];
                             helloWorld().set(array);
-                            socket.getOutputStream().write(array);
-                            socket.getOutputStream().flush();
+                            client.getOutputStream().write(array);
+                            client.getOutputStream().flush();
                         } catch (final IOException ioe) {
                             log.error("failed to send to {}",
-                                      socket.getRemoteSocketAddress(), ioe);
+                                      client.getRemoteSocketAddress(), ioe);
                         }
-                    }).start();
+                    });
                 } catch (final IOException ioe) {
-                    if (serverSocket.isClosed()) {
+                    if (server.isClosed()) {
                         break;
                     }
                     log.error("failed to accept", ioe);
                 }
             }
-            LOCAL_PORT.remove();
-            serverSocket = null;
+            shutdownAndAwaitTermination(executor, 8L, SECONDS);
+            PORT.remove();
+            server = null;
         }).start();
         log.debug("[S] server thread started");
     }
@@ -108,10 +112,10 @@ class HelloWorldServerTcp
     }
 
     private void close_() throws IOException {
-        if (serverSocket == null || serverSocket.isClosed()) {
+        if (server == null || server.isClosed()) {
             return;
         }
-        serverSocket.close();
+        server.close();
     }
 
     @Override
@@ -126,5 +130,5 @@ class HelloWorldServerTcp
 
     private final Lock lock = new ReentrantLock();
 
-    private ServerSocket serverSocket;
+    private ServerSocket server;
 }

@@ -33,6 +33,7 @@ import java.util.function.Consumer;
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 import static java.util.Objects.requireNonNull;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 @Slf4j
 class HelloWorldClientUdp
@@ -80,11 +81,11 @@ class HelloWorldClientUdp
         try (var socket = new DatagramSocket()) {
             log.debug("[C] local socket address: {}",
                       socket.getLocalSocketAddress());
-            socket.setSoTimeout(10000); // 10 sec
             socket.send(new DatagramPacket(new byte[0], 0, endpoint));
             log.debug("[C] send to {}", endpoint);
             final var array = new byte[BYTES];
             final var packet = new DatagramPacket(array, array.length);
+            socket.setSoTimeout((int) SECONDS.toMillis(8L));
             socket.receive(packet);
             assert packet.getLength() == array.length;
             log.debug("[C] received from {}", packet.getSocketAddress());

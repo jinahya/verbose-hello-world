@@ -33,7 +33,7 @@ class HelloWorldMainTcpTest {
 
     @Test
     void main__() throws InterruptedException, IOException {
-        IHelloWorldServerUtils.writeQuitToClose(() -> {
+        IHelloWorldServerUtils.callAndWriteQuit(() -> {
             HelloWorldMainTcp.main("0.0.0.0", "0");
             final InetAddress host = InetAddress.getLocalHost();
             final int port = HelloWorldServerTcp.LOCAL_PORT.get();

@@ -24,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramSocket;
 import java.net.SocketAddress;
-import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 
 import static java.nio.charset.StandardCharsets.US_ASCII;
@@ -33,7 +32,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 
 @Slf4j
 public class HelloWorldClientUdp
-        implements Callable<byte[]> {
+        implements IHelloWorldClient {
 
     static void clients(final int count, final SocketAddress endpoint,
                         final Consumer<? super String> consumer)

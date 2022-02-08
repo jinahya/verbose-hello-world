@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 
 import static com.github.jinahya.hello.HelloWorldClientUdp.clients;
-import static com.github.jinahya.hello.HelloWorldServerUdp.LOCAL_PORT;
+import static com.github.jinahya.hello.HelloWorldServerUdp.PORT;
 import static java.net.InetAddress.getLoopbackAddress;
 
 @Slf4j
@@ -35,23 +35,14 @@ class HelloWorldServerUdpTest {
 
     @Test
     void test() throws IOException, InterruptedException {
-        final var addr = getLoopbackAddress();
-        final IHelloWorldServer server;
-        {
-            final var socketAddress = new InetSocketAddress(addr, 0);
-            server = new HelloWorldServerUdp(socketAddress);
-        }
-        try {
-            log.debug("opening the server...");
+        final var host = getLoopbackAddress();
+        final var endpoint = new InetSocketAddress(host, 0);
+        try (var server = new HelloWorldServerUdp(endpoint)) {
             server.open();
-            final var port = LOCAL_PORT.get();
-            final var endpoint = new InetSocketAddress(addr, port);
-            clients(4, endpoint, s -> {
-                log.debug("received: {}", s);
+            final var port = PORT.get();
+            clients(4, new InetSocketAddress(host, port), s -> {
+                log.debug("[C] received: {}", s);
             });
-        } finally {
-            log.debug("closing the server...");
-            server.close();
         }
     }
 }

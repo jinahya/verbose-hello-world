@@ -33,10 +33,16 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.UnknownHostException;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 
+import static java.lang.Integer.parseInt;
 import static java.lang.System.in;
+import static java.lang.System.setIn;
+import static java.lang.Thread.currentThread;
 import static java.net.InetAddress.getByName;
 import static java.net.InetAddress.getLocalHost;
 import static java.nio.charset.StandardCharsets.US_ASCII;
@@ -52,6 +58,56 @@ import static java.util.ServiceLoader.load;
 final class IHelloWorldServerUtils {
 
     /**
+     * Parses specified command line arguments and applies them to specified
+     * function.
+     *
+     * @param args     the command line arguments.
+     * @param function the function to apply.
+     * @param <R>      result type parameter
+     * @return the result of the {@code function}.
+     * @throws UnknownHostException if {@code args[1]} is not known as an
+     *                              address.
+     */
+    static <R> R parseEndpoint(
+            final String[] args,
+            final IntFunction<
+                    ? extends Function<
+                            ? super InetAddress,
+                            ? extends R>> function)
+            throws UnknownHostException {
+        requireNonNull(args, "args is null");
+        requireNonNull(function, "function is null");
+        var port = 0;
+        if (args.length > 0) {
+            port = parseInt(args[0]);
+        }
+        var host = getLocalHost();
+        if (args.length > 1) {
+            host = getByName(args[1]);
+        }
+        return function.apply(port).apply(host);
+    }
+
+    /**
+     * Parses specified command line arguments and applies them to specified
+     * function.
+     *
+     * @param args     the command line arguments.
+     * @param function the function to apply.
+     * @param <R>      result type parameter
+     * @return the result of the {@code function}.
+     * @throws UnknownHostException if {@code args[1]} is not known as an
+     *                              address.
+     */
+    static <R> R parseEndpoint(
+            final String[] args,
+            final BiFunction<
+                    ? super Integer, ? super InetAddress, ? extends R> function)
+            throws UnknownHostException {
+        return parseEndpoint(args, p -> h -> function.apply(p, h));
+    }
+
+    /**
      * Parses specified command line arguments and returns a socket address to
      * bind.
      *
@@ -60,64 +116,9 @@ final class IHelloWorldServerUtils {
      * @throws UnknownHostException if {@code args[1]} is not known as an
      *                              address.
      */
-    static SocketAddress parseSocketAddress(final String[] args)
+    static SocketAddress parseEndpoint(final String... args)
             throws UnknownHostException {
-        requireNonNull(args, "args is null");
-        var port = 0;
-        if (args.length > 0) {
-            port = Integer.parseInt(args[0]);
-        }
-        var addr = getLocalHost();
-        if (args.length > 1) {
-            addr = getByName(args[1]);
-        }
-        return new InetSocketAddress(addr, port);
-    }
-
-    /**
-     * Parses specified command line arguments and applies them to specified
-     * function.
-     *
-     * @param args     the command line arguments.
-     * @param function the function to apply.
-     * @param <R>      result type parameter
-     * @return the result of the {@code function}.
-     * @throws UnknownHostException if {@code args[1]} is not known as an
-     *                              address.
-     */
-    static <R> R applySocketAddress(
-            final String[] args,
-            final Function<
-                    ? super Integer,
-                    ? extends Function<
-                            ? super InetAddress,
-                            ? extends R>> function)
-            throws UnknownHostException {
-        requireNonNull(function, "function is null");
-        final var parsed = parseSocketAddress(args);
-        final var port = ((InetSocketAddress) parsed).getPort();
-        final var addr = ((InetSocketAddress) parsed).getAddress();
-        return function.apply(port).apply(addr);
-    }
-
-    /**
-     * Parses specified command line arguments and applies them to specified
-     * function.
-     *
-     * @param args     the command line arguments.
-     * @param function the function to apply.
-     * @param <R>      result type parameter
-     * @return the result of the {@code function}.
-     * @throws UnknownHostException if {@code args[1]} is not known as an
-     *                              address.
-     */
-    static <R> R applySocketAddress(
-            final String[] args,
-            final BiFunction<
-                    ? super Integer,
-                    ? super InetAddress, ? extends R> function)
-            throws UnknownHostException {
-        return applySocketAddress(args, p -> a -> function.apply(p, a));
+        return parseEndpoint(args, (p, h) -> new InetSocketAddress(h, p));
     }
 
     /**
@@ -128,13 +129,13 @@ final class IHelloWorldServerUtils {
      */
     static void readQuitAndClose(final Closeable closeable) {
         if (closeable == null) {
-            throw new NullPointerException("server is null");
+            throw new NullPointerException("closeable is null");
         }
         new Thread(() -> {
             final var reader = new BufferedReader(new InputStreamReader(in));
             try {
-                for (String line; (line = reader.readLine()) != null; ) {
-                    if (line.trim().equalsIgnoreCase("quit")) {
+                for (String l; (l = reader.readLine()) != null; ) {
+                    if (l.trim().equalsIgnoreCase("quit")) {
                         log.debug("read 'quit'. breaking out...");
                         break;
                     }
@@ -153,37 +154,29 @@ final class IHelloWorldServerUtils {
     }
 
     /**
-     * Invokes {@link Callable#call()} method on specified callable and writes
-     * "{@code quit\n}" to a pipe connected to {@link System#in}.
+     * {@link Callable#call() Calls} callable and writes "{@code quit\n}" to a
+     * pipe connected to {@link System#in}.
      *
      * @param callable the callable to call.
-     * @throws InterruptedException when interrupted while executing {@code
-     *                              callable}.
-     * @throws IOException          if an I/O error occurs.
+     * @throws IOException if an I/O error occurs.
      */
-    static void writeQuitToClose(final Callable<Void> callable)
-            throws InterruptedException, IOException {
+    static void callAndWriteQuit(final Callable<Void> callable)
+            throws IOException {
         requireNonNull(callable, "callable is null");
-        final var thread = new Thread(() -> {
+        final var in_ = in;
+        try (var pos = new PipedOutputStream();
+             var pis = new PipedInputStream(pos)) {
+            setIn(pis);
             try {
                 callable.call();
             } catch (final Exception e) {
-                log.debug("failed to call {}", callable, e);
+                log.error("failed to call {}", callable, e);
             }
-        });
-        thread.start();
-        thread.join();
-        try (var pos = new PipedOutputStream();
-             var pis = new PipedInputStream(pos)) {
-            final var in = System.in;
-            try {
-                System.setIn(pis);
-                log.debug("writing 'quit'...");
-                pos.write("quit\n".getBytes(US_ASCII));
-                pos.flush();
-            } finally {
-                System.setIn(in);
-            }
+            log.debug("writing 'quit'...");
+            pos.write("quit\n".getBytes(US_ASCII));
+            pos.flush();
+        } finally {
+            setIn(in_);
         }
     }
 
@@ -198,28 +191,35 @@ final class IHelloWorldServerUtils {
         return load(HelloWorld.class).iterator().next();
     }
 
-//    static void clients(final int count,
-//                        final Supplier<? extends IHelloWorldClient> supplier,
-//                        final Consumer<? super String> consumer)
-//            throws InterruptedException {
-//        if (count <= 0) {
-//            throw new IllegalArgumentException(
-//                    "count(" + count + ") is not positive");
-//        }
-//        requireNonNull(supplier, "supplier is null");
-//        requireNonNull(consumer, "consumer is null");
-//        for (int i = 0; i < count; i++) {
-//            final var client = supplier.get();
-//            final byte[] bytes;
-//            try {
-//                bytes = client.call();
-//            } catch (final Exception e) {
-//                log.error("failed to call {}", client, e);
-//            }
-//            final var string = new String(bytes, US_ASCII);
-//            consumer.accept(string);
-//        }
-//    }
+    /**
+     * {@link ExecutorService#shutdown() Shuts down} specified executor service
+     * and awaits its termination for specified amount of time.
+     *
+     * @param executor the executor service to shut down.
+     * @param timeout  a timeout for awaiting termination.
+     * @param unit     a time unit for awaiting termination.
+     * @see ExecutorService#shutdown()
+     * @see ExecutorService#awaitTermination(long, TimeUnit)
+     */
+    static void shutdownAndAwaitTermination(final ExecutorService executor,
+                                            final long timeout,
+                                            final TimeUnit unit) {
+        requireNonNull(executor, "executor is null");
+        if (timeout <= 0L) {
+            throw new IllegalArgumentException(
+                    "timeout(" + timeout + ") is not positive");
+        }
+        requireNonNull(unit, "unit is null");
+        executor.shutdown();
+        try {
+            if (!executor.awaitTermination(timeout, unit)) {
+                log.warn("executor has not terminated in specified time!");
+            }
+        } catch (final InterruptedException ie) {
+            log.error("interrupted while awaiting executor terminated", ie);
+            currentThread().interrupt();
+        }
+    }
 
     /**
      * Creates a new instance which is impossible.

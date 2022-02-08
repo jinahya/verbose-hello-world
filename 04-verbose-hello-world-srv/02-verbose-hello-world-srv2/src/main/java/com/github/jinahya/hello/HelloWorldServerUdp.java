@@ -27,8 +27,13 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.util.concurrent.Executors;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
+import static com.github.jinahya.hello.IHelloWorldServerUtils.shutdownAndAwaitTermination;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
  * A class serves {@code hello, world} to clients.
@@ -39,72 +44,93 @@ import static com.github.jinahya.hello.HelloWorld.BYTES;
 class HelloWorldServerUdp
         extends AbstractHelloWorldServer {
 
-    static final ThreadLocal<Integer> LOCAL_PORT = new ThreadLocal<>();
+    static final ThreadLocal<Integer> PORT = new ThreadLocal<>();
 
     /**
-     * Creates a new instance.
+     * Creates a new instance with specified local socket address.
      *
-     * @param socketAddress a socket address to bind.
+     * @param endpoint the local socket address to bind.
      */
-    HelloWorldServerUdp(final SocketAddress socketAddress) {
-        super(socketAddress);
+    HelloWorldServerUdp(final SocketAddress endpoint) {
+        super(endpoint);
     }
 
-    @Override
-    public void open() throws IOException {
+    private void open_() throws IOException {
         close();
-        datagramSocket = new DatagramSocket(null);
-        if (socketAddress instanceof InetSocketAddress
-            && ((InetSocketAddress) socketAddress).getPort() > 0) {
-            datagramSocket.setReuseAddress(true);
+        socket = new DatagramSocket(null);
+        if (endpoint instanceof InetSocketAddress
+            && ((InetSocketAddress) endpoint).getPort() > 0) {
+            socket.setReuseAddress(true);
         }
         try {
-            datagramSocket.bind(socketAddress);
+            socket.bind(endpoint);
         } catch (final IOException ioe) {
-            log.error("failed to bind to {}", socketAddress, ioe);
+            log.error("failed to bind to {}", endpoint, ioe);
             throw ioe;
         }
-        log.info("[S] server bound to {}", datagramSocket.getLocalSocketAddress());
-        LOCAL_PORT.set(datagramSocket.getLocalPort());
+        log.info("[S] server bound to {}", socket.getLocalSocketAddress());
+        PORT.set(socket.getLocalPort());
         new Thread(() -> {
-            while (!datagramSocket.isClosed()) {
-                final var clientPacket = new DatagramPacket(new byte[0], 0);
+            final var executor = Executors.newCachedThreadPool();
+            while (!socket.isClosed()) {
+                final var packet = new DatagramPacket(new byte[0], 0);
                 try {
-                    datagramSocket.receive(clientPacket);
-                    final var clientAddress = clientPacket.getSocketAddress();
-                    log.debug("[S] received from {}", clientAddress);
-                    new Thread(() -> {
+                    socket.receive(packet);
+                    final var address = packet.getSocketAddress();
+                    log.debug("[S] received from {}", address);
+                    executor.submit(() -> {
                         final var array = new byte[BYTES];
                         helloWorld().set(array);
-                        final var serverPacket = new DatagramPacket(
-                                array, array.length, clientAddress);
+                        packet.setData(array);
                         try {
-                            datagramSocket.send(serverPacket);
-                            log.debug("[S] send to {}", clientAddress);
+                            socket.send(packet);
+                            log.debug("[S] send to {}", address);
                         } catch (final IOException ioe) {
                             log.error("failed to send", ioe);
                         }
-                    }).start();
+                    });
                 } catch (final IOException ioe) {
-                    if (datagramSocket.isClosed()) {
+                    if (socket.isClosed()) {
                         break;
                     }
                     log.error("failed to receive", ioe);
                 }
             }
-            LOCAL_PORT.remove();
-            datagramSocket = null;
+            shutdownAndAwaitTermination(executor, 8L, SECONDS);
+            PORT.remove();
+            socket = null;
         }).start();
         log.debug("[S] server thread started");
     }
 
     @Override
-    public void close() throws IOException {
-        if (datagramSocket == null || datagramSocket.isClosed()) {
-            return;
+    public void open() throws IOException {
+        try {
+            lock.lock();
+            open_();
+        } finally {
+            lock.unlock();
         }
-        datagramSocket.close();
     }
 
-    private DatagramSocket datagramSocket;
+    private void close_() throws IOException {
+        if (socket == null || socket.isClosed()) {
+            return;
+        }
+        socket.close();
+    }
+
+    @Override
+    public void close() throws IOException {
+        try {
+            lock.lock();
+            close_();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    private DatagramSocket socket;
+
+    private final Lock lock = new ReentrantLock();
 }
