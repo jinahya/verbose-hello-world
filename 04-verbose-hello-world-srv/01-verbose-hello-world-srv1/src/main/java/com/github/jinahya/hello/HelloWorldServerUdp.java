@@ -27,7 +27,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.net.SocketTimeoutException;
 
 /**
  * A class serves {@code hello, world} to clients.
@@ -70,8 +69,6 @@ class HelloWorldServerUdp
                 final var clientPacket = new DatagramPacket(new byte[0], 0);
                 try {
                     socket.receive(clientPacket);
-                } catch (final SocketTimeoutException ste) {
-                    continue;
                 } catch (final IOException ioe) {
                     if (socket.isClosed()) {
                         break;
