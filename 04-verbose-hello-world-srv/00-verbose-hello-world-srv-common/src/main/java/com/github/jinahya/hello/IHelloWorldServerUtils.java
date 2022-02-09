@@ -122,16 +122,11 @@ final class IHelloWorldServerUtils {
     }
 
     /**
-     * Starts a new thread which reads "{@code quit\n}" from {@link System#in}
-     * and {@link Closeable#close() closes} specified closeable.
-     *
-     * @param closeable the closeable to close.
+     * Returns a (started) thread which reads "{@code quit\n}" from {@link
+     * System#in}.
      */
-    static void readQuitAndClose(final Closeable closeable) {
-        if (closeable == null) {
-            throw new NullPointerException("closeable is null");
-        }
-        new Thread(() -> {
+    static Thread readQuit() {
+        final var thread = new Thread(() -> {
             final var reader = new BufferedReader(new InputStreamReader(in));
             try {
                 for (String l; (l = reader.readLine()) != null; ) {
@@ -143,14 +138,34 @@ final class IHelloWorldServerUtils {
             } catch (final IOException ioe) {
                 log.error("failed to read 'quit'", ioe);
             }
-            log.debug("closing {}", closeable);
-            try {
-                closeable.close();
-            } catch (final IOException ioe) {
-                log.error("failed to close {}", closeable, ioe);
-            }
-        }).start();
+        });
+        thread.start();
         log.debug("thread for reading 'quit' started");
+        return thread;
+    }
+
+    /**
+     * Starts a new thread which reads "{@code quit\n}" from {@link System#in}
+     * and {@link Closeable#close() closes} specified closeable.
+     *
+     * @param closeable the closeable to close.
+     */
+    static void readQuitAndClose(final Closeable closeable) {
+        if (closeable == null) {
+            throw new NullPointerException("closeable is null");
+        }
+        final var thread = readQuit();
+        try {
+            thread.join();
+        } catch (final InterruptedException ie) {
+            log.warn("interrupted while joining the 'quit'-reading thread");
+        }
+        log.debug("closing {}", closeable);
+        try {
+            closeable.close();
+        } catch (final IOException ioe) {
+            log.error("failed to close {}", closeable, ioe);
+        }
     }
 
     /**
