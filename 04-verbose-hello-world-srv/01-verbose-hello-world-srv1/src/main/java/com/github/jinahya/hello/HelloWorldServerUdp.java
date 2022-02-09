@@ -83,7 +83,7 @@ class HelloWorldServerUdp
             PORT.remove();
             socket = null;
         }).start();
-        log.debug("server thread started.");
+        log.debug("server thread started");
     }
 
     @Override
