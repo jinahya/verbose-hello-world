@@ -24,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 
-import static com.github.jinahya.hello.IHelloWorldServerUtils.parseEndpoint;
 import static com.github.jinahya.hello.IHelloWorldServerUtils.readQuitAndClose;
 
 /**
@@ -45,10 +44,9 @@ public class HelloWorldMainTcp {
      */
     public static void main(final String... args) throws IOException {
         final var endpoint = IHelloWorldServerUtils.parseEndpoint(args);
-        try (var server = new HelloWorldServerTcp(endpoint)) {
-            server.open();
-            readQuitAndClose(server);
-        }
+        final var server = new HelloWorldServerTcp(endpoint);
+        server.open();
+        readQuitAndClose(server);
     }
 
     /**
