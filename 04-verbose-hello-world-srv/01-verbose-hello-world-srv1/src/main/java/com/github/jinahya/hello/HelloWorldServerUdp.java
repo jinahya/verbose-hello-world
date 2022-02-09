@@ -66,9 +66,9 @@ class HelloWorldServerUdp
         PORT.set(socket.getLocalPort());
         new Thread(() -> {
             while (!socket.isClosed()) {
-                final var packet = new DatagramPacket(new byte[0], 0);
+                final var clientPacket = new DatagramPacket(new byte[0], 0);
                 try {
-                    socket.receive(packet);
+                    socket.receive(clientPacket);
                 } catch (final IOException ioe) {
                     if (socket.isClosed()) {
                         break;
@@ -76,8 +76,8 @@ class HelloWorldServerUdp
                     log.error("failed to receive", ioe);
                     continue;
                 }
-                final var address = packet.getSocketAddress();
-                log.debug("[S] received from {}", address);
+                final var clientAddress = clientPacket.getSocketAddress();
+                log.debug("[S] received from {}", clientAddress);
                 // TODO: Send "hello, world" bytes back to the client!
             }
             PORT.remove();
