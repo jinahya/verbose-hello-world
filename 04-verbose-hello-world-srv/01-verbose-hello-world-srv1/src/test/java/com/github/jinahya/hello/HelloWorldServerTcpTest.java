@@ -29,6 +29,7 @@ import java.net.InetSocketAddress;
 import static com.github.jinahya.hello.HelloWorldClientTcp.clients;
 import static com.github.jinahya.hello.HelloWorldServerTcp.PORT;
 import static java.net.InetAddress.getLoopbackAddress;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @Slf4j
 class HelloWorldServerTcpTest {
@@ -42,6 +43,7 @@ class HelloWorldServerTcpTest {
             final var port = PORT.get();
             clients(4, new InetSocketAddress(host, port), s -> {
                 log.debug("[C] received: {}", s);
+                assertNotNull(s);
             });
         }
     }
