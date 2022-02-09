@@ -28,7 +28,6 @@ import java.util.function.Consumer;
 
 import static java.nio.charset.StandardCharsets.US_ASCII;
 import static java.util.Objects.requireNonNull;
-import static java.util.concurrent.TimeUnit.SECONDS;
 
 @Slf4j
 public class HelloWorldClientUdp
@@ -37,11 +36,11 @@ public class HelloWorldClientUdp
     static void clients(final int count, final SocketAddress endpoint,
                         final Consumer<? super String> consumer)
             throws InterruptedException {
-        requireNonNull(endpoint, "endpoint is null");
         if (count <= 0) {
             throw new IllegalArgumentException(
                     "count(" + count + ") is not positive");
         }
+        requireNonNull(endpoint, "endpoint is null");
         requireNonNull(consumer, "consumer is null");
         for (int i = 0; i < count; i++) {
             try {
@@ -54,9 +53,9 @@ public class HelloWorldClientUdp
     }
 
     /**
-     * Creates a new instance which connects to specified endpoint.
+     * Creates a new instance with specified server endpoint.
      *
-     * @param endpoint the endpoint to connect.
+     * @param endpoint the server endpoint.
      */
     HelloWorldClientUdp(final SocketAddress endpoint) {
         super();
@@ -66,7 +65,6 @@ public class HelloWorldClientUdp
     @Override
     public byte[] call() throws Exception {
         try (var socket = new DatagramSocket()) {
-            socket.setSoTimeout((int) SECONDS.toMillis(8L));
             // TODO: Connect to the endpoint, read 12 bytes, and return it.
             return new byte[0];
         }

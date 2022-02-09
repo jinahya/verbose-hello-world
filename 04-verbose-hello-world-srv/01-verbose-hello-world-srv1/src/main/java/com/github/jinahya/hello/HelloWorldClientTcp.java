@@ -28,7 +28,6 @@ import java.util.function.Consumer;
 
 import static java.nio.charset.StandardCharsets.US_ASCII;
 import static java.util.Objects.requireNonNull;
-import static java.util.concurrent.TimeUnit.SECONDS;
 
 @Slf4j
 public class HelloWorldClientTcp
@@ -54,9 +53,9 @@ public class HelloWorldClientTcp
     }
 
     /**
-     * Creates a new instance which connects to specified endpoint.
+     * Creates a new instance with specified server endpoint.
      *
-     * @param endpoint the endpoint to connect.
+     * @param endpoint the server endpoint.
      */
     HelloWorldClientTcp(final SocketAddress endpoint) {
         super();
@@ -66,7 +65,6 @@ public class HelloWorldClientTcp
     @Override
     public byte[] call() throws Exception {
         try (var socket = new Socket()) {
-            socket.setSoTimeout((int) SECONDS.toMillis(8L));
             // TODO: Connect to the endpoint, read 12 bytes, and return it.
             return new byte[0];
         }
