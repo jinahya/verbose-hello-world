@@ -154,18 +154,20 @@ final class IHelloWorldServerUtils {
         if (closeable == null) {
             throw new NullPointerException("closeable is null");
         }
-        final var thread = readQuit();
-        try {
-            thread.join();
-        } catch (final InterruptedException ie) {
-            log.warn("interrupted while joining the 'quit'-reading thread");
-        }
-        log.debug("closing {}", closeable);
-        try {
-            closeable.close();
-        } catch (final IOException ioe) {
-            log.error("failed to close {}", closeable, ioe);
-        }
+        new Thread(() ->{
+            final var thread = readQuit();
+            try {
+                thread.join();
+            } catch (final InterruptedException ie) {
+                log.warn("interrupted while joining the 'quit'-reading thread");
+            }
+            log.debug("closing {}", closeable);
+            try {
+                closeable.close();
+            } catch (final IOException ioe) {
+                log.error("failed to close {}", closeable, ioe);
+            }
+        }).start();
     }
 
     /**
