@@ -34,8 +34,7 @@ public class HelloWorldClientTcp
         implements IHelloWorldClient {
 
     static void clients(final int count, final SocketAddress endpoint,
-                        final Consumer<? super String> consumer)
-            throws InterruptedException {
+                        final Consumer<? super String> consumer) {
         if (count <= 0) {
             throw new IllegalArgumentException(
                     "count(" + count + ") is not positive");
