@@ -43,8 +43,8 @@ class HelloWorldMainUdpTest {
             main("0", host.getHostAddress());
             final int port = PORT.get();
             clients(4, new InetSocketAddress(host, port), s -> {
-                assertNotNull(s);
                 log.debug("[C] received: {}", s);
+                assertNotNull(s);
             });
             return null;
         });
