@@ -29,8 +29,6 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.SocketTimeoutException;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
-
 /**
  * A class serves {@code hello, world} to clients.
  *
@@ -67,7 +65,6 @@ class HelloWorldServerUdp
         }
         log.info("server bound to {}", socket.getLocalSocketAddress());
         PORT.set(socket.getLocalPort());
-        socket.setSoTimeout((int) SECONDS.toMicros(1L));
         new Thread(() -> {
             while (!socket.isClosed()) {
                 final var clientPacket = new DatagramPacket(new byte[0], 0);
