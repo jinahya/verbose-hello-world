@@ -22,6 +22,8 @@ package com.github.jinahya.hello;
 
 import com.google.inject.AbstractModule;
 
+import static java.lang.Class.forName;
+
 /**
  * A module for injecting instances of {@link HelloWorld}.
  *
@@ -43,9 +45,8 @@ class HelloWorldModule
 
     static {
         try {
-            HELLO_WORLD_IMPL_CLASS = Class.forName(HELLO_WORLD_IMPL_FQCN)
-                    .asSubclass(
-                            HelloWorld.class);
+            HELLO_WORLD_IMPL_CLASS = forName(HELLO_WORLD_IMPL_FQCN)
+                    .asSubclass(HelloWorld.class);
         } catch (final ClassNotFoundException cnfe) {
             throw new InstantiationError(cnfe.getMessage());
         }
@@ -53,6 +54,7 @@ class HelloWorldModule
 
     @Override
     protected void configure() {
-        bind(HelloWorld.class).to(HELLO_WORLD_IMPL_CLASS);
+        bind(HelloWorld.class)
+                .to(HELLO_WORLD_IMPL_CLASS);
     }
 }

@@ -35,8 +35,12 @@
       <groupId>com.google.dagger</groupId>
       <artifactId>dagger-compiler</artifactId>
     </dependency>
+<!--    <dependency>-->
+<!--      <groupId>com.google.inject</groupId>-->
+<!--      <artifactId>guice</artifactId>-->
+<!--    </dependency>-->
     <dependency>
-      <groupId>com.google.inject</groupId>
+      <groupId>com.guicedee.services</groupId>
       <artifactId>guice</artifactId>
     </dependency>
     <dependency>

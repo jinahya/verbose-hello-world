@@ -36,7 +36,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 @Slf4j
 class SimpleDatagramServer {
 
-    public static void main(final String[] args) throws IOException {
+    public static void main(final String... args) throws IOException {
         final var socket = new DatagramSocket(null);
         socket.bind(new InetSocketAddress(getLoopbackAddress(), 0));
         log.debug("bound to {}", socket.getLocalSocketAddress());

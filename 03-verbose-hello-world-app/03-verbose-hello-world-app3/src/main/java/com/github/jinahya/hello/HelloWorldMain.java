@@ -20,7 +20,8 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import javax.inject.Inject;
+import com.google.inject.Inject;
+
 import java.io.IOException;
 
 /**

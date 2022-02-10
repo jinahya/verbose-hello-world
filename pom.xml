@@ -95,6 +95,12 @@
         <version>${version.com.google.inject}</version>
       </dependency>
       <dependency>
+        <!-- https://search.maven.org/artifact/com.guicedee.services/guice -->
+        <groupId>com.guicedee.services</groupId>
+        <artifactId>guice</artifactId>
+        <version>1.2.0.1-jre11</version>
+      </dependency>
+      <dependency>
         <groupId>jakarta.enterprise</groupId>
         <artifactId>jakarta.enterprise.cdi-api</artifactId>
         <version>4.0.0-RC4</version>

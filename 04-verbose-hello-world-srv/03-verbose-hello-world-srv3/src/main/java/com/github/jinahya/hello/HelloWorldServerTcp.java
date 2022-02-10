@@ -24,16 +24,20 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.net.SocketAddress;
-import java.util.Objects;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
+import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Supplier;
+
+import static java.lang.Boolean.TRUE;
+import static java.net.StandardSocketOptions.SO_REUSEADDR;
+import static java.nio.channels.SelectionKey.OP_ACCEPT;
+import static java.nio.channels.SelectionKey.OP_WRITE;
+import static java.util.Objects.requireNonNull;
 
 /**
  * A class serves {@code hello, world} to clients.
@@ -42,122 +46,118 @@ import java.util.function.Supplier;
  */
 @Slf4j
 class HelloWorldServerTcp
-        implements IHelloWorldServer {
+        extends AbstractHelloWorldServer {
 
-    static final ThreadLocal<Integer> LOCAL_PORT = new ThreadLocal<>();
+    static final ThreadLocal<Integer> PORT = new ThreadLocal<>();
 
     /**
-     * Creates a new instance.
+     * Creates a new instance with specified local address to bind.
      *
-     * @param helloWorld              an instance of {@link HelloWorld}
-     *                                interface.
-     * @param socketAddress           a socket address to bind.
-     * @param backlog                 a value of backlog.
-     * @param executorServiceSupplier a supplier for an executor service.
+     * @param endpoint the local socket address to bind.
      */
-    HelloWorldServerTcp(final HelloWorld helloWorld,
-                        final SocketAddress socketAddress,
-                        final int backlog,
-                        final Supplier<? extends ExecutorService> executorServiceSupplier) {
-        super();
-        this.service = Objects.requireNonNull(helloWorld, "helloWorld is null");
-        this.endpoint = Objects.requireNonNull(socketAddress,
-                                               "socketAddress is null");
-        this.backlog = backlog;
-        this.executorServiceSupplier = Objects.requireNonNull(
-                executorServiceSupplier, "executorServiceSupplier is null");
+    HelloWorldServerTcp(final SocketAddress endpoint) {
+        super(endpoint);
+    }
+
+    private void handle(final Set<SelectionKey> keys, final Selector selector)
+            throws IOException {
+        requireNonNull(keys, "keys is null");
+        requireNonNull(selector, "selector is null");
+        for (final SelectionKey key : keys) {
+            if (key.isAcceptable()) { // server; ready to accept
+                final var channel = (ServerSocketChannel) key.channel();
+                final var client = channel.accept();
+                log.debug("[S] accepted from {}", client.getRemoteAddress());
+                client.configureBlocking(false);
+                client.register(selector, OP_WRITE);
+                continue;
+            }
+            if (key.isWritable()) { // client; ready to write
+                final SocketChannel channel = ((SocketChannel) key.channel());
+                helloWorld().write(channel);
+                log.debug("[S] written to {}", channel.getRemoteAddress());
+                key.channel().close();
+                continue;
+            }
+            log.warn("unhandled key: {}; opts: {}", key, key.interestOps());
+        }
+        keys.clear();
+    }
+
+    private void open_() throws IOException {
+        close();
+        server = ServerSocketChannel.open();
+        if (endpoint instanceof InetSocketAddress
+            && ((InetSocketAddress) endpoint).getPort() > 0) {
+            server.setOption(SO_REUSEADDR, TRUE);
+        }
+        try {
+            server.bind(endpoint);
+        } catch (final IOException ioe) {
+            log.error("failed to bind to {}", endpoint, ioe);
+            throw ioe;
+        }
+        log.info("server bound to {}", server.getLocalAddress());
+        PORT.set(server.socket().getLocalPort());
+        final var selector = Selector.open();
+        server.configureBlocking(false);
+        server.register(selector, OP_ACCEPT);
+        new Thread(() -> {
+            while (!server.socket().isClosed()) {
+                try {
+                    if (selector.select() == 0) {
+                        continue;
+                    }
+                    handle(selector.selectedKeys(), selector);
+                } catch (final IOException ioe) {
+                    if (server.socket().isClosed()) {
+                        break;
+                    }
+                    log.error("failed to work", ioe);
+                }
+            }
+            try {
+                if (selector.select() > 0) {
+                    handle(selector.selectedKeys(), selector);
+                }
+                selector.close();
+            } catch (final IOException ioe) {
+                log.error("failed to close {}", selector, ioe);
+            }
+            PORT.remove();
+            server = null;
+        }).start();
+        log.debug("server thread started");
     }
 
     @Override
     public void open() throws IOException {
         try {
             lock.lock();
-            close();
-            serverSocket = new ServerSocket();
-            if (endpoint instanceof InetSocketAddress &&
-                ((InetSocketAddress) endpoint).getPort() > 0) {
-                serverSocket.setReuseAddress(true);
-            }
-            try {
-                serverSocket.bind(endpoint, backlog);
-            } catch (final IOException ioe) {
-                log.error("failed to bind; endpoint: {}, backlog: {}", endpoint,
-                          backlog, ioe);
-                throw ioe;
-            }
-            log.info("server is open; {}",
-                     serverSocket.getLocalSocketAddress());
-            LOCAL_PORT.set(serverSocket.getLocalPort());
-            final Thread thread = new Thread(() -> {
-                final ExecutorService executorService
-                        = executorServiceSupplier.get();
-                while (!serverSocket.isClosed()) {
-                    try {
-                        final Socket socket = serverSocket.accept();
-                        final Future<Void> futurue = executorService.submit(
-                                () -> {
-                                    try (Socket s = socket) {
-                                        log.debug(
-                                                "[S] connected from {}; local: {}",
-                                                socket.getRemoteSocketAddress(),
-                                                socket.getLocalSocketAddress());
-                                        final byte[] array
-                                                = new byte[HelloWorld.BYTES];
-                                        service.set(array);
-                                        s.getOutputStream().write(array);
-                                        s.getOutputStream().flush();
-                                    }
-                                    return null;
-                                });
-                    } catch (final IOException ioe) {
-                        if (serverSocket.isClosed()) {
-                            break;
-                        }
-                        log.error("failed to accept", ioe);
-                    }
-                }
-                executorService.shutdown();
-                try {
-                    final boolean terminated
-                            = executorService.awaitTermination(8L,
-                                                               TimeUnit.SECONDS);
-                    log.debug("executor service terminated: {}", terminated);
-                } catch (final InterruptedException ie) {
-                    log.error(
-                            "interrupted while awaiting executor service to be terminated",
-                            ie);
-                }
-                LOCAL_PORT.remove();
-            });
-            thread.setDaemon(true);
-            thread.start();
+            open_();
         } finally {
             lock.unlock();
         }
+    }
+
+    private void close_() throws IOException {
+        if (server == null || server.socket().isClosed()) {
+            return;
+        }
+        server.close();
     }
 
     @Override
     public void close() throws IOException {
         try {
             lock.lock();
-            if (serverSocket == null || serverSocket.isClosed()) {
-                return;
-            }
-            serverSocket.close();
+            close_();
         } finally {
             lock.unlock();
         }
     }
 
-    private final HelloWorld service;
-
-    private final SocketAddress endpoint;
-
-    private final int backlog;
-
-    private final Supplier<? extends ExecutorService> executorServiceSupplier;
-
     private final Lock lock = new ReentrantLock();
 
-    private ServerSocket serverSocket;
+    private ServerSocketChannel server;
 }

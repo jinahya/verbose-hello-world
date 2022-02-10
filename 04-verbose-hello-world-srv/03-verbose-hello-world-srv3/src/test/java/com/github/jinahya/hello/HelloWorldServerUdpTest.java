@@ -31,7 +31,6 @@ import java.net.SocketAddress;
 import static com.github.jinahya.hello.HelloWorldClientUdp.clients;
 import static java.lang.System.arraycopy;
 import static java.nio.charset.StandardCharsets.US_ASCII;
-import static java.util.concurrent.Executors.newCachedThreadPool;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doAnswer;
@@ -57,8 +56,7 @@ class HelloWorldServerUdpTest {
                 }).when(service).set(notNull());
             }
             final SocketAddress endpoint = new InetSocketAddress(host, 0);
-            server = new HelloWorldServerUdp(
-                    service, endpoint, newCachedThreadPool());
+            server = new HelloWorldServerUdp(endpoint);
         }
         try {
             server.open();

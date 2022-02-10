@@ -36,7 +36,7 @@ class HelloWorldMainTcpTest {
         IHelloWorldServerUtils.callAndWriteQuit(() -> {
             HelloWorldMainTcp.main("0.0.0.0", "0");
             final InetAddress host = InetAddress.getLocalHost();
-            final int port = HelloWorldServerTcp.LOCAL_PORT.get();
+            final int port = HelloWorldServerTcp.PORT.get();
             final SocketAddress endpoint = new InetSocketAddress(host, port);
             HelloWorldClientTcp.clients(8, endpoint, b -> {
                 // TODO: Verify array!

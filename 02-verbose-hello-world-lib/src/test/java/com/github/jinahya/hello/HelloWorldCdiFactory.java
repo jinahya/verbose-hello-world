@@ -46,8 +46,8 @@ class HelloWorldCdiFactory {
      * @param injectionPoint the injection point to be injected
      * @return an instance of {@link HelloWorld}.
      */
-    @javax.inject.Named(DEMO)
-    @javax.enterprise.inject.Produces
+//    @javax.inject.Named(DEMO)
+//    @javax.enterprise.inject.Produces
     @Named(DEMO)
     @Produces
     HelloWorld produceNamedDemo(final InjectionPoint injectionPoint) {
@@ -64,8 +64,8 @@ class HelloWorldCdiFactory {
      * @param helloWorld the {@link HelloWorld} instance to dispose
      */
     void disposeNamedDemo(
-            @javax.inject.Named(DEMO)
-            @javax.enterprise.inject.Disposes
+//            @javax.inject.Named(DEMO)
+//            @javax.enterprise.inject.Disposes
             @Named(DEMO) @Disposes final HelloWorld helloWorld) {
         log.debug("disposing {}", helloWorld);
         assertTrue(helloWorld instanceof HelloWorldDemo);
@@ -78,8 +78,8 @@ class HelloWorldCdiFactory {
      * @param injectionPoint the injection point to be injected.
      * @return an instance of {@link HelloWorldImpl}
      */
-    @javax.inject.Named(IMPL)
-    @javax.enterprise.inject.Produces
+//    @javax.inject.Named(IMPL)
+//    @javax.enterprise.inject.Produces
     @Named(IMPL)
     @Produces
     HelloWorld produceNamedImpl(final InjectionPoint injectionPoint) {
@@ -95,8 +95,8 @@ class HelloWorldCdiFactory {
      * @param helloWorld the {@link HelloWorld} instance to dispose.
      */
     void disposeNamedImpl(
-            @javax.inject.Named(IMPL)
-            @javax.enterprise.inject.Disposes
+//            @javax.inject.Named(IMPL)
+//            @javax.enterprise.inject.Disposes
             @Named(IMPL) @Disposes final HelloWorld helloWorld) {
         log.debug("disposing {}", helloWorld);
         assertTrue(helloWorld instanceof HelloWorldImpl);
@@ -109,7 +109,7 @@ class HelloWorldCdiFactory {
      * @param injectionPoint the injection point
      * @return an instance of {@link HelloWorld}
      */
-    @javax.enterprise.inject.Produces
+//    @javax.enterprise.inject.Produces
     @Produces
     @QualifiedDemo
     HelloWorld produceQualifiedDemo(final InjectionPoint injectionPoint) {
@@ -125,7 +125,7 @@ class HelloWorldCdiFactory {
      * @param helloWorld the {@link HelloWorld} instance to dispose
      */
     void disposeQualifiedDemo(
-            @javax.enterprise.inject.Disposes
+//            @javax.enterprise.inject.Disposes
             @Disposes @QualifiedDemo final HelloWorld helloWorld) {
         log.debug("disposing {}", helloWorld);
         assertTrue(helloWorld instanceof HelloWorldDemo);
@@ -138,7 +138,7 @@ class HelloWorldCdiFactory {
      * @param injectionPoint the injection point
      * @return an instance of {@link HelloWorld}
      */
-    @javax.enterprise.inject.Produces
+//    @javax.enterprise.inject.Produces
     @Produces
     @QualifiedImpl
     HelloWorld produceQualifiedImpl(final InjectionPoint injectionPoint) {
@@ -154,7 +154,7 @@ class HelloWorldCdiFactory {
      * @param helloWorld the {@link HelloWorld} instance to dispose
      */
     void disposeQualifiedImpl(
-            @javax.enterprise.inject.Disposes
+//            @javax.enterprise.inject.Disposes
             @Disposes @QualifiedImpl final HelloWorld helloWorld) {
         log.debug("disposing {}", helloWorld);
         assertTrue(helloWorld instanceof HelloWorldImpl);

@@ -37,7 +37,7 @@ public class HelloWorldMain {
      * @param args an array of main arguments
      * @throws IOException if an I/O error occurs.
      */
-    public static void main(final String[] args) throws IOException {
+    public static void main(final String... args) throws IOException {
         // TODO: implement!
     }
 
