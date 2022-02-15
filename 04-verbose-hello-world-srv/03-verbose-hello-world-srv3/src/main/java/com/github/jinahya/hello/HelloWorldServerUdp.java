@@ -23,10 +23,18 @@ package com.github.jinahya.hello;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.nio.channels.DatagramChannel;
+import java.nio.channels.Selector;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+import static com.github.jinahya.hello.HelloWorld.BYTES;
+import static java.lang.Thread.currentThread;
+import static java.nio.ByteBuffer.allocate;
+import static java.nio.channels.SelectionKey.OP_READ;
+import static java.nio.channels.SelectionKey.OP_WRITE;
 
 /**
  * A class serves {@code hello, world} to clients.
@@ -48,49 +56,91 @@ class HelloWorldServerUdp
         super(endpoint);
     }
 
-    @Override
-    public void open() throws IOException {
+    private void open_() throws IOException {
         close();
-        socket = new DatagramSocket(null);
+        server = DatagramChannel.open();
         if (endpoint instanceof InetSocketAddress &&
             ((InetSocketAddress) endpoint).getPort() > 0) {
-            socket.setReuseAddress(true);
+            server.socket().setReuseAddress(true);
         }
         try {
-            socket.bind(endpoint);
+            server.bind(endpoint);
         } catch (final IOException ioe) {
             log.error("failed to bind to {}", endpoint, ioe);
             throw ioe;
         }
-        log.info("server bound to {}", socket.getLocalSocketAddress());
-        PORT.set(socket.getLocalPort());
+        log.info("server bound to {}", server.getLocalAddress());
+        PORT.set(server.socket().getLocalPort());
         new Thread(() -> {
-            while (!socket.isClosed()) {
-                final DatagramPacket clientPacket
-                        = new DatagramPacket(new byte[0], 0);
-                try {
-                    socket.receive(clientPacket);
-                } catch (final IOException ioe) {
-                    if (socket.isClosed()) {
-                        break;
+            try (var selector = Selector.open()) {
+                server.configureBlocking(false);
+                server.register(selector, OP_READ);
+                while (!currentThread().isInterrupted()) {
+                    if (selector.select() == 0) {
+                        continue;
                     }
-                    log.error("failed to receive", ioe);
-                    continue;
+                    final var keys = selector.selectedKeys();
+                    for (final var key : keys) {
+                        final var channel = (DatagramChannel) key.channel();
+                        if (key.isReadable()) {
+                            final var address = channel.receive(allocate(0));
+                            if (address != null) {
+                                log.debug("received from {}", address);
+                                key.interestOps(key.interestOps() & ~OP_READ);
+                                key.interestOps(key.interestOps() | OP_WRITE);
+                                key.attach(address);
+                            }
+                            continue;
+                        }
+                        if (key.isWritable()) {
+                            final var src = allocate(BYTES);
+                            service().put(src);
+                            // TODO: flip the src!
+                            final var target = (SocketAddress) key.attachment();
+                            if (channel.send(src, target) == src.capacity()) {
+                                key.interestOps(key.interestOps() & ~OP_WRITE);
+                                key.interestOps(key.interestOps() | OP_READ);
+                            }
+                            continue;
+                        }
+                        log.warn("unhandled key: {}", key);
+                    }
+                    keys.clear();
                 }
+            } catch (final IOException ioe) {
+                log.error("io error in server thread", ioe);
             }
             PORT.remove();
-            socket = null;
+            server = null;
         }).start();
         log.debug("[S] server thread started");
     }
 
     @Override
-    public void close() throws IOException {
-        if (socket == null || socket.isClosed()) {
-            return;
+    public void open() throws IOException {
+        try {
+            lock.lock();
+            close();
+            open_();
+        } finally {
+            lock.unlock();
         }
-        socket.close();
     }
 
-    private DatagramSocket socket;
+    private void close_() throws IOException {
+    }
+
+    @Override
+    public void close() throws IOException {
+        try {
+            lock.lock();
+            close_();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    private final Lock lock = new ReentrantLock();
+
+    private DatagramChannel server;
 }

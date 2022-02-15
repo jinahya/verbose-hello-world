@@ -154,7 +154,7 @@ final class IHelloWorldServerUtils {
         if (closeable == null) {
             throw new NullPointerException("closeable is null");
         }
-        new Thread(() ->{
+        new Thread(() -> {
             final var thread = readQuit();
             try {
                 thread.join();
@@ -236,6 +236,10 @@ final class IHelloWorldServerUtils {
             log.error("interrupted while awaiting executor terminated", ie);
             currentThread().interrupt();
         }
+    }
+
+    static void setAndNotify(final ThreadLocal<Integer> port) {
+        requireNonNull(port, "port is null");
     }
 
     /**

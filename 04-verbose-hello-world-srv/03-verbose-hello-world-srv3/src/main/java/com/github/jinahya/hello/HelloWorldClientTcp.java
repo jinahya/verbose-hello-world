@@ -22,11 +22,8 @@ package com.github.jinahya.hello;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.EOFException;
 import java.io.IOException;
 import java.net.SocketAddress;
-import java.nio.ByteBuffer;
-import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.CountDownLatch;
@@ -38,68 +35,60 @@ import static java.nio.channels.SelectionKey.OP_CONNECT;
 import static java.nio.channels.SelectionKey.OP_READ;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 import static java.util.Objects.requireNonNull;
-import static java.util.concurrent.Executors.newCachedThreadPool;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 @Slf4j
 final class HelloWorldClientTcp {
 
-    static byte[] readAndAccept(final ReadableByteChannel channel,
-                                final Consumer<? super String> consumer)
-            throws IOException {
-        requireNonNull(channel, "channel is null");
-        requireNonNull(consumer, "consumer is null");
-        final var array = new byte[BYTES];
-        final ByteBuffer buffer = wrap(array);
-        while (buffer.hasRemaining()) {
-            if (channel.read(buffer) == -1) {
-                throw new EOFException("unexpected end-of-stream");
-            }
-        }
-        consumer.accept(new String(array, US_ASCII));
-        return array;
-    }
-
     static void clients(final int count, final SocketAddress endpoint,
                         final Consumer<? super String> consumer)
-            throws InterruptedException, IOException {
+            throws IOException {
         if (count <= 0) {
             throw new IllegalArgumentException(
                     "count(" + count + ") is not positive");
         }
         requireNonNull(endpoint, "endpoint is null");
         requireNonNull(consumer, "consumer is null");
-        final var executor = newCachedThreadPool();
         try (var selector = Selector.open()) {
-            final CountDownLatch latch = new CountDownLatch(count);
             for (int i = 0; i < count; i++) {
                 final var client = SocketChannel.open();
                 client.configureBlocking(false);
-                final var key = client.register(selector, OP_CONNECT);
                 if (client.connect(endpoint)) { // connected, immediately
-                    key.cancel();
+                    log.debug("[C] connected to {}", client.getRemoteAddress());
                     client.register(selector, OP_READ);
+                } else {
+                    client.register(selector, OP_CONNECT);
                 }
             }
+            final var latch = new CountDownLatch(count);
             while (latch.getCount() > 0L) {
-                if (selector.select() == 0) {
+                if (selector.select(SECONDS.toMillis(1L)) == 0) {
                     continue;
                 }
                 final var keys = selector.selectedKeys();
-                for (var key : selector.selectedKeys()) {
+                for (final var key : selector.selectedKeys()) {
+                    final var channel = (SocketChannel) key.channel();
                     if (key.isConnectable()) { // ready-to-connect
-                        key.channel().register(selector, OP_READ);
+                        try {
+                            if (channel.finishConnect()) {
+                                log.debug("[C] connected to {}",
+                                          channel.getRemoteAddress());
+                                key.interestOps(
+                                        key.interestOps() & ~OP_CONNECT);
+                                channel.register(selector, OP_READ);
+                            }
+                        } catch (final IOException ioe) {
+                            log.error("failed to finish connect", ioe);
+                            channel.close(); // key.cancel();
+                            latch.countDown();
+                        }
                         continue;
                     }
                     if (key.isReadable()) { // ready-to-read
-                        final var channel = (SocketChannel) key.channel();
-                        final var array = new byte[BYTES];
-                        final var buffer = wrap(array);
-                        while (buffer.hasRemaining()) {
-                            if (channel.read(buffer) == -1) {
-                                throw new EOFException("unexpected eof");
-                            }
-                        }
-                        consumer.accept(new String(array, US_ASCII));
+                        final var buffer = wrap(new byte[BYTES]);
+                        // TODO: fill buffer from the channel
+                        consumer.accept(new String(buffer.array(), US_ASCII));
+                        channel.close(); // key.cancel();
                         latch.countDown();
                         continue;
                     }
@@ -107,6 +96,7 @@ final class HelloWorldClientTcp {
                 }
                 keys.clear();
             } // end-of-while
+            log.debug("[C] out of loop; {}", selector.keys().size());
         }
     }
 

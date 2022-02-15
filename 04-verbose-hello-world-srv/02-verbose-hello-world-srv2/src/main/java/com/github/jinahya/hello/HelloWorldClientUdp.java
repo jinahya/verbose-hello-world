@@ -31,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
+import static java.lang.Thread.currentThread;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -40,8 +41,7 @@ class HelloWorldClientUdp
         implements Callable<byte[]> {
 
     static void clients(final int count, final SocketAddress endpoint,
-                        final Consumer<? super String> consumer)
-            throws InterruptedException {
+                        final Consumer<? super String> consumer) {
         requireNonNull(endpoint, "endpoint is null");
         if (count <= 0) {
             throw new IllegalArgumentException(
@@ -61,8 +61,13 @@ class HelloWorldClientUdp
                 }
             }).start();
         }
-        if (!latch.await(1L, TimeUnit.MINUTES)) {
-            log.warn("latch is still not broken!");
+        try {
+            if (!latch.await(1L, TimeUnit.MINUTES)) {
+                log.warn("latch is still not broken!");
+            }
+        } catch (final InterruptedException ie) {
+            log.error("interrupted while awaiting latch", ie);
+            currentThread().interrupt();
         }
     }
 

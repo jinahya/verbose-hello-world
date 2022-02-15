@@ -24,48 +24,26 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.SocketAddress;
 
 import static com.github.jinahya.hello.HelloWorldClientUdp.clients;
-import static java.lang.System.arraycopy;
-import static java.nio.charset.StandardCharsets.US_ASCII;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.mockito.ArgumentMatchers.notNull;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.spy;
+import static com.github.jinahya.hello.HelloWorldServerUdp.PORT;
+import static java.net.InetAddress.getLoopbackAddress;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @Slf4j
 class HelloWorldServerUdpTest {
 
     @Test
     void test() throws IOException, InterruptedException {
-        final InetAddress host = InetAddress.getLocalHost();
-        final IHelloWorldServer server;
-        {
-            HelloWorld service = IHelloWorldServerUtils.loadHelloWorld();
-            if (true) { // TODO: falsify or remove when HelloWorld#set(array) method is implemented!
-                service = spy(service);
-                // https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#13
-                doAnswer(i -> {
-                    final byte[] array = i.getArgument(0);
-                    final byte[] src = "hello, world".getBytes(US_ASCII);
-                    arraycopy(src, 0, array, 0, src.length);
-                    return array;
-                }).when(service).set(notNull());
-            }
-            final SocketAddress endpoint = new InetSocketAddress(host, 0);
-            server = new HelloWorldServerUdp(endpoint);
-        }
-        try {
+        final var host = getLoopbackAddress();
+        final var endpoint = new InetSocketAddress(host, 0);
+        try (var server = new HelloWorldServerTcp(endpoint)) {
             server.open();
-            final int port = HelloWorldServerUdp.PORT.get();
-            final SocketAddress endpoint = new InetSocketAddress(host, port);
-            final byte[] expected = "hello, world".getBytes(US_ASCII);
-            clients(4, endpoint, b -> assertArrayEquals(expected, b));
-        } finally {
-            server.close();
+            clients(4, new InetSocketAddress(host, PORT.get()), s -> {
+                log.debug("[C] received: {}", s);
+                assertNotNull(s);
+            });
         }
     }
 }

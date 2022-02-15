@@ -36,7 +36,7 @@ import static java.net.InetAddress.getLoopbackAddress;
 class HelloWorldMainTcpTest {
 
     @Test
-    void main__() throws InterruptedException, IOException {
+    void main__() throws IOException {
         final var host = getLoopbackAddress();
         callAndWriteQuit(() -> {
             main("0", host.getHostAddress());

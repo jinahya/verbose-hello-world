@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class HelloWorldMainUdpTest {
 
     @Test
-    void main__() throws InterruptedException, IOException {
+    void main__() throws IOException {
         final InetAddress host = getLoopbackAddress();
         callAndWriteQuit(() -> {
             main("0", host.getHostAddress());

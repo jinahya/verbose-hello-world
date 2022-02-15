@@ -34,6 +34,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import static java.lang.Boolean.TRUE;
+import static java.lang.Thread.currentThread;
 import static java.net.StandardSocketOptions.SO_REUSEADDR;
 import static java.nio.channels.SelectionKey.OP_ACCEPT;
 import static java.nio.channels.SelectionKey.OP_WRITE;
@@ -59,11 +60,21 @@ class HelloWorldServerTcp
         super(endpoint);
     }
 
+    /**
+     * Handles specified selection keys.
+     *
+     * @param keys     the selection keys to handle.
+     * @param selector a selector.
+     * @throws IOException if an I/O error occurs.
+     */
     private void handle(final Set<SelectionKey> keys, final Selector selector)
             throws IOException {
         requireNonNull(keys, "keys is null");
+        if (keys.isEmpty()) {
+            throw new IllegalArgumentException("empty keys");
+        }
         requireNonNull(selector, "selector is null");
-        for (final SelectionKey key : keys) {
+        for (final var key : keys) {
             if (key.isAcceptable()) { // server; ready to accept
                 final var channel = (ServerSocketChannel) key.channel();
                 final var client = channel.accept();
@@ -73,20 +84,19 @@ class HelloWorldServerTcp
                 continue;
             }
             if (key.isWritable()) { // client; ready to write
-                final SocketChannel channel = ((SocketChannel) key.channel());
-                helloWorld().write(channel);
-                log.debug("[S] written to {}", channel.getRemoteAddress());
-                key.channel().close();
+                try (var channel = ((SocketChannel) key.channel())) {
+                    service().write(channel);
+                    log.debug("[S] written to {}", channel.getRemoteAddress());
+                }
                 continue;
             }
-            log.warn("unhandled key: {}; opts: {}", key, key.interestOps());
+            log.warn("unhandled key: {}", key);
         }
         keys.clear();
     }
 
     private void open_() throws IOException {
-        close();
-        server = ServerSocketChannel.open();
+        final var server = ServerSocketChannel.open();
         if (endpoint instanceof InetSocketAddress
             && ((InetSocketAddress) endpoint).getPort() > 0) {
             server.setOption(SO_REUSEADDR, TRUE);
@@ -99,34 +109,27 @@ class HelloWorldServerTcp
         }
         log.info("server bound to {}", server.getLocalAddress());
         PORT.set(server.socket().getLocalPort());
-        final var selector = Selector.open();
-        server.configureBlocking(false);
-        server.register(selector, OP_ACCEPT);
-        new Thread(() -> {
-            while (!server.socket().isClosed()) {
-                try {
+        thread = new Thread(() -> {
+            try (var selector = Selector.open()) {
+                server.configureBlocking(false);
+                server.register(selector, OP_ACCEPT);
+                while (!currentThread().isInterrupted()) {
                     if (selector.select() == 0) {
                         continue;
                     }
                     handle(selector.selectedKeys(), selector);
-                } catch (final IOException ioe) {
-                    if (server.socket().isClosed()) {
-                        break;
-                    }
-                    log.error("failed to work", ioe);
-                }
-            }
-            try {
-                if (selector.select() > 0) {
+                } // end-of-while
+                log.debug("[S] out of loop");
+                server.keyFor(selector).cancel();
+                if (selector.selectNow() > 0) {
                     handle(selector.selectedKeys(), selector);
                 }
-                selector.close();
             } catch (final IOException ioe) {
-                log.error("failed to close {}", selector, ioe);
+                log.error("io error in server thread", ioe);
             }
-            PORT.remove();
-            server = null;
-        }).start();
+            log.debug("end of server thread");
+        });
+        thread.start();
         log.debug("server thread started");
     }
 
@@ -134,6 +137,7 @@ class HelloWorldServerTcp
     public void open() throws IOException {
         try {
             lock.lock();
+            close();
             open_();
         } finally {
             lock.unlock();
@@ -141,10 +145,20 @@ class HelloWorldServerTcp
     }
 
     private void close_() throws IOException {
-        if (server == null || server.socket().isClosed()) {
-            return;
+        if (thread != null && thread.isAlive()) {
+            thread.interrupt();
+            try {
+                thread.join();
+            } catch (final InterruptedException ie) {
+                log.error("interrupted while joining server thread", ie);
+                currentThread().interrupt();
+            }
         }
-        server.close();
+        thread = null;
+        if (server != null && server.isOpen()) {
+            server.close();
+        }
+        server = null;
     }
 
     @Override
@@ -157,7 +171,10 @@ class HelloWorldServerTcp
         }
     }
 
+    // a lock to synchronize method calls.
     private final Lock lock = new ReentrantLock();
 
     private ServerSocketChannel server;
+
+    private Thread thread;
 }

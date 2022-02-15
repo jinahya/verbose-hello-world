@@ -51,11 +51,11 @@ abstract class AbstractHelloWorldServer
      *
      * @return an instance of {@link HelloWorld} interface.
      */
-    HelloWorld helloWorld() {
-        if (helloWorld == null) {
-            helloWorld = load(HelloWorld.class).iterator().next();
+    HelloWorld service() {
+        if (service == null) {
+            service = load(HelloWorld.class).iterator().next();
         }
-        return helloWorld;
+        return service;
     }
 
     /**
@@ -63,5 +63,5 @@ abstract class AbstractHelloWorldServer
      */
     final SocketAddress endpoint;
 
-    private HelloWorld helloWorld;
+    private HelloWorld service;
 }

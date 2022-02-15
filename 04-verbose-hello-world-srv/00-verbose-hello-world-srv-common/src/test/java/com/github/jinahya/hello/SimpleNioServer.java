@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.nio.ByteBuffer;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
@@ -39,10 +40,8 @@ import static java.nio.channels.SelectionKey.OP_ACCEPT;
 import static java.nio.channels.SelectionKey.OP_CONNECT;
 import static java.nio.channels.SelectionKey.OP_READ;
 import static java.nio.channels.SelectionKey.OP_WRITE;
-import static java.time.Duration.ofSeconds;
 import static java.util.concurrent.Executors.newCachedThreadPool;
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.awaitility.Awaitility.await;
 
 @Slf4j
 class SimpleNioServer {
@@ -62,15 +61,15 @@ class SimpleNioServer {
                 if (key.isAcceptable()) {
                     final var channel = (ServerSocketChannel) key.channel();
                     final var client = channel.accept();
-                    log.debug("[S] connected from {}",
-                              client.getRemoteAddress());
+//                    log.debug("[S] connected from {}",
+//                              client.getRemoteAddress());
                     client.configureBlocking(false);
                     client.register(selector, OP_WRITE);
                     continue;
                 }
                 if (key.isWritable()) {
                     final var channel = (SocketChannel) key.channel();
-                    log.debug("[S] writing to {}", channel);
+//                    log.debug("[S] writing to {}", channel);
                     for (final var b = allocate(1); b.hasRemaining(); ) {
                         channel.write(b);
                     }
@@ -87,12 +86,14 @@ class SimpleNioServer {
             for (final var key : keys) {
                 if (key.isWritable()) {
                     final var channel = (SocketChannel) key.channel();
-                    log.debug("[S] writing to {}", channel);
-                    await().atMost(ofSeconds(4L));
-                    for (final var b = allocate(1); b.hasRemaining(); ) {
-                        channel.write(b);
+                    final var attachment = (ByteBuffer) key.attachment();
+                    if (attachment == null) {
+                        key.attach(allocate(1));
+                    } else if (!attachment.hasRemaining()) {
+                        channel.close();
+                    } else {
+                        channel.write(attachment);
                     }
-                    channel.close();
                     continue;
                 }
                 log.warn("unhandled key: {}", key);
@@ -104,18 +105,18 @@ class SimpleNioServer {
     private static void clients(final SocketAddress remote,
                                 final Selector selector)
             throws Exception {
-        final var count = 16;
+        final var count = 32;
         final var executor = newCachedThreadPool();
         for (int i = 0; i < count; i++) {
             executor.submit((Callable<Void>) () -> {
                 final var client = SocketChannel.open();
                 client.configureBlocking(false);
                 if (client.connect(remote)) {
-                    log.debug("[C] connected, immediately");
-                    log.debug("[C] registering for OP_READ");
+//                    log.debug("[C] connected, immediately");
+//                    log.debug("[C] registering for OP_READ");
                     client.register(selector, OP_READ);
                 } else {
-                    log.debug("[C] registering for OP_CONNECT");
+//                    log.debug("[C] registering for OP_CONNECT");
                     client.register(selector, OP_CONNECT);
                 }
                 return null;
@@ -135,17 +136,22 @@ class SimpleNioServer {
             for (final var key : keys) {
                 final var channel = (SocketChannel) key.channel();
                 if (key.isConnectable()) {
-                    if (channel.finishConnect()) {
-                        log.debug("[C] connected to {}",
-                                  channel.getRemoteAddress());
-                        key.interestOps(key.interestOps() & ~OP_CONNECT);
-                        key.interestOps(key.interestOps() | OP_READ);
+                    try {
+                        if (channel.finishConnect()) {
+//                            log.debug("[C] connected to {}",
+//                                      channel.getRemoteAddress());
+                            key.interestOps(key.interestOps() & ~OP_CONNECT);
+                            key.interestOps(key.interestOps() | OP_READ);
+                        }
+                    } catch (final IOException ioe) {
+                        log.error("failed to finish connect", ioe);
+                        channel.close();
                     }
                     continue;
                 }
                 if (key.isReadable()) {
-                    log.debug("[C] reading from {}",
-                              channel.getRemoteAddress());
+//                    log.debug("[C] reading from {}",
+//                              channel.getRemoteAddress());
                     for (final var b = allocate(1); b.hasRemaining(); ) {
                         if (channel.read(b) == -1) {
                             log.error("eof");
@@ -165,14 +171,17 @@ class SimpleNioServer {
             for (final var key : keys) {
                 final var channel = (SocketChannel) key.channel();
                 if (key.isReadable()) {
-                    log.debug("[C] reading...");
-                    for (final var b = allocate(1); b.hasRemaining(); ) {
-                        if (channel.read(b) == -1) {
+                    final var attachment = (ByteBuffer) key.attachment();
+                    if (attachment == null) {
+                        key.attach(allocate(1));
+                    } else if (!attachment.hasRemaining()) { // all read
+                        channel.close();
+                    } else {
+//                    log.debug("[C] reading...");
+                        if (channel.read(attachment) == -1) {
                             log.error("eof");
                         }
                     }
-                    key.interestOps(key.interestOps() & ~OP_READ);
-                    key.channel().close();
                     continue;
                 }
                 log.warn("unhandled key: {}", key);
@@ -209,7 +218,7 @@ class SimpleNioServer {
         clientsThread.start();
         log.debug("client(s) thread started");
 
-        log.debug("awaiting...");
+        log.debug("sleeping...");
         sleep(10000L);
 //        await().atLeast(ofSeconds(8L)).with().pollInterval(ofSeconds(8L));
 

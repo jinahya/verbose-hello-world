@@ -79,7 +79,7 @@ class HelloWorldServerTcp
                                   client.getRemoteSocketAddress());
                         try (client) {
                             final byte[] array = new byte[BYTES];
-                            helloWorld().set(array);
+                            service().set(array);
                             client.getOutputStream().write(array);
                             client.getOutputStream().flush();
                         } catch (final IOException ioe) {

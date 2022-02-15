@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class HelloWorldServerUdpTest {
 
     @Test
-    void test() throws IOException, InterruptedException {
+    void test() throws IOException {
         final var host = getLoopbackAddress();
         final var endpoint = new InetSocketAddress(host, 0);
         try (var server = new HelloWorldServerUdp(endpoint)) {

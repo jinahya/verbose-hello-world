@@ -80,7 +80,7 @@ class HelloWorldServerUdp
                     log.debug("[S] received from {}", address);
                     executor.submit(() -> {
                         final var array = new byte[BYTES];
-                        helloWorld().set(array);
+                        service().set(array);
                         packet.setData(array);
                         try {
                             socket.send(packet);
