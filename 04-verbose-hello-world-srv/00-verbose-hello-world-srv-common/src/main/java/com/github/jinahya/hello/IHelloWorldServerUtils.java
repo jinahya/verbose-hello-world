@@ -87,8 +87,8 @@ final class IHelloWorldServerUtils {
      *                              address.
      */
     static <R> R parseEndpoint(
-            final String[] args,
-            final IntFunction<
+            String[] args,
+            IntFunction<
                     ? extends Function<
                             ? super InetAddress,
                             ? extends R>> function)
@@ -118,9 +118,8 @@ final class IHelloWorldServerUtils {
      *                              address.
      */
     static <R> R parseEndpoint(
-            final String[] args,
-            final BiFunction<
-                    ? super Integer, ? super InetAddress, ? extends R> function)
+            String[] args,
+            BiFunction<? super Integer, ? super InetAddress, ? extends R> function)
             throws UnknownHostException {
         return parseEndpoint(args, p -> h -> function.apply(p, h));
     }
@@ -134,7 +133,7 @@ final class IHelloWorldServerUtils {
      * @throws UnknownHostException if {@code args[1]} is not known as an
      *                              address.
      */
-    static SocketAddress parseEndpoint(final String... args)
+    static SocketAddress parseEndpoint(String... args)
             throws UnknownHostException {
         return parseEndpoint(args, (p, h) -> new InetSocketAddress(h, p));
     }
@@ -211,7 +210,7 @@ final class IHelloWorldServerUtils {
      * @param closeable the closeable to close.
      * @return a new started thread.
      */
-    static Thread startReadingQuitAndClose(final Closeable closeable) {
+    static Thread startReadingQuitAndClose(Closeable closeable) {
         if (closeable == null) {
             throw new NullPointerException("closeable is null");
         }
@@ -231,7 +230,7 @@ final class IHelloWorldServerUtils {
         return thread;
     }
 
-    static void submitAndWriteQuit(final Callable<Void> task) {
+    static void submitAndWriteQuit(Callable<Void> task) {
         Objects.requireNonNull(task, "task is null");
         var in = System.in;
         try (var pos = new PipedOutputStream();
@@ -278,9 +277,9 @@ final class IHelloWorldServerUtils {
      * @see ExecutorService#shutdown()
      * @see ExecutorService#awaitTermination(long, TimeUnit)
      */
-    static void shutdownAndAwaitTermination(final ExecutorService executor,
-                                            final long timeout,
-                                            final TimeUnit unit) {
+    static void shutdownAndAwaitTermination(ExecutorService executor,
+                                            long timeout,
+                                            TimeUnit unit) {
         Objects.requireNonNull(executor, "executor is null");
         if (timeout <= 0L) {
             throw new IllegalArgumentException(
@@ -293,7 +292,7 @@ final class IHelloWorldServerUtils {
                 log.warn("executor has not terminated for {} in {}: {}",
                          timeout, unit, executor);
             }
-        } catch (final InterruptedException ie) {
+        } catch (InterruptedException ie) {
             log.error("interrupted while awaiting executor terminated", ie);
             currentThread().interrupt();
         }
@@ -307,11 +306,11 @@ final class IHelloWorldServerUtils {
      * @see ExecutorService#shutdown()
      * @see ExecutorService#awaitTermination(long, TimeUnit)
      */
-    static void shutdownAndAwaitTermination(final ExecutorService executor) {
+    static void shutdownAndAwaitTermination(ExecutorService executor) {
         shutdownAndAwaitTermination(executor, 8L, TimeUnit.SECONDS);
     }
 
-    static void setAndNotify(final ThreadLocal<Integer> port) {
+    static void setAndNotify(ThreadLocal<Integer> port) {
         Objects.requireNonNull(port, "port is null");
     }
 
@@ -341,9 +340,9 @@ final class IHelloWorldServerUtils {
         if (port <= 0 || port > 65535) {
             throw new IllegalArgumentException("invalid port : " + port);
         }
-        final var tmp = Files.createTempFile(dir, null, null);
+        var tmp = Files.createTempFile(dir, null, null);
         try (var channel = FileChannel.open(tmp, StandardOpenOption.WRITE)) {
-            final var src = ByteBuffer.allocate(Short.BYTES);
+            var src = ByteBuffer.allocate(Short.BYTES);
             src.asShortBuffer().put((short) port);
             while (src.hasRemaining()) {
                 channel.write(src);
@@ -364,7 +363,7 @@ final class IHelloWorldServerUtils {
      * @see #writePortNumber(Path, int)
      * @see #readPortNumber(Path, IntConsumer)
      */
-    static int readPortNumber(final Path dir)
+    static int readPortNumber(Path dir)
             throws IOException, InterruptedException {
         if (!Files.isDirectory(Objects.requireNonNull(dir, "dir is null"))) {
             throw new IllegalArgumentException("not a directory: " + dir);
@@ -375,7 +374,7 @@ final class IHelloWorldServerUtils {
                                  StandardWatchEventKinds.ENTRY_CREATE},
                          SensitivityWatchEventModifier.HIGH);
             while (!Thread.currentThread().isInterrupted()) {
-                final var key = service.poll(8L, TimeUnit.SECONDS);
+                var key = service.poll(8L, TimeUnit.SECONDS);
                 if (key == null) {
                     continue;
                 }
@@ -383,7 +382,7 @@ final class IHelloWorldServerUtils {
                 boolean created = false;
                 for (var event : key.pollEvents()) {
                     assert event.kind() == StandardWatchEventKinds.ENTRY_CREATE;
-                    final Path context = (Path) event.context();
+                    Path context = (Path) event.context();
                     if (PORT_TXT.equals(context.getFileName().toString())) {
                         created = true;
                         break;
@@ -397,7 +396,7 @@ final class IHelloWorldServerUtils {
             assert Files.isRegularFile(path);
             try (var channel = FileChannel.open(
                     path, StandardOpenOption.READ)) {
-                final var dst = ByteBuffer.allocate(Short.BYTES);
+                var dst = ByteBuffer.allocate(Short.BYTES);
                 while (dst.hasRemaining()) {
                     if (channel.read(dst) == -1) {
                         throw new EOFException("unexpected eof");

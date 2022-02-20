@@ -57,7 +57,7 @@ class HelloWorldServerUdpTest {
             var endpoint = new InetSocketAddress(host, 0);
             try {
                 server.open(endpoint, dir);
-            } catch (final IOException ioe) {
+            } catch (IOException ioe) {
                 log.error("failed to open the server", ioe);
                 thread.interrupt();
                 throw ioe;

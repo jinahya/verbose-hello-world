@@ -40,7 +40,7 @@ class HelloWorldMainUdp {
      * @param args an array of command line arguments.
      * @throws IOException if an I/O error occurs.
      */
-    public static void main(final String... args) throws IOException {
+    public static void main(String... args) throws IOException {
         try (var server = new HelloWorldServerUdp()) {
             var endpoint = IHelloWorldServerUtils.parseEndpoint(args);
             server.open(endpoint, null);

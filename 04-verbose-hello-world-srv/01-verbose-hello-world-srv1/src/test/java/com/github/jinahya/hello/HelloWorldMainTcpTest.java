@@ -31,7 +31,7 @@ class HelloWorldMainTcpTest {
     @Test
     void main__() {
         IHelloWorldServerUtils.submitAndWriteQuit(() -> {
-            final var host = InetAddress.getLoopbackAddress();
+            var host = InetAddress.getLoopbackAddress();
             HelloWorldMainTcp.main("0", host.getHostAddress());
             return null;
         });

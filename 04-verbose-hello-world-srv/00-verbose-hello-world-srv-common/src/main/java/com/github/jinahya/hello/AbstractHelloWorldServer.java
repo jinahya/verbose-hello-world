@@ -44,11 +44,11 @@ abstract class AbstractHelloWorldServer
         super();
     }
 
-    abstract void openInternal(final SocketAddress endpoint, final Path dir)
+    abstract void openInternal(SocketAddress endpoint, Path dir)
             throws IOException;
 
     @Override
-    public void open(final SocketAddress endpoint, final Path dir)
+    public void open(SocketAddress endpoint, Path dir)
             throws IOException {
         try {
             lock.lock();

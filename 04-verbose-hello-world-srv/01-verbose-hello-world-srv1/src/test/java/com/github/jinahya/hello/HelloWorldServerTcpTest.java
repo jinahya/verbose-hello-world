@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class HelloWorldServerTcpTest {
 
     @Test
-    void test(@TempDir final Path tempDir)
+    void test(@TempDir Path tempDir)
             throws IOException, InterruptedException {
         var host = InetAddress.getLoopbackAddress();
         var dir = Files.createTempDirectory(tempDir, null);
@@ -57,7 +57,7 @@ class HelloWorldServerTcpTest {
         try (var server = new HelloWorldServerTcp()) {
             try {
                 server.open(new InetSocketAddress(host, 0), dir);
-            } catch (final IOException ioe) {
+            } catch (IOException ioe) {
                 log.error("failed to open server", ioe);
                 thread.interrupt();
                 throw ioe;
