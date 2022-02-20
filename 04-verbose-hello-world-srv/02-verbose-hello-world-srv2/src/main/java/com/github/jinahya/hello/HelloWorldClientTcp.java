@@ -24,16 +24,14 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.net.Socket;
 import java.net.SocketAddress;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-import static com.github.jinahya.hello.HelloWorld.BYTES;
-import static java.lang.Thread.currentThread;
-import static java.nio.charset.StandardCharsets.US_ASCII;
-import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.TimeUnit.MINUTES;
-import static java.util.concurrent.TimeUnit.SECONDS;
 
 @Slf4j
 public class HelloWorldClientTcp
@@ -45,14 +43,15 @@ public class HelloWorldClientTcp
             throw new IllegalArgumentException(
                     "count(" + count + ") is not positive");
         }
-        requireNonNull(endpoint, "endpoint is null");
-        requireNonNull(consumer, "consumer is null");
+        Objects.requireNonNull(endpoint, "endpoint is null");
+        Objects.requireNonNull(consumer, "consumer is null");
         final var latch = new CountDownLatch(count);
         for (int i = 0; i < count; i++) {
             new Thread(() -> {
                 try {
                     final var bytes = new HelloWorldClientTcp(endpoint).call();
-                    consumer.accept(new String(bytes, US_ASCII));
+                    consumer.accept(
+                            new String(bytes, StandardCharsets.US_ASCII));
                 } catch (final Exception e) {
                     log.error("failed to call for {}", endpoint, e);
                 } finally {
@@ -62,11 +61,11 @@ public class HelloWorldClientTcp
         }
         try {
             if (!latch.await(1L, MINUTES)) {
-                log.warn("latch is still not broken!");
+                log.warn("latch remained unbroken!");
             }
         } catch (final InterruptedException ie) {
             log.error("interrupted while awaiting latch", ie);
-            currentThread().interrupt();
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -77,21 +76,21 @@ public class HelloWorldClientTcp
      */
     HelloWorldClientTcp(final SocketAddress endpoint) {
         super();
-        this.endpoint = requireNonNull(endpoint, "endpoint is null");
+        this.endpoint = Objects.requireNonNull(endpoint, "endpoint is null");
     }
 
     @Override
     public byte[] call() throws Exception {
         try (var socket = new Socket()) {
-            socket.setSoTimeout((int) SECONDS.toMillis(8L));
+            socket.setSoTimeout((int) TimeUnit.SECONDS.toMillis(8L));
             socket.connect(endpoint);
             log.debug("[C] connected to {}", socket.getRemoteSocketAddress());
-            return socket.getInputStream().readNBytes(BYTES);
+            return socket.getInputStream().readNBytes(HelloWorld.BYTES);
         }
     }
 
     /**
-     * The server endpoint.
+     * The server endpoint to connect.
      */
     private final SocketAddress endpoint;
 }

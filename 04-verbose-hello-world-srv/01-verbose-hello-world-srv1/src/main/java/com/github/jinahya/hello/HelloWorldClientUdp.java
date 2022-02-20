@@ -22,55 +22,41 @@ package com.github.jinahya.hello;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
+import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketAddress;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import java.util.function.Consumer;
 
-import static java.nio.charset.StandardCharsets.US_ASCII;
-import static java.util.Objects.requireNonNull;
-
 @Slf4j
-public class HelloWorldClientUdp
-        implements IHelloWorldClient {
+class HelloWorldClientUdp {
 
-    static void clients(final int count, final SocketAddress endpoint,
-                        final Consumer<? super String> consumer) {
+    static void clients(int count, SocketAddress endpoint,
+                        Consumer<? super String> consumer)
+            throws IOException {
         if (count <= 0) {
             throw new IllegalArgumentException(
                     "count(" + count + ") is not positive");
         }
-        requireNonNull(endpoint, "endpoint is null");
-        requireNonNull(consumer, "consumer is null");
+        Objects.requireNonNull(endpoint, "endpoint is null");
+        Objects.requireNonNull(consumer, "consumer is null");
         for (int i = 0; i < count; i++) {
-            try {
-                final var bytes = new HelloWorldClientUdp(endpoint).call();
-                consumer.accept(new String(bytes, US_ASCII));
-            } catch (final Exception e) {
-                log.error("failed to call for {}", endpoint, e);
+            try (var client = new DatagramSocket(null)) {
+                client.send(new DatagramPacket(new byte[0], 0, endpoint));
+                log.debug("[C] sent to {}", endpoint);
+                var array = new byte[HelloWorld.BYTES];
+                var packet = new DatagramPacket(array, array.length);
+                client.receive(packet);
+                log.debug("[C] received from {}", packet.getSocketAddress());
+                var string = new String(array, StandardCharsets.US_ASCII);
+                consumer.accept(string);
             }
         }
     }
 
-    /**
-     * Creates a new instance with specified server endpoint.
-     *
-     * @param endpoint the server endpoint.
-     */
-    HelloWorldClientUdp(final SocketAddress endpoint) {
-        super();
-        this.endpoint = requireNonNull(endpoint, "endpoint is null");
+    private HelloWorldClientUdp() {
+        throw new AssertionError("instantiation is not allowed");
     }
-
-    @Override
-    public byte[] call() throws Exception {
-        try (var socket = new DatagramSocket()) {
-            // TODO: Connect to the endpoint, read 12 bytes, and return it.
-            return new byte[0];
-        }
-    }
-
-    /**
-     * The server endpoint.
-     */
-    private final SocketAddress endpoint;
 }

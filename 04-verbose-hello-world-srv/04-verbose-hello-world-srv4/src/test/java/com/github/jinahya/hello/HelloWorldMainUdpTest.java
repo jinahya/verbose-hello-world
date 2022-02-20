@@ -24,14 +24,26 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+
+import static com.github.jinahya.hello.HelloWorldClientUdp.clients;
+import static com.github.jinahya.hello.IHelloWorldServerUtils.submitAndWriteQuit;
 
 @Slf4j
 class HelloWorldMainUdpTest {
 
     @Test
-    void main__() throws IOException {
-        IHelloWorldServerUtils.submitAndWriteQuit(() -> {
-            HelloWorldMainUdp.main("0", "0.0.0.0");
+    void main__() throws InterruptedException, IOException {
+        submitAndWriteQuit(() -> {
+            HelloWorldMainUdp.main("0.0.0.0", "0");
+            final InetAddress host = InetAddress.getLocalHost();
+            final int port = HelloWorldServerUdp.PORT.get();
+            final SocketAddress endpoint = new InetSocketAddress(host, port);
+            clients(8, endpoint, array -> {
+                // TODO: Verify array!
+            });
             return null;
         });
     }

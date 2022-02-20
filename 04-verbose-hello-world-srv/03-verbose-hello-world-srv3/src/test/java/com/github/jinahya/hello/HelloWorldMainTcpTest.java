@@ -24,26 +24,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
-
-import static com.github.jinahya.hello.HelloWorldClientTcp.clients;
-import static com.github.jinahya.hello.HelloWorldMainTcp.main;
-import static com.github.jinahya.hello.HelloWorldServerTcp.PORT;
-import static com.github.jinahya.hello.IHelloWorldServerUtils.callAndWriteQuit;
-import static java.net.InetAddress.getLoopbackAddress;
 
 @Slf4j
 class HelloWorldMainTcpTest {
 
     @Test
     void main__() throws IOException {
-        final var host = getLoopbackAddress();
-        callAndWriteQuit(() -> {
-            main("0", host.getHostAddress());
-            final var port = PORT.get();
-            clients(4, new InetSocketAddress(host, port), s -> {
-                log.debug("[C] received: {}", s);
-            });
+        IHelloWorldServerUtils.submitAndWriteQuit(() -> {
+            HelloWorldMainTcp.main("0", "0.0.0.0");
             return null;
         });
     }

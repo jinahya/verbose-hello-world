@@ -20,10 +20,19 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static com.github.jinahya.hello.IHelloWorldServerUtils.loadHelloWorld;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
@@ -31,6 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@Slf4j
 class IHelloWorldServerUtilsTest {
 
     /**
@@ -42,5 +52,38 @@ class IHelloWorldServerUtilsTest {
     void load_NotNull_() {
         final var helloWorld = loadHelloWorld();
         assertNotNull(helloWorld);
+    }
+
+    @Nested
+    class PortTest {
+
+        @Test
+        void writePort(@TempDir final Path tempDir) throws IOException {
+            final var dir = Files.createTempDirectory(tempDir, null);
+            final var port = ThreadLocalRandom.current().nextInt(1, 65536);
+            IHelloWorldServerUtils.writePortNumber(dir, port);
+            assertThat(dir.resolve("port.txt"))
+                    .isRegularFile()
+                    .hasSize(Short.BYTES);
+        }
+
+        @Test
+        void writeAndReadPort(@TempDir final Path tempDir)
+                throws IOException, InterruptedException {
+            final Path dir = Files.createTempDirectory(tempDir, null);
+            final int expected = ThreadLocalRandom.current().nextInt(1, 65536);
+            final var thread = new Thread(() -> {
+                try {
+                    final var actual
+                            = IHelloWorldServerUtils.readPortNumber(dir);
+                    assertThat(actual).isEqualTo(expected);
+                } catch (IOException | InterruptedException e) {
+                    log.error("failed to read port", e);
+                }
+            });
+            thread.start();
+            IHelloWorldServerUtils.writePortNumber(dir, expected);
+            thread.join();
+        }
     }
 }

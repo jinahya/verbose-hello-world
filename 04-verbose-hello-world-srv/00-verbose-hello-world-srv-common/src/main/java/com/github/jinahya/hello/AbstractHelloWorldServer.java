@@ -22,10 +22,11 @@ package com.github.jinahya.hello;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.net.SocketAddress;
-
-import static java.util.Objects.requireNonNull;
-import static java.util.ServiceLoader.load;
+import java.nio.file.Path;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * A class serves {@code hello, world} to clients.
@@ -37,31 +38,38 @@ abstract class AbstractHelloWorldServer
         implements IHelloWorldServer {
 
     /**
-     * Creates a new instance with specified local socket address to bind.
-     *
-     * @param endpoint the local socket address to bind.
+     * Creates a new instance.
      */
-    AbstractHelloWorldServer(final SocketAddress endpoint) {
+    AbstractHelloWorldServer() {
         super();
-        this.endpoint = requireNonNull(endpoint);
     }
 
-    /**
-     * Returns an instance of {@link HelloWorld} interface.
-     *
-     * @return an instance of {@link HelloWorld} interface.
-     */
-    HelloWorld service() {
-        if (service == null) {
-            service = load(HelloWorld.class).iterator().next();
+    abstract void openInternal(final SocketAddress endpoint, final Path dir)
+            throws IOException;
+
+    @Override
+    public void open(final SocketAddress endpoint, final Path dir)
+            throws IOException {
+        try {
+            lock.lock();
+            close();
+            openInternal(endpoint, dir);
+        } finally {
+            lock.unlock();
         }
-        return service;
     }
 
-    /**
-     * The local socket address to bind.
-     */
-    final SocketAddress endpoint;
+    abstract void closeInternal() throws IOException;
 
-    private HelloWorld service;
+    @Override
+    public void close() throws IOException {
+        try {
+            lock.lock();
+            closeInternal();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    private final Lock lock = new ReentrantLock();
 }

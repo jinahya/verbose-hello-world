@@ -24,8 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 
-import static com.github.jinahya.hello.IHelloWorldServerUtils.readQuitAndClose;
-
 /**
  * A class whose {@link #main(String[])} method serves {@code hello, world} to
  * clients.
@@ -33,7 +31,7 @@ import static com.github.jinahya.hello.IHelloWorldServerUtils.readQuitAndClose;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-public class HelloWorldMainUdp {
+class HelloWorldMainUdp {
 
     /**
      * The main method of this program which serves {@code hello, world} to
@@ -43,15 +41,13 @@ public class HelloWorldMainUdp {
      * @throws IOException if an I/O error occurs.
      */
     public static void main(final String... args) throws IOException {
-        final var endpoint = IHelloWorldServerUtils.parseEndpoint(args);
-        final var server = new HelloWorldServerUdp(endpoint);
-        server.open();
-        readQuitAndClose(server);
+        try (var server = new HelloWorldServerUdp()) {
+            var endpoint = IHelloWorldServerUtils.parseEndpoint(args);
+            server.open(endpoint, null);
+            IHelloWorldServerUtils.startReadingQuit();
+        }
     }
 
-    /**
-     * Creates a new instance.
-     */
     private HelloWorldMainUdp() {
         throw new AssertionError("instantiation is not allowed");
     }

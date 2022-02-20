@@ -26,6 +26,9 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.SocketAddress;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Objects;
 
 /**
  * A class serves {@code hello, world} to clients.
@@ -34,21 +37,15 @@ import java.net.SocketAddress;
  */
 @Slf4j
 class HelloWorldServerTcp
-        extends AbstractHelloWorldServer {
-
-    static final ThreadLocal<Integer> PORT = new ThreadLocal<>();
-
-    /**
-     * Creates a new instance.
-     *
-     * @param socketAddress a socket address to bind.
-     */
-    HelloWorldServerTcp(final SocketAddress socketAddress) {
-        super(socketAddress);
-    }
+        implements IHelloWorldServer {
 
     @Override
-    public synchronized void open() throws IOException {
+    public synchronized void open(SocketAddress endpoint, Path dir)
+            throws IOException {
+        Objects.requireNonNull(endpoint, "endpoint is null");
+        if (dir != null && !Files.isDirectory(dir)) {
+            throw new IllegalArgumentException("not a directory: " + dir);
+        }
         close();
         server = new ServerSocket();
         if (endpoint instanceof InetSocketAddress
@@ -57,29 +54,34 @@ class HelloWorldServerTcp
         }
         try {
             server.bind(endpoint);
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             log.error("failed to bind to {}", endpoint, ioe);
             throw ioe;
         }
-        log.info("server bound to {}", server.getLocalSocketAddress());
-        PORT.set(server.getLocalPort());
+        log.info("[S] bound to {}", server.getLocalSocketAddress());
+        if (dir != null) {
+            var port = server.getLocalPort();
+            IHelloWorldServerUtils.writePortNumber(dir, port);
+        }
         new Thread(() -> {
-            while (!server.isClosed()) {
+            while (!Thread.currentThread().isInterrupted()) {
                 try (var client = server.accept()) {
-                    log.debug("[S] connected from {}",
-                              client.getRemoteSocketAddress());
-                    // TODO: Send "hello, world" bytes through the socket!
-                } catch (final IOException ioe) {
+                    var address = client.getRemoteSocketAddress();
+                    log.debug("[S] connected from {}", address);
+                    var array = new byte[HelloWorld.BYTES];
+                    service().set(array);
+                    client.getOutputStream().write(array);
+                    client.getOutputStream().flush();
+                    log.debug("[S] written to {}", address);
+                } catch (IOException ioe) {
                     if (server.isClosed()) {
                         break;
                     }
-                    log.error("failed to accept/send", ioe);
+                    log.error("failed to serve", ioe);
                 }
             }
-            PORT.remove();
-            server = null;
         }).start();
-        log.debug("server thread started");
+        log.debug("[S] server thread started");
     }
 
     @Override

@@ -23,29 +23,16 @@ package com.github.jinahya.hello;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-
-import static com.github.jinahya.hello.HelloWorldClientUdp.clients;
-import static com.github.jinahya.hello.HelloWorldMainUdp.main;
-import static com.github.jinahya.hello.HelloWorldServerUdp.PORT;
-import static com.github.jinahya.hello.IHelloWorldServerUtils.callAndWriteQuit;
-import static java.net.InetAddress.getLoopbackAddress;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import java.net.InetAddress;
 
 @Slf4j
 class HelloWorldMainUdpTest {
 
     @Test
-    void main__() throws IOException {
-        final var host = getLoopbackAddress();
-        callAndWriteQuit(() -> {
-            main("0", host.getHostAddress());
-            final int port = PORT.get();
-            clients(4, new InetSocketAddress(host, port), s -> {
-                log.debug("[C] received: {}", s);
-                assertNotNull(s);
-            });
+    void main__() {
+        IHelloWorldServerUtils.submitAndWriteQuit(() -> {
+            var host = InetAddress.getLoopbackAddress();
+            HelloWorldMainUdp.main("0", host.getHostAddress());
             return null;
         });
     }

@@ -25,13 +25,16 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
-import java.nio.file.Path;
+import java.nio.channels.Selector;
 import java.util.Set;
-import java.util.concurrent.Executors;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
+import static com.github.jinahya.hello.HelloWorld.BYTES;
+import static java.lang.Thread.currentThread;
+import static java.nio.ByteBuffer.allocate;
 import static java.nio.channels.SelectionKey.OP_READ;
 import static java.nio.channels.SelectionKey.OP_WRITE;
 
@@ -44,11 +47,22 @@ import static java.nio.channels.SelectionKey.OP_WRITE;
 class HelloWorldServerUdp
         extends AbstractHelloWorldServer {
 
+    static final ThreadLocal<Integer> PORT = new ThreadLocal<>();
+
+    /**
+     * Creates a new instance with specified local socket address to bind.
+     *
+     * @param endpoint the local socket address to bind.
+     */
+    HelloWorldServerUdp(final SocketAddress endpoint) {
+        super(endpoint);
+    }
+
     private void handle(final Set<SelectionKey> keys) throws IOException {
         for (final var key : keys) {
             final var channel = (DatagramChannel) key.channel();
             if (key.isReadable()) {
-                final var address = channel.receive(ByteBuffer.allocate(0));
+                final var address = channel.receive(allocate(0));
                 if (address != null) {
                     log.debug("received from {}", address);
                     key.interestOps(key.interestOps() & ~OP_READ);
@@ -58,7 +72,7 @@ class HelloWorldServerUdp
                 continue;
             }
             if (key.isWritable()) {
-                final var src = ByteBuffer.allocate(HelloWorld.BYTES);
+                final var src = allocate(BYTES);
                 service().put(src);
                 // TODO: flip the src!
                 final var target = (SocketAddress) key.attachment();
@@ -73,63 +87,84 @@ class HelloWorldServerUdp
         keys.clear();
     }
 
-    @Override
-    protected void openInternal(SocketAddress endpoint, Path dir)
-            throws IOException {
-        server = DatagramChannel.open();
+    private void open_() throws IOException {
+        final var server = DatagramChannel.open();
         if (endpoint instanceof InetSocketAddress &&
             ((InetSocketAddress) endpoint).getPort() > 0) {
             server.socket().setReuseAddress(true);
         }
         try {
             server.bind(endpoint);
-        } catch (IOException ioe) {
+        } catch (final IOException ioe) {
             log.error("failed to bind to {}", endpoint, ioe);
             throw ioe;
         }
         log.info("server bound to {}", server.getLocalAddress());
-        if (dir != null) {
-            var port = server.socket().getLocalPort();
-            var path = IHelloWorldServerUtils.writePortNumber(dir, port);
-            log.debug("port({}) has been written to {}", port, path);
-        }
-        var thread = new Thread(() -> {
-            var executor = Executors.newCachedThreadPool();
-            while (!Thread.currentThread().isInterrupted()) {
-                try {
-                    var address = server.receive(ByteBuffer.allocate(0));
-                    executor.submit(() -> {
-                        log.debug("[S] received from {}", address);
-                        var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
-                        service().put(buffer);
-                        if (buffer.position() > 0) { // // TODO: peel off!
-                            buffer.flip();
-                        }
-                        var sent = server.send(buffer, address);
-                        assert sent == buffer.capacity();
-                        log.debug("[S] sent to {}", address);
-                        return null;
-                    });
-                } catch (IOException ioe) {
-                    if (!server.isOpen()) {
-                        break;
+        PORT.set(server.socket().getLocalPort());
+        new Thread(() -> {
+            try (var selector = Selector.open()) {
+                server.configureBlocking(false);
+                server.register(selector, OP_READ);
+                while (!currentThread().isInterrupted()) {
+                    if (selector.select() == 0) {
+                        continue;
                     }
-                    log.error("failed to receive", ioe);
+                    handle(selector.selectedKeys());
+                } // end-of-while
+                if (selector.selectNow() > 0) {
+                    handle(selector.selectedKeys());
                 }
-            } // end-of-while
-            IHelloWorldServerUtils.shutdownAndAwaitTermination(executor);
-        });
-        thread.start();
+            } catch (final IOException ioe) {
+                log.error("io error in server thread", ioe);
+            }
+            PORT.remove();
+        }).start();
         log.debug("[S] server thread started");
     }
 
     @Override
-    protected void closeInternal() throws IOException {
+    public void open() throws IOException {
+        try {
+            lock.lock();
+            close();
+            open_();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    private void close_() throws IOException {
+        if (thead == null || !thead.isAlive()) {
+            return;
+        }
+        thead.interrupt();
+        try {
+            thead.join();
+        } catch (final InterruptedException ie) {
+            log.error("interrupted while joining server thread", ie);
+            currentThread().interrupt();
+        }
+        thead = null;
         if (server == null || !server.isOpen()) {
             return;
         }
         server.close();
+        server = null;
     }
+
+    @Override
+    public void close() throws IOException {
+        try {
+            lock.lock();
+            close_();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    private final Lock lock = new ReentrantLock();
+
+    private Thread thead;
 
     private DatagramChannel server;
 }

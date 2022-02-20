@@ -22,82 +22,45 @@ package com.github.jinahya.hello;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.net.SocketAddress;
-import java.nio.channels.Selector;
+import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
-import java.util.concurrent.CountDownLatch;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
-import static com.github.jinahya.hello.HelloWorld.BYTES;
-import static java.nio.ByteBuffer.wrap;
-import static java.nio.channels.SelectionKey.OP_CONNECT;
-import static java.nio.channels.SelectionKey.OP_READ;
-import static java.nio.charset.StandardCharsets.US_ASCII;
+import static com.github.jinahya.hello.IHelloWorldServerUtils.shutdownAndAwaitTermination;
 import static java.util.Objects.requireNonNull;
-import static java.util.concurrent.TimeUnit.SECONDS;
 
 @Slf4j
 final class HelloWorldClientTcp {
 
     static void clients(final int count, final SocketAddress endpoint,
-                        final Consumer<? super String> consumer)
-            throws IOException {
+                        final Consumer<? super String> consumer) {
         if (count <= 0) {
             throw new IllegalArgumentException(
                     "count(" + count + ") is not positive");
         }
         requireNonNull(endpoint, "endpoint is null");
         requireNonNull(consumer, "consumer is null");
-        try (var selector = Selector.open()) {
-            for (int i = 0; i < count; i++) {
-                final var client = SocketChannel.open();
-                client.configureBlocking(false);
-                if (client.connect(endpoint)) { // connected, immediately
+        var executor = Executors.newCachedThreadPool();
+        for (int i = 0; i < count; i++) {
+            executor.submit(() -> {
+                try (var client = SocketChannel.open()) {
+                    client.connect(endpoint);
                     log.debug("[C] connected to {}", client.getRemoteAddress());
-                    client.register(selector, OP_READ);
-                } else {
-                    client.register(selector, OP_CONNECT);
-                }
-            }
-            final var latch = new CountDownLatch(count);
-            while (latch.getCount() > 0L) {
-                if (selector.select(SECONDS.toMillis(1L)) == 0) {
-                    continue;
-                }
-                final var keys = selector.selectedKeys();
-                for (final var key : selector.selectedKeys()) {
-                    final var channel = (SocketChannel) key.channel();
-                    if (key.isConnectable()) { // ready-to-connect
-                        try {
-                            if (channel.finishConnect()) {
-                                log.debug("[C] connected to {}",
-                                          channel.getRemoteAddress());
-                                key.interestOps(
-                                        key.interestOps() & ~OP_CONNECT);
-                                channel.register(selector, OP_READ);
-                            }
-                        } catch (final IOException ioe) {
-                            log.error("failed to finish connect", ioe);
-                            channel.close(); // key.cancel();
-                            latch.countDown();
-                        }
-                        continue;
+                    var array = new byte[HelloWorld.BYTES];
+                    var buffer = ByteBuffer.wrap(array);
+                    while (buffer.hasRemaining()) {
+                        client.read(buffer);
                     }
-                    if (key.isReadable()) { // ready-to-read
-                        final var buffer = wrap(new byte[BYTES]);
-                        // TODO: fill buffer from the channel
-                        consumer.accept(new String(buffer.array(), US_ASCII));
-                        channel.close(); // key.cancel();
-                        latch.countDown();
-                        continue;
-                    }
-                    log.warn("unhandled selection key; {}", key);
+                    var string = new String(array, StandardCharsets.US_ASCII);
+                    consumer.accept(string);
+                    return null;
                 }
-                keys.clear();
-            } // end-of-while
-            log.debug("[C] out of loop; {}", selector.keys().size());
+            });
         }
+        shutdownAndAwaitTermination(executor);
     }
 
     private HelloWorldClientTcp() {

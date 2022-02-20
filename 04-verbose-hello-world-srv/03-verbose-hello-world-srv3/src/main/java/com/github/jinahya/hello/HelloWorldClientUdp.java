@@ -23,8 +23,11 @@ package com.github.jinahya.hello;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.SocketAddress;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
+import java.nio.ByteBuffer;
+import java.nio.channels.DatagramChannel;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
+import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 @Slf4j
@@ -32,16 +35,32 @@ public class HelloWorldClientUdp {
 
     static void clients(final int count, final SocketAddress endpoint,
                         final Consumer<? super String> consumer) {
-        final CountDownLatch latch = new CountDownLatch(count);
+        if (count <= 0) {
+            throw new IllegalArgumentException(
+                    "count(" + count + ") is not positive");
+        }
+        Objects.requireNonNull(endpoint, "endpoint is null");
+        Objects.requireNonNull(consumer, "consumer is null");
+        var executor = Executors.newCachedThreadPool();
         for (int i = 0; i < count; i++) {
+            executor.submit(() -> {
+                try (var client = DatagramChannel.open()) {
+                    var src = ByteBuffer.allocate(0);
+                    var sent = client.send(src, endpoint);
+                    log.debug("[C] sent to {}", endpoint);
+                    assert sent == src.capacity();
+                    var dst = ByteBuffer.allocate(HelloWorld.BYTES);
+                    var address = client.receive(dst);
+                    log.debug("[C] received from {}", address);
+                    assert address != null;
+                    var array = dst.array();
+                    var string = new String(array, StandardCharsets.US_ASCII);
+                    consumer.accept(string);
+                }
+                return null;
+            });
         }
-        try {
-            if (!latch.await(1L, TimeUnit.MINUTES)) {
-                log.warn("latch is still not broken!");
-            }
-        } catch (final InterruptedException ie) {
-            log.error("interrupted while awaiting latch", ie);
-        }
+        IHelloWorldServerUtils.shutdownAndAwaitTermination(executor);
     }
 
     private HelloWorldClientUdp() {

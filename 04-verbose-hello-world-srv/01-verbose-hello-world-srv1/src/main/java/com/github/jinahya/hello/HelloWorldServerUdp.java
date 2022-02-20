@@ -27,6 +27,9 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Objects;
 
 /**
  * A class serves {@code hello, world} to clients.
@@ -35,21 +38,15 @@ import java.net.SocketAddress;
  */
 @Slf4j
 class HelloWorldServerUdp
-        extends AbstractHelloWorldServer {
-
-    static final ThreadLocal<Integer> PORT = new ThreadLocal<>();
-
-    /**
-     * Creates a new instance with specified local socket address to bind.
-     *
-     * @param endpoint the socket address to bind.
-     */
-    HelloWorldServerUdp(final SocketAddress endpoint) {
-        super(endpoint);
-    }
+        implements IHelloWorldServer {
 
     @Override
-    public synchronized void open() throws IOException {
+    public synchronized void open(SocketAddress endpoint, Path dir)
+            throws IOException {
+        Objects.requireNonNull(endpoint, "endpoint is null");
+        if (dir != null && !Files.isDirectory(dir)) {
+            throw new IllegalArgumentException("not a directory: " + dir);
+        }
         close();
         socket = new DatagramSocket(null);
         if (endpoint instanceof InetSocketAddress
@@ -62,28 +59,37 @@ class HelloWorldServerUdp
             log.error("failed to bind to {}", endpoint, ioe);
             throw ioe;
         }
-        log.info("server bound to {}", socket.getLocalSocketAddress());
-        PORT.set(socket.getLocalPort());
+        log.info("[S] bound to {}", socket.getLocalSocketAddress());
+        if (dir != null) {
+            var port = socket.getLocalPort();
+            IHelloWorldServerUtils.writePortNumber(dir, port);
+        }
         new Thread(() -> {
-            while (!socket.isClosed()) {
-                final var clientPacket = new DatagramPacket(new byte[0], 0);
+            while (!Thread.currentThread().isInterrupted()) {
+                var received = new DatagramPacket(new byte[1], 1);
                 try {
-                    socket.receive(clientPacket);
-                } catch (final IOException ioe) {
+                    socket.receive(received);
+                } catch (IOException ioe) {
                     if (socket.isClosed()) {
                         break;
                     }
                     log.error("failed to receive", ioe);
                     continue;
                 }
-                final var clientAddress = clientPacket.getSocketAddress();
-                log.debug("[S] received from {}", clientAddress);
-                // TODO: Send "hello, world" bytes back to the client!
+                var address = received.getSocketAddress();
+                log.debug("[S] received from {}", address);
+                var array = new byte[HelloWorld.BYTES];
+                service().set(array);
+                var sending = new DatagramPacket(array, array.length, address);
+                try {
+                    socket.send(sending);
+                    log.debug("[S] sent to {}", address);
+                } catch (IOException ioe) {
+                    log.error("failed to send to {}", address);
+                }
             }
-            PORT.remove();
-            socket = null;
         }).start();
-        log.debug("server thread started");
+        log.debug("[S] server thread started");
     }
 
     @Override

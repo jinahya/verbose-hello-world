@@ -25,20 +25,16 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
-import java.util.Set;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.nio.file.Path;
 
+import static com.github.jinahya.hello.HelloWorld.BYTES;
+import static com.github.jinahya.hello.IHelloWorldServerUtils.shutdownAndAwaitTermination;
+import static com.github.jinahya.hello.IHelloWorldServerUtils.writePortNumber;
 import static java.lang.Boolean.TRUE;
-import static java.lang.Thread.currentThread;
 import static java.net.StandardSocketOptions.SO_REUSEADDR;
-import static java.nio.channels.SelectionKey.OP_ACCEPT;
-import static java.nio.channels.SelectionKey.OP_WRITE;
-import static java.util.Objects.requireNonNull;
+import static java.nio.ByteBuffer.allocate;
+import static java.util.concurrent.Executors.newCachedThreadPool;
 
 /**
  * A class serves {@code hello, world} to clients.
@@ -49,132 +45,61 @@ import static java.util.Objects.requireNonNull;
 class HelloWorldServerTcp
         extends AbstractHelloWorldServer {
 
-    static final ThreadLocal<Integer> PORT = new ThreadLocal<>();
-
-    /**
-     * Creates a new instance with specified local address to bind.
-     *
-     * @param endpoint the local socket address to bind.
-     */
-    HelloWorldServerTcp(final SocketAddress endpoint) {
-        super(endpoint);
-    }
-
-    /**
-     * Handles specified selection keys.
-     *
-     * @param keys     the selection keys to handle.
-     * @param selector a selector.
-     * @throws IOException if an I/O error occurs.
-     */
-    private void handle(final Set<SelectionKey> keys, final Selector selector)
+    @Override
+    protected void openInternal(SocketAddress endpoint, Path dir)
             throws IOException {
-        requireNonNull(keys, "keys is null");
-        if (keys.isEmpty()) {
-            throw new IllegalArgumentException("empty keys");
-        }
-        requireNonNull(selector, "selector is null");
-        for (final var key : keys) {
-            if (key.isAcceptable()) { // server; ready to accept
-                final var channel = (ServerSocketChannel) key.channel();
-                final var client = channel.accept();
-                log.debug("[S] accepted from {}", client.getRemoteAddress());
-                client.configureBlocking(false);
-                client.register(selector, OP_WRITE);
-                continue;
-            }
-            if (key.isWritable()) { // client; ready to write
-                try (var channel = ((SocketChannel) key.channel())) {
-                    service().write(channel);
-                    log.debug("[S] written to {}", channel.getRemoteAddress());
-                }
-                continue;
-            }
-            log.warn("unhandled key: {}", key);
-        }
-        keys.clear();
-    }
-
-    private void open_() throws IOException {
-        final var server = ServerSocketChannel.open();
+        server = ServerSocketChannel.open();
         if (endpoint instanceof InetSocketAddress
             && ((InetSocketAddress) endpoint).getPort() > 0) {
             server.setOption(SO_REUSEADDR, TRUE);
         }
         try {
             server.bind(endpoint);
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             log.error("failed to bind to {}", endpoint, ioe);
             throw ioe;
         }
         log.info("server bound to {}", server.getLocalAddress());
-        PORT.set(server.socket().getLocalPort());
-        thread = new Thread(() -> {
-            try (var selector = Selector.open()) {
-                server.configureBlocking(false);
-                server.register(selector, OP_ACCEPT);
-                while (!currentThread().isInterrupted()) {
-                    if (selector.select() == 0) {
-                        continue;
+        if (dir != null) {
+            writePortNumber(dir, server.socket().getLocalPort());
+        }
+        var thread = new Thread(() -> {
+            var executor = newCachedThreadPool();
+            while (server.isOpen()) {
+                try {
+                    var client = server.accept();
+                    executor.submit(() -> {
+                        log.debug("[S] accepted from {}",
+                                  client.getRemoteAddress());
+                        var buffer = allocate(BYTES);
+                        service().put(buffer);
+                        if (buffer.position() > 0) { // TODO: peel off!
+                            buffer.flip();
+                        }
+                        while (buffer.hasRemaining()) {
+                            client.write(buffer);
+                        }
+                        return null;
+                    });
+                } catch (IOException ioe) {
+                    if (!server.isOpen()) {
+                        break;
                     }
-                    handle(selector.selectedKeys(), selector);
-                } // end-of-while
-                log.debug("[S] out of loop");
-                server.keyFor(selector).cancel();
-                if (selector.selectNow() > 0) {
-                    handle(selector.selectedKeys(), selector);
+                    log.error("failed to accept", ioe);
                 }
-            } catch (final IOException ioe) {
-                log.error("io error in server thread", ioe);
-            }
-            log.debug("end of server thread");
+            } // end-of-while
+            shutdownAndAwaitTermination(executor);
         });
         thread.start();
         log.debug("server thread started");
     }
 
     @Override
-    public void open() throws IOException {
-        try {
-            lock.lock();
-            close();
-            open_();
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    private void close_() throws IOException {
-        if (thread != null && thread.isAlive()) {
-            thread.interrupt();
-            try {
-                thread.join();
-            } catch (final InterruptedException ie) {
-                log.error("interrupted while joining server thread", ie);
-                currentThread().interrupt();
-            }
-        }
-        thread = null;
-        if (server != null && server.isOpen()) {
+    protected void closeInternal() throws IOException {
+        if (server != null && !server.isOpen()) {
             server.close();
         }
-        server = null;
     }
-
-    @Override
-    public void close() throws IOException {
-        try {
-            lock.lock();
-            close_();
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    // a lock to synchronize method calls.
-    private final Lock lock = new ReentrantLock();
 
     private ServerSocketChannel server;
-
-    private Thread thread;
 }

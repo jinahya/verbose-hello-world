@@ -21,30 +21,48 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
-
-import static com.github.jinahya.hello.HelloWorldClientUdp.clients;
-import static com.github.jinahya.hello.HelloWorldServerUdp.PORT;
-import static java.net.InetAddress.getLoopbackAddress;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 @Slf4j
 class HelloWorldServerUdpTest {
 
     @Test
-    void test() throws IOException, InterruptedException {
-        final var host = getLoopbackAddress();
-        final var endpoint = new InetSocketAddress(host, 0);
-        try (var server = new HelloWorldServerUdp(endpoint)) {
-            server.open();
-            final var port = PORT.get();
-            clients(4, new InetSocketAddress(host, port), s -> {
-                log.debug("[C] received: {}", s);
-                assertNotNull(s);
+    void test(@TempDir Path tempDir)
+            throws IOException, InterruptedException {
+        var host = InetAddress.getLoopbackAddress();
+        var dir = Files.createTempDirectory(tempDir, null);
+        var thread = new Thread(() -> {
+            IHelloWorldServerUtils.readPortNumber(dir, p -> {
+                var endpoint = new InetSocketAddress(host, p);
+                try {
+                    HelloWorldClientUdp.clients(4, endpoint, s -> {
+                        log.debug("[C] received: {}", s);
+                        Assertions.assertNotNull(s);
+                    });
+                } catch (IOException ioe) {
+                    log.error("failed to run clients", ioe);
+                }
             });
+        });
+        thread.start();
+        try (var server = new HelloWorldServerUdp()) {
+            var endpoint = new InetSocketAddress(host, 0);
+            try {
+                server.open(endpoint, dir);
+            } catch (final IOException ioe) {
+                log.error("failed to open the server", ioe);
+                thread.interrupt();
+                throw ioe;
+            }
+            thread.join();
         }
     }
 }

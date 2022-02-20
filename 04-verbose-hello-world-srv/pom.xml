@@ -20,6 +20,7 @@
     <module>01-verbose-hello-world-srv1</module>
     <module>02-verbose-hello-world-srv2</module>
     <module>03-verbose-hello-world-srv3</module>
+    <module>04-verbose-hello-world-srv4</module>
     <!--    <module>verbose-hello-world-srv3</module>-->
     <!--    <module>verbose-hello-world-srv4</module>-->
     <!--    <module>verbose-hello-world-srv5</module>-->

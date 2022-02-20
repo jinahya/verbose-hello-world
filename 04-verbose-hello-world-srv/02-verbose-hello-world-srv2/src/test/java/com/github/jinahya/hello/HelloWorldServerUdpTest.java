@@ -22,28 +22,55 @@ package com.github.jinahya.hello;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
-import static com.github.jinahya.hello.HelloWorldClientUdp.clients;
-import static com.github.jinahya.hello.HelloWorldServerUdp.PORT;
-import static java.net.InetAddress.getLoopbackAddress;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @Slf4j
 class HelloWorldServerUdpTest {
 
     @Test
-    void test() throws IOException {
-        final var host = getLoopbackAddress();
-        final var endpoint = new InetSocketAddress(host, 0);
-        try (var server = new HelloWorldServerUdp(endpoint)) {
-            server.open();
-            clients(4, new InetSocketAddress(host, PORT.get()), s -> {
-                assertNotNull(s);
-                log.debug("[C] received: {}", s);
-            });
+    void test(@TempDir final Path tempDir)
+            throws IOException, InterruptedException {
+        final var host = InetAddress.getLoopbackAddress();
+        final Path dir = Files.createTempDirectory(tempDir, null);
+        final Thread thread = new Thread(() -> {
+            final int port;
+            try {
+                port = IHelloWorldServerUtils.readPortNumber(dir);
+            } catch (final IOException ioe) {
+                log.error("failed to read port number", ioe);
+                return;
+            } catch (final InterruptedException ie) {
+                log.debug("interrupted while reading port number", ie);
+                Thread.currentThread().interrupt();
+                return;
+            }
+            HelloWorldClientUdp.clients(
+                    4,
+                    new InetSocketAddress(host, port),
+                    s -> {
+                        log.debug("[C] received: {}", s);
+                        assertNotNull(s);
+                    }
+            );
+        });
+        thread.start();
+        try (var server = new HelloWorldServerUdp()) {
+            try {
+                server.open(new InetSocketAddress(host, 0), dir);
+            } catch (final IOException ioe) {
+                log.error("failed to open the server", ioe);
+                thread.interrupt();
+                throw ioe;
+            }
+            thread.join();
         }
     }
 }

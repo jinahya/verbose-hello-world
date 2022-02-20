@@ -27,13 +27,8 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.nio.file.Path;
 import java.util.concurrent.Executors;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
-import static com.github.jinahya.hello.HelloWorld.BYTES;
-import static com.github.jinahya.hello.IHelloWorldServerUtils.shutdownAndAwaitTermination;
-import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
  * A class serves {@code hello, world} to clients.
@@ -44,19 +39,16 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 class HelloWorldServerUdp
         extends AbstractHelloWorldServer {
 
-    static final ThreadLocal<Integer> PORT = new ThreadLocal<>();
-
     /**
-     * Creates a new instance with specified local socket address.
-     *
-     * @param endpoint the local socket address to bind.
+     * Creates a new instance.
      */
-    HelloWorldServerUdp(final SocketAddress endpoint) {
-        super(endpoint);
+    HelloWorldServerUdp() {
+        super();
     }
 
-    private void open_() throws IOException {
-        close();
+    @Override
+    void openInternal(final SocketAddress endpoint, final Path dir)
+            throws IOException {
         socket = new DatagramSocket(null);
         if (endpoint instanceof InetSocketAddress
             && ((InetSocketAddress) endpoint).getPort() > 0) {
@@ -64,27 +56,30 @@ class HelloWorldServerUdp
         }
         try {
             socket.bind(endpoint);
+            log.info("[S] server bound to {}", socket.getLocalSocketAddress());
         } catch (final IOException ioe) {
             log.error("failed to bind to {}", endpoint, ioe);
             throw ioe;
         }
-        log.info("[S] server bound to {}", socket.getLocalSocketAddress());
-        PORT.set(socket.getLocalPort());
+        if (dir != null) {
+            IHelloWorldServerUtils.writePortNumber(dir, socket.getLocalPort());
+        }
         new Thread(() -> {
             final var executor = Executors.newCachedThreadPool();
             while (!socket.isClosed()) {
-                final var packet = new DatagramPacket(new byte[0], 0);
+                final var array = new byte[HelloWorld.BYTES];
+                final var received = new DatagramPacket(array, array.length);
                 try {
-                    socket.receive(packet);
-                    final var address = packet.getSocketAddress();
-                    log.debug("[S] received from {}", address);
+                    socket.receive(received);
                     executor.submit(() -> {
-                        final var array = new byte[BYTES];
+                        final var address = received.getSocketAddress();
+                        log.debug("[S] received from {}", address);
                         service().set(array);
-                        packet.setData(array);
+                        final var sending = new DatagramPacket(
+                                array, array.length, address);
                         try {
-                            socket.send(packet);
-                            log.debug("[S] send to {}", address);
+                            socket.send(sending);
+                            log.debug("[S] sent to {}", address);
                         } catch (final IOException ioe) {
                             log.error("failed to send", ioe);
                         }
@@ -95,42 +90,19 @@ class HelloWorldServerUdp
                     }
                     log.error("failed to receive", ioe);
                 }
-            }
-            shutdownAndAwaitTermination(executor, 8L, SECONDS);
-            PORT.remove();
-            socket = null;
+            } // end-of-while
+            IHelloWorldServerUtils.shutdownAndAwaitTermination(executor);
         }).start();
         log.debug("[S] server thread started");
     }
 
     @Override
-    public void open() throws IOException {
-        try {
-            lock.lock();
-            open_();
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    private void close_() throws IOException {
+    void closeInternal() throws IOException {
         if (socket == null || socket.isClosed()) {
             return;
         }
         socket.close();
     }
 
-    @Override
-    public void close() throws IOException {
-        try {
-            lock.lock();
-            close_();
-        } finally {
-            lock.unlock();
-        }
-    }
-
     private DatagramSocket socket;
-
-    private final Lock lock = new ReentrantLock();
 }

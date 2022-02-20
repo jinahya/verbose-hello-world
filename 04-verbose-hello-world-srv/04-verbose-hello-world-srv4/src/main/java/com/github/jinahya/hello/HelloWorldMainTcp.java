@@ -24,6 +24,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 
+import static com.github.jinahya.hello.IHelloWorldServerUtils.parseEndpoint;
+import static com.github.jinahya.hello.IHelloWorldServerUtils.startReadingQuitAndClose;
+
 /**
  * A class whose {@link #main(String[])} method accepts socket connections and
  * sends {@code hello, world} to clients.
@@ -31,7 +34,7 @@ import java.io.IOException;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorldMainTcp {
+public class HelloWorldMainTcp {
 
     /**
      * The main method of this program which accepts socket connections and
@@ -41,11 +44,10 @@ class HelloWorldMainTcp {
      * @throws IOException if an I/O error occurs.
      */
     public static void main(final String... args) throws IOException {
-        try (var server = new HelloWorldServerTcp()) {
-            var endpoint = IHelloWorldServerUtils.parseEndpoint(args);
-            server.open(endpoint, null);
-            IHelloWorldServerUtils.readQuit();
-        }
+        final var endpoint = parseEndpoint(args);
+        final var server = new HelloWorldServerTcp(endpoint);
+        server.open();
+        startReadingQuitAndClose(server);
     }
 
     /**

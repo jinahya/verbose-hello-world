@@ -31,7 +31,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
-import static java.lang.Thread.currentThread;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -63,11 +62,11 @@ class HelloWorldClientUdp
         }
         try {
             if (!latch.await(1L, TimeUnit.MINUTES)) {
-                log.warn("latch is still not broken!");
+                log.warn("latch remained unbroken!");
             }
         } catch (final InterruptedException ie) {
             log.error("interrupted while awaiting latch", ie);
-            currentThread().interrupt();
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -84,10 +83,8 @@ class HelloWorldClientUdp
     @Override
     public byte[] call() throws Exception {
         try (var socket = new DatagramSocket()) {
-            log.debug("[C] local socket address: {}",
-                      socket.getLocalSocketAddress());
             socket.send(new DatagramPacket(new byte[0], 0, endpoint));
-            log.debug("[C] send to {}", endpoint);
+            log.debug("[C] sent to {}", endpoint);
             final var array = new byte[BYTES];
             final var packet = new DatagramPacket(array, array.length);
             socket.setSoTimeout((int) SECONDS.toMillis(8L));

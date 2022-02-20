@@ -24,9 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 
-import static com.github.jinahya.hello.IHelloWorldServerUtils.parseEndpoint;
-import static com.github.jinahya.hello.IHelloWorldServerUtils.readQuitAndClose;
-
 /**
  * A class whose {@link #main(String[])} method accepts socket connections and
  * sends {@code hello, world} to clients.
@@ -38,21 +35,18 @@ public class HelloWorldMainTcp {
 
     /**
      * The main method of this program which accepts socket connections and
-     * sends {@code hello, world} bytes to clients.
+     * sends {@code hello, world} bytes to each client.
      *
      * @param args an array of command line arguments.
      * @throws IOException if an I/O error occurs.
      */
-    public static void main(final String... args) throws IOException {
-        final var endpoint = parseEndpoint(args);
-        final var server = new HelloWorldServerTcp(endpoint);
-        server.open();
-        readQuitAndClose(server);
+    public static void main(String... args) throws IOException {
+        var endpoint = IHelloWorldServerUtils.parseEndpoint(args);
+        var server = new HelloWorldServerTcp();
+        server.open(endpoint, null);
+        IHelloWorldServerUtils.startReadingQuitAndClose(server);
     }
 
-    /**
-     * Creates a new instance.
-     */
     private HelloWorldMainTcp() {
         throw new AssertionError("instantiation is not allowed");
     }

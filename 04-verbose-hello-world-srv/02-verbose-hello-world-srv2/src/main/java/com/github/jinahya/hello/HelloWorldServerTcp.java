@@ -26,12 +26,11 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.SocketAddress;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.nio.file.Path;
+import java.util.concurrent.Executors;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static com.github.jinahya.hello.IHelloWorldServerUtils.shutdownAndAwaitTermination;
-import static java.util.concurrent.Executors.newCachedThreadPool;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
@@ -43,19 +42,16 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 class HelloWorldServerTcp
         extends AbstractHelloWorldServer {
 
-    static final ThreadLocal<Integer> PORT = new ThreadLocal<>();
-
     /**
-     * Creates a new instance with specified local socket address.
-     *
-     * @param endpoint the local socket address to bind.
+     * Creates a new instance.
      */
-    HelloWorldServerTcp(final SocketAddress endpoint) {
-        super(endpoint);
+    HelloWorldServerTcp() {
+        super();
     }
 
-    private void open_() throws IOException {
-        close();
+    @Override
+    void openInternal(final SocketAddress endpoint, final Path dir)
+            throws IOException {
         server = new ServerSocket();
         if (endpoint instanceof InetSocketAddress &&
             ((InetSocketAddress) endpoint).getPort() > 0) {
@@ -68,16 +64,18 @@ class HelloWorldServerTcp
             throw ioe;
         }
         log.info("[S] server bound to {}", server.getLocalSocketAddress());
-        PORT.set(server.getLocalPort());
+        if (dir != null) {
+            IHelloWorldServerUtils.writePortNumber(dir, server.getLocalPort());
+        }
         new Thread(() -> {
-            var executor = newCachedThreadPool();
+            final var executor = Executors.newCachedThreadPool();
             while (!server.isClosed()) {
                 try {
                     final var client = server.accept();
                     executor.submit(() -> {
-                        log.debug("[S] connected from {}",
-                                  client.getRemoteSocketAddress());
                         try (client) {
+                            log.debug("[S] connected from {}",
+                                      client.getRemoteSocketAddress());
                             final byte[] array = new byte[BYTES];
                             service().set(array);
                             client.getOutputStream().write(array);
@@ -93,42 +91,19 @@ class HelloWorldServerTcp
                     }
                     log.error("failed to accept", ioe);
                 }
-            }
+            } // end-of-while
             shutdownAndAwaitTermination(executor, 8L, SECONDS);
-            PORT.remove();
-            server = null;
         }).start();
         log.debug("[S] server thread started");
     }
 
     @Override
-    public void open() throws IOException {
-        try {
-            lock.lock();
-            open_();
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    private void close_() throws IOException {
+    void closeInternal() throws IOException {
         if (server == null || server.isClosed()) {
             return;
         }
         server.close();
     }
-
-    @Override
-    public void close() throws IOException {
-        try {
-            lock.lock();
-            close_();
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    private final Lock lock = new ReentrantLock();
 
     private ServerSocket server;
 }

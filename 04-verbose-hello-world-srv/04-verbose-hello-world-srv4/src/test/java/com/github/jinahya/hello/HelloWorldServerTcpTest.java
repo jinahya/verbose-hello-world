@@ -24,15 +24,26 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
+
+import static com.github.jinahya.hello.HelloWorldClientTcp.clients;
+import static com.github.jinahya.hello.HelloWorldServerTcp.PORT;
+import static java.net.InetAddress.getLoopbackAddress;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @Slf4j
-class HelloWorldMainUdpTest {
+class HelloWorldServerTcpTest {
 
     @Test
-    void main__() throws IOException {
-        IHelloWorldServerUtils.submitAndWriteQuit(() -> {
-            HelloWorldMainUdp.main("0", "0.0.0.0");
-            return null;
-        });
+    void test() throws IOException {
+        final var host = getLoopbackAddress();
+        final var endpoint = new InetSocketAddress(host, 0);
+        try (var server = new HelloWorldServerTcp(endpoint)) {
+            server.open();
+            clients(4, new InetSocketAddress(host, PORT.get()), s -> {
+                log.debug("[C] received: {}", s);
+                assertNotNull(s);
+            });
+        }
     }
 }
