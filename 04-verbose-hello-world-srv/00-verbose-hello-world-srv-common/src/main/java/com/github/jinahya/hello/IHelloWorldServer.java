@@ -37,15 +37,14 @@ public interface IHelloWorldServer
 
     /**
      * Opens this server binding specified socket address and, if specified,
-     * writes the port number, on which this server is listening, to a file
-     * created in specified directory.
+     * writes the port number on which this server is listening, to a file of
+     * predefined name in specified directory.
      *
      * @param endpoint the local socket address to bind.
      * @param dir      the directory to which the file is created; may be {@code
      *                 null}.
      * @throws IOException if an I/O error occurs.
      * @see IHelloWorldServerUtils#readPortNumber(Path)
-     * @see #open(SocketAddress)
      */
     void open(@NotNull SocketAddress endpoint, Path dir) throws IOException;
 

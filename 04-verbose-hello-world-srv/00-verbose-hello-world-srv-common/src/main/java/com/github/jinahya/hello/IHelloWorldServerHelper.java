@@ -13,7 +13,7 @@ final class IHelloWorldServerHelper {
         return service;
     }
 
-    IHelloWorldServerHelper() {
+    private IHelloWorldServerHelper() {
         throw new AssertionError("instantiation is not allowed");
     }
 }
