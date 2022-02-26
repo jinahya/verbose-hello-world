@@ -374,7 +374,7 @@ final class IHelloWorldServerUtils {
                                  StandardWatchEventKinds.ENTRY_CREATE},
                          SensitivityWatchEventModifier.HIGH);
             while (!Thread.currentThread().isInterrupted()) {
-                var key = service.poll(8L, TimeUnit.SECONDS);
+                var key = service.poll(1L, TimeUnit.SECONDS);
                 if (key == null) {
                     continue;
                 }
@@ -396,14 +396,14 @@ final class IHelloWorldServerUtils {
             assert Files.isRegularFile(path);
             try (var channel = FileChannel.open(
                     path, StandardOpenOption.READ)) {
-                var dst = ByteBuffer.allocate(Short.BYTES);
-                while (dst.hasRemaining()) {
-                    if (channel.read(dst) == -1) {
+                var buffer = ByteBuffer.allocate(Short.BYTES);
+                while (buffer.hasRemaining()) {
+                    if (channel.read(buffer) == -1) {
                         throw new EOFException("unexpected eof");
                     }
                 }
-                dst.flip();
-                return dst.asShortBuffer().get() & 0xFFFF;
+                buffer.flip();
+                return buffer.asShortBuffer().get() & 0xFFFF;
             }
         } // end-of-try-with-resources; WatchService
     }

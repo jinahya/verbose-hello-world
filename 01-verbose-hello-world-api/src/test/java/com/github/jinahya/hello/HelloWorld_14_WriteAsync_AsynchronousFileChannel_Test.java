@@ -21,18 +21,15 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousFileChannel;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.LongAdder;
 
@@ -47,8 +44,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * A class for testing {@link HelloWorld#writeAsync(AsynchronousFileChannel,
- * long, ExecutorService)} method.
+ * A class for testing {@link HelloWorld#writeAsync(AsynchronousFileChannel, long, ExecutorService)}
+ * method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_14_WriteAsync_AsynchronousFileChannel_Arguments_Test
@@ -69,9 +66,8 @@ class HelloWorld_14_WriteAsync_AsynchronousFileChannel_Test
     }
 
     /**
-     * Asserts {@link HelloWorld#writeAsync(AsynchronousFileChannel, long,
-     * ExecutorService) writeAsync(channel, posotion, service)} method returns a
-     * future of {@code channel}.
+     * Asserts {@link HelloWorld#writeAsync(AsynchronousFileChannel, long, ExecutorService)
+     * writeAsync(channel, posotion, service)} method returns a future of {@code channel}.
      *
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.

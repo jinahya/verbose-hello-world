@@ -38,8 +38,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 
 /**
- * An abstract class for testing methods defined in {@link HelloWorld}
- * interface.
+ * An abstract class for testing methods defined in {@link HelloWorld} interface.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -49,8 +48,7 @@ import java.nio.channels.WritableByteChannel;
 abstract class HelloWorldTest {
 
     /**
-     * Stubs that {@link HelloWorld#set(byte[], int)} method returns the {@code
-     * array} argument.
+     * Stubs that {@link HelloWorld#set(byte[], int)} method returns the {@code array} argument.
      */
     @BeforeEach
     void stub_PutBuffer_FillBuffer() {

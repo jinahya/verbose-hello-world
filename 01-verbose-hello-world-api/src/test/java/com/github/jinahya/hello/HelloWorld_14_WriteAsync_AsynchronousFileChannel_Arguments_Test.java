@@ -32,8 +32,8 @@ import java.util.Random;
 import java.util.concurrent.ExecutorService;
 
 /**
- * A class for testing {@link HelloWorld#writeAsync(AsynchronousFileChannel,
- * long, ExecutorService)} method regarding arguments verification.
+ * A class for testing {@link HelloWorld#writeAsync(AsynchronousFileChannel, long, ExecutorService)}
+ * method regarding arguments verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_14_WriteAsync_AsynchronousFileChannel_Test
@@ -43,10 +43,9 @@ class HelloWorld_14_WriteAsync_AsynchronousFileChannel_Arguments_Test
         extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#writeAsync(AsynchronousFileChannel, long,
-     * ExecutorService) writeAsync(channel, position, service)} method throws a
-     * {@link NullPointerException} when {@code channel} argument is {@code
-     * null}.
+     * Asserts {@link HelloWorld#writeAsync(AsynchronousFileChannel, long, ExecutorService)
+     * writeAsync(channel, position, service)} method throws a {@link NullPointerException} when
+     * {@code channel} argument is {@code null}.
      */
     @DisplayName("writeAsync(null, , ) throws NullPointerException")
     @Test
@@ -60,10 +59,9 @@ class HelloWorld_14_WriteAsync_AsynchronousFileChannel_Arguments_Test
     }
 
     /**
-     * Asserts {@link HelloWorld#writeAsync(AsynchronousFileChannel, long,
-     * ExecutorService) writeAsync(channel, position, service)} method throws an
-     * {@link IllegalArgumentException} when {@code position} argument is not
-     * positive.
+     * Asserts {@link HelloWorld#writeAsync(AsynchronousFileChannel, long, ExecutorService)
+     * writeAsync(channel, position, service)} method throws an {@link IllegalArgumentException}
+     * when {@code position} argument is not positive.
      */
     @DisplayName("writeAsync(, negative, ) throws IllegalArgumentException")
     @Test
@@ -78,10 +76,9 @@ class HelloWorld_14_WriteAsync_AsynchronousFileChannel_Arguments_Test
     }
 
     /**
-     * Asserts {@link HelloWorld#writeAsync(AsynchronousByteChannel,
-     * ExecutorService) writeAsync(channel, position, service} method throws a
-     * {@link NullPointerException} when {@code channel} argument is {@code
-     * null}.
+     * Asserts {@link HelloWorld#writeAsync(AsynchronousByteChannel, ExecutorService)
+     * writeAsync(channel, position, service} method throws a {@link NullPointerException} when
+     * {@code channel} argument is {@code null}.
      */
     @DisplayName("writeAsync(, , null) throws NullPointerException")
     @Test

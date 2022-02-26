@@ -28,8 +28,7 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 
 /**
- * A class for testing {@link HelloWorld#append(File)} method regarding
- * arguments verification.
+ * A class for testing {@link HelloWorld#append(File)} method regarding arguments verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_03_Append_File_Test
@@ -39,9 +38,8 @@ class HelloWorld_03_Append_File_Arguments_Test
         extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#append(File) append(file)} method throws a
-     * {@link NullPointerException} when the {@code file} argument is {@code
-     * null}.
+     * Asserts {@link HelloWorld#append(File) append(file)} method throws a {@link
+     * NullPointerException} when the {@code file} argument is {@code null}.
      */
     @DisplayName("append(null) throws a NullPointerException")
     @Test

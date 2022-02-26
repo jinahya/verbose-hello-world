@@ -30,8 +30,8 @@ import java.nio.channels.AsynchronousFileChannel;
 import java.util.Random;
 
 /**
- * A class for testing {@link HelloWorld#writeCompletable(AsynchronousFileChannel,
- * long)} method regarding arguments verification.
+ * A class for testing {@link HelloWorld#writeCompletable(AsynchronousFileChannel, long)} method
+ * regarding arguments verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Test
@@ -42,8 +42,8 @@ class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Arguments_Test
 
     /**
      * Asserts {@link HelloWorld#writeCompletable(AsynchronousFileChannel, long)
-     * writeCompletable(channel, position)} method throws a {@link
-     * NullPointerException} when the {@code channel} argument is {@code null}.
+     * writeCompletable(channel, position)} method throws a {@link NullPointerException} when the
+     * {@code channel} argument is {@code null}.
      */
     @DisplayName("writeCompletable(null, ) throws NullPointerException")
     @Test
@@ -57,9 +57,8 @@ class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Arguments_Test
 
     /**
      * Asserts {@link HelloWorld#writeCompletable(AsynchronousFileChannel, long)
-     * writeCompletable(channel, position)} method throws an {@link
-     * IllegalArgumentException} when the {@code position} argument is
-     * negative.
+     * writeCompletable(channel, position)} method throws an {@link IllegalArgumentException} when
+     * the {@code position} argument is negative.
      */
     @DisplayName("writeCompletable(, negative) throws IllegalArgumentException")
     @Test

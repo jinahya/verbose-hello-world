@@ -44,8 +44,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class IHelloWorldServerUtilsTest {
 
     /**
-     * Asserts {@link IHelloWorldServerUtils#loadHelloWorld()} returns non-null
-     * instance.
+     * Asserts {@link IHelloWorldServerUtils#loadHelloWorld()} returns non-null instance.
      */
     @DisplayName("load() return non-null")
     @Test
@@ -74,8 +73,7 @@ class IHelloWorldServerUtilsTest {
             final int expected = ThreadLocalRandom.current().nextInt(1, 65536);
             final var thread = new Thread(() -> {
                 try {
-                    final var actual
-                            = IHelloWorldServerUtils.readPortNumber(dir);
+                    final var actual = IHelloWorldServerUtils.readPortNumber(dir);
                     assertThat(actual).isEqualTo(expected);
                 } catch (IOException | InterruptedException e) {
                     log.error("failed to read port", e);

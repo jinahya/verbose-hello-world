@@ -30,8 +30,8 @@ import java.nio.channels.AsynchronousFileChannel;
 import java.util.Random;
 
 /**
- * A class for testing {@link HelloWorld#write(AsynchronousFileChannel, long)}
- * method regarding arguments verification.
+ * A class for testing {@link HelloWorld#write(AsynchronousFileChannel, long)} method regarding
+ * arguments verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_13_Write_AsynchronousFileChannel_Test
@@ -41,9 +41,8 @@ class HelloWorld_13_Write_AsynchronousFileChannel_Arguments_Test
         extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#write(AsynchronousFileChannel, long)
-     * write(channel, position)} method throws a {@link NullPointerException}
-     * when {@code channel} argument is {@code null}.
+     * Asserts {@link HelloWorld#write(AsynchronousFileChannel, long) write(channel, position)}
+     * method throws a {@link NullPointerException} when {@code channel} argument is {@code null}.
      */
     @DisplayName("write(null, ) throws NullPointerException")
     @Test
@@ -55,9 +54,9 @@ class HelloWorld_13_Write_AsynchronousFileChannel_Arguments_Test
     }
 
     /**
-     * Asserts {@link HelloWorld#write(AsynchronousFileChannel, long)
-     * write(channel, position)} method throws a {@link IllegalArgumentException}
-     * when the {@code position} argument is negative.
+     * Asserts {@link HelloWorld#write(AsynchronousFileChannel, long) write(channel, position)}
+     * method throws a {@link IllegalArgumentException} when the {@code position} argument is
+     * negative.
      */
     @DisplayName("write(, negative) throws IllegalArgumentException")
     @Test

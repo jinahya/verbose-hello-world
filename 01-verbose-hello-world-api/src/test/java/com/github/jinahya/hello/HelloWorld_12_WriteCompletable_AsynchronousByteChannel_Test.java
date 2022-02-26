@@ -21,7 +21,6 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -44,8 +43,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
- * A class for testing {@link HelloWorld#writeCompletable(AsynchronousByteChannel)}
- * method.
+ * A class for testing {@link HelloWorld#writeCompletable(AsynchronousByteChannel)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_12_WriteCompletable_AsynchronousByteChannel_Arguments_Test
@@ -56,8 +54,8 @@ class HelloWorld_12_WriteCompletable_AsynchronousByteChannel_Test
 
     /**
      * Asserts {@link HelloWorld#writeCompletable(AsynchronousByteChannel)
-     * writeCompletable(channel)} method invokes {@link HelloWorld#put(ByteBuffer)
-     * put(buffer)} method and writes the buffer to the {@code channel}.
+     * writeCompletable(channel)} method invokes {@link HelloWorld#put(ByteBuffer) put(buffer)}
+     * method and writes the buffer to the {@code channel}.
      *
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.

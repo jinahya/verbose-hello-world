@@ -57,8 +57,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
- * A class for testing {@link HelloWorld#write(AsynchronousFileChannel, long)}
- * method.
+ * A class for testing {@link HelloWorld#write(AsynchronousFileChannel, long)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_13_Write_AsynchronousFileChannel_Arguments_Test
@@ -79,9 +78,9 @@ class HelloWorld_13_Write_AsynchronousFileChannel_Test
     }
 
     /**
-     * Asserts {@link HelloWorld#write(AsynchronousFileChannel, long)
-     * write(channel, position)} method invokes {@link HelloWorld#put(ByteBuffer)
-     * put(buffer)} method and writes the buffer to the {@code channel}.
+     * Asserts {@link HelloWorld#write(AsynchronousFileChannel, long) write(channel, position)}
+     * method invokes {@link HelloWorld#put(ByteBuffer) put(buffer)} method and writes the buffer to
+     * the {@code channel}.
      *
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
@@ -120,9 +119,8 @@ class HelloWorld_13_Write_AsynchronousFileChannel_Test
     }
 
     /**
-     * Asserts {@link HelloWorld#write(AsynchronousFileChannel, long)
-     * write(channel, position)} method {@link HelloWorld#BYTES} bytes starting
-     * at specified {@code position}.
+     * Asserts {@link HelloWorld#write(AsynchronousFileChannel, long) write(channel, position)}
+     * method {@link HelloWorld#BYTES} bytes starting at specified {@code position}.
      *
      * @param tempDir a temporary directory to test with.
      * @throws InterruptedException if interrupted while testing.
@@ -152,8 +150,8 @@ class HelloWorld_13_Write_AsynchronousFileChannel_Test
     }
 
     /**
-     * Asserts {@link HelloWorld#write(AsynchronousFileChannel, long)
-     * write(channel, position)} method returns the {@code channel} argument.
+     * Asserts {@link HelloWorld#write(AsynchronousFileChannel, long) write(channel, position)}
+     * method returns the {@code channel} argument.
      *
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.

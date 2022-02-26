@@ -36,8 +36,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.LongAdder;
 
 /**
- * A class for testing {@link HelloWorld#write(AsynchronousByteChannel)}
- * method.
+ * A class for testing {@link HelloWorld#write(AsynchronousByteChannel)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_10_Write_AsynchronousByteChannel_Arguments_Test
@@ -47,9 +46,9 @@ class HelloWorld_10_Write_AsynchronousByteChannel_Test
         extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#write(AsynchronousByteChannel) write(channel)}
-     * method invokes {@link HelloWorld#put(ByteBuffer) put(buffer)} method and
-     * writes the buffer to the {@code channel}.
+     * Asserts {@link HelloWorld#write(AsynchronousByteChannel) write(channel)} method invokes
+     * {@link HelloWorld#put(ByteBuffer) put(buffer)} method and writes the buffer to the {@code
+     * channel}.
      *
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
@@ -83,8 +82,8 @@ class HelloWorld_10_Write_AsynchronousByteChannel_Test
     }
 
     /**
-     * Asserts {@link HelloWorld#write(AsynchronousByteChannel) write(channel)}
-     * method returns the {@code channel} argument.
+     * Asserts {@link HelloWorld#write(AsynchronousByteChannel) write(channel)} method returns the
+     * {@code channel} argument.
      *
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.

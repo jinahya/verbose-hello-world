@@ -30,8 +30,8 @@ import java.nio.channels.AsynchronousByteChannel;
 import java.util.concurrent.ExecutorService;
 
 /**
- * A class for testing {@link HelloWorld#writeAsync(AsynchronousByteChannel,
- * ExecutorService)} method regarding arguments verification.
+ * A class for testing {@link HelloWorld#writeAsync(AsynchronousByteChannel, ExecutorService)}
+ * method regarding arguments verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -40,9 +40,9 @@ class HelloWorld_11_WriteAsync_AsynchronousByteChannel_Arguments_Test
         extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#writeAsync(AsynchronousByteChannel,
-     * ExecutorService) writeAsync(channel, service)} method throws a {@link
-     * NullPointerException} when {@code channel} argument is {@code null}.
+     * Asserts {@link HelloWorld#writeAsync(AsynchronousByteChannel, ExecutorService)
+     * writeAsync(channel, service)} method throws a {@link NullPointerException} when {@code
+     * channel} argument is {@code null}.
      */
     @DisplayName("writeAsync(null, ) throws NullPointerException")
     @Test
@@ -55,9 +55,9 @@ class HelloWorld_11_WriteAsync_AsynchronousByteChannel_Arguments_Test
     }
 
     /**
-     * Asserts {@link HelloWorld#writeAsync(AsynchronousByteChannel,
-     * ExecutorService) writeAsync(channel, service)} method throws a {@link
-     * NullPointerException} when {@code service} argument is {@code null}.
+     * Asserts {@link HelloWorld#writeAsync(AsynchronousByteChannel, ExecutorService)
+     * writeAsync(channel, service)} method throws a {@link NullPointerException} when {@code
+     * service} argument is {@code null}.
      */
     @DisplayName("writeAsync(, null) throws NullPointerException")
     @Test

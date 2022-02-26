@@ -42,9 +42,9 @@ class HelloWorld_05_Write_DataOutput_Test
         extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#write(DataOutput) write(data)} method invokes
-     * {@link HelloWorld#set(byte[]) set(array)} method with an array of {@link
-     * HelloWorld#BYTES} bytes and writes the array to specified data output.
+     * Asserts {@link HelloWorld#write(DataOutput) write(data)} method invokes {@link
+     * HelloWorld#set(byte[]) set(array)} method with an array of {@link HelloWorld#BYTES} bytes and
+     * writes the array to specified data output.
      *
      * @param tempDir a temporary directory to test with
      * @throws IOException if an I/O error occurs.
@@ -64,8 +64,8 @@ class HelloWorld_05_Write_DataOutput_Test
     }
 
     /**
-     * Asserts {@link HelloWorld#write(DataOutput) write(data)} method returns
-     * the {@code data} argument.
+     * Asserts {@link HelloWorld#write(DataOutput) write(data)} method returns the {@code data}
+     * argument.
      *
      * @throws IOException if an I/O error occurs.
      */

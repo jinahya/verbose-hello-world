@@ -58,8 +58,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
- * A class for testing {@link HelloWorld#writeCompletable(AsynchronousFileChannel,
- * long)} method.
+ * A class for testing {@link HelloWorld#writeCompletable(AsynchronousFileChannel, long)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Arguments_Test
@@ -81,9 +80,9 @@ class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Test
 
     /**
      * Asserts {@link HelloWorld#writeCompletable(AsynchronousFileChannel, long)
-     * writeCompletable(channel, position)} method invokes {@link
-     * HelloWorld#put(ByteBuffer) put(buffer)} method and writes the buffer to
-     * {@code channel} starting at specified {@code position}.
+     * writeCompletable(channel, position)} method invokes {@link HelloWorld#put(ByteBuffer)
+     * put(buffer)} method and writes the buffer to {@code channel} starting at specified {@code
+     * position}.
      *
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
@@ -131,9 +130,8 @@ class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Test
 
     /**
      * Asserts {@link HelloWorld#writeCompletable(AsynchronousFileChannel, long)
-     * writeCompletable(channel, posotion)} method writes {@link
-     * HelloWorld#BYTES} bytes to {@code channel} starting at specified
-     * position.
+     * writeCompletable(channel, posotion)} method writes {@link HelloWorld#BYTES} bytes to {@code
+     * channel} starting at specified position.
      *
      * @param tempDir a temporary directory to test with.
      * @throws IOException          if an I/O error occurs.

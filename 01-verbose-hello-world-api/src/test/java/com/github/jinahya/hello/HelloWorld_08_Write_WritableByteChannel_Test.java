@@ -59,10 +59,9 @@ class HelloWorld_08_Write_WritableByteChannel_Test
     }
 
     /**
-     * Asserts {@link HelloWorld#write(WritableByteChannel) write(channel)}
-     * method invokes {@link HelloWorld#put(ByteBuffer) put(buffer)} method with
-     * a byte buffer of {@link HelloWorld#BYTES} bytes and writes the buffer to
-     * specified channel.
+     * Asserts {@link HelloWorld#write(WritableByteChannel) write(channel)} method invokes {@link
+     * HelloWorld#put(ByteBuffer) put(buffer)} method with a byte buffer of {@link HelloWorld#BYTES}
+     * bytes and writes the buffer to specified channel.
      *
      * @throws IOException if an I/O error occurs.
      */
@@ -86,8 +85,8 @@ class HelloWorld_08_Write_WritableByteChannel_Test
     }
 
     /**
-     * Asserts {@link HelloWorld#write(WritableByteChannel) write(channel)}
-     * method returns the {@code channel} argument.
+     * Asserts {@link HelloWorld#write(WritableByteChannel) write(channel)} method returns the
+     * {@code channel} argument.
      *
      * @throws IOException if an I/O error occurs.
      */

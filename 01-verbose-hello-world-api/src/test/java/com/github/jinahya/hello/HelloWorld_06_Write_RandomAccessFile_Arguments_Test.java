@@ -28,8 +28,8 @@ import org.junit.jupiter.api.Test;
 import java.io.RandomAccessFile;
 
 /**
- * A class for testing {@link HelloWorld#write(RandomAccessFile)} method
- * regarding arguments verification.
+ * A class for testing {@link HelloWorld#write(RandomAccessFile)} method regarding arguments
+ * verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_06_Write_RandomAccessFile_Test
@@ -39,9 +39,8 @@ class HelloWorld_06_Write_RandomAccessFile_Arguments_Test
         extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#write(RandomAccessFile) write(file)} method
-     * throws a {@link NullPointerException} when {@code file} argument is
-     * {@code null}.
+     * Asserts {@link HelloWorld#write(RandomAccessFile) write(file)} method throws a {@link
+     * NullPointerException} when {@code file} argument is {@code null}.
      */
     @DisplayName("write((RandomAccessFile) null) throws NullPointerException")
     @Test

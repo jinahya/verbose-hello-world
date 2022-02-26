@@ -41,9 +41,9 @@ class HelloWorld_04_Send_Socket_Test
         extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#send(Socket) send(socket)} method invokes the
-     * {@link HelloWorld#write(OutputStream) write(stream)} method with {@link
-     * Socket#getOutputStream() socket.outputStream}.
+     * Asserts {@link HelloWorld#send(Socket) send(socket)} method invokes the {@link
+     * HelloWorld#write(OutputStream) write(stream)} method with {@link Socket#getOutputStream()
+     * socket.outputStream}.
      *
      * @throws IOException if an I/O error occurs.
      */
@@ -60,8 +60,8 @@ class HelloWorld_04_Send_Socket_Test
     }
 
     /**
-     * Asserts {@link HelloWorld#send(Socket) send(socket)} method returns the
-     * {@code socket} argument.
+     * Asserts {@link HelloWorld#send(Socket) send(socket)} method returns the {@code socket}
+     * argument.
      *
      * @throws IOException if an I/O error occurs.
      */

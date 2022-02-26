@@ -31,8 +31,7 @@ import java.nio.ByteBuffer;
 import java.util.Random;
 
 /**
- * A class for testing {@link HelloWorld#put(ByteBuffer)} method regarding
- * arguments verification.
+ * A class for testing {@link HelloWorld#put(ByteBuffer)} method regarding arguments verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_07_Put_ByteBuffer_Test
@@ -42,9 +41,8 @@ class HelloWorld_07_Put_ByteBuffer_Arguments_Test
         extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method throws a
-     * {@link NullPointerException} when the {@code buffer} argument is {@code
-     * null}.
+     * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method throws a {@link
+     * NullPointerException} when the {@code buffer} argument is {@code null}.
      */
     @DisplayName("put(null) throws NullPointerException")
     @Test
@@ -55,9 +53,9 @@ class HelloWorld_07_Put_ByteBuffer_Arguments_Test
     }
 
     /**
-     * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method throws a
-     * {@link BufferOverflowException} when {@link ByteBuffer#remaining()
-     * buffer.remaining} is less than {@link HelloWorld#BYTES}.
+     * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method throws a {@link
+     * BufferOverflowException} when {@link ByteBuffer#remaining() buffer.remaining} is less than
+     * {@link HelloWorld#BYTES}.
      */
     @DisplayName("put(buffer) throws BufferOverflowException"
                  + " when buffer.remaining is not enough")

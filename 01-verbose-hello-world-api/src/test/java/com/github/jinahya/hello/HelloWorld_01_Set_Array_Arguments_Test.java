@@ -27,8 +27,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Random;
 
 /**
- * A class for testing {@link HelloWorld#set(byte[])} method regarding arguments
- * verification.
+ * A class for testing {@link HelloWorld#set(byte[])} method regarding arguments verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_01_Set_Array_Test
@@ -50,8 +49,7 @@ class HelloWorld_01_Set_Array_Arguments_Test
 
     /**
      * Asserts {@link HelloWorld#set(byte[]) set(array)} method throws an {@link
-     * IndexOutOfBoundsException} when {@code array.length} is less than {@link
-     * HelloWorld#BYTES}.
+     * IndexOutOfBoundsException} when {@code array.length} is less than {@link HelloWorld#BYTES}.
      */
     @DisplayName("set(array:not-long-enough) throws IndexOutOfBoundsException")
     @Test
