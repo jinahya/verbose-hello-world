@@ -25,8 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 
 /**
- * A class whose {@link #main(String[])} method serves {@code hello, world} to
- * clients.
+ * A class whose {@link #main(String[])} method serves {@code hello, world} to clients.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -34,8 +33,7 @@ import java.io.IOException;
 class HelloWorldMainUdp {
 
     /**
-     * The main method of this program which serves {@code hello, world} to
-     * clients.
+     * The main method of this program which serves {@code hello, world} to clients.
      *
      * @param args an array of command line arguments.
      * @throws IOException if an I/O error occurs.
@@ -44,7 +42,7 @@ class HelloWorldMainUdp {
         try (var server = new HelloWorldServerUdp()) {
             var endpoint = IHelloWorldServerUtils.parseEndpoint(args);
             server.open(endpoint, null);
-            IHelloWorldServerUtils.startReadingQuit();
+            IHelloWorldServerUtils.readQuit();
         }
     }
 

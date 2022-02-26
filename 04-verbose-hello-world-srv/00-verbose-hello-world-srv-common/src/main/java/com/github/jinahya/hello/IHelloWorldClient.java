@@ -27,7 +27,7 @@ import java.util.concurrent.Callable;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-public interface IHelloWorldClient
-        extends Callable<byte[]> {
+@Deprecated(forRemoval = true)
+public interface IHelloWorldClient extends Callable<byte[]> {
 
 }

@@ -26,8 +26,7 @@ import jakarta.inject.Named;
 import static java.util.concurrent.ThreadLocalRandom.current;
 
 /**
- * An abstract class for testing {@link HelloWorld} implementations using
- * Dependency Injection.
+ * An abstract class for testing {@link HelloWorld} implementations using Dependency Injection.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -58,24 +57,24 @@ abstract class HelloWorldDiTest
         }
     }
 
-//    @javax.inject.Named(DEMO) // Guice
+    //    @javax.inject.Named(DEMO) // Guice
     @javax.inject.Inject // Guice
     @Named(DEMO)
     @Inject
     HelloWorld namedDemo;
 
-//    @javax.inject.Named(IMPL) // Guice
+    //    @javax.inject.Named(IMPL) // Guice
     @javax.inject.Inject // Guice
     @Named(IMPL)
     @Inject
     HelloWorld namedImpl;
 
-//    @javax.inject.Inject // Guice
+    //    @javax.inject.Inject // Guice
     @QualifiedDemo
     @Inject
     HelloWorld qualifiedDemo;
 
-//    @javax.inject.Inject // Guice
+    //    @javax.inject.Inject // Guice
     @QualifiedImpl
     @Inject
     HelloWorld qualifiedImpl;

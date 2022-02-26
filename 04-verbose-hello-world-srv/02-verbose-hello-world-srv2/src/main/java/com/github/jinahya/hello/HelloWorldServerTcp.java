@@ -29,10 +29,6 @@ import java.net.SocketAddress;
 import java.nio.file.Path;
 import java.util.concurrent.Executors;
 
-import static com.github.jinahya.hello.HelloWorld.BYTES;
-import static com.github.jinahya.hello.IHelloWorldServerUtils.shutdownAndAwaitTermination;
-import static java.util.concurrent.TimeUnit.SECONDS;
-
 /**
  * A class serves {@code hello, world} to clients.
  *
@@ -50,16 +46,14 @@ class HelloWorldServerTcp
     }
 
     @Override
-    void openInternal(final SocketAddress endpoint, final Path dir)
-            throws IOException {
+    void openInternal(SocketAddress endpoint, Path dir) throws IOException {
         server = new ServerSocket();
-        if (endpoint instanceof InetSocketAddress &&
-            ((InetSocketAddress) endpoint).getPort() > 0) {
+        if (endpoint instanceof InetSocketAddress && ((InetSocketAddress) endpoint).getPort() > 0) {
             server.setReuseAddress(true);
         }
         try {
             server.bind(endpoint);
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             log.error("failed to bind to {}", endpoint);
             throw ioe;
         }
@@ -68,31 +62,29 @@ class HelloWorldServerTcp
             IHelloWorldServerUtils.writePortNumber(dir, server.getLocalPort());
         }
         new Thread(() -> {
-            final var executor = Executors.newCachedThreadPool();
+            var executor = Executors.newCachedThreadPool();
             while (!server.isClosed()) {
                 try {
-                    final var client = server.accept();
+                    var client = server.accept();
                     executor.submit(() -> {
                         try (client) {
-                            log.debug("[S] connected from {}",
-                                      client.getRemoteSocketAddress());
-                            final byte[] array = new byte[BYTES];
+                            log.debug("[S] connected from {}", client.getRemoteSocketAddress());
+                            byte[] array = new byte[HelloWorld.BYTES];
                             service().set(array);
                             client.getOutputStream().write(array);
                             client.getOutputStream().flush();
-                        } catch (final IOException ioe) {
-                            log.error("failed to send to {}",
-                                      client.getRemoteSocketAddress(), ioe);
+                        } catch (IOException ioe) {
+                            log.error("failed to send to {}", client.getRemoteSocketAddress(), ioe);
                         }
                     });
-                } catch (final IOException ioe) {
+                } catch (IOException ioe) {
                     if (server.isClosed()) {
                         break;
                     }
                     log.error("failed to accept", ioe);
                 }
             } // end-of-while
-            shutdownAndAwaitTermination(executor, 8L, SECONDS);
+            IHelloWorldServerUtils.shutdownAndAwaitTermination(executor);
         }).start();
         log.debug("[S] server thread started");
     }

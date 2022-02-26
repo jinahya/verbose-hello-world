@@ -31,15 +31,9 @@ import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.concurrent.TimeUnit;
 
-import static com.github.jinahya.hello.HelloWorld.BYTES;
-import static java.nio.ByteBuffer.allocate;
-import static java.nio.channels.AsynchronousChannelGroup.withCachedThreadPool;
-import static java.util.ServiceLoader.load;
-import static java.util.concurrent.Executors.newCachedThreadPool;
-
 /**
- * A class whose {@link #main(String[])} method accepts socket connections and
- * sends {@code hello, world} to clients.
+ * A class whose {@link #main(String[])} method accepts socket connections and sends {@code hello,
+ * world} to clients.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -50,8 +44,8 @@ public class HelloWorldMain
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
-     * The main method of this program which accepts socket connections and
-     * sends {@code hello, world} to clients.
+     * The main method of this program which accepts socket connections and sends {@code hello,
+     * world} to clients.
      *
      * @param args an array of command line arguments
      * @throws IOException          if an I/O error occurs.

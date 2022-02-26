@@ -41,14 +41,13 @@ import static java.nio.channels.SelectionKey.OP_WRITE;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorldServerUdp
-        extends AbstractHelloWorldServer {
+class HelloWorldServerUdp extends AbstractHelloWorldServer {
 
-    private void handle(final Set<SelectionKey> keys) throws IOException {
-        for (final var key : keys) {
-            final var channel = (DatagramChannel) key.channel();
+    private void handle(Set<SelectionKey> keys) throws IOException {
+        for (var key : keys) {
+            var channel = (DatagramChannel) key.channel();
             if (key.isReadable()) {
-                final var address = channel.receive(ByteBuffer.allocate(0));
+                var address = channel.receive(ByteBuffer.allocate(0));
                 if (address != null) {
                     log.debug("received from {}", address);
                     key.interestOps(key.interestOps() & ~OP_READ);
@@ -58,7 +57,7 @@ class HelloWorldServerUdp
                 continue;
             }
             if (key.isWritable()) {
-                final var src = ByteBuffer.allocate(HelloWorld.BYTES);
+                var src = ByteBuffer.allocate(HelloWorld.BYTES);
                 service().put(src);
                 // TODO: flip the src!
                 final var target = (SocketAddress) key.attachment();
@@ -74,11 +73,9 @@ class HelloWorldServerUdp
     }
 
     @Override
-    protected void openInternal(SocketAddress endpoint, Path dir)
-            throws IOException {
+    protected void openInternal(SocketAddress endpoint, Path dir) throws IOException {
         server = DatagramChannel.open();
-        if (endpoint instanceof InetSocketAddress &&
-            ((InetSocketAddress) endpoint).getPort() > 0) {
+        if (endpoint instanceof InetSocketAddress && ((InetSocketAddress) endpoint).getPort() > 0) {
             server.socket().setReuseAddress(true);
         }
         try {
@@ -90,8 +87,7 @@ class HelloWorldServerUdp
         log.info("server bound to {}", server.getLocalAddress());
         if (dir != null) {
             var port = server.socket().getLocalPort();
-            var path = IHelloWorldServerUtils.writePortNumber(dir, port);
-            log.debug("port({}) has been written to {}", port, path);
+            IHelloWorldServerUtils.writePortNumber(dir, port);
         }
         var thread = new Thread(() -> {
             var executor = Executors.newCachedThreadPool();

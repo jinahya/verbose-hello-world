@@ -25,8 +25,8 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 
 /**
- * A class whose {@link #main(String[])} method accepts socket connections and
- * sends {@code hello, world} to clients.
+ * A class whose {@link #main(String[])} method accepts socket connections and sends {@code hello,
+ * world} to clients.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -34,13 +34,13 @@ import java.io.IOException;
 public class HelloWorldMainUdp {
 
     /**
-     * The main method of this program which receives datagrams and sends {@code
-     * hello, world} to each client.
+     * The main method of this program which receives datagrams and sends {@code hello, world} to
+     * each client.
      *
      * @param args an array of command line arguments.
      * @throws IOException if an I/O error occurs.
      */
-    public static void main(final String... args) throws IOException {
+    public static void main(String... args) throws IOException {
         var endpoint = IHelloWorldServerUtils.parseEndpoint(args);
         var server = new HelloWorldServerUdp();
         server.open(endpoint, null);

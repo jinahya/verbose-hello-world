@@ -21,6 +21,7 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -30,28 +31,34 @@ import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 @Slf4j
 class HelloWorldServerTcpTest {
 
     @Test
-    void test(@TempDir Path tempDir)
-            throws IOException, InterruptedException {
+    void test(@TempDir Path tempDir) throws IOException, InterruptedException {
         var host = InetAddress.getLoopbackAddress();
         var dir = Files.createTempDirectory(tempDir, null);
         var thread = new Thread(() -> {
-            IHelloWorldServerUtils.readPortNumber(dir, p -> {
-                var endpoint = new InetSocketAddress(host, p);
-                try {
-                    HelloWorldClientTcp.clients(4, endpoint, s -> {
-                        log.debug("[C] read: {}", s);
-                        assertNotNull(s);
-                    });
-                } catch (IOException ioe) {
-                    log.error("failed to run clients", ioe);
-                }
-            });
+            int port;
+            try {
+                port = IHelloWorldServerUtils.readPortNumber(dir);
+            } catch (IOException ioe) {
+                log.error("failed to read port number from " + dir, ioe);
+                return;
+            } catch (InterruptedException ie) {
+                log.error("interrupted while reading port number from " + dir, ie);
+                Thread.currentThread().interrupt();
+                return;
+            }
+            var endpoint = new InetSocketAddress(host, port);
+            try {
+                HelloWorldClientTcp.connect(4, endpoint, s -> {
+                    log.debug("[C] read: {}", s);
+                    Assertions.assertNotNull(s);
+                });
+            } catch (IOException ioe) {
+                log.error("failed to connect", ioe);
+            }
         });
         thread.start();
         try (var server = new HelloWorldServerTcp()) {

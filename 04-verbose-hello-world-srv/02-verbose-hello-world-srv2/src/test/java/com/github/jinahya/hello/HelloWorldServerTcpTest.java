@@ -29,7 +29,7 @@ import java.net.InetSocketAddress;
 import java.nio.file.Path;
 
 import static com.github.jinahya.hello.HelloWorldClientTcp.clients;
-import static com.github.jinahya.hello.IHelloWorldServerUtils.readPortNumber;
+import static com.github.jinahya.hello.IHelloWorldServerUtils.startReadingPortNumber;
 import static java.net.InetAddress.getLoopbackAddress;
 import static java.nio.file.Files.createTempDirectory;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -42,7 +42,7 @@ class HelloWorldServerTcpTest {
             throws IOException, InterruptedException {
         final var host = getLoopbackAddress();
         final var dir = createTempDirectory(tempDir, null);
-        final var thread = readPortNumber(dir, p -> {
+        final var thread = startReadingPortNumber(dir, p -> {
             final var endpoint = new InetSocketAddress(host, p);
             clients(4, endpoint, s -> {
                 log.debug("[C] received: {}", s);

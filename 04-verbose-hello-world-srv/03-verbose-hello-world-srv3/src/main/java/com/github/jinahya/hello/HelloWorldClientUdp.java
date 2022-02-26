@@ -33,11 +33,9 @@ import java.util.function.Consumer;
 @Slf4j
 public class HelloWorldClientUdp {
 
-    static void clients(final int count, final SocketAddress endpoint,
-                        final Consumer<? super String> consumer) {
+    static void clients(int count, SocketAddress endpoint, Consumer<? super String> consumer) {
         if (count <= 0) {
-            throw new IllegalArgumentException(
-                    "count(" + count + ") is not positive");
+            throw new IllegalArgumentException("count(" + count + ") is not positive");
         }
         Objects.requireNonNull(endpoint, "endpoint is null");
         Objects.requireNonNull(consumer, "consumer is null");

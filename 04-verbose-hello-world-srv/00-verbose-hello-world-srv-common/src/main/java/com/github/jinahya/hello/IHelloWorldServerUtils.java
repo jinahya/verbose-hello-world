@@ -76,22 +76,17 @@ import static java.util.ServiceLoader.load;
 final class IHelloWorldServerUtils {
 
     /**
-     * Parses specified command line arguments and applies them to specified
-     * function.
+     * Parses specified command line arguments and applies them to specified function.
      *
      * @param args     the command line arguments.
      * @param function the function to apply.
      * @param <R>      result type parameter
      * @return the result of the {@code function}.
-     * @throws UnknownHostException if {@code args[1]} is not known as an
-     *                              address.
+     * @throws UnknownHostException if {@code args[1]} is not known as an address.
      */
     static <R> R parseEndpoint(
             String[] args,
-            IntFunction<
-                    ? extends Function<
-                            ? super InetAddress,
-                            ? extends R>> function)
+            IntFunction<? extends Function<? super InetAddress, ? extends R>> function)
             throws UnknownHostException {
         Objects.requireNonNull(args, "args is null");
         Objects.requireNonNull(function, "function is null");
@@ -107,15 +102,13 @@ final class IHelloWorldServerUtils {
     }
 
     /**
-     * Parses specified command line arguments and applies them to specified
-     * function.
+     * Parses specified command line arguments and applies them to specified function.
      *
      * @param args     the command line arguments.
      * @param function the function to apply.
      * @param <R>      result type parameter
      * @return the result of the {@code function}.
-     * @throws UnknownHostException if {@code args[1]} is not known as an
-     *                              address.
+     * @throws UnknownHostException if {@code args[1]} is not known as an address.
      */
     static <R> R parseEndpoint(
             String[] args,
@@ -125,21 +118,17 @@ final class IHelloWorldServerUtils {
     }
 
     /**
-     * Parses specified command line arguments and returns a socket address to
-     * bind.
+     * Parses specified command line arguments and returns a socket address to bind.
      *
      * @param args the command line arguments.
      * @return a socket address to bind.
-     * @throws UnknownHostException if {@code args[1]} is not known as an
-     *                              address.
+     * @throws UnknownHostException if {@code args[1]} is not known as an address.
      */
-    static SocketAddress parseEndpoint(String... args)
-            throws UnknownHostException {
+    static SocketAddress parseEndpoint(String... args) throws UnknownHostException {
         return parseEndpoint(args, (p, h) -> new InetSocketAddress(h, p));
     }
 
-    private static void readLineUntil(Reader source,
-                                      Predicate<? super String> matcher)
+    private static void readLineUntil(Reader source, Predicate<? super String> matcher)
             throws IOException {
         Objects.requireNonNull(source, "source is null");
         Objects.requireNonNull(matcher, "matcher is null");
@@ -158,15 +147,13 @@ final class IHelloWorldServerUtils {
         readLineUntil(new InputStreamReader(source, charset), matcher);
     }
 
-    private static void readLineUntil(InputStream source,
-                                      Predicate<? super String> matcher)
+    private static void readLineUntil(InputStream source, Predicate<? super String> matcher)
             throws IOException {
         readLineUntil(source, Charset.defaultCharset(), matcher);
     }
 
     /**
-     * Keeps reading lines from {@link System#in} until it reads {@code
-     * 'quit'}.
+     * Keeps reading lines from {@link System#in} until it reads {@code 'quit'}.
      *
      * @throws IOException if an I/O error occurs.
      */
@@ -182,8 +169,8 @@ final class IHelloWorldServerUtils {
     }
 
     /**
-     * Starts a new daemon thread which keeps reading a line from {@link
-     * System#in} until it reads {@code 'quit'}.
+     * Starts a new daemon thread which keeps reading a line from {@link System#in} until it reads
+     * {@code 'quit'}.
      */
     static Thread startReadingQuit() {
         var thread = new Thread(() -> {
@@ -204,8 +191,8 @@ final class IHelloWorldServerUtils {
     }
 
     /**
-     * Starts a new thread which reads "{@code quit\n}" from {@link System#in}
-     * and {@link Closeable#close() closes} specified closeable.
+     * Starts a new thread which reads "{@code quit\n}" from {@link System#in} and {@link
+     * Closeable#close() closes} specified closeable.
      *
      * @param closeable the closeable to close.
      * @return a new started thread.
@@ -230,7 +217,7 @@ final class IHelloWorldServerUtils {
         return thread;
     }
 
-    static void submitAndWriteQuit(Callable<Void> task) {
+    static void submitAndWriteQuit(Callable<?> task) {
         Objects.requireNonNull(task, "task is null");
         var in = System.in;
         try (var pos = new PipedOutputStream();
@@ -243,7 +230,7 @@ final class IHelloWorldServerUtils {
             try {
                 future.get();
             } catch (InterruptedException ie) {
-                log.error("interrupted while executing", ie);
+                log.error("interrupted while waiting future", ie);
                 Thread.currentThread().interrupt();
             } catch (ExecutionException ee) {
                 log.error("failed to execute", ee);
@@ -268,8 +255,8 @@ final class IHelloWorldServerUtils {
     }
 
     /**
-     * {@link ExecutorService#shutdown() Shuts down} specified executor service
-     * and awaits its termination for specified amount of time.
+     * {@link ExecutorService#shutdown() Shuts down} specified executor service and awaits its
+     * termination for specified amount of time.
      *
      * @param executor the executor service to shut down.
      * @param timeout  a timeout for awaiting termination.
@@ -277,9 +264,7 @@ final class IHelloWorldServerUtils {
      * @see ExecutorService#shutdown()
      * @see ExecutorService#awaitTermination(long, TimeUnit)
      */
-    static void shutdownAndAwaitTermination(ExecutorService executor,
-                                            long timeout,
-                                            TimeUnit unit) {
+    static void shutdownAndAwaitTermination(ExecutorService executor, long timeout, TimeUnit unit) {
         Objects.requireNonNull(executor, "executor is null");
         if (timeout <= 0L) {
             throw new IllegalArgumentException(
@@ -299,8 +284,8 @@ final class IHelloWorldServerUtils {
     }
 
     /**
-     * {@link ExecutorService#shutdown() Shuts down} specified executor service
-     * and awaits its termination for 8 seconds.
+     * {@link ExecutorService#shutdown() Shuts down} specified executor service and awaits its
+     * termination for 8 seconds.
      *
      * @param executor the executor service to shut down.
      * @see ExecutorService#shutdown()
@@ -320,20 +305,15 @@ final class IHelloWorldServerUtils {
     private static final String PORT_TXT = "port.txt";
 
     /**
-     * Writes specified port number to a file newly created in specified
-     * directory.
+     * Writes specified port number to a file newly created in specified directory.
      *
      * @param dir  the directory in which a new file is created.
      * @param port the port number to be written.
-     * @return a path to the file whose content is given {@code port} written in
-     * big-endian byte order; the path's size is {@value
-     * java.lang.Short#BYTES}.
      * @throws IOException if an I/O error occurs.
      * @see #readPortNumber(Path)
      * @see #readPortNumber(Path, IntConsumer)
      */
-    static void writePortNumber(Path dir, int port)
-            throws IOException {
+    static void writePortNumber(Path dir, int port) throws IOException {
         if (!Files.isDirectory(Objects.requireNonNull(dir, "dir is null"))) {
             throw new IllegalArgumentException("not a directory: " + dir);
         }
@@ -342,36 +322,33 @@ final class IHelloWorldServerUtils {
         }
         var tmp = Files.createTempFile(dir, null, null);
         try (var channel = FileChannel.open(tmp, StandardOpenOption.WRITE)) {
-            var src = ByteBuffer.allocate(Short.BYTES);
-            src.asShortBuffer().put((short) port);
-            while (src.hasRemaining()) {
-                channel.write(src);
+            var buffer = ByteBuffer.allocate(Short.BYTES);
+            buffer.asShortBuffer().put((short) port);
+            while (buffer.hasRemaining()) {
+                channel.write(buffer);
             }
             channel.force(false);
         }
-        Files.move(tmp, dir.resolve(PORT_TXT), StandardCopyOption.ATOMIC_MOVE);
+        var path = Files.move(tmp, dir.resolve(PORT_TXT), StandardCopyOption.ATOMIC_MOVE);
+        log.debug("port({}) has been written to {}", port, path);
     }
 
     /**
-     * Starts watching specified directory and returns a port number when it's
-     * written on a file of predefined name.
+     * Starts watching specified directory and returns a port number when it's written on a file of
+     * predefined name.
      *
      * @param dir the directory to watch.
      * @return a port number read.
      * @throws IOException          if an I/O error occurs.
      * @throws InterruptedException if interrupted while polling.
      * @see #writePortNumber(Path, int)
-     * @see #readPortNumber(Path, IntConsumer)
      */
-    static int readPortNumber(Path dir)
-            throws IOException, InterruptedException {
+    static int readPortNumber(Path dir) throws IOException, InterruptedException {
         if (!Files.isDirectory(Objects.requireNonNull(dir, "dir is null"))) {
             throw new IllegalArgumentException("not a directory: " + dir);
         }
         try (var service = FileSystems.getDefault().newWatchService()) {
-            dir.register(service,
-                         new WatchEvent.Kind[] {
-                                 StandardWatchEventKinds.ENTRY_CREATE},
+            dir.register(service, new WatchEvent.Kind[] {StandardWatchEventKinds.ENTRY_CREATE},
                          SensitivityWatchEventModifier.HIGH);
             while (!Thread.currentThread().isInterrupted()) {
                 var key = service.poll(1L, TimeUnit.SECONDS);
@@ -394,8 +371,7 @@ final class IHelloWorldServerUtils {
             } // end-of-while
             var path = dir.resolve(PORT_TXT);
             assert Files.isRegularFile(path);
-            try (var channel = FileChannel.open(
-                    path, StandardOpenOption.READ)) {
+            try (var channel = FileChannel.open(path, StandardOpenOption.READ)) {
                 var buffer = ByteBuffer.allocate(Short.BYTES);
                 while (buffer.hasRemaining()) {
                     if (channel.read(buffer) == -1) {
@@ -403,14 +379,16 @@ final class IHelloWorldServerUtils {
                     }
                 }
                 buffer.flip();
-                return buffer.asShortBuffer().get() & 0xFFFF;
+                var port = buffer.asShortBuffer().get() & 0xFFFF;
+                log.debug("port({}) read from {}", port, path);
+                return port;
             }
         } // end-of-try-with-resources; WatchService
     }
 
     /**
-     * Reads a port number from a file of predefined name written in specified
-     * directory and accepts the port number to specified consumer.
+     * Reads a port number from a file of predefined name written in specified directory and accepts
+     * the port number to specified consumer.
      *
      * @param dir      the directory from which a port number is read.
      * @param consumer the consumer accepts the port number.
@@ -429,114 +407,32 @@ final class IHelloWorldServerUtils {
     }
 
     /**
-     * Starts a new daemon thread which reads a port number from a file of
-     * predefined name written in specified directory and accepts the port
-     * number to specified consumer.
+     * Starts a thread which reads a port number from a file created in specified directory and
+     * accept the port number to specified consumer.
      *
      * @param dir      the directory from which a port number is read.
      * @param consumer the consumer accepts the port number.
-     * @return a new started thread.
      * @see #readPortNumber(Path)
      */
     static Thread startReadingPortNumber(Path dir, IntConsumer consumer) {
+        if (!Files.isDirectory(Objects.requireNonNull(dir, "dir is null"))) {
+            throw new IllegalArgumentException("not a directory: " + dir);
+        }
+        Objects.requireNonNull(consumer, "consumer is null");
         var thread = new Thread(() -> {
-            readPortNumber(dir, consumer);
+            try {
+                var port = readPortNumber(dir);
+                consumer.accept(port);
+            } catch (IOException ioe) {
+                log.error("failed to read port number in " + dir, ioe);
+            } catch (InterruptedException ie) {
+                log.error("interrupted while reading port number in " + dir, ie);
+                Thread.currentThread().interrupt();
+            }
         });
-        thread.setDaemon(true);
         thread.start();
         return thread;
     }
-
-    /**
-     * The name of the file to which a port number is written.
-     */
-    private static final String ENDPOINT_TXT = "endpoint.txt";
-
-//    /**
-//     * Writes specified port number to a file newly created in specified
-//     * directory.
-//     *
-//     * @param dir      the directory in which a new file is created.
-//     * @param endpoint the socket address to write.
-//     * @return a path to the file whose content is given {@code port} written in
-//     * big-endian byte order; the path's size is {@value
-//     * java.lang.Short#BYTES}.
-//     * @throws IOException if an I/O error occurs.
-//     * @see #readPortNumber(Path, long, TimeUnit)
-//     */
-//    static Path writeSocketAddress(final Path dir, final SocketAddress endpoint)
-//            throws IOException {
-//        if (!Files.isDirectory(Objects.requireNonNull(dir, "dir is null"))) {
-//            throw new IllegalArgumentException("not a directory: " + dir);
-//        }
-//        Objects.requireNonNull(endpoint, "endpoint is null");
-//        if (port <= 0) {
-//            throw new IllegalArgumentException(
-//                    "port(" + port + ") is not positive");
-//        }
-//        if (port > 65535) {
-//            throw new IllegalArgumentException("port(" + port + ") > 65535");
-//        }
-//        final var tmp = Files.createTempFile(dir, null, null);
-//        try (var channel = FileChannel.open(tmp, StandardOpenOption.WRITE)) {
-//            final var src = ByteBuffer.allocate(Short.BYTES);
-//            src.asShortBuffer().put((short) port);
-//            while (src.hasRemaining()) {
-//                channel.write(src);
-//            }
-//            channel.force(false);
-//        }
-//        return Files.move(tmp, dir.resolve(PORT_TXT));
-//    }
-//
-//    /**
-//     * Starts watching specified directory and returns a port number when it's
-//     * written on a predefined file.
-//     *
-//     * @param dir     the directory to watch.
-//     * @param timeout a polling timeout.
-//     * @param unit    a polling time unit.
-//     * @return a port number read.
-//     * @throws IOException          if an I/O error occurs.
-//     * @throws InterruptedException if interrupted while polling.
-//     * @see #writePortNumber(Path, int)
-//     */
-//    static int readPortNumber(final Path dir, final long timeout,
-//                              final TimeUnit unit)
-//            throws IOException, InterruptedException {
-//        if (!Files.isDirectory(Objects.requireNonNull(dir, "dir is null"))) {
-//            throw new IllegalArgumentException("not a directory: " + dir);
-//        }
-//        try (var service = FileSystems.getDefault().newWatchService()) {
-//            dir.register(service, StandardWatchEventKinds.ENTRY_CREATE);
-//            for (boolean flag = false; !flag; ) {
-//                final var key = service.poll(timeout, unit);
-//                if (key == null) {
-//                    continue;
-//                }
-//                assert key.isValid();
-//                for (var event : key.pollEvents()) {
-//                    assert event.kind() == StandardWatchEventKinds.ENTRY_CREATE;
-//                    final Path file = (Path) event.context();
-//                    if (PORT_TXT.equals(file.getFileName().toString())) {
-//                        flag = true;
-//                    }
-//                }
-//            } // end-of-while
-//        }
-//        final var file = dir.resolve(PORT_TXT);
-//        assert Files.isRegularFile(file);
-//        try (var channel = FileChannel.open(file, StandardOpenOption.READ)) {
-//            final var dst = ByteBuffer.allocate(Short.BYTES);
-//            while (dst.hasRemaining()) {
-//                if (channel.read(dst) == -1) {
-//                    throw new EOFException("unexpected eof");
-//                }
-//            }
-//            dst.flip();
-//            return dst.asShortBuffer().get() & 0xFFFF;
-//        }
-//    }
 
     /**
      * Creates a new instance which is impossible.

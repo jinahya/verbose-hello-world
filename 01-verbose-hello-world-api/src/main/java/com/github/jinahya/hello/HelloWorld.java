@@ -47,8 +47,8 @@ import java.util.concurrent.Future;
  * targets.
  *
  * <h2 id="hello-world-bytes">hello-world-bytes</h2>
- * A sequence of {@link #BYTES} bytes, representing the "{@code hello, world}" string encoded in
- * {@link java.nio.charset.StandardCharsets#US_ASCII US-ASCII} character set, which consists of
+ * A sequence of {@value #BYTES} bytes, representing the "{@code hello, world}" string encoded in
+ * {@link java.nio.charset.StandardCharsets#US_ASCII US_ASCII} character set, which consists of
  * {@code 0x68("h")} followed by {@code 0x65("e")}, {@code 0x6C("l")}, {@code 0x6C("l")}, {@code
  * 0x6F("o")}, {@code 0x2C(",")}, {@code 0x20(" ")}, {@code 0x77("w")}, {@code 0x6F("o")}, {@code
  * 0x72("r")}, {@code 0x6C("l")}, and {@code 0x64("d")}.

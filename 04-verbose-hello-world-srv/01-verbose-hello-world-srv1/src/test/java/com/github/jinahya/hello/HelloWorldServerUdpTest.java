@@ -35,22 +35,30 @@ import java.nio.file.Path;
 class HelloWorldServerUdpTest {
 
     @Test
-    void test(@TempDir Path tempDir)
-            throws IOException, InterruptedException {
+    void test(@TempDir Path tempDir) throws IOException, InterruptedException {
         var host = InetAddress.getLoopbackAddress();
         var dir = Files.createTempDirectory(tempDir, null);
         var thread = new Thread(() -> {
-            IHelloWorldServerUtils.readPortNumber(dir, p -> {
-                var endpoint = new InetSocketAddress(host, p);
-                try {
-                    HelloWorldClientUdp.clients(4, endpoint, s -> {
-                        log.debug("[C] received: {}", s);
-                        Assertions.assertNotNull(s);
-                    });
-                } catch (IOException ioe) {
-                    log.error("failed to run clients", ioe);
-                }
-            });
+            int port;
+            try {
+                port = IHelloWorldServerUtils.readPortNumber(dir);
+            } catch (IOException ioe) {
+                log.error("failed to read port number from " + dir, ioe);
+                return;
+            } catch (InterruptedException ie) {
+                log.error("interrupted while reading port number from " + dir, ie);
+                Thread.currentThread().interrupt();
+                return;
+            }
+            var endpoint = new InetSocketAddress(host, port);
+            try {
+                HelloWorldClientUdp.connect(4, endpoint, s -> {
+                    log.debug("[C] received: {}", s);
+                    Assertions.assertNotNull(s);
+                });
+            } catch (IOException ioe) {
+                log.error("failed to connect", ioe);
+            }
         });
         thread.start();
         try (var server = new HelloWorldServerUdp()) {

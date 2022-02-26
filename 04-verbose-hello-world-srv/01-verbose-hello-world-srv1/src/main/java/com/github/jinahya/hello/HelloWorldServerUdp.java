@@ -37,20 +37,17 @@ import java.util.Objects;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorldServerUdp
-        implements IHelloWorldServer {
+class HelloWorldServerUdp implements IHelloWorldServer {
 
     @Override
-    public synchronized void open(SocketAddress endpoint, Path dir)
-            throws IOException {
+    public synchronized void open(SocketAddress endpoint, Path dir) throws IOException {
         Objects.requireNonNull(endpoint, "endpoint is null");
         if (dir != null && !Files.isDirectory(dir)) {
             throw new IllegalArgumentException("not a directory: " + dir);
         }
         close();
         socket = new DatagramSocket(null);
-        if (endpoint instanceof InetSocketAddress
-            && ((InetSocketAddress) endpoint).getPort() > 0) {
+        if (endpoint instanceof InetSocketAddress && ((InetSocketAddress) endpoint).getPort() > 0) {
             socket.setReuseAddress(true);
         }
         try {
@@ -64,8 +61,8 @@ class HelloWorldServerUdp
             var port = socket.getLocalPort();
             IHelloWorldServerUtils.writePortNumber(dir, port);
         }
-        new Thread(() -> {
-            while (!Thread.currentThread().isInterrupted()) {
+        var thread = new Thread(() -> {
+            while (true) {
                 var received = new DatagramPacket(new byte[1], 1);
                 try {
                     socket.receive(received);
@@ -85,10 +82,11 @@ class HelloWorldServerUdp
                     socket.send(sending);
                     log.debug("[S] sent to {}", address);
                 } catch (IOException ioe) {
-                    log.error("failed to send to {}", address);
+                    log.error("failed to send to {}", address, ioe);
                 }
-            }
-        }).start();
+            } // end-of-while
+        });
+        thread.start();
         log.debug("[S] server thread started");
     }
 

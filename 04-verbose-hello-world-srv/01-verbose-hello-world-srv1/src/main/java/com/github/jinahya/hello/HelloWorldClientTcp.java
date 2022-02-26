@@ -33,27 +33,51 @@ import java.util.function.Consumer;
 @Slf4j
 class HelloWorldClientTcp {
 
-    static void clients(int count, SocketAddress endpoint,
-                        Consumer<? super String> consumer)
+    /**
+     * Connects to specified endpoint, reads {@value com.github.jinahya.hello.HelloWorld#BYTES}
+     * bytes, decodes those bytes into a string using {@link StandardCharsets#US_ASCII US_ASCII},
+     * and accepts the string to specified consumer.
+     *
+     * @param endpoint the endpoint to connect.
+     * @param consumer the consumer accepts the string.
+     * @throws IOException if an I/O error occurs.
+     */
+    static void connect(SocketAddress endpoint, Consumer<? super String> consumer)
+            throws IOException {
+        Objects.requireNonNull(endpoint, "endpoint is null");
+        Objects.requireNonNull(consumer, "consumer is null");
+        try (var client = new Socket()) {                                           // <1>
+            client.connect(endpoint);                                               // <2>
+            log.debug("[C] connected to {}", client.getRemoteSocketAddress());
+            var array = new byte[HelloWorld.BYTES];                                 // <3>
+            var bytes = client.getInputStream().readNBytes(array, 0, array.length); // <4>
+            if (bytes < HelloWorld.BYTES) {                                         // <5>
+                throw new EOFException("premature eof");
+            }
+            var string = new String(array, StandardCharsets.US_ASCII);              // <6>
+            consumer.accept(string);                                                // <7>
+        }
+    }
+
+    /**
+     * Invokes {@link #connect(SocketAddress, Consumer)} method, with specified arguments, by
+     * specified number of times.
+     *
+     * @param count    the number of times to call {@link #connect(SocketAddress, Consumer)}
+     *                 method.
+     * @param endpoint the endpoint to connect.
+     * @param consumer the consumer accepts the string.
+     * @throws IOException if an I/O error occurs.
+     */
+    static void connect(int count, SocketAddress endpoint, Consumer<? super String> consumer)
             throws IOException {
         if (count <= 0) {
-            throw new IllegalArgumentException(
-                    "count(" + count + ") is not positive");
+            throw new IllegalArgumentException("count(" + count + ") is not positive");
         }
         Objects.requireNonNull(endpoint, "endpoint is null");
         Objects.requireNonNull(consumer, "consumer is null");
         for (int i = 0; i < count; i++) {
-            try (var client = new Socket()) {
-                client.connect(endpoint);
-                log.debug("[C] connected to {}",
-                          client.getRemoteSocketAddress());
-                var array = new byte[HelloWorld.BYTES];
-                if (client.getInputStream().read(array) == -1) {
-                    throw new EOFException("unexpected end-of-file");
-                }
-                var string = new String(array, StandardCharsets.US_ASCII);
-                consumer.accept(string);
-            }
+            connect(endpoint, consumer);
         }
     }
 

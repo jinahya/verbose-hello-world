@@ -54,7 +54,7 @@ class HelloWorldServerUdp
      *
      * @param endpoint the local socket address to bind.
      */
-    HelloWorldServerUdp(final SocketAddress endpoint) {
+    protected HelloWorldServerUdp(final SocketAddress endpoint) {
         super(endpoint);
     }
 

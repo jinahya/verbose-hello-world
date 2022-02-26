@@ -35,8 +35,7 @@ class HelloWorldModule
     /**
      * The fully qualified name of the {@code HelloWorldImpl} class.
      */
-    private static final String HELLO_WORLD_IMPL_FQCN
-            = "com.github.jinahya.hello.HelloWorldImpl";
+    private static final String HELLO_WORLD_IMPL_FQCN = "com.github.jinahya.hello.HelloWorldImpl";
 
     /**
      * The class found with {@link #HELLO_WORLD_IMPL_FQCN}.
@@ -45,8 +44,7 @@ class HelloWorldModule
 
     static {
         try {
-            HELLO_WORLD_IMPL_CLASS = forName(HELLO_WORLD_IMPL_FQCN)
-                    .asSubclass(HelloWorld.class);
+            HELLO_WORLD_IMPL_CLASS = forName(HELLO_WORLD_IMPL_FQCN).asSubclass(HelloWorld.class);
         } catch (final ClassNotFoundException cnfe) {
             throw new InstantiationError(cnfe.getMessage());
         }
@@ -54,7 +52,6 @@ class HelloWorldModule
 
     @Override
     protected void configure() {
-        bind(HelloWorld.class)
-                .to(HELLO_WORLD_IMPL_CLASS);
+        bind(HelloWorld.class).to(HELLO_WORLD_IMPL_CLASS);
     }
 }

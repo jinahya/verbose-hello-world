@@ -26,23 +26,19 @@ import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
-
-import static com.github.jinahya.hello.IHelloWorldServerUtils.shutdownAndAwaitTermination;
-import static java.util.Objects.requireNonNull;
 
 @Slf4j
 final class HelloWorldClientTcp {
 
-    static void clients(final int count, final SocketAddress endpoint,
-                        final Consumer<? super String> consumer) {
+    static void clients(int count, SocketAddress endpoint, Consumer<? super String> consumer) {
         if (count <= 0) {
-            throw new IllegalArgumentException(
-                    "count(" + count + ") is not positive");
+            throw new IllegalArgumentException("count(" + count + ") is not positive");
         }
-        requireNonNull(endpoint, "endpoint is null");
-        requireNonNull(consumer, "consumer is null");
+        Objects.requireNonNull(endpoint, "endpoint is null");
+        Objects.requireNonNull(consumer, "consumer is null");
         var executor = Executors.newCachedThreadPool();
         for (int i = 0; i < count; i++) {
             executor.submit(() -> {
@@ -60,7 +56,7 @@ final class HelloWorldClientTcp {
                 }
             });
         }
-        shutdownAndAwaitTermination(executor);
+        IHelloWorldServerUtils.shutdownAndAwaitTermination(executor);
     }
 
     private HelloWorldClientTcp() {

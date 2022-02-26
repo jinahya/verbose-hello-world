@@ -24,7 +24,7 @@ import jakarta.enterprise.inject.Disposes;
 import jakarta.enterprise.inject.Produces;
 import lombok.extern.slf4j.Slf4j;
 
-import static java.util.ServiceLoader.load;
+import java.util.ServiceLoader;
 
 /**
  * A class for producing (and disposing) instances of {@link HelloWorld}.
@@ -41,7 +41,7 @@ class HelloWorldProvider {
      */
     @Produces
     public HelloWorld produceHelloWorld() {
-        final var loader = load(HelloWorld.class);
+        final var loader = ServiceLoader.load(HelloWorld.class);
         final var iterator = loader.iterator();
         return iterator.next();
     }
@@ -49,10 +49,9 @@ class HelloWorldProvider {
     /**
      * Disposes specified instance of {@link HelloWorld} interface.
      *
-     * @param helloWorld the instance of {@link HelloWorld} interface to
-     *                   dispose.
+     * @param helloWorld the instance of {@link HelloWorld} interface to dispose.
      */
-    void disposeHelloWorld(@Disposes final HelloWorld helloWorld) {
+    void disposeHelloWorld(@Disposes HelloWorld helloWorld) {
 //        log.debug("disposing {}", helloWorld);
     }
 }

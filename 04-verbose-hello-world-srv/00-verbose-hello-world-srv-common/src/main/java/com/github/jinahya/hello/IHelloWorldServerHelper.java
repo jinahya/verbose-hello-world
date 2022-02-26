@@ -6,7 +6,7 @@ final class IHelloWorldServerHelper {
 
     private static HelloWorld service;
 
-    static HelloWorld service() {
+    static HelloWorld helloWorld() {
         if (service == null) {
             service = ServiceLoader.load(HelloWorld.class).iterator().next();
         }

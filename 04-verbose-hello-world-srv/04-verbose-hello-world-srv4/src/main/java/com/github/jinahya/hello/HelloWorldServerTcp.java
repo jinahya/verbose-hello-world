@@ -56,7 +56,7 @@ class HelloWorldServerTcp
      *
      * @param endpoint the local socket address to bind.
      */
-    HelloWorldServerTcp(final SocketAddress endpoint) {
+    protected HelloWorldServerTcp(final SocketAddress endpoint) {
         super(endpoint);
     }
 

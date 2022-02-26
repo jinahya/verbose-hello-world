@@ -27,14 +27,11 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.file.Path;
+import java.util.concurrent.Executors;
 
-import static com.github.jinahya.hello.HelloWorld.BYTES;
-import static com.github.jinahya.hello.IHelloWorldServerUtils.shutdownAndAwaitTermination;
-import static com.github.jinahya.hello.IHelloWorldServerUtils.writePortNumber;
 import static java.lang.Boolean.TRUE;
 import static java.net.StandardSocketOptions.SO_REUSEADDR;
 import static java.nio.ByteBuffer.allocate;
-import static java.util.concurrent.Executors.newCachedThreadPool;
 
 /**
  * A class serves {@code hello, world} to clients.
@@ -42,15 +39,12 @@ import static java.util.concurrent.Executors.newCachedThreadPool;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorldServerTcp
-        extends AbstractHelloWorldServer {
+class HelloWorldServerTcp extends AbstractHelloWorldServer {
 
     @Override
-    protected void openInternal(SocketAddress endpoint, Path dir)
-            throws IOException {
+    protected void openInternal(SocketAddress endpoint, Path dir) throws IOException {
         server = ServerSocketChannel.open();
-        if (endpoint instanceof InetSocketAddress
-            && ((InetSocketAddress) endpoint).getPort() > 0) {
+        if (endpoint instanceof InetSocketAddress && ((InetSocketAddress) endpoint).getPort() > 0) {
             server.setOption(SO_REUSEADDR, TRUE);
         }
         try {
@@ -61,17 +55,16 @@ class HelloWorldServerTcp
         }
         log.info("server bound to {}", server.getLocalAddress());
         if (dir != null) {
-            writePortNumber(dir, server.socket().getLocalPort());
+            IHelloWorldServerUtils.writePortNumber(dir, server.socket().getLocalPort());
         }
         var thread = new Thread(() -> {
-            var executor = newCachedThreadPool();
+            var executor = Executors.newCachedThreadPool();
             while (server.isOpen()) {
                 try {
                     var client = server.accept();
                     executor.submit(() -> {
-                        log.debug("[S] accepted from {}",
-                                  client.getRemoteAddress());
-                        var buffer = allocate(BYTES);
+                        log.debug("[S] accepted from {}", client.getRemoteAddress());
+                        var buffer = allocate(HelloWorld.BYTES);
                         service().put(buffer);
                         if (buffer.position() > 0) { // TODO: peel off!
                             buffer.flip();
@@ -88,7 +81,7 @@ class HelloWorldServerTcp
                     log.error("failed to accept", ioe);
                 }
             } // end-of-while
-            shutdownAndAwaitTermination(executor);
+            IHelloWorldServerUtils.shutdownAndAwaitTermination(executor);
         });
         thread.start();
         log.debug("server thread started");

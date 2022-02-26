@@ -25,34 +25,29 @@ import lombok.extern.slf4j.Slf4j;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketAddress;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-import static com.github.jinahya.hello.HelloWorld.BYTES;
-import static java.nio.charset.StandardCharsets.US_ASCII;
-import static java.util.Objects.requireNonNull;
-import static java.util.concurrent.TimeUnit.SECONDS;
-
 @Slf4j
-class HelloWorldClientUdp
-        implements Callable<byte[]> {
+class HelloWorldClientUdp implements Callable<byte[]> {
 
     static void clients(final int count, final SocketAddress endpoint,
                         final Consumer<? super String> consumer) {
-        requireNonNull(endpoint, "endpoint is null");
+        Objects.requireNonNull(endpoint, "endpoint is null");
         if (count <= 0) {
-            throw new IllegalArgumentException(
-                    "count(" + count + ") is not positive");
+            throw new IllegalArgumentException("count(" + count + ") is not positive");
         }
-        requireNonNull(consumer, "consumer is null");
+        Objects.requireNonNull(consumer, "consumer is null");
         final var latch = new CountDownLatch(count);
         for (var i = 0; i < count; i++) {
             new Thread(() -> {
                 try {
-                    final var bytes = new HelloWorldClientUdp(endpoint).call();
-                    consumer.accept(new String(bytes, US_ASCII));
+                    var bytes = new HelloWorldClientUdp(endpoint).call();
+                    consumer.accept(new String(bytes, StandardCharsets.US_ASCII));
                 } catch (final Exception e) {
                     log.error("failed to call for {}", endpoint, e);
                 } finally {
@@ -77,7 +72,7 @@ class HelloWorldClientUdp
      */
     HelloWorldClientUdp(final SocketAddress endpoint) {
         super();
-        this.endpoint = requireNonNull(endpoint, "endpoint is null");
+        this.endpoint = Objects.requireNonNull(endpoint, "endpoint is null");
     }
 
     @Override
@@ -85,9 +80,9 @@ class HelloWorldClientUdp
         try (var socket = new DatagramSocket()) {
             socket.send(new DatagramPacket(new byte[0], 0, endpoint));
             log.debug("[C] sent to {}", endpoint);
-            final var array = new byte[BYTES];
-            final var packet = new DatagramPacket(array, array.length);
-            socket.setSoTimeout((int) SECONDS.toMillis(8L));
+            var array = new byte[HelloWorld.BYTES];
+            var packet = new DatagramPacket(array, array.length);
+            socket.setSoTimeout((int) TimeUnit.SECONDS.toMillis(8L));
             socket.receive(packet);
             assert packet.getLength() == array.length;
             log.debug("[C] received from {}", packet.getSocketAddress());

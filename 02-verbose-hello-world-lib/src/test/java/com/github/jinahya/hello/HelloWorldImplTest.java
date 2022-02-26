@@ -32,8 +32,7 @@ class HelloWorldImplTest
      * {@inheritDoc}
      *
      * @return {@inheritDoc}
-     * @implNote This implementation returns a new instance of {@link
-     * HelloWorldImpl} class.
+     * @implNote This implementation returns a new instance of {@link HelloWorldImpl} class.
      */
     @Override
     HelloWorld helloWorld() {

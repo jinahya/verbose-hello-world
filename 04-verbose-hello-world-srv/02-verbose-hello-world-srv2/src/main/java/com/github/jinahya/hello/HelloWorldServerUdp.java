@@ -47,11 +47,9 @@ class HelloWorldServerUdp
     }
 
     @Override
-    void openInternal(final SocketAddress endpoint, final Path dir)
-            throws IOException {
+    void openInternal(SocketAddress endpoint, Path dir) throws IOException {
         socket = new DatagramSocket(null);
-        if (endpoint instanceof InetSocketAddress
-            && ((InetSocketAddress) endpoint).getPort() > 0) {
+        if (endpoint instanceof InetSocketAddress && ((InetSocketAddress) endpoint).getPort() > 0) {
             socket.setReuseAddress(true);
         }
         try {
@@ -75,8 +73,7 @@ class HelloWorldServerUdp
                         final var address = received.getSocketAddress();
                         log.debug("[S] received from {}", address);
                         service().set(array);
-                        final var sending = new DatagramPacket(
-                                array, array.length, address);
+                        final var sending = new DatagramPacket(array, array.length, address);
                         try {
                             socket.send(sending);
                             log.debug("[S] sent to {}", address);
@@ -84,7 +81,7 @@ class HelloWorldServerUdp
                             log.error("failed to send", ioe);
                         }
                     });
-                } catch (final IOException ioe) {
+                } catch (IOException ioe) {
                     if (socket.isClosed()) {
                         break;
                     }

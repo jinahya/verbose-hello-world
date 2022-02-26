@@ -36,20 +36,17 @@ import java.util.Objects;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorldServerTcp
-        implements IHelloWorldServer {
+class HelloWorldServerTcp implements IHelloWorldServer {
 
     @Override
-    public synchronized void open(SocketAddress endpoint, Path dir)
-            throws IOException {
+    public synchronized void open(SocketAddress endpoint, Path dir) throws IOException {
         Objects.requireNonNull(endpoint, "endpoint is null");
         if (dir != null && !Files.isDirectory(dir)) {
             throw new IllegalArgumentException("not a directory: " + dir);
         }
         close();
         server = new ServerSocket();
-        if (endpoint instanceof InetSocketAddress
-            && ((InetSocketAddress) endpoint).getPort() > 0) {
+        if (endpoint instanceof InetSocketAddress && ((InetSocketAddress) endpoint).getPort() > 0) {
             server.setReuseAddress(true);
         }
         try {
@@ -63,8 +60,8 @@ class HelloWorldServerTcp
             var port = server.getLocalPort();
             IHelloWorldServerUtils.writePortNumber(dir, port);
         }
-        new Thread(() -> {
-            while (!Thread.currentThread().isInterrupted()) {
+        var thread = new Thread(() -> {
+            while (true) {
                 try (var client = server.accept()) {
                     var address = client.getRemoteSocketAddress();
                     log.debug("[S] connected from {}", address);
@@ -80,7 +77,8 @@ class HelloWorldServerTcp
                     log.error("failed to serve", ioe);
                 }
             }
-        }).start();
+        });
+        thread.start();
         log.debug("[S] server thread started");
     }
 

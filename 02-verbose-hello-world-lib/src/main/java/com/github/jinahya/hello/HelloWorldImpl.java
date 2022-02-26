@@ -29,18 +29,16 @@ public class HelloWorldImpl
         implements HelloWorld {
 
     @Override
-    public byte[] set(final byte[] array, final int index) {
+    public byte[] set(byte[] array, int index) {
         if (array == null) {
             throw new NullPointerException("array is null");
         }
         if (index < 0) {
-            throw new ArrayIndexOutOfBoundsException(
-                    "index(" + index + ") < 0");
+            throw new ArrayIndexOutOfBoundsException("index(" + index + ") < 0");
         }
         if (index + BYTES > array.length) {
             throw new ArrayIndexOutOfBoundsException(
-                    "index(" + index + ")" + BYTES + " > array.length(" +
-                    array.length + ")");
+                    "index(" + index + ")" + BYTES + " > array.length(" + array.length + ")");
         }
         // TODO: Implement!
         return array;

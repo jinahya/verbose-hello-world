@@ -37,22 +37,19 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 public class HelloWorldClientTcp
         implements Callable<byte[]> {
 
-    static void clients(final int count, final SocketAddress endpoint,
-                        final Consumer<? super String> consumer) {
+    static void clients(int count, SocketAddress endpoint, Consumer<? super String> consumer) {
         if (count <= 0) {
-            throw new IllegalArgumentException(
-                    "count(" + count + ") is not positive");
+            throw new IllegalArgumentException("count(" + count + ") is not positive");
         }
         Objects.requireNonNull(endpoint, "endpoint is null");
         Objects.requireNonNull(consumer, "consumer is null");
-        final var latch = new CountDownLatch(count);
+        var latch = new CountDownLatch(count);
         for (int i = 0; i < count; i++) {
             new Thread(() -> {
                 try {
-                    final var bytes = new HelloWorldClientTcp(endpoint).call();
-                    consumer.accept(
-                            new String(bytes, StandardCharsets.US_ASCII));
-                } catch (final Exception e) {
+                    var bytes = new HelloWorldClientTcp(endpoint).call();
+                    consumer.accept(new String(bytes, StandardCharsets.US_ASCII));
+                } catch (Exception e) {
                     log.error("failed to call for {}", endpoint, e);
                 } finally {
                     latch.countDown();
@@ -63,7 +60,7 @@ public class HelloWorldClientTcp
             if (!latch.await(1L, MINUTES)) {
                 log.warn("latch remained unbroken!");
             }
-        } catch (final InterruptedException ie) {
+        } catch (InterruptedException ie) {
             log.error("interrupted while awaiting latch", ie);
             Thread.currentThread().interrupt();
         }
@@ -74,7 +71,7 @@ public class HelloWorldClientTcp
      *
      * @param endpoint the server endpoint.
      */
-    HelloWorldClientTcp(final SocketAddress endpoint) {
+    HelloWorldClientTcp(SocketAddress endpoint) {
         super();
         this.endpoint = Objects.requireNonNull(endpoint, "endpoint is null");
     }

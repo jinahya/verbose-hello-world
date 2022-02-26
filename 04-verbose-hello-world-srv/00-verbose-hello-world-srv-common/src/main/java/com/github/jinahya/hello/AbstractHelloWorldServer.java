@@ -34,22 +34,19 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-abstract class AbstractHelloWorldServer
-        implements IHelloWorldServer {
+abstract class AbstractHelloWorldServer implements IHelloWorldServer {
 
     /**
      * Creates a new instance.
      */
-    AbstractHelloWorldServer() {
+    protected AbstractHelloWorldServer() {
         super();
     }
 
-    abstract void openInternal(SocketAddress endpoint, Path dir)
-            throws IOException;
+    abstract void openInternal(SocketAddress endpoint, Path dir) throws IOException;
 
     @Override
-    public void open(SocketAddress endpoint, Path dir)
-            throws IOException {
+    public void open(SocketAddress endpoint, Path dir) throws IOException {
         try {
             lock.lock();
             close();

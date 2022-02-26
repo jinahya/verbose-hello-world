@@ -31,7 +31,8 @@ class HelloWorldMainUdpTest {
     @Test
     void main__() {
         IHelloWorldServerUtils.submitAndWriteQuit(() -> {
-            var host = InetAddress.getLoopbackAddress();
+//            var host = InetAddress.getLoopbackAddress();
+            var host = InetAddress.getLocalHost();
             HelloWorldMainUdp.main("0", host.getHostAddress());
             return null;
         });

@@ -32,17 +32,14 @@ import java.nio.file.Path;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-public interface IHelloWorldServer
-        extends Closeable {
+public interface IHelloWorldServer extends Closeable {
 
     /**
-     * Opens this server binding specified socket address and, if specified,
-     * writes the port number on which this server is listening, to a file of
-     * predefined name in specified directory.
+     * Opens this server binding specified socket address and, if specified, writes the port number
+     * on which this server is listening, to a file of predefined name in specified directory.
      *
      * @param endpoint the local socket address to bind.
-     * @param dir      the directory to which the file is created; may be {@code
-     *                 null}.
+     * @param dir      the directory to which the file is created; may be {@code null}.
      * @throws IOException if an I/O error occurs.
      * @see IHelloWorldServerUtils#readPortNumber(Path)
      */
@@ -54,6 +51,6 @@ public interface IHelloWorldServer
      * @return an instance of {@link HelloWorld}.
      */
     default HelloWorld service() {
-        return IHelloWorldServerHelper.service();
+        return IHelloWorldServerHelper.helloWorld();
     }
 }
