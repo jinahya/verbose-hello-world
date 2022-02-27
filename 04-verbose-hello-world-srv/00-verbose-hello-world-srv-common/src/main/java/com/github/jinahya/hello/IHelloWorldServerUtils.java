@@ -219,8 +219,8 @@ final class IHelloWorldServerUtils {
     }
 
     /**
-     * Submits specified task into an exeutor and writes {@code "quit\n"} to a pipe synced to {@link
-     * System#in}.
+     * Submits specified task into an executor and writes {@code "quit\n"} to a pipe synced to
+     * {@link System#in}.
      *
      * @param task the task to submit.
      * @throws IOException          if an I/O error occurs.
@@ -371,7 +371,6 @@ final class IHelloWorldServerUtils {
             channel.force(false);
         }
         var path = Files.move(tmp, dir.resolve(PORT_TXT), StandardCopyOption.ATOMIC_MOVE);
-        //log.debug("port({}) has been written to {}", port, path);
     }
 
     /**
@@ -420,9 +419,7 @@ final class IHelloWorldServerUtils {
                     }
                 }
                 buffer.flip();
-                var port = buffer.asShortBuffer().get() & 0xFFFF;
-                //log.debug("port({}) read from {}", port, path);
-                return port;
+                return buffer.asShortBuffer().get() & 0xFFFF;
             }
         } // end-of-try-with-resources; WatchService
     }

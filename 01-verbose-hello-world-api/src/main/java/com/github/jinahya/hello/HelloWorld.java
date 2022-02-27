@@ -209,7 +209,7 @@ public interface HelloWorld {
 
     /**
      * Puts <a href="#hello-world-bytes">hello-world-bytes</a> on specified byte buffer. The
-     * buffer"s position, on successful return, is incremented by {@link #BYTES}.
+     * buffer's position, on successful return, is incremented by {@link #BYTES}.
      * <pre>
      * Given,
      *           |------------------------ remaining ------------------------|

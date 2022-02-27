@@ -119,7 +119,7 @@ class HelloWorldCdiFactory {
 
     /**
      * Disposes specified {@link HelloWorld} instance produced for those injection points which each
-     * annoatated with {@link QualifiedDemo}.
+     * annotated with {@link QualifiedDemo}.
      *
      * @param helloWorld the {@link HelloWorld} instance to dispose
      */
