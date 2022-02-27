@@ -46,16 +46,17 @@ class HelloWorldClientUdp {
             throws IOException {
         Objects.requireNonNull(endpoint, "endpoint is null");
         Objects.requireNonNull(consumer, "consumer is null");
-        try (var client = new DatagramSocket(null)) {                  // <1>
-            client.send(new DatagramPacket(new byte[0], 0, endpoint)); // <2>
+        try (var client = new DatagramSocket(null)) {                             // <1>
+            client.send(new DatagramPacket(new byte[0], 0, endpoint));            // <2>
             log.debug("[C] sent to {}", endpoint);
-            var array = new byte[HelloWorld.BYTES];                    // <3>
-            var packet = new DatagramPacket(array, array.length);      // <4>
-            client.receive(packet);                                    // <5>
-            assert packet.getLength() == HelloWorld.BYTES;             // <6>
+            var array = new byte[HelloWorld.BYTES];                               // <3>
+            var packet = new DatagramPacket(array, array.length);                 // <4>
+            client.receive(packet);                                               // <5>
+            var length = packet.getLength();
+            assert length == HelloWorld.BYTES;                                    // <6>
             log.debug("[C] received from {}", packet.getSocketAddress());
-            var string = new String(array, StandardCharsets.US_ASCII); // <7>
-            consumer.accept(string);                                   // <8>
+            var string = new String(array, 0, length, StandardCharsets.US_ASCII); // <7>
+            consumer.accept(string);                                              // <8>
         }
     }
 

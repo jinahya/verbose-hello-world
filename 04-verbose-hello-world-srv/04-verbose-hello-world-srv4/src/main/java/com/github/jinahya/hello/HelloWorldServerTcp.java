@@ -29,9 +29,8 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.nio.file.Path;
 import java.util.Set;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import static java.lang.Boolean.TRUE;
 import static java.lang.Thread.currentThread;
@@ -49,15 +48,11 @@ import static java.util.Objects.requireNonNull;
 class HelloWorldServerTcp
         extends AbstractHelloWorldServer {
 
-    static final ThreadLocal<Integer> PORT = new ThreadLocal<>();
-
     /**
      * Creates a new instance with specified local address to bind.
-     *
-     * @param endpoint the local socket address to bind.
      */
-    protected HelloWorldServerTcp(final SocketAddress endpoint) {
-        super(endpoint);
+    public HelloWorldServerTcp() {
+        super();
     }
 
     /**
@@ -95,7 +90,8 @@ class HelloWorldServerTcp
         keys.clear();
     }
 
-    private void open_() throws IOException {
+    @Override
+    protected void openInternal(SocketAddress endpoint, Path dir) throws IOException {
         final var server = ServerSocketChannel.open();
         if (endpoint instanceof InetSocketAddress
             && ((InetSocketAddress) endpoint).getPort() > 0) {
@@ -108,7 +104,9 @@ class HelloWorldServerTcp
             throw ioe;
         }
         log.info("server bound to {}", server.getLocalAddress());
-        PORT.set(server.socket().getLocalPort());
+        if (dir != null) {
+            IHelloWorldServerUtils.writePortNumber(dir, server.socket().getLocalPort());
+        }
         thread = new Thread(() -> {
             try (var selector = Selector.open()) {
                 server.configureBlocking(false);
@@ -134,17 +132,7 @@ class HelloWorldServerTcp
     }
 
     @Override
-    public void open() throws IOException {
-        try {
-            lock.lock();
-            close();
-            open_();
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    private void close_() throws IOException {
+    protected void closeInternal() throws IOException {
         if (thread != null && thread.isAlive()) {
             thread.interrupt();
             try {
@@ -160,19 +148,6 @@ class HelloWorldServerTcp
         }
         server = null;
     }
-
-    @Override
-    public void close() throws IOException {
-        try {
-            lock.lock();
-            close_();
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    // a lock to synchronize method calls.
-    private final Lock lock = new ReentrantLock();
 
     private ServerSocketChannel server;
 

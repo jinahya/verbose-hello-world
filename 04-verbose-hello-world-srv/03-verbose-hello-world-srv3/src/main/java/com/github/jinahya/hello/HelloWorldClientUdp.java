@@ -33,7 +33,7 @@ import java.util.function.Consumer;
 @Slf4j
 public class HelloWorldClientUdp {
 
-    static void clients(int count, SocketAddress endpoint, Consumer<? super String> consumer) {
+    static void runClients(int count, SocketAddress endpoint, Consumer<? super String> consumer) {
         if (count <= 0) {
             throw new IllegalArgumentException("count(" + count + ") is not positive");
         }
@@ -43,16 +43,14 @@ public class HelloWorldClientUdp {
         for (int i = 0; i < count; i++) {
             executor.submit(() -> {
                 try (var client = DatagramChannel.open()) {
-                    var src = ByteBuffer.allocate(0);
-                    var sent = client.send(src, endpoint);
+                    client.send(ByteBuffer.allocate(0), endpoint);
                     log.debug("[C] sent to {}", endpoint);
-                    assert sent == src.capacity();
-                    var dst = ByteBuffer.allocate(HelloWorld.BYTES);
-                    var address = client.receive(dst);
+                    var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
+                    var address = client.receive(buffer);
                     log.debug("[C] received from {}", address);
-                    assert address != null;
-                    var array = dst.array();
-                    var string = new String(array, StandardCharsets.US_ASCII);
+                    var array = buffer.array();
+                    var length = buffer.position();
+                    var string = new String(array, 0, length, StandardCharsets.US_ASCII);
                     consumer.accept(string);
                 }
                 return null;

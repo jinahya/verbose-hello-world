@@ -49,6 +49,9 @@ import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
 import java.util.Objects;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.CompletionService;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -62,7 +65,6 @@ import java.util.stream.Stream;
 
 import static java.lang.Integer.parseInt;
 import static java.lang.System.setIn;
-import static java.lang.Thread.currentThread;
 import static java.net.InetAddress.getByName;
 import static java.net.InetAddress.getLocalHost;
 import static java.util.ServiceLoader.load;
@@ -161,7 +163,6 @@ final class IHelloWorldServerUtils {
         var reader = new BufferedReader(new InputStreamReader(System.in));
         for (String line; !Thread.currentThread().isInterrupted()
                           && (line = reader.readLine()) != null; ) {
-            log.debug("line: {}", line);
             if (line.strip().equalsIgnoreCase("quit")) {
                 break;
             }
@@ -217,27 +218,31 @@ final class IHelloWorldServerUtils {
         return thread;
     }
 
-    static void submitAndWriteQuit(Callable<?> task) {
+    /**
+     * Submits specified task into an exeutor and writes {@code "quit\n"} to a pipe synced to {@link
+     * System#in}.
+     *
+     * @param task the task to submit.
+     * @throws IOException          if an I/O error occurs.
+     * @throws InterruptedException if interrupted while waiting the {@code task} to finish.
+     * @throws ExecutionException   if failed to execute the {@code task}.
+     */
+    static <T> T submitAndWriteQuit(Callable<? extends T> task)
+            throws IOException, InterruptedException, ExecutionException {
         Objects.requireNonNull(task, "task is null");
         var in = System.in;
         try (var pos = new PipedOutputStream();
              var pis = new PipedInputStream(pos)) {
             setIn(pis);
             var executor = Executors.newSingleThreadExecutor();
-            var future = executor.submit(task);
-            pos.write("quit\n".getBytes(StandardCharsets.US_ASCII));
-            pos.flush();
             try {
-                future.get();
-            } catch (InterruptedException ie) {
-                log.error("interrupted while waiting future", ie);
-                Thread.currentThread().interrupt();
-            } catch (ExecutionException ee) {
-                log.error("failed to execute", ee);
+                var future = executor.submit(task);
+                pos.write("quit\n".getBytes(StandardCharsets.US_ASCII));
+                pos.flush();
+                return future.get();
+            } finally {
+                IHelloWorldServerUtils.shutdownAndAwaitTermination(executor);
             }
-            IHelloWorldServerUtils.shutdownAndAwaitTermination(executor);
-        } catch (IOException ioe) {
-            log.error("failed to write 'quit'", ioe);
         } finally {
             setIn(in);
         }
@@ -261,10 +266,12 @@ final class IHelloWorldServerUtils {
      * @param executor the executor service to shut down.
      * @param timeout  a timeout for awaiting termination.
      * @param unit     a time unit for awaiting termination.
+     * @throws InterruptedException if interrupted while waiting.
      * @see ExecutorService#shutdown()
      * @see ExecutorService#awaitTermination(long, TimeUnit)
      */
-    static void shutdownAndAwaitTermination(ExecutorService executor, long timeout, TimeUnit unit) {
+    static void shutdownAndAwaitTermination(ExecutorService executor, long timeout, TimeUnit unit)
+            throws InterruptedException {
         Objects.requireNonNull(executor, "executor is null");
         if (timeout <= 0L) {
             throw new IllegalArgumentException(
@@ -272,14 +279,8 @@ final class IHelloWorldServerUtils {
         }
         Objects.requireNonNull(unit, "unit is null");
         executor.shutdown();
-        try {
-            if (!executor.awaitTermination(timeout, unit)) {
-                log.warn("executor has not terminated for {} in {}: {}",
-                         timeout, unit, executor);
-            }
-        } catch (InterruptedException ie) {
-            log.error("interrupted while awaiting executor terminated", ie);
-            currentThread().interrupt();
+        if (!executor.awaitTermination(timeout, unit)) {
+            log.warn("executor has not been terminated for {} {}: {}", timeout, unit, executor);
         }
     }
 
@@ -292,11 +293,51 @@ final class IHelloWorldServerUtils {
      * @see ExecutorService#awaitTermination(long, TimeUnit)
      */
     static void shutdownAndAwaitTermination(ExecutorService executor) {
-        shutdownAndAwaitTermination(executor, 8L, TimeUnit.SECONDS);
+        try {
+            shutdownAndAwaitTermination(executor, 8L, TimeUnit.SECONDS);
+        } catch (InterruptedException ie) {
+            log.error("interrupted while waiting", ie);
+        }
     }
 
-    static void setAndNotify(ThreadLocal<Integer> port) {
-        Objects.requireNonNull(port, "port is null");
+    static void monitorCompletedTasks(CompletionService<?> service) throws InterruptedException {
+        Objects.requireNonNull(service, "service is null");
+        while (!Thread.currentThread().isInterrupted()) {
+            var future = service.poll(1L, TimeUnit.SECONDS);
+            if (future == null) {
+                continue;
+            }
+            assert future.isDone();
+            //assert !future.isCancelled(); // who knows?
+            try {
+                var result = future.get();
+                log.debug("completed: {}, result: {}", future, result);
+            } catch (CancellationException ce) {
+                log.debug("canceled: {}", future, ce);
+            } catch (ExecutionException ee) {
+                log.debug("failed: {}", future, ee);
+            }
+        } // end-of-while
+    }
+
+    /**
+     * Starts a new daemon thread polls completed tasks from specified service.
+     *
+     * @param service the service from which completed tasks are polled.
+     * @return a new started thread.
+     */
+    static Thread startMonitoringCompletedTasks(CompletionService<?> service) {
+        Objects.requireNonNull(service, "service is null");
+        var thread = new Thread(() -> {
+            try {
+                monitorCompletedTasks(service);
+            } catch (InterruptedException ie) {
+                Thread.currentThread().interrupt();
+            }
+        });
+        thread.setDaemon(true);
+        thread.start();
+        return thread;
     }
 
     /**
@@ -330,7 +371,7 @@ final class IHelloWorldServerUtils {
             channel.force(false);
         }
         var path = Files.move(tmp, dir.resolve(PORT_TXT), StandardCopyOption.ATOMIC_MOVE);
-        log.debug("port({}) has been written to {}", port, path);
+        //log.debug("port({}) has been written to {}", port, path);
     }
 
     /**
@@ -380,7 +421,7 @@ final class IHelloWorldServerUtils {
                 }
                 buffer.flip();
                 var port = buffer.asShortBuffer().get() & 0xFFFF;
-                log.debug("port({}) read from {}", port, path);
+                //log.debug("port({}) read from {}", port, path);
                 return port;
             }
         } // end-of-try-with-resources; WatchService
@@ -432,6 +473,20 @@ final class IHelloWorldServerUtils {
         });
         thread.start();
         return thread;
+    }
+
+    static boolean await(CountDownLatch latch, long timeout, TimeUnit unit)
+            throws InterruptedException {
+        Objects.requireNonNull(latch, "latch is null");
+        var reached = latch.await(timeout, unit);
+        if (!reached) {
+            log.error("count didn't reach zero for {} {}: {}", timeout, unit, latch);
+        }
+        return reached;
+    }
+
+    static boolean await(CountDownLatch latch) throws InterruptedException {
+        return await(latch, 1L, TimeUnit.MINUTES);
     }
 
     /**

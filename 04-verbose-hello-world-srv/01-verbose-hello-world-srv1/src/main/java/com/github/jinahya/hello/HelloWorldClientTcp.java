@@ -22,7 +22,6 @@ package com.github.jinahya.hello;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketAddress;
@@ -51,11 +50,9 @@ class HelloWorldClientTcp {
             log.debug("[C] connected to {}", client.getRemoteSocketAddress());
             var array = new byte[HelloWorld.BYTES];                                 // <3>
             var bytes = client.getInputStream().readNBytes(array, 0, array.length); // <4>
-            if (bytes < HelloWorld.BYTES) {                                         // <5>
-                throw new EOFException("premature eof");
-            }
-            var string = new String(array, StandardCharsets.US_ASCII);              // <6>
-            consumer.accept(string);                                                // <7>
+            assert bytes == HelloWorld.BYTES;
+            var string = new String(array, 0, bytes, StandardCharsets.US_ASCII);    // <5>
+            consumer.accept(string);                                                // <6>
         }
     }
 

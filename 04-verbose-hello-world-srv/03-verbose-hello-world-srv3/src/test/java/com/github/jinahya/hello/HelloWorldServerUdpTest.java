@@ -38,17 +38,16 @@ class HelloWorldServerUdpTest {
     void test(@TempDir Path tempDir) throws IOException, InterruptedException {
         var host = InetAddress.getLoopbackAddress();
         var dir = Files.createTempDirectory(tempDir, null);
-        var thread = IHelloWorldServerUtils.readPortNumber(dir, p -> {
+        var thread = IHelloWorldServerUtils.startReadingPortNumber(dir, p -> {
             var endpoint = new InetSocketAddress(host, p);
-            HelloWorldClientUdp.clients(4, endpoint, s -> {
+            HelloWorldClientUdp.runClients(4, endpoint, s -> {
                 log.debug("[C] received: {}", s);
                 Assertions.assertNotNull(s);
             });
         });
         try (var server = new HelloWorldServerUdp()) {
-            var endpoint = new InetSocketAddress(host, 0);
             try {
-                server.open(endpoint, dir);
+                server.open(new InetSocketAddress(host, 0), dir);
             } catch (IOException ioe) {
                 log.error("failed to open server", ioe);
                 thread.interrupt();

@@ -24,45 +24,42 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.net.SocketAddress;
+import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
+import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.nio.ByteBuffer.wrap;
-import static java.nio.channels.SelectionKey.OP_CONNECT;
-import static java.nio.channels.SelectionKey.OP_READ;
 import static java.nio.charset.StandardCharsets.US_ASCII;
-import static java.util.Objects.requireNonNull;
-import static java.util.concurrent.TimeUnit.SECONDS;
 
 @Slf4j
 final class HelloWorldClientTcp {
 
-    static void clients(final int count, final SocketAddress endpoint,
-                        final Consumer<? super String> consumer)
+    static void runClients(int count, SocketAddress endpoint, Consumer<? super String> consumer)
             throws IOException {
         if (count <= 0) {
-            throw new IllegalArgumentException(
-                    "count(" + count + ") is not positive");
+            throw new IllegalArgumentException("count(" + count + ") is not positive");
         }
-        requireNonNull(endpoint, "endpoint is null");
-        requireNonNull(consumer, "consumer is null");
+        Objects.requireNonNull(endpoint, "endpoint is null");
+        Objects.requireNonNull(consumer, "consumer is null");
         try (var selector = Selector.open()) {
             for (int i = 0; i < count; i++) {
                 final var client = SocketChannel.open();
                 client.configureBlocking(false);
                 if (client.connect(endpoint)) { // connected, immediately
                     log.debug("[C] connected to {}", client.getRemoteAddress());
-                    client.register(selector, OP_READ);
+                    client.register(selector, SelectionKey.OP_READ);
                 } else {
-                    client.register(selector, OP_CONNECT);
+                    client.register(selector, SelectionKey.OP_CONNECT);
                 }
             }
             final var latch = new CountDownLatch(count);
             while (latch.getCount() > 0L) {
-                if (selector.select(SECONDS.toMillis(1L)) == 0) {
+                if (selector.select(TimeUnit.SECONDS.toMillis(1L)) == 0) {
                     continue;
                 }
                 final var keys = selector.selectedKeys();
@@ -71,11 +68,9 @@ final class HelloWorldClientTcp {
                     if (key.isConnectable()) { // ready-to-connect
                         try {
                             if (channel.finishConnect()) {
-                                log.debug("[C] connected to {}",
-                                          channel.getRemoteAddress());
-                                key.interestOps(
-                                        key.interestOps() & ~OP_CONNECT);
-                                channel.register(selector, OP_READ);
+                                log.debug("[C] connected to {}", channel.getRemoteAddress());
+                                key.interestOps(key.interestOps() & ~SelectionKey.OP_CONNECT);
+                                channel.register(selector, SelectionKey.OP_READ);
                             }
                         } catch (final IOException ioe) {
                             log.error("failed to finish connect", ioe);

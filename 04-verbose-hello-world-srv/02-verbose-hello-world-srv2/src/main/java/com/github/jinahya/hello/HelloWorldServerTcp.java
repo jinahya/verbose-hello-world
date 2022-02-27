@@ -61,21 +61,22 @@ class HelloWorldServerTcp
         if (dir != null) {
             IHelloWorldServerUtils.writePortNumber(dir, server.getLocalPort());
         }
-        new Thread(() -> {
+        var thread = new Thread(() -> {
             var executor = Executors.newCachedThreadPool();
-            while (!server.isClosed()) {
+            while (!Thread.currentThread().isInterrupted()) {
                 try {
                     var client = server.accept();
-                    executor.submit(() -> {
+                    var future = executor.submit(() -> {
                         try (client) {
-                            log.debug("[S] connected from {}", client.getRemoteSocketAddress());
-                            byte[] array = new byte[HelloWorld.BYTES];
+                            var address = client.getRemoteSocketAddress();
+                            log.debug("[S] connected from {}", address);
+                            var array = new byte[HelloWorld.BYTES];
                             service().set(array);
                             client.getOutputStream().write(array);
                             client.getOutputStream().flush();
-                        } catch (IOException ioe) {
-                            log.error("failed to send to {}", client.getRemoteSocketAddress(), ioe);
+                            log.debug("[S] written to {}", address);
                         }
+                        return null;
                     });
                 } catch (IOException ioe) {
                     if (server.isClosed()) {
@@ -85,16 +86,17 @@ class HelloWorldServerTcp
                 }
             } // end-of-while
             IHelloWorldServerUtils.shutdownAndAwaitTermination(executor);
-        }).start();
+        });
+        thread.start();
         log.debug("[S] server thread started");
     }
 
     @Override
     void closeInternal() throws IOException {
-        if (server == null || server.isClosed()) {
-            return;
+        if (server != null && !server.isClosed()) {
+            server.close();
+            log.debug("[S] server closed");
         }
-        server.close();
     }
 
     private ServerSocket server;

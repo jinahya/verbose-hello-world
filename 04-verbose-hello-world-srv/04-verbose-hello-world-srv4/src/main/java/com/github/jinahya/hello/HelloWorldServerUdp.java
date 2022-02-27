@@ -28,9 +28,8 @@ import java.net.SocketAddress;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
+import java.nio.file.Path;
 import java.util.Set;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.lang.Thread.currentThread;
@@ -46,17 +45,6 @@ import static java.nio.channels.SelectionKey.OP_WRITE;
 @Slf4j
 class HelloWorldServerUdp
         extends AbstractHelloWorldServer {
-
-    static final ThreadLocal<Integer> PORT = new ThreadLocal<>();
-
-    /**
-     * Creates a new instance with specified local socket address to bind.
-     *
-     * @param endpoint the local socket address to bind.
-     */
-    protected HelloWorldServerUdp(final SocketAddress endpoint) {
-        super(endpoint);
-    }
 
     private void handle(final Set<SelectionKey> keys) throws IOException {
         for (final var key : keys) {
@@ -87,7 +75,8 @@ class HelloWorldServerUdp
         keys.clear();
     }
 
-    private void open_() throws IOException {
+    @Override
+    protected void openInternal(SocketAddress endpoint, Path dir) throws IOException {
         final var server = DatagramChannel.open();
         if (endpoint instanceof InetSocketAddress &&
             ((InetSocketAddress) endpoint).getPort() > 0) {
@@ -100,8 +89,10 @@ class HelloWorldServerUdp
             throw ioe;
         }
         log.info("server bound to {}", server.getLocalAddress());
-        PORT.set(server.socket().getLocalPort());
-        new Thread(() -> {
+        if (dir != null) {
+            IHelloWorldServerUtils.writePortNumber(dir, server.socket().getLocalPort());
+        }
+        thread = new Thread(() -> {
             try (var selector = Selector.open()) {
                 server.configureBlocking(false);
                 server.register(selector, OP_READ);
@@ -117,34 +108,24 @@ class HelloWorldServerUdp
             } catch (final IOException ioe) {
                 log.error("io error in server thread", ioe);
             }
-            PORT.remove();
-        }).start();
+        });
+        thread.start();
         log.debug("[S] server thread started");
     }
 
     @Override
-    public void open() throws IOException {
-        try {
-            lock.lock();
-            close();
-            open_();
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    private void close_() throws IOException {
-        if (thead == null || !thead.isAlive()) {
+    protected void closeInternal() throws IOException {
+        if (thread == null || !thread.isAlive()) {
             return;
         }
-        thead.interrupt();
+        thread.interrupt();
         try {
-            thead.join();
+            thread.join();
         } catch (final InterruptedException ie) {
             log.error("interrupted while joining server thread", ie);
             currentThread().interrupt();
         }
-        thead = null;
+        thread = null;
         if (server == null || !server.isOpen()) {
             return;
         }
@@ -152,19 +133,7 @@ class HelloWorldServerUdp
         server = null;
     }
 
-    @Override
-    public void close() throws IOException {
-        try {
-            lock.lock();
-            close_();
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    private final Lock lock = new ReentrantLock();
-
-    private Thread thead;
+    private Thread thread;
 
     private DatagramChannel server;
 }

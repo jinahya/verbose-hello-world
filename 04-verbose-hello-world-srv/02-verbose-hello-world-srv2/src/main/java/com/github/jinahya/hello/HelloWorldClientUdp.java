@@ -22,76 +22,53 @@ package com.github.jinahya.hello;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
-import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 @Slf4j
-class HelloWorldClientUdp implements Callable<byte[]> {
+final class HelloWorldClientUdp {
 
-    static void clients(final int count, final SocketAddress endpoint,
-                        final Consumer<? super String> consumer) {
-        Objects.requireNonNull(endpoint, "endpoint is null");
+    static void runClients(int count, SocketAddress endpoint, Consumer<? super String> consumer)
+            throws InterruptedException {
         if (count <= 0) {
             throw new IllegalArgumentException("count(" + count + ") is not positive");
         }
+        Objects.requireNonNull(endpoint, "endpoint is null");
         Objects.requireNonNull(consumer, "consumer is null");
-        final var latch = new CountDownLatch(count);
+        var latch = new CountDownLatch(count);
         for (var i = 0; i < count; i++) {
             new Thread(() -> {
-                try {
-                    var bytes = new HelloWorldClientUdp(endpoint).call();
-                    consumer.accept(new String(bytes, StandardCharsets.US_ASCII));
-                } catch (final Exception e) {
-                    log.error("failed to call for {}", endpoint, e);
+                try (var client = new DatagramSocket(null)) {
+                    var sending = new DatagramPacket(new byte[0], 0, endpoint);
+                    client.send(sending);
+                    log.debug("[C] sent to {}", endpoint);
+                    var array = new byte[HelloWorld.BYTES];
+                    var received = new DatagramPacket(array, array.length);
+                    client.setSoTimeout((int) TimeUnit.SECONDS.toMillis(1L));
+                    client.receive(received);
+                    log.debug("[C] received from {}", received.getSocketAddress());
+                    var length = received.getLength();
+                    assert length == array.length;
+                    var string = new String(array, 0, length, StandardCharsets.US_ASCII);
+                    consumer.accept(string);
+                } catch (IOException ioe) {
+                    log.error("failed to send/receive to/from {}", endpoint, ioe);
                 } finally {
                     latch.countDown();
                 }
             }).start();
         }
-        try {
-            if (!latch.await(1L, TimeUnit.MINUTES)) {
-                log.warn("latch remained unbroken!");
-            }
-        } catch (final InterruptedException ie) {
-            log.error("interrupted while awaiting latch", ie);
-            Thread.currentThread().interrupt();
-        }
+        IHelloWorldServerUtils.await(latch);
     }
 
-    /**
-     * Creates a new instance which connects to specified endpoint.
-     *
-     * @param endpoint the endpoint to connect.
-     */
-    HelloWorldClientUdp(final SocketAddress endpoint) {
-        super();
-        this.endpoint = Objects.requireNonNull(endpoint, "endpoint is null");
+    private HelloWorldClientUdp() {
+        throw new AssertionError("instantiation is not allowed");
     }
-
-    @Override
-    public byte[] call() throws Exception {
-        try (var socket = new DatagramSocket()) {
-            socket.send(new DatagramPacket(new byte[0], 0, endpoint));
-            log.debug("[C] sent to {}", endpoint);
-            var array = new byte[HelloWorld.BYTES];
-            var packet = new DatagramPacket(array, array.length);
-            socket.setSoTimeout((int) TimeUnit.SECONDS.toMillis(8L));
-            socket.receive(packet);
-            assert packet.getLength() == array.length;
-            log.debug("[C] received from {}", packet.getSocketAddress());
-            return array;
-        }
-    }
-
-    /**
-     * The endpoint on which the server is listening.
-     */
-    private final SocketAddress endpoint;
 }

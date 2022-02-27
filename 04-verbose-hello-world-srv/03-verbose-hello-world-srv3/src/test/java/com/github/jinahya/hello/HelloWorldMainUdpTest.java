@@ -24,14 +24,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.util.concurrent.ExecutionException;
 
 @Slf4j
 class HelloWorldMainUdpTest {
 
     @Test
-    void main__() throws IOException {
+    void main__() throws IOException, InterruptedException, ExecutionException {
         IHelloWorldServerUtils.submitAndWriteQuit(() -> {
-            HelloWorldMainUdp.main("0", "0.0.0.0");
+            var host = InetAddress.getLoopbackAddress();
+            HelloWorldMainUdp.main("0", host.getHostAddress());
             return null;
         });
     }

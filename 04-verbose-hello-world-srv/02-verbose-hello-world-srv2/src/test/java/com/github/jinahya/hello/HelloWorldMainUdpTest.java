@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.concurrent.ExecutionException;
 
 import static com.github.jinahya.hello.HelloWorldMainUdp.main;
 
@@ -32,9 +33,9 @@ import static com.github.jinahya.hello.HelloWorldMainUdp.main;
 class HelloWorldMainUdpTest {
 
     @Test
-    void main__() throws IOException {
+    void main__() throws IOException, InterruptedException, ExecutionException {
         IHelloWorldServerUtils.submitAndWriteQuit(() -> {
-            final InetAddress host = InetAddress.getLoopbackAddress();
+            var host = InetAddress.getLoopbackAddress();
             main("0", host.getHostAddress());
             return null;
         });

@@ -58,11 +58,10 @@ class HelloWorldServerUdp implements IHelloWorldServer {
         }
         log.info("[S] bound to {}", socket.getLocalSocketAddress());
         if (dir != null) {
-            var port = socket.getLocalPort();
-            IHelloWorldServerUtils.writePortNumber(dir, port);
+            IHelloWorldServerUtils.writePortNumber(dir, socket.getLocalPort());
         }
         var thread = new Thread(() -> {
-            while (true) {
+            while (!Thread.currentThread().isInterrupted()) {
                 var received = new DatagramPacket(new byte[1], 1);
                 try {
                     socket.receive(received);
@@ -82,6 +81,9 @@ class HelloWorldServerUdp implements IHelloWorldServer {
                     socket.send(sending);
                     log.debug("[S] sent to {}", address);
                 } catch (IOException ioe) {
+                    if (socket.isClosed()) {
+                        break;
+                    }
                     log.error("failed to send to {}", address, ioe);
                 }
             } // end-of-while
@@ -92,10 +94,10 @@ class HelloWorldServerUdp implements IHelloWorldServer {
 
     @Override
     public synchronized void close() throws IOException {
-        if (socket == null || socket.isClosed()) {
-            return;
+        if (socket != null && !socket.isClosed()) {
+            socket.close();
+            log.debug("[S] server closed");
         }
-        socket.close();
     }
 
     private DatagramSocket socket;

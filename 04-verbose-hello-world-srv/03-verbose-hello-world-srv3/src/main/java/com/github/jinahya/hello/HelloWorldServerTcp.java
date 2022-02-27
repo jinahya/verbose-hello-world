@@ -25,13 +25,13 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.net.StandardSocketOptions;
+import java.nio.ByteBuffer;
 import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
 import java.nio.file.Path;
+import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.Executors;
-
-import static java.lang.Boolean.TRUE;
-import static java.net.StandardSocketOptions.SO_REUSEADDR;
-import static java.nio.ByteBuffer.allocate;
 
 /**
  * A class serves {@code hello, world} to clients.
@@ -45,7 +45,7 @@ class HelloWorldServerTcp extends AbstractHelloWorldServer {
     protected void openInternal(SocketAddress endpoint, Path dir) throws IOException {
         server = ServerSocketChannel.open();
         if (endpoint instanceof InetSocketAddress && ((InetSocketAddress) endpoint).getPort() > 0) {
-            server.setOption(SO_REUSEADDR, TRUE);
+            server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
         }
         try {
             server.bind(endpoint);
@@ -59,29 +59,36 @@ class HelloWorldServerTcp extends AbstractHelloWorldServer {
         }
         var thread = new Thread(() -> {
             var executor = Executors.newCachedThreadPool();
-            while (server.isOpen()) {
+            var service = new ExecutorCompletionService<Void>(executor);
+            var monitor = IHelloWorldServerUtils.startMonitoringCompletedTasks(service);
+            while (!Thread.currentThread().isInterrupted()) {
+                SocketChannel client;
                 try {
-                    var client = server.accept();
-                    executor.submit(() -> {
-                        log.debug("[S] accepted from {}", client.getRemoteAddress());
-                        var buffer = allocate(HelloWorld.BYTES);
-                        service().put(buffer);
-                        if (buffer.position() > 0) { // TODO: peel off!
-                            buffer.flip();
-                        }
-                        while (buffer.hasRemaining()) {
-                            client.write(buffer);
-                        }
-                        return null;
-                    });
+                    client = server.accept();
                 } catch (IOException ioe) {
                     if (!server.isOpen()) {
                         break;
                     }
                     log.error("failed to accept", ioe);
+                    continue;
                 }
+                var future = service.submit(() -> {
+                    var address = client.getRemoteAddress();
+                    log.debug("[S] accepted from {}", address);
+                    var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
+                    service().put(buffer);
+                    if (buffer.position() > 0) { // TODO: peel off!
+                        buffer.flip();
+                    }
+                    while (buffer.hasRemaining()) {
+                        client.write(buffer);
+                    }
+                    log.debug("[S] written to {}", address);
+                    return null;
+                });
             } // end-of-while
             IHelloWorldServerUtils.shutdownAndAwaitTermination(executor);
+            monitor.interrupt();
         });
         thread.start();
         log.debug("server thread started");
@@ -89,8 +96,9 @@ class HelloWorldServerTcp extends AbstractHelloWorldServer {
 
     @Override
     protected void closeInternal() throws IOException {
-        if (server != null && !server.isOpen()) {
+        if (server != null && server.isOpen()) {
             server.close();
+            log.debug("[S] server closed");
         }
     }
 

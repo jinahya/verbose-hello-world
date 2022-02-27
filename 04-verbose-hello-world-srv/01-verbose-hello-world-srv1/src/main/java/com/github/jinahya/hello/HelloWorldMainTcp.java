@@ -41,8 +41,8 @@ class HelloWorldMainTcp {
      * @throws IOException if an I/O error occurs.
      */
     public static void main(String... args) throws IOException {
+        var endpoint = IHelloWorldServerUtils.parseEndpoint(args);
         try (var server = new HelloWorldServerTcp()) {
-            var endpoint = IHelloWorldServerUtils.parseEndpoint(args);
             server.open(endpoint, null);
             IHelloWorldServerUtils.readQuit();
         }

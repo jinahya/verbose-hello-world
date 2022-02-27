@@ -25,15 +25,12 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
-import java.nio.channels.SelectionKey;
 import java.nio.file.Path;
-import java.util.Set;
+import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.Executors;
-
-import static java.nio.channels.SelectionKey.OP_READ;
-import static java.nio.channels.SelectionKey.OP_WRITE;
 
 /**
  * A class serves {@code hello, world} to clients.
@@ -43,40 +40,11 @@ import static java.nio.channels.SelectionKey.OP_WRITE;
 @Slf4j
 class HelloWorldServerUdp extends AbstractHelloWorldServer {
 
-    private void handle(Set<SelectionKey> keys) throws IOException {
-        for (var key : keys) {
-            var channel = (DatagramChannel) key.channel();
-            if (key.isReadable()) {
-                var address = channel.receive(ByteBuffer.allocate(0));
-                if (address != null) {
-                    log.debug("received from {}", address);
-                    key.interestOps(key.interestOps() & ~OP_READ);
-                    key.interestOps(key.interestOps() | OP_WRITE);
-                    key.attach(address);
-                }
-                continue;
-            }
-            if (key.isWritable()) {
-                var src = ByteBuffer.allocate(HelloWorld.BYTES);
-                service().put(src);
-                // TODO: flip the src!
-                final var target = (SocketAddress) key.attachment();
-                if (channel.send(src, target) == src.capacity()) {
-                    key.interestOps(key.interestOps() & ~OP_WRITE);
-                    key.interestOps(key.interestOps() | OP_READ);
-                }
-                continue;
-            }
-            log.warn("unhandled key: {}", key);
-        }
-        keys.clear();
-    }
-
     @Override
     protected void openInternal(SocketAddress endpoint, Path dir) throws IOException {
         server = DatagramChannel.open();
         if (endpoint instanceof InetSocketAddress && ((InetSocketAddress) endpoint).getPort() > 0) {
-            server.socket().setReuseAddress(true);
+            server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
         }
         try {
             server.bind(endpoint);
@@ -86,34 +54,39 @@ class HelloWorldServerUdp extends AbstractHelloWorldServer {
         }
         log.info("server bound to {}", server.getLocalAddress());
         if (dir != null) {
-            var port = server.socket().getLocalPort();
-            IHelloWorldServerUtils.writePortNumber(dir, port);
+            IHelloWorldServerUtils.writePortNumber(dir, server.socket().getLocalPort());
         }
         var thread = new Thread(() -> {
             var executor = Executors.newCachedThreadPool();
+            var service = new ExecutorCompletionService<Void>(executor);
+            var monitor = IHelloWorldServerUtils.startMonitoringCompletedTasks(service);
             while (!Thread.currentThread().isInterrupted()) {
+                SocketAddress address;
                 try {
-                    var address = server.receive(ByteBuffer.allocate(0));
-                    executor.submit(() -> {
-                        log.debug("[S] received from {}", address);
-                        var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
-                        service().put(buffer);
-                        if (buffer.position() > 0) { // // TODO: peel off!
-                            buffer.flip();
-                        }
-                        var sent = server.send(buffer, address);
-                        assert sent == buffer.capacity();
-                        log.debug("[S] sent to {}", address);
-                        return null;
-                    });
+                    address = server.receive(ByteBuffer.allocate(0));
+                    assert address != null;
                 } catch (IOException ioe) {
                     if (!server.isOpen()) {
                         break;
                     }
                     log.error("failed to receive", ioe);
+                    continue;
                 }
+                var future = service.submit(() -> {
+                    log.debug("[S] received from {}", address);
+                    var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
+                    service().put(buffer);
+                    if (buffer.position() > 0) { // // TODO: peel off!
+                        buffer.flip();
+                    }
+                    var bytes = server.send(buffer, address);
+                    assert bytes == buffer.capacity();
+                    log.debug("[S] sent to {}", address);
+                    return null;
+                });
             } // end-of-while
             IHelloWorldServerUtils.shutdownAndAwaitTermination(executor);
+            monitor.interrupt();
         });
         thread.start();
         log.debug("[S] server thread started");
@@ -121,10 +94,10 @@ class HelloWorldServerUdp extends AbstractHelloWorldServer {
 
     @Override
     protected void closeInternal() throws IOException {
-        if (server == null || !server.isOpen()) {
-            return;
+        if (server != null && server.isOpen()) {
+            server.close();
+            log.debug("[S] server closed");
         }
-        server.close();
     }
 
     private DatagramChannel server;

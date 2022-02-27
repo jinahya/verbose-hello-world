@@ -23,12 +23,10 @@ package com.github.jinahya.hello;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 
 /**
- * A class whose {@link #main(String[])} method accepts socket connections and
- * sends {@code hello, world} to clients.
+ * A class whose {@link #main(String[])} method accepts socket connections and sends {@code hello,
+ * world} to clients.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -36,28 +34,20 @@ import java.net.InetSocketAddress;
 public class HelloWorldMainUdp {
 
     /**
-     * The main method of this program which accepts socket connections and
-     * sends {@code hello, world} to clients.
+     * The main method of this program which accepts socket connections and sends {@code hello,
+     * world} to clients.
      *
      * @param args an array of command line arguments.
      * @throws IOException if an I/O error occurs.
      */
     public static void main(final String... args) throws IOException {
-        final HelloWorld service = IHelloWorldServerUtils.loadHelloWorld();
-        final var host = InetAddress.getByName(args[0]);
-        final var port = Integer.parseInt(args[1]);
-        final var endpoint = new InetSocketAddress(host, port);
-        final var server = new HelloWorldServerUdp(endpoint);
-        try {
-            server.open();
-        } finally {
-            IHelloWorldServerUtils.startReadingQuitAndClose(server);
+        final var endpoint = IHelloWorldServerUtils.parseEndpoint(args);
+        try (var server = new HelloWorldServerUdp()) {
+            server.open(endpoint, null);
+            IHelloWorldServerUtils.readQuit();
         }
     }
 
-    /**
-     * Creates a new instance.
-     */
     private HelloWorldMainUdp() {
         throw new AssertionError("instantiation is not allowed");
     }

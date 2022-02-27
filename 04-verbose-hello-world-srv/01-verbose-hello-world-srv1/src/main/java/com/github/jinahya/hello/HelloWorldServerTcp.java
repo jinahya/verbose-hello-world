@@ -84,10 +84,10 @@ class HelloWorldServerTcp implements IHelloWorldServer {
 
     @Override
     public synchronized void close() throws IOException {
-        if (server == null || server.isClosed()) {
-            return;
+        if (server != null && !server.isClosed()) {
+            server.close();
+            log.debug("[S] server closed");
         }
-        server.close();
     }
 
     private ServerSocket server;

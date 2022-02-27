@@ -64,21 +64,23 @@ class HelloWorldServerUdp
         }
         new Thread(() -> {
             final var executor = Executors.newCachedThreadPool();
-            while (!socket.isClosed()) {
-                final var array = new byte[HelloWorld.BYTES];
-                final var received = new DatagramPacket(array, array.length);
+            while (!Thread.currentThread().isInterrupted()) {
+                var received = new DatagramPacket(new byte[1], 1);
                 try {
                     socket.receive(received);
-                    executor.submit(() -> {
-                        final var address = received.getSocketAddress();
+                    var future = executor.submit(() -> {
+                        var address = received.getSocketAddress();
                         log.debug("[S] received from {}", address);
+                        var array = new byte[HelloWorld.BYTES];
                         service().set(array);
-                        final var sending = new DatagramPacket(array, array.length, address);
+                        var sending = new DatagramPacket(array, array.length, address);
                         try {
                             socket.send(sending);
                             log.debug("[S] sent to {}", address);
-                        } catch (final IOException ioe) {
-                            log.error("failed to send", ioe);
+                        } catch (IOException ioe) {
+                            if (!socket.isClosed()) {
+                                log.error("failed to send", ioe);
+                            }
                         }
                     });
                 } catch (IOException ioe) {

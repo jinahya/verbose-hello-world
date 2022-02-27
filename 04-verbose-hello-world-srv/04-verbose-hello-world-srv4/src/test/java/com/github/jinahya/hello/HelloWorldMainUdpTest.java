@@ -25,25 +25,16 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-
-import static com.github.jinahya.hello.HelloWorldClientUdp.clients;
-import static com.github.jinahya.hello.IHelloWorldServerUtils.submitAndWriteQuit;
+import java.util.concurrent.ExecutionException;
 
 @Slf4j
 class HelloWorldMainUdpTest {
 
     @Test
-    void main__() throws InterruptedException, IOException {
-        submitAndWriteQuit(() -> {
-            HelloWorldMainUdp.main("0.0.0.0", "0");
+    void main__() throws IOException, InterruptedException, ExecutionException {
+        IHelloWorldServerUtils.submitAndWriteQuit(() -> {
             final InetAddress host = InetAddress.getLocalHost();
-            final int port = HelloWorldServerUdp.PORT.get();
-            final SocketAddress endpoint = new InetSocketAddress(host, port);
-            clients(8, endpoint, array -> {
-                // TODO: Verify array!
-            });
+            HelloWorldMainUdp.main("0", host.getHostAddress());
             return null;
         });
     }

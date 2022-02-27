@@ -24,12 +24,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 
-import static com.github.jinahya.hello.IHelloWorldServerUtils.parseEndpoint;
-import static com.github.jinahya.hello.IHelloWorldServerUtils.startReadingQuitAndClose;
-
 /**
- * A class whose {@link #main(String[])} method accepts socket connections and
- * sends {@code hello, world} to clients.
+ * A class whose {@link #main(String[])} method accepts socket connections and sends {@code hello,
+ * world} to clients.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -37,22 +34,20 @@ import static com.github.jinahya.hello.IHelloWorldServerUtils.startReadingQuitAn
 public class HelloWorldMainTcp {
 
     /**
-     * The main method of this program which accepts socket connections and
-     * sends {@code hello, world} bytes to clients.
+     * The main method of this program which accepts socket connections and sends {@code hello,
+     * world} bytes to clients.
      *
      * @param args an array of command line arguments.
      * @throws IOException if an I/O error occurs.
      */
     public static void main(final String... args) throws IOException {
-        final var endpoint = parseEndpoint(args);
-        final var server = new HelloWorldServerTcp(endpoint);
-        server.open();
-        startReadingQuitAndClose(server);
+        final var endpoint = IHelloWorldServerUtils.parseEndpoint(args);
+        try (var server = new HelloWorldServerTcp()) {
+            server.open(endpoint, null);
+            IHelloWorldServerUtils.readQuit();
+        }
     }
 
-    /**
-     * Creates a new instance.
-     */
     private HelloWorldMainTcp() {
         throw new AssertionError("instantiation is not allowed");
     }

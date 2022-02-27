@@ -24,8 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 
-import static com.github.jinahya.hello.IHelloWorldServerUtils.startReadingQuitAndClose;
-
 /**
  * A class whose {@link #main(String[])} method accepts socket connections and sends {@code hello,
  * world} to clients.
@@ -36,17 +34,18 @@ import static com.github.jinahya.hello.IHelloWorldServerUtils.startReadingQuitAn
 public class HelloWorldMainUdp {
 
     /**
-     * The main method of this program which accepts socket connections and sends {@code hello,
-     * world} to clients.
+     * Opens a UDP server receives packets from clients and sends {@code hello, world} back to each
+     * client.
      *
      * @param args an array of command line arguments.
      * @throws IOException if an I/O error occurs.
      */
-    public static void main(final String... args) throws IOException {
+    public static void main(String... args) throws IOException {
         final var endpoint = IHelloWorldServerUtils.parseEndpoint(args);
-        final var server = new HelloWorldServerUdp();
-        server.open(endpoint, null);
-        startReadingQuitAndClose(server);
+        try (var server = new HelloWorldServerUdp()) {
+            server.open(endpoint, null);
+            IHelloWorldServerUtils.readQuit();
+        }
     }
 
     /**

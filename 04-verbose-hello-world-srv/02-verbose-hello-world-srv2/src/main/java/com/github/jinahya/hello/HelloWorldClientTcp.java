@@ -22,22 +22,30 @@ package com.github.jinahya.hello;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
-import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-import static java.util.concurrent.TimeUnit.MINUTES;
-
 @Slf4j
-public class HelloWorldClientTcp
-        implements Callable<byte[]> {
+final class HelloWorldClientTcp {
 
-    static void clients(int count, SocketAddress endpoint, Consumer<? super String> consumer) {
+    /**
+     * Runs specified number of clients which each connects to specified endpoint, read {@value
+     * com.github.jinahya.hello.HelloWorld#BYTES} bytes, decodes those bytes into a string with
+     * {@link StandardCharsets#US_ASCII US_ASCII} charset, and accepts it to specified consumer.
+     *
+     * @param count    the number of clients to run.
+     * @param endpoint the endpoint to connect/read.
+     * @param consumer the consumer accepts each response.
+     * @throws InterruptedException if interrupted while waiting all clients finish.
+     */
+    static void runClients(int count, SocketAddress endpoint, Consumer<? super String> consumer)
+            throws InterruptedException {
         if (count <= 0) {
             throw new IllegalArgumentException("count(" + count + ") is not positive");
         }
@@ -46,48 +54,25 @@ public class HelloWorldClientTcp
         var latch = new CountDownLatch(count);
         for (int i = 0; i < count; i++) {
             new Thread(() -> {
-                try {
-                    var bytes = new HelloWorldClientTcp(endpoint).call();
-                    consumer.accept(new String(bytes, StandardCharsets.US_ASCII));
-                } catch (Exception e) {
-                    log.error("failed to call for {}", endpoint, e);
+                try (var client = new Socket()) {
+                    client.setSoTimeout((int) TimeUnit.SECONDS.toMillis(1L));
+                    client.connect(endpoint);
+                    log.debug("[C] connected to {}", client.getRemoteSocketAddress());
+                    var array = client.getInputStream().readNBytes(HelloWorld.BYTES);
+                    assert array.length == HelloWorld.BYTES;
+                    var string = new String(array, StandardCharsets.US_ASCII);
+                    consumer.accept(string);
+                } catch (IOException ioe) {
+                    log.error("failed to connect/read to {}", endpoint, ioe);
                 } finally {
                     latch.countDown();
                 }
             }).start();
-        }
-        try {
-            if (!latch.await(1L, MINUTES)) {
-                log.warn("latch remained unbroken!");
-            }
-        } catch (InterruptedException ie) {
-            log.error("interrupted while awaiting latch", ie);
-            Thread.currentThread().interrupt();
-        }
+        } // end-of-for
+        IHelloWorldServerUtils.await(latch);
     }
 
-    /**
-     * Creates a new instance which communicate with specified server endpoint.
-     *
-     * @param endpoint the server endpoint.
-     */
-    HelloWorldClientTcp(SocketAddress endpoint) {
-        super();
-        this.endpoint = Objects.requireNonNull(endpoint, "endpoint is null");
+    private HelloWorldClientTcp() {
+        throw new AssertionError("instantiation is not allowed");
     }
-
-    @Override
-    public byte[] call() throws Exception {
-        try (var socket = new Socket()) {
-            socket.setSoTimeout((int) TimeUnit.SECONDS.toMillis(8L));
-            socket.connect(endpoint);
-            log.debug("[C] connected to {}", socket.getRemoteSocketAddress());
-            return socket.getInputStream().readNBytes(HelloWorld.BYTES);
-        }
-    }
-
-    /**
-     * The server endpoint to connect.
-     */
-    private final SocketAddress endpoint;
 }

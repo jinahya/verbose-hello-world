@@ -33,27 +33,30 @@ import java.util.function.Consumer;
 @Slf4j
 final class HelloWorldClientTcp {
 
-    static void clients(int count, SocketAddress endpoint, Consumer<? super String> consumer) {
+    static void runClients(int count, SocketAddress endpoint, Consumer<? super String> consumer) {
         if (count <= 0) {
             throw new IllegalArgumentException("count(" + count + ") is not positive");
         }
         Objects.requireNonNull(endpoint, "endpoint is null");
         Objects.requireNonNull(consumer, "consumer is null");
-        var executor = Executors.newCachedThreadPool();
+        var executor = Executors.newFixedThreadPool(Math.min(128, count));
         for (int i = 0; i < count; i++) {
             executor.submit(() -> {
                 try (var client = SocketChannel.open()) {
                     client.connect(endpoint);
                     log.debug("[C] connected to {}", client.getRemoteAddress());
-                    var array = new byte[HelloWorld.BYTES];
-                    var buffer = ByteBuffer.wrap(array);
+                    var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
                     while (buffer.hasRemaining()) {
-                        client.read(buffer);
+                        if (client.read(buffer) == -1) {
+                            log.error("premature eof at {}", buffer.position());
+                        }
                     }
-                    var string = new String(array, StandardCharsets.US_ASCII);
+                    var array = buffer.array();
+                    var length = buffer.position();
+                    var string = new String(array, 0, length, StandardCharsets.US_ASCII);
                     consumer.accept(string);
-                    return null;
                 }
+                return null;
             });
         }
         IHelloWorldServerUtils.shutdownAndAwaitTermination(executor);

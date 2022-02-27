@@ -66,8 +66,8 @@ public class HelloWorldClientUdp {
         keys.clear();
     }
 
-    static void clients(final int count, final SocketAddress endpoint,
-                        final Consumer<? super String> consumer)
+    static void runClients(final int count, final SocketAddress endpoint,
+                           final Consumer<? super String> consumer)
             throws IOException {
         if (count <= 0) {
             throw new IllegalArgumentException(

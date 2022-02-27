@@ -21,39 +21,39 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.nio.file.Files;
 import java.nio.file.Path;
-
-import static com.github.jinahya.hello.HelloWorldClientTcp.clients;
-import static com.github.jinahya.hello.IHelloWorldServerUtils.startReadingPortNumber;
-import static java.net.InetAddress.getLoopbackAddress;
-import static java.nio.file.Files.createTempDirectory;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @Slf4j
 class HelloWorldServerTcpTest {
 
     @Test
-    void test(@TempDir final Path tempDir)
-            throws IOException, InterruptedException {
-        final var host = getLoopbackAddress();
-        final var dir = createTempDirectory(tempDir, null);
-        final var thread = startReadingPortNumber(dir, p -> {
-            final var endpoint = new InetSocketAddress(host, p);
-            clients(4, endpoint, s -> {
-                log.debug("[C] received: {}", s);
-                assertNotNull(s);
-            });
+    void test(@TempDir final Path tempDir) throws IOException, InterruptedException {
+        var host = InetAddress.getLoopbackAddress();
+        var dir = Files.createTempDirectory(tempDir, null);
+        var thread = IHelloWorldServerUtils.startReadingPortNumber(dir, p -> {
+            var endpoint = new InetSocketAddress(host, p);
+            try {
+                HelloWorldClientTcp.runClients(4, endpoint, s -> {
+                    log.debug("[C] received: {}", s);
+                    Assertions.assertNotNull(s);
+                });
+            } catch (InterruptedException ie) {
+                log.error("interrupted while running clients", ie);
+                Thread.currentThread().interrupt();
+            }
         });
         try (var server = new HelloWorldServerTcp()) {
-            final var endpoint = new InetSocketAddress(host, 0);
             try {
-                server.open(endpoint, dir);
-            } catch (final IOException ioe) {
+                server.open(new InetSocketAddress(host, 0), dir);
+            } catch (IOException ioe) {
                 log.error("failed to open server", ioe);
                 thread.interrupt();
                 throw ioe;

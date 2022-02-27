@@ -42,9 +42,10 @@ public class HelloWorldMainTcp {
      */
     public static void main(String... args) throws IOException {
         var endpoint = IHelloWorldServerUtils.parseEndpoint(args);
-        var server = new HelloWorldServerTcp();
-        server.open(endpoint, null);
-        IHelloWorldServerUtils.startReadingQuitAndClose(server);
+        try (var server = new HelloWorldServerTcp()) {
+            server.open(endpoint, null);
+            IHelloWorldServerUtils.readQuit();
+        }
     }
 
     private HelloWorldMainTcp() {

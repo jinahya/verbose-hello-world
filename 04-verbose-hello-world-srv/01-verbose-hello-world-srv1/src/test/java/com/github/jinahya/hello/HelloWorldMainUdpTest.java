@@ -23,16 +23,17 @@ package com.github.jinahya.hello;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.net.InetAddress;
+import java.util.concurrent.ExecutionException;
 
 @Slf4j
 class HelloWorldMainUdpTest {
 
     @Test
-    void main__() {
+    void main__() throws IOException, InterruptedException, ExecutionException {
         IHelloWorldServerUtils.submitAndWriteQuit(() -> {
-//            var host = InetAddress.getLoopbackAddress();
-            var host = InetAddress.getLocalHost();
+            var host = InetAddress.getLoopbackAddress();
             HelloWorldMainUdp.main("0", host.getHostAddress());
             return null;
         });
