@@ -35,7 +35,7 @@ import java.nio.file.Path;
 class HelloWorldServerTcpTest {
 
     @Test
-    void test(@TempDir final Path tempDir) throws IOException, InterruptedException {
+    void test(@TempDir Path tempDir) throws IOException, InterruptedException {
         var host = InetAddress.getLoopbackAddress();
         var dir = Files.createTempDirectory(tempDir, null);
         var thread = IHelloWorldServerUtils.startReadingPortNumber(dir, p -> {

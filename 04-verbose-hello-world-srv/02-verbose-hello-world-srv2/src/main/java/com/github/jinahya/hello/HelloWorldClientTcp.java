@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 @Slf4j
-final class HelloWorldClientTcp {
+class HelloWorldClientTcp {
 
     /**
      * Runs specified number of clients which each connects to specified endpoint, read {@value

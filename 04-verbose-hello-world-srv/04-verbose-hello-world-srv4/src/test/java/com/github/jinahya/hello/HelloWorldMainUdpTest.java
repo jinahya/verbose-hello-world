@@ -33,7 +33,7 @@ class HelloWorldMainUdpTest {
     @Test
     void main__() throws IOException, InterruptedException, ExecutionException {
         IHelloWorldServerUtils.submitAndWriteQuit(() -> {
-            final InetAddress host = InetAddress.getLocalHost();
+          InetAddress host = InetAddress.getLocalHost();
             HelloWorldMainUdp.main("0", host.getHostAddress());
             return null;
         });

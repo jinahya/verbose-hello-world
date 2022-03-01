@@ -34,8 +34,8 @@ class HelloWorldDiHk2Test
 
     @BeforeEach
     void inject() {
-        final var binder = new HelloWorldDiHk2Binder();
-        final var locator = bind(binder);
+        var binder = new HelloWorldDiHk2Binder();
+        var locator = bind(binder);
         locator.inject(this);
     }
 }

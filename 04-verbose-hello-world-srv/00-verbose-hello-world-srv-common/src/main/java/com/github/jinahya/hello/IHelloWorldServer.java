@@ -35,15 +35,28 @@ import java.nio.file.Path;
 public interface IHelloWorldServer extends Closeable {
 
     /**
-     * Opens this server binding specified socket address and, if specified, writes the port number
-     * on which this server is listening, to a file of predefined name in specified directory.
+     * Opens this server binding to specified socket address and writes the port number, on which
+     * this server is listening, to a file of predefined name in specified directory.
      *
      * @param endpoint the local socket address to bind.
-     * @param dir      the directory to which the file is created; may be {@code null}.
+     * @param dir      the directory to which the file is created; may be {@code null} in which case
+     *                 the file is not written.
      * @throws IOException if an I/O error occurs.
+     * @see #open(SocketAddress)
      * @see IHelloWorldServerUtils#readPortNumber(Path)
      */
     void open(@NotNull SocketAddress endpoint, Path dir) throws IOException;
+
+    /**
+     * Opens this server binding to specified socket address.
+     *
+     * @param endpoint the local socket address to bind.
+     * @throws IOException if an I/O error occurs.
+     * @see #open(SocketAddress, Path)
+     */
+    default void open(@NotNull SocketAddress endpoint) throws IOException {
+        open(endpoint, null);
+    }
 
     /**
      * Returns an instance of {@link HelloWorld} to serve with.

@@ -62,17 +62,17 @@ class HelloWorldServerTcp
      * @param selector a selector.
      * @throws IOException if an I/O error occurs.
      */
-    private void handle(final Set<SelectionKey> keys, final Selector selector)
+    private void handle(Set<SelectionKey> keys, Selector selector)
             throws IOException {
         requireNonNull(keys, "keys is null");
         if (keys.isEmpty()) {
             throw new IllegalArgumentException("empty keys");
         }
         requireNonNull(selector, "selector is null");
-        for (final var key : keys) {
+        for (var key : keys) {
             if (key.isAcceptable()) { // server; ready to accept
-                final var channel = (ServerSocketChannel) key.channel();
-                final var client = channel.accept();
+              var channel = (ServerSocketChannel) key.channel();
+              var client = channel.accept();
                 log.debug("[S] accepted from {}", client.getRemoteAddress());
                 client.configureBlocking(false);
                 client.register(selector, OP_WRITE);
@@ -92,14 +92,14 @@ class HelloWorldServerTcp
 
     @Override
     protected void openInternal(SocketAddress endpoint, Path dir) throws IOException {
-        final var server = ServerSocketChannel.open();
+      var server = ServerSocketChannel.open();
         if (endpoint instanceof InetSocketAddress
             && ((InetSocketAddress) endpoint).getPort() > 0) {
             server.setOption(SO_REUSEADDR, TRUE);
         }
         try {
             server.bind(endpoint);
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             log.error("failed to bind to {}", endpoint, ioe);
             throw ioe;
         }
@@ -122,7 +122,7 @@ class HelloWorldServerTcp
                 if (selector.selectNow() > 0) {
                     handle(selector.selectedKeys(), selector);
                 }
-            } catch (final IOException ioe) {
+            } catch (IOException ioe) {
                 log.error("io error in server thread", ioe);
             }
             log.debug("end of server thread");
@@ -137,7 +137,7 @@ class HelloWorldServerTcp
             thread.interrupt();
             try {
                 thread.join();
-            } catch (final InterruptedException ie) {
+            } catch (InterruptedException ie) {
                 log.error("interrupted while joining server thread", ie);
                 currentThread().interrupt();
             }

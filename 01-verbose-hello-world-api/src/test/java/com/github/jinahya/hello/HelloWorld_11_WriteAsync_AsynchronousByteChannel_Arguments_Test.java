@@ -36,8 +36,7 @@ import java.util.concurrent.ExecutorService;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorld_11_WriteAsync_AsynchronousByteChannel_Arguments_Test
-        extends HelloWorldTest {
+class HelloWorld_11_WriteAsync_AsynchronousByteChannel_Arguments_Test extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#writeAsync(AsynchronousByteChannel, ExecutorService)
@@ -47,11 +46,11 @@ class HelloWorld_11_WriteAsync_AsynchronousByteChannel_Arguments_Test
     @DisplayName("writeAsync(null, ) throws NullPointerException")
     @Test
     void writeAsync_ThrowNullPointerException_ChannelIsNull() {
-        final AsynchronousByteChannel channel = null;
-        final ExecutorService service = Mockito.mock(ExecutorService.class);
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> helloWorld().writeAsync(channel, service));
+        var service = helloWorld();
+        AsynchronousByteChannel channel = null;
+        var executor = Mockito.mock(ExecutorService.class);
+        Assertions.assertThrows(NullPointerException.class,
+                                () -> service.writeAsync(channel, executor));
     }
 
     /**
@@ -62,11 +61,10 @@ class HelloWorld_11_WriteAsync_AsynchronousByteChannel_Arguments_Test
     @DisplayName("writeAsync(, null) throws NullPointerException")
     @Test
     void writeAsync_NullPointerException_ServiceIsNull() {
-        final AsynchronousByteChannel channel = Mockito.mock(
-                AsynchronousByteChannel.class);
-        final ExecutorService service = null;
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> helloWorld().writeAsync(channel, service));
+        var service = helloWorld();
+        var channel = Mockito.mock(AsynchronousByteChannel.class);
+        ExecutorService executor = null;
+        Assertions.assertThrows(NullPointerException.class,
+                                () -> service.writeAsync(channel, executor));
     }
 }

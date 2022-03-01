@@ -27,7 +27,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
 import org.mockito.Mockito;
 import org.mockito.Spy;
@@ -36,6 +35,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 
 /**
  * An abstract class for testing methods defined in {@link HelloWorld} interface.
@@ -53,8 +55,7 @@ abstract class HelloWorldTest {
     @BeforeEach
     void stub_PutBuffer_FillBuffer() {
         Mockito.lenient()
-                .when(helloWorld.set(ArgumentMatchers.any(),     // <1>
-                                     ArgumentMatchers.anyInt()))
+                .when(helloWorld.set(any(), anyInt())) // <1>
                 .thenAnswer(i -> i.getArgument(0));              // <2>
     }
 

@@ -46,11 +46,11 @@ import static java.nio.channels.SelectionKey.OP_WRITE;
 class HelloWorldServerUdp
         extends AbstractHelloWorldServer {
 
-    private void handle(final Set<SelectionKey> keys) throws IOException {
-        for (final var key : keys) {
-            final var channel = (DatagramChannel) key.channel();
+    private void handle(Set<SelectionKey> keys) throws IOException {
+        for (var key : keys) {
+          var channel = (DatagramChannel) key.channel();
             if (key.isReadable()) {
-                final var address = channel.receive(allocate(0));
+              var address = channel.receive(allocate(0));
                 if (address != null) {
                     log.debug("received from {}", address);
                     key.interestOps(key.interestOps() & ~OP_READ);
@@ -60,10 +60,10 @@ class HelloWorldServerUdp
                 continue;
             }
             if (key.isWritable()) {
-                final var src = allocate(BYTES);
+              var src = allocate(BYTES);
                 service().put(src);
                 // TODO: flip the src!
-                final var target = (SocketAddress) key.attachment();
+              var target = (SocketAddress) key.attachment();
                 if (channel.send(src, target) == src.capacity()) {
                     key.interestOps(key.interestOps() & ~OP_WRITE);
                     key.interestOps(key.interestOps() | OP_READ);
@@ -77,14 +77,14 @@ class HelloWorldServerUdp
 
     @Override
     protected void openInternal(SocketAddress endpoint, Path dir) throws IOException {
-        final var server = DatagramChannel.open();
+      var server = DatagramChannel.open();
         if (endpoint instanceof InetSocketAddress &&
             ((InetSocketAddress) endpoint).getPort() > 0) {
             server.socket().setReuseAddress(true);
         }
         try {
             server.bind(endpoint);
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             log.error("failed to bind to {}", endpoint, ioe);
             throw ioe;
         }
@@ -105,7 +105,7 @@ class HelloWorldServerUdp
                 if (selector.selectNow() > 0) {
                     handle(selector.selectedKeys());
                 }
-            } catch (final IOException ioe) {
+            } catch (IOException ioe) {
                 log.error("io error in server thread", ioe);
             }
         });
@@ -121,7 +121,7 @@ class HelloWorldServerUdp
         thread.interrupt();
         try {
             thread.join();
-        } catch (final InterruptedException ie) {
+        } catch (InterruptedException ie) {
             log.error("interrupted while joining server thread", ie);
             currentThread().interrupt();
         }

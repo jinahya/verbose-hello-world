@@ -21,13 +21,14 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.nio.channels.AsynchronousFileChannel;
 import java.util.Random;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 
 /**
  * A class for testing {@link HelloWorld#writeCompletable(AsynchronousFileChannel, long)} method
@@ -48,11 +49,10 @@ class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Arguments_Test
     @DisplayName("writeCompletable(null, ) throws NullPointerException")
     @Test
     void writeCompletable_ThrowNullPointerException_ChannelIsNull() {
-        final AsynchronousFileChannel channel = null;
-        final long position = new Random().nextLong() & Long.MAX_VALUE;
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> helloWorld().writeCompletable(channel, position));
+        var service = helloWorld();
+        AsynchronousFileChannel channel = null;
+        var position = new Random().nextLong() & Long.MAX_VALUE;
+        assertThrows(NullPointerException.class, () -> service.writeCompletable(channel, position));
     }
 
     /**
@@ -63,11 +63,10 @@ class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Arguments_Test
     @DisplayName("writeCompletable(, negative) throws IllegalArgumentException")
     @Test
     void writeCompletable_ThrowIllegalArgumentException_PositionIsNegative() {
-        final AsynchronousFileChannel channel = Mockito.mock(
-                AsynchronousFileChannel.class);
-        final long position = new Random().nextLong() | Long.MIN_VALUE;
-        Assertions.assertThrows(
-                IllegalArgumentException.class,
-                () -> helloWorld().writeCompletable(channel, position));
+        var service = helloWorld();
+        var channel = mock(AsynchronousFileChannel.class);
+        var position = new Random().nextLong() | Long.MIN_VALUE;
+        assertThrows(IllegalArgumentException.class,
+                     () -> service.writeCompletable(channel, position));
     }
 }

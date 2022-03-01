@@ -43,7 +43,7 @@ public class HelloWorldMainTcp {
     public static void main(String... args) throws IOException {
         var endpoint = IHelloWorldServerUtils.parseEndpoint(args);
         try (var server = new HelloWorldServerTcp()) {
-            server.open(endpoint, null);
+            server.open(endpoint);
             IHelloWorldServerUtils.readQuit();
         }
     }

@@ -53,13 +53,12 @@ class HelloWorld_06_Write_RandomAccessFile_Test
     @DisplayName("write(file) invokes set(byte[BYTES]) method"
                  + " and writes the array to file")
     @Test
-    void write_InvokeSetArrayWriteArrayToFile_(@TempDir final File tempDir)
-            throws IOException {
-        final RandomAccessFile file = Mockito.mock(RandomAccessFile.class);
+    void write_InvokeSetArrayWriteArrayToFile_(@TempDir File tempDir) throws IOException {
+        var file = Mockito.mock(RandomAccessFile.class);
         helloWorld().write(file);
         Mockito.verify(helloWorld(), Mockito.times(1))
                 .set(arrayCaptor().capture());
-        final byte[] array = arrayCaptor().getValue();
+        var array = arrayCaptor().getValue();
         Assertions.assertNotNull(array);
         Assertions.assertEquals(HelloWorld.BYTES, array.length);
         Mockito.verify(file, Mockito.times(1))
@@ -75,8 +74,8 @@ class HelloWorld_06_Write_RandomAccessFile_Test
     @DisplayName("write(file) returns file")
     @Test
     void write_ReturnFile_() throws IOException {
-        final RandomAccessFile expected = Mockito.mock(RandomAccessFile.class);
-        final RandomAccessFile actual = helloWorld().write(expected);
+        var expected = Mockito.mock(RandomAccessFile.class);
+        var actual = helloWorld().write(expected);
         Assertions.assertSame(expected, actual);
     }
 }

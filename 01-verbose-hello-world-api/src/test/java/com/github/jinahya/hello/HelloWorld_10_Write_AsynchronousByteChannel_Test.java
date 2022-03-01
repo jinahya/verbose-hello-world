@@ -58,25 +58,23 @@ class HelloWorld_10_Write_AsynchronousByteChannel_Test
     @Test
     void write_InvokePutBufferWriteBufferToChannel_()
             throws InterruptedException, ExecutionException {
-        final AsynchronousByteChannel channel = Mockito.mock(
-                AsynchronousByteChannel.class);
-        final LongAdder writtenSoFar = new LongAdder();
-        Mockito.lenient().when(channel.write(ArgumentMatchers.notNull()))
+        var channel = Mockito.mock(AsynchronousByteChannel.class);
+        var writtenSoFar = new LongAdder();
+        Mockito.lenient()
+                .when(channel.write(ArgumentMatchers.notNull()))
                 .thenAnswer(i -> {
-                    final ByteBuffer buffer = i.getArgument(0);
-                    final int written
-                            = new Random().nextInt(buffer.remaining() + 1);
+                    var buffer = i.getArgument(0, ByteBuffer.class);
+                    var written = new Random().nextInt(buffer.remaining() + 1);
                     buffer.position(buffer.position() + written);
                     writtenSoFar.add(written);
-                    @SuppressWarnings({"unchecked"})
-                    final Future<Integer> future = Mockito.mock(Future.class);
+                    var future = Mockito.mock(Future.class);
                     Mockito.doReturn(written).when(future).get();
                     return future;
                 });
         helloWorld().write(channel);
         Mockito.verify(helloWorld(), Mockito.times(1))
                 .put(bufferCaptor().capture());
-        final ByteBuffer buffer = bufferCaptor().getValue();
+        var buffer = bufferCaptor().getValue();
         Assertions.assertEquals(HelloWorld.BYTES, buffer.capacity());
         // TODO: Implement!
     }
@@ -88,24 +86,20 @@ class HelloWorld_10_Write_AsynchronousByteChannel_Test
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
      */
-    @DisplayName(
-            "write(channel) invokes put(buffer) writes the buffer to channel")
+    @DisplayName("write(channel) invokes put(buffer) writes the buffer to channel")
     @Test
-    void write_ReturnChannel_()
-            throws InterruptedException, ExecutionException {
-        final AsynchronousByteChannel channel = Mockito.mock(
-                AsynchronousByteChannel.class);
+    void write_ReturnChannel_() throws InterruptedException, ExecutionException {
+        var channel = Mockito.mock(AsynchronousByteChannel.class);
         Mockito.lenient()
                 .when(channel.write(ArgumentMatchers.any(ByteBuffer.class)))
                 .thenAnswer(
                         i -> {
-                            final ByteBuffer buffer = i.getArgument(0);
-                            final int written = new Random().nextInt(
-                                    buffer.remaining() + 1);
+                            var buffer = i.getArgument(0, ByteBuffer.class);
+                            var written = new Random().nextInt(buffer.remaining() + 1);
                             buffer.position(buffer.position() + written);
                             return CompletableFuture.completedFuture(written);
                         });
-        final AsynchronousByteChannel actual = helloWorld().write(channel);
+        var actual = helloWorld().write(channel);
         Assertions.assertSame(channel, actual);
     }
 }

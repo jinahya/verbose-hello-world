@@ -33,8 +33,7 @@ import java.util.Random;
  * @see HelloWorld_01_Set_Array_Test
  */
 @Slf4j
-class HelloWorld_01_Set_Array_Arguments_Test
-        extends HelloWorldTest {
+class HelloWorld_01_Set_Array_Arguments_Test extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#set(byte[]) set(array)} method throws a {@link
@@ -43,7 +42,7 @@ class HelloWorld_01_Set_Array_Arguments_Test
     @DisplayName("set(null) throws NullPointerException")
     @Test
     void set_ThrowNullPointerException_ArrayIsNull() {
-        final byte[] array = null;
+        byte[] array = null;
         // TODO: Implement!
     }
 
@@ -54,8 +53,8 @@ class HelloWorld_01_Set_Array_Arguments_Test
     @DisplayName("set(array:not-long-enough) throws IndexOutOfBoundsException")
     @Test
     void set_ThrowIndexOutOfBoundsException_ArrayIsNotLongEnough() {
-        final int length = new Random().nextInt(HelloWorld.BYTES);
-        final byte[] array = new byte[length];
+        var length = new Random().nextInt(HelloWorld.BYTES);
+        var array = new byte[length];
         // TODO: Implement!
     }
 }

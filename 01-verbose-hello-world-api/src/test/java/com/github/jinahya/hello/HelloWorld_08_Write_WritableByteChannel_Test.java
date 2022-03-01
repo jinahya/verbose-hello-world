@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -33,7 +34,6 @@ import java.util.concurrent.atomic.LongAdder;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.notNull;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -50,12 +50,15 @@ class HelloWorld_08_Write_WritableByteChannel_Test
     @BeforeEach
     void stub_PutBuffer_FillBuffer() {
         // https://www.javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#13
-        lenient().doAnswer(i -> {
-            final ByteBuffer buffer = i.getArgument(0);
-            assert buffer.remaining() >= HelloWorld.BYTES;
-            buffer.position(buffer.position() + HelloWorld.BYTES);
-            return buffer;
-        }).when(helloWorld()).put(notNull());
+        Mockito.lenient()
+                .doAnswer(i -> {
+                    var buffer = i.getArgument(0, ByteBuffer.class);
+                    assert buffer.remaining() >= HelloWorld.BYTES;
+                    buffer.position(buffer.position() + HelloWorld.BYTES);
+                    return buffer;
+                })
+                .when(helloWorld())
+                .put(notNull());
     }
 
     /**
@@ -70,13 +73,13 @@ class HelloWorld_08_Write_WritableByteChannel_Test
                  + " and writes the buffer to the channel")
     @Test
     void write_InvokePutBufferWriteBufferToChannel_() throws IOException {
-        final WritableByteChannel channel = mock(WritableByteChannel.class);
-        final LongAdder writtenSoFar = new LongAdder();           // <2>
-        lenient().when(channel.write(notNull()))                  // <3>
+        var channel = mock(WritableByteChannel.class);
+        var writtenSoFar = new LongAdder();           // <2>
+        Mockito.lenient()
+                .when(channel.write(notNull()))                  // <3>
                 .thenAnswer(i -> {
-                    final ByteBuffer buffer = i.getArgument(0);   // <4>
-                    final int written                             // <5>
-                            = new Random().nextInt(buffer.remaining() + 1);
+                    var buffer = i.getArgument(0, ByteBuffer.class);   // <4>
+                    var written = new Random().nextInt(buffer.remaining() + 1); // <5>
                     buffer.position(buffer.position() + written); // <6>
                     writtenSoFar.add(written);                    // <7>
                     return written;                               // <8>
@@ -93,15 +96,16 @@ class HelloWorld_08_Write_WritableByteChannel_Test
     @DisplayName("write(channel) returns channel")
     @Test
     void write_ReturnChannel_() throws IOException {
-        final WritableByteChannel channel = mock(WritableByteChannel.class);
-        lenient().when(channel.write(notNull()))
+        var channel = mock(WritableByteChannel.class);
+        Mockito.lenient()
+                .when(channel.write(notNull()))
                 .thenAnswer(i -> {
-                    final ByteBuffer buffer = i.getArgument(0);
-                    final int written = buffer.remaining();
+                    var buffer = i.getArgument(0, ByteBuffer.class);
+                    var written = buffer.remaining();
                     buffer.position(buffer.limit());
                     return written;
                 });
-        final WritableByteChannel actual = helloWorld().write(channel);
+        var actual = helloWorld().write(channel);
         assertSame(channel, actual);
     }
 }

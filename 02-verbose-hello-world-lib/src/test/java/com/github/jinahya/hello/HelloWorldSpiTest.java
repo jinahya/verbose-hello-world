@@ -25,8 +25,7 @@ package com.github.jinahya.hello;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-class HelloWorldSpiTest
-        extends HelloWorldTest {
+class HelloWorldSpiTest extends HelloWorldTest {
 
     @Override
     HelloWorld helloWorld() {

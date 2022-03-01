@@ -35,7 +35,7 @@ class HelloWorldDiGuiceTest
 
     @BeforeEach
     void inject() {
-        final var injector = createInjector(new HelloWorldDiGuiceModule());
+        var injector = createInjector(new HelloWorldDiGuiceModule());
         injector.injectMembers(this);
     }
 }

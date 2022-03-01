@@ -39,11 +39,11 @@ class HelloWorldCdiSeTestInstanceFactory
 
     @Override
     public Object createTestInstance(
-            final TestInstanceFactoryContext testInstanceFactoryContext,
-            final ExtensionContext extensionContext)
+            TestInstanceFactoryContext testInstanceFactoryContext,
+            ExtensionContext extensionContext)
             throws TestInstantiationException {
-        final Class<?> testClass = testInstanceFactoryContext.getTestClass();
-        final SeContainerInitializer seContainerInitializer
+        Class<?> testClass = testInstanceFactoryContext.getTestClass();
+        SeContainerInitializer seContainerInitializer
                 = SeContainerInitializer.newInstance()
                 .addBeanClasses(HelloWorldCdiFactory.class, testClass);
         try (SeContainer container = seContainerInitializer.initialize()) {

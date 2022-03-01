@@ -53,10 +53,9 @@ class HelloWorld_09_Append_Path_Test
     @DisplayName("append(path) invokes write(FileChannel)"
                  + ", 12 bytes are appended")
     @Test
-    void append_InvokeWriteChannel12BytesWritten_(@TempDir final Path tempDir)
-            throws IOException {
-        final Path path = Files.createTempFile(tempDir, null, null);
-        final long size = Files.size(path);
+    void append_InvokeWriteChannel12BytesWritten_(@TempDir Path tempDir) throws IOException {
+        var path = Files.createTempFile(tempDir, null, null);
+        var size = Files.size(path);
         // TODO: Implement!
     }
 
@@ -69,9 +68,9 @@ class HelloWorld_09_Append_Path_Test
      */
     @DisplayName("append(path) returns path")
     @Test
-    void append_ReturnPath_(@TempDir final Path tempDir) throws IOException {
-        final Path path = Files.createTempFile(tempDir, null, null);
-        final Path actual = helloWorld().append(path);
+    void append_ReturnPath_(@TempDir Path tempDir) throws IOException {
+        var path = Files.createTempFile(tempDir, null, null);
+        var actual = helloWorld().append(path);
         Assertions.assertSame(path, actual);
     }
 }

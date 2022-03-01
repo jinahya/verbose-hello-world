@@ -35,18 +35,10 @@ import java.util.concurrent.Executors;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorldServerTcp
-        extends AbstractHelloWorldServer {
-
-    /**
-     * Creates a new instance.
-     */
-    HelloWorldServerTcp() {
-        super();
-    }
+class HelloWorldServerTcp extends AbstractHelloWorldServer {
 
     @Override
-    void openInternal(SocketAddress endpoint, Path dir) throws IOException {
+    protected void openInternal(SocketAddress endpoint, Path dir) throws IOException {
         server = new ServerSocket();
         if (endpoint instanceof InetSocketAddress && ((InetSocketAddress) endpoint).getPort() > 0) {
             server.setReuseAddress(true);
@@ -92,7 +84,7 @@ class HelloWorldServerTcp
     }
 
     @Override
-    void closeInternal() throws IOException {
+    protected void closeInternal() throws IOException {
         if (server != null && !server.isClosed()) {
             server.close();
             log.debug("[S] server closed");

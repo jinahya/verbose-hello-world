@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 @Slf4j
-final class HelloWorldClientUdp {
+class HelloWorldClientUdp {
 
     static void runClients(int count, SocketAddress endpoint, Consumer<? super String> consumer)
             throws InterruptedException {

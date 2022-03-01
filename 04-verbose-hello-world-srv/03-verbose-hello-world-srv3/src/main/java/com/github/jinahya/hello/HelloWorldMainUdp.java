@@ -43,7 +43,7 @@ public class HelloWorldMainUdp {
     public static void main(String... args) throws IOException {
         var endpoint = IHelloWorldServerUtils.parseEndpoint(args);
         try (var server = new HelloWorldServerUdp()) {
-            server.open(endpoint, null);
+            server.open(endpoint);
             IHelloWorldServerUtils.readQuit();
         }
     }

@@ -2,7 +2,7 @@ package com.github.jinahya.hello;
 
 import java.util.ServiceLoader;
 
-final class IHelloWorldServerHelper {
+class IHelloWorldServerHelper {
 
     private static HelloWorld service;
 

@@ -35,8 +35,7 @@ import java.io.RandomAccessFile;
  * @see HelloWorld_06_Write_RandomAccessFile_Test
  */
 @Slf4j
-class HelloWorld_06_Write_RandomAccessFile_Arguments_Test
-        extends HelloWorldTest {
+class HelloWorld_06_Write_RandomAccessFile_Arguments_Test extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(RandomAccessFile) write(file)} method throws a {@link
@@ -45,8 +44,7 @@ class HelloWorld_06_Write_RandomAccessFile_Arguments_Test
     @DisplayName("write((RandomAccessFile) null) throws NullPointerException")
     @Test
     void write_ThrowNullPointerException_FileIsNull() {
-        final RandomAccessFile file = null;
-        Assertions.assertThrows(NullPointerException.class,
-                                () -> helloWorld().write(file));
+        RandomAccessFile file = null;
+        Assertions.assertThrows(NullPointerException.class, () -> helloWorld().write(file));
     }
 }

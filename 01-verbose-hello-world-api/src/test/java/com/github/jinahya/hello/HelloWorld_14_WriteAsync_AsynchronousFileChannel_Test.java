@@ -30,10 +30,10 @@ import java.nio.channels.AsynchronousFileChannel;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.LongAdder;
 
-import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.longThat;
@@ -51,15 +51,14 @@ import static org.mockito.Mockito.when;
  * @see HelloWorld_14_WriteAsync_AsynchronousFileChannel_Arguments_Test
  */
 @Slf4j
-class HelloWorld_14_WriteAsync_AsynchronousFileChannel_Test
-        extends HelloWorldTest {
+class HelloWorld_14_WriteAsync_AsynchronousFileChannel_Test extends HelloWorldTest {
 
     // TODO: Remove this stubbing method when you implemented the put(buffer) method!
     @BeforeEach
     void stub_PutBuffer_FillBuffer() {
         // https://www.javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#13
         doAnswer(i -> {
-            final ByteBuffer buffer = i.getArgument(0);
+            ByteBuffer buffer = i.getArgument(0);
             buffer.position(buffer.position() + HelloWorld.BYTES);
             return buffer;
         }).when(helloWorld()).put(notNull());
@@ -77,27 +76,23 @@ class HelloWorld_14_WriteAsync_AsynchronousFileChannel_Test
     @Test
     void writeAsync_InvokePutBufferWriteBufferToChannel_()
             throws InterruptedException, ExecutionException {
-        final LongAdder writtenSoFar = new LongAdder();
-        final AsynchronousFileChannel channel
-                = mock(AsynchronousFileChannel.class);
+        var writtenSoFar = new LongAdder();
+        var channel = mock(AsynchronousFileChannel.class);
         when(channel.write(notNull(), longThat(a -> a >= 0L)))
                 .thenAnswer(i -> {
-                    final ByteBuffer buffer = i.getArgument(0);
-                    final long position = i.getArgument(1);
-                    final int written
-                            = new Random().nextInt(buffer.remaining() + 1);
+                    ByteBuffer buffer = i.getArgument(0);
+                    var position = i.getArgument(1);
+                    int written = new Random().nextInt(buffer.remaining() + 1);
                     buffer.position(buffer.position() + written);
                     writtenSoFar.add(written);
-                    @SuppressWarnings({"unchecked"})
-                    final Future<Integer> future = mock(Future.class);
+                    var future = mock(Future.class);
                     doReturn(written).when(future).get();
                     return future;
                 });
-        final long position = 0L;
-        final ExecutorService service = newSingleThreadExecutor();
-        final Future<AsynchronousFileChannel> future
-                = helloWorld().writeAsync(channel, position, service);
-        final AsynchronousFileChannel actual = future.get();
+        var position = 0L;
+        var executor = Executors.newSingleThreadExecutor();
+        var future = helloWorld().writeAsync(channel, position, executor);
+        var actual = future.get();
         assertSame(channel, actual);
         assertEquals(HelloWorld.BYTES, writtenSoFar.intValue());
     }

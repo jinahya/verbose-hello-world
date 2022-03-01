@@ -41,8 +41,8 @@ class HelloWorldProvider {
      */
     @Produces
     public HelloWorld produceHelloWorld() {
-        final var loader = ServiceLoader.load(HelloWorld.class);
-        final var iterator = loader.iterator();
+        var loader = ServiceLoader.load(HelloWorld.class);
+        var iterator = loader.iterator();
         return iterator.next();
     }
 

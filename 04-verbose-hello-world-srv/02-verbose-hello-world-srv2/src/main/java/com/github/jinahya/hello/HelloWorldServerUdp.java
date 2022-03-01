@@ -36,18 +36,10 @@ import java.util.concurrent.Executors;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorldServerUdp
-        extends AbstractHelloWorldServer {
-
-    /**
-     * Creates a new instance.
-     */
-    HelloWorldServerUdp() {
-        super();
-    }
+class HelloWorldServerUdp extends AbstractHelloWorldServer {
 
     @Override
-    void openInternal(SocketAddress endpoint, Path dir) throws IOException {
+    protected void openInternal(SocketAddress endpoint, Path dir) throws IOException {
         socket = new DatagramSocket(null);
         if (endpoint instanceof InetSocketAddress && ((InetSocketAddress) endpoint).getPort() > 0) {
             socket.setReuseAddress(true);
@@ -55,7 +47,7 @@ class HelloWorldServerUdp
         try {
             socket.bind(endpoint);
             log.info("[S] server bound to {}", socket.getLocalSocketAddress());
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             log.error("failed to bind to {}", endpoint, ioe);
             throw ioe;
         }
@@ -63,7 +55,7 @@ class HelloWorldServerUdp
             IHelloWorldServerUtils.writePortNumber(dir, socket.getLocalPort());
         }
         new Thread(() -> {
-            final var executor = Executors.newCachedThreadPool();
+            var executor = Executors.newCachedThreadPool();
             while (!Thread.currentThread().isInterrupted()) {
                 var received = new DatagramPacket(new byte[1], 1);
                 try {
@@ -96,7 +88,7 @@ class HelloWorldServerUdp
     }
 
     @Override
-    void closeInternal() throws IOException {
+    protected void closeInternal() throws IOException {
         if (socket == null || socket.isClosed()) {
             return;
         }

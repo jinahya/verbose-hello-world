@@ -50,12 +50,12 @@ class HelloWorld_04_Send_Socket_Test
     @DisplayName("send(socket) invokes write(socket.outputStream)")
     @Test
     void send_InvokeWriteStreamWithSocketOutputStream_() throws IOException {
-        final Socket socket = Mockito.spy(new Socket());              // <1>
-        final OutputStream stream = Mockito.mock(OutputStream.class); // <2>
-        Mockito.lenient().doReturn(stream)                            // <3>
+        var socket = Mockito.spy(new Socket());        // <1>
+        var stream = Mockito.mock(OutputStream.class); // <2>
+        Mockito.lenient().doReturn(stream)             // <3>
                 .when(socket)
                 .getOutputStream();
-        helloWorld().send(socket);                                    // <4>
+        helloWorld().send(socket);                     // <4>
         // TODO: Implement!
     }
 
@@ -68,11 +68,12 @@ class HelloWorld_04_Send_Socket_Test
     @DisplayName("send(socket) returns socket")
     @Test
     void send_ReturnSocket_() throws IOException {
-        final Socket expected = Mockito.spy(new Socket());
-        Mockito.lenient().doReturn(Mockito.mock(OutputStream.class))
+        var expected = Mockito.spy(new Socket());
+        Mockito.lenient()
+                .doReturn(Mockito.mock(OutputStream.class))
                 .when(expected)
                 .getOutputStream();
-        final Socket actual = helloWorld().send(expected);
+        var actual = helloWorld().send(expected);
         Assertions.assertSame(expected, actual);
     }
 }

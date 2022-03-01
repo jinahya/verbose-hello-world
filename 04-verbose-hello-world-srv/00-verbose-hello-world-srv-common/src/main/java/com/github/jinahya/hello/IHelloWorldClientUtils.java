@@ -34,7 +34,7 @@ import java.util.Objects;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-final class IHelloWorldClientUtils {
+class IHelloWorldClientUtils {
 
     private static void validateArgumentsForReadFully(InputStream input, byte[] b, int off,
                                                       int len) {

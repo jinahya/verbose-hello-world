@@ -31,8 +31,7 @@ import org.junit.jupiter.api.Test;
  * @see HelloWorld_01_Set_Array_Arguments_Test
  */
 @Slf4j
-class HelloWorld_01_Set_Array_Test
-        extends HelloWorldTest {
+class HelloWorld_01_Set_Array_Test extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#set(byte[]) set(array)} method invokes {@link
@@ -42,7 +41,7 @@ class HelloWorld_01_Set_Array_Test
     @DisplayName("set(array) invokes set(array, 0)")
     @Test
     void set_InvokesSetArrayWithArrayAndZero_() {
-        final byte[] array = new byte[HelloWorld.BYTES];
+        var array = new byte[HelloWorld.BYTES];
         // TODO: Implement!
     }
 
@@ -53,8 +52,8 @@ class HelloWorld_01_Set_Array_Test
     @DisplayName("set(array) returns array")
     @Test
     void set_ReturnArray_() {
-        final byte[] array = new byte[HelloWorld.BYTES];
-        final byte[] actual = helloWorld().set(array);
+        var array = new byte[HelloWorld.BYTES];
+        var actual = helloWorld().set(array);
         // TODO: Implement!
     }
 }

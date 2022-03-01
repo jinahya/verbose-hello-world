@@ -30,18 +30,15 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.CompletionHandler;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.LongAdder;
 
-import static com.github.jinahya.hello.HelloWorld.BYTES;
-import static java.nio.ByteBuffer.allocate;
-import static java.nio.channels.AsynchronousFileChannel.open;
 import static java.nio.file.Files.createTempFile;
-import static java.nio.file.Files.size;
 import static java.nio.file.StandardOpenOption.READ;
 import static java.nio.file.StandardOpenOption.WRITE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -72,8 +69,8 @@ class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Test
     void stub_PutBuffer_FillBuffer() {
         // https://www.javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#13
         doAnswer(i -> {
-            final ByteBuffer buffer = i.getArgument(0);
-            buffer.position(buffer.position() + BYTES);
+            ByteBuffer buffer = i.getArgument(0);
+            buffer.position(buffer.position() + HelloWorld.BYTES);
             return buffer;
         }).when(helloWorld()).put(any());
     }
@@ -93,31 +90,25 @@ class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Test
     @Test
     void writeCompletable_InvokePutBufferWriteBufferToChannel_()
             throws InterruptedException, ExecutionException {
-        final LongAdder writtenSoFar = new LongAdder();
-        final AsynchronousFileChannel channel
-                = mock(AsynchronousFileChannel.class);
+        var writtenSoFar = new LongAdder();
+        var channel = mock(AsynchronousFileChannel.class);
         doAnswer(i -> {
-            final ByteBuffer src = i.getArgument(0);
-            final long position = i.getArgument(1);
-            final Long attachment = i.getArgument(2);
-            final CompletionHandler<Integer, Long> handler = i.getArgument(3);
-            final int written = new Random().nextInt(src.remaining() + 1);
+            ByteBuffer src = i.getArgument(0);
+            var position = i.getArgument(1);
+            Long attachment = i.getArgument(2);
+            CompletionHandler<Integer, Long> handler = i.getArgument(3);
+            var written = new Random().nextInt(src.remaining() + 1);
             src.position(src.position() + written);
             writtenSoFar.add(written);
             handler.completed(written, attachment);
             return null;
-        }).when(channel).write(notNull(),
-                               longThat(a -> a >= 0L),
-                               notNull(),
-                               notNull());
-        final long position = 0L;
-        final Future<AsynchronousFileChannel> future
-                = helloWorld().writeCompletable(channel, position);
-        final AsynchronousFileChannel actual = future.get();
-        verify(helloWorld(), times(1))
-                .put(bufferCaptor().capture());
-        final ByteBuffer buffer = bufferCaptor().getValue();
-        assertEquals(BYTES, buffer.capacity());
+        }).when(channel).write(notNull(), longThat(a -> a >= 0L), notNull(), notNull());
+        var position = 0L;
+        var future = helloWorld().writeCompletable(channel, position);
+        var actual = future.get();
+        verify(helloWorld(), times(1)).put(bufferCaptor().capture());
+        var buffer = bufferCaptor().getValue();
+        assertEquals(HelloWorld.BYTES, buffer.capacity());
         assertFalse(buffer.hasRemaining());
         verify(channel, atLeast(1))
                 .write(same(buffer),
@@ -125,7 +116,7 @@ class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Test
                        notNull(),
                        notNull());
         assertSame(channel, actual);
-        assertEquals(BYTES, writtenSoFar.intValue());
+        assertEquals(HelloWorld.BYTES, writtenSoFar.intValue());
     }
 
     /**
@@ -141,27 +132,25 @@ class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Test
     @DisplayName("writeCompletable(channel, position)" +
                  " writes 12 bytes starting at position")
     @Test
-    void writeCompletable_Write12BytesFromPosition_(
-            @TempDir final Path tempDir)
+    void writeCompletable_Write12BytesFromPosition_(@TempDir Path tempDir)
             throws IOException, InterruptedException, ExecutionException {
-        final Path path = createTempFile(tempDir, null, null);
-        final long position = new Random().nextInt(1024);
-        try (AsynchronousFileChannel channel = open(path, WRITE)) {
+        var path = createTempFile(tempDir, null, null);
+        var position = ThreadLocalRandom.current().nextLong(1024L);
+        try (var channel = AsynchronousFileChannel.open(path, WRITE)) {
             helloWorld().writeCompletable(channel, position)
                     .get()
                     .force(false);
         }
-        assertEquals(position + BYTES, size(path));
-        final AsynchronousFileChannel channel = open(path, READ);
-        final ByteBuffer buffer = allocate(BYTES);
-        final CompletableFuture<Void> future = new CompletableFuture<>();
+        assertEquals(position + HelloWorld.BYTES, Files.size(path));
+        var channel = AsynchronousFileChannel.open(path, READ);
+        var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
+        CompletableFuture<Void> future = new CompletableFuture<>();
         channel.read(buffer,                                  // buffer
                      position,                                // position
                      position,                                // attachment
                      new CompletionHandler<Integer, Long>() { // handler
                          @Override
-                         public void completed(final Integer result,
-                                               Long attachment) {
+                         public void completed(Integer result, Long attachment) {
                              if (!buffer.hasRemaining()) {
                                  future.complete(null);
                                  return;
@@ -174,8 +163,7 @@ class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Test
                          }
 
                          @Override
-                         public void failed(final Throwable exc,
-                                            final Long attachment) {
+                         public void failed(Throwable exc, Long attachment) {
                              log.error("failed to read from channel" +
                                        "; attachment: {}", attachment, exc);
                              future.completeExceptionally(exc);

@@ -49,16 +49,14 @@ class HelloWorld_05_Write_DataOutput_Test
      * @param tempDir a temporary directory to test with
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(data) invokes set(byte[BYTES])"
-                 + " and writes the array to data")
+    @DisplayName("write(data) invokes set(byte[BYTES]) and writes the array to data")
     @Test
-    void write_InvokeSetArrayWriteArrayToData_(@TempDir final File tempDir)
-            throws IOException {
-        final DataOutput data = Mockito.mock(DataOutput.class);  // <1>
+    void write_InvokeSetArrayWriteArrayToData_(@TempDir File tempDir) throws IOException {
+        var data = Mockito.mock(DataOutput.class);  // <1>
         helloWorld().write(data);                                // <2>
         Mockito.verify(helloWorld(), Mockito.times(1))           // <3>
                 .set(arrayCaptor().capture());
-        final byte[] array = arrayCaptor().getValue();           // <4>
+        var array = arrayCaptor().getValue();           // <4>
         Assertions.assertEquals(HelloWorld.BYTES, array.length); // <5>
         // TODO: Implement!
     }
@@ -72,8 +70,8 @@ class HelloWorld_05_Write_DataOutput_Test
     @DisplayName("write(data) returns data")
     @Test
     void write_ReturnData_() throws IOException {
-        final DataOutput expected = Mockito.mock(DataOutput.class);
-        final DataOutput actual = helloWorld().write(expected);
+        var expected = Mockito.mock(DataOutput.class);
+        var actual = helloWorld().write(expected);
         Assertions.assertSame(expected, actual);
     }
 }

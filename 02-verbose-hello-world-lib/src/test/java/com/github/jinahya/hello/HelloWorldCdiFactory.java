@@ -49,8 +49,8 @@ class HelloWorldCdiFactory {
 //    @javax.enterprise.inject.Produces
     @Named(DEMO)
     @Produces
-    HelloWorld produceNamedDemo(final InjectionPoint injectionPoint) {
-        final var helloWorld = new HelloWorldDemo();
+    HelloWorld produceNamedDemo(InjectionPoint injectionPoint) {
+        var helloWorld = new HelloWorldDemo();
         log.debug("producing {} for {}", helloWorld, injectionPoint);
         return helloWorld;
     }
@@ -65,7 +65,7 @@ class HelloWorldCdiFactory {
     void disposeNamedDemo(
 //            @javax.inject.Named(DEMO)
 //            @javax.enterprise.inject.Disposes
-            @Named(DEMO) @Disposes final HelloWorld helloWorld) {
+            @Named(DEMO) @Disposes HelloWorld helloWorld) {
         log.debug("disposing {}", helloWorld);
         assertTrue(helloWorld instanceof HelloWorldDemo);
     }
@@ -81,8 +81,8 @@ class HelloWorldCdiFactory {
 //    @javax.enterprise.inject.Produces
     @Named(IMPL)
     @Produces
-    HelloWorld produceNamedImpl(final InjectionPoint injectionPoint) {
-        final var helloWorld = new HelloWorldImpl();
+    HelloWorld produceNamedImpl(InjectionPoint injectionPoint) {
+        var helloWorld = new HelloWorldImpl();
         log.debug("producing {} for {}", helloWorld, injectionPoint);
         return helloWorld;
     }
@@ -96,7 +96,7 @@ class HelloWorldCdiFactory {
     void disposeNamedImpl(
 //            @javax.inject.Named(IMPL)
 //            @javax.enterprise.inject.Disposes
-            @Named(IMPL) @Disposes final HelloWorld helloWorld) {
+            @Named(IMPL) @Disposes HelloWorld helloWorld) {
         log.debug("disposing {}", helloWorld);
         assertTrue(helloWorld instanceof HelloWorldImpl);
     }
@@ -111,8 +111,8 @@ class HelloWorldCdiFactory {
 //    @javax.enterprise.inject.Produces
     @Produces
     @QualifiedDemo
-    HelloWorld produceQualifiedDemo(final InjectionPoint injectionPoint) {
-        final var helloWorld = new HelloWorldDemo();
+    HelloWorld produceQualifiedDemo(InjectionPoint injectionPoint) {
+        var helloWorld = new HelloWorldDemo();
         log.debug("producing {} for {}", helloWorld, injectionPoint);
         return helloWorld;
     }
@@ -125,7 +125,7 @@ class HelloWorldCdiFactory {
      */
     void disposeQualifiedDemo(
 //            @javax.enterprise.inject.Disposes
-            @Disposes @QualifiedDemo final HelloWorld helloWorld) {
+            @Disposes @QualifiedDemo HelloWorld helloWorld) {
         log.debug("disposing {}", helloWorld);
         assertTrue(helloWorld instanceof HelloWorldDemo);
     }
@@ -140,8 +140,8 @@ class HelloWorldCdiFactory {
 //    @javax.enterprise.inject.Produces
     @Produces
     @QualifiedImpl
-    HelloWorld produceQualifiedImpl(final InjectionPoint injectionPoint) {
-        final var helloWorld = new HelloWorldImpl();
+    HelloWorld produceQualifiedImpl(InjectionPoint injectionPoint) {
+        var helloWorld = new HelloWorldImpl();
         log.debug("producing {} for {}", helloWorld, injectionPoint);
         return helloWorld;
     }
@@ -154,7 +154,7 @@ class HelloWorldCdiFactory {
      */
     void disposeQualifiedImpl(
 //            @javax.enterprise.inject.Disposes
-            @Disposes @QualifiedImpl final HelloWorld helloWorld) {
+            @Disposes @QualifiedImpl HelloWorld helloWorld) {
         log.debug("disposing {}", helloWorld);
         assertTrue(helloWorld instanceof HelloWorldImpl);
     }

@@ -35,7 +35,7 @@ class HelloWorldMainTcpTest {
     @Test
     void main__() throws IOException, InterruptedException, ExecutionException {
         IHelloWorldServerUtils.submitAndWriteQuit(() -> {
-            final var host = InetAddress.getLoopbackAddress();
+          var host = InetAddress.getLoopbackAddress();
             main("0", host.getHostAddress());
             return null;
         });

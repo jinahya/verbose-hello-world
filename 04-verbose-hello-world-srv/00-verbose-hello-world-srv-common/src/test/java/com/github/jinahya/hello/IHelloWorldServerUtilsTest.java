@@ -49,7 +49,7 @@ class IHelloWorldServerUtilsTest {
     @DisplayName("load() return non-null")
     @Test
     void load_NotNull_() {
-        final var helloWorld = loadHelloWorld();
+        var helloWorld = loadHelloWorld();
         assertNotNull(helloWorld);
     }
 
@@ -57,9 +57,9 @@ class IHelloWorldServerUtilsTest {
     class PortTest {
 
         @Test
-        void writePort(@TempDir final Path tempDir) throws IOException {
-            final var dir = Files.createTempDirectory(tempDir, null);
-            final var port = ThreadLocalRandom.current().nextInt(1, 65536);
+        void writePort(@TempDir Path tempDir) throws IOException {
+            var dir = Files.createTempDirectory(tempDir, null);
+            var port = ThreadLocalRandom.current().nextInt(1, 65536);
             IHelloWorldServerUtils.writePortNumber(dir, port);
             assertThat(dir.resolve("port.txt"))
                     .isRegularFile()
@@ -67,13 +67,13 @@ class IHelloWorldServerUtilsTest {
         }
 
         @Test
-        void writeAndReadPort(@TempDir final Path tempDir)
+        void writeAndReadPort(@TempDir Path tempDir)
                 throws IOException, InterruptedException {
-            final Path dir = Files.createTempDirectory(tempDir, null);
-            final int expected = ThreadLocalRandom.current().nextInt(1, 65536);
-            final var thread = new Thread(() -> {
+            Path dir = Files.createTempDirectory(tempDir, null);
+            int expected = ThreadLocalRandom.current().nextInt(1, 65536);
+            var thread = new Thread(() -> {
                 try {
-                    final var actual = IHelloWorldServerUtils.readPortNumber(dir);
+                    var actual = IHelloWorldServerUtils.readPortNumber(dir);
                     assertThat(actual).isEqualTo(expected);
                 } catch (IOException | InterruptedException e) {
                     log.error("failed to read port", e);

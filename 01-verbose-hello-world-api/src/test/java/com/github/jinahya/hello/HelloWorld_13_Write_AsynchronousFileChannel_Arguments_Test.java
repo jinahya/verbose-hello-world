@@ -47,10 +47,10 @@ class HelloWorld_13_Write_AsynchronousFileChannel_Arguments_Test
     @DisplayName("write(null, ) throws NullPointerException")
     @Test
     void write_ThrowNullPointerException_ChannelIsNull() {
-        final AsynchronousFileChannel channel = null;
-        final long position = new Random().nextLong() & Long.MAX_VALUE;
-        Assertions.assertThrows(NullPointerException.class,
-                                () -> helloWorld().write(channel, position));
+        var service = helloWorld();
+        AsynchronousFileChannel channel = null;
+        var position = new Random().nextLong() & Long.MAX_VALUE;
+        Assertions.assertThrows(NullPointerException.class, () -> service.write(channel, position));
     }
 
     /**
@@ -61,10 +61,10 @@ class HelloWorld_13_Write_AsynchronousFileChannel_Arguments_Test
     @DisplayName("write(, negative) throws IllegalArgumentException")
     @Test
     void write_ThrowIllegalArgumentException_PositionIsNegative() {
-        final AsynchronousFileChannel channel
-                = Mockito.mock(AsynchronousFileChannel.class);
-        final long position = new Random().nextLong() | Long.MIN_VALUE;
+        var service = helloWorld();
+        var channel = Mockito.mock(AsynchronousFileChannel.class);
+        var position = new Random().nextLong() | Long.MIN_VALUE;
         Assertions.assertThrows(IllegalArgumentException.class,
-                                () -> helloWorld().write(channel, position));
+                                () -> service.write(channel, position));
     }
 }

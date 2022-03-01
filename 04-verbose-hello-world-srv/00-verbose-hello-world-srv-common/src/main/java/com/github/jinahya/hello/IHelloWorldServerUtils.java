@@ -75,7 +75,7 @@ import static java.util.ServiceLoader.load;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-final class IHelloWorldServerUtils {
+class IHelloWorldServerUtils {
 
     /**
      * Parses specified command line arguments and applies them to specified function.

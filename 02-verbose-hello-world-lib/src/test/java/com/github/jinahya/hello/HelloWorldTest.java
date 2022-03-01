@@ -52,10 +52,10 @@ abstract class HelloWorldTest {
     @DisplayName("set(null, index) throws NullPointerException")
     @Test
     void set_ThrowNullPointerException_ArrayIsNull() {
-        final var helloWorld = helloWorld();
+        var helloWorld = helloWorld();
         assumeTrue(helloWorld != null);
-        final byte[] array = null;
-        final var index = new Random().nextInt() & Integer.MAX_VALUE;
+        byte[] array = null;
+        var index = new Random().nextInt() & Integer.MAX_VALUE;
         assertThrows(NullPointerException.class, () -> helloWorld.set(null, 0));
     }
 
@@ -66,10 +66,10 @@ abstract class HelloWorldTest {
     @DisplayName("set(array, !positive) throws IndexOutOfBoundsException")
     @Test
     void set_ThrowIndexOutOfBoundsException_IndexIsNegative() {
-        final var helloWorld = helloWorld();
+        var helloWorld = helloWorld();
         assumeTrue(helloWorld != null);
-        final var array = new byte[0];
-        final var index = current().nextInt() | Integer.MIN_VALUE;
+        var array = new byte[0];
+        var index = current().nextInt() | Integer.MIN_VALUE;
         assertThrows(IndexOutOfBoundsException.class,
                      () -> helloWorld.set(array, index));
     }
@@ -83,12 +83,11 @@ abstract class HelloWorldTest {
                  + " when index + BYTES > array.length")
     @Test
     void set_ThrowsIndexOutOfBoundsException_SpaceIsNotEnough() {
-        final HelloWorld helloWorld = helloWorld();
+        HelloWorld helloWorld = helloWorld();
         assumeTrue(helloWorld != null);
-        final var array = new byte[BYTES];
-        final var index = new Random().nextInt(BYTES - 1) + 1;
-        assertThrows(IndexOutOfBoundsException.class,
-                     () -> helloWorld.set(array, index));
+        var array = new byte[BYTES];
+        var index = new Random().nextInt(BYTES - 1) + 1;
+        assertThrows(IndexOutOfBoundsException.class, () -> helloWorld.set(array, index));
     }
 
     /**
@@ -99,10 +98,10 @@ abstract class HelloWorldTest {
                  + " on array starting at index")
     @Test
     void set_SetsHelloWorldBytesOnArrayStartingAtIndex_() {
-        final var helloWorld = helloWorld();
+        var helloWorld = helloWorld();
         assumeTrue(helloWorld != null);
-        final var array = new byte[BYTES];
-        final var index = 0;
+        var array = new byte[BYTES];
+        var index = 0;
         helloWorld.set(array, index);
         // TODO: implement!
     }
@@ -114,11 +113,11 @@ abstract class HelloWorldTest {
     @DisplayName("set(array, index) returns array")
     @Test
     void set_ReturnArray_() {
-        final var helloWorld = helloWorld();
+        var helloWorld = helloWorld();
         assumeTrue(helloWorld != null);
-        final var array = new byte[BYTES];
-        final var index = 0;
-        final var actual = helloWorld.set(array, index);
+        var array = new byte[BYTES];
+        var index = 0;
+        var actual = helloWorld.set(array, index);
         assertSame(array, actual);
     }
 }

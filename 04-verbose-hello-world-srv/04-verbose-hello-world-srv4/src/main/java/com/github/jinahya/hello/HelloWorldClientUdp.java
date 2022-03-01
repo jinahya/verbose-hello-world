@@ -43,19 +43,19 @@ import static java.util.Objects.requireNonNull;
 @Slf4j
 public class HelloWorldClientUdp {
 
-    private static void handle(final Set<SelectionKey> keys,
-                               final SocketAddress endpoint,
-                               final Consumer<? super String> consumer,
-                               final CountDownLatch latch)
+    private static void handle(Set<SelectionKey> keys,
+                               SocketAddress endpoint,
+                               Consumer<? super String> consumer,
+                               CountDownLatch latch)
             throws IOException {
-        for (final var key : keys) {
-            final var channel = (DatagramChannel) key.channel();
+        for (var key : keys) {
+            var channel = (DatagramChannel) key.channel();
             if (key.isWritable()) {
                 channel.send(allocate(0), endpoint);
                 continue;
             }
             if (key.isReadable()) {
-                final var dst = allocate(BYTES);
+                var dst = allocate(BYTES);
                 channel.receive(dst);
                 consumer.accept(new String(dst.array(), UTF_8));
                 latch.countDown();
@@ -66,8 +66,8 @@ public class HelloWorldClientUdp {
         keys.clear();
     }
 
-    static void runClients(final int count, final SocketAddress endpoint,
-                           final Consumer<? super String> consumer)
+    static void runClients(int count, SocketAddress endpoint,
+                           Consumer<? super String> consumer)
             throws IOException {
         if (count <= 0) {
             throw new IllegalArgumentException(
@@ -77,11 +77,11 @@ public class HelloWorldClientUdp {
         requireNonNull(consumer, "consumer is null");
         try (var selector = Selector.open()) {
             for (int i = 0; i < count; i++) {
-                final var client = DatagramChannel.open();
+                var client = DatagramChannel.open();
                 client.configureBlocking(false);
                 client.register(selector, OP_READ | OP_WRITE);
             }
-            final CountDownLatch latch = new CountDownLatch(count);
+            CountDownLatch latch = new CountDownLatch(count);
             while (latch.getCount() > 0L && !currentThread().isInterrupted()) {
                 if (selector.select() == 0) {
                     continue;
@@ -95,7 +95,7 @@ public class HelloWorldClientUdp {
                 if (!latch.await(1L, TimeUnit.MINUTES)) {
                     log.warn("latch is still not broken!");
                 }
-            } catch (final InterruptedException ie) {
+            } catch (InterruptedException ie) {
                 log.error("interrupted while awaiting latch", ie);
             }
         }

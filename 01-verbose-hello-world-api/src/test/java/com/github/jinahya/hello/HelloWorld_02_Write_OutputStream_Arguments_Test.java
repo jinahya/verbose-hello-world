@@ -34,8 +34,7 @@ import java.io.OutputStream;
  * @see HelloWorld_02_Write_OutputStream_Test
  */
 @Slf4j
-class HelloWorld_02_Write_OutputStream_Arguments_Test
-        extends HelloWorldTest {
+class HelloWorld_02_Write_OutputStream_Arguments_Test extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(OutputStream) write(stream)} method throws a {@link
@@ -44,7 +43,7 @@ class HelloWorld_02_Write_OutputStream_Arguments_Test
     @DisplayName("write(null) throws NullPointerException")
     @Test
     void write_ThrowNullPointerException_StreamIsNull() {
-        final OutputStream stream = null;
+        OutputStream stream = null;
         // TODO: Implement!
     }
 }

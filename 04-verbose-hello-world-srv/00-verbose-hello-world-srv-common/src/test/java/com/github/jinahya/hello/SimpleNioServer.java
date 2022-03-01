@@ -46,9 +46,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 @Slf4j
 class SimpleNioServer {
 
-    private static void server(final ServerSocketChannel server,
-                               final Selector selector)
-            throws IOException {
+    private static void server(ServerSocketChannel server, Selector selector) throws IOException {
         server.configureBlocking(false);
         server.register(selector, OP_ACCEPT);
         while (!currentThread().isInterrupted()) {
@@ -56,11 +54,11 @@ class SimpleNioServer {
             if (selector.select() == 0) {
                 continue;
             }
-            final var keys = selector.selectedKeys();
-            for (final var key : keys) {
+            var keys = selector.selectedKeys();
+            for (var key : keys) {
                 if (key.isAcceptable()) {
-                    final var channel = (ServerSocketChannel) key.channel();
-                    final var client = channel.accept();
+                    var channel = (ServerSocketChannel) key.channel();
+                    var client = channel.accept();
 //                    log.debug("[S] connected from {}",
 //                              client.getRemoteAddress());
                     client.configureBlocking(false);
@@ -68,9 +66,9 @@ class SimpleNioServer {
                     continue;
                 }
                 if (key.isWritable()) {
-                    final var channel = (SocketChannel) key.channel();
+                    var channel = (SocketChannel) key.channel();
 //                    log.debug("[S] writing to {}", channel);
-                    for (final var b = allocate(1); b.hasRemaining(); ) {
+                    for (var b = allocate(1); b.hasRemaining(); ) {
                         channel.write(b);
                     }
                     channel.close();
@@ -82,11 +80,11 @@ class SimpleNioServer {
         } // end-of-while
         log.debug("[S] out-of-loop");
         if (selector.selectNow() > 0) {
-            final var keys = selector.selectedKeys();
-            for (final var key : keys) {
+            var keys = selector.selectedKeys();
+            for (var key : keys) {
                 if (key.isWritable()) {
-                    final var channel = (SocketChannel) key.channel();
-                    final var attachment = (ByteBuffer) key.attachment();
+                    var channel = (SocketChannel) key.channel();
+                    var attachment = (ByteBuffer) key.attachment();
                     if (attachment == null) {
                         key.attach(allocate(1));
                     } else if (!attachment.hasRemaining()) {
@@ -102,14 +100,12 @@ class SimpleNioServer {
         }
     }
 
-    private static void clients(final SocketAddress remote,
-                                final Selector selector)
-            throws Exception {
-        final var count = 32;
-        final var executor = newCachedThreadPool();
+    private static void clients(SocketAddress remote, Selector selector) throws Exception {
+        var count = 32;
+        var executor = newCachedThreadPool();
         for (int i = 0; i < count; i++) {
             executor.submit((Callable<Void>) () -> {
-                final var client = SocketChannel.open();
+                var client = SocketChannel.open();
                 client.configureBlocking(false);
                 if (client.connect(remote)) {
 //                    log.debug("[C] connected, immediately");
@@ -132,9 +128,9 @@ class SimpleNioServer {
             if (selector.select() == 0) {
                 continue;
             }
-            final var keys = selector.selectedKeys();
-            for (final var key : keys) {
-                final var channel = (SocketChannel) key.channel();
+            var keys = selector.selectedKeys();
+            for (var key : keys) {
+                var channel = (SocketChannel) key.channel();
                 if (key.isConnectable()) {
                     try {
                         if (channel.finishConnect()) {
@@ -143,7 +139,7 @@ class SimpleNioServer {
                             key.interestOps(key.interestOps() & ~OP_CONNECT);
                             key.interestOps(key.interestOps() | OP_READ);
                         }
-                    } catch (final IOException ioe) {
+                    } catch (IOException ioe) {
                         log.error("failed to finish connect", ioe);
                         channel.close();
                     }
@@ -152,7 +148,7 @@ class SimpleNioServer {
                 if (key.isReadable()) {
 //                    log.debug("[C] reading from {}",
 //                              channel.getRemoteAddress());
-                    for (final var b = allocate(1); b.hasRemaining(); ) {
+                    for (var b = allocate(1); b.hasRemaining(); ) {
                         if (channel.read(b) == -1) {
                             log.error("eof");
                         }
@@ -167,11 +163,11 @@ class SimpleNioServer {
         } // end-of-while
         log.debug("[C] out-of-loop");
         if (selector.selectNow() > 0) {
-            final var keys = selector.selectedKeys();
-            for (final var key : keys) {
-                final var channel = (SocketChannel) key.channel();
+            var keys = selector.selectedKeys();
+            for (var key : keys) {
+                var channel = (SocketChannel) key.channel();
                 if (key.isReadable()) {
-                    final var attachment = (ByteBuffer) key.attachment();
+                    var attachment = (ByteBuffer) key.attachment();
                     if (attachment == null) {
                         key.attach(allocate(1));
                     } else if (!attachment.hasRemaining()) { // all read
@@ -190,28 +186,27 @@ class SimpleNioServer {
         }
     }
 
-    public static void main(final String... args) throws Exception {
+    public static void main(String... args) throws Exception {
         getSystemClassLoader().setDefaultAssertionStatus(true);
-        final var serverSocket = ServerSocketChannel.open();
+        var serverSocket = ServerSocketChannel.open();
         serverSocket.bind(new InetSocketAddress(getLoopbackAddress(), 0));
         log.debug("server bound to {}", serverSocket.getLocalAddress());
-
-        final var serverSelector = Selector.open();
-        final Thread serverThread = new Thread(() -> {
+        var serverSelector = Selector.open();
+        Thread serverThread = new Thread(() -> {
             try {
                 server(serverSocket, serverSelector);
-            } catch (final IOException ioe) {
+            } catch (IOException ioe) {
                 log.error("io error in server", ioe);
             }
         });
         serverThread.start();
         log.debug("server thread started");
 
-        final var clientSelector = Selector.open();
-        final var clientsThread = new Thread(() -> {
+        var clientSelector = Selector.open();
+        var clientsThread = new Thread(() -> {
             try {
                 clients(serverSocket.getLocalAddress(), clientSelector);
-            } catch (final Exception e) {
+            } catch (Exception e) {
                 log.error("error in clients", e);
             }
         });

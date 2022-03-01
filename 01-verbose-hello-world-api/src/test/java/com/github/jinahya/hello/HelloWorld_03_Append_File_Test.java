@@ -37,8 +37,7 @@ import java.io.OutputStream;
  * @see HelloWorld_03_Append_File_Arguments_Test
  */
 @Slf4j
-class HelloWorld_03_Append_File_Test
-        extends HelloWorldTest {
+class HelloWorld_03_Append_File_Test extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#append(File) append(file)} method invokes {@link
@@ -51,11 +50,9 @@ class HelloWorld_03_Append_File_Test
     @DisplayName("append(file) invokes write(FileOutputStream)"
                  + " and 12 bytes are appended")
     @Test
-    void append_InvokeWriteStreamAnd12BytesAppended_(
-            @TempDir final File tempDir)
-            throws IOException {
-        final File file = File.createTempFile("tmp", null, tempDir);
-        final long length = file.length();
+    void append_InvokeWriteStreamAnd12BytesAppended_(@TempDir File tempDir) throws IOException {
+        var file = File.createTempFile("tmp", null, tempDir);
+        var length = file.length();
         // TODO: Implement!
     }
 
@@ -67,9 +64,9 @@ class HelloWorld_03_Append_File_Test
      */
     @DisplayName("append(file) returns file")
     @Test
-    void append_ReturnFile_(@TempDir final File tempDir) throws IOException {
-        final File file = File.createTempFile("tmp", null, tempDir);
-        final File actual = helloWorld().append(file);
+    void append_ReturnFile_(@TempDir File tempDir) throws IOException {
+        var file = File.createTempFile("tmp", null, tempDir);
+        var actual = helloWorld().append(file);
         Assertions.assertSame(file, actual);
     }
 }

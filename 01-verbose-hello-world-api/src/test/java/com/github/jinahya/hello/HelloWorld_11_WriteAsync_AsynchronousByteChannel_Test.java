@@ -59,26 +59,22 @@ class HelloWorld_11_WriteAsync_AsynchronousByteChannel_Test
     @DisplayName("writeAsync(channel, service) invokes put(buffer)"
                  + " and writes the buffer to channel")
     @Test
-    void writeAsync_InvokePutBufferWriteBufferToChannel_(
-            @TempDir final Path tempDir)
+    void writeAsync_InvokePutBufferWriteBufferToChannel_(@TempDir Path tempDir)
             throws InterruptedException, ExecutionException {
-        final AsynchronousByteChannel channel = Mockito.mock(
-                AsynchronousByteChannel.class);
-        Mockito.lenient().when(channel.write(ArgumentMatchers.notNull()))
+        var channel = Mockito.mock(AsynchronousByteChannel.class);
+        Mockito.lenient()
+                .when(channel.write(ArgumentMatchers.notNull()))
                 .thenAnswer(i -> {
-                    final ByteBuffer buffer = i.getArgument(0);
-                    final int written
-                            = new Random().nextInt(buffer.remaining() + 1);
+                    var buffer = i.getArgument(0, ByteBuffer.class);
+                    int written = new Random().nextInt(buffer.remaining() + 1);
                     buffer.position(buffer.position() + written);
-                    @SuppressWarnings({"unchecked"})
-                    final Future<Integer> future = Mockito.mock(Future.class);
+                    var future = Mockito.mock(Future.class);
                     Mockito.doReturn(written).when(future).get();
                     return future;
                 });
-        final ExecutorService service = Executors.newSingleThreadExecutor();
-        final Future<AsynchronousByteChannel> future
-                = helloWorld().writeAsync(channel, service);
-        final AsynchronousByteChannel actual = future.get();
+        var executor = Executors.newSingleThreadExecutor();
+        var future = helloWorld().writeAsync(channel, executor);
+        var actual = future.get();
         Assertions.assertSame(channel, actual);
         // TODO: Implement!
     }

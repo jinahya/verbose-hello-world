@@ -37,7 +37,7 @@ import static java.nio.ByteBuffer.wrap;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 
 @Slf4j
-final class HelloWorldClientTcp {
+class HelloWorldClientTcp {
 
     static void runClients(int count, SocketAddress endpoint, Consumer<? super String> consumer)
             throws IOException {
@@ -48,7 +48,7 @@ final class HelloWorldClientTcp {
         Objects.requireNonNull(consumer, "consumer is null");
         try (var selector = Selector.open()) {
             for (int i = 0; i < count; i++) {
-                final var client = SocketChannel.open();
+                var client = SocketChannel.open();
                 client.configureBlocking(false);
                 if (client.connect(endpoint)) { // connected, immediately
                     log.debug("[C] connected to {}", client.getRemoteAddress());
@@ -57,14 +57,14 @@ final class HelloWorldClientTcp {
                     client.register(selector, SelectionKey.OP_CONNECT);
                 }
             }
-            final var latch = new CountDownLatch(count);
+            var latch = new CountDownLatch(count);
             while (latch.getCount() > 0L) {
                 if (selector.select(TimeUnit.SECONDS.toMillis(1L)) == 0) {
                     continue;
                 }
-                final var keys = selector.selectedKeys();
-                for (final var key : selector.selectedKeys()) {
-                    final var channel = (SocketChannel) key.channel();
+                var keys = selector.selectedKeys();
+                for (var key : selector.selectedKeys()) {
+                    var channel = (SocketChannel) key.channel();
                     if (key.isConnectable()) { // ready-to-connect
                         try {
                             if (channel.finishConnect()) {
@@ -72,7 +72,7 @@ final class HelloWorldClientTcp {
                                 key.interestOps(key.interestOps() & ~SelectionKey.OP_CONNECT);
                                 channel.register(selector, SelectionKey.OP_READ);
                             }
-                        } catch (final IOException ioe) {
+                        } catch (IOException ioe) {
                             log.error("failed to finish connect", ioe);
                             channel.close(); // key.cancel();
                             latch.countDown();
@@ -80,7 +80,7 @@ final class HelloWorldClientTcp {
                         continue;
                     }
                     if (key.isReadable()) { // ready-to-read
-                        final var buffer = wrap(new byte[BYTES]);
+                      var buffer = wrap(new byte[BYTES]);
                         // TODO: fill buffer from the channel
                         consumer.accept(new String(buffer.array(), US_ASCII));
                         channel.close(); // key.cancel();

@@ -29,8 +29,7 @@ import static java.lang.Class.forName;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-class HelloWorldModule
-        extends AbstractModule {
+class HelloWorldModule extends AbstractModule {
 
     /**
      * The fully qualified name of the {@code HelloWorldImpl} class.
@@ -45,7 +44,7 @@ class HelloWorldModule
     static {
         try {
             HELLO_WORLD_IMPL_CLASS = forName(HELLO_WORLD_IMPL_FQCN).asSubclass(HelloWorld.class);
-        } catch (final ClassNotFoundException cnfe) {
+        } catch (ClassNotFoundException cnfe) {
             throw new InstantiationError(cnfe.getMessage());
         }
     }

@@ -34,8 +34,7 @@ import java.nio.file.Path;
  * @see HelloWorld_09_Append_Path_Test
  */
 @Slf4j
-class HelloWorld_09_Append_Path_Arguments_Test
-        extends HelloWorldTest {
+class HelloWorld_09_Append_Path_Arguments_Test extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#append(Path) append(path)} method throws a {@link
@@ -44,8 +43,8 @@ class HelloWorld_09_Append_Path_Arguments_Test
     @DisplayName("append((Path) null) throws NullPointerException")
     @Test
     void append_ThrowNullPointerException_PathIsNull() {
-        final Path path = null;
-        Assertions.assertThrows(NullPointerException.class,
-                                () -> helloWorld().append(path));
+        Path path = null;
+        var service = helloWorld();
+        Assertions.assertThrows(NullPointerException.class, () -> service.append(path));
     }
 }

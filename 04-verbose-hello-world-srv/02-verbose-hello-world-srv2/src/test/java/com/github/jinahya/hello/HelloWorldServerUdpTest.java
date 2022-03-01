@@ -35,10 +35,9 @@ import java.nio.file.Path;
 class HelloWorldServerUdpTest {
 
     @Test
-    void test(@TempDir final Path tempDir)
-            throws IOException, InterruptedException {
-        final var host = InetAddress.getLoopbackAddress();
-        final Path dir = Files.createTempDirectory(tempDir, null);
+    void test(@TempDir Path tempDir) throws IOException, InterruptedException {
+        var host = InetAddress.getLoopbackAddress();
+        var dir = Files.createTempDirectory(tempDir, null);
         var thread = IHelloWorldServerUtils.startReadingPortNumber(dir, p -> {
             var endpoint = new InetSocketAddress(host, p);
             try {

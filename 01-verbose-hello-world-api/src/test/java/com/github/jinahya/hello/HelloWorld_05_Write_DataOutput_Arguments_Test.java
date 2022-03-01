@@ -35,8 +35,7 @@ import java.io.DataOutput;
  * @see HelloWorld_05_Write_DataOutput_Test
  */
 @Slf4j
-class HelloWorld_05_Write_DataOutput_Arguments_Test
-        extends HelloWorldTest {
+class HelloWorld_05_Write_DataOutput_Arguments_Test extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(DataOutput) write(data)} method throws a {@link
@@ -45,8 +44,7 @@ class HelloWorld_05_Write_DataOutput_Arguments_Test
     @DisplayName("write((DataOutput) null) method throws NullPointerException")
     @Test
     void write_ThrowsNullPointerException_DataIsNull() {
-        final DataOutput data = null;
-        Assertions.assertThrows(NullPointerException.class,
-                                () -> helloWorld().write(data));
+        DataOutput data = null;
+        Assertions.assertThrows(NullPointerException.class, () -> helloWorld().write(data));
     }
 }

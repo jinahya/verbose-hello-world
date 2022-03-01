@@ -35,8 +35,7 @@ import java.nio.ByteBuffer;
  * @see HelloWorld_07_Put_ByteBuffer_Arguments_Test
  */
 @Slf4j
-class HelloWorld_07_Put_ByteBuffer_Test
-        extends HelloWorldTest {
+class HelloWorld_07_Put_ByteBuffer_Test extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method, when invoked with a byte
@@ -48,12 +47,12 @@ class HelloWorld_07_Put_ByteBuffer_Test
                  + " and increments position")
     @Test
     void put_InvokeSetArrayIndexAndIncrementPosition_BufferHasBackingArray() {
-        final ByteBuffer buffer = ByteBuffer.wrap(new byte[HelloWorld.BYTES]);
+        var buffer = ByteBuffer.wrap(new byte[HelloWorld.BYTES]);
         assert buffer.remaining() >= HelloWorld.BYTES;
         assert buffer.hasArray();
-        final byte[] array = buffer.array();
-        final int arrayOffset = buffer.arrayOffset();
-        final int position = buffer.position();
+        var array = buffer.array();
+        int arrayOffset = buffer.arrayOffset();
+        int position = buffer.position();
         // TODO: Implement!
     }
 
@@ -68,14 +67,13 @@ class HelloWorld_07_Put_ByteBuffer_Test
     @Test
     void put_InvokeSetArrayPutArrayToBuffer_BufferHasNoBackingArray() {
         // mock-maker-inline
-        final ByteBuffer buffer = Mockito.spy(
-                ByteBuffer.allocateDirect(HelloWorld.BYTES));  // <1>
+        var buffer = Mockito.spy(ByteBuffer.allocateDirect(HelloWorld.BYTES));  // <1>
         if (buffer.hasArray()) {                               // <2>
             log.info("a direct byte buffer has a backing array?");
             Mockito.when(buffer.hasArray()).thenReturn(false); // <3>
         }
         assert !buffer.hasArray();
-        final int position = buffer.position();
+        var position = buffer.position();
         // TODO: Implement!
     }
 
@@ -86,8 +84,8 @@ class HelloWorld_07_Put_ByteBuffer_Test
     @DisplayName("put(buffer) returns buffer")
     @Test
     void put_ReturnBuffer_() {
-        final ByteBuffer expected = ByteBuffer.allocate(HelloWorld.BYTES);
-        final ByteBuffer actual = helloWorld().put(expected);
+        var expected = ByteBuffer.allocate(HelloWorld.BYTES);
+        var actual = helloWorld().put(expected);
         Assertions.assertSame(expected, actual);
     }
 }

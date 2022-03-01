@@ -40,8 +40,8 @@ public class HelloWorldMainTcp {
      * @param args an array of command line arguments.
      * @throws IOException if an I/O error occurs.
      */
-    public static void main(final String... args) throws IOException {
-        final var endpoint = IHelloWorldServerUtils.parseEndpoint(args);
+    public static void main(String... args) throws IOException {
+      var endpoint = IHelloWorldServerUtils.parseEndpoint(args);
         try (var server = new HelloWorldServerTcp()) {
             server.open(endpoint, null);
             IHelloWorldServerUtils.readQuit();

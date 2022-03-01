@@ -21,26 +21,23 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.Random;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.LongAdder;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * A class for testing {@link HelloWorld#writeCompletable(AsynchronousByteChannel)} method.
@@ -66,16 +63,13 @@ class HelloWorld_12_WriteCompletable_AsynchronousByteChannel_Test
     @Test
     void writeAsync_InvokePutBufferWriteBufferToChannel_()
             throws InterruptedException, ExecutionException {
-        final LongAdder writtenSoFar = new LongAdder();
-        final AsynchronousByteChannel channel
-                = mock(AsynchronousByteChannel.class);
+        var writtenSoFar = new LongAdder();
+        var channel = Mockito.mock(AsynchronousByteChannel.class);
         lenient().doAnswer(i -> {
-                    final ByteBuffer src = i.getArgument(0);
-                    final Void attachment = i.getArgument(1);
-                    final CompletionHandler<Integer, Void> handler
-                            = i.getArgument(2);
-                    final int written
-                            = new Random().nextInt(src.remaining() + 1);
+                    var src = i.getArgument(0, ByteBuffer.class);
+                    Void attachment = i.getArgument(1);
+                    CompletionHandler<Integer, Void> handler = i.getArgument(2);
+                    var written = new Random().nextInt(src.remaining() + 1);
                     src.position(src.position() + written);
                     writtenSoFar.add(written);
                     handler.completed(written, attachment);
@@ -86,13 +80,13 @@ class HelloWorld_12_WriteCompletable_AsynchronousByteChannel_Test
                        any(),     // attachment
                        notNull()  // handler
                 );
-        final CompletableFuture<AsynchronousByteChannel> future
-                = helloWorld().writeCompletable(channel);
-        final AsynchronousByteChannel actual = future.get();
-        assertSame(channel, actual);
-        verify(helloWorld(), times(1)).put(bufferCaptor().capture());
-        final ByteBuffer buffer = bufferCaptor().getValue();
-        assertEquals(BYTES, buffer.capacity());
+        var future = helloWorld().writeCompletable(channel);
+        var actual = future.get();
+        Assertions.assertSame(channel, actual);
+        Mockito.verify(helloWorld(), times(1))
+                .put(bufferCaptor().capture());
+        var buffer = bufferCaptor().getValue();
+        Assertions.assertEquals(BYTES, buffer.capacity());
         // TODO: Implement!
     }
 }

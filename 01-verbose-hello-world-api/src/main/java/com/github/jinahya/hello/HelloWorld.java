@@ -95,7 +95,7 @@ public interface HelloWorld {
      * method with specified {@code array} and {@code 0}.
      * @see #set(byte[], int)
      */
-    default byte[] set(final byte[] array) {
+    default byte[] set(byte[] array) {
         // TODO: Implement!
         return null;
     }
@@ -113,7 +113,7 @@ public interface HelloWorld {
      * @see #set(byte[])
      * @see OutputStream#write(byte[])
      */
-    default <T extends OutputStream> T write(final T stream)
+    default <T extends OutputStream> T write(T stream)
             throws IOException {
         // TODO: implement!
         return null;
@@ -132,7 +132,7 @@ public interface HelloWorld {
      * @see java.io.FileOutputStream#FileOutputStream(File, boolean)
      * @see #write(OutputStream)
      */
-    default <T extends File> T append(final T file) throws IOException {
+    default <T extends File> T append(T file) throws IOException {
         if (file == null) {
             throw new NullPointerException("file is null");
         }
@@ -152,7 +152,7 @@ public interface HelloWorld {
      * @see Socket#getOutputStream()
      * @see #write(OutputStream)
      */
-    default <T extends Socket> T send(final T socket) throws IOException {
+    default <T extends Socket> T send(T socket) throws IOException {
         if (socket == null) {
             throw new NullPointerException("socket is null");
         }
@@ -173,11 +173,11 @@ public interface HelloWorld {
      * @see #set(byte[])
      * @see DataOutput#write(byte[])
      */
-    default <T extends DataOutput> T write(final T data) throws IOException {
+    default <T extends DataOutput> T write(T data) throws IOException {
         if (data == null) {
             throw new NullPointerException("data is null");
         }
-        final byte[] array = set(new byte[BYTES]);
+        byte[] array = set(new byte[BYTES]);
         // TODO: Implement!
         return data;
     }
@@ -196,12 +196,11 @@ public interface HelloWorld {
      * @see #set(byte[])
      * @see RandomAccessFile#write(byte[])
      */
-    default <T extends RandomAccessFile> T write(final T file)
-            throws IOException {
+    default <T extends RandomAccessFile> T write(T file) throws IOException {
         if (file == null) {
             throw new NullPointerException("file is null");
         }
-        final byte[] array = new byte[BYTES];
+        byte[] array = new byte[BYTES];
         set(array);
         file.write(array);
         return file;
@@ -245,7 +244,7 @@ public interface HelloWorld {
      * @see #set(byte[])
      * @see ByteBuffer#put(byte[])
      */
-    default <T extends ByteBuffer> T put(final T buffer) {
+    default <T extends ByteBuffer> T put(T buffer) {
         if (buffer == null) {
             throw new NullPointerException("buffer is null");
         }
@@ -274,7 +273,7 @@ public interface HelloWorld {
      * @see ByteBuffer#flip()
      * @see WritableByteChannel#write(ByteBuffer)
      */
-    default <T extends WritableByteChannel> T write(final T channel)
+    default <T extends WritableByteChannel> T write(T channel)
             throws IOException {
         if (channel == null) {
             throw new NullPointerException("channel is null");
@@ -298,7 +297,7 @@ public interface HelloWorld {
      * @see FileChannel#open(Path, OpenOption...)
      * @see #write(WritableByteChannel)
      */
-    default <T extends Path> T append(final T path) throws IOException {
+    default <T extends Path> T append(T path) throws IOException {
         if (path == null) {
             throw new NullPointerException("path is null");
         }
@@ -319,12 +318,12 @@ public interface HelloWorld {
      * channel(buffer)} and {@link Future#get() getting} the result while the {@code buffer} has
      * {@link ByteBuffer#hasRemaining() remaining}.
      */
-    default <T extends AsynchronousByteChannel> T write(final T channel)
+    default <T extends AsynchronousByteChannel> T write(T channel)
             throws InterruptedException, ExecutionException {
         if (channel == null) {
             throw new NullPointerException("channel is null");
         }
-        final ByteBuffer buffer = ByteBuffer.allocate(BYTES);
+        var buffer = ByteBuffer.allocate(BYTES);
         put(buffer);
         buffer.flip();
         // TODO: Implement!
@@ -333,24 +332,23 @@ public interface HelloWorld {
 
     /**
      * Writes, asynchronously, the <a href="#hello-world-bytes">hello-world-bytes</a> to specified
-     * channel using specified executor service.
+     * channel using specified executor executor.
      *
-     * @param channel the channel to which bytes are written.
-     * @param service the executor service to which a task is submitted.
+     * @param channel  the channel to which bytes are written.
+     * @param executor the executor service to which a task is submitted.
      * @return A future representing the result of the operation.
-     * @implSpec The default implementation submits a task, to specified service, which simply
+     * @implSpec The default implementation submits a task, to specified executor, which simply
      * returns the result of {@link #write(AsynchronousByteChannel) #write(channel)} method.
      */
     default <T extends AsynchronousByteChannel> Future<T> writeAsync(
-            final T channel,
-            final ExecutorService service) {
+            T channel, ExecutorService executor) {
         if (channel == null) {
             throw new NullPointerException("channel is null");
         }
-        if (service == null) {
-            throw new NullPointerException("service is null");
+        if (executor == null) {
+            throw new NullPointerException("executor is null");
         }
-        return service.submit(() -> {
+        return executor.submit(() -> {
             // TODO: Implement!
             return channel;
         });
@@ -363,13 +361,12 @@ public interface HelloWorld {
      * @param channel the channel to which bytes are written.
      * @return a completable future of {@code channel}.
      */
-    default <T extends AsynchronousByteChannel> CompletableFuture<T> writeCompletable(
-            final T channel) {
+    default <T extends AsynchronousByteChannel> CompletableFuture<T> writeCompletable(T channel) {
         if (channel == null) {
             throw new NullPointerException("channel is null");
         }
-        final CompletableFuture<T> future = new CompletableFuture<>();
-        final ByteBuffer buffer = ByteBuffer.allocate(BYTES);
+        CompletableFuture<T> future = new CompletableFuture<>();
+        var buffer = ByteBuffer.allocate(BYTES);
         put(buffer);
         buffer.flip();
         future.complete(channel); // TODO: Replace!!!
@@ -392,24 +389,21 @@ public interface HelloWorld {
      * @see #put(ByteBuffer)
      * @see AsynchronousFileChannel#write(ByteBuffer, long)
      */
-    default <T extends AsynchronousFileChannel> T write(final T channel,
-                                                        long position)
+    default <T extends AsynchronousFileChannel> T write(T channel, long position)
             throws InterruptedException, ExecutionException {
         if (channel == null) {
             throw new NullPointerException("channel is null");
         }
         if (position < 0L) {
-            throw new IllegalArgumentException(
-                    "position(" + position + ") is negative");
+            throw new IllegalArgumentException("position(" + position + ") is negative");
         }
-        final ByteBuffer buffer = ByteBuffer.allocate(BYTES);
+        var buffer = ByteBuffer.allocate(BYTES);
         put(buffer);
         buffer.flip();
         while (buffer.hasRemaining()) {
-            final Future<Integer> future
-                    = channel.write(buffer, position); // <1>
-            final int written = future.get();          // <2>
-            position += written;                       // <3>
+            var future = channel.write(buffer, position); // <1>
+            int written = future.get();                   // <2>
+            position += written;                          // <3>
         }
         return channel;
     }
@@ -420,28 +414,25 @@ public interface HelloWorld {
      *
      * @param channel  the channel to which bytes are written.
      * @param position the file position at which the transfer is to begin; must be non-negative.
-     * @param service  an executor service for submitting a task.
+     * @param executor an executor service for submitting a task.
      * @return A future representing the result of the operation.
      * @implSpec The default implementation {@link ExecutorService#submit(Callable) submits}, to
-     * specified service, a task which simply returns the result of {@link
+     * specified executor, a task which simply returns the result of {@link
      * #write(AsynchronousFileChannel, long) #write(channel, position)} method.
      * @see #write(AsynchronousFileChannel, long)
      */
     default <T extends AsynchronousFileChannel> Future<T> writeAsync(
-            final T channel,
-            final long position,
-            final ExecutorService service) {
+            T channel, long position, ExecutorService executor) {
         if (channel == null) {
             throw new NullPointerException("channel is null");
         }
         if (position < 0L) {
-            throw new IllegalArgumentException(
-                    "position(" + position + ") is negative");
+            throw new IllegalArgumentException("position(" + position + ") is negative");
         }
-        if (service == null) {
-            throw new NullPointerException("service is null");
+        if (executor == null) {
+            throw new NullPointerException("executor is null");
         }
-        return service.submit(() -> write(channel, position));
+        return executor.submit(() -> write(channel, position));
     }
 
     /**
@@ -460,39 +451,36 @@ public interface HelloWorld {
      * @see #write(AsynchronousFileChannel, long)
      */
     default <T extends AsynchronousFileChannel> CompletableFuture<T> writeCompletable(
-            final T channel, final long position) {
+            T channel, long position) {
         if (channel == null) {
             throw new NullPointerException("channel is null");
         }
         if (position < 0L) {
-            throw new IllegalArgumentException(
-                    "position(" + position + ") is negative");
+            throw new IllegalArgumentException("position(" + position + ") is negative");
         }
-        final CompletableFuture<T> future = new CompletableFuture<>();
-        final ByteBuffer buffer = ByteBuffer.allocate(BYTES);
+        var future = new CompletableFuture<T>();
+        var buffer = ByteBuffer.allocate(BYTES);
         put(buffer);
         buffer.flip();
-        channel.write(buffer,                                  // buffer
-                      position,                                // position
-                      position,                                // attachment
-                      new CompletionHandler<Integer, Long>() { // handler
+        channel.write(buffer,                     // src
+                      position,                   // position
+                      position,                   // attachment
+                      new CompletionHandler<>() { // handler
                           @Override
-                          public void completed(final Integer result,
-                                                Long attachment) {
+                          public void completed(Integer result, Long attachment) {
                               if (!buffer.hasRemaining()) {            // <1>
                                   future.complete(channel);            // <2>
                                   return;
                               }
                               attachment += result;                    // <3>
-                              channel.write(buffer,     // buffer      // <4>
+                              channel.write(buffer,     // src         // <4>
                                             attachment, // position
                                             attachment, // attachment
                                             this);      // handler
                           }
 
                           @Override
-                          public void failed(final Throwable exc,
-                                             final Long attachment) {
+                          public void failed(Throwable exc, Long attachment) {
                               future.completeExceptionally(exc);
                           }
                       });

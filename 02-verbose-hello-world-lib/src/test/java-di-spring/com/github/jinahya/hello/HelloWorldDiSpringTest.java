@@ -28,9 +28,9 @@ class HelloWorldDiSpringTest
 
     @BeforeEach
     void inject() {
-        final var context = new AnnotationConfigApplicationContext(
+        var context = new AnnotationConfigApplicationContext(
                 HelloWorldDiSpringConfiguration.class);
-        final var factory = context.getAutowireCapableBeanFactory();
+        var factory = context.getAutowireCapableBeanFactory();
         factory.autowireBean(this);
     }
 }

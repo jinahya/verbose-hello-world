@@ -43,8 +43,25 @@ abstract class AbstractHelloWorldServer implements IHelloWorldServer {
         super();
     }
 
-    abstract void openInternal(SocketAddress endpoint, Path dir) throws IOException;
+    /**
+     * Opens this server binding to specified socket address and writes the port number, on which
+     * this server is listening, to a file of predefined name in specified directory.
+     *
+     * @param endpoint an endpoint to bind.
+     * @param dir      the directory to which the file is created; may be {@code null} in which case
+     *                 the file is not written.
+     * @throws IOException if an I/O error occurs.
+     */
+    protected abstract void openInternal(SocketAddress endpoint, Path dir) throws IOException;
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param endpoint {@inheritDoc}
+     * @param dir      {@inheritDoc}
+     * @throws IOException {@inheritDoc}
+     * @implSpec Invokes {@link #openInternal(SocketAddress, Path)} method.
+     */
     @Override
     public void open(SocketAddress endpoint, Path dir) throws IOException {
         try {
@@ -56,8 +73,19 @@ abstract class AbstractHelloWorldServer implements IHelloWorldServer {
         }
     }
 
-    abstract void closeInternal() throws IOException;
+    /**
+     * Closes this server and releases any system resources associated with it.
+     *
+     * @throws IOException if an I/O error occurs.
+     */
+    protected abstract void closeInternal() throws IOException;
 
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IOException {@inheritDoc}
+     * @implSpec Invokes {@link #closeInternal()} method.
+     */
     @Override
     public void close() throws IOException {
         try {

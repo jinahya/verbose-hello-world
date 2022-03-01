@@ -36,25 +36,25 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 @Slf4j
 class SimpleDatagramServer {
 
-    public static void main(final String... args) throws IOException {
-        final var socket = new DatagramSocket(null);
+    public static void main(String... args) throws IOException {
+        var socket = new DatagramSocket(null);
         socket.bind(new InetSocketAddress(getLoopbackAddress(), 0));
         log.debug("bound to {}", socket.getLocalSocketAddress());
         new Thread(() -> {
             try {
                 sleep(SECONDS.toMillis(4L));
                 socket.close();
-            } catch (final InterruptedException ie) {
+            } catch (InterruptedException ie) {
                 log.error("interrupted", ie);
                 currentThread().interrupt();
             }
         }).start();
         while (!socket.isClosed()) {
-            final var packet = new DatagramPacket(new byte[0], 0);
+            var packet = new DatagramPacket(new byte[0], 0);
             try {
                 socket.receive(packet);
                 log.debug("received from {}", packet.getSocketAddress());
-            } catch (final IOException ioe) {
+            } catch (IOException ioe) {
                 if (socket.isClosed()) {
                     break;
                 }

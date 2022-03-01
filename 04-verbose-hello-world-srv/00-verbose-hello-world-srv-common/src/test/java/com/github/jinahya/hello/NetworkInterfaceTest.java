@@ -85,9 +85,9 @@ class NetworkInterfaceTest {
     @Disabled("takes too long")
     @Test
     void printNetworkInterfaces() throws SocketException {
-        final var nie = NetworkInterface.getNetworkInterfaces();
+        var nie = NetworkInterface.getNetworkInterfaces();
         while (nie.hasMoreElements()) {
-            final var ni = nie.nextElement();
+            var ni = nie.nextElement();
             log.debug("network interface: {}", ni);
             log.debug("\tdisplay name: {}", ni.getDisplayName());
             log.debug("\thardware address: {}",
@@ -118,7 +118,7 @@ class NetworkInterfaceTest {
             log.debug("\tparent: " + ni.getParent());
             for (var si = ni.getSubInterfaces();
                  si.hasMoreElements(); ) {
-                final var subInterface = si.nextElement();
+                var subInterface = si.nextElement();
                 log.debug("\tsub interface: {}", subInterface);
             }
             log.debug("\tloopback: {}", ni.isLoopback());
