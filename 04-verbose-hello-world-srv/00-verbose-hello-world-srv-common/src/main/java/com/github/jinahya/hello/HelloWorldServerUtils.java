@@ -27,7 +27,6 @@ import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.EOFException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
@@ -38,7 +37,6 @@ import java.net.SocketAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -63,10 +61,7 @@ import java.util.function.IntFunction;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static java.lang.Integer.parseInt;
 import static java.lang.System.setIn;
-import static java.net.InetAddress.getByName;
-import static java.net.InetAddress.getLocalHost;
 import static java.util.ServiceLoader.load;
 
 /**
@@ -78,9 +73,9 @@ import static java.util.ServiceLoader.load;
 class IHelloWorldServerUtils {
 
     /**
-     * Parses specified command line arguments and applies them to specified function.
+     * Parses specified arguments and does currying to specified function.
      *
-     * @param args     the command line arguments.
+     * @param args     the arguments to parse.
      * @param function the function to apply.
      * @param <R>      result type parameter
      * @return the result of the {@code function}.
@@ -92,21 +87,29 @@ class IHelloWorldServerUtils {
             throws UnknownHostException {
         Objects.requireNonNull(args, "args is null");
         Objects.requireNonNull(function, "function is null");
-        var port = 0;
+        var port = 0; // any available
         if (args.length > 0) {
-            port = parseInt(args[0]);
+            port = Integer.parseInt(args[0]);
+            if (port < 0 || port > 65535) {
+                throw new IllegalArgumentException("invalid port number parsed: " + port);
+            }
         }
-        var host = getLocalHost();
+        var host = InetAddress.getByName("0.0.0.0"); // all network interfaces
         if (args.length > 1) {
-            host = getByName(args[1]);
+            try {
+                host = InetAddress.getByName(args[1]);
+            } catch (UnknownHostException uhe) {
+                log.error("failed to determine an address from {}", args[1]);
+                throw uhe;
+            }
         }
         return function.apply(port).apply(host);
     }
 
     /**
-     * Parses specified command line arguments and applies them to specified function.
+     * Parses specified arguments and applies a port and a host to specified function.
      *
-     * @param args     the command line arguments.
+     * @param args     the arguments to parse.
      * @param function the function to apply.
      * @param <R>      result type parameter
      * @return the result of the {@code function}.
@@ -116,17 +119,20 @@ class IHelloWorldServerUtils {
             String[] args,
             BiFunction<? super Integer, ? super InetAddress, ? extends R> function)
             throws UnknownHostException {
+        Objects.requireNonNull(args, "args is null");
+        Objects.requireNonNull(function, "function is null");
         return parseEndpoint(args, p -> h -> function.apply(p, h));
     }
 
     /**
-     * Parses specified command line arguments and returns a socket address to bind.
+     * Parses specified arguments and returns a socket address.
      *
      * @param args the command line arguments.
      * @return a socket address to bind.
      * @throws UnknownHostException if {@code args[1]} is not known as an address.
      */
-    static SocketAddress parseEndpoint(String... args) throws UnknownHostException {
+    public static SocketAddress parseEndpoint(String... args) throws UnknownHostException {
+        Objects.requireNonNull(args, "args is null");
         return parseEndpoint(args, (p, h) -> new InetSocketAddress(h, p));
     }
 
@@ -143,26 +149,27 @@ class IHelloWorldServerUtils {
         }
     }
 
-    private static void readLineUntil(InputStream source, Charset charset,
-                                      Predicate<? super String> matcher)
-            throws IOException {
-        readLineUntil(new InputStreamReader(source, charset), matcher);
-    }
-
-    private static void readLineUntil(InputStream source, Predicate<? super String> matcher)
-            throws IOException {
-        readLineUntil(source, Charset.defaultCharset(), matcher);
-    }
+//    private static void readLineUntil(InputStream source, Charset charset,
+//                                      Predicate<? super String> matcher)
+//            throws IOException {
+//        readLineUntil(new InputStreamReader(source, charset), matcher);
+//    }
+//
+//    private static void readLineUntil(InputStream source, Predicate<? super String> matcher)
+//            throws IOException {
+//        readLineUntil(source, Charset.defaultCharset(), matcher);
+//    }
 
     /**
      * Keeps reading lines from {@link System#in} until it reads {@code 'quit'}.
      *
      * @throws IOException if an I/O error occurs.
      */
-    static void readQuit() throws IOException {
+    // https://stackoverflow.com/q/49520625/330457
+    // https://stackoverflow.com/q/6008177/330457
+    static void readQuitFromStandardInput() throws IOException {
         var reader = new BufferedReader(new InputStreamReader(System.in));
-        for (String line; !Thread.currentThread().isInterrupted()
-                          && (line = reader.readLine()) != null; ) {
+        for (String line; (line = reader.readLine()) != null; ) {
             if (line.strip().equalsIgnoreCase("quit")) {
                 break;
             }
@@ -170,20 +177,17 @@ class IHelloWorldServerUtils {
     }
 
     /**
-     * Starts a new daemon thread which keeps reading a line from {@link System#in} until it reads
-     * {@code 'quit'}.
+     * Starts a new <em>daemon</em> thread which keeps reading lines from {@link System#in} until it
+     * reads {@code 'quit'}.
+     *
+     * @see #readQuitFromStandardInput()
      */
-    static Thread startReadingQuit() {
+    static Thread startReadingQuitFromStandardInput() {
         var thread = new Thread(() -> {
-            var reader = new BufferedReader(new InputStreamReader(System.in));
             try {
-                for (String line; (line = reader.readLine()) != null; ) {
-                    if (line.strip().equalsIgnoreCase("quit")) {
-                        break;
-                    }
-                }
+                readQuitFromStandardInput();
             } catch (IOException ioe) {
-                log.error("failed to read a line", ioe);
+                log.error("failed to read 'quit' from the standard input", ioe);
             }
         });
         thread.setDaemon(true);
@@ -204,7 +208,7 @@ class IHelloWorldServerUtils {
         }
         var thread = new Thread(() -> {
             try {
-                startReadingQuit().join();
+                startReadingQuitFromStandardInput().join();
             } catch (InterruptedException ie) {
                 log.error("interrupted while reading 'quit'", ie);
             }
@@ -472,17 +476,39 @@ class IHelloWorldServerUtils {
         return thread;
     }
 
-    static boolean await(CountDownLatch latch, long timeout, TimeUnit unit)
+    /**
+     * Causes the current thread to wait until specified latch has counted down to zero for
+     * specified amount of time.
+     *
+     * @param latch   the latch to await.
+     * @param timeout the maximum time to wait
+     * @param unit    the time unit of the {@code timeout} argument
+     * @return {@code true} if the count reached zero and {@code false} if the waiting time elapsed
+     * before the count reached zero
+     * @throws InterruptedException if the current thread is interrupted while waiting
+     * @see CountDownLatch#await(long, TimeUnit)
+     */
+    public static boolean await(CountDownLatch latch, long timeout, TimeUnit unit)
             throws InterruptedException {
         Objects.requireNonNull(latch, "latch is null");
         var reached = latch.await(timeout, unit);
         if (!reached) {
-            log.error("count didn't reach zero for {} {}: {}", timeout, unit, latch);
+            log.error("latch hasn't reached zero for {} {}: {}", timeout, unit, latch);
         }
         return reached;
     }
 
-    static boolean await(CountDownLatch latch) throws InterruptedException {
+    /**
+     * Causes the current thread to wait until specified latch has counted down to zero for a
+     * minute.
+     *
+     * @param latch the latch to await.
+     * @return {@code true} if the count reached zero and {@code false} if the waiting time elapsed
+     * before the count reached zero
+     * @throws InterruptedException if the current thread is interrupted while waiting
+     * @see #await(CountDownLatch, long, TimeUnit)
+     */
+    public static boolean await(CountDownLatch latch) throws InterruptedException {
         return await(latch, 1L, TimeUnit.MINUTES);
     }
 
