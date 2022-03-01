@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * A class for testing {@link HelloWorld#set(byte[])} method regarding arguments verification.
@@ -36,8 +36,8 @@ import java.util.Random;
 class HelloWorld_01_Set_Array_Arguments_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#set(byte[]) set(array)} method throws a {@link
-     * NullPointerException} when the {@code array} argument is {@code null}.
+     * Asserts {@link HelloWorld#set(byte[])} method throws a {@link NullPointerException} when the
+     * {@code array} argument is {@code null}.
      */
     @DisplayName("set(null) throws NullPointerException")
     @Test
@@ -47,13 +47,13 @@ class HelloWorld_01_Set_Array_Arguments_Test extends HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#set(byte[]) set(array)} method throws an {@link
-     * IndexOutOfBoundsException} when {@code array.length} is less than {@link HelloWorld#BYTES}.
+     * Asserts {@link HelloWorld#set(byte[])} method throws an {@link IndexOutOfBoundsException}
+     * when {@code array.length} is less than {@link HelloWorld#BYTES}.
      */
     @DisplayName("set(array:not-long-enough) throws IndexOutOfBoundsException")
     @Test
     void set_ThrowIndexOutOfBoundsException_ArrayIsNotLongEnough() {
-        var length = new Random().nextInt(HelloWorld.BYTES);
+        var length = ThreadLocalRandom.current().nextInt(HelloWorld.BYTES);
         var array = new byte[length];
         // TODO: Implement!
     }

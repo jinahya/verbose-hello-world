@@ -43,14 +43,15 @@ class HelloWorld_06_Write_RandomAccessFile_Test
         extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#write(RandomAccessFile) write(file)} method invokes {@link
-     * HelloWorld#set(byte[]) set(array)} method with an array of {@link HelloWorld#BYTES} bytes and
-     * invokes {@link RandomAccessFile#write(byte[]) file.write(array)}.
+     * Asserts {@link HelloWorld#write(RandomAccessFile)} method invokes {@link
+     * HelloWorld#set(byte[])} method with an array of {@value com.github.jinahya.hello.HelloWorld#BYTES}
+     * bytes and invokes {@link RandomAccessFile#write(byte[])} with the array.
      *
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(file) invokes set(byte[BYTES]) method"
+    @DisplayName("write(file)"
+                 + " invokes set(byte[BYTES]) method"
                  + " and writes the array to file")
     @Test
     void write_InvokeSetArrayWriteArrayToFile_(@TempDir File tempDir) throws IOException {
@@ -66,8 +67,7 @@ class HelloWorld_06_Write_RandomAccessFile_Test
     }
 
     /**
-     * Asserts {@link HelloWorld#write(RandomAccessFile) write(file)} method returns the {@code
-     * file} argument.
+     * Asserts {@link HelloWorld#write(RandomAccessFile)} method returns the {@code file} argument.
      *
      * @throws IOException if an I/O error occurs.
      */

@@ -38,32 +38,32 @@ import java.io.IOException;
  * @see HelloWorld_05_Write_DataOutput_Arguments_Test
  */
 @Slf4j
-class HelloWorld_05_Write_DataOutput_Test
-        extends HelloWorldTest {
+class HelloWorld_05_Write_DataOutput_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#write(DataOutput) write(data)} method invokes {@link
-     * HelloWorld#set(byte[]) set(array)} method with an array of {@link HelloWorld#BYTES} bytes and
-     * writes the array to specified data output.
+     * Asserts {@link HelloWorld#write(DataOutput)} method invokes {@link HelloWorld#set(byte[])}
+     * method with an array of {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and writes
+     * the array to specified data output.
      *
      * @param tempDir a temporary directory to test with
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(data) invokes set(byte[BYTES]) and writes the array to data")
+    @DisplayName("write(data)"
+                 + " invokes set(byte[BYTES])"
+                 + " and writes the array to data")
     @Test
     void write_InvokeSetArrayWriteArrayToData_(@TempDir File tempDir) throws IOException {
-        var data = Mockito.mock(DataOutput.class);  // <1>
+        var data = Mockito.mock(DataOutput.class);               // <1>
         helloWorld().write(data);                                // <2>
         Mockito.verify(helloWorld(), Mockito.times(1))           // <3>
                 .set(arrayCaptor().capture());
-        var array = arrayCaptor().getValue();           // <4>
+        var array = arrayCaptor().getValue();                    // <4>
         Assertions.assertEquals(HelloWorld.BYTES, array.length); // <5>
         // TODO: Implement!
     }
 
     /**
-     * Asserts {@link HelloWorld#write(DataOutput) write(data)} method returns the {@code data}
-     * argument.
+     * Asserts {@link HelloWorld#write(DataOutput)} method returns the {@code data} argument.
      *
      * @throws IOException if an I/O error occurs.
      */

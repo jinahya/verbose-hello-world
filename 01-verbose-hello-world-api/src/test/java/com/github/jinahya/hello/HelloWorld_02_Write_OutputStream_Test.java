@@ -23,10 +23,11 @@ package com.github.jinahya.hello;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.io.OutputStream;
+
+import static org.mockito.Mockito.mock;
 
 /**
  * A class for testing {@link HelloWorld#write(OutputStream)} method.
@@ -38,9 +39,9 @@ import java.io.OutputStream;
 class HelloWorld_02_Write_OutputStream_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#write(OutputStream) write(stream)} method invokes {@link
-     * HelloWorld#set(byte[]) set(array)} method with an array of {@link HelloWorld#BYTES} bytes and
-     * invokes {@link OutputStream#write(byte[])} method on {@code stream} with the array.
+     * Asserts {@link HelloWorld#write(OutputStream)} method invokes {@link HelloWorld#set(byte[])}
+     * method with an array of {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and invokes
+     * {@link OutputStream#write(byte[])} method on {@code stream} with the array.
      *
      * @throws IOException if an I/O error occurs.
      */
@@ -53,15 +54,14 @@ class HelloWorld_02_Write_OutputStream_Test extends HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#write(OutputStream) write(stream)} method returns given {@code
-     * stream} argument.
+     * Asserts {@link HelloWorld#write(OutputStream)} method returns given {@code stream} argument.
      *
      * @throws IOException if an I/O error occurs.
      */
     @DisplayName("write(stream) returns stream")
     @Test
     void write_ReturnStream_() throws IOException {
-        var stream = Mockito.mock(OutputStream.class);
+        var stream = mock(OutputStream.class);
         var actual = helloWorld().write(stream);
         // TODO: Implement!
     }

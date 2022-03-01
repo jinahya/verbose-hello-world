@@ -21,7 +21,6 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -29,6 +28,8 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 /**
  * A class for testing {@link HelloWorld#append(File)} method.
@@ -40,15 +41,17 @@ import java.io.OutputStream;
 class HelloWorld_03_Append_File_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#append(File) append(file)} method invokes {@link
-     * HelloWorld#write(OutputStream)} method with an {@link java.io.FileOutputStream} and asserts
-     * {@link HelloWorld#BYTES} bytes are appended to the end of the {@code file}.
+     * Asserts {@link HelloWorld#append(File)} method invokes {@link HelloWorld#write(OutputStream)}
+     * method with an instance of {@link java.io.FileOutputStream} and asserts {@value
+     * com.github.jinahya.hello.HelloWorld#BYTES} bytes are appended to the end of the {@code
+     * file}.
      *
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("append(file) invokes write(FileOutputStream)"
-                 + " and 12 bytes are appended")
+    @DisplayName("append(file)"
+                 + " invokes write(FileOutputStream)"
+                 + " 12 bytes are appended to file")
     @Test
     void append_InvokeWriteStreamAnd12BytesAppended_(@TempDir File tempDir) throws IOException {
         var file = File.createTempFile("tmp", null, tempDir);
@@ -57,7 +60,7 @@ class HelloWorld_03_Append_File_Test extends HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#append(File) append(file)} returns given {@code file} arguments.
+     * Asserts {@link HelloWorld#append(File)} returns given {@code file} arguments.
      *
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
@@ -67,6 +70,6 @@ class HelloWorld_03_Append_File_Test extends HelloWorldTest {
     void append_ReturnFile_(@TempDir File tempDir) throws IOException {
         var file = File.createTempFile("tmp", null, tempDir);
         var actual = helloWorld().append(file);
-        Assertions.assertSame(file, actual);
+        assertSame(file, actual);
     }
 }

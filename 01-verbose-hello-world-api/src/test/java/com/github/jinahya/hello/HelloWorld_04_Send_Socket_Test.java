@@ -41,8 +41,8 @@ class HelloWorld_04_Send_Socket_Test
         extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#send(Socket) send(socket)} method invokes the {@link
-     * HelloWorld#write(OutputStream) write(stream)} method with {@link Socket#getOutputStream()
+     * Asserts {@link HelloWorld#send(Socket)} method invokes the {@link
+     * HelloWorld#write(OutputStream)} method with {@link Socket#getOutputStream()
      * socket.outputStream}.
      *
      * @throws IOException if an I/O error occurs.
@@ -55,7 +55,7 @@ class HelloWorld_04_Send_Socket_Test
         Mockito.lenient().doReturn(stream)             // <3>
                 .when(socket)
                 .getOutputStream();
-        helloWorld().send(socket);                     // <4>
+        helloWorld().send(socket);             // <4>
         // TODO: Implement!
     }
 

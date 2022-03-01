@@ -21,11 +21,12 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.net.Socket;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * A class for testing {@link HelloWorld#send(Socket)} method regarding arguments verification.
@@ -34,17 +35,17 @@ import java.net.Socket;
  * @see HelloWorld_04_Send_Socket_Test
  */
 @Slf4j
-class HelloWorld_04_Send_Socket_Arguments_Test
-        extends HelloWorldTest {
+class HelloWorld_04_Send_Socket_Arguments_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#send(Socket) send(socket)} method throws a {@link
-     * NullPointerException} when the {@code socket} argument is {@code null}.
+     * Asserts {@link HelloWorld#send(Socket)} method throws a {@link NullPointerException} when the
+     * {@code socket} argument is {@code null}.
      */
     @DisplayName("send(null) throws NullPointerException")
     @Test
     void send_ThrowNullPointerException_SocketIsNull() {
+        var service = helloWorld();
         Socket socket = null;
-        Assertions.assertThrows(NullPointerException.class, () -> helloWorld().send(socket));
+        assertThrows(NullPointerException.class, () -> service.send(socket));
     }
 }

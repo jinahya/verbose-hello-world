@@ -35,8 +35,7 @@ import java.nio.channels.WritableByteChannel;
  * @see HelloWorld_08_Write_WritableByteChannel_Test
  */
 @Slf4j
-class HelloWorld_08_Write_WritableByteChannel_Arguments_Test
-        extends HelloWorldTest {
+class HelloWorld_08_Write_WritableByteChannel_Arguments_Test extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(WritableByteChannel) write(channel)} method throws a {@link

@@ -38,13 +38,14 @@ import java.io.RandomAccessFile;
 class HelloWorld_06_Write_RandomAccessFile_Arguments_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#write(RandomAccessFile) write(file)} method throws a {@link
+     * Asserts {@link HelloWorld#write(RandomAccessFile)} method throws a {@link
      * NullPointerException} when {@code file} argument is {@code null}.
      */
     @DisplayName("write((RandomAccessFile) null) throws NullPointerException")
     @Test
     void write_ThrowNullPointerException_FileIsNull() {
+        var service = helloWorld();
         RandomAccessFile file = null;
-        Assertions.assertThrows(NullPointerException.class, () -> helloWorld().write(file));
+        Assertions.assertThrows(NullPointerException.class, () -> service.write(file));
     }
 }

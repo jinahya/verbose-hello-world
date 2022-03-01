@@ -22,6 +22,7 @@ package com.github.jinahya.hello;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -38,41 +39,38 @@ import java.nio.ByteBuffer;
 class HelloWorld_07_Put_ByteBuffer_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method, when invoked with a byte
-     * buffer which {@link ByteBuffer#hasArray() has a backing array}, invokes {@link
-     * HelloWorld#set(byte[], int) set(buffer.array, buffer.arrayOffset + buffer.position)} and
-     * increments the {@link ByteBuffer#position(int) buffer.position} by {@link HelloWorld#BYTES}.
+     * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method, when the buffer has a backing
+     * array, invokes {@link HelloWorld#set(byte[], int) set(array, index)} method with {@code
+     * buffer.array} and ({@code buffer.arrayOffset + buffer.position}) and increments the {@code
+     * buffer.position} by {@value com.github.jinahya.hello.HelloWorld#BYTES}.
      */
-    @DisplayName("put(buffer-with-backing-array) invokes set(array, index)"
-                 + " and increments position")
+    @DisplayName("put(buffer-with-backing-array)"
+                 + " invokes set(buffer.array, buffer.arrayOffset + buffer.position)"
+                 + " and increments buffer.position")
     @Test
     void put_InvokeSetArrayIndexAndIncrementPosition_BufferHasBackingArray() {
         var buffer = ByteBuffer.wrap(new byte[HelloWorld.BYTES]);
         assert buffer.remaining() >= HelloWorld.BYTES;
         assert buffer.hasArray();
         var array = buffer.array();
-        int arrayOffset = buffer.arrayOffset();
-        int position = buffer.position();
+        var arrayOffset = buffer.arrayOffset();
+        var position = buffer.position();
         // TODO: Implement!
     }
 
     /**
      * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method, when invoked with a byte
-     * buffer which does not have a {@link ByteBuffer#hasArray() backing array}, invokes {@link
-     * HelloWorld#set(byte[]) set(array)} method with an array of {@link HelloWorld#BYTES} bytes and
-     * invokes {@link ByteBuffer#put(byte[]) buffer.put(array)}.
+     * buffer which does not have a backing array, invokes {@link HelloWorld#set(byte[]) set(array)}
+     * method with an array of {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and puts the
+     * array to {@code buffer}.
      */
-    @DisplayName("put(buffer-with-no-backing-array) invokes set(array)"
+    @DisplayName("put(buffer-with-no-backing-array)"
+                 + " invokes set(array[BYTES])"
                  + " and invokes buffer.put(array)")
     @Test
     void put_InvokeSetArrayPutArrayToBuffer_BufferHasNoBackingArray() {
-        // mock-maker-inline
-        var buffer = Mockito.spy(ByteBuffer.allocateDirect(HelloWorld.BYTES));  // <1>
-        if (buffer.hasArray()) {                               // <2>
-            log.info("a direct byte buffer has a backing array?");
-            Mockito.when(buffer.hasArray()).thenReturn(false); // <3>
-        }
-        assert !buffer.hasArray();
+        var buffer = Mockito.spy(ByteBuffer.allocateDirect(HelloWorld.BYTES));
+        Assumptions.assumeFalse(buffer.hasArray(), "a direct byte buffer has a backing array?");
         var position = buffer.position();
         // TODO: Implement!
     }
