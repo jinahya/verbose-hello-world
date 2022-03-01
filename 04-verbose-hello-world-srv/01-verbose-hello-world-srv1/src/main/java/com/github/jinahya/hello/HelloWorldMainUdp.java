@@ -42,7 +42,7 @@ class HelloWorldMainUdp {
         var endpoint = IHelloWorldServerUtils.parseEndpoint(args);
         try (var server = new HelloWorldServerUdp()) {
             server.open(endpoint, null);
-            IHelloWorldServerUtils.readQuit();
+            IHelloWorldServerUtils.readQuitFromStandardInput();
         }
     }
 

@@ -44,7 +44,7 @@ class HelloWorldMainTcp {
         var endpoint = IHelloWorldServerUtils.parseEndpoint(args);
         try (var server = new HelloWorldServerTcp()) {
             server.open(endpoint, null);
-            IHelloWorldServerUtils.readQuit();
+            IHelloWorldServerUtils.readQuitFromStandardInput();
         }
     }
 

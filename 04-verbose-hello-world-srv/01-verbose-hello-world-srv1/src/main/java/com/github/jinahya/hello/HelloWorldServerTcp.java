@@ -36,7 +36,7 @@ import java.util.Objects;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorldServerTcp implements IHelloWorldServer {
+class HelloWorldServerTcp implements HelloWorldServer {
 
     @Override
     public synchronized void open(SocketAddress endpoint, Path dir) throws IOException {

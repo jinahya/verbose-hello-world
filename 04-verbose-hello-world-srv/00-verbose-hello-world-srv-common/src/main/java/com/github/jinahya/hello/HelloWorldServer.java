@@ -32,7 +32,7 @@ import java.nio.file.Path;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-public interface IHelloWorldServer extends Closeable {
+public interface HelloWorldServer extends Closeable {
 
     /**
      * Opens this server binding to specified socket address and writes the port number, on which

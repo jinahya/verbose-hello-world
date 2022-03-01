@@ -34,7 +34,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-abstract class AbstractHelloWorldServer implements IHelloWorldServer {
+abstract class AbstractHelloWorldServer implements HelloWorldServer {
 
     /**
      * Creates a new instance.
