@@ -42,8 +42,7 @@ import java.util.concurrent.atomic.LongAdder;
  * @see HelloWorld_10_Write_AsynchronousByteChannel_Arguments_Test
  */
 @Slf4j
-class HelloWorld_10_Write_AsynchronousByteChannel_Test
-        extends HelloWorldTest {
+class HelloWorld_10_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(AsynchronousByteChannel) write(channel)} method invokes
@@ -53,7 +52,8 @@ class HelloWorld_10_Write_AsynchronousByteChannel_Test
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
      */
-    @DisplayName("write(channel) invokes put(buffer)"
+    @DisplayName("write(channel)"
+                 + " invokes put(buffer)"
                  + " and writes the buffer to channel")
     @Test
     void write_InvokePutBufferWriteBufferToChannel_()
@@ -63,7 +63,7 @@ class HelloWorld_10_Write_AsynchronousByteChannel_Test
         Mockito.lenient()
                 .when(channel.write(ArgumentMatchers.notNull()))
                 .thenAnswer(i -> {
-                    var buffer = i.getArgument(0, ByteBuffer.class);
+                    ByteBuffer buffer = i.getArgument(0);
                     var written = new Random().nextInt(buffer.remaining() + 1);
                     buffer.position(buffer.position() + written);
                     writtenSoFar.add(written);
@@ -92,13 +92,12 @@ class HelloWorld_10_Write_AsynchronousByteChannel_Test
         var channel = Mockito.mock(AsynchronousByteChannel.class);
         Mockito.lenient()
                 .when(channel.write(ArgumentMatchers.any(ByteBuffer.class)))
-                .thenAnswer(
-                        i -> {
-                            var buffer = i.getArgument(0, ByteBuffer.class);
-                            var written = new Random().nextInt(buffer.remaining() + 1);
-                            buffer.position(buffer.position() + written);
-                            return CompletableFuture.completedFuture(written);
-                        });
+                .thenAnswer(i -> {
+                    ByteBuffer buffer = i.getArgument(0);
+                    var written = new Random().nextInt(buffer.remaining() + 1);
+                    buffer.position(buffer.position() + written);
+                    return CompletableFuture.completedFuture(written);
+                });
         var actual = helloWorld().write(channel);
         Assertions.assertSame(channel, actual);
     }

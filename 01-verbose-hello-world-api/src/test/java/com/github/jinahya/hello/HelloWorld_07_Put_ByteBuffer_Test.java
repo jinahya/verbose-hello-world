@@ -65,7 +65,7 @@ class HelloWorld_07_Put_ByteBuffer_Test extends HelloWorldTest {
      * array to {@code buffer}.
      */
     @DisplayName("put(buffer-with-no-backing-array)"
-                 + " invokes set(array[BYTES])"
+                 + " invokes set(array[12])"
                  + " and invokes buffer.put(array)")
     @Test
     void put_InvokeSetArrayPutArrayToBuffer_BufferHasNoBackingArray() {

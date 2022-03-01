@@ -37,13 +37,14 @@ import java.io.File;
 class HelloWorld_03_Append_File_Arguments_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#append(File)} method throws a {@link NullPointerException} when the
-     * {@code file} argument is {@code null}.
+     * Asserts {@link HelloWorld#append(File) append(file)} method throws a {@link
+     * NullPointerException} when the {@code file} argument is {@code null}.
      */
-    @DisplayName("append(null) throws a NullPointerException")
+    @DisplayName("append((File) null) throws a NullPointerException")
     @Test
     void append_ThrowNullPointerException_FileIsNull() {
+        var service = helloWorld();
         File file = null;
-        Assertions.assertThrows(NullPointerException.class, () -> helloWorld().append(file));
+        Assertions.assertThrows(NullPointerException.class, () -> service.append(file));
     }
 }

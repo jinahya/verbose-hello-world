@@ -57,12 +57,13 @@ class HelloWorld_07_Put_ByteBuffer_Arguments_Test extends HelloWorldTest {
      */
     @DisplayName("put(buffer)"
                  + " throws BufferOverflowException"
-                 + " when buffer.remaining is not enough")
+                 + " when buffer.remaining is less than 12")
     @Test
-    void put_ThrowBufferOverflowException_BufferRemainingIsNotEnough() {
+    void put_ThrowBufferOverflowException_BufferRemainingLessThan12() {
         var service = helloWorld();
         var capacity = ThreadLocalRandom.current().nextInt(HelloWorld.BYTES);
         var buffer = ByteBuffer.allocate(capacity);
+        assert buffer.remaining() < HelloWorld.BYTES;
         Assertions.assertThrows(BufferOverflowException.class, () -> service.put(buffer));
     }
 }

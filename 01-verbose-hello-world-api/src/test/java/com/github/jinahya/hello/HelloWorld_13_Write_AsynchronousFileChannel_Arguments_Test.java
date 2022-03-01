@@ -28,6 +28,7 @@ import org.mockito.Mockito;
 
 import java.nio.channels.AsynchronousFileChannel;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * A class for testing {@link HelloWorld#write(AsynchronousFileChannel, long)} method regarding
@@ -49,7 +50,7 @@ class HelloWorld_13_Write_AsynchronousFileChannel_Arguments_Test
     void write_ThrowNullPointerException_ChannelIsNull() {
         var service = helloWorld();
         AsynchronousFileChannel channel = null;
-        var position = new Random().nextLong() & Long.MAX_VALUE;
+        var position = ThreadLocalRandom.current().nextLong() & Long.MAX_VALUE;
         Assertions.assertThrows(NullPointerException.class, () -> service.write(channel, position));
     }
 

@@ -21,14 +21,13 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.nio.channels.AsynchronousFileChannel;
-import java.util.Random;
-
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * A class for testing {@link HelloWorld#writeCompletable(AsynchronousFileChannel, long)} method
@@ -38,8 +37,7 @@ import static org.mockito.Mockito.mock;
  * @see HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Test
  */
 @Slf4j
-class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Arguments_Test
-        extends HelloWorldTest {
+class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Arguments_Test extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#writeCompletable(AsynchronousFileChannel, long)
@@ -51,8 +49,9 @@ class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Arguments_Test
     void writeCompletable_ThrowNullPointerException_ChannelIsNull() {
         var service = helloWorld();
         AsynchronousFileChannel channel = null;
-        var position = new Random().nextLong() & Long.MAX_VALUE;
-        assertThrows(NullPointerException.class, () -> service.writeCompletable(channel, position));
+        var position = ThreadLocalRandom.current().nextLong() & Long.MAX_VALUE;
+        Assertions.assertThrows(NullPointerException.class,
+                                () -> service.writeCompletable(channel, position));
     }
 
     /**
@@ -64,9 +63,9 @@ class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Arguments_Test
     @Test
     void writeCompletable_ThrowIllegalArgumentException_PositionIsNegative() {
         var service = helloWorld();
-        var channel = mock(AsynchronousFileChannel.class);
-        var position = new Random().nextLong() | Long.MIN_VALUE;
-        assertThrows(IllegalArgumentException.class,
-                     () -> service.writeCompletable(channel, position));
+        var channel = Mockito.mock(AsynchronousFileChannel.class);
+        var position = ThreadLocalRandom.current().nextLong() | Long.MIN_VALUE;
+        Assertions.assertThrows(IllegalArgumentException.class,
+                                () -> service.writeCompletable(channel, position));
     }
 }

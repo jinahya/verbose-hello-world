@@ -21,20 +21,18 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.LongAdder;
-
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.ArgumentMatchers.notNull;
-import static org.mockito.Mockito.mock;
 
 /**
  * A class for testing {@link HelloWorld#write(WritableByteChannel)} method.
@@ -43,8 +41,7 @@ import static org.mockito.Mockito.mock;
  * @see HelloWorld_08_Write_WritableByteChannel_Arguments_Test
  */
 @Slf4j
-class HelloWorld_08_Write_WritableByteChannel_Test
-        extends HelloWorldTest {
+class HelloWorld_08_Write_WritableByteChannel_Test extends HelloWorldTest {
 
     // TODO: Remove this stubbing method when you implemented the put(buffer) method!
     @BeforeEach
@@ -58,28 +55,29 @@ class HelloWorld_08_Write_WritableByteChannel_Test
                     return buffer;
                 })
                 .when(helloWorld())
-                .put(notNull());
+                .put(ArgumentMatchers.notNull());
     }
 
     /**
      * Asserts {@link HelloWorld#write(WritableByteChannel) write(channel)} method invokes {@link
-     * HelloWorld#put(ByteBuffer) put(buffer)} method with a byte buffer of {@link HelloWorld#BYTES}
-     * bytes and writes the buffer to specified channel.
+     * HelloWorld#put(ByteBuffer) put(buffer)} method with a byte buffer of {@value
+     * com.github.jinahya.hello.HelloWorld#BYTES} bytes and writes the buffer to specified channel.
      *
      * @throws IOException if an I/O error occurs.
      */
     @DisplayName("write(channel)"
-                 + " invokes put(buffer)"
+                 + " invokes put(buffer(12))"
                  + " and writes the buffer to the channel")
     @Test
     void write_InvokePutBufferWriteBufferToChannel_() throws IOException {
-        var channel = mock(WritableByteChannel.class);
+        var channel = Mockito.mock(WritableByteChannel.class);
         var writtenSoFar = new LongAdder();           // <2>
         Mockito.lenient()
-                .when(channel.write(notNull()))                  // <3>
+                .when(channel.write(ArgumentMatchers.notNull()))                  // <3>
                 .thenAnswer(i -> {
-                    var buffer = i.getArgument(0, ByteBuffer.class);   // <4>
-                    var written = new Random().nextInt(buffer.remaining() + 1); // <5>
+                    ByteBuffer buffer = i.getArgument(0);   // <4>
+                    var written = ThreadLocalRandom.current()
+                            .nextInt(buffer.remaining() + 1); // <5>
                     buffer.position(buffer.position() + written); // <6>
                     writtenSoFar.add(written);                    // <7>
                     return written;                               // <8>
@@ -96,16 +94,16 @@ class HelloWorld_08_Write_WritableByteChannel_Test
     @DisplayName("write(channel) returns channel")
     @Test
     void write_ReturnChannel_() throws IOException {
-        var channel = mock(WritableByteChannel.class);
+        var channel = Mockito.mock(WritableByteChannel.class);
         Mockito.lenient()
-                .when(channel.write(notNull()))
+                .when(channel.write(ArgumentMatchers.notNull()))
                 .thenAnswer(i -> {
-                    var buffer = i.getArgument(0, ByteBuffer.class);
+                    ByteBuffer buffer = i.getArgument(0);
                     var written = buffer.remaining();
                     buffer.position(buffer.limit());
                     return written;
                 });
         var actual = helloWorld().write(channel);
-        assertSame(channel, actual);
+        Assertions.assertSame(channel, actual);
     }
 }

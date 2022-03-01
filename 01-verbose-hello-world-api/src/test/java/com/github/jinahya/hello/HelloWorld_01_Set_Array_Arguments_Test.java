@@ -36,8 +36,8 @@ import java.util.concurrent.ThreadLocalRandom;
 class HelloWorld_01_Set_Array_Arguments_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#set(byte[])} method throws a {@link NullPointerException} when the
-     * {@code array} argument is {@code null}.
+     * Asserts {@link HelloWorld#set(byte[]) set(array)} method throws a {@link
+     * NullPointerException} when the {@code array} argument is {@code null}.
      */
     @DisplayName("set(null) throws NullPointerException")
     @Test
@@ -47,10 +47,11 @@ class HelloWorld_01_Set_Array_Arguments_Test extends HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#set(byte[])} method throws an {@link IndexOutOfBoundsException}
-     * when {@code array.length} is less than {@link HelloWorld#BYTES}.
+     * Asserts {@link HelloWorld#set(byte[]) set(array)} method throws an {@link
+     * IndexOutOfBoundsException} when {@code array.length} is less than {@value
+     * com.github.jinahya.hello.HelloWorld#BYTES}.
      */
-    @DisplayName("set(array:not-long-enough) throws IndexOutOfBoundsException")
+    @DisplayName("set(array[<12]) throws IndexOutOfBoundsException")
     @Test
     void set_ThrowIndexOutOfBoundsException_ArrayIsNotLongEnough() {
         var length = ThreadLocalRandom.current().nextInt(HelloWorld.BYTES);

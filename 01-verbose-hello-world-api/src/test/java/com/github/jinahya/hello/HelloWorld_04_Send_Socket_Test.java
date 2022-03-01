@@ -37,12 +37,11 @@ import java.net.Socket;
  * @see HelloWorld_04_Send_Socket_Arguments_Test
  */
 @Slf4j
-class HelloWorld_04_Send_Socket_Test
-        extends HelloWorldTest {
+class HelloWorld_04_Send_Socket_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#send(Socket)} method invokes the {@link
-     * HelloWorld#write(OutputStream)} method with {@link Socket#getOutputStream()
+     * Asserts {@link HelloWorld#send(Socket) send(socket)} method invokes the {@link
+     * HelloWorld#write(OutputStream) write(stream)} method with {@link Socket#getOutputStream()
      * socket.outputStream}.
      *
      * @throws IOException if an I/O error occurs.
@@ -68,12 +67,12 @@ class HelloWorld_04_Send_Socket_Test
     @DisplayName("send(socket) returns socket")
     @Test
     void send_ReturnSocket_() throws IOException {
-        var expected = Mockito.spy(new Socket());
+        var socket = Mockito.spy(new Socket());
         Mockito.lenient()
                 .doReturn(Mockito.mock(OutputStream.class))
-                .when(expected)
+                .when(socket)
                 .getOutputStream();
-        var actual = helloWorld().send(expected);
-        Assertions.assertSame(expected, actual);
+        var actual = helloWorld().send(socket);
+        Assertions.assertSame(socket, actual);
     }
 }
