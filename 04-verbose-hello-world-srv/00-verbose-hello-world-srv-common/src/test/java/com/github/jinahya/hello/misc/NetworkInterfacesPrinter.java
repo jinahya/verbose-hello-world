@@ -1,4 +1,4 @@
-package com.github.jinahya.hello;
+package com.github.jinahya.hello.misc;
 
 /*-
  * #%L
@@ -21,9 +21,8 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Modifier;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -42,8 +41,37 @@ import java.util.stream.IntStream;
 @Slf4j
 class NetworkInterfaceTest {
 
-    private static String hexadecimal(byte[] bytes, String format,
-                                      String delimiter) {
+    private static <T> void log(Object indent, Class<T> clazz, final T object) {
+        Objects.requireNonNull(indent, "indent is null");
+        Objects.requireNonNull(clazz, "clazz is null");
+        Objects.requireNonNull(object, "object is null");
+        for (var method : clazz.getMethods()) {
+            if (method.getDeclaringClass() != clazz) {
+                continue;
+            }
+            if (method.isSynthetic()) {
+                continue;
+            }
+            var modifier = method.getModifiers();
+            if (Modifier.isStatic(modifier)) {
+                continue;
+            }
+            if (method.getParameterTypes().length > 0) {
+                continue;
+            }
+            try {
+                Object value = method.invoke(object);
+                if (value instanceof byte[]) {
+                    value = hexadecimal((byte[]) value);
+                }
+                log.debug("{}{}: {}", indent, method.getName(), value);
+            } catch (ReflectiveOperationException roe) {
+                throw new RuntimeException(roe);
+            }
+        }
+    }
+
+    private static String hexadecimal(byte[] bytes, String format, String delimiter) {
         Objects.requireNonNull(bytes, "bytes is null");
         Objects.requireNonNull(delimiter, "delimiter is null");
         return IntStream.range(0, bytes.length)
@@ -51,9 +79,16 @@ class NetworkInterfaceTest {
                 .collect(Collectors.joining(delimiter));
     }
 
+    private static String hexadecimal(byte[] bytes) {
+        return hexadecimal(bytes, "$02x", "");
+    }
+
     private static void inetAddress(String indent, InetAddress address) {
         Objects.requireNonNull(indent, "indent is null");
         Objects.requireNonNull(address, "address is null");
+        if (true) {
+            log(indent, InetAddress.class, address);
+        }
         log.debug("{}address: {}", indent,
                   Optional.ofNullable(address.getAddress())
                           .map(v -> hexadecimal(v, "%02X", ""))
@@ -82,9 +117,7 @@ class NetworkInterfaceTest {
                   address.isSiteLocalAddress());
     }
 
-    @Disabled("takes too long")
-    @Test
-    void printNetworkInterfaces() throws SocketException {
+    public static void main(String... args) throws SocketException {
         var nie = NetworkInterface.getNetworkInterfaces();
         while (nie.hasMoreElements()) {
             var ni = nie.nextElement();
@@ -122,7 +155,7 @@ class NetworkInterfaceTest {
                 log.debug("\tsub interface: {}", subInterface);
             }
             log.debug("\tloopback: {}", ni.isLoopback());
-            log.debug("\tpoint to point: {}", ni.isPointToPoint());
+            log.debug("\tisPointToPoint: {}", ni.isPointToPoint());
             log.debug("\tup: {}", ni.isUp());
             log.debug("\tvirtual: {}", ni.isVirtual());
             log.debug("\tsupports multicast: {}",

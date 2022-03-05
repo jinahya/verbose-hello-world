@@ -43,7 +43,7 @@ class HelloWorld_01_Set_Array_Arguments_Test extends HelloWorldTest {
     @Test
     void set_ThrowNullPointerException_ArrayIsNull() {
         byte[] array = null;
-        // TODO: Implement!
+        // TODO: Assert set(array) throws a NullPointerException.
     }
 
     /**
@@ -56,6 +56,6 @@ class HelloWorld_01_Set_Array_Arguments_Test extends HelloWorldTest {
     void set_ThrowIndexOutOfBoundsException_ArrayIsNotLongEnough() {
         var length = ThreadLocalRandom.current().nextInt(HelloWorld.BYTES);
         var array = new byte[length];
-        // TODO: Implement!
+        // TODO: Assert set(array) throws a IndexOutOfBoundsException.
     }
 }

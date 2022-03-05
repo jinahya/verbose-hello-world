@@ -66,23 +66,25 @@ class HelloWorld_08_Write_WritableByteChannel_Test extends HelloWorldTest {
      * @throws IOException if an I/O error occurs.
      */
     @DisplayName("write(channel)"
-                 + " invokes put(buffer(12))"
+                 + " invokes put(buffer[12])"
                  + " and writes the buffer to the channel")
     @Test
     void write_InvokePutBufferWriteBufferToChannel_() throws IOException {
-        var channel = Mockito.mock(WritableByteChannel.class);
-        var writtenSoFar = new LongAdder();           // <2>
+        var channel = Mockito.mock(WritableByteChannel.class);    // <1>
+        var writtenSoFar = new LongAdder();                       // <2>
         Mockito.lenient()
-                .when(channel.write(ArgumentMatchers.notNull()))                  // <3>
+                .when(channel.write(ArgumentMatchers.notNull()))  // <3>
                 .thenAnswer(i -> {
-                    ByteBuffer buffer = i.getArgument(0);   // <4>
+                    ByteBuffer buffer = i.getArgument(0);         // <4>
                     var written = ThreadLocalRandom.current()
-                            .nextInt(buffer.remaining() + 1); // <5>
+                            .nextInt(buffer.remaining() + 1);     // <5>
                     buffer.position(buffer.position() + written); // <6>
                     writtenSoFar.add(written);                    // <7>
                     return written;                               // <8>
                 });
-        // TODO: Implement!
+        // TODO: Invoke helloWorld().write(channel)
+        // TODO: Verify helloWorld() invoked, once, put(buffer[12])
+        // TODO: Verify helloWorld() invoked, at least once, channel.write(buffer)
     }
 
     /**

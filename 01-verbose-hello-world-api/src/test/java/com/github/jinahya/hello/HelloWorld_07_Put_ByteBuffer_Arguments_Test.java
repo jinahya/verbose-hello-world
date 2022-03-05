@@ -52,12 +52,10 @@ class HelloWorld_07_Put_ByteBuffer_Arguments_Test extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method throws a {@link
-     * BufferOverflowException} when {@code buffer.remaining} is less than {@value
-     * com.github.jinahya.hello.HelloWorld#BYTES}.
+     * BufferOverflowException} when {@link ByteBuffer#remaining() buffer.remaining} is less than
+     * {@value com.github.jinahya.hello.HelloWorld#BYTES}.
      */
-    @DisplayName("put(buffer)"
-                 + " throws BufferOverflowException"
-                 + " when buffer.remaining is less than 12")
+    @DisplayName("put(buffer[<12]) throws BufferOverflowException")
     @Test
     void put_ThrowBufferOverflowException_BufferRemainingLessThan12() {
         var service = helloWorld();

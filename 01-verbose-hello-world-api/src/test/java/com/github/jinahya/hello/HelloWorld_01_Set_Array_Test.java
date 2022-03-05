@@ -40,9 +40,10 @@ class HelloWorld_01_Set_Array_Test extends HelloWorldTest {
      */
     @DisplayName("set(array) invokes set(array, 0)")
     @Test
-    void set_InvokesSetArrayWithArrayAndZero_() {
+    void set_InvokeSetArrayWithArrayAndZero_() {
         var array = new byte[HelloWorld.BYTES];
-        // TODO: Implement!
+        // TODO: Invoke helloWorld().set(array).
+        // TODO: Verify helloWorld() invoked set(array, 0).
     }
 
     /**
@@ -52,8 +53,8 @@ class HelloWorld_01_Set_Array_Test extends HelloWorldTest {
     @DisplayName("set(array) returns array")
     @Test
     void set_ReturnArray_() {
-        var array = new byte[HelloWorld.BYTES];
-        var actual = helloWorld().set(array);
-        // TODO: Implement!
+        var expected = new byte[HelloWorld.BYTES];
+        var actual = helloWorld().set(expected);
+        // TODO: Assert that expected and actual refer to the same object.
     }
 }

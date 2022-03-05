@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.nio.ByteBuffer;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * A class for testing {@link HelloWorld#put(ByteBuffer)} method.
@@ -41,19 +42,33 @@ class HelloWorld_07_Put_ByteBuffer_Test extends HelloWorldTest {
     /**
      * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method, when the buffer has a backing
      * array, invokes {@link HelloWorld#set(byte[], int) set(array, index)} method with {@code
-     * buffer.array} and ({@code buffer.arrayOffset + buffer.position}) and increments the {@code
-     * buffer.position} by {@value com.github.jinahya.hello.HelloWorld#BYTES}.
+     * buffer.array} and ({@code buffer.arrayOffset + buffer.position}) and asserts that the {@code
+     * buffer.position} is increased by {@value com.github.jinahya.hello.HelloWorld#BYTES}.
      */
     @DisplayName("put(buffer-with-backing-array)"
                  + " invokes set(buffer.array, buffer.arrayOffset + buffer.position)"
-                 + " and increments buffer.position")
+                 + " and increases buffer.position by 12")
+//    @RepeatedTest(1024)
     @Test
     void put_InvokeSetArrayIndexAndIncrementPosition_BufferHasBackingArray() {
-        var buffer = ByteBuffer.wrap(new byte[HelloWorld.BYTES]);
-        assert buffer.remaining() >= HelloWorld.BYTES;
-        assert buffer.hasArray();
-        var array = buffer.array();
-        var arrayOffset = buffer.arrayOffset();
+        ByteBuffer buffer;
+        {
+            var array = new byte[HelloWorld.BYTES * 3];
+            var wrapping = ByteBuffer.wrap(array);
+            assert wrapping.hasArray();
+            assert wrapping.array() == array;
+            assert wrapping.arrayOffset() == 0;
+            assert wrapping.capacity() == array.length;
+            assert wrapping.limit() == wrapping.capacity();
+            assert wrapping.position() == 0;
+            assert wrapping.remaining() == wrapping.capacity();
+            buffer = wrapping.slice();
+            assert buffer.hasArray();
+            wrapping.position(ThreadLocalRandom.current().nextInt(HelloWorld.BYTES));
+            assert buffer.array() == array;
+        }
+        helloWorld().put(buffer);
+        // TODO: Verify helloWorld() invoked set(buffer.array(), buffer.arrayOffset + buffer.position)
         var position = buffer.position();
         // TODO: Implement!
     }

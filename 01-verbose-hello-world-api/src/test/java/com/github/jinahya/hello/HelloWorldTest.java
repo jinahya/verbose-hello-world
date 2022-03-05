@@ -56,7 +56,7 @@ abstract class HelloWorldTest {
     void stub_PutBuffer_FillBuffer() {
         Mockito.lenient()
                 .when(helloWorld.set(any(), anyInt())) // <1>
-                .thenAnswer(i -> i.getArgument(0));              // <2>
+                .thenAnswer(i -> i.getArgument(0));    // <2>
     }
 
     @Spy
@@ -64,31 +64,52 @@ abstract class HelloWorldTest {
     @Getter
     private HelloWorld helloWorld;
 
-    // for capturing byte[] argument with set(byte[], int) or set(byte[])
+    /**
+     * An argument captor for capturing arguments of {@code byte[]}.
+     *
+     * @see HelloWorld#set(byte[])
+     * @see HelloWorld#set(byte[], int)
+     */
     @Captor
     @Accessors(fluent = true)
     @Getter
     private ArgumentCaptor<byte[]> arrayCaptor;
 
-    // for capturing index argument with set(byte[], index)
+    /**
+     * An argument captor for capturing arguments of {@code int}.
+     *
+     * @see HelloWorld#set(byte[], int)
+     */
     @Captor
     @Accessors(fluent = true)
     @Getter
     private ArgumentCaptor<Integer> indexCaptor;
 
-    // for capturing stream argument with write(OutputStream)
+    /**
+     * An argument captor for capturing arguments of {@link OutputStream}.
+     *
+     * @see HelloWorld#write(OutputStream)
+     */
     @Captor
     @Accessors(fluent = true)
     @Getter
     private ArgumentCaptor<OutputStream> streamCaptor;
 
-    // for capturing buffer argument with put(ByteBuffer)
+    /**
+     * An argument captor for capturing arguments of {@link ByteBuffer}.
+     *
+     * @see HelloWorld#put(ByteBuffer)
+     */
     @Captor
     @Accessors(fluent = true)
     @Getter
     private ArgumentCaptor<ByteBuffer> bufferCaptor;
 
-    // for capturing channel argument with write(WritableByteChannel)
+    /**
+     * An argument captor for capturing arguments of {@link WritableByteChannel}.
+     *
+     * @see HelloWorld#write(WritableByteChannel)
+     */
     @Captor
     @Accessors(fluent = true)
     @Getter

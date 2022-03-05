@@ -31,6 +31,7 @@ import org.mockito.Mockito;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * A class for testing {@link HelloWorld#write(RandomAccessFile)} method.
@@ -39,22 +40,21 @@ import java.io.RandomAccessFile;
  * @see HelloWorld_06_Write_RandomAccessFile_Arguments_Test
  */
 @Slf4j
-class HelloWorld_06_Write_RandomAccessFile_Test
-        extends HelloWorldTest {
+class HelloWorld_06_Write_RandomAccessFile_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#write(RandomAccessFile)} method invokes {@link
-     * HelloWorld#set(byte[])} method with an array of {@value com.github.jinahya.hello.HelloWorld#BYTES}
-     * bytes and invokes {@link RandomAccessFile#write(byte[])} on {@code file} with the array.
+     * Asserts {@link HelloWorld#write(RandomAccessFile) write((RandomAccessFile) file)} method
+     * invokes {@link HelloWorld#set(byte[]) set(byte[])} method with an array of {@value
+     * com.github.jinahya.hello.HelloWorld#BYTES} bytes and invokes {@link
+     * RandomAccessFile#write(byte[])} method on {@code file} argument with the array.
      *
-     * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(file)"
-                 + " invokes set(array[12]) method"
+    @DisplayName("write((RandomAccessFile) file)"
+                 + " invokes set(array[12])"
                  + " and invokes file.write(array)")
     @Test
-    void write_InvokeSetArrayWriteArrayToFile_(@TempDir File tempDir) throws IOException {
+    void write_InvokeSetArrayWriteArrayToFile_() throws IOException {
         var file = Mockito.mock(RandomAccessFile.class);
         helloWorld().write(file);
         Mockito.verify(helloWorld(), Mockito.times(1))
@@ -67,15 +67,36 @@ class HelloWorld_06_Write_RandomAccessFile_Test
     }
 
     /**
-     * Asserts {@link HelloWorld#write(RandomAccessFile)} method returns the {@code file} argument.
+     * Asserts {@link HelloWorld#write(RandomAccessFile) write((RandomAccessFile) file)} method
+     * returns the {@code file} argument.
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(file) returns file")
+    @DisplayName("write((RandomAccessFile) file) returns file")
     @Test
     void write_ReturnFile_() throws IOException {
         var expected = Mockito.mock(RandomAccessFile.class);
         var actual = helloWorld().write(expected);
         Assertions.assertSame(expected, actual);
+    }
+
+    /**
+     * Asserts, redundantly, {@link HelloWorld#write(RandomAccessFile) write((RandomAccessFile)
+     * file)} method writes {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes.
+     *
+     * @param tempDir a temporary directory to test with.
+     * @throws IOException if an I/O error occurs.
+     */
+    @DisplayName("write((RandomAccess) file) writes 12 bytes")
+    @Test
+    void write_InvokeSetArrayWriteArrayToFile_(@TempDir File tempDir) throws IOException {
+        var tempFile = File.createTempFile("tmp", null, tempDir);
+        try (var raf = new RandomAccessFile(tempFile, "rw")) {
+            var pos = ThreadLocalRandom.current().nextLong(128);
+            raf.seek(pos);
+            helloWorld().write(raf);
+            raf.getFD().sync();
+            // TODO: Assert tempFile.length() is equals to (pos + 12)
+        }
     }
 }
