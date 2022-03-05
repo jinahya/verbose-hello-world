@@ -41,6 +41,7 @@ class SimpleDatagramServer {
             new Thread(() -> {
                 try {
                     Thread.sleep(TimeUnit.SECONDS.toMillis(4L));
+                    log.debug("closing {}", socket);
                     socket.close();
                 } catch (InterruptedException ie) {
                     log.error("interrupted", ie);

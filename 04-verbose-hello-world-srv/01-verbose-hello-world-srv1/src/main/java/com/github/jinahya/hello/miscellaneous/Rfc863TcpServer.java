@@ -1,4 +1,4 @@
-package com.github.jinahya.hello;
+package com.github.jinahya.hello.miscellaneous;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -8,6 +8,7 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.SocketAddress;
 
+// https://datatracker.ietf.org/doc/html/rfc863
 @Slf4j
 class Rfc863TcpServer {
 
@@ -23,19 +24,18 @@ class Rfc863TcpServer {
                 try (var client = server.accept()) {
                     log.debug("[S] accepted from {}", client.getRemoteSocketAddress());
                     var bytes = 0L;
-                    while (true) {
+                    for (; true; bytes++) {
                         var b = client.getInputStream().read();
                         if (b == -1) {
                             break;
                         }
-                        bytes++;
                     }
                     log.debug("number of bytes discarded: {}", bytes);
                 } catch (IOException ioe) {
                     if (server.isClosed()) {
                         break;
                     }
-                    log.error("failed to accept/read", ioe);
+                    log.error("failed to accept/discard", ioe);
                 }
             }
         }

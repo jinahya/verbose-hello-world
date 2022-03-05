@@ -1,4 +1,4 @@
-package com.github.jinahya.hello;
+package com.github.jinahya.hello.miscellaneous;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
-import java.net.SocketAddress;
 
+// https://datatracker.ietf.org/doc/html/rfc862
 @Slf4j
 class Rfc862TcpServer {
 
@@ -15,7 +15,7 @@ class Rfc862TcpServer {
 
     public static void main(String... args) throws IOException {
         var host = InetAddress.getLoopbackAddress();
-        SocketAddress endpoint = new InetSocketAddress(host, PORT);
+        var endpoint = new InetSocketAddress(host, PORT);
         try (var server = new ServerSocket()) {
             server.bind(endpoint);
             log.info("server bound to {}", server.getLocalSocketAddress());
@@ -23,20 +23,20 @@ class Rfc862TcpServer {
                 try (var client = server.accept()) {
                     log.debug("[S] accepted from {}", client.getRemoteSocketAddress());
                     var bytes = 0L;
-                    while (true) {
+                    for (; true; bytes++) {
                         var b = client.getInputStream().read();
                         if (b == -1) {
                             break;
                         }
                         client.getOutputStream().write(b);
-                        bytes++;
+                        client.getOutputStream().flush();
                     }
                     log.debug("number of bytes echoed: {}", bytes);
                 } catch (IOException ioe) {
                     if (server.isClosed()) {
                         break;
                     }
-                    log.error("failed to accept/read/write", ioe);
+                    log.error("failed to accept/echo", ioe);
                 }
             }
         }

@@ -1,4 +1,4 @@
-package com.github.jinahya.hello;
+package com.github.jinahya.hello.miscellaneous;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,6 +28,7 @@ class Rfc862TcpClient {
                 if (r == -1) {
                     throw new EOFException("unexpected eof");
                 }
+                assert r == w;
             }
             log.debug("number of bytes send/received: {}", bytes);
         }
