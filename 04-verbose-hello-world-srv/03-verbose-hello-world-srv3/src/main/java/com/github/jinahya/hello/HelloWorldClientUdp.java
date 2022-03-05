@@ -56,7 +56,7 @@ public class HelloWorldClientUdp {
                 return null;
             });
         }
-        IHelloWorldServerUtils.shutdownAndAwaitTermination(executor);
+        HelloWorldServerUtils.shutdownAndAwaitTermination(executor);
     }
 
     private HelloWorldClientUdp() {

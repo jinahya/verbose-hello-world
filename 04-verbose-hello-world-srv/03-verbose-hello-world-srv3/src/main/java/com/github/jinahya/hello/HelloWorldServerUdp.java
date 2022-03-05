@@ -54,12 +54,12 @@ class HelloWorldServerUdp extends AbstractHelloWorldServer {
         }
         log.info("server bound to {}", server.getLocalAddress());
         if (dir != null) {
-            IHelloWorldServerUtils.writePortNumber(dir, server.socket().getLocalPort());
+            HelloWorldServerUtils.writePortNumber(dir, server.socket().getLocalPort());
         }
         var thread = new Thread(() -> {
             var executor = Executors.newCachedThreadPool();
             var service = new ExecutorCompletionService<Void>(executor);
-            var monitor = IHelloWorldServerUtils.startMonitoringCompletedTasks(service);
+            var monitor = HelloWorldServerUtils.startMonitoringCompletedTasks(service);
             while (!Thread.currentThread().isInterrupted()) {
                 SocketAddress address;
                 try {
@@ -85,7 +85,7 @@ class HelloWorldServerUdp extends AbstractHelloWorldServer {
                     return null;
                 });
             } // end-of-while
-            IHelloWorldServerUtils.shutdownAndAwaitTermination(executor);
+            HelloWorldServerUtils.shutdownAndAwaitTermination(executor);
             monitor.interrupt();
         });
         thread.start();

@@ -105,7 +105,7 @@ class HelloWorldServerTcp
         }
         log.info("server bound to {}", server.getLocalAddress());
         if (dir != null) {
-            IHelloWorldServerUtils.writePortNumber(dir, server.socket().getLocalPort());
+            HelloWorldServerUtils.writePortNumber(dir, server.socket().getLocalPort());
         }
         thread = new Thread(() -> {
             try (var selector = Selector.open()) {

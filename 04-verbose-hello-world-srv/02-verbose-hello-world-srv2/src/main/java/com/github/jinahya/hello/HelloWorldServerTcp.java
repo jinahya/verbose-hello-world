@@ -51,7 +51,7 @@ class HelloWorldServerTcp extends AbstractHelloWorldServer {
         }
         log.info("[S] server bound to {}", server.getLocalSocketAddress());
         if (dir != null) {
-            IHelloWorldServerUtils.writePortNumber(dir, server.getLocalPort());
+            HelloWorldServerUtils.writePortNumber(dir, server.getLocalPort());
         }
         var thread = new Thread(() -> {
             var executor = Executors.newCachedThreadPool();
@@ -77,7 +77,7 @@ class HelloWorldServerTcp extends AbstractHelloWorldServer {
                     log.error("failed to accept", ioe);
                 }
             } // end-of-while
-            IHelloWorldServerUtils.shutdownAndAwaitTermination(executor);
+            HelloWorldServerUtils.shutdownAndAwaitTermination(executor);
         });
         thread.start();
         log.debug("[S] server thread started");

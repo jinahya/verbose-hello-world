@@ -23,10 +23,10 @@ package com.github.jinahya.hello;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.net.SocketAddress;
 
 /**
- * A class whose {@link #main(String[])} method accepts socket connections and sends {@code hello,
- * world} to clients.
+ * A program serves {@code hello, world} bytes to clients through a UDP socket.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -34,17 +34,22 @@ import java.io.IOException;
 public class HelloWorldMainUdp {
 
     /**
-     * Opens a UDP server receives packets from clients and sends {@code hello, world} back to each
-     * client.
+     * The main method of this program which {@link HelloWorldServer#open(SocketAddress) opens} an
+     * instance of {@link HelloWorldServerUdp}, with an endpoint {@link
+     * HelloWorldServerUtils#parseEndpoint(String...) parsed} from specified command line
+     * arguments, and sends {@code hello, world} bytes to clients.
      *
-     * @param args an array of command line arguments.
-     * @throws IOException if an I/O error occurs.
+     * @param args an array of command line arguments from which an endpoint is parsed.
+     * @throws IOException          if an I/O error occurs.
+     * @throws InterruptedException if interrupted while running.
+     * @see HelloWorldServerUtils#parseEndpoint(String...)
+     * @see HelloWorldServer#open(SocketAddress)
      */
-    public static void main(String... args) throws IOException {
-        var endpoint = IHelloWorldServerUtils.parseEndpoint(args);
+    public static void main(String... args) throws IOException, InterruptedException {
+        var endpoint = HelloWorldServerUtils.parseEndpoint(args);
         try (var server = new HelloWorldServerUdp()) {
-            server.open(endpoint, null);
-            IHelloWorldServerUtils.readQuit();
+            server.open(endpoint);
+            HelloWorldServerUtils.startReadingQuitFromStandardInput().join();
         }
     }
 

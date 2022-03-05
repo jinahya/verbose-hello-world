@@ -98,7 +98,7 @@
         <!-- https://search.maven.org/artifact/com.guicedee.services/guice -->
         <groupId>com.guicedee.services</groupId>
         <artifactId>guice</artifactId>
-<!--        <version>1.2.0.1-jre11</version>-->
+        <!--        <version>1.2.0.1-jre11</version>-->
         <version>1.2.2.1</version>
       </dependency>
       <dependency>
@@ -351,6 +351,23 @@
               <link>https://static.javadoc.io/org.mockito/junit-jupiter/${version.org.mockito}</link>
               <link>https://junit.org/junit5/docs/current/api/</link>
             </links>
+            <tags>
+              <tag>
+                <name>apiNote</name>
+                <placement>a</placement>
+                <head>API Note:</head>
+              </tag>
+              <tag>
+                <name>implSpec</name>
+                <placement>a</placement>
+                <head>Implementation Requirements:</head>
+              </tag>
+              <tag>
+                <name>implNote</name>
+                <placement>a</placement>
+                <head>Implementation Note:</head>
+              </tag>
+            </tags>
           </configuration>
           <executions>
             <execution>
@@ -406,28 +423,28 @@
           <artifactId>asciidoctor-maven-plugin</artifactId>
           <version>2.2.1</version>
         </plugin>
-<!--        <plugin>-->
-<!--          <groupId>org.codehaus.mojo</groupId>-->
-<!--          <artifactId>animal-sniffer-maven-plugin</artifactId>-->
-<!--          <version>1.18</version>-->
-<!--          <executions>-->
-<!--            <execution>-->
-<!--              <id>check-signature-java18:1.0</id>-->
-<!--              <phase>process-classes</phase>-->
-<!--              <goals>-->
-<!--                <goal>check</goal>-->
-<!--              </goals>-->
-<!--              <configuration>-->
-<!--                <skip>true</skip>-->
-<!--                <signature>-->
-<!--                  <groupId>org.codehaus.mojo.signature</groupId>-->
-<!--                  <artifactId>java18</artifactId>-->
-<!--                  <version>1.0</version>-->
-<!--                </signature>-->
-<!--              </configuration>-->
-<!--            </execution>-->
-<!--          </executions>-->
-<!--        </plugin>-->
+        <!--        <plugin>-->
+        <!--          <groupId>org.codehaus.mojo</groupId>-->
+        <!--          <artifactId>animal-sniffer-maven-plugin</artifactId>-->
+        <!--          <version>1.18</version>-->
+        <!--          <executions>-->
+        <!--            <execution>-->
+        <!--              <id>check-signature-java18:1.0</id>-->
+        <!--              <phase>process-classes</phase>-->
+        <!--              <goals>-->
+        <!--                <goal>check</goal>-->
+        <!--              </goals>-->
+        <!--              <configuration>-->
+        <!--                <skip>true</skip>-->
+        <!--                <signature>-->
+        <!--                  <groupId>org.codehaus.mojo.signature</groupId>-->
+        <!--                  <artifactId>java18</artifactId>-->
+        <!--                  <version>1.0</version>-->
+        <!--                </signature>-->
+        <!--              </configuration>-->
+        <!--            </execution>-->
+        <!--          </executions>-->
+        <!--        </plugin>-->
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>build-helper-maven-plugin</artifactId>

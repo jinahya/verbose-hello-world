@@ -2,18 +2,29 @@ package com.github.jinahya.hello;
 
 import java.util.ServiceLoader;
 
-class IHelloWorldServerHelper {
+/**
+ * A class for helping {@link HelloWorldServer} interface.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
+final class HelloWorldServerHelper {
 
-    private static HelloWorld service;
+    private static volatile HelloWorld service;
 
-    static HelloWorld helloWorld() {
-        if (service == null) {
-            service = ServiceLoader.load(HelloWorld.class).iterator().next();
+    /**
+     * Loads an instance of {@link HelloWorld} interface.
+     *
+     * @return an instance of {@link HelloWorld} interface.
+     */
+    static HelloWorld service() {
+        var result = service;
+        if (result == null) {
+            service = result = ServiceLoader.load(HelloWorld.class).iterator().next();
         }
-        return service;
+        return result;
     }
 
-    private IHelloWorldServerHelper() {
+    private HelloWorldServerHelper() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

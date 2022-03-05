@@ -42,7 +42,8 @@ class HelloWorldClientTcp {
      * @param count    the number of clients to run.
      * @param endpoint the endpoint to connect/read.
      * @param consumer the consumer accepts each response.
-     * @throws InterruptedException if interrupted while waiting all clients finish.
+     * @throws InterruptedException if the current thread interrupted while waiting all clients to
+     *                              finish.
      */
     static void runClients(int count, SocketAddress endpoint, Consumer<? super String> consumer)
             throws InterruptedException {
@@ -69,7 +70,7 @@ class HelloWorldClientTcp {
                 }
             }).start();
         } // end-of-for
-        IHelloWorldServerUtils.await(latch);
+        HelloWorldServerUtils.await(latch);
     }
 
     private HelloWorldClientTcp() {

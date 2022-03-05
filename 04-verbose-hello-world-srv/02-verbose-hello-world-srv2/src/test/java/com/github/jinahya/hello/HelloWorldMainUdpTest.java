@@ -34,7 +34,7 @@ class HelloWorldMainUdpTest {
 
     @Test
     void main__() throws IOException, InterruptedException, ExecutionException {
-        IHelloWorldServerUtils.submitAndWriteQuit(() -> {
+        HelloWorldServerUtils.submitAndWriteQuit(() -> {
             var host = InetAddress.getLoopbackAddress();
             main("0", host.getHostAddress());
             return null;

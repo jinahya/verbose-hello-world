@@ -36,7 +36,7 @@ import java.util.Objects;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorldServerTcp implements IHelloWorldServer {
+class HelloWorldServerTcp implements HelloWorldServer {
 
     @Override
     public synchronized void open(SocketAddress endpoint, Path dir) throws IOException {
@@ -58,7 +58,7 @@ class HelloWorldServerTcp implements IHelloWorldServer {
         log.info("[S] bound to {}", server.getLocalSocketAddress());
         if (dir != null) {
             var port = server.getLocalPort();
-            IHelloWorldServerUtils.writePortNumber(dir, port);
+            HelloWorldServerUtils.writePortNumber(dir, port);
         }
         var thread = new Thread(() -> {
             while (true) {

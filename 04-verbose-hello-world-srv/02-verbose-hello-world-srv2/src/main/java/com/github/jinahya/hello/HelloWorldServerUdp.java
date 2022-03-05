@@ -52,7 +52,7 @@ class HelloWorldServerUdp extends AbstractHelloWorldServer {
             throw ioe;
         }
         if (dir != null) {
-            IHelloWorldServerUtils.writePortNumber(dir, socket.getLocalPort());
+            HelloWorldServerUtils.writePortNumber(dir, socket.getLocalPort());
         }
         new Thread(() -> {
             var executor = Executors.newCachedThreadPool();
@@ -82,17 +82,17 @@ class HelloWorldServerUdp extends AbstractHelloWorldServer {
                     log.error("failed to receive", ioe);
                 }
             } // end-of-while
-            IHelloWorldServerUtils.shutdownAndAwaitTermination(executor);
+            HelloWorldServerUtils.shutdownAndAwaitTermination(executor);
         }).start();
         log.debug("[S] server thread started");
     }
 
     @Override
     protected void closeInternal() throws IOException {
-        if (socket == null || socket.isClosed()) {
-            return;
+        if (socket != null && !socket.isClosed()) {
+            socket.close();
+            log.debug("server closed");
         }
-        socket.close();
     }
 
     private DatagramSocket socket;

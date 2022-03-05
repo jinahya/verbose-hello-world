@@ -38,7 +38,7 @@ class HelloWorldServerUdpTest {
     void test(@TempDir Path tempDir) throws IOException, InterruptedException {
         var host = InetAddress.getLoopbackAddress();
         var dir = Files.createTempDirectory(tempDir, null);
-        var thread = IHelloWorldServerUtils.startReadingPortNumber(dir, p -> {
+        var thread = HelloWorldServerUtils.startReadingPortNumber(dir, p -> {
             var endpoint = new InetSocketAddress(host, p);
             try {
                 HelloWorldClientUdp.runClients(4, endpoint, s -> {

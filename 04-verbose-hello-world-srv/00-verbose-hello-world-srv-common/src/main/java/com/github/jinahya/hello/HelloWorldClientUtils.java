@@ -34,7 +34,7 @@ import java.util.Objects;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class IHelloWorldClientUtils {
+class HelloWorldClientUtils {
 
     private static void validateArgumentsForReadFully(InputStream input, byte[] b, int off,
                                                       int len) {
@@ -88,7 +88,7 @@ class IHelloWorldClientUtils {
         readFully3(input, Objects.requireNonNull(b, "b is null"));
     }
 
-    private IHelloWorldClientUtils() {
+    private HelloWorldClientUtils() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

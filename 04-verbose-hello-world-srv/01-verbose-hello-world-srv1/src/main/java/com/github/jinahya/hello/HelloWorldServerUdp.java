@@ -37,7 +37,7 @@ import java.util.Objects;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorldServerUdp implements IHelloWorldServer {
+class HelloWorldServerUdp implements HelloWorldServer {
 
     @Override
     public synchronized void open(SocketAddress endpoint, Path dir) throws IOException {
@@ -58,7 +58,7 @@ class HelloWorldServerUdp implements IHelloWorldServer {
         }
         log.info("[S] bound to {}", socket.getLocalSocketAddress());
         if (dir != null) {
-            IHelloWorldServerUtils.writePortNumber(dir, socket.getLocalPort());
+            HelloWorldServerUtils.writePortNumber(dir, socket.getLocalPort());
         }
         var thread = new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {

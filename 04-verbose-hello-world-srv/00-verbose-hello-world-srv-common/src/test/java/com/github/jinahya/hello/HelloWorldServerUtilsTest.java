@@ -31,20 +31,20 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static com.github.jinahya.hello.IHelloWorldServerUtils.loadHelloWorld;
+import static com.github.jinahya.hello.HelloWorldServerUtils.loadHelloWorld;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
- * A class for testing {@link IHelloWorldServerUtils} class.
+ * A class for testing {@link HelloWorldServerUtils} class.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class IHelloWorldServerUtilsTest {
+class HelloWorldServerUtilsTest {
 
     /**
-     * Asserts {@link IHelloWorldServerUtils#loadHelloWorld()} returns non-null instance.
+     * Asserts {@link HelloWorldServerUtils#loadHelloWorld()} returns non-null instance.
      */
     @DisplayName("load() return non-null")
     @Test
@@ -60,7 +60,7 @@ class IHelloWorldServerUtilsTest {
         void writePort(@TempDir Path tempDir) throws IOException {
             var dir = Files.createTempDirectory(tempDir, null);
             var port = ThreadLocalRandom.current().nextInt(1, 65536);
-            IHelloWorldServerUtils.writePortNumber(dir, port);
+            HelloWorldServerUtils.writePortNumber(dir, port);
             assertThat(dir.resolve("port.txt"))
                     .isRegularFile()
                     .hasSize(Short.BYTES);
@@ -73,14 +73,14 @@ class IHelloWorldServerUtilsTest {
             int expected = ThreadLocalRandom.current().nextInt(1, 65536);
             var thread = new Thread(() -> {
                 try {
-                    var actual = IHelloWorldServerUtils.readPortNumber(dir);
+                    var actual = HelloWorldServerUtils.readPortNumber(dir);
                     assertThat(actual).isEqualTo(expected);
                 } catch (IOException | InterruptedException e) {
                     log.error("failed to read port", e);
                 }
             });
             thread.start();
-            IHelloWorldServerUtils.writePortNumber(dir, expected);
+            HelloWorldServerUtils.writePortNumber(dir, expected);
             thread.join();
         }
     }

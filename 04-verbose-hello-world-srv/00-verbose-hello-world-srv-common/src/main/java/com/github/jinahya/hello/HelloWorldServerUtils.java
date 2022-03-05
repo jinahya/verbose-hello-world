@@ -70,7 +70,7 @@ import static java.util.ServiceLoader.load;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class IHelloWorldServerUtils {
+class HelloWorldServerUtils {
 
     /**
      * Parses specified arguments and does currying to specified function.
@@ -245,7 +245,7 @@ class IHelloWorldServerUtils {
                 pos.flush();
                 return future.get();
             } finally {
-                IHelloWorldServerUtils.shutdownAndAwaitTermination(executor);
+                HelloWorldServerUtils.shutdownAndAwaitTermination(executor);
             }
         } finally {
             setIn(in);
@@ -515,7 +515,7 @@ class IHelloWorldServerUtils {
     /**
      * Creates a new instance which is impossible.
      */
-    private IHelloWorldServerUtils() {
+    private HelloWorldServerUtils() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

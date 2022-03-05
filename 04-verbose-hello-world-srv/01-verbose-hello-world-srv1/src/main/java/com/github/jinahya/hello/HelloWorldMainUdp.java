@@ -39,10 +39,10 @@ class HelloWorldMainUdp {
      * @throws IOException if an I/O error occurs.
      */
     public static void main(String... args) throws IOException {
-        var endpoint = IHelloWorldServerUtils.parseEndpoint(args);
+        var endpoint = HelloWorldServerUtils.parseEndpoint(args);
         try (var server = new HelloWorldServerUdp()) {
             server.open(endpoint, null);
-            IHelloWorldServerUtils.readQuit();
+            HelloWorldServerUtils.readQuitFromStandardInput();
         }
     }
 

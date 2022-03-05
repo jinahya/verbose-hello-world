@@ -35,6 +35,18 @@ import java.util.function.Consumer;
 @Slf4j
 class HelloWorldClientUdp {
 
+    /**
+     * Runs specified number of clients which each sends an empty packet to specified endpoint,
+     * receives {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes, decodes those bytes into a
+     * string using {@link StandardCharsets#US_ASCII} charset, and accepts the string to specified
+     * consumer.
+     *
+     * @param count    the number of clients to run.
+     * @param endpoint the endpoint send/receive packet to/from.
+     * @param consumer the consumer accepts the decoded string.
+     * @throws InterruptedException if the current thread interrupted while waiting all clients to
+     *                              finish.
+     */
     static void runClients(int count, SocketAddress endpoint, Consumer<? super String> consumer)
             throws InterruptedException {
         if (count <= 0) {
@@ -47,12 +59,12 @@ class HelloWorldClientUdp {
             new Thread(() -> {
                 try (var client = new DatagramSocket(null)) {
                     var sending = new DatagramPacket(new byte[0], 0, endpoint);
-                    client.send(sending);
+                    client.send(sending); // IOException
                     log.debug("[C] sent to {}", endpoint);
                     var array = new byte[HelloWorld.BYTES];
                     var received = new DatagramPacket(array, array.length);
-                    client.setSoTimeout((int) TimeUnit.SECONDS.toMillis(1L));
-                    client.receive(received);
+                    client.setSoTimeout((int) TimeUnit.SECONDS.toMillis(1L)); // SocketException
+                    client.receive(received); // IOException
                     log.debug("[C] received from {}", received.getSocketAddress());
                     var length = received.getLength();
                     assert length == array.length;
@@ -65,7 +77,7 @@ class HelloWorldClientUdp {
                 }
             }).start();
         }
-        IHelloWorldServerUtils.await(latch);
+        HelloWorldServerUtils.await(latch);
     }
 
     private HelloWorldClientUdp() {

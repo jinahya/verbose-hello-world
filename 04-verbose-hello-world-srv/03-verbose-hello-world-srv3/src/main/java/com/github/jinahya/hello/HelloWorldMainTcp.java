@@ -41,10 +41,10 @@ public class HelloWorldMainTcp {
      * @throws IOException if an I/O error occurs.
      */
     public static void main(String... args) throws IOException {
-        var endpoint = IHelloWorldServerUtils.parseEndpoint(args);
+        var endpoint = HelloWorldServerUtils.parseEndpoint(args);
         try (var server = new HelloWorldServerTcp()) {
             server.open(endpoint);
-            IHelloWorldServerUtils.readQuit();
+            HelloWorldServerUtils.readQuitFromStandardInput();
         }
     }
 

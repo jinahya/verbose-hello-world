@@ -68,7 +68,7 @@ class HelloWorldClientTcp {
                 return null;
             });
         }
-        IHelloWorldServerUtils.shutdownAndAwaitTermination(executor);
+        HelloWorldServerUtils.shutdownAndAwaitTermination(executor);
     }
 
     private HelloWorldClientTcp() {

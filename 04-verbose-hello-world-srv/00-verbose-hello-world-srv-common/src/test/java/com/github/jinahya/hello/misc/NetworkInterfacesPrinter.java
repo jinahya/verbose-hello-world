@@ -23,13 +23,15 @@ package com.github.jinahya.hello.misc;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Modifier;
-import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.util.Collection;
+import java.util.Enumeration;
 import java.util.Objects;
-import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  * A class for testing {@link NetworkInterface}.
@@ -39,9 +41,16 @@ import java.util.stream.IntStream;
  * Network Interfaces in Java (Bealdung)</a>
  */
 @Slf4j
-class NetworkInterfaceTest {
+class NetworkInterfacesPrinter {
 
-    private static <T> void log(Object indent, Class<T> clazz, final T object) {
+    private static String hexadecimal(byte[] bytes) {
+        Objects.requireNonNull(bytes, "bytes is null");
+        return IntStream.range(0, bytes.length)
+                .mapToObj(i -> String.format("%02x", bytes[i]))
+                .collect(Collectors.joining());
+    }
+
+    private static <T> void print(Object indent, Class<T> clazz, T object) {
         Objects.requireNonNull(indent, "indent is null");
         Objects.requireNonNull(clazz, "clazz is null");
         Objects.requireNonNull(object, "object is null");
@@ -59,107 +68,64 @@ class NetworkInterfaceTest {
             if (method.getParameterTypes().length > 0) {
                 continue;
             }
+            Object value;
             try {
-                Object value = method.invoke(object);
-                if (value instanceof byte[]) {
-                    value = hexadecimal((byte[]) value);
-                }
-                log.debug("{}{}: {}", indent, method.getName(), value);
+                value = method.invoke(object);
             } catch (ReflectiveOperationException roe) {
                 throw new RuntimeException(roe);
             }
+            if (value instanceof Enumeration) {
+                int i = 0;
+                for (var e = (Enumeration<?>) value; e.hasMoreElements(); ) {
+                    var n = e.nextElement();
+                    System.out.printf("%1$s%2$s[%3$d]: %4$s%n", indent, method.getName(), i++, n);
+                    print(indent + "\t", n);
+                }
+                continue;
+            }
+            if (value instanceof Collection) {
+                int i = 0;
+                for (var j = ((Collection<?>) value).iterator(); j.hasNext(); ) {
+                    var n = j.next();
+                    System.out.printf("%1$s%2$s[%3$d]: %4$s%n", indent, method.getName(), i++, n);
+                    print(indent + "\t", n);
+                }
+                continue;
+            }
+            if (value instanceof Stream) {
+                var i = new AtomicInteger();
+                ((Stream<?>) value).forEach(e -> {
+                    System.out.printf("%1$s%2$s[%3$d]: %4$s%n", indent, method.getName(),
+                                      i.getAndIncrement(), e);
+                    print(indent + "\t", e);
+                });
+                continue;
+            }
+            if (value instanceof byte[]) {
+                value = hexadecimal((byte[]) value);
+            }
+            System.out.printf("%1$s%2$s: %3$s%n", indent, method.getName(), value);
         }
     }
 
-    private static String hexadecimal(byte[] bytes, String format, String delimiter) {
-        Objects.requireNonNull(bytes, "bytes is null");
-        Objects.requireNonNull(delimiter, "delimiter is null");
-        return IntStream.range(0, bytes.length)
-                .mapToObj(i -> String.format(format, bytes[i]))
-                .collect(Collectors.joining(delimiter));
-    }
-
-    private static String hexadecimal(byte[] bytes) {
-        return hexadecimal(bytes, "$02x", "");
-    }
-
-    private static void inetAddress(String indent, InetAddress address) {
+    private static <T> void printHelper(Object indent, Class<T> clazz, Object object) {
         Objects.requireNonNull(indent, "indent is null");
-        Objects.requireNonNull(address, "address is null");
-        if (true) {
-            log(indent, InetAddress.class, address);
-        }
-        log.debug("{}address: {}", indent,
-                  Optional.ofNullable(address.getAddress())
-                          .map(v -> hexadecimal(v, "%02X", ""))
-                          .orElse("null"));
-        log.debug("{}canonical host name: {}", indent,
-                  address.getCanonicalHostName());
-        log.debug("{}host address: {}", indent, address.getHostAddress());
-        log.debug("{}host name: {}", indent, address.getHostName());
-        log.debug("{}any local address: {}", indent,
-                  address.isAnyLocalAddress());
-        log.debug("{}link local address: {}", indent,
-                  address.isLinkLocalAddress());
-        log.debug("{}loopback address: {}", indent,
-                  address.isLoopbackAddress());
-        log.debug("{}multicast global: {}", indent, address.isMCGlobal());
-        log.debug("{}multicast link local: {}", indent,
-                  address.isMCLinkLocal());
-        log.debug("{}multicast node local: {}", indent,
-                  address.isMCNodeLocal());
-        log.debug("{}multicast org local: {}", indent, address.isMCOrgLocal());
-        log.debug("{}multicast site local: {}", indent,
-                  address.isMCSiteLocal());
-        log.debug("{}multicast address: {}", indent,
-                  address.isMulticastAddress());
-        log.debug("{}site local address: {}", indent,
-                  address.isSiteLocalAddress());
+        Objects.requireNonNull(clazz, "clazz is null");
+        print(indent, clazz, clazz.cast(object));
+    }
+
+    private static <T> void print(Object indent, T object) {
+        Objects.requireNonNull(indent, "indent is null");
+        Objects.requireNonNull(object, "object is null");
+        printHelper(indent, object.getClass(), object);
     }
 
     public static void main(String... args) throws SocketException {
-        var nie = NetworkInterface.getNetworkInterfaces();
-        while (nie.hasMoreElements()) {
-            var ni = nie.nextElement();
-            log.debug("network interface: {}", ni);
-            log.debug("\tdisplay name: {}", ni.getDisplayName());
-            log.debug("\thardware address: {}",
-                      Optional.ofNullable(ni.getHardwareAddress())
-                              .map(v -> hexadecimal(v, "%02x", ":"))
-                              .orElse(null));
-            log.debug("\tindex: {}", ni.getIndex());
-            for (var iae = ni.getInetAddresses(); iae.hasMoreElements(); ) {
-                var ia = iae.nextElement();
-                log.debug("\tinet address: {}", ia);
-                inetAddress("\t\t", ia);
-            }
-            for (var ia : ni.getInterfaceAddresses()) {
-                log.debug("\tinterface address: {}", ia);
-                var address = ia.getAddress();
-                log.debug("\t\taddress: {}", address);
-                inetAddress("\t\t\t", address);
-                var broadcast = ia.getBroadcast();
-                log.debug("\t\tbroadcast: {}", broadcast);
-                if (broadcast != null) {
-                    inetAddress("\t\t\t", broadcast);
-                }
-                log.debug("\t\tnetwork prefix length: {}",
-                          ia.getNetworkPrefixLength());
-            }
-            log.debug("\tmtu: " + ni.getMTU());
-            log.debug("\tname: " + ni.getName());
-            log.debug("\tparent: " + ni.getParent());
-            for (var si = ni.getSubInterfaces();
-                 si.hasMoreElements(); ) {
-                var subInterface = si.nextElement();
-                log.debug("\tsub interface: {}", subInterface);
-            }
-            log.debug("\tloopback: {}", ni.isLoopback());
-            log.debug("\tisPointToPoint: {}", ni.isPointToPoint());
-            log.debug("\tup: {}", ni.isUp());
-            log.debug("\tvirtual: {}", ni.isVirtual());
-            log.debug("\tsupports multicast: {}",
-                      ni.supportsMulticast());
+        int index = 0;
+        for (var e = NetworkInterface.getNetworkInterfaces(); e.hasMoreElements(); ) {
+            var n = e.nextElement();
+            System.out.printf("getNetworkInterfaces[%1$d]: %2$s%n", index++, n);
+            print('\t', n);
         }
     }
 }

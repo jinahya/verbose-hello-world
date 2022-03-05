@@ -41,7 +41,7 @@ class HelloWorldServerUdpTest {
         var thread = new Thread(() -> {
             int port;
             try {
-                port = IHelloWorldServerUtils.readPortNumber(dir);
+                port = HelloWorldServerUtils.readPortNumber(dir);
             } catch (IOException ioe) {
                 log.error("failed to read port number from " + dir, ioe);
                 return;

@@ -20,16 +20,15 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
-import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /**
  * An abstract class for testing classes implement {@link HelloWorld} interface.
@@ -53,10 +52,10 @@ abstract class HelloWorldTest {
     @Test
     void set_ThrowNullPointerException_ArrayIsNull() {
         var helloWorld = helloWorld();
-        assumeTrue(helloWorld != null);
+        Assumptions.assumeTrue(helloWorld != null);
         byte[] array = null;
-        var index = new Random().nextInt() & Integer.MAX_VALUE;
-        assertThrows(NullPointerException.class, () -> helloWorld.set(null, 0));
+        var index = ThreadLocalRandom.current().nextInt() & Integer.MAX_VALUE;
+        Assertions.assertThrows(NullPointerException.class, () -> helloWorld.set(null, 0));
     }
 
     /**
@@ -67,27 +66,28 @@ abstract class HelloWorldTest {
     @Test
     void set_ThrowIndexOutOfBoundsException_IndexIsNegative() {
         var helloWorld = helloWorld();
-        assumeTrue(helloWorld != null);
+        Assumptions.assumeTrue(helloWorld != null);
         var array = new byte[0];
         var index = current().nextInt() | Integer.MIN_VALUE;
-        assertThrows(IndexOutOfBoundsException.class,
-                     () -> helloWorld.set(array, index));
+        Assertions.assertThrows(IndexOutOfBoundsException.class,
+                                () -> helloWorld.set(array, index));
     }
 
     /**
      * Asserts {@link HelloWorld#set(byte[], int) set(array, index)} method throws an {@code
-     * IndexOutOfBoundsException} when ({@code index} + {@link HelloWorld#BYTES}) is greater than
-     * {@code array.length}.
+     * IndexOutOfBoundsException} when ({@code index} + {@value com.github.jinahya.hello.HelloWorld#BYTES})
+     * is greater than {@code array.length}.
      */
     @DisplayName("set(array, index) throws IndexOutOfBoundsException"
-                 + " when index + BYTES > array.length")
+                 + " when (index + 12) > array.length")
     @Test
     void set_ThrowsIndexOutOfBoundsException_SpaceIsNotEnough() {
         HelloWorld helloWorld = helloWorld();
-        assumeTrue(helloWorld != null);
-        var array = new byte[BYTES];
-        var index = new Random().nextInt(BYTES - 1) + 1;
-        assertThrows(IndexOutOfBoundsException.class, () -> helloWorld.set(array, index));
+        Assumptions.assumeTrue(helloWorld != null);
+        var array = new byte[HelloWorld.BYTES];
+        var index = ThreadLocalRandom.current().nextInt(HelloWorld.BYTES - 1) + 1;
+        Assertions.assertThrows(IndexOutOfBoundsException.class,
+                                () -> helloWorld.set(array, index));
     }
 
     /**
@@ -99,8 +99,8 @@ abstract class HelloWorldTest {
     @Test
     void set_SetsHelloWorldBytesOnArrayStartingAtIndex_() {
         var helloWorld = helloWorld();
-        assumeTrue(helloWorld != null);
-        var array = new byte[BYTES];
+        Assumptions.assumeTrue(helloWorld != null);
+        var array = new byte[HelloWorld.BYTES];
         var index = 0;
         helloWorld.set(array, index);
         // TODO: implement!
@@ -114,8 +114,8 @@ abstract class HelloWorldTest {
     @Test
     void set_ReturnArray_() {
         var helloWorld = helloWorld();
-        assumeTrue(helloWorld != null);
-        var array = new byte[BYTES];
+        Assumptions.assumeTrue(helloWorld != null);
+        var array = new byte[HelloWorld.BYTES];
         var index = 0;
         var actual = helloWorld.set(array, index);
         assertSame(array, actual);
