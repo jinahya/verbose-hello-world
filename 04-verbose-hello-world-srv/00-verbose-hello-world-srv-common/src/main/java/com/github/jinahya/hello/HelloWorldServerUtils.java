@@ -202,7 +202,7 @@ class HelloWorldServerUtils {
      * @param closeable the closeable to close.
      * @return a new started thread.
      */
-    static Thread startReadingQuitAndClose(Closeable closeable) {
+    static Thread startReadingQuitFromStandardInputAndClose(Closeable closeable) {
         if (closeable == null) {
             throw new NullPointerException("closeable is null");
         }
@@ -211,6 +211,7 @@ class HelloWorldServerUtils {
                 startReadingQuitFromStandardInput().join();
             } catch (InterruptedException ie) {
                 log.error("interrupted while reading 'quit'", ie);
+                Thread.currentThread().interrupt();
             }
             try {
                 closeable.close();
@@ -218,6 +219,7 @@ class HelloWorldServerUtils {
                 log.error("failed to close {}", closeable, ioe);
             }
         });
+        thread.setDaemon(true);
         thread.start();
         return thread;
     }
