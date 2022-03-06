@@ -1,6 +1,6 @@
-package com.github.jinahya.hello.miscellaneous.rfc863_m2;
+package com.github.jinahya.hello.miscellaneous.m2_rfc862;
 
-import com.github.jinahya.hello.miscellaneous.rfc863_m1.Rfc863TcpServer1;
+import com.github.jinahya.hello.miscellaneous.m1_rfc862.Rfc862TcpServer1;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -10,11 +10,11 @@ import java.net.ServerSocket;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-// https://datatracker.ietf.org/doc/html/rfc863
+// https://datatracker.ietf.org/doc/html/rfc862
 @Slf4j
-class Rfc863TcpServer2 {
+class Rfc862TcpServer2 {
 
-    static final int PORT = 52009; // 9 + 52000
+    static final int PORT = 52007; // 7 + 52000
 
     public static void main(String... args) throws IOException, InterruptedException {
         var host = InetAddress.getLoopbackAddress();
@@ -26,12 +26,12 @@ class Rfc863TcpServer2 {
             while (!server.isClosed()) {
                 var client = server.accept();
                 executor.submit(() -> {
-                    Rfc863TcpServer1.readAndClose(client);
+                    Rfc862TcpServer1.readAndWrite(client);
                     return null;
                 });
             }
             executor.shutdown();
-            var timeout = 8L;
+            var timeout = 4L;
             var unit = TimeUnit.SECONDS;
             if (!executor.awaitTermination(timeout, unit)) {
                 log.error("executor not terminated in {} {}", timeout, unit);
@@ -39,7 +39,7 @@ class Rfc863TcpServer2 {
         }
     }
 
-    private Rfc863TcpServer2() {
+    private Rfc862TcpServer2() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

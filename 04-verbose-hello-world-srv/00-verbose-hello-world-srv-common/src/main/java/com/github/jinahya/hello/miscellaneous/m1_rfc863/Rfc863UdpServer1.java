@@ -1,6 +1,5 @@
-package com.github.jinahya.hello.miscellaneous.rfc862_m2;
+package com.github.jinahya.hello.miscellaneous.m1_rfc863;
 
-import com.github.jinahya.hello.miscellaneous.rfc862_m1.Rfc862UdpServer1;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -8,43 +7,36 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 // https://datatracker.ietf.org/doc/html/rfc863
 @Slf4j
-class Rfc862UdpServer2 {
+public class Rfc863UdpServer1 {
 
-    static final int PORT = Rfc862TcpServer2.PORT;
+    static final int PORT = Rfc863TcpServer1.PORT;
 
     static final int MAX_PACKET_LENGTH = 8;
 
-    public static void main(String... args) throws IOException, InterruptedException {
+    public static void log(DatagramPacket packet) {
+        log.debug("[S] {} byte(s) received from {}", packet.getLength(),
+                  packet.getSocketAddress());
+    }
+
+    public static void main(String... args) throws IOException {
         var host = InetAddress.getLoopbackAddress();
         var endpoint = new InetSocketAddress(host, PORT);
         try (var server = new DatagramSocket(null)) {
             server.bind(endpoint);
             log.info("[S] server bound to {}", server.getLocalSocketAddress());
-            var executor = Executors.newCachedThreadPool();
             while (!server.isClosed()) {
                 var buffer = new byte[MAX_PACKET_LENGTH];
                 var packet = new DatagramPacket(buffer, buffer.length);
                 server.receive(packet);
-                executor.submit(() -> {
-                    Rfc862UdpServer1.send(packet, server);
-                    return null;
-                });
-            } // end-of-while
-            executor.shutdown();
-            var timeout = 4L;
-            var unit = TimeUnit.SECONDS;
-            if (!executor.awaitTermination(timeout, unit)) {
-                log.error("executor not terminated in {} {}", timeout, unit);
+                log(packet);
             }
         }
     }
 
-    private Rfc862UdpServer2() {
+    private Rfc863UdpServer1() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.miscellaneous.rfc863_m1;
+package com.github.jinahya.hello.miscellaneous.m1_rfc863;
 
 import lombok.extern.slf4j.Slf4j;
 

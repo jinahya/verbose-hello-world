@@ -1,6 +1,6 @@
-package com.github.jinahya.hello.miscellaneous.rfc863_m2;
+package com.github.jinahya.hello.miscellaneous.m2_rfc863;
 
-import com.github.jinahya.hello.miscellaneous.rfc863_m1.Rfc863TcpClient1;
+import com.github.jinahya.hello.miscellaneous.m1_rfc863.Rfc863TcpClient1;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
