@@ -36,10 +36,12 @@ class Rfc862UdpServer2 {
                 });
             } // end-of-while
             executor.shutdown();
-            var timeout = 4L;
-            var unit = TimeUnit.SECONDS;
-            if (!executor.awaitTermination(timeout, unit)) {
-                log.error("executor not terminated in {} {}", timeout, unit);
+            {
+                var timeout = 4L;
+                var unit = TimeUnit.SECONDS;
+                if (!executor.awaitTermination(timeout, unit)) {
+                    log.error("executor not terminated in {} {}", timeout, unit);
+                }
             }
         }
     }

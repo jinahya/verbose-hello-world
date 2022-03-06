@@ -31,10 +31,12 @@ class Rfc863TcpServer2 {
                 });
             }
             executor.shutdown();
-            var timeout = 8L;
-            var unit = TimeUnit.SECONDS;
-            if (!executor.awaitTermination(timeout, unit)) {
-                log.error("executor not terminated in {} {}", timeout, unit);
+            {
+                var timeout = 8L;
+                var unit = TimeUnit.SECONDS;
+                if (!executor.awaitTermination(timeout, unit)) {
+                    log.error("executor not terminated in {} {}", timeout, unit);
+                }
             }
         }
     }

@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.miscellaneous.m2_rfc863;
+package com.github.jinahya.hello.miscellaneous.m3_rfc863;
 
 import com.github.jinahya.hello.miscellaneous.m1_rfc863.Rfc863UdpServer1;
 import lombok.extern.slf4j.Slf4j;
@@ -13,9 +13,9 @@ import java.util.concurrent.TimeUnit;
 
 // https://datatracker.ietf.org/doc/html/rfc863
 @Slf4j
-class Rfc863UdpServer2 {
+class Rfc863UdpServer3 {
 
-    static final int PORT = Rfc863TcpServer2.PORT;
+    static final int PORT = Rfc863TcpServer3.PORT;
 
     static final int MAX_PACKET_LENGTH = 8;
 
@@ -45,7 +45,7 @@ class Rfc863UdpServer2 {
         }
     }
 
-    private Rfc863UdpServer2() {
+    private Rfc863UdpServer3() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

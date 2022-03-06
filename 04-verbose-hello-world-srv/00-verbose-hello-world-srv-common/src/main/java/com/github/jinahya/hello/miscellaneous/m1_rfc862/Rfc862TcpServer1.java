@@ -14,19 +14,21 @@ public class Rfc862TcpServer1 {
 
     static final int PORT = 51007; // 7 + 51000
 
-    public static void readAndWrite(Socket client) throws IOException {
-        log.debug("[S] accepted from {}, through {}", client.getRemoteSocketAddress(),
-                  client.getLocalSocketAddress());
-        var bytes = 0L;
-        for (; true; bytes++) {
-            var b = client.getInputStream().read();
-            if (b == -1) {
-                break;
+    public static void readWriteAndClose(Socket client) throws IOException {
+        try (client) {
+            log.debug("[S] accepted from {}, through {}", client.getRemoteSocketAddress(),
+                      client.getLocalSocketAddress());
+            var bytes = 0L;
+            for (; true; bytes++) {
+                var b = client.getInputStream().read();
+                if (b == -1) {
+                    break;
+                }
+                client.getOutputStream().write(b);
+                client.getOutputStream().flush();
             }
-            client.getOutputStream().write(b);
-            client.getOutputStream().flush();
+            log.debug("[S] {} byte(s) read/written", bytes);
         }
-        log.debug("[S] {} byte(s) read/written", bytes);
     }
 
     public static void main(String... args) throws IOException {
@@ -36,9 +38,7 @@ public class Rfc862TcpServer1 {
             server.bind(endpoint);
             log.info("[S] server bound to {}", server.getLocalSocketAddress());
             while (!server.isClosed()) {
-                try (var client = server.accept()) {
-                    readAndWrite(client);
-                }
+                readWriteAndClose(server.accept());
             }
         }
     }
