@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.miscellaneous.m1_rfc863;
+package com.github.jinahya.hello.miscellaneous.rfc863_m1;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -7,29 +7,28 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
-class Rfc863UdpClient1 {
+public class Rfc863UdpClient1 {
 
     private static final boolean BIND = false;
 
     private static final boolean CONNECT = false;
 
-    public static void main(String... args) throws IOException {
-        var host = InetAddress.getLoopbackAddress();
-        var endpoint = new InetSocketAddress(host, Rfc863UdpServer1.PORT);
+    public static void send(SocketAddress endpoint) throws IOException {
         try (var client = new DatagramSocket(null)) {
             if (BIND) {
-                client.bind(new InetSocketAddress(host, 0));
+                client.bind(new InetSocketAddress(InetAddress.getLocalHost(), 0));
                 log.debug("[C] client bound to {}", client.getLocalSocketAddress());
             }
             if (CONNECT) {
                 client.connect(endpoint);
                 log.debug("[C] client connected");
-                var wrong = new InetSocketAddress(host, 1234);
+                var other = new InetSocketAddress(InetAddress.getLocalHost(), 1234);
                 try {
-                    client.send(new DatagramPacket(new byte[0], 0, wrong));
+                    client.send(new DatagramPacket(new byte[0], 0, other));
                     assert false;
                 } catch (IllegalArgumentException iae) {
                     log.debug("[C] unable to send to other than connected: {}",
@@ -48,6 +47,12 @@ class Rfc863UdpClient1 {
                 log.debug("[C] client disconnected");
             }
         }
+    }
+
+    public static void main(String... args) throws IOException {
+        var host = InetAddress.getLoopbackAddress();
+        var endpoint = new InetSocketAddress(host, Rfc863UdpServer1.PORT);
+        send(endpoint);
     }
 
     private Rfc863UdpClient1() {

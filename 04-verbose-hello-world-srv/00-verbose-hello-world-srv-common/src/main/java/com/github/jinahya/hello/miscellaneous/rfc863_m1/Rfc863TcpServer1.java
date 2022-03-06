@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.miscellaneous.m1_rfc863;
+package com.github.jinahya.hello.miscellaneous.rfc863_m1;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -6,13 +6,27 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
-import java.util.concurrent.ThreadLocalRandom;
+import java.net.Socket;
 
 // https://datatracker.ietf.org/doc/html/rfc863
 @Slf4j
-class Rfc863TcpServer1 {
+public class Rfc863TcpServer1 {
 
     static final int PORT = 51009; // 9 + 51000
+
+    public static void readAndClose(Socket client) throws IOException {
+        try (client) {
+            log.debug("[S] accepted from {}", client.getRemoteSocketAddress());
+            var bytes = 0L;
+            for (; true; bytes++) {
+                var read = client.getInputStream().read();
+                if (read == -1) {
+                    break;
+                }
+            }
+            log.debug("[S] byte(s) read: {}", bytes);
+        }
+    }
 
     public static void main(String... args) throws IOException {
         var host = InetAddress.getLoopbackAddress();
@@ -21,20 +35,8 @@ class Rfc863TcpServer1 {
             server.bind(endpoint);
             log.info("[S] server bound to {}", server.getLocalSocketAddress());
             while (!server.isClosed()) {
-                try (var client = server.accept()) {
-                    log.debug("[S] accepted from {}", client.getRemoteSocketAddress());
-                    var bytes = 0L;
-                    for (; true; bytes++) {
-                        var read = client.getInputStream().read();
-                        if (read == -1) {
-                            break;
-                        }
-                    }
-                    if (ThreadLocalRandom.current().nextBoolean()) {
-                        client.shutdownInput();
-                    }
-                    log.debug("[S] byte(s) read: {}", bytes);
-                }
+                var client = server.accept();
+                readAndClose(client);
             }
         }
     }

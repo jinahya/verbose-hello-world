@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.miscellaneous.m1_rfc863;
+package com.github.jinahya.hello.miscellaneous.rfc863_m1;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -6,16 +6,15 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
-class Rfc863TcpClient1 {
+public class Rfc863TcpClient1 {
 
     private static final boolean BIND = false;
 
-    public static void main(String... args) throws IOException {
-        var host = InetAddress.getLoopbackAddress();
-        var endpoint = new InetSocketAddress(host, Rfc863TcpServer1.PORT);
+    public static void connectAndWrite(SocketAddress endpoint) throws IOException {
         try (var client = new Socket()) {
             if (BIND) {
                 client.bind(new InetSocketAddress(InetAddress.getLocalHost(), 0));
@@ -35,6 +34,12 @@ class Rfc863TcpClient1 {
             }
             log.debug("[C] {} byte(s) written", bytes);
         }
+    }
+
+    public static void main(String... args) throws IOException {
+        var host = InetAddress.getLoopbackAddress();
+        var endpoint = new InetSocketAddress(host, Rfc863TcpServer1.PORT);
+        connectAndWrite(endpoint);
     }
 
     private Rfc863TcpClient1() {

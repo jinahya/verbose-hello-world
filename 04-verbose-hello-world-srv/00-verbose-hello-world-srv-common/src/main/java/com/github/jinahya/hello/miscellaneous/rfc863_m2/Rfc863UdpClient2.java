@@ -1,14 +1,12 @@
-package com.github.jinahya.hello.miscellaneous.m2_rfc863;
+package com.github.jinahya.hello.miscellaneous.rfc863_m2;
 
+import com.github.jinahya.hello.miscellaneous.rfc863_m1.Rfc863UdpClient1;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -20,15 +18,7 @@ class Rfc863UdpClient2 {
         var executor = Executors.newCachedThreadPool();
         for (int i = 0; i < 4; i++) {
             executor.submit(() -> {
-                try (var client = new DatagramSocket(null)) {
-                    var length = ThreadLocalRandom.current()
-                            .nextInt(1, Rfc863UdpServer2.MAX_PACKET_LENGTH + 1);
-                    var buffer = new byte[length];
-                    var packet = new DatagramPacket(buffer, buffer.length, endpoint);
-                    client.send(packet);
-                    log.debug("[C] {} byte(s) sent to {}, through {}", packet.getLength(), endpoint,
-                              client.getLocalSocketAddress());
-                }
+                Rfc863UdpClient1.send(endpoint);
                 return null;
             });
         }
