@@ -23,24 +23,29 @@ package com.github.jinahya.hello;
 import java.io.IOException;
 
 /**
- * A class whose {@link #main(String[]) main(args)} method prints {@code hello, world} to {@link
+ * A program whose {@link #main(String[])} method prints {@code hello, world} to {@link
  * System#out}.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-public class HelloWorldMain {
+class HelloWorldMain {
 
     /**
      * The main method of this program which prints {@code hello, world} to {@link System#out}
-     * followed by a new line character.
+     * followed by a platform-specific line separator.
      *
-     * @param args an array of main arguments
+     * @param args an array of command line arguments
      * @throws IOException if an I/O error occurs.
      */
     public static void main(String... args) throws IOException {
-        // TODO: implement!
+        // TODO: Create a instance of HelloWorldImpl
+        // TODO: Print 'hello, world' to System.out using the instance
+        // TODO: Put System.lineSeparator() to System.out
     }
 
+    /**
+     * Creates a new instance, which is not possible.
+     */
     private HelloWorldMain() {
         throw new AssertionError("instantiation is not allowed");
     }

@@ -39,7 +39,7 @@ public class HelloWorldImpl implements HelloWorld {
             throw new ArrayIndexOutOfBoundsException(
                     "index(" + index + ")" + BYTES + " > array.length(" + array.length + ")");
         }
-        // TODO: Implement!
+        // TODO: Set 'hello, world' on array starting at index
         return array;
     }
 }

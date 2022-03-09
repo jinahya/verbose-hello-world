@@ -28,7 +28,8 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 
 /**
- * A class whose {@link #main(String[])} method prints {@code hello, world} to {@link System#out}.
+ * A program whose {@link #main(String[])} method prints {@code hello, world} to {@link
+ * System#out}.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -37,13 +38,15 @@ public class HelloWorldMain {
 
     /**
      * The main method of this program which prints {@code hello, world} to {@link System#out}
-     * followed by a new line character.
+     * followed by a platform-specific line separator.
      *
-     * @param args an array of main arguments
+     * @param args an array of command line arguments
      * @throws IOException if an I/O error occurs.
      */
     public static void main(String... args) throws IOException {
-        // TODO: implement!
+        // TODO: Create a new instance of this class
+        // TODO: Inject values to the instance
+        // TODO: Print 'hello, world' to System.out using instance.helloWorld
     }
 
     /**
@@ -55,12 +58,12 @@ public class HelloWorldMain {
 
     @PostConstruct
     private void onPostConstruct() {
-//        log.debug("constructed; helloWorld: {}", helloWorld);
+        log.debug("constructed; helloWorld: {}", helloWorld);
     }
 
     @PreDestroy
     private void onPreDestroy() {
-//        log.debug("destroying...");
+        log.debug("being destroyed...");
     }
 
     /**

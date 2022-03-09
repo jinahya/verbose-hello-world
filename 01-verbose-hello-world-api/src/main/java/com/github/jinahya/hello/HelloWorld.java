@@ -97,7 +97,10 @@ public interface HelloWorld {
      * @see #set(byte[], int)
      */
     default byte[] set(byte[] array) {
-        // TODO: Implement!
+        // TODO: Throw NullPointerException when array is null
+        // TODO: Throw IndexOutOfBoundsExeption when array.length is less than 12
+        // TODO: Invoke set(array, 0)
+        // TODO: Return array
         return null;
     }
 
@@ -116,7 +119,10 @@ public interface HelloWorld {
      * @see OutputStream#write(byte[])
      */
     default <T extends OutputStream> T write(T stream) throws IOException {
-        // TODO: implement!
+        // TODO: Throw NullPointerException when stream is null
+        // TODO: Invoke set(array:byte[12])
+        // TODO: Invoke stream.write(array)
+        // TODO: Return stream
         return null;
     }
 
@@ -138,7 +144,9 @@ public interface HelloWorld {
         if (file == null) {
             throw new NullPointerException("file is null");
         }
-        // TODO: Implement!
+        // TODO: Create a FileOutputStream from file
+        // TODO: Invoke write(stream)
+        // TODO: Flush the stream
         return file;
     }
 
@@ -159,7 +167,7 @@ public interface HelloWorld {
         if (socket == null) {
             throw new NullPointerException("socket is null");
         }
-        // TODO: Implement!
+        // TODO: Invoke write(socket.getOutputStream())
         return socket;
     }
 
@@ -181,8 +189,9 @@ public interface HelloWorld {
         if (data == null) {
             throw new NullPointerException("data is null");
         }
-        byte[] array = set(new byte[BYTES]);
-        // TODO: Implement!
+        var array = new byte[BYTES];
+        set(array);
+        // TODO: Invoke data.write(array)
         return data;
     }
 
@@ -205,9 +214,8 @@ public interface HelloWorld {
         if (file == null) {
             throw new NullPointerException("file is null");
         }
-        byte[] array = new byte[BYTES];
-        set(array);
-        file.write(array);
+        var array = set(new byte[BYTES]);
+        // TODO: Invoke file.write(array)
         return file;
     }
 
@@ -221,7 +229,7 @@ public interface HelloWorld {
      *   ↓       ↓                                                           ↓           ↓
      * |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
      *
-     * On successful return,
+     * Then, on successful return,
      *   0                                                    &lt;= position &lt;= limit    &lt;= capacity
      *   ↓                                                       ↓           ↓           ↓
      * |   |   |"h"|"e"|"l"|"l"|"o"|","|" "|"w"|"o"|"r"|"l"|"d"|   |   |   |   |   |   |
@@ -257,9 +265,11 @@ public interface HelloWorld {
             throw new BufferOverflowException();
         }
         if (buffer.hasArray()) {
-            // TODO: Implement!
+            // TODO: Invoke set(buffer.array(), buffer.arrayOffset() + buffer.position())
+            // TODO: Increase buffer's position by 12.
         } else {
-            // TODO: Implement!
+            // TODO: Invoke set(array[12])
+            // TODO: Invoke buffer.put(array)
         }
         return buffer;
     }
@@ -285,7 +295,9 @@ public interface HelloWorld {
         if (channel == null) {
             throw new NullPointerException("channel is null");
         }
-        // TODO: Implement!
+        // TODO: Invoke put(buffer[12])
+        // TODO: Flip the buffer
+        // TODO: Invoke channel.write(buffer) while buffer has remaining
         return channel;
     }
 
@@ -308,7 +320,10 @@ public interface HelloWorld {
         if (path == null) {
             throw new NullPointerException("path is null");
         }
-        // TODO: Implement!
+        // TODO: Open a FileChannel from path as appending mode
+        // TODO: Invoke write(channel) with it
+        // TODO: Force the channel
+        // TODO: Close the channel
         return path;
     }
 
@@ -330,10 +345,8 @@ public interface HelloWorld {
         if (channel == null) {
             throw new NullPointerException("channel is null");
         }
-        var buffer = ByteBuffer.allocate(BYTES);
-        put(buffer);
-        buffer.flip();
-        // TODO: Implement!
+        var buffer = put(ByteBuffer.allocate(BYTES)).flip();
+        // TODO: Write the buffer to channel while it has remaining
         return channel;
     }
 
@@ -358,7 +371,7 @@ public interface HelloWorld {
             throw new NullPointerException("executor is null");
         }
         return executor.submit(() -> {
-            // TODO: Implement!
+            // TODO: Invoke write(channel)
             return channel;
         });
     }
@@ -370,16 +383,16 @@ public interface HelloWorld {
      * @param <T>     channel type parameter
      * @param channel the channel to which bytes are written.
      * @return a completable future of {@code channel}.
+     * @see #write(AsynchronousByteChannel)
      */
     default <T extends AsynchronousByteChannel> CompletableFuture<T> writeCompletable(T channel) {
         if (channel == null) {
             throw new NullPointerException("channel is null");
         }
         var future = new CompletableFuture<T>();
-        var buffer = ByteBuffer.allocate(BYTES);
-        put(buffer);
-        buffer.flip();
-        future.complete(channel); // TODO: Replace!!!
+        var buffer = put(ByteBuffer.allocate(BYTES)).flip();
+        // TODO: Write the buffer to channel while the buffer has remaining
+        future.complete(channel); // TODO: Remove!!!
         return future;
     }
 
@@ -408,10 +421,7 @@ public interface HelloWorld {
         if (position < 0L) {
             throw new IllegalArgumentException("position(" + position + ") is negative");
         }
-        var buffer = ByteBuffer.allocate(BYTES);
-        put(buffer);
-        buffer.flip();
-        while (buffer.hasRemaining()) {
+        for (var buffer = put(ByteBuffer.allocate(BYTES)).flip(); buffer.hasRemaining(); ) {
             var future = channel.write(buffer, position); // <1>
             int written = future.get();                   // <2>
             position += written;                          // <3>
@@ -470,24 +480,22 @@ public interface HelloWorld {
             throw new IllegalArgumentException("position(" + position + ") is negative");
         }
         var future = new CompletableFuture<T>();
-        var buffer = ByteBuffer.allocate(BYTES);
-        put(buffer);
-        buffer.flip();
+        var buffer = put(ByteBuffer.allocate(BYTES)).flip();
         channel.write(buffer,                     // src
                       position,                   // position
                       position,                   // attachment
                       new CompletionHandler<>() { // handler
                           @Override
                           public void completed(Integer result, Long attachment) {
-                              if (!buffer.hasRemaining()) {            // <1>
-                                  future.complete(channel);            // <2>
+                              if (!buffer.hasRemaining()) { // <1>
+                                  future.complete(channel); // <2>
                                   return;
                               }
-                              attachment += result;                    // <3>
-                              channel.write(buffer,     // src         // <4>
-                                            attachment, // position
-                                            attachment, // attachment
-                                            this);      // handler
+                              attachment += result;                   // <1>
+                              channel.write(buffer,     // src        // <2>
+                                            attachment, // position   // <3>
+                                            attachment, // attachment // <4>
+                                            this);      // handler    // <5>
                           }
 
                           @Override

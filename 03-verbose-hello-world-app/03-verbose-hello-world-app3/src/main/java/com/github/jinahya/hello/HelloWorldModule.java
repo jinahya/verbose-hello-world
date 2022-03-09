@@ -22,35 +22,21 @@ package com.github.jinahya.hello;
 
 import com.google.inject.AbstractModule;
 
-import static java.lang.Class.forName;
+import java.util.ServiceLoader;
 
 /**
- * A module for injecting instances of {@link HelloWorld}.
+ * A module for binding injection points of {@link HelloWorld} interface.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 class HelloWorldModule extends AbstractModule {
 
-    /**
-     * The fully qualified name of the {@code HelloWorldImpl} class.
-     */
-    private static final String HELLO_WORLD_IMPL_FQCN = "com.github.jinahya.hello.HelloWorldImpl";
-
-    /**
-     * The class found with {@link #HELLO_WORLD_IMPL_FQCN}.
-     */
-    private static final Class<? extends HelloWorld> HELLO_WORLD_IMPL_CLASS;
-
-    static {
-        try {
-            HELLO_WORLD_IMPL_CLASS = forName(HELLO_WORLD_IMPL_FQCN).asSubclass(HelloWorld.class);
-        } catch (ClassNotFoundException cnfe) {
-            throw new InstantiationError(cnfe.getMessage());
-        }
-    }
+    private static final HelloWorld INSTANCE
+            = ServiceLoader.load(HelloWorld.class).iterator().next();
 
     @Override
     protected void configure() {
-        bind(HelloWorld.class).to(HELLO_WORLD_IMPL_CLASS);
+        bind(HelloWorld.class)
+                .toInstance(INSTANCE);
     }
 }
