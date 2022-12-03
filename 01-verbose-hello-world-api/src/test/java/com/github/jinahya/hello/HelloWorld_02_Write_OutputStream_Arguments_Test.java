@@ -37,8 +37,8 @@ import java.io.OutputStream;
 class HelloWorld_02_Write_OutputStream_Arguments_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#write(OutputStream) write(stream)} method throws a {@link
-     * NullPointerException} when the {@code stream} argument is {@code null}.
+     * Asserts {@link HelloWorld#write(OutputStream) write(stream)} method throws a
+     * {@link NullPointerException} when the {@code stream} argument is {@code null}.
      */
     @DisplayName("write((OutputStream) null) throws NullPointerException")
     @Test

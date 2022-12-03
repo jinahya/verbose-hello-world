@@ -38,8 +38,8 @@ import java.io.RandomAccessFile;
 class HelloWorld_06_Write_RandomAccessFile_Arguments_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#write(RandomAccessFile)} method throws a {@link
-     * NullPointerException} when {@code file} argument is {@code null}.
+     * Asserts {@link HelloWorld#write(RandomAccessFile)} method throws a
+     * {@link NullPointerException} when {@code file} argument is {@code null}.
      */
     @DisplayName("write((RandomAccessFile) null) throws NullPointerException")
     @Test

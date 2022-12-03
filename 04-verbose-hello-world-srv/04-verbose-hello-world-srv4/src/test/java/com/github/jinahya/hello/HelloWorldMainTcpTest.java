@@ -21,6 +21,7 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -32,10 +33,11 @@ import static com.github.jinahya.hello.HelloWorldMainTcp.main;
 @Slf4j
 class HelloWorldMainTcpTest {
 
+    @Disabled
     @Test
     void main__() throws IOException, InterruptedException, ExecutionException {
         HelloWorldServerUtils.submitAndWriteQuit(() -> {
-          var host = InetAddress.getLoopbackAddress();
+            var host = InetAddress.getLoopbackAddress();
             main("0", host.getHostAddress());
             return null;
         });

@@ -48,11 +48,12 @@
   </issueManagement>
 
   <properties>
-    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>${maven.compiler.source}</maven.compiler.target>
     <maven.compiler.release>${maven.compiler.target}</maven.compiler.release>
     <maven.compiler.testSource>${maven.compiler.source}</maven.compiler.testSource>
     <maven.compiler.testTarget>${maven.compiler.testSource}</maven.compiler.testTarget>
+    <maven.compiler.testRelase>${maven.compiler.testTarget}</maven.compiler.testRelase>
     <version.asciidoctorj>2.5.3</version.asciidoctorj>
     <version.asciidoctorj-pdf>1.6.2</version.asciidoctorj-pdf>
     <version.com.google.dagger>2.40.5</version.com.google.dagger>

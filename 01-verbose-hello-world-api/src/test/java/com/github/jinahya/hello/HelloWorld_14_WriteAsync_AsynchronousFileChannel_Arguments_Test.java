@@ -42,7 +42,8 @@ import java.util.concurrent.ThreadLocalRandom;
 class HelloWorld_14_WriteAsync_AsynchronousFileChannel_Arguments_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#writeAsync(AsynchronousFileChannel, long, ExecutorService)
+     * Asserts
+     * {@link HelloWorld#writeAsync(AsynchronousFileChannel, long, ExecutorService)
      * writeAsync(channel, position, service)} method throws a {@link NullPointerException} when
      * {@code channel} argument is {@code null}.
      */
@@ -58,7 +59,8 @@ class HelloWorld_14_WriteAsync_AsynchronousFileChannel_Arguments_Test extends He
     }
 
     /**
-     * Asserts {@link HelloWorld#writeAsync(AsynchronousFileChannel, long, ExecutorService)
+     * Asserts
+     * {@link HelloWorld#writeAsync(AsynchronousFileChannel, long, ExecutorService)
      * writeAsync(channel, position, service)} method throws an {@link IllegalArgumentException}
      * when {@code position} argument is not positive.
      */
@@ -74,9 +76,10 @@ class HelloWorld_14_WriteAsync_AsynchronousFileChannel_Arguments_Test extends He
     }
 
     /**
-     * Asserts {@link HelloWorld#writeAsync(AsynchronousByteChannel, ExecutorService)
-     * writeAsync(channel, position, service} method throws a {@link NullPointerException} when
-     * {@code channel} argument is {@code null}.
+     * Asserts
+     * {@link HelloWorld#writeAsync(AsynchronousByteChannel, ExecutorService) writeAsync(channel,
+     * position, service} method throws a {@link NullPointerException} when {@code channel} argument
+     * is {@code null}.
      */
     @DisplayName("writeAsync(, , null) throws NullPointerException")
     @Test

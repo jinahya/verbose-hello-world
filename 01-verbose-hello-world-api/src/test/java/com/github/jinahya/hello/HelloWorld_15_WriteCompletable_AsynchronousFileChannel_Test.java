@@ -66,17 +66,18 @@ class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Test extends HelloW
     }
 
     /**
-     * Asserts {@link HelloWorld#writeCompletable(AsynchronousFileChannel, long)
-     * writeCompletable(channel, position)} method invokes {@link HelloWorld#put(ByteBuffer)
-     * put(buffer)} method with a byte buffer of {@value com.github.jinahya.hello.HelloWorld#BYTES}
-     * bytes and writes the buffer to {@code channel} starting at specified {@code position}.
+     * Asserts
+     * {@link HelloWorld#writeCompletable(AsynchronousFileChannel, long) writeCompletable(channel,
+     * position)} method invokes {@link HelloWorld#put(ByteBuffer) put(buffer)} method with a byte
+     * buffer of {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes, and writes the buffer to
+     * {@code channel} starting at specified {@code position}.
      *
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
      */
     @DisplayName("writeCompletable(channel, position)"
                  + " invokes put(buffer(12))"
-                 + " and writes the buffer to channel")
+                 + ", and writes the buffer to channel")
     @Test
     void writeCompletable_InvokePutBufferWriteBufferToChannel_()
             throws InterruptedException, ExecutionException {
@@ -114,9 +115,10 @@ class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Test extends HelloW
     }
 
     /**
-     * Asserts {@link HelloWorld#writeCompletable(AsynchronousFileChannel, long)
-     * writeCompletable(channel, posotion)} method writes {@value com.github.jinahya.hello.HelloWorld#BYTES}
-     * bytes to {@code channel} starting at specified position.
+     * Asserts
+     * {@link HelloWorld#writeCompletable(AsynchronousFileChannel, long) writeCompletable(channel,
+     * posotion)} method writes {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes to
+     * {@code channel} starting at specified position.
      *
      * @param tempDir a temporary directory to test with.
      * @throws IOException          if an I/O error occurs.

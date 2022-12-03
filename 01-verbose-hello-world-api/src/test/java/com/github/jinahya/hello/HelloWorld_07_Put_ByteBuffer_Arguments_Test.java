@@ -39,8 +39,8 @@ import java.util.concurrent.ThreadLocalRandom;
 class HelloWorld_07_Put_ByteBuffer_Arguments_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method throws a {@link
-     * NullPointerException} when the {@code buffer} argument is {@code null}.
+     * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method throws a
+     * {@link NullPointerException} when the {@code buffer} argument is {@code null}.
      */
     @DisplayName("put(null) throws NullPointerException")
     @Test
@@ -51,9 +51,9 @@ class HelloWorld_07_Put_ByteBuffer_Arguments_Test extends HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method throws a {@link
-     * BufferOverflowException} when {@link ByteBuffer#remaining() buffer.remaining} is less than
-     * {@value com.github.jinahya.hello.HelloWorld#BYTES}.
+     * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method throws a
+     * {@link BufferOverflowException} when {@link ByteBuffer#remaining() buffer.remaining} is less
+     * than {@value com.github.jinahya.hello.HelloWorld#BYTES}.
      */
     @DisplayName("put(buffer[<12]) throws BufferOverflowException")
     @Test

@@ -40,10 +40,10 @@ import java.io.OutputStream;
 class HelloWorld_03_Append_File_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#append(File) append(file)} method invokes {@link
-     * HelloWorld#write(OutputStream) write(stream)} method with an instance of {@link
-     * java.io.FileOutputStream} and asserts {@value com.github.jinahya.hello.HelloWorld#BYTES}
-     * bytes are appended to the {@code file}.
+     * Asserts {@link HelloWorld#append(File) append(file)} method invokes
+     * {@link HelloWorld#write(OutputStream) write(stream)} method with an instance of
+     * {@link java.io.FileOutputStream} and asserts
+     * {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes are appended to the {@code file}.
      *
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.

@@ -80,7 +80,7 @@ class HelloWorldClientTcp {
                         continue;
                     }
                     if (key.isReadable()) { // ready-to-read
-                      var buffer = wrap(new byte[BYTES]);
+                        var buffer = wrap(new byte[BYTES]);
                         // TODO: fill buffer from the channel
                         consumer.accept(new String(buffer.array(), US_ASCII));
                         channel.close(); // key.cancel();

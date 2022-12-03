@@ -50,9 +50,9 @@ import java.util.concurrent.Future;
  * <h2 id="hello-world-bytes">hello-world-bytes</h2>
  * A sequence of {@value #BYTES} bytes, representing the "{@code hello, world}" string encoded in
  * {@link java.nio.charset.StandardCharsets#US_ASCII US_ASCII} character set, which consists of
- * {@code 0x68("h")} followed by {@code 0x65("e")}, {@code 0x6C("l")}, {@code 0x6C("l")}, {@code
- * 0x6F("o")}, {@code 0x2C(",")}, {@code 0x20(" ")}, {@code 0x77("w")}, {@code 0x6F("o")}, {@code
- * 0x72("r")}, {@code 0x6C("l")}, and {@code 0x64("d")}.
+ * {@code 0x68("h")} followed by {@code 0x65("e")}, {@code 0x6C("l")}, {@code 0x6C("l")},
+ * {@code 0x6F("o")}, {@code 0x2C(",")}, {@code 0x20(" ")}, {@code 0x77("w")}, {@code 0x6F("o")},
+ * {@code 0x72("r")}, {@code 0x6C("l")}, and {@code 0x64("d")}.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -79,14 +79,14 @@ public interface HelloWorld {
      * @param index the starting index of the {@code array}.
      * @return given {@code array}.
      * @throws NullPointerException      if {@code array} is {@code null}.
-     * @throws IndexOutOfBoundsException if {@code index} is negative or ({@code index} + {@value
-     *                                   #BYTES}) is greater than {@code array.length}.
+     * @throws IndexOutOfBoundsException if {@code index} is negative or ({@code index} +
+     *                                   {@value #BYTES}) is greater than {@code array.length}.
      */
     byte[] set(byte[] array, int index);
 
     /**
-     * Sets <a href="#hello-world-bytes">hello-world-bytes</a> on specified array starting at {@code
-     * 0}.
+     * Sets <a href="#hello-world-bytes">hello-world-bytes</a> on specified array starting at
+     * {@code 0}.
      *
      * @param array the array on which bytes are set.
      * @return given {@code array}.
@@ -97,10 +97,10 @@ public interface HelloWorld {
      * @see #set(byte[], int)
      */
     default byte[] set(byte[] array) {
-        // TODO: Throw NullPointerException when array is null
-        // TODO: Throw IndexOutOfBoundsExeption when array.length is less than 12
+        // TODO: Throw NullPointerException when the array argument is null
+        // TODO: Throw IndexOutOfBoundsException when array.length is less than 12
         // TODO: Invoke set(array, 0)
-        // TODO: Return array
+        // TODO: Return the array
         return null;
     }
 
@@ -113,8 +113,8 @@ public interface HelloWorld {
      * @throws NullPointerException if {@code stream} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @implSpec The default implementation invokes {@link #set(byte[]) set(array)} method with an
-     * array of {@value #BYTES} bytes and writes the array to {@code stream} by invoking {@link
-     * OutputStream#write(byte[]) stream.write(array)} method.
+     * array of {@value #BYTES} bytes and writes the array to {@code stream} by invoking
+     * {@link OutputStream#write(byte[]) stream.write(array)} method.
      * @see #set(byte[])
      * @see OutputStream#write(byte[])
      */
@@ -135,8 +135,8 @@ public interface HelloWorld {
      * @throws NullPointerException if {@code file} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @implSpec The default implementation creates a {@link FileOutputStream} from the {@code file}
-     * as {@link FileOutputStream#FileOutputStream(File, boolean) appending mode} and invokes {@link
-     * #write(OutputStream)} method with the stream.
+     * as {@link FileOutputStream#FileOutputStream(File, boolean) appending mode}, and invokes
+     * {@link #write(OutputStream)} method with the stream.
      * @see java.io.FileOutputStream#FileOutputStream(File, boolean)
      * @see #write(OutputStream)
      */
@@ -158,8 +158,8 @@ public interface HelloWorld {
      * @return given {@code socket}.
      * @throws NullPointerException if {@code socket} is {@code null}.
      * @throws IOException          if an I/O error occurs.
-     * @implSpec The default implementation invokes {@link #write(OutputStream)} method with what
-     * {@link Socket#getOutputStream()} method, invoked on {@code socket}, returns .
+     * @implSpec The default implementation invokes {@link #write(OutputStream)} method with
+     * {@link Socket#getOutputStream() socket.outputStream}, and returns the {@code socket}.
      * @see Socket#getOutputStream()
      * @see #write(OutputStream)
      */
@@ -180,8 +180,8 @@ public interface HelloWorld {
      * @throws NullPointerException if {@code data} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @implSpec The default implementation invokes {@link #set(byte[])} method with an array of
-     * {@value #BYTES} bytes and writes the array to specified data output by invoking {@link
-     * DataOutput#write(byte[])} method on {@code data} with the {@code array}.
+     * {@value #BYTES} bytes, and writes the array to specified data output by invoking
+     * {@link DataOutput#write(byte[])} method on {@code data} with the {@code array}.
      * @see #set(byte[])
      * @see DataOutput#write(byte[])
      */
@@ -205,8 +205,8 @@ public interface HelloWorld {
      * @throws NullPointerException if {@code file} argument is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @implSpec The default implementation invokes {@link #set(byte[])} method with an array of
-     * {@value #BYTES} bytes and writes the array to specified random access file by invoking {@link
-     * DataOutput#write(byte[])} method on {@code file} with the array.
+     * {@value #BYTES} bytes, and writes the array to specified random access file by invoking
+     * {@link DataOutput#write(byte[])} method on {@code file} with the array.
      * @see #set(byte[])
      * @see RandomAccessFile#write(byte[])
      */
@@ -220,8 +220,8 @@ public interface HelloWorld {
     }
 
     /**
-     * Puts <a href="#hello-world-bytes">hello-world-bytes</a> on specified byte buffer. The
-     * buffer's position, on successful return, is incremented by {@value #BYTES}.
+     * Puts <a href="#hello-world-bytes">hello-world-bytes</a> on specified byte buffer.
+     * <p>The buffer's position, on successful return, is incremented by {@value #BYTES}.
      * <pre>
      * Given,
      *           |------------------------ remaining ------------------------|
@@ -232,7 +232,7 @@ public interface HelloWorld {
      * Then, on successful return,
      *   0                                                    &lt;= position &lt;= limit    &lt;= capacity
      *   ↓                                                       ↓           ↓           ↓
-     * |   |   |"h"|"e"|"l"|"l"|"o"|","|" "|"w"|"o"|"r"|"l"|"d"|   |   |   |   |   |   |
+     * |   |   |'h'|'e'|'l'|'l'|'o'|','|' '|'w'|'o'|'r'|'l'|'d'|   |   |   |   |   |   |
      *                                                           |-remaining-|
      * </pre>
      *
@@ -242,13 +242,14 @@ public interface HelloWorld {
      * @throws NullPointerException    if {@code buffer} is {@code null}.
      * @throws BufferOverflowException if {@link ByteBuffer#remaining() buffer.remaining} is less
      *                                 than {@value #BYTES}.
-     * @implSpec The default implementation, if specified buffer {@link ByteBuffer#hasArray() has a
-     * backing-array}, invokes {@link #set(byte[], int) #set(array, index)} with the buffer"s
-     * backing-array and ({@code buffer.arrayOffset} + {@code buffer.position}) and then manually
-     * increments the buffer"s position by {@value #BYTES}. Otherwise, this method invokes {@link
-     * #set(byte[]) #set(array)} method with an array of {@value #BYTES} bytes and puts the array on
-     * the buffer by invoking {@link ByteBuffer#put(byte[])} method on {@code buffer} with the
-     * array.
+     * @implSpec The default implementation, if specified buffer
+     * {@link ByteBuffer#hasArray() has a backing-array}, invokes
+     * {@link #set(byte[], int) #set(array, index)} with the buffer"s backing-array and
+     * ({@code buffer.arrayOffset} + {@code buffer.position}) and then manually increments the
+     * buffer"s position by {@value #BYTES}. Otherwise, this method invokes
+     * {@link #set(byte[]) #set(array)} method with an array of {@value #BYTES} bytes and puts the
+     * array on the buffer by invoking {@link ByteBuffer#put(byte[])} method on {@code buffer} with
+     * the array.
      * @see ByteBuffer#hasArray()
      * @see ByteBuffer#array()
      * @see ByteBuffer#arrayOffset()
@@ -284,8 +285,8 @@ public interface HelloWorld {
      * @throws IOException          if an I/O error occurs.
      * @implSpec The default implementation invokes {@link #put(ByteBuffer)} method with a buffer of
      * {@value #BYTES} bytes, flips the buffer, and writes the buffer to {@code channel} by
-     * continuously invoking {@link WritableByteChannel#write(ByteBuffer)}  method on {@code
-     * channel} with the buffer while the buffer has remaining.
+     * continuously invoking {@link WritableByteChannel#write(ByteBuffer)} method on {@code channel}
+     * with the buffer while the buffer has remaining.
      * @see #put(ByteBuffer)
      * @see ByteBuffer#flip()
      * @see ByteBuffer#hasRemaining()
@@ -302,17 +303,17 @@ public interface HelloWorld {
     }
 
     /**
-     * Appends <a href="#hello-world-bytes">hello-world-bytes</a> to the end of specified path to a
-     * file. The length of the file, on successful return, is increased by {@value #BYTES}.
+     * Appends <a href="#hello-world-bytes">hello-world-bytes</a> to the end of specified path. The
+     * length of the file, on successful return, is increased by {@value #BYTES}.
      *
      * @param <T>  channel type parameter
      * @param path the path a file to which bytes are appended.
      * @return given {@code path}.
      * @throws NullPointerException if {@code path} is {@code null}.
      * @throws IOException          if an I/O error occurs.
-     * @implSpec The default implementation opens a {@link FileChannel} from specified path as
-     * {@link java.nio.file.StandardOpenOption#APPEND appending mode} and invokes {@link
-     * #write(WritableByteChannel)} method with it.
+     * @implSpec The default implementation opens a {@link FileChannel} from specified path in
+     * {@link java.nio.file.StandardOpenOption#APPEND appending mode} and invokes
+     * {@link #write(WritableByteChannel)} method with it.
      * @see FileChannel#open(Path, OpenOption...)
      * @see #write(WritableByteChannel)
      */
@@ -320,8 +321,8 @@ public interface HelloWorld {
         if (path == null) {
             throw new NullPointerException("path is null");
         }
-        // TODO: Open a FileChannel from path as appending mode
-        // TODO: Invoke write(channel) with it
+        // TODO: Open a FileChannel from path in appending mode
+        // TODO: Invoke write(channel) method with it
         // TODO: Force the channel
         // TODO: Close the channel
         return path;
@@ -336,9 +337,10 @@ public interface HelloWorld {
      * @throws InterruptedException if interrupted while working.
      * @throws ExecutionException   if failed to operate.
      * @implSpec The default implementation invokes {@link #put(ByteBuffer)} method with a byte
-     * buffer of {@value #BYTES} bytes, flips it, and write the buffer to {@code channel} by
+     * buffer of {@value #BYTES} bytes, flips it, and writes the buffer to {@code channel} by
      * repeatedly getting the result of {@link AsynchronousByteChannel#write(ByteBuffer)} method
      * invoked on {@code channel} with the buffer while the buffer has remaining.
+     * @see AsynchronousByteChannel#write(ByteBuffer)
      */
     default <T extends AsynchronousByteChannel> T write(T channel)
             throws InterruptedException, ExecutionException {
@@ -377,8 +379,8 @@ public interface HelloWorld {
     }
 
     /**
-     * Returns a completable future which writes the <a href="#hello-world-bytes">hello-world-bytes</a>
-     * to specified channel.
+     * Returns a completable future which writes the <a
+     * href="#hello-world-bytes">hello-world-bytes</a> to specified channel.
      *
      * @param <T>     channel type parameter
      * @param channel the channel to which bytes are written.
@@ -408,8 +410,9 @@ public interface HelloWorld {
      * @throws ExecutionException   if failed to operate.
      * @implSpec The default implementation invokes {@link #put(ByteBuffer)} method with a byte
      * buffer of {@value #BYTES} bytes, flips it, and writes the buffer to {@code channel} by
-     * repeatedly getting the result of {@link AsynchronousFileChannel#write(ByteBuffer, long)
-     * channel.write(buffer)} while the buffer has remaining.
+     * repeatedly getting the result of
+     * {@link AsynchronousFileChannel#write(ByteBuffer, long) channel.write(buffer)} method while
+     * the buffer has remaining.
      * @see #put(ByteBuffer)
      * @see AsynchronousFileChannel#write(ByteBuffer, long)
      */
@@ -479,8 +482,8 @@ public interface HelloWorld {
         if (position < 0L) {
             throw new IllegalArgumentException("position(" + position + ") is negative");
         }
-        var future = new CompletableFuture<T>();
         var buffer = put(ByteBuffer.allocate(BYTES)).flip();
+        var future = new CompletableFuture<T>();
         channel.write(buffer,                     // src
                       position,                   // position
                       position,                   // attachment

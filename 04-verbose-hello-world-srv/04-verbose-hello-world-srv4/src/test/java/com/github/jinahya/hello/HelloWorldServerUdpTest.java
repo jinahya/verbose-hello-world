@@ -22,6 +22,8 @@ package com.github.jinahya.hello;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -34,6 +36,7 @@ import java.nio.file.Path;
 @Slf4j
 class HelloWorldServerUdpTest {
 
+    @Disabled
     @Test
     void test(@TempDir Path tempDir) throws IOException, InterruptedException {
         var host = InetAddress.getLoopbackAddress();

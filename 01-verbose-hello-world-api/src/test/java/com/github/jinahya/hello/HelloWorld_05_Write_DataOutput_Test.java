@@ -45,9 +45,10 @@ import java.util.concurrent.ThreadLocalRandom;
 class HelloWorld_05_Write_DataOutput_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#write(DataOutput) write(data)} method invokes {@link
-     * HelloWorld#set(byte[])} method with an array of {@value com.github.jinahya.hello.HelloWorld#BYTES}
-     * bytes and writes the array to specified data output.
+     * Asserts {@link HelloWorld#write(DataOutput) write(data)} method invokes
+     * {@link HelloWorld#set(byte[])} method with an array of
+     * {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and writes the array to specified
+     * data output.
      *
      * @throws IOException if an I/O error occurs.
      */
@@ -81,8 +82,8 @@ class HelloWorld_05_Write_DataOutput_Test extends HelloWorldTest {
     }
 
     /**
-     * Asserts, redundantly, {@link HelloWorld#write(DataOutput) write(data)} method writes {@value
-     * com.github.jinahya.hello.HelloWorld#BYTES} bytes to given {@code data} argument.
+     * Asserts, redundantly, {@link HelloWorld#write(DataOutput) write(data)} method writes
+     * {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes to given {@code data} argument.
      *
      * @throws IOException if an I/O error occurs.
      */
@@ -103,8 +104,8 @@ class HelloWorld_05_Write_DataOutput_Test extends HelloWorldTest {
     }
 
     /**
-     * Asserts, redundantly, {@link HelloWorld#write(DataOutput) write(data)} method writes {@value
-     * com.github.jinahya.hello.HelloWorld#BYTES} bytes to given {@code data} arguments.
+     * Asserts, redundantly, {@link HelloWorld#write(DataOutput) write(data)} method writes
+     * {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes to given {@code data} arguments.
      *
      * @param tempDir a temporary directory to test with
      * @throws IOException if an I/O error occurs.

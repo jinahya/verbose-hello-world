@@ -40,9 +40,9 @@ import java.net.Socket;
 class HelloWorld_04_Send_Socket_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#send(Socket) send(socket)} method invokes the {@link
-     * HelloWorld#write(OutputStream) write(stream)} method with {@link Socket#getOutputStream()
-     * socket.outputStream}.
+     * Asserts {@link HelloWorld#send(Socket) send(socket)} method invokes the
+     * {@link HelloWorld#write(OutputStream) write(stream)} method with
+     * {@link Socket#getOutputStream() socket.outputStream}.
      *
      * @throws IOException if an I/O error occurs.
      */

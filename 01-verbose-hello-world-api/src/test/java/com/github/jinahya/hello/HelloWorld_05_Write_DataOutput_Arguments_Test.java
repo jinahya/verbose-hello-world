@@ -38,8 +38,8 @@ import java.io.DataOutput;
 class HelloWorld_05_Write_DataOutput_Arguments_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#write(DataOutput) write(data)} method throws a {@link
-     * NullPointerException} when the {@code data} argument is {@code null}.
+     * Asserts {@link HelloWorld#write(DataOutput) write(data)} method throws a
+     * {@link NullPointerException} when the {@code data} argument is {@code null}.
      */
     @DisplayName("write((DataOutput) null) method throws NullPointerException")
     @Test

@@ -45,8 +45,8 @@ abstract class HelloWorldTest {
     abstract HelloWorld helloWorld();
 
     /**
-     * Asserts {@link HelloWorld#set(byte[], int) set(array, index)} method throws a {@code
-     * NullPointerException} when the {@code array} argument is {@code null}.
+     * Asserts {@link HelloWorld#set(byte[], int) set(array, index)} method throws a
+     * {@code NullPointerException} when the {@code array} argument is {@code null}.
      */
     @DisplayName("set(null, index) throws NullPointerException")
     @Test
@@ -59,8 +59,8 @@ abstract class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#set(byte[], int) set(array, index)} method throws an {@code
-     * IndexOutOfBoundsException} when {@code index} argument is negative.
+     * Asserts {@link HelloWorld#set(byte[], int) set(array, index)} method throws an
+     * {@code IndexOutOfBoundsException} when {@code index} argument is negative.
      */
     @DisplayName("set(array, !positive) throws IndexOutOfBoundsException")
     @Test
@@ -74,9 +74,9 @@ abstract class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#set(byte[], int) set(array, index)} method throws an {@code
-     * IndexOutOfBoundsException} when ({@code index} + {@value com.github.jinahya.hello.HelloWorld#BYTES})
-     * is greater than {@code array.length}.
+     * Asserts {@link HelloWorld#set(byte[], int) set(array, index)} method throws an
+     * {@code IndexOutOfBoundsException} when ({@code index} +
+     * {@value com.github.jinahya.hello.HelloWorld#BYTES}) is greater than {@code array.length}.
      */
     @DisplayName("set(array, index) throws IndexOutOfBoundsException"
                  + " when (index + 12) > array.length")
@@ -91,8 +91,8 @@ abstract class HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#set(byte[], int) set(array, index)} method sets "{@code hello,
-     * world}" bytes on specified array starting at specified index.
+     * Asserts {@link HelloWorld#set(byte[], int) set(array, index)} method sets
+     * "{@code hello, world}" bytes on specified array starting at specified index.
      */
     @DisplayName("set(array, index) sets 'hello, world' bytes"
                  + " on array starting at index")

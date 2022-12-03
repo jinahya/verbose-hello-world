@@ -39,9 +39,9 @@ class HelloWorld_12_WriteCompletable_AsynchronousByteChannel_Arguments_Test
         extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#writeCompletable(AsynchronousByteChannel)
-     * writeCompletable(channel)} method throws a {@link NullPointerException} when the {@code
-     * channel} argument is {@code null}.
+     * Asserts
+     * {@link HelloWorld#writeCompletable(AsynchronousByteChannel) writeCompletable(channel)} method
+     * throws a {@link NullPointerException} when the {@code channel} argument is {@code null}.
      */
     @DisplayName("writeCompletable(null) throws NullPointerException")
     @Test

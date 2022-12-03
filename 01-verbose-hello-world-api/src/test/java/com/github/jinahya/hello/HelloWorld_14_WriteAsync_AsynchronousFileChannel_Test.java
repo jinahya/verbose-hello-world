@@ -65,7 +65,8 @@ class HelloWorld_14_WriteAsync_AsynchronousFileChannel_Test extends HelloWorldTe
     }
 
     /**
-     * Asserts {@link HelloWorld#writeAsync(AsynchronousFileChannel, long, ExecutorService)
+     * Asserts
+     * {@link HelloWorld#writeAsync(AsynchronousFileChannel, long, ExecutorService)
      * writeAsync(channel, posotion, service)} method returns a future of {@code channel}.
      *
      * @throws InterruptedException if interrupted while testing.

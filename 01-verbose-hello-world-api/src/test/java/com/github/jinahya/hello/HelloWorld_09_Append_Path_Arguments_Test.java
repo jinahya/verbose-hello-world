@@ -37,8 +37,8 @@ import java.nio.file.Path;
 class HelloWorld_09_Append_Path_Arguments_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#append(Path) append(path)} method throws a {@link
-     * NullPointerException} when the {@code path} argument is {@code null}.
+     * Asserts {@link HelloWorld#append(Path) append(path)} method throws a
+     * {@link NullPointerException} when the {@code path} argument is {@code null}.
      */
     @DisplayName("append((Path) null) throws NullPointerException")
     @Test

@@ -21,13 +21,12 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * A class for testing constants defined in {@link HelloWorld} interface.
@@ -49,6 +48,6 @@ class HelloWorld_Constants_Test {
     @Test
     void BYTES_EqualsToActualNumberOfHelloWorldBytes_() {
         var expected = "hello, world".getBytes(StandardCharsets.US_ASCII).length;
-        assertEquals(expected, HelloWorld.BYTES);
+        Assertions.assertEquals(expected, HelloWorld.BYTES);
     }
 }

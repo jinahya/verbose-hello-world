@@ -46,8 +46,8 @@ class HelloWorld_10_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(AsynchronousByteChannel) write(channel)} method invokes
-     * {@link HelloWorld#put(ByteBuffer) put(buffer)} method and writes the buffer to the {@code
-     * channel}.
+     * {@link HelloWorld#put(ByteBuffer) put(buffer)} method and writes the buffer to the
+     * {@code channel}.
      *
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.

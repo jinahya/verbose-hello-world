@@ -36,8 +36,8 @@ import java.util.concurrent.ThreadLocalRandom;
 class HelloWorld_01_Set_Array_Arguments_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#set(byte[]) set(array)} method throws a {@link
-     * NullPointerException} when the {@code array} argument is {@code null}.
+     * Asserts {@link HelloWorld#set(byte[]) set(array)} method throws a
+     * {@link NullPointerException} when the {@code array} argument is {@code null}.
      */
     @DisplayName("set(null) throws NullPointerException")
     @Test
@@ -47,9 +47,9 @@ class HelloWorld_01_Set_Array_Arguments_Test extends HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#set(byte[]) set(array)} method throws an {@link
-     * IndexOutOfBoundsException} when {@code array.length} is less than {@value
-     * com.github.jinahya.hello.HelloWorld#BYTES}.
+     * Asserts {@link HelloWorld#set(byte[]) set(array)} method throws an
+     * {@link IndexOutOfBoundsException} when {@code array.length} is less than
+     * {@value com.github.jinahya.hello.HelloWorld#BYTES}.
      */
     @DisplayName("set(array[<12]) throws IndexOutOfBoundsException")
     @Test

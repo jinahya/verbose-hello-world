@@ -38,8 +38,8 @@ import java.nio.channels.WritableByteChannel;
 class HelloWorld_08_Write_WritableByteChannel_Arguments_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#write(WritableByteChannel) write(channel)} method throws a {@link
-     * NullPointerException} when {@code channel} argument is {@code null}.
+     * Asserts {@link HelloWorld#write(WritableByteChannel) write(channel)} method throws a
+     * {@link NullPointerException} when {@code channel} argument is {@code null}.
      */
     @DisplayName("write(null) throws NullPointerException")
     @Test

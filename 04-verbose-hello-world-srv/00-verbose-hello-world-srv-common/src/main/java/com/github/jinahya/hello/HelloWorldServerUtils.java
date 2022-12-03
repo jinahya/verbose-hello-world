@@ -196,8 +196,8 @@ class HelloWorldServerUtils {
     }
 
     /**
-     * Starts a new thread which reads "{@code quit\n}" from {@link System#in} and {@link
-     * Closeable#close() closes} specified closeable.
+     * Starts a new thread which reads "{@code quit\n}" from {@link System#in} and
+     * {@link Closeable#close() closes} specified closeable.
      *
      * @param closeable the closeable to close.
      * @return a new started thread.

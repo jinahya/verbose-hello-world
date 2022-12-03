@@ -35,8 +35,8 @@ public class HelloWorldMainUdp2 {
 
     /**
      * The main method of this program which {@link HelloWorldServer#open(SocketAddress) opens} an
-     * instance of {@link HelloWorldServerUdp2}, with an endpoint {@link
-     * HelloWorldServerUtils#parseEndpoint(String...) parsed} from specified command line
+     * instance of {@link HelloWorldServerUdp2}, with an endpoint
+     * {@link HelloWorldServerUtils#parseEndpoint(String...) parsed} from specified command line
      * arguments, and sends {@code hello, world} bytes to clients.
      *
      * @param args an array of command line arguments from which an endpoint is parsed.

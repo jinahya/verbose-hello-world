@@ -59,9 +59,10 @@ class HelloWorld_08_Write_WritableByteChannel_Test extends HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#write(WritableByteChannel) write(channel)} method invokes {@link
-     * HelloWorld#put(ByteBuffer) put(buffer)} method with a byte buffer of {@value
-     * com.github.jinahya.hello.HelloWorld#BYTES} bytes and writes the buffer to specified channel.
+     * Asserts {@link HelloWorld#write(WritableByteChannel) write(channel)} method invokes
+     * {@link HelloWorld#put(ByteBuffer) put(buffer)} method with a byte buffer of
+     * {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and writes the buffer to specified
+     * channel.
      *
      * @throws IOException if an I/O error occurs.
      */

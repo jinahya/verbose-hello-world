@@ -39,9 +39,10 @@ import java.util.concurrent.ExecutorService;
 class HelloWorld_11_WriteAsync_AsynchronousByteChannel_Arguments_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#writeAsync(AsynchronousByteChannel, ExecutorService)
-     * writeAsync(channel, service)} method throws a {@link NullPointerException} when {@code
-     * channel} argument is {@code null}.
+     * Asserts
+     * {@link HelloWorld#writeAsync(AsynchronousByteChannel, ExecutorService) writeAsync(channel,
+     * service)} method throws a {@link NullPointerException} when {@code channel} argument is
+     * {@code null}.
      */
     @DisplayName("writeAsync(null, ) throws NullPointerException")
     @Test
@@ -54,9 +55,10 @@ class HelloWorld_11_WriteAsync_AsynchronousByteChannel_Arguments_Test extends He
     }
 
     /**
-     * Asserts {@link HelloWorld#writeAsync(AsynchronousByteChannel, ExecutorService)
-     * writeAsync(channel, service)} method throws a {@link NullPointerException} when {@code
-     * service} argument is {@code null}.
+     * Asserts
+     * {@link HelloWorld#writeAsync(AsynchronousByteChannel, ExecutorService) writeAsync(channel,
+     * service)} method throws a {@link NullPointerException} when {@code service} argument is
+     * {@code null}.
      */
     @DisplayName("writeAsync(, null) throws NullPointerException")
     @Test

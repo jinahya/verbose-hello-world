@@ -48,9 +48,9 @@ class HelloWorldServerUdp
 
     private void handle(Set<SelectionKey> keys) throws IOException {
         for (var key : keys) {
-          var channel = (DatagramChannel) key.channel();
+            var channel = (DatagramChannel) key.channel();
             if (key.isReadable()) {
-              var address = channel.receive(allocate(0));
+                var address = channel.receive(allocate(0));
                 if (address != null) {
                     log.debug("received from {}", address);
                     key.interestOps(key.interestOps() & ~OP_READ);
@@ -60,10 +60,10 @@ class HelloWorldServerUdp
                 continue;
             }
             if (key.isWritable()) {
-              var src = allocate(BYTES);
+                var src = allocate(BYTES);
                 service().put(src);
                 // TODO: flip the src!
-              var target = (SocketAddress) key.attachment();
+                var target = (SocketAddress) key.attachment();
                 if (channel.send(src, target) == src.capacity()) {
                     key.interestOps(key.interestOps() & ~OP_WRITE);
                     key.interestOps(key.interestOps() | OP_READ);
@@ -77,7 +77,7 @@ class HelloWorldServerUdp
 
     @Override
     protected void openInternal(SocketAddress endpoint, Path dir) throws IOException {
-      var server = DatagramChannel.open();
+        var server = DatagramChannel.open();
         if (endpoint instanceof InetSocketAddress &&
             ((InetSocketAddress) endpoint).getPort() > 0) {
             server.socket().setReuseAddress(true);

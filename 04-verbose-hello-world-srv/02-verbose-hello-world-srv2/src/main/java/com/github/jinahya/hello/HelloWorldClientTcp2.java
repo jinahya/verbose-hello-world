@@ -35,9 +35,10 @@ import java.util.function.Consumer;
 class HelloWorldClientTcp2 {
 
     /**
-     * Runs specified number of clients which each connects to specified endpoint, read {@value
-     * com.github.jinahya.hello.HelloWorld#BYTES} bytes, decodes those bytes into a string with
-     * {@link StandardCharsets#US_ASCII US_ASCII} charset, and accepts it to specified consumer.
+     * Runs specified number of clients which each connects to specified endpoint, read
+     * {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes, decodes those bytes into a string
+     * with {@link StandardCharsets#US_ASCII US_ASCII} charset, and accepts it to specified
+     * consumer.
      *
      * @param count    the number of clients to run.
      * @param endpoint the endpoint to connect/read.

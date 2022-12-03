@@ -42,10 +42,11 @@ class HelloWorld_09_Append_Path_Test
         extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#append(Path) append(path)} method invokes {@link
-     * HelloWorld#write(WritableByteChannel) write(channel)} method with an instance of {@link
-     * java.nio.channels.FileChannel} and asserts {@value com.github.jinahya.hello.HelloWorld#BYTES}
-     * bytes are appended to specified {@code path}.
+     * Asserts {@link HelloWorld#append(Path) append(path)} method invokes
+     * {@link HelloWorld#write(WritableByteChannel) write(channel)} method with an instance of
+     * {@link java.nio.channels.FileChannel} and asserts
+     * {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes are appended to specified
+     * {@code path}.
      *
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.

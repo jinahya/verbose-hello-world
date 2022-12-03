@@ -71,8 +71,8 @@ class HelloWorldServerTcp
         requireNonNull(selector, "selector is null");
         for (var key : keys) {
             if (key.isAcceptable()) { // server; ready to accept
-              var channel = (ServerSocketChannel) key.channel();
-              var client = channel.accept();
+                var channel = (ServerSocketChannel) key.channel();
+                var client = channel.accept();
                 log.debug("[S] accepted from {}", client.getRemoteAddress());
                 client.configureBlocking(false);
                 client.register(selector, OP_WRITE);
@@ -92,7 +92,7 @@ class HelloWorldServerTcp
 
     @Override
     protected void openInternal(SocketAddress endpoint, Path dir) throws IOException {
-      var server = ServerSocketChannel.open();
+        var server = ServerSocketChannel.open();
         if (endpoint instanceof InetSocketAddress
             && ((InetSocketAddress) endpoint).getPort() > 0) {
             server.setOption(SO_REUSEADDR, TRUE);

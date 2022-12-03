@@ -57,8 +57,8 @@ class HelloWorldCdiFactory {
 
     /**
      * Disposes specified {@link HelloWorld} instance produced for those injection points which each
-     * annotated with {@link Named} whose {@link Named#value() value} equals to {@link
-     * HelloWorldDiTest#DEMO}.
+     * annotated with {@link Named} whose {@link Named#value() value} equals to
+     * {@link HelloWorldDiTest#DEMO}.
      *
      * @param helloWorld the {@link HelloWorld} instance to dispose
      */
@@ -88,8 +88,8 @@ class HelloWorldCdiFactory {
     }
 
     /**
-     * Disposes specified {@link HelloWorld} instance produced for injection points {@link Named
-     * named} with {@link HelloWorldDiTest#IMPL}.
+     * Disposes specified {@link HelloWorld} instance produced for injection points
+     * {@link Named named} with {@link HelloWorldDiTest#IMPL}.
      *
      * @param helloWorld the {@link HelloWorld} instance to dispose.
      */

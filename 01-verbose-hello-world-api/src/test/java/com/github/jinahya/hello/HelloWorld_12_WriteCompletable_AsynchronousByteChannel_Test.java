@@ -49,10 +49,11 @@ import static org.mockito.Mockito.times;
 class HelloWorld_12_WriteCompletable_AsynchronousByteChannel_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#writeCompletable(AsynchronousByteChannel)
-     * writeCompletable(channel)} method invokes {@link HelloWorld#put(ByteBuffer) put(buffer)}
-     * method with a buffer of {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and writes
-     * the buffer to the {@code channel}.
+     * Asserts
+     * {@link HelloWorld#writeCompletable(AsynchronousByteChannel) writeCompletable(channel)} method
+     * invokes {@link HelloWorld#put(ByteBuffer) put(buffer)} method with a buffer of
+     * {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and writes the buffer to the
+     * {@code channel}.
      *
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.

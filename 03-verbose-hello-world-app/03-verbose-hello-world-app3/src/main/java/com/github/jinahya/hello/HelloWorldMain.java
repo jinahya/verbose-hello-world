@@ -25,8 +25,8 @@ import jakarta.inject.Inject;
 import java.io.IOException;
 
 /**
- * A program whose {@link #main(String[])} method prints {@code hello, world} to {@link
- * System#out}.
+ * A program whose {@link #main(String[])} method prints {@code hello, world} to
+ * {@link System#out}.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */

@@ -38,8 +38,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class HelloWorld_04_Send_Socket_Arguments_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#send(Socket) send(socket)} method throws a {@link
-     * NullPointerException} when the {@code socket} argument is {@code null}.
+     * Asserts {@link HelloWorld#send(Socket) send(socket)} method throws a
+     * {@link NullPointerException} when the {@code socket} argument is {@code null}.
      */
     @DisplayName("send(null) throws NullPointerException")
     @Test

@@ -47,9 +47,10 @@ import java.util.concurrent.Future;
 class HelloWorld_11_WriteAsync_AsynchronousByteChannel_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#writeAsync(AsynchronousByteChannel, ExecutorService)
-     * writeAsync(channel, service)} method invokes {@link HelloWorld#put(ByteBuffer) put(buffer)}
-     * method and writes the returned buffer to the {@code channel}.
+     * Asserts
+     * {@link HelloWorld#writeAsync(AsynchronousByteChannel, ExecutorService) writeAsync(channel,
+     * service)} method invokes {@link HelloWorld#put(ByteBuffer) put(buffer)} method and writes the
+     * returned buffer to the {@code channel}.
      *
      * @param tempDir a temporary directory to test with.
      * @throws InterruptedException if interrupted while testing.

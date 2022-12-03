@@ -41,9 +41,9 @@ class HelloWorld_07_Put_ByteBuffer_Test extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method, when the buffer has a backing
-     * array, invokes {@link HelloWorld#set(byte[], int) set(array, index)} method with {@code
-     * buffer.array} and ({@code buffer.arrayOffset + buffer.position}) and asserts that the {@code
-     * buffer.position} is increased by {@value com.github.jinahya.hello.HelloWorld#BYTES}.
+     * array, invokes {@link HelloWorld#set(byte[], int) set(array, index)} method with
+     * {@code buffer.array} and ({@code buffer.arrayOffset + buffer.position}) and asserts that the
+     * {@code buffer.position} is increased by {@value com.github.jinahya.hello.HelloWorld#BYTES}.
      */
     @DisplayName("put(buffer-with-backing-array)"
                  + " invokes set(buffer.array, buffer.arrayOffset + buffer.position)"

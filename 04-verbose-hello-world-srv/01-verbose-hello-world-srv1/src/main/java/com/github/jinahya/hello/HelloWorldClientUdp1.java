@@ -34,9 +34,10 @@ import java.util.function.Consumer;
 class HelloWorldClientUdp1 {
 
     /**
-     * Sends an empty packet to specified endpoint, receives {@value com.github.jinahya.hello.HelloWorld#BYTES}
-     * bytes, decodes those bytes into a string using {@link StandardCharsets#US_ASCII US_ASCII}
-     * charset, and accepts the string to specified consumer.
+     * Sends an empty packet to specified endpoint, receives
+     * {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes, decodes those bytes into a string
+     * using {@link StandardCharsets#US_ASCII US_ASCII} charset, and accepts the string to specified
+     * consumer.
      *
      * @param endpoint the endpoint to/from send/receive.
      * @param consumer the consumer accepts the decoded string.
