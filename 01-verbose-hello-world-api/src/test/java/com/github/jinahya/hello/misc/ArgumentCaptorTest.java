@@ -26,7 +26,7 @@ class ArgumentCaptorTest {
         some.b();
         var captor = ArgumentCaptor.forClass(int.class);
         verify(some, times(1)).a(captor.capture());
-        var a = captor.capture();
+        var a = captor.getValue();
         assertEquals(0, a);
     }
 }
