@@ -72,15 +72,15 @@ public interface HelloWorld {
      * <pre>
      *   0    &lt;= index                                  index + 12    &lt;= array.length
      *   ↓       ↓                                               ↓       ↓
-     * |   |...|"h"|"e"|"l"|"l"|"o"|","|" "|"w"|"o"|"r"|"l"|"d"|...|   |
+     * |   |...|'h'|'e'|'l'|'l'|'o'|','|' '|'w'|'o'|'r'|'l'|'d'|...|   |
      * </pre>
      *
      * @param array the array on which bytes are set.
      * @param index the starting index of the {@code array}.
      * @return given {@code array}.
      * @throws NullPointerException      if {@code array} is {@code null}.
-     * @throws IndexOutOfBoundsException if {@code index} is negative or ({@code index} +
-     *                                   {@value #BYTES}) is greater than {@code array.length}.
+     * @throws IndexOutOfBoundsException if {@code index} is negative or {@code array.length} is
+     *                                   less than or equal to ({@code index} + {@value #BYTES}).
      */
     byte[] set(byte[] array, int index);
 
@@ -97,10 +97,7 @@ public interface HelloWorld {
      * @see #set(byte[], int)
      */
     default byte[] set(byte[] array) {
-        // TODO: Throw NullPointerException when the array argument is null
-        // TODO: Throw IndexOutOfBoundsException when array.length is less than 12
-        // TODO: Invoke set(array, 0)
-        // TODO: Return the array
+        // TODO: Implement!
         return null;
     }
 
@@ -113,16 +110,13 @@ public interface HelloWorld {
      * @throws NullPointerException if {@code stream} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @implSpec The default implementation invokes {@link #set(byte[]) set(array)} method with an
-     * array of {@value #BYTES} bytes and writes the array to {@code stream} by invoking
-     * {@link OutputStream#write(byte[]) stream.write(array)} method.
+     * array of {@value #BYTES} bytes, and writes the array to {@code stream} by invoking
+     * {@link OutputStream#write(byte[])} on {@code stream} method with the array.
      * @see #set(byte[])
      * @see OutputStream#write(byte[])
      */
     default <T extends OutputStream> T write(T stream) throws IOException {
-        // TODO: Throw NullPointerException when stream is null
-        // TODO: Invoke set(array:byte[12])
-        // TODO: Invoke stream.write(array)
-        // TODO: Return stream
+        // TODO: Implement!
         return null;
     }
 
@@ -144,9 +138,7 @@ public interface HelloWorld {
         if (file == null) {
             throw new NullPointerException("file is null");
         }
-        // TODO: Create a FileOutputStream from file
-        // TODO: Invoke write(stream)
-        // TODO: Flush the stream
+        // TODO: Implement!
         return file;
     }
 
@@ -167,7 +159,7 @@ public interface HelloWorld {
         if (socket == null) {
             throw new NullPointerException("socket is null");
         }
-        // TODO: Invoke write(socket.getOutputStream())
+        // TODO: Implement!
         return socket;
     }
 
@@ -191,7 +183,7 @@ public interface HelloWorld {
         }
         var array = new byte[BYTES];
         set(array);
-        // TODO: Invoke data.write(array)
+        // TODO: Implement!
         return data;
     }
 
@@ -215,7 +207,7 @@ public interface HelloWorld {
             throw new NullPointerException("file is null");
         }
         var array = set(new byte[BYTES]);
-        // TODO: Invoke file.write(array)
+        // TODO: Implement!
         return file;
     }
 
@@ -224,10 +216,10 @@ public interface HelloWorld {
      * <p>The buffer's position, on successful return, is incremented by {@value #BYTES}.
      * <pre>
      * Given,
-     *           |------------------------ remaining ------------------------|
      *   0    &lt;= position                                                 &lt;= limit    &lt;= capacity
      *   ↓       ↓                                                           ↓           ↓
      * |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
+     *           |------------------------ remaining ------------------------|
      *
      * Then, on successful return,
      *   0                                                    &lt;= position &lt;= limit    &lt;= capacity
@@ -266,11 +258,9 @@ public interface HelloWorld {
             throw new BufferOverflowException();
         }
         if (buffer.hasArray()) {
-            // TODO: Invoke set(buffer.array(), buffer.arrayOffset() + buffer.position())
-            // TODO: Increase buffer's position by 12.
+            // TODO: Implement!
         } else {
-            // TODO: Invoke set(array[12])
-            // TODO: Invoke buffer.put(array)
+            // TODO: Implement!
         }
         return buffer;
     }
@@ -296,9 +286,7 @@ public interface HelloWorld {
         if (channel == null) {
             throw new NullPointerException("channel is null");
         }
-        // TODO: Invoke put(buffer[12])
-        // TODO: Flip the buffer
-        // TODO: Invoke channel.write(buffer) while buffer has remaining
+        // TODO: Implement!
         return channel;
     }
 
@@ -321,10 +309,7 @@ public interface HelloWorld {
         if (path == null) {
             throw new NullPointerException("path is null");
         }
-        // TODO: Open a FileChannel from path in appending mode
-        // TODO: Invoke write(channel) method with it
-        // TODO: Force the channel
-        // TODO: Close the channel
+        // TODO: Implement!
         return path;
     }
 
@@ -348,7 +333,7 @@ public interface HelloWorld {
             throw new NullPointerException("channel is null");
         }
         var buffer = put(ByteBuffer.allocate(BYTES)).flip();
-        // TODO: Write the buffer to channel while it has remaining
+        // TODO: Implement!
         return channel;
     }
 
@@ -373,7 +358,7 @@ public interface HelloWorld {
             throw new NullPointerException("executor is null");
         }
         return executor.submit(() -> {
-            // TODO: Invoke write(channel)
+            // TODO: Implement!
             return channel;
         });
     }
@@ -393,7 +378,7 @@ public interface HelloWorld {
         }
         var future = new CompletableFuture<T>();
         var buffer = put(ByteBuffer.allocate(BYTES)).flip();
-        // TODO: Write the buffer to channel while the buffer has remaining
+        // TODO: Implement!
         future.complete(channel); // TODO: Remove!!!
         return future;
     }
