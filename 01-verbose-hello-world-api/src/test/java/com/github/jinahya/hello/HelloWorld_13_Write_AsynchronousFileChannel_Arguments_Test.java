@@ -21,14 +21,15 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.nio.channels.AsynchronousFileChannel;
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
+
+import static java.util.concurrent.ThreadLocalRandom.current;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 
 /**
  * A class for testing {@link HelloWorld#write(AsynchronousFileChannel, long)} method regarding
@@ -50,8 +51,8 @@ class HelloWorld_13_Write_AsynchronousFileChannel_Arguments_Test
     void write_ThrowNullPointerException_ChannelIsNull() {
         var service = helloWorld();
         AsynchronousFileChannel channel = null;
-        var position = ThreadLocalRandom.current().nextLong() & Long.MAX_VALUE;
-        Assertions.assertThrows(NullPointerException.class, () -> service.write(channel, position));
+        var position = current().nextLong() & Long.MAX_VALUE;
+        assertThrows(NullPointerException.class, () -> service.write(channel, position));
     }
 
     /**
@@ -63,9 +64,9 @@ class HelloWorld_13_Write_AsynchronousFileChannel_Arguments_Test
     @Test
     void write_ThrowIllegalArgumentException_PositionIsNegative() {
         var service = helloWorld();
-        var channel = Mockito.mock(AsynchronousFileChannel.class);
+        var channel = mock(AsynchronousFileChannel.class);
         var position = new Random().nextLong() | Long.MIN_VALUE;
-        Assertions.assertThrows(IllegalArgumentException.class,
-                                () -> service.write(channel, position));
+        assertThrows(IllegalArgumentException.class,
+                     () -> service.write(channel, position));
     }
 }

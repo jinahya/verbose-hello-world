@@ -21,13 +21,14 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.nio.channels.AsynchronousByteChannel;
 import java.util.concurrent.ExecutorService;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 
 /**
  * A class for testing {@link HelloWorld#writeAsync(AsynchronousByteChannel, ExecutorService)}
@@ -49,9 +50,9 @@ class HelloWorld_11_WriteAsync_AsynchronousByteChannel_Arguments_Test extends He
     void writeAsync_ThrowNullPointerException_ChannelIsNull() {
         var service = helloWorld();
         AsynchronousByteChannel channel = null;
-        var executor = Mockito.mock(ExecutorService.class);
-        Assertions.assertThrows(NullPointerException.class,
-                                () -> service.writeAsync(channel, executor));
+        var executor = mock(ExecutorService.class);
+        assertThrows(NullPointerException.class,
+                     () -> service.writeAsync(channel, executor));
     }
 
     /**
@@ -64,9 +65,9 @@ class HelloWorld_11_WriteAsync_AsynchronousByteChannel_Arguments_Test extends He
     @Test
     void writeAsync_NullPointerException_ServiceIsNull() {
         var service = helloWorld();
-        var channel = Mockito.mock(AsynchronousByteChannel.class);
+        var channel = mock(AsynchronousByteChannel.class);
         ExecutorService executor = null;
-        Assertions.assertThrows(NullPointerException.class,
-                                () -> service.writeAsync(channel, executor));
+        assertThrows(NullPointerException.class,
+                     () -> service.writeAsync(channel, executor));
     }
 }

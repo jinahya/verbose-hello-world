@@ -21,12 +21,9 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
 
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
@@ -34,8 +31,14 @@ import java.nio.file.Path;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+
+import static java.util.concurrent.Executors.newSingleThreadExecutor;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.ArgumentMatchers.notNull;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
 
 /**
  * A class for testing {@link HelloWorld#writeAsync(AsynchronousByteChannel, ExecutorService)}
@@ -62,21 +65,22 @@ class HelloWorld_11_WriteAsync_AsynchronousByteChannel_Test extends HelloWorldTe
     @Test
     void writeAsync_InvokePutBufferWriteBufferToChannel_(@TempDir Path tempDir)
             throws InterruptedException, ExecutionException {
-        var channel = Mockito.mock(AsynchronousByteChannel.class);
-        Mockito.lenient()
-                .when(channel.write(ArgumentMatchers.notNull()))
+        var service = helloWorld();
+        var channel = mock(AsynchronousByteChannel.class);
+        lenient()
+                .when(channel.write(notNull()))
                 .thenAnswer(i -> {
-                    ByteBuffer buffer = i.getArgument(0);
-                    int written = new Random().nextInt(buffer.remaining() + 1);
+                    var buffer = i.getArgument(0, ByteBuffer.class);
+                    var written = new Random().nextInt(buffer.remaining() + 1);
                     buffer.position(buffer.position() + written);
-                    var future = Mockito.mock(Future.class);
-                    Mockito.doReturn(written).when(future).get();
+                    var future = mock(Future.class);
+                    doReturn(written).when(future).get();
                     return future;
                 });
-        var executor = Executors.newSingleThreadExecutor();
-        var future = helloWorld().writeAsync(channel, executor);
+        var executor = newSingleThreadExecutor();
+        var future = service.writeAsync(channel, executor);
         var actual = future.get();
-        Assertions.assertSame(channel, actual);
+        assertSame(channel, actual);
         // TODO: Implement!
     }
 }

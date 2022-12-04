@@ -21,19 +21,26 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
 
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
 import java.util.Random;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.LongAdder;
+
+import static java.util.concurrent.CompletableFuture.completedFuture;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * A class for testing {@link HelloWorld#write(AsynchronousByteChannel)} method.
@@ -58,24 +65,22 @@ class HelloWorld_10_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
     @Test
     void write_InvokePutBufferWriteBufferToChannel_()
             throws InterruptedException, ExecutionException {
-        var channel = Mockito.mock(AsynchronousByteChannel.class);
+        var service = helloWorld();
+        var channel = mock(AsynchronousByteChannel.class);
         var writtenSoFar = new LongAdder();
-        Mockito.lenient()
-                .when(channel.write(ArgumentMatchers.notNull()))
-                .thenAnswer(i -> {
-                    ByteBuffer buffer = i.getArgument(0);
-                    var written = new Random().nextInt(buffer.remaining() + 1);
-                    buffer.position(buffer.position() + written);
-                    writtenSoFar.add(written);
-                    var future = Mockito.mock(Future.class);
-                    Mockito.doReturn(written).when(future).get();
-                    return future;
-                });
+        lenient().when(channel.write(ArgumentMatchers.notNull())).thenAnswer(i -> {
+            var buffer = i.getArgument(0, ByteBuffer.class);
+            var written = new Random().nextInt(buffer.remaining() + 1);
+            buffer.position(buffer.position() + written);
+            writtenSoFar.add(written);
+            var future = mock(Future.class);
+            doReturn(written).when(future).get();
+            return future;
+        });
         helloWorld().write(channel);
-        Mockito.verify(helloWorld(), Mockito.times(1))
-                .put(bufferCaptor().capture());
+        verify(service, times(1)).put(bufferCaptor().capture());
         var buffer = bufferCaptor().getValue();
-        Assertions.assertEquals(HelloWorld.BYTES, buffer.capacity());
+        assertEquals(HelloWorld.BYTES, buffer.capacity());
         // TODO: Implement!
     }
 
@@ -89,16 +94,17 @@ class HelloWorld_10_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
     @DisplayName("write(channel) invokes put(buffer) writes the buffer to channel")
     @Test
     void write_ReturnChannel_() throws InterruptedException, ExecutionException {
-        var channel = Mockito.mock(AsynchronousByteChannel.class);
-        Mockito.lenient()
-                .when(channel.write(ArgumentMatchers.any(ByteBuffer.class)))
+        var service = helloWorld();
+        var channel = mock(AsynchronousByteChannel.class);
+        lenient()
+                .when(channel.write(any(ByteBuffer.class)))
                 .thenAnswer(i -> {
-                    ByteBuffer buffer = i.getArgument(0);
+                    var buffer = i.getArgument(0, ByteBuffer.class);
                     var written = new Random().nextInt(buffer.remaining() + 1);
                     buffer.position(buffer.position() + written);
-                    return CompletableFuture.completedFuture(written);
+                    return completedFuture(written);
                 });
-        var actual = helloWorld().write(channel);
-        Assertions.assertSame(channel, actual);
+        var actual = service.write(channel);
+        assertSame(channel, actual);
     }
 }

@@ -21,14 +21,17 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.nio.ByteBuffer;
-import java.util.concurrent.ThreadLocalRandom;
+
+import static java.nio.ByteBuffer.allocate;
+import static java.nio.ByteBuffer.wrap;
+import static java.util.concurrent.ThreadLocalRandom.current;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
+import static org.mockito.Mockito.spy;
 
 /**
  * A class for testing {@link HelloWorld#put(ByteBuffer)} method.
@@ -51,24 +54,25 @@ class HelloWorld_07_Put_ByteBuffer_Test extends HelloWorldTest {
 //    @RepeatedTest(1024)
     @Test
     void put_InvokeSetArrayIndexAndIncrementPosition_BufferHasBackingArray() {
+        var service = helloWorld();
         ByteBuffer buffer;
         {
             var array = new byte[HelloWorld.BYTES * 3];
-            var wrapping = ByteBuffer.wrap(array);
-            assert wrapping.hasArray();
-            assert wrapping.array() == array;
-            assert wrapping.arrayOffset() == 0;
-            assert wrapping.capacity() == array.length;
-            assert wrapping.limit() == wrapping.capacity();
-            assert wrapping.position() == 0;
-            assert wrapping.remaining() == wrapping.capacity();
-            buffer = wrapping.slice();
+            var wrapper = wrap(array);
+            assert wrapper.hasArray();
+            assert wrapper.array() == array;
+            assert wrapper.arrayOffset() == 0;
+            assert wrapper.capacity() == array.length;
+            assert wrapper.limit() == wrapper.capacity();
+            assert wrapper.position() == 0;
+            assert wrapper.remaining() == wrapper.capacity();
+            buffer = wrapper.slice();
             assert buffer.hasArray();
-            wrapping.position(ThreadLocalRandom.current().nextInt(HelloWorld.BYTES));
+            wrapper.position(current().nextInt(HelloWorld.BYTES));
             assert buffer.array() == array;
         }
-        helloWorld().put(buffer);
-        // TODO: Verify helloWorld() invoked set(buffer.array(), buffer.arrayOffset + buffer.position)
+        service.put(buffer);
+        // TODO: Verify service invoked set(buffer.array(), buffer.arrayOffset + buffer.position)
         var position = buffer.position();
         // TODO: Implement!
     }
@@ -84,8 +88,8 @@ class HelloWorld_07_Put_ByteBuffer_Test extends HelloWorldTest {
                  + " and invokes buffer.put(array)")
     @Test
     void put_InvokeSetArrayPutArrayToBuffer_BufferHasNoBackingArray() {
-        var buffer = Mockito.spy(ByteBuffer.allocateDirect(HelloWorld.BYTES));
-        Assumptions.assumeFalse(buffer.hasArray(), "a direct byte buffer has a backing array?");
+        var buffer = spy(ByteBuffer.allocateDirect(HelloWorld.BYTES));
+        assumeFalse(buffer.hasArray(), "a direct buffer has a backing array?");
         var position = buffer.position();
         // TODO: Implement!
     }
@@ -97,8 +101,9 @@ class HelloWorld_07_Put_ByteBuffer_Test extends HelloWorldTest {
     @DisplayName("put(buffer) returns buffer")
     @Test
     void put_ReturnBuffer_() {
-        var expected = ByteBuffer.allocate(HelloWorld.BYTES);
-        var actual = helloWorld().put(expected);
-        Assertions.assertSame(expected, actual);
+        var service = helloWorld();
+        var buffer = allocate(HelloWorld.BYTES);
+        var actual = service.put(buffer);
+        assertSame(buffer, actual);
     }
 }

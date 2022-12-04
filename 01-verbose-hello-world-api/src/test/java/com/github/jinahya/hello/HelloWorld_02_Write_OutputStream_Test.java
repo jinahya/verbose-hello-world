@@ -23,10 +23,11 @@ package com.github.jinahya.hello;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.io.OutputStream;
+
+import static org.mockito.Mockito.mock;
 
 /**
  * A class for testing {@link HelloWorld#write(OutputStream)} method.
@@ -50,6 +51,7 @@ class HelloWorld_02_Write_OutputStream_Test extends HelloWorldTest {
                  + " and invokes stream.write(array)")
     @Test
     void write_InvokeSetArrayAndWriteArrayToStream_() throws IOException {
+        var service = helloWorld();
         // TODO: Create a mock object of java.io.OutputStream, say 'stream'
         // TODO: Invoke helloWorld().write(stream)
         // TODO: Verify helloWorld() invoked write(array[12]) once
@@ -65,8 +67,9 @@ class HelloWorld_02_Write_OutputStream_Test extends HelloWorldTest {
     @DisplayName("write(stream) returns stream")
     @Test
     void write_ReturnStream_() throws IOException {
-        var expected = Mockito.mock(OutputStream.class);
-        var actual = helloWorld().write(expected);
-        // TODO: Assert that expected and actual refer to the same object.
+        var service = helloWorld();
+        var stream = mock(OutputStream.class);
+        var actual = service.write(stream);
+        // TODO: Assert that both expected and actual refer to the same object.
     }
 }

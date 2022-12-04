@@ -27,6 +27,8 @@ import org.junit.jupiter.api.Test;
 
 import java.io.DataOutput;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 /**
  * A class for testing {@link HelloWorld#write(DataOutput)} method regarding arguments
  * verification.
@@ -46,6 +48,6 @@ class HelloWorld_05_Write_DataOutput_Arguments_Test extends HelloWorldTest {
     void write_ThrowsNullPointerException_DataIsNull() {
         var service = helloWorld();
         DataOutput data = null;
-        Assertions.assertThrows(NullPointerException.class, () -> service.write(data));
+        assertThrows(NullPointerException.class, () -> service.write(data));
     }
 }

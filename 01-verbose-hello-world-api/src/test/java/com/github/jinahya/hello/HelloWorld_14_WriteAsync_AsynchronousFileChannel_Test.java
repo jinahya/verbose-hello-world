@@ -79,17 +79,16 @@ class HelloWorld_14_WriteAsync_AsynchronousFileChannel_Test extends HelloWorldTe
             throws InterruptedException, ExecutionException {
         var writtenSoFar = new LongAdder();
         var channel = mock(AsynchronousFileChannel.class);
-        when(channel.write(notNull(), longThat(a -> a >= 0L)))
-                .thenAnswer(i -> {
-                    ByteBuffer buffer = i.getArgument(0);
-                    var position = i.getArgument(1);
-                    int written = new Random().nextInt(buffer.remaining() + 1);
-                    buffer.position(buffer.position() + written);
-                    writtenSoFar.add(written);
-                    var future = mock(Future.class);
-                    doReturn(written).when(future).get();
-                    return future;
-                });
+        when(channel.write(notNull(), longThat(a -> a >= 0L))).thenAnswer(i -> {
+            ByteBuffer buffer = i.getArgument(0);
+            var position = i.getArgument(1);
+            var written = new Random().nextInt(buffer.remaining() + 1);
+            buffer.position(buffer.position() + written);
+            writtenSoFar.add(written);
+            var future = mock(Future.class);
+            doReturn(written).when(future).get();
+            return future;
+        });
         var position = 0L;
         var executor = Executors.newSingleThreadExecutor();
         var future = helloWorld().writeAsync(channel, position, executor);

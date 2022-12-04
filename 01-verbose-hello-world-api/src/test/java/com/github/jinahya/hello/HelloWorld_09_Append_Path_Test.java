@@ -21,15 +21,17 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
 import java.nio.channels.WritableByteChannel;
-import java.nio.file.Files;
 import java.nio.file.Path;
+
+import static java.nio.file.Files.createTempFile;
+import static java.nio.file.Files.size;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 /**
  * A class for testing {@link HelloWorld#append(Path)} method.
@@ -44,7 +46,7 @@ class HelloWorld_09_Append_Path_Test
     /**
      * Asserts {@link HelloWorld#append(Path) append(path)} method invokes
      * {@link HelloWorld#write(WritableByteChannel) write(channel)} method with an instance of
-     * {@link java.nio.channels.FileChannel} and asserts
+     * {@link java.nio.channels.FileChannel}, and asserts
      * {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes are appended to specified
      * {@code path}.
      *
@@ -56,8 +58,8 @@ class HelloWorld_09_Append_Path_Test
                  + ", 12 bytes are appended")
     @Test
     void append_InvokeWriteChannel12BytesWritten_(@TempDir Path tempDir) throws IOException {
-        var path = Files.createTempFile(tempDir, null, null);
-        var size = Files.size(path);
+        var path = createTempFile(tempDir, null, null);
+        var size = size(path);
         // TODO: Implement!
     }
 
@@ -71,8 +73,9 @@ class HelloWorld_09_Append_Path_Test
     @DisplayName("append(path) returns path")
     @Test
     void append_ReturnPath_(@TempDir Path tempDir) throws IOException {
-        var path = Files.createTempFile(tempDir, null, null);
-        var actual = helloWorld().append(path);
-        Assertions.assertSame(path, actual);
+        var service = helloWorld();
+        var path = createTempFile(tempDir, null, null);
+        var actual = service.append(path);
+        assertSame(path, actual);
     }
 }

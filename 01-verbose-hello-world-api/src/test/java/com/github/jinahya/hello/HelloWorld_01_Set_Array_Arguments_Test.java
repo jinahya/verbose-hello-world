@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.concurrent.ThreadLocalRandom;
+import static java.util.concurrent.ThreadLocalRandom.current;
 
 /**
  * A class for testing {@link HelloWorld#set(byte[])} method regarding arguments verification.
@@ -42,6 +42,7 @@ class HelloWorld_01_Set_Array_Arguments_Test extends HelloWorldTest {
     @DisplayName("set(null) throws NullPointerException")
     @Test
     void set_ThrowNullPointerException_ArrayIsNull() {
+        var service = helloWorld();
         byte[] array = null;
         // TODO: Assert set(array) throws a NullPointerException.
     }
@@ -54,7 +55,8 @@ class HelloWorld_01_Set_Array_Arguments_Test extends HelloWorldTest {
     @DisplayName("set(array[<12]) throws IndexOutOfBoundsException")
     @Test
     void set_ThrowIndexOutOfBoundsException_ArrayIsNotLongEnough() {
-        var length = ThreadLocalRandom.current().nextInt(HelloWorld.BYTES);
+        var service = helloWorld();
+        var length = current().nextInt(HelloWorld.BYTES);
         var array = new byte[length];
         // TODO: Assert set(array) throws a IndexOutOfBoundsException.
     }

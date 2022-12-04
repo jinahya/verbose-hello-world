@@ -27,6 +27,8 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 /**
  * A class for testing {@link HelloWorld#append(File)} method regarding arguments verification.
  *
@@ -45,6 +47,6 @@ class HelloWorld_03_Append_File_Arguments_Test extends HelloWorldTest {
     void append_ThrowNullPointerException_FileIsNull() {
         var service = helloWorld();
         File file = null;
-        Assertions.assertThrows(NullPointerException.class, () -> service.append(file));
+        assertThrows(NullPointerException.class, () -> service.append(file));
     }
 }

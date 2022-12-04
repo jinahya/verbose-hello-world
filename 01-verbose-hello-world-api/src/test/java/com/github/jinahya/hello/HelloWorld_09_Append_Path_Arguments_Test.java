@@ -27,6 +27,8 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 /**
  * A class for testing {@link HelloWorld#append(Path)} method regarding arguments verification.
  *
@@ -45,6 +47,6 @@ class HelloWorld_09_Append_Path_Arguments_Test extends HelloWorldTest {
     void append_ThrowNullPointerException_PathIsNull() {
         var service = helloWorld();
         Path path = null;
-        Assertions.assertThrows(NullPointerException.class, () -> service.append(path));
+        assertThrows(NullPointerException.class, () -> service.append(path));
     }
 }

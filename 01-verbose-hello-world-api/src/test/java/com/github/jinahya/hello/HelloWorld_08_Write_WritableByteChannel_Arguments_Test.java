@@ -21,11 +21,12 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.nio.channels.WritableByteChannel;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * A class for testing {@link HelloWorld#write(WritableByteChannel)} method regarding argument
@@ -46,6 +47,6 @@ class HelloWorld_08_Write_WritableByteChannel_Arguments_Test extends HelloWorldT
     void write_ThrowNullPointerException_ChannelIsNull() {
         var service = helloWorld();
         WritableByteChannel channel = null;
-        Assertions.assertThrows(NullPointerException.class, () -> service.write(channel));
+        assertThrows(NullPointerException.class, () -> service.write(channel));
     }
 }

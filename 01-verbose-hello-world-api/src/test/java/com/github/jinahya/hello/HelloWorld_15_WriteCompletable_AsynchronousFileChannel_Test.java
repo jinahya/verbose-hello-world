@@ -21,13 +21,10 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -38,12 +35,24 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.LongAdder;
 
+import static java.nio.ByteBuffer.allocate;
+import static java.nio.channels.AsynchronousFileChannel.open;
+import static java.nio.file.Files.createTempFile;
+import static java.util.concurrent.ThreadLocalRandom.current;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.longThat;
+import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * A class for testing {@link HelloWorld#writeCompletable(AsynchronousFileChannel, long)} method.
@@ -58,7 +67,7 @@ class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Test extends HelloW
     @BeforeEach
     void stub_PutBuffer_FillBuffer() {
         // https://www.javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#13
-        Mockito.doAnswer(i -> {
+        doAnswer(i -> {
             ByteBuffer buffer = i.getArgument(0);
             buffer.position(buffer.position() + HelloWorld.BYTES);
             return buffer;
@@ -81,37 +90,31 @@ class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Test extends HelloW
     @Test
     void writeCompletable_InvokePutBufferWriteBufferToChannel_()
             throws InterruptedException, ExecutionException {
+        var service = helloWorld();
         var writtenSoFar = new LongAdder();
         var channel = mock(AsynchronousFileChannel.class);
-        Mockito.doAnswer(i -> {
-                    ByteBuffer src = i.getArgument(0);
-                    var position = i.getArgument(1);
-                    Long attachment = i.getArgument(2);
-                    CompletionHandler<Integer, Long> handler = i.getArgument(3);
-                    var written = ThreadLocalRandom.current().nextInt(src.remaining() + 1);
-                    src.position(src.position() + written);
-                    writtenSoFar.add(written);
-                    handler.completed(written, attachment);
-                    return null;
-                })
-                .when(channel)
-                .write(ArgumentMatchers.notNull(), ArgumentMatchers.longThat(a -> a >= 0L),
-                       ArgumentMatchers.notNull(), ArgumentMatchers.notNull());
+        doAnswer(i -> {
+            ByteBuffer src = i.getArgument(0);
+            var position = i.getArgument(1);
+            Long attachment = i.getArgument(2);
+            CompletionHandler<Integer, Long> handler = i.getArgument(3);
+            var written = current().nextInt(src.remaining() + 1);
+            src.position(src.position() + written);
+            writtenSoFar.add(written);
+            handler.completed(written, attachment);
+            return null;
+        }).when(channel).write(notNull(), longThat(a -> a >= 0L), notNull(), notNull());
         var position = 0L;
         var future = helloWorld().writeCompletable(channel, position);
         var actual = future.get();
-        Mockito.verify(helloWorld(), Mockito.times(1))
-                .put(bufferCaptor().capture());
+        verify(service, times(1)).put(bufferCaptor().capture());
         var buffer = bufferCaptor().getValue();
-        Assertions.assertEquals(HelloWorld.BYTES, buffer.capacity());
-        Assertions.assertFalse(buffer.hasRemaining());
-        Mockito.verify(channel, Mockito.atLeast(1))
-                .write(same(buffer),
-                       ArgumentMatchers.longThat(a -> a >= position),
-                       ArgumentMatchers.notNull(),
-                       ArgumentMatchers.notNull());
-        Assertions.assertSame(channel, actual);
-        Assertions.assertEquals(HelloWorld.BYTES, writtenSoFar.intValue());
+        assertEquals(HelloWorld.BYTES, buffer.capacity());
+        assertFalse(buffer.hasRemaining());
+        verify(channel, atLeast(1))
+                .write(same(buffer), longThat(a -> a >= position), notNull(), notNull());
+        assertSame(channel, actual);
+        assertEquals(HelloWorld.BYTES, writtenSoFar.intValue());
     }
 
     /**
@@ -130,16 +133,17 @@ class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Test extends HelloW
     @Test
     void writeCompletable_Write12BytesFromPosition_(@TempDir Path tempDir)
             throws IOException, InterruptedException, ExecutionException {
-        var path = Files.createTempFile(tempDir, null, null);
-        var position = ThreadLocalRandom.current().nextLong(1024L);
-        try (var channel = AsynchronousFileChannel.open(path, StandardOpenOption.WRITE)) {
-            helloWorld().writeCompletable(channel, position)
+        var service = helloWorld();
+        var path = createTempFile(tempDir, null, null);
+        var position = current().nextLong(1024L);
+        try (var channel = open(path, StandardOpenOption.WRITE)) {
+            service.writeCompletable(channel, position)
                     .get()
                     .force(false);
         }
-        Assertions.assertEquals(position + HelloWorld.BYTES, Files.size(path));
-        var channel = AsynchronousFileChannel.open(path, StandardOpenOption.READ);
-        var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
+        assertEquals(position + HelloWorld.BYTES, Files.size(path));
+        var channel = open(path, StandardOpenOption.READ);
+        var buffer = allocate(HelloWorld.BYTES);
         var future = new CompletableFuture<Void>();
         channel.read(buffer,                     // dst
                      position,                   // position
@@ -166,7 +170,7 @@ class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Test extends HelloW
                          }
                      });
         future.get();
-        Assertions.assertFalse(buffer.hasRemaining());
+        assertFalse(buffer.hasRemaining());
         channel.close();
     }
 }

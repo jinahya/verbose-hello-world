@@ -24,11 +24,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
+
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 
 /**
  * A class for testing {@link HelloWorld#send(Socket)} method.
@@ -49,12 +53,14 @@ class HelloWorld_04_Send_Socket_Test extends HelloWorldTest {
     @DisplayName("send(socket) invokes write(socket.outputStream)")
     @Test
     void send_InvokeWriteStreamWithSocketOutputStream_() throws IOException {
-        var socket = Mockito.spy(new Socket());        // <1>
-        var stream = Mockito.mock(OutputStream.class); // <2>
-        Mockito.lenient().doReturn(stream)             // <3>
+        var service = helloWorld();
+        var socket = spy(new Socket());        // <1>
+        var stream = mock(OutputStream.class); // <2>
+        lenient()
+                .doReturn(stream)              // <3>
                 .when(socket).getOutputStream();
-        helloWorld().send(socket);                     // <4>
-        // TODO: Verify helloWorld() invoked write(stream)
+        service.send(socket);                  // <4>
+        // TODO: Verify service invoked write(socket.outputStream)
     }
 
     /**
@@ -66,10 +72,11 @@ class HelloWorld_04_Send_Socket_Test extends HelloWorldTest {
     @DisplayName("send(socket) returns socket")
     @Test
     void send_ReturnSocket_() throws IOException {
-        var expected = Mockito.spy(new Socket());
-        Mockito.lenient().doReturn(Mockito.mock(OutputStream.class)) // <2>
+        var service = helloWorld();
+        var expected = spy(new Socket());
+        lenient().doReturn(mock(OutputStream.class)) // <2>
                 .when(expected).getOutputStream();
         var actual = helloWorld().send(expected);
-        Assertions.assertSame(expected, actual);
+        assertSame(expected, actual);
     }
 }

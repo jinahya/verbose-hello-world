@@ -27,6 +27,8 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.channels.AsynchronousByteChannel;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 /**
  * A class for testing {@link HelloWorld#write(AsynchronousByteChannel)} method regarding arguments
  * verification.
@@ -46,6 +48,6 @@ class HelloWorld_10_Write_AsynchronousByteChannel_Arguments_Test extends HelloWo
     void writeAsync_ThrowNullPointerException_ChannelIsNull() {
         var service = helloWorld();
         AsynchronousByteChannel channel = null;
-        Assertions.assertThrows(NullPointerException.class, () -> service.write(channel));
+        assertThrows(NullPointerException.class, () -> service.write(channel));
     }
 }

@@ -29,6 +29,10 @@ import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static java.nio.ByteBuffer.allocate;
+import static java.util.concurrent.ThreadLocalRandom.current;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 /**
  * A class for testing {@link HelloWorld#put(ByteBuffer)} method regarding arguments verification.
  *
@@ -47,7 +51,7 @@ class HelloWorld_07_Put_ByteBuffer_Arguments_Test extends HelloWorldTest {
     void put_ThrowNullPointerException_BufferIsNull() {
         var service = helloWorld();
         ByteBuffer buffer = null;
-        Assertions.assertThrows(NullPointerException.class, () -> service.put(buffer));
+        assertThrows(NullPointerException.class, () -> service.put(buffer));
     }
 
     /**
@@ -59,9 +63,9 @@ class HelloWorld_07_Put_ByteBuffer_Arguments_Test extends HelloWorldTest {
     @Test
     void put_ThrowBufferOverflowException_BufferRemainingLessThan12() {
         var service = helloWorld();
-        var capacity = ThreadLocalRandom.current().nextInt(HelloWorld.BYTES);
-        var buffer = ByteBuffer.allocate(capacity);
+        var capacity = current().nextInt(HelloWorld.BYTES);
+        var buffer = allocate(capacity);
         assert buffer.remaining() < HelloWorld.BYTES;
-        Assertions.assertThrows(BufferOverflowException.class, () -> service.put(buffer));
+        assertThrows(BufferOverflowException.class, () -> service.put(buffer));
     }
 }

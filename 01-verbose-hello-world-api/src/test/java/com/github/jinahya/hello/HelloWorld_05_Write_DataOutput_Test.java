@@ -21,11 +21,9 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.mockito.Mockito;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutput;
@@ -33,7 +31,15 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.concurrent.ThreadLocalRandom;
+
+import static java.io.File.createTempFile;
+import static java.util.concurrent.ThreadLocalRandom.current;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * A class for testing {@link HelloWorld#write(DataOutput)} method.
@@ -45,40 +51,41 @@ import java.util.concurrent.ThreadLocalRandom;
 class HelloWorld_05_Write_DataOutput_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#write(DataOutput) write(data)} method invokes
-     * {@link HelloWorld#set(byte[])} method with an array of
-     * {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and writes the array to specified
+     * Asserts {@link HelloWorld#write(DataOutput) write(DataOutput output)} method invokes
+     * {@link HelloWorld#set(byte[]) set(array)} method with an array of
+     * {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes, and writes the array to specified
      * data output.
      *
      * @throws IOException if an I/O error occurs.
      */
     @DisplayName("write(data)"
                  + " invokes set(array[12])"
-                 + " and writes the array to data")
+                 + ", and writes the array to data")
     @Test
     void write_InvokeSetArrayWriteArrayToData_() throws IOException {
-        var data = Mockito.mock(DataOutput.class);               // <1>
-        helloWorld().write(data);                                // <2>
-        Mockito.verify(helloWorld(), Mockito.times(1))           // <3>
-                .set(arrayCaptor().capture());
-        var array = arrayCaptor().getValue();                    // <4>
-        Assertions.assertNotNull(array);                         // <5>
-        Assertions.assertEquals(HelloWorld.BYTES, array.length); // <6>
-        // TODO: Verify helloWorld() invoked data.write(array) once.
+        var service = helloWorld();
+        var output = mock(DataOutput.class);                         // <1>
+        service.write(output);                                       // <2>
+        verify(helloWorld(), times(1)).set(arrayCaptor().capture()); // <3>
+        var array = arrayCaptor().getValue();                        // <4>
+        assertNotNull(array);                                        // <5>
+        assertEquals(HelloWorld.BYTES, array.length);                // <6>
+        // TODO: Verify the service invoked output.write(array) once.
     }
 
     /**
-     * Asserts {@link HelloWorld#write(DataOutput) write(data)} method returns the {@code data}
-     * argument.
+     * Asserts {@link HelloWorld#write(DataOutput) write(DataOutput output)} method returns the
+     * {@code output} argument.
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(data) returns data")
+    @DisplayName("write(DataOutput output) returns output")
     @Test
     void write_ReturnData_() throws IOException {
-        var expected = Mockito.mock(DataOutput.class);
-        var actual = helloWorld().write(expected);
-        Assertions.assertSame(expected, actual);
+        var service = helloWorld();
+        var output = mock(DataOutput.class);
+        var actual = helloWorld().write(output);
+        assertSame(output, actual);
     }
 
     /**
@@ -87,15 +94,17 @@ class HelloWorld_05_Write_DataOutput_Test extends HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(data) writes 12 bytes")
+    @DisplayName("write(DataOutput) writes 12 bytes")
     @Test
+    @畵蛇添足
     void write_Appends12Bytes_() throws IOException {
+        var service = helloWorld();
         try (var baos = new ByteArrayOutputStream();
              var dos = new DataOutputStream(baos)) {
-            baos.write(new byte[ThreadLocalRandom.current().nextInt(2)]); // byte[[0..1]]
+            baos.write(new byte[current().nextInt(2)]); // byte[[0..1]]
             baos.flush();
             var size = baos.size();
-            helloWorld().write((DataOutput) dos);
+            service.write((DataOutput) dos);
             dos.flush();
             var expected = size + HelloWorld.BYTES;
             var actual = baos.size();
@@ -104,22 +113,25 @@ class HelloWorld_05_Write_DataOutput_Test extends HelloWorldTest {
     }
 
     /**
-     * Asserts, redundantly, {@link HelloWorld#write(DataOutput) write(data)} method writes
-     * {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes to given {@code data} arguments.
+     * Asserts, redundantly, {@link HelloWorld#write(DataOutput) write(DataOutput data)} method
+     * writes {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes to given {@code data}
+     * arguments.
      *
      * @param tempDir a temporary directory to test with
      * @throws IOException if an I/O error occurs.
      */
     @DisplayName("write(data) writes 12 bytes")
     @Test
+    @畵蛇添足
     void write_Appends12Bytes_(@TempDir File tempDir) throws IOException {
-        var file = File.createTempFile("tmp", null, tempDir);
+        var service = helloWorld();
+        var file = createTempFile("tmp", null, tempDir);
         try (var fos = new FileOutputStream(file);
              var dos = new DataOutputStream(fos)) {
-            fos.write(new byte[ThreadLocalRandom.current().nextInt(2)]); // byte[[0..1]]
+            fos.write(new byte[current().nextInt(2)]); // byte[[0..1]]
             fos.flush();
             var length = file.length();
-            helloWorld().write((DataOutput) dos);
+            service.write((DataOutput) dos);
             dos.flush();
             var expected = length + HelloWorld.BYTES;
             var actual = file.length();

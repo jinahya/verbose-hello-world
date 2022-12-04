@@ -24,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
@@ -34,10 +33,14 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.LongAdder;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * A class for testing {@link HelloWorld#writeCompletable(AsynchronousByteChannel)} method.
@@ -60,15 +63,16 @@ class HelloWorld_12_WriteCompletable_AsynchronousByteChannel_Test extends HelloW
      */
     @DisplayName("writeCompletable(channel)"
                  + " invokes put(buffer(12))"
-                 + " and writes the buffer to channel")
+                 + ", and writes the buffer to channel")
     @Test
     void writeAsync_InvokePutBufferWriteBufferToChannel_()
             throws InterruptedException, ExecutionException {
+        var service = helloWorld();
         var writtenSoFar = new LongAdder();
-        var channel = Mockito.mock(AsynchronousByteChannel.class);
+        var channel = mock(AsynchronousByteChannel.class);
         lenient().doAnswer(i -> {
                     var src = i.getArgument(0, ByteBuffer.class);
-                    Void attachment = i.getArgument(1);
+                    var attachment = i.getArgument(1, Void.class);
                     CompletionHandler<Integer, Void> handler = i.getArgument(2);
                     var written = new Random().nextInt(src.remaining() + 1);
                     src.position(src.position() + written);
@@ -81,13 +85,12 @@ class HelloWorld_12_WriteCompletable_AsynchronousByteChannel_Test extends HelloW
                        any(),     // attachment
                        notNull()  // handler
                 );
-        var future = helloWorld().writeCompletable(channel);
+        var future = service.writeCompletable(channel);
         var actual = future.get();
-        Assertions.assertSame(channel, actual);
-        Mockito.verify(helloWorld(), times(1))
-                .put(bufferCaptor().capture());
+        assertSame(channel, actual);
+        verify(helloWorld(), times(1)).put(bufferCaptor().capture());
         var buffer = bufferCaptor().getValue();
-        Assertions.assertEquals(BYTES, buffer.capacity());
+        assertEquals(BYTES, buffer.capacity());
         // TODO: Implement!
     }
 }

@@ -21,7 +21,6 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -29,6 +28,9 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+
+import static java.io.File.createTempFile;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 /**
  * A class for testing {@link HelloWorld#append(File)} method.
@@ -53,10 +55,11 @@ class HelloWorld_03_Append_File_Test extends HelloWorldTest {
                  + " 12 bytes are appended to the file")
     @Test
     void append_InvokeWriteStreamAnd12BytesAppended_(@TempDir File tempDir) throws IOException {
-        var file = File.createTempFile("tmp", null, tempDir);
+        var service = helloWorld();
+        var file = createTempFile("tmp", null, tempDir);
         var length = file.length();
-        // TODO: Invoke helloWorld().append(file).
-        // TODO: Verify helloWorld() invoked write(OutputStream) once.
+        // TODO: Invoke service.append(file).
+        // TODO: Verify service invoked write(OutputStream) once.
         // TODO: Verify file.length increased by 12.
     }
 
@@ -69,8 +72,9 @@ class HelloWorld_03_Append_File_Test extends HelloWorldTest {
     @DisplayName("append(file) returns file")
     @Test
     void append_ReturnFile_(@TempDir File tempDir) throws IOException {
-        var expected = File.createTempFile("tmp", null, tempDir);
-        var actual = helloWorld().append(expected);
-        Assertions.assertSame(expected, actual);
+        var service = helloWorld();
+        var file = createTempFile("tmp", null, tempDir);
+        var actual = helloWorld().append(file);
+        assertSame(file, actual);
     }
 }

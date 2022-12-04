@@ -21,11 +21,12 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.nio.channels.AsynchronousByteChannel;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * A class for testing {@link HelloWorld#writeCompletable(AsynchronousByteChannel)} method regarding
@@ -48,7 +49,7 @@ class HelloWorld_12_WriteCompletable_AsynchronousByteChannel_Arguments_Test
     void writeAsync_ThrowNullPointerException_ChannelIsNull() {
         var service = helloWorld();
         AsynchronousByteChannel channel = null;
-        Assertions.assertThrows(NullPointerException.class,
-                                () -> service.writeCompletable(channel));
+        assertThrows(NullPointerException.class,
+                     () -> service.writeCompletable(channel));
     }
 }

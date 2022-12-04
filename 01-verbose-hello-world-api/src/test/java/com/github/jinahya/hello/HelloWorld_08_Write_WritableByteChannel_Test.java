@@ -21,18 +21,20 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.LongAdder;
+
+import static java.util.concurrent.ThreadLocalRandom.current;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.ArgumentMatchers.notNull;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
 
 /**
  * A class for testing {@link HelloWorld#write(WritableByteChannel)} method.
@@ -47,7 +49,7 @@ class HelloWorld_08_Write_WritableByteChannel_Test extends HelloWorldTest {
     @BeforeEach
     void stub_PutBuffer_FillBuffer() {
         // https://www.javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#13
-        Mockito.lenient()
+        lenient()
                 .doAnswer(i -> {
                     var buffer = i.getArgument(0, ByteBuffer.class);
                     assert buffer.remaining() >= HelloWorld.BYTES;
@@ -55,7 +57,7 @@ class HelloWorld_08_Write_WritableByteChannel_Test extends HelloWorldTest {
                     return buffer;
                 })
                 .when(helloWorld())
-                .put(ArgumentMatchers.notNull());
+                .put(notNull());
     }
 
     /**
@@ -68,24 +70,22 @@ class HelloWorld_08_Write_WritableByteChannel_Test extends HelloWorldTest {
      */
     @DisplayName("write(channel)"
                  + " invokes put(buffer[12])"
-                 + " and writes the buffer to the channel")
+                 + ", and writes the buffer to the channel")
     @Test
     void write_InvokePutBufferWriteBufferToChannel_() throws IOException {
-        var channel = Mockito.mock(WritableByteChannel.class);    // <1>
-        var writtenSoFar = new LongAdder();                       // <2>
-        Mockito.lenient()
-                .when(channel.write(ArgumentMatchers.notNull()))  // <3>
-                .thenAnswer(i -> {
-                    ByteBuffer buffer = i.getArgument(0);         // <4>
-                    var written = ThreadLocalRandom.current()
-                            .nextInt(buffer.remaining() + 1);     // <5>
-                    buffer.position(buffer.position() + written); // <6>
-                    writtenSoFar.add(written);                    // <7>
-                    return written;                               // <8>
-                });
-        // TODO: Invoke helloWorld().write(channel)
-        // TODO: Verify helloWorld() invoked, once, put(buffer[12])
-        // TODO: Verify helloWorld() invoked, at least once, channel.write(buffer)
+        var service = helloWorld();
+        var channel = mock(WritableByteChannel.class);               // <1>
+        var writtenSoFar = new LongAdder();                          // <2>
+        lenient().when(channel.write(notNull())).thenAnswer(i -> {   // <3>
+            var buffer = i.getArgument(0, ByteBuffer.class);         // <4>
+            var written = current().nextInt(buffer.remaining() + 1); // <5>
+            buffer.position(buffer.position() + written);            // <6>
+            writtenSoFar.add(written);                               // <7>
+            return written;                                          // <8>
+        });
+        // TODO: Invoke service.write(channel)
+        // TODO: Verify service invoked, once, put(buffer[12])
+        // TODO: Verify service invoked, at least once, channel.write(buffer)
     }
 
     /**
@@ -97,16 +97,17 @@ class HelloWorld_08_Write_WritableByteChannel_Test extends HelloWorldTest {
     @DisplayName("write(channel) returns channel")
     @Test
     void write_ReturnChannel_() throws IOException {
-        var channel = Mockito.mock(WritableByteChannel.class);
-        Mockito.lenient()
-                .when(channel.write(ArgumentMatchers.notNull()))
+        var service = helloWorld();
+        var channel = mock(WritableByteChannel.class);
+        lenient()
+                .when(channel.write(notNull()))
                 .thenAnswer(i -> {
-                    ByteBuffer buffer = i.getArgument(0);
+                    var buffer = i.getArgument(0, ByteBuffer.class);
                     var written = buffer.remaining();
                     buffer.position(buffer.limit());
                     return written;
                 });
-        var actual = helloWorld().write(channel);
-        Assertions.assertSame(channel, actual);
+        var actual = service.write(channel);
+        assertSame(channel, actual);
     }
 }

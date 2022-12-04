@@ -21,11 +21,12 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.RandomAccessFile;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * A class for testing {@link HelloWorld#write(RandomAccessFile)} method regarding arguments
@@ -38,14 +39,14 @@ import java.io.RandomAccessFile;
 class HelloWorld_06_Write_RandomAccessFile_Arguments_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#write(RandomAccessFile)} method throws a
-     * {@link NullPointerException} when {@code file} argument is {@code null}.
+     * Asserts {@link HelloWorld#write(RandomAccessFile file)} method throws a
+     * {@link NullPointerException} when the {@code file} argument is {@code null}.
      */
     @DisplayName("write((RandomAccessFile) null) throws NullPointerException")
     @Test
     void write_ThrowNullPointerException_FileIsNull() {
         var service = helloWorld();
         RandomAccessFile file = null;
-        Assertions.assertThrows(NullPointerException.class, () -> service.write(file));
+        assertThrows(NullPointerException.class, () -> service.write(file));
     }
 }

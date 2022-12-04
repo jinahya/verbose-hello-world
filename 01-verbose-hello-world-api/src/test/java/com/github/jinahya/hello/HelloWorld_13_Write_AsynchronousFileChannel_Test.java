@@ -21,32 +21,38 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.LongAdder;
 
-import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.lang.Long.MAX_VALUE;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.channels.AsynchronousFileChannel.open;
 import static java.nio.file.Files.createTempFile;
-import static java.nio.file.StandardOpenOption.READ;
-import static java.nio.file.StandardOpenOption.WRITE;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.longThat;
 import static org.mockito.ArgumentMatchers.notNull;
+import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * A class for testing {@link HelloWorld#write(AsynchronousFileChannel, long)} method.
@@ -61,14 +67,13 @@ class HelloWorld_13_Write_AsynchronousFileChannel_Test
     // TODO: Remove this stubbing method when you implemented the put(buffer) method!
     @BeforeEach
     void stubPutBuffer() {
+        var service = helloWorld();
         // https://www.javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#13
-        Mockito.doAnswer(i -> {
-                    ByteBuffer buffer = i.getArgument(0);
-                    buffer.position(buffer.position() + BYTES);
-                    return buffer;
-                })
-                .when(helloWorld())
-                .put(ArgumentMatchers.any());
+        doAnswer(i -> {
+            var buffer = i.getArgument(0, ByteBuffer.class);
+            buffer.position(buffer.position() + HelloWorld.BYTES);
+            return buffer;
+        }).when(service).put(any());
     }
 
     /**
@@ -81,33 +86,29 @@ class HelloWorld_13_Write_AsynchronousFileChannel_Test
      */
     @DisplayName("write(channel)"
                  + " invokes put(buffer)"
-                 + " and writes the buffer to channel")
+                 + ", and writes the buffer to channel")
     @Test
     void write_InvokePutBufferWriteBufferToChannel_()
             throws InterruptedException, ExecutionException {
         var writtenSoFar = new LongAdder();
-        var channel = Mockito.mock(AsynchronousFileChannel.class);
-        Mockito.when(channel.write(notNull(), ArgumentMatchers.longThat(a -> a >= 0L)))
-                .thenAnswer(i -> {
-                    ByteBuffer buffer = i.getArgument(0);
-                    var position = i.getArgument(1);
-                    var written = new Random().nextInt(buffer.remaining() + 1);
-                    buffer.position(buffer.position() + written);
-                    writtenSoFar.add(written);
-                    var future = Mockito.mock(Future.class);
-                    Mockito.doReturn(written).when(future).get();
-                    return future;
-                });
+        var channel = mock(AsynchronousFileChannel.class);
+        when(channel.write(notNull(), longThat(a -> a >= 0L))).thenAnswer(i -> {
+            var buffer = i.getArgument(0, ByteBuffer.class);
+            var position = i.getArgument(1);
+            var written = new Random().nextInt(buffer.remaining() + 1);
+            buffer.position(buffer.position() + written);
+            writtenSoFar.add(written);
+            var future = mock(Future.class);
+            doReturn(written).when(future).get();
+            return future;
+        });
         var position = 0L;
         var actual = helloWorld().write(channel, position);
-        Assertions.assertSame(channel, actual);
-        Mockito.verify(helloWorld(), times(1))
-                .put(bufferCaptor().capture());
+        assertSame(channel, actual);
+        verify(helloWorld(), times(1)).put(bufferCaptor().capture());
         var buffer = bufferCaptor().getValue();
-        Assertions.assertEquals(BYTES, buffer.capacity());
-        Mockito.verify(channel, Mockito.atLeast(1))
-                .write(ArgumentMatchers.same(buffer),
-                       ArgumentMatchers.longThat(a -> a >= position));
+        assertEquals(HelloWorld.BYTES, buffer.capacity());
+        verify(channel, atLeast(1)).write(same(buffer), longThat(a -> a >= position));
     }
 
     /**
@@ -125,20 +126,20 @@ class HelloWorld_13_Write_AsynchronousFileChannel_Test
     @Test
     void write_Write12Bytes_(@TempDir Path tempDir)
             throws InterruptedException, ExecutionException, IOException {
-        Path path = createTempFile(tempDir, null, null);
+        var service = helloWorld();
+        var path = createTempFile(tempDir, null, null);
         long writePosition = new Random().nextLong() & 1024L;
-        try (AsynchronousFileChannel channel = open(path, WRITE)) {
-            helloWorld().write(channel, writePosition);
+        try (var channel = open(path, StandardOpenOption.WRITE)) {
+            service.write(channel, writePosition);
             channel.force(false);
         }
         long readPosition = writePosition;
-        try (AsynchronousFileChannel channel = open(path, READ)) {
-            ByteBuffer buffer = allocate(BYTES);
-            while (buffer.hasRemaining()) {
+        try (var channel = open(path, StandardOpenOption.READ)) {
+            for (var buffer = allocate(HelloWorld.BYTES); buffer.hasRemaining(); ) {
                 readPosition += channel.read(buffer, readPosition).get();
             }
         }
-        Assertions.assertEquals(writePosition + BYTES, readPosition);
+        assertEquals(writePosition + HelloWorld.BYTES, readPosition);
     }
 
     /**
@@ -152,22 +153,20 @@ class HelloWorld_13_Write_AsynchronousFileChannel_Test
     @Test
     void write_ReturnChannel_()
             throws InterruptedException, ExecutionException {
-        AsynchronousFileChannel channel
-                = Mockito.mock(AsynchronousFileChannel.class);
-        Mockito.when(channel.write(notNull(), ArgumentMatchers.longThat(a -> a >= 0L)))
-                .thenAnswer(i -> {
-                    ByteBuffer buffer = i.getArgument(0);
-                    long position = i.getArgument(1);
-                    int written = buffer.remaining();
-                    buffer.position(buffer.position() + written);
-                    @SuppressWarnings({"unchecked"})
-                    Future<Integer> future = Mockito.mock(Future.class);
-                    Mockito.doReturn(written).when(future).get();
-                    return future;
-                });
-        long position = new Random().nextLong() & MAX_VALUE;
-        AsynchronousFileChannel actual
-                = helloWorld().write(channel, position);
-        Assertions.assertSame(channel, actual);
+        var service = helloWorld();
+        var channel = mock(AsynchronousFileChannel.class);
+        when(channel.write(notNull(), longThat(a -> a >= 0L))).thenAnswer(i -> {
+            var buffer = i.getArgument(0, ByteBuffer.class);
+            var position = i.getArgument(1);
+            int written = buffer.remaining();
+            buffer.position(buffer.position() + written);
+            @SuppressWarnings({"unchecked"})
+            Future<Integer> future = mock(Future.class);
+            doReturn(written).when(future).get();
+            return future;
+        });
+        var position = new Random().nextLong() & MAX_VALUE;
+        var actual = service.write(channel, position);
+        assertSame(channel, actual);
     }
 }

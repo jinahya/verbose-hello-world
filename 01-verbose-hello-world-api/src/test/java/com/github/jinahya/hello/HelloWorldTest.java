@@ -20,6 +20,7 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
@@ -61,7 +62,7 @@ abstract class HelloWorldTest {
 
     @Spy
     @Accessors(fluent = true)
-    @Getter
+    @Getter(AccessLevel.PROTECTED)
     private HelloWorld helloWorld;
 
     /**

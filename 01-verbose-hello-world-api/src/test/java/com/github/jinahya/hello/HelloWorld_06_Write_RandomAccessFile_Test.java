@@ -21,17 +21,22 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.concurrent.ThreadLocalRandom;
+
+import static java.io.File.createTempFile;
+import static java.util.concurrent.ThreadLocalRandom.current;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * A class for testing {@link HelloWorld#write(RandomAccessFile)} method.
@@ -46,7 +51,7 @@ class HelloWorld_06_Write_RandomAccessFile_Test extends HelloWorldTest {
      * Asserts {@link HelloWorld#write(RandomAccessFile) write((RandomAccessFile) file)} method
      * invokes {@link HelloWorld#set(byte[]) set(byte[])} method with an array of
      * {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes, and invokes
-     * {@link RandomAccessFile#write(byte[])} method on {@code file} argument with the array.
+     * {@link RandomAccessFile#write(byte[])} method on the {@code file} argument with the array.
      *
      * @throws IOException if an I/O error occurs.
      */
@@ -55,15 +60,14 @@ class HelloWorld_06_Write_RandomAccessFile_Test extends HelloWorldTest {
                  + ", and invokes file.write(array)")
     @Test
     void write_InvokeSetArrayWriteArrayToFile_() throws IOException {
-        var file = Mockito.mock(RandomAccessFile.class);
-        helloWorld().write(file);
-        Mockito.verify(helloWorld(), Mockito.times(1))
-                .set(arrayCaptor().capture());
+        var service = helloWorld();
+        var file = mock(RandomAccessFile.class);
+        service.write(file);
+        verify(helloWorld(), times(1)).set(arrayCaptor().capture());
         var array = arrayCaptor().getValue();
-        Assertions.assertNotNull(array);
-        Assertions.assertEquals(HelloWorld.BYTES, array.length);
-//        Mockito.verify(file, Mockito.times(1))
-//                .write(ArgumentMatchers.same(array));
+        assertNotNull(array);
+        assertEquals(HelloWorld.BYTES, array.length);
+        // TODO: Verify the service invoked file.write(array)
     }
 
     /**
@@ -75,9 +79,10 @@ class HelloWorld_06_Write_RandomAccessFile_Test extends HelloWorldTest {
     @DisplayName("write((RandomAccessFile) file) returns file")
     @Test
     void write_ReturnFile_() throws IOException {
-        var expected = Mockito.mock(RandomAccessFile.class);
-        var actual = helloWorld().write(expected);
-        Assertions.assertSame(expected, actual);
+        var service = helloWorld();
+        var file = mock(RandomAccessFile.class);
+        var actual = service.write(file);
+        assertSame(file, actual);
     }
 
     /**
@@ -90,14 +95,16 @@ class HelloWorld_06_Write_RandomAccessFile_Test extends HelloWorldTest {
      */
     @DisplayName("write((RandomAccess) file) writes 12 bytes")
     @Test
+    @畵蛇添足
     void write_InvokeSetArrayWriteArrayToFile_(@TempDir File tempDir) throws IOException {
-        var tempFile = File.createTempFile("tmp", null, tempDir);
-        try (var raf = new RandomAccessFile(tempFile, "rw")) {
-            var pos = ThreadLocalRandom.current().nextLong(128);
+        var service = helloWorld();
+        var tf = createTempFile("tmp", null, tempDir);
+        try (var raf = new RandomAccessFile(tf, "rw")) {
+            var pos = current().nextLong(128);
             raf.seek(pos);
-            helloWorld().write(raf);
+            service.write(raf);
             raf.getFD().sync();
-            // TODO: Assert tempFile.length() is equals to (pos + 12)
+            // TODO: Assert tf.length() is equals to (pos + 12)
         }
     }
 }
