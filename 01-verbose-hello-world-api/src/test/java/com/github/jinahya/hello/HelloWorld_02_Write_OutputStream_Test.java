@@ -48,7 +48,7 @@ class HelloWorld_02_Write_OutputStream_Test extends HelloWorldTest {
      */
     @DisplayName("write(stream)"
                  + " invokes set(array[12])"
-                 + " and invokes stream.write(array)")
+                 + ", and invokes stream.write(array)")
     @Test
     void write_InvokeSetArrayAndWriteArrayToStream_() throws IOException {
         var service = helloWorld();

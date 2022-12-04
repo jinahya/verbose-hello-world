@@ -21,7 +21,6 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -74,7 +73,8 @@ class HelloWorld_04_Send_Socket_Test extends HelloWorldTest {
     void send_ReturnSocket_() throws IOException {
         var service = helloWorld();
         var expected = spy(new Socket());
-        lenient().doReturn(mock(OutputStream.class)) // <2>
+        lenient(). // <1> TODO: Remove!
+                doReturn(mock(OutputStream.class)) // <2>
                 .when(expected).getOutputStream();
         var actual = service.send(expected);
         assertSame(expected, actual);

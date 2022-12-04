@@ -44,20 +44,19 @@ class HelloWorld_01_Set_Array_Arguments_Test extends HelloWorldTest {
     void set_ThrowNullPointerException_ArrayIsNull() {
         var service = helloWorld();
         byte[] array = null;
-        // TODO: Assert set(array) throws a NullPointerException.
+        // TODO: Assert service.set(array) throws a NullPointerException.
     }
 
     /**
      * Asserts {@link HelloWorld#set(byte[]) set(array)} method throws an
      * {@link IndexOutOfBoundsException} when {@code array.length} is less than
-     * {@value com.github.jinahya.hello.HelloWorld#BYTES}.
+     * {@value HelloWorld#BYTES}.
      */
     @DisplayName("set(array[<12]) throws IndexOutOfBoundsException")
     @Test
     void set_ThrowIndexOutOfBoundsException_ArrayIsNotLongEnough() {
         var service = helloWorld();
-        var length = current().nextInt(HelloWorld.BYTES);
-        var array = new byte[length];
-        // TODO: Assert set(array) throws a IndexOutOfBoundsException.
+        var array = new byte[current().nextInt(HelloWorld.BYTES)];
+        // TODO: Assert service.set(array) throws an IndexOutOfBoundsException.
     }
 }

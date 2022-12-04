@@ -51,7 +51,7 @@ import static org.mockito.Mockito.verify;
 class HelloWorld_05_Write_DataOutput_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#write(DataOutput) write(DataOutput output)} method invokes
+     * Asserts {@link HelloWorld#write(DataOutput) write(DataOutput data)} method invokes
      * {@link HelloWorld#set(byte[]) set(array)} method with an array of
      * {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes, and writes the array to specified
      * data output.
@@ -64,8 +64,8 @@ class HelloWorld_05_Write_DataOutput_Test extends HelloWorldTest {
     @Test
     void write_InvokeSetArrayWriteArrayToData_() throws IOException {
         var service = helloWorld();
-        var output = mock(DataOutput.class);                         // <1>
-        service.write(output);                                       // <2>
+        var data = mock(DataOutput.class);                         // <1>
+        service.write(data);                                       // <2>
         verify(service, times(1)).set(arrayCaptor().capture()); // <3>
         var array = arrayCaptor().getValue();                        // <4>
         assertNotNull(array);                                        // <5>
@@ -79,13 +79,13 @@ class HelloWorld_05_Write_DataOutput_Test extends HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(DataOutput output) returns output")
+    @DisplayName("write(DataOutput data) returns output")
     @Test
     void write_ReturnData_() throws IOException {
         var service = helloWorld();
-        var output = mock(DataOutput.class);
-        var actual = service.write(output);
-        assertSame(output, actual);
+        var data = mock(DataOutput.class);
+        var actual = service.write(data);
+        assertSame(data, actual);
     }
 
     /**
