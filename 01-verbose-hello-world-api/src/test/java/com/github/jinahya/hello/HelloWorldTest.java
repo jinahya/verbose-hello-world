@@ -73,7 +73,7 @@ abstract class HelloWorldTest {
      */
     @Captor
     @Accessors(fluent = true)
-    @Getter
+    @Getter(AccessLevel.PROTECTED)
     private ArgumentCaptor<byte[]> arrayCaptor;
 
     /**
@@ -83,7 +83,7 @@ abstract class HelloWorldTest {
      */
     @Captor
     @Accessors(fluent = true)
-    @Getter
+    @Getter(AccessLevel.PROTECTED)
     private ArgumentCaptor<Integer> indexCaptor;
 
     /**
@@ -93,7 +93,7 @@ abstract class HelloWorldTest {
      */
     @Captor
     @Accessors(fluent = true)
-    @Getter
+    @Getter(AccessLevel.PROTECTED)
     private ArgumentCaptor<OutputStream> streamCaptor;
 
     /**
@@ -103,7 +103,7 @@ abstract class HelloWorldTest {
      */
     @Captor
     @Accessors(fluent = true)
-    @Getter
+    @Getter(AccessLevel.PROTECTED)
     private ArgumentCaptor<ByteBuffer> bufferCaptor;
 
     /**
@@ -113,6 +113,6 @@ abstract class HelloWorldTest {
      */
     @Captor
     @Accessors(fluent = true)
-    @Getter
+    @Getter(AccessLevel.PROTECTED)
     private ArgumentCaptor<WritableByteChannel> channelCaptor;
 }

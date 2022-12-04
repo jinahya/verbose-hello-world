@@ -63,7 +63,7 @@ class HelloWorld_06_Write_RandomAccessFile_Test extends HelloWorldTest {
         var service = helloWorld();
         var file = mock(RandomAccessFile.class);
         service.write(file);
-        verify(helloWorld(), times(1)).set(arrayCaptor().capture());
+        verify(service, times(1)).set(arrayCaptor().capture());
         var array = arrayCaptor().getValue();
         assertNotNull(array);
         assertEquals(HelloWorld.BYTES, array.length);

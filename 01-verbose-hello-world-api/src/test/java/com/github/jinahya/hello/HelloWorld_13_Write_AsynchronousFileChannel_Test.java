@@ -90,6 +90,7 @@ class HelloWorld_13_Write_AsynchronousFileChannel_Test
     @Test
     void write_InvokePutBufferWriteBufferToChannel_()
             throws InterruptedException, ExecutionException {
+        var service = helloWorld();
         var writtenSoFar = new LongAdder();
         var channel = mock(AsynchronousFileChannel.class);
         when(channel.write(notNull(), longThat(a -> a >= 0L))).thenAnswer(i -> {
@@ -103,9 +104,9 @@ class HelloWorld_13_Write_AsynchronousFileChannel_Test
             return future;
         });
         var position = 0L;
-        var actual = helloWorld().write(channel, position);
+        var actual = service.write(channel, position);
         assertSame(channel, actual);
-        verify(helloWorld(), times(1)).put(bufferCaptor().capture());
+        verify(service, times(1)).put(bufferCaptor().capture());
         var buffer = bufferCaptor().getValue();
         assertEquals(HelloWorld.BYTES, buffer.capacity());
         verify(channel, atLeast(1)).write(same(buffer), longThat(a -> a >= position));

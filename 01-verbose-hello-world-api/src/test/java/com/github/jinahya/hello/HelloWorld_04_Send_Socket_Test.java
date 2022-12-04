@@ -76,7 +76,7 @@ class HelloWorld_04_Send_Socket_Test extends HelloWorldTest {
         var expected = spy(new Socket());
         lenient().doReturn(mock(OutputStream.class)) // <2>
                 .when(expected).getOutputStream();
-        var actual = helloWorld().send(expected);
+        var actual = service.send(expected);
         assertSame(expected, actual);
     }
 }

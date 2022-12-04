@@ -66,12 +66,13 @@ class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Test extends HelloW
     // TODO: Remove this stubbing method when you implemented the put(buffer) method!
     @BeforeEach
     void stub_PutBuffer_FillBuffer() {
+        var service = helloWorld();
         // https://www.javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#13
         doAnswer(i -> {
             ByteBuffer buffer = i.getArgument(0);
             buffer.position(buffer.position() + HelloWorld.BYTES);
             return buffer;
-        }).when(helloWorld()).put(any());
+        }).when(service).put(any());
     }
 
     /**
@@ -105,7 +106,7 @@ class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Test extends HelloW
             return null;
         }).when(channel).write(notNull(), longThat(a -> a >= 0L), notNull(), notNull());
         var position = 0L;
-        var future = helloWorld().writeCompletable(channel, position);
+        var future = service.writeCompletable(channel, position);
         var actual = future.get();
         verify(service, times(1)).put(bufferCaptor().capture());
         var buffer = bufferCaptor().getValue();

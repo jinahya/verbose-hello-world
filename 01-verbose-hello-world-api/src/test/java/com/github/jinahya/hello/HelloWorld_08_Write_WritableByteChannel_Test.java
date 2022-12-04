@@ -48,6 +48,7 @@ class HelloWorld_08_Write_WritableByteChannel_Test extends HelloWorldTest {
     // TODO: Remove this stubbing method when you implemented the put(buffer) method!
     @BeforeEach
     void stub_PutBuffer_FillBuffer() {
+        var service = helloWorld();
         // https://www.javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#13
         lenient()
                 .doAnswer(i -> {
@@ -56,7 +57,7 @@ class HelloWorld_08_Write_WritableByteChannel_Test extends HelloWorldTest {
                     buffer.position(buffer.position() + HelloWorld.BYTES);
                     return buffer;
                 })
-                .when(helloWorld())
+                .when(service)
                 .put(notNull());
     }
 

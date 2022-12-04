@@ -43,8 +43,8 @@ class HelloWorld_01_Set_Array_Test extends HelloWorldTest {
     void set_InvokeSetArrayWithArrayAndZero_() {
         var service = helloWorld();
         var array = new byte[HelloWorld.BYTES];
-        // TODO: Invoke helloWorld().set(array).
-        // TODO: Verify helloWorld() invoked set(array, 0).
+        // TODO: Invoke service.set(array).
+        // TODO: Verify service invoked set(array, 0).
     }
 
     /**
@@ -56,7 +56,7 @@ class HelloWorld_01_Set_Array_Test extends HelloWorldTest {
     void set_ReturnArray_() {
         var service = helloWorld();
         var array = new byte[HelloWorld.BYTES];
-        var actual = helloWorld().set(array);
+        var actual = service.set(array);
         // TODO: Assert that expected and actual refer to the same object.
     }
 }

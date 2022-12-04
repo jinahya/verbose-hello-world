@@ -77,7 +77,7 @@ class HelloWorld_10_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
             doReturn(written).when(future).get();
             return future;
         });
-        helloWorld().write(channel);
+        service.write(channel);
         verify(service, times(1)).put(bufferCaptor().capture());
         var buffer = bufferCaptor().getValue();
         assertEquals(HelloWorld.BYTES, buffer.capacity());

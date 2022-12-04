@@ -32,7 +32,6 @@ import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.LongAdder;
 
-import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
@@ -88,9 +87,9 @@ class HelloWorld_12_WriteCompletable_AsynchronousByteChannel_Test extends HelloW
         var future = service.writeCompletable(channel);
         var actual = future.get();
         assertSame(channel, actual);
-        verify(helloWorld(), times(1)).put(bufferCaptor().capture());
+        verify(service, times(1)).put(bufferCaptor().capture());
         var buffer = bufferCaptor().getValue();
-        assertEquals(BYTES, buffer.capacity());
+        assertEquals(HelloWorld.BYTES, buffer.capacity());
         // TODO: Implement!
     }
 }

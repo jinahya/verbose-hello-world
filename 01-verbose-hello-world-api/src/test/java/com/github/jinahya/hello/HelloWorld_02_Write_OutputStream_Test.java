@@ -53,9 +53,9 @@ class HelloWorld_02_Write_OutputStream_Test extends HelloWorldTest {
     void write_InvokeSetArrayAndWriteArrayToStream_() throws IOException {
         var service = helloWorld();
         // TODO: Create a mock object of java.io.OutputStream, say 'stream'
-        // TODO: Invoke helloWorld().write(stream)
-        // TODO: Verify helloWorld() invoked write(array[12]) once
-        // TODO: Verify helloWorld() invoked stream.write(array) once
+        // TODO: Invoke service.write(stream)
+        // TODO: Verify service invoked write(array[12]) once
+        // TODO: Verify service invoked stream.write(array) once
     }
 
     /**

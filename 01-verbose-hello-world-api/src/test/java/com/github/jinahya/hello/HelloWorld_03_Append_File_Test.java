@@ -74,7 +74,7 @@ class HelloWorld_03_Append_File_Test extends HelloWorldTest {
     void append_ReturnFile_(@TempDir File tempDir) throws IOException {
         var service = helloWorld();
         var file = createTempFile("tmp", null, tempDir);
-        var actual = helloWorld().append(file);
+        var actual = service.append(file);
         assertSame(file, actual);
     }
 }

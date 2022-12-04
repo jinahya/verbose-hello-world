@@ -66,7 +66,7 @@ class HelloWorld_05_Write_DataOutput_Test extends HelloWorldTest {
         var service = helloWorld();
         var output = mock(DataOutput.class);                         // <1>
         service.write(output);                                       // <2>
-        verify(helloWorld(), times(1)).set(arrayCaptor().capture()); // <3>
+        verify(service, times(1)).set(arrayCaptor().capture()); // <3>
         var array = arrayCaptor().getValue();                        // <4>
         assertNotNull(array);                                        // <5>
         assertEquals(HelloWorld.BYTES, array.length);                // <6>
@@ -84,7 +84,7 @@ class HelloWorld_05_Write_DataOutput_Test extends HelloWorldTest {
     void write_ReturnData_() throws IOException {
         var service = helloWorld();
         var output = mock(DataOutput.class);
-        var actual = helloWorld().write(output);
+        var actual = service.write(output);
         assertSame(output, actual);
     }
 
