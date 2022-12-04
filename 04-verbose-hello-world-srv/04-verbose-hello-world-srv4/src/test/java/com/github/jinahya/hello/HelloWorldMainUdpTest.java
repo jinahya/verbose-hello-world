@@ -21,6 +21,7 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -30,6 +31,7 @@ import java.util.concurrent.ExecutionException;
 @Slf4j
 class HelloWorldMainUdpTest {
 
+    @Disabled
     @Test
     void main__() throws IOException, InterruptedException, ExecutionException {
         HelloWorldServerUtils.submitAndWriteQuit(() -> {

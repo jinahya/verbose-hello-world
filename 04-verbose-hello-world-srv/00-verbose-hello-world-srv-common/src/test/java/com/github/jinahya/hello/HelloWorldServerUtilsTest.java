@@ -21,6 +21,7 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -32,7 +33,6 @@ import java.nio.file.Path;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static com.github.jinahya.hello.HelloWorldServerUtils.loadHelloWorld;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
@@ -61,9 +61,9 @@ class HelloWorldServerUtilsTest {
             var dir = Files.createTempDirectory(tempDir, null);
             var port = ThreadLocalRandom.current().nextInt(1, 65536);
             HelloWorldServerUtils.writePortNumber(dir, port);
-            assertThat(dir.resolve("port.txt"))
-                    .isRegularFile()
-                    .hasSize(Short.BYTES);
+            var resolved = dir.resolve("port.txt");
+            Assertions.assertTrue(Files.isRegularFile(resolved));
+            Assertions.assertEquals(Short.BYTES, Files.size(resolved));
         }
 
         @Test
@@ -74,7 +74,7 @@ class HelloWorldServerUtilsTest {
             var thread = new Thread(() -> {
                 try {
                     var actual = HelloWorldServerUtils.readPortNumber(dir);
-                    assertThat(actual).isEqualTo(expected);
+                    Assertions.assertEquals(expected, actual);
                 } catch (IOException | InterruptedException e) {
                     log.error("failed to read port", e);
                 }
