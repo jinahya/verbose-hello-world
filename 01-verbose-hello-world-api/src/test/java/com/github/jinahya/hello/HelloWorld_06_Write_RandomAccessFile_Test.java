@@ -60,7 +60,7 @@ class HelloWorld_06_Write_RandomAccessFile_Test extends HelloWorldTest {
                  + ", and invokes file.write(array)")
     @Test
     void write_InvokeSetArrayWriteArrayToFile_() throws IOException {
-        var service = helloWorld();
+        var service = service();
         var file = mock(RandomAccessFile.class);
         service.write(file);
         verify(service, times(1)).set(arrayCaptor().capture());
@@ -79,7 +79,7 @@ class HelloWorld_06_Write_RandomAccessFile_Test extends HelloWorldTest {
     @DisplayName("write((RandomAccessFile) file) returns file")
     @Test
     void write_ReturnFile_() throws IOException {
-        var service = helloWorld();
+        var service = service();
         var file = mock(RandomAccessFile.class);
         var actual = service.write(file);
         assertSame(file, actual);
@@ -97,7 +97,7 @@ class HelloWorld_06_Write_RandomAccessFile_Test extends HelloWorldTest {
     @Test
     @畵蛇添足
     void write_InvokeSetArrayWriteArrayToFile_(@TempDir File tempDir) throws IOException {
-        var service = helloWorld();
+        var service = service();
         var tf = createTempFile("tmp", null, tempDir);
         try (var raf = new RandomAccessFile(tf, "rw")) {
             var pos = current().nextLong(128);

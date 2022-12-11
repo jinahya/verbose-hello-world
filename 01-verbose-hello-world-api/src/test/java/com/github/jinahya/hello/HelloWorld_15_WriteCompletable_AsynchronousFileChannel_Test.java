@@ -66,7 +66,7 @@ class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Test extends HelloW
     // TODO: Remove this stubbing method when you implemented the put(buffer) method!
     @BeforeEach
     void stub_PutBuffer_FillBuffer() {
-        var service = helloWorld();
+        var service = service();
         // https://www.javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#13
         doAnswer(i -> {
             ByteBuffer buffer = i.getArgument(0);
@@ -91,7 +91,7 @@ class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Test extends HelloW
     @Test
     void writeCompletable_InvokePutBufferWriteBufferToChannel_()
             throws InterruptedException, ExecutionException {
-        var service = helloWorld();
+        var service = service();
         var writtenSoFar = new LongAdder();
         var channel = mock(AsynchronousFileChannel.class);
         doAnswer(i -> {
@@ -134,7 +134,7 @@ class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Test extends HelloW
     @Test
     void writeCompletable_Write12BytesFromPosition_(@TempDir Path tempDir)
             throws IOException, InterruptedException, ExecutionException {
-        var service = helloWorld();
+        var service = service();
         var path = createTempFile(tempDir, null, null);
         var position = current().nextLong(1024L);
         try (var channel = open(path, StandardOpenOption.WRITE)) {

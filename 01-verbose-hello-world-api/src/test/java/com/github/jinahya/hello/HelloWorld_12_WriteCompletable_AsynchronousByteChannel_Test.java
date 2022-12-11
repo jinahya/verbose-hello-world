@@ -21,7 +21,6 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -66,7 +65,7 @@ class HelloWorld_12_WriteCompletable_AsynchronousByteChannel_Test extends HelloW
     @Test
     void writeAsync_InvokePutBufferWriteBufferToChannel_()
             throws InterruptedException, ExecutionException {
-        var service = helloWorld();
+        var service = service();
         var writtenSoFar = new LongAdder();
         var channel = mock(AsynchronousByteChannel.class);
         lenient().doAnswer(i -> {

@@ -52,7 +52,7 @@ class HelloWorld_04_Send_Socket_Test extends HelloWorldTest {
     @DisplayName("send(socket) invokes write(socket.outputStream)")
     @Test
     void send_InvokeWriteStreamWithSocketOutputStream_() throws IOException {
-        var service = helloWorld();
+        var service = service();
         var socket = spy(new Socket());        // <1>
         var stream = mock(OutputStream.class); // <2>
         lenient()
@@ -71,7 +71,7 @@ class HelloWorld_04_Send_Socket_Test extends HelloWorldTest {
     @DisplayName("send(socket) returns socket")
     @Test
     void send_ReturnSocket_() throws IOException {
-        var service = helloWorld();
+        var service = service();
         var expected = spy(new Socket());
         lenient(). // <1> TODO: Remove!
                 doReturn(mock(OutputStream.class)) // <2>

@@ -51,7 +51,7 @@ class HelloWorld_02_Write_OutputStream_Test extends HelloWorldTest {
                  + ", and invokes stream.write(array)")
     @Test
     void write_InvokeSetArrayAndWriteArrayToStream_() throws IOException {
-        var service = helloWorld();
+        var service = service();
         // TODO: Create a mock object of java.io.OutputStream, say 'stream'
         // TODO: Invoke service.write(stream)
         // TODO: Verify service invoked write(array[12]) once
@@ -67,7 +67,7 @@ class HelloWorld_02_Write_OutputStream_Test extends HelloWorldTest {
     @DisplayName("write(stream) returns stream")
     @Test
     void write_ReturnStream_() throws IOException {
-        var service = helloWorld();
+        var service = service();
         var stream = mock(OutputStream.class);
         var actual = service.write(stream);
         // TODO: Assert that both expected and actual refer to the same object.

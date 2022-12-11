@@ -63,7 +63,7 @@ class HelloWorld_05_Write_DataOutput_Test extends HelloWorldTest {
                  + ", and writes the array to data")
     @Test
     void write_InvokeSetArrayWriteArrayToData_() throws IOException {
-        var service = helloWorld();
+        var service = service();
         var data = mock(DataOutput.class);                         // <1>
         service.write(data);                                       // <2>
         verify(service, times(1)).set(arrayCaptor().capture()); // <3>
@@ -82,7 +82,7 @@ class HelloWorld_05_Write_DataOutput_Test extends HelloWorldTest {
     @DisplayName("write(DataOutput data) returns output")
     @Test
     void write_ReturnData_() throws IOException {
-        var service = helloWorld();
+        var service = service();
         var data = mock(DataOutput.class);
         var actual = service.write(data);
         assertSame(data, actual);
@@ -98,7 +98,7 @@ class HelloWorld_05_Write_DataOutput_Test extends HelloWorldTest {
     @Test
     @畵蛇添足
     void write_Appends12Bytes_() throws IOException {
-        var service = helloWorld();
+        var service = service();
         try (var baos = new ByteArrayOutputStream();
              var dos = new DataOutputStream(baos)) {
             baos.write(new byte[current().nextInt(2)]); // byte[[0..1]]
@@ -124,7 +124,7 @@ class HelloWorld_05_Write_DataOutput_Test extends HelloWorldTest {
     @Test
     @畵蛇添足
     void write_Appends12Bytes_(@TempDir File tempDir) throws IOException {
-        var service = helloWorld();
+        var service = service();
         var file = createTempFile("tmp", null, tempDir);
         try (var fos = new FileOutputStream(file);
              var dos = new DataOutputStream(fos)) {

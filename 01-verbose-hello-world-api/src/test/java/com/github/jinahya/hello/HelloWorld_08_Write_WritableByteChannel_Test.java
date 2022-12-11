@@ -48,7 +48,7 @@ class HelloWorld_08_Write_WritableByteChannel_Test extends HelloWorldTest {
     // TODO: Remove this stubbing method when you implemented the put(buffer) method!
     @BeforeEach
     void stub_PutBuffer_FillBuffer() {
-        var service = helloWorld();
+        var service = service();
         // https://www.javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#13
         lenient()
                 .doAnswer(i -> {
@@ -74,7 +74,7 @@ class HelloWorld_08_Write_WritableByteChannel_Test extends HelloWorldTest {
                  + ", and writes the buffer to the channel")
     @Test
     void write_InvokePutBufferWriteBufferToChannel_() throws IOException {
-        var service = helloWorld();
+        var service = service();
         var channel = mock(WritableByteChannel.class);               // <1>
         var writtenSoFar = new LongAdder();                          // <2>
         lenient().when(channel.write(notNull())).thenAnswer(i -> {   // <3>
@@ -98,7 +98,7 @@ class HelloWorld_08_Write_WritableByteChannel_Test extends HelloWorldTest {
     @DisplayName("write(channel) returns channel")
     @Test
     void write_ReturnChannel_() throws IOException {
-        var service = helloWorld();
+        var service = service();
         var channel = mock(WritableByteChannel.class);
         lenient()
                 .when(channel.write(notNull()))

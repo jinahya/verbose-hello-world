@@ -54,7 +54,7 @@ class HelloWorld_07_Put_ByteBuffer_Test extends HelloWorldTest {
 //    @RepeatedTest(1024)
     @Test
     void put_InvokeSetArrayIndexAndIncrementPosition_BufferHasBackingArray() {
-        var service = helloWorld();
+        var service = service();
         ByteBuffer buffer;
         {
             var array = new byte[HelloWorld.BYTES * 3];
@@ -101,7 +101,7 @@ class HelloWorld_07_Put_ByteBuffer_Test extends HelloWorldTest {
     @DisplayName("put(buffer) returns buffer")
     @Test
     void put_ReturnBuffer_() {
-        var service = helloWorld();
+        var service = service();
         var buffer = allocate(HelloWorld.BYTES);
         var actual = service.put(buffer);
         assertSame(buffer, actual);

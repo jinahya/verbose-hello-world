@@ -20,19 +20,22 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import lombok.extern.slf4j.Slf4j;
-
 /**
- * An abstract class for testing methods defined in {@link HelloWorld} interface.
+ * An interface for generating <a href="#hello-world-bytes">hello-world-bytes</a> to various
+ * targets.
+ * <p>
+ * All methods defined in this interface are thead-safe.
+ *
+ * <h2 id="hello-world-bytes">hello-world-bytes</h2>
+ * A sequence of {@value #BYTES} bytes, representing the "{@code hello, world}" string encoded in
+ * {@link java.nio.charset.StandardCharsets#US_ASCII US_ASCII} character set, which consists of
+ * {@code 0x68("h")} followed by {@code 0x65("e")}, {@code 0x6C("l")}, {@code 0x6C("l")},
+ * {@code 0x6F("o")}, {@code 0x2C(",")}, {@code 0x20(" ")}, {@code 0x77("w")}, {@code 0x6F("o")},
+ * {@code 0x72("r")}, {@code 0x6C("l")}, and {@code 0x64("d")}.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-//@ExtendWith({MockitoExtension.class})
-//@TestInstance(TestInstance.Lifecycle.PER_METHOD) // default, implicitly.
-@Slf4j
-abstract class HelloWorldTest extends AbstractHelloWorldTest<HelloWorld> {
+@FunctionalInterface
+public interface ReactiveHelloWorld extends HelloWorld {
 
-    HelloWorldTest() {
-        super(HelloWorld.class);
-    }
 }

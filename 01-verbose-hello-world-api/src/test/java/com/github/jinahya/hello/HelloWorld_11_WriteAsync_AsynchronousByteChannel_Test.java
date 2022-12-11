@@ -65,7 +65,7 @@ class HelloWorld_11_WriteAsync_AsynchronousByteChannel_Test extends HelloWorldTe
     @Test
     void writeAsync_InvokePutBufferWriteBufferToChannel_(@TempDir Path tempDir)
             throws InterruptedException, ExecutionException {
-        var service = helloWorld();
+        var service = service();
         var channel = mock(AsynchronousByteChannel.class);
         lenient()
                 .when(channel.write(notNull()))

@@ -21,7 +21,6 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -46,7 +45,7 @@ class HelloWorld_05_Write_DataOutput_Arguments_Test extends HelloWorldTest {
     @DisplayName("write((DataOutput) null) method throws NullPointerException")
     @Test
     void write_ThrowsNullPointerException_DataIsNull() {
-        var service = helloWorld();
+        var service = service();
         DataOutput data = null;
         assertThrows(NullPointerException.class, () -> service.write(data));
     }

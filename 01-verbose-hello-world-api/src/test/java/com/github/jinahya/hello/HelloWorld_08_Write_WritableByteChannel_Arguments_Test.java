@@ -45,7 +45,7 @@ class HelloWorld_08_Write_WritableByteChannel_Arguments_Test extends HelloWorldT
     @DisplayName("write(null) throws NullPointerException")
     @Test
     void write_ThrowNullPointerException_ChannelIsNull() {
-        var service = helloWorld();
+        var service = service();
         WritableByteChannel channel = null;
         assertThrows(NullPointerException.class, () -> service.write(channel));
     }

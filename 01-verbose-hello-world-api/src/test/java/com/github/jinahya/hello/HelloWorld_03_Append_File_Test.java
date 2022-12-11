@@ -55,7 +55,7 @@ class HelloWorld_03_Append_File_Test extends HelloWorldTest {
                  + " 12 bytes are appended to the file")
     @Test
     void append_InvokeWriteStreamAnd12BytesAppended_(@TempDir File tempDir) throws IOException {
-        var service = helloWorld();
+        var service = service();
         var file = createTempFile("tmp", null, tempDir);
         var length = file.length();
         // TODO: Invoke service.append(file).
@@ -72,7 +72,7 @@ class HelloWorld_03_Append_File_Test extends HelloWorldTest {
     @DisplayName("append(file) returns file")
     @Test
     void append_ReturnFile_(@TempDir File tempDir) throws IOException {
-        var service = helloWorld();
+        var service = service();
         var file = createTempFile("tmp", null, tempDir);
         var actual = service.append(file);
         assertSame(file, actual);

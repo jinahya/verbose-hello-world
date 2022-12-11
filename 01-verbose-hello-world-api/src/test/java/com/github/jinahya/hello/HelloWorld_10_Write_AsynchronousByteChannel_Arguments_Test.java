@@ -21,7 +21,6 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -46,7 +45,7 @@ class HelloWorld_10_Write_AsynchronousByteChannel_Arguments_Test extends HelloWo
     @DisplayName("write(null) throws NullPointerException")
     @Test
     void writeAsync_ThrowNullPointerException_ChannelIsNull() {
-        var service = helloWorld();
+        var service = service();
         AsynchronousByteChannel channel = null;
         assertThrows(NullPointerException.class, () -> service.write(channel));
     }

@@ -51,7 +51,7 @@ class HelloWorld_14_WriteAsync_AsynchronousFileChannel_Arguments_Test extends He
     @DisplayName("writeAsync(null, , ) throws NullPointerException")
     @Test
     void writeAsync_NullPointerException_ChannelIsNull() {
-        var service = helloWorld();
+        var service = service();
         AsynchronousFileChannel channel = null;
         var position = current().nextLong() & Integer.MAX_VALUE;
         var executor = mock(ExecutorService.class);
@@ -68,7 +68,7 @@ class HelloWorld_14_WriteAsync_AsynchronousFileChannel_Arguments_Test extends He
     @DisplayName("writeAsync(, negative, ) throws IllegalArgumentException")
     @Test
     void writeAsync_ThrowIllegalArgumentException_PositionIsNegative() {
-        var service = helloWorld();
+        var service = service();
         var channel = mock(AsynchronousFileChannel.class);
         var position = current().nextLong() | Integer.MIN_VALUE;
         var executor = mock(ExecutorService.class);
@@ -85,7 +85,7 @@ class HelloWorld_14_WriteAsync_AsynchronousFileChannel_Arguments_Test extends He
     @DisplayName("writeAsync(, , null) throws NullPointerException")
     @Test
     void writeAsync_ThrowNullPointerException_ServiceIsNull() {
-        var service = helloWorld();
+        var service = service();
         var channel = mock(AsynchronousFileChannel.class);
         var position = current().nextLong() & Integer.MAX_VALUE;
         ExecutorService executor = null;

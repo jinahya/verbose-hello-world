@@ -24,27 +24,31 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.io.OutputStream;
+import java.nio.channels.AsynchronousByteChannel;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
- * A class for testing {@link HelloWorld#write(OutputStream)} method regarding arguments
+ * A class for testing {@link HelloWorld#write(AsynchronousByteChannel)} method regarding arguments
  * verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_02_Write_OutputStream_Test
+ * @see AsynchronousHelloWorld_01_WriteSync_AsynchronousByteChannel_Test
  */
 @Slf4j
-class HelloWorld_02_Write_OutputStream_Arguments_Test extends HelloWorldTest {
+class AsynchronousHelloWorld_01_WriteSync_AsynchronousByteChannel_Arguments_Test
+        extends AsynchronousHelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#write(OutputStream) write(stream)} method throws a
-     * {@link NullPointerException} when the {@code stream} argument is {@code null}.
+     * Asserts {@link AsynchronousHelloWorld#writeSync(AsynchronousByteChannel) writeSync(channel)}
+     * method throws a {@link NullPointerException} when the {@code channel} argument is
+     * {@code null}.
      */
-    @DisplayName("write((OutputStream) null) throws NullPointerException")
+    @DisplayName("writeSync(null) throws NullPointerException")
     @Test
-    void write_ThrowNullPointerException_StreamIsNull() {
+    void _ThrowNullPointerException_ChannelIsNull() {
         var service = service();
-        OutputStream stream = null;
-        // TODO: Assert service.write(stream) throws a NullPointerException.
+        AsynchronousByteChannel channel = null;
+        assertThrows(NullPointerException.class, () -> service.writeSync(channel));
     }
 }

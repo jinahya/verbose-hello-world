@@ -48,7 +48,7 @@ class HelloWorld_11_WriteAsync_AsynchronousByteChannel_Arguments_Test extends He
     @DisplayName("writeAsync(null, ) throws NullPointerException")
     @Test
     void writeAsync_ThrowNullPointerException_ChannelIsNull() {
-        var service = helloWorld();
+        var service = service();
         AsynchronousByteChannel channel = null;
         var executor = mock(ExecutorService.class);
         assertThrows(NullPointerException.class,
@@ -64,7 +64,7 @@ class HelloWorld_11_WriteAsync_AsynchronousByteChannel_Arguments_Test extends He
     @DisplayName("writeAsync(, null) throws NullPointerException")
     @Test
     void writeAsync_NullPointerException_ServiceIsNull() {
-        var service = helloWorld();
+        var service = service();
         var channel = mock(AsynchronousByteChannel.class);
         ExecutorService executor = null;
         assertThrows(NullPointerException.class,

@@ -21,13 +21,11 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
-import java.util.concurrent.ThreadLocalRandom;
 
 import static java.nio.ByteBuffer.allocate;
 import static java.util.concurrent.ThreadLocalRandom.current;
@@ -49,7 +47,7 @@ class HelloWorld_07_Put_ByteBuffer_Arguments_Test extends HelloWorldTest {
     @DisplayName("put(null) throws NullPointerException")
     @Test
     void put_ThrowNullPointerException_BufferIsNull() {
-        var service = helloWorld();
+        var service = service();
         ByteBuffer buffer = null;
         assertThrows(NullPointerException.class, () -> service.put(buffer));
     }
@@ -62,7 +60,7 @@ class HelloWorld_07_Put_ByteBuffer_Arguments_Test extends HelloWorldTest {
     @DisplayName("put(buffer[<12]) throws BufferOverflowException")
     @Test
     void put_ThrowBufferOverflowException_BufferRemainingLessThan12() {
-        var service = helloWorld();
+        var service = service();
         var capacity = current().nextInt(HelloWorld.BYTES);
         var buffer = allocate(capacity);
         assert buffer.remaining() < HelloWorld.BYTES;

@@ -45,7 +45,7 @@ class HelloWorld_06_Write_RandomAccessFile_Arguments_Test extends HelloWorldTest
     @DisplayName("write((RandomAccessFile) null) throws NullPointerException")
     @Test
     void write_ThrowNullPointerException_FileIsNull() {
-        var service = helloWorld();
+        var service = service();
         RandomAccessFile file = null;
         assertThrows(NullPointerException.class, () -> service.write(file));
     }

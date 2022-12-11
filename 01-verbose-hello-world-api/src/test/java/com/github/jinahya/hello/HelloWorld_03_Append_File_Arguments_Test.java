@@ -21,7 +21,6 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -45,7 +44,7 @@ class HelloWorld_03_Append_File_Arguments_Test extends HelloWorldTest {
     @DisplayName("append((File) null) throws a NullPointerException")
     @Test
     void append_ThrowNullPointerException_FileIsNull() {
-        var service = helloWorld();
+        var service = service();
         File file = null;
         assertThrows(NullPointerException.class, () -> service.append(file));
     }

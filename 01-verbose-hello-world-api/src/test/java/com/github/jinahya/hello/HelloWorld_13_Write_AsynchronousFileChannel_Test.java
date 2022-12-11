@@ -67,7 +67,7 @@ class HelloWorld_13_Write_AsynchronousFileChannel_Test
     // TODO: Remove this stubbing method when you implemented the put(buffer) method!
     @BeforeEach
     void stubPutBuffer() {
-        var service = helloWorld();
+        var service = service();
         // https://www.javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#13
         doAnswer(i -> {
             var buffer = i.getArgument(0, ByteBuffer.class);
@@ -90,7 +90,7 @@ class HelloWorld_13_Write_AsynchronousFileChannel_Test
     @Test
     void write_InvokePutBufferWriteBufferToChannel_()
             throws InterruptedException, ExecutionException {
-        var service = helloWorld();
+        var service = service();
         var writtenSoFar = new LongAdder();
         var channel = mock(AsynchronousFileChannel.class);
         when(channel.write(notNull(), longThat(a -> a >= 0L))).thenAnswer(i -> {
@@ -127,7 +127,7 @@ class HelloWorld_13_Write_AsynchronousFileChannel_Test
     @Test
     void write_Write12Bytes_(@TempDir Path tempDir)
             throws InterruptedException, ExecutionException, IOException {
-        var service = helloWorld();
+        var service = service();
         var path = createTempFile(tempDir, null, null);
         long writePosition = new Random().nextLong() & 1024L;
         try (var channel = open(path, StandardOpenOption.WRITE)) {
@@ -154,7 +154,7 @@ class HelloWorld_13_Write_AsynchronousFileChannel_Test
     @Test
     void write_ReturnChannel_()
             throws InterruptedException, ExecutionException {
-        var service = helloWorld();
+        var service = service();
         var channel = mock(AsynchronousFileChannel.class);
         when(channel.write(notNull(), longThat(a -> a >= 0L))).thenAnswer(i -> {
             var buffer = i.getArgument(0, ByteBuffer.class);

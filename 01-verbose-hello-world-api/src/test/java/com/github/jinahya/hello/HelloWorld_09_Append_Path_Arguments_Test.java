@@ -21,7 +21,6 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -45,7 +44,7 @@ class HelloWorld_09_Append_Path_Arguments_Test extends HelloWorldTest {
     @DisplayName("append((Path) null) throws NullPointerException")
     @Test
     void append_ThrowNullPointerException_PathIsNull() {
-        var service = helloWorld();
+        var service = service();
         Path path = null;
         assertThrows(NullPointerException.class, () -> service.append(path));
     }

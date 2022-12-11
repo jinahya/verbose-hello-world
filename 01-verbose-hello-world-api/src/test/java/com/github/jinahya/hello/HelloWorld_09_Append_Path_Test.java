@@ -73,7 +73,7 @@ class HelloWorld_09_Append_Path_Test
     @DisplayName("append(path) returns path")
     @Test
     void append_ReturnPath_(@TempDir Path tempDir) throws IOException {
-        var service = helloWorld();
+        var service = service();
         var path = createTempFile(tempDir, null, null);
         var actual = service.append(path);
         assertSame(path, actual);

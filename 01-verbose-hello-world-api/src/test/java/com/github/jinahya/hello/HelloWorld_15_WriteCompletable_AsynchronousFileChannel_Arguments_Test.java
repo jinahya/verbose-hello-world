@@ -49,7 +49,7 @@ class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Arguments_Test exte
     @DisplayName("writeCompletable(null, ) throws NullPointerException")
     @Test
     void writeCompletable_ThrowNullPointerException_ChannelIsNull() {
-        var service = helloWorld();
+        var service = service();
         AsynchronousFileChannel channel = null;
         var position = current().nextLong() & Long.MAX_VALUE;
         assertThrows(NullPointerException.class,
@@ -65,7 +65,7 @@ class HelloWorld_15_WriteCompletable_AsynchronousFileChannel_Arguments_Test exte
     @DisplayName("writeCompletable(, negative) throws IllegalArgumentException")
     @Test
     void writeCompletable_ThrowIllegalArgumentException_PositionIsNegative() {
-        var service = helloWorld();
+        var service = service();
         var channel = mock(AsynchronousFileChannel.class);
         var position = current().nextLong() | Long.MIN_VALUE;
         assertThrows(IllegalArgumentException.class,
