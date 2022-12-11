@@ -81,12 +81,12 @@ class AsynchronousHelloWorld_01_WriteSync_AsynchronousByteChannel_Test
         });
         // WHEN
         service.writeSync(channel);
-        // THEN
+        // THEN: put(buffer[12]) invoked
         verify(service, times(1)).put(bufferCaptor().capture());
         var buffer = bufferCaptor().getValue();
         assertEquals(BYTES, buffer.capacity());
-        // TODO: Assert that channel.write(buffer) invoked at least once
-        // TODO: Assert that the buffer has no remaining
+        // THEN: channel.write(buffer) invoked at least once
+        // THEN: buffer has no remaining
     }
 
     /**
