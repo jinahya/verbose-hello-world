@@ -55,7 +55,7 @@ public interface AsynchronousHelloWorld extends HelloWorld {
      * @see #put(ByteBuffer)
      * @see AsynchronousByteChannel#write(ByteBuffer)
      */
-    default <T extends AsynchronousByteChannel> T writeSync(T channel)
+    default <T extends AsynchronousByteChannel> T writeSync1(T channel)
             throws InterruptedException, ExecutionException {
         if (channel == null) {
             throw new NullPointerException("channel is null");
@@ -66,8 +66,8 @@ public interface AsynchronousHelloWorld extends HelloWorld {
     }
 
     /**
-     * Writes, asynchronously, the <a href="#hello-world-bytes">hello-world-bytes</a> to specified
-     * channel using specified executor.
+     * Writes, asynchronously, the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>
+     * to specified channel using specified executor.
      *
      * @param <T>      channel type parameter
      * @param channel  the channel to which bytes are written.

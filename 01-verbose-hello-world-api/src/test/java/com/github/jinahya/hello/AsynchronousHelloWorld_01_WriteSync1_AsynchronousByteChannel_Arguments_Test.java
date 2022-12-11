@@ -33,16 +33,16 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see AsynchronousHelloWorld_01_WriteSync_AsynchronousByteChannel_Test
+ * @see AsynchronousHelloWorld_01_WriteSync1_AsynchronousByteChannel_Test
  */
 @Slf4j
-class AsynchronousHelloWorld_01_WriteSync_AsynchronousByteChannel_Arguments_Test
+class AsynchronousHelloWorld_01_WriteSync1_AsynchronousByteChannel_Arguments_Test
         extends AsynchronousHelloWorldTest {
 
     /**
-     * Asserts {@link AsynchronousHelloWorld#writeSync(AsynchronousByteChannel) writeSync(channel)}
-     * method throws a {@link NullPointerException} when the {@code channel} argument is
-     * {@code null}.
+     * Asserts
+     * {@link AsynchronousHelloWorld#writeSync1(AsynchronousByteChannel) writeSync1(channel)} method
+     * throws a {@link NullPointerException} when the {@code channel} argument is {@code null}.
      */
     @DisplayName("writeSync(null) throws NullPointerException")
     @Test
@@ -51,6 +51,6 @@ class AsynchronousHelloWorld_01_WriteSync_AsynchronousByteChannel_Arguments_Test
         var service = service();
         AsynchronousByteChannel channel = null;
         // WHEN/THEN
-        assertThrows(NullPointerException.class, () -> service.writeSync(channel));
+        assertThrows(NullPointerException.class, () -> service.writeSync1(channel));
     }
 }

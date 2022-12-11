@@ -44,24 +44,24 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
- * A class for testing {@link AsynchronousHelloWorld#writeSync(AsynchronousByteChannel)} method.
+ * A class for testing {@link AsynchronousHelloWorld#writeSync1(AsynchronousByteChannel)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see AsynchronousHelloWorld_01_WriteSync_AsynchronousByteChannel_Arguments_Test
+ * @see AsynchronousHelloWorld_01_WriteSync1_AsynchronousByteChannel_Arguments_Test
  */
 @Slf4j
-class AsynchronousHelloWorld_01_WriteSync_AsynchronousByteChannel_Test
+class AsynchronousHelloWorld_01_WriteSync1_AsynchronousByteChannel_Test
         extends AsynchronousHelloWorldTest {
 
     /**
-     * Asserts {@link AsynchronousHelloWorld#writeSync(AsynchronousByteChannel)} writeSync(channel)}
-     * method invokes {@link HelloWorld#put(ByteBuffer) put(buffer)} method, and writes the buffer
-     * to the {@code channel}.
+     * Asserts {@link AsynchronousHelloWorld#writeSync1(AsynchronousByteChannel)}
+     * writeSync1(channel)} method invokes {@link HelloWorld#put(ByteBuffer) put(buffer)} method,
+     * and writes the buffer to the {@code channel}.
      *
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
      */
-    @DisplayName("writeSync(channel)"
+    @DisplayName("writeSync1(channel)"
                  + " invokes put(buffer)"
                  + ", and writes the buffer to channel")
     @Test
@@ -80,7 +80,7 @@ class AsynchronousHelloWorld_01_WriteSync_AsynchronousByteChannel_Test
             return future;
         });
         // WHEN
-        service.writeSync(channel);
+        service.writeSync1(channel);
         // THEN: put(buffer[12]) invoked
         verify(service, times(1)).put(bufferCaptor().capture());
         var buffer = bufferCaptor().getValue();
@@ -90,13 +90,14 @@ class AsynchronousHelloWorld_01_WriteSync_AsynchronousByteChannel_Test
     }
 
     /**
-     * Asserts {@link AsynchronousHelloWorld#writeSync(AsynchronousByteChannel) writeSync(channel)}
-     * method returns the {@code channel} argument.
+     * Asserts
+     * {@link AsynchronousHelloWorld#writeSync1(AsynchronousByteChannel) writeSync1(channel)} method
+     * returns the {@code channel} argument.
      *
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
      */
-    @DisplayName("write(channel) invokes put(buffer) writes the buffer to channel")
+    @DisplayName("writeSync1(channel) returns channel")
     @Test
     void _ReturnChannel_() throws InterruptedException, ExecutionException {
         // GIVEN
@@ -111,7 +112,7 @@ class AsynchronousHelloWorld_01_WriteSync_AsynchronousByteChannel_Test
                     return completedFuture(written);
                 });
         // WHEN
-        var actual = service.writeSync(channel);
+        var actual = service.writeSync1(channel);
         // THEN
         assertSame(channel, actual);
     }
