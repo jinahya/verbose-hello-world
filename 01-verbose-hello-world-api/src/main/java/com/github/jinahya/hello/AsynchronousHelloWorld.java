@@ -66,6 +66,33 @@ public interface AsynchronousHelloWorld extends HelloWorld {
     }
 
     /**
+     * Writes the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to specified
+     * channel.
+     *
+     * @param <T>     channel type parameter
+     * @param channel the channel to which bytes are written.
+     * @return given {@code channel}.
+     * @throws InterruptedException if interrupted while working.
+     * @throws ExecutionException   if failed to operate.
+     * @implSpec The default implementation invokes {@link #put(ByteBuffer) put(buffer)} method with
+     * a byte buffer of {@value #BYTES} bytes, flips it, and writes the buffer to {@code channel} by
+     * recursively handling the callback called inside the
+     * {@link AsynchronousByteChannel#write(ByteBuffer, Object, CompletionHandler) channel#(src,
+     * attachment, handler)} method.
+     * @see #put(ByteBuffer)
+     * @see AsynchronousByteChannel#write(ByteBuffer, Object, CompletionHandler)
+     */
+    default <T extends AsynchronousByteChannel> T writeSync2(T channel)
+            throws InterruptedException, ExecutionException {
+        if (channel == null) {
+            throw new NullPointerException("channel is null");
+        }
+        var buffer = put(ByteBuffer.allocate(BYTES)).flip();
+        // TODO: Implement!
+        return channel;
+    }
+
+    /**
      * Writes, asynchronously, the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>
      * to specified channel using specified executor.
      *
