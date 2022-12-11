@@ -31,6 +31,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.LongAdder;
 
+import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -83,8 +84,9 @@ class AsynchronousHelloWorld_01_WriteSync_AsynchronousByteChannel_Test
         // THEN
         verify(service, times(1)).put(bufferCaptor().capture());
         var buffer = bufferCaptor().getValue();
-        assertEquals(HelloWorld.BYTES, buffer.capacity());
-        // TODO: Implement!
+        assertEquals(BYTES, buffer.capacity());
+        // TODO: Assert that channel.write(buffer) invoked at least once
+        // TODO: Assert that the buffer has no remaining
     }
 
     /**
@@ -104,8 +106,8 @@ class AsynchronousHelloWorld_01_WriteSync_AsynchronousByteChannel_Test
                 .when(channel.write(any(ByteBuffer.class)))
                 .thenAnswer(i -> {
                     var buffer = i.getArgument(0, ByteBuffer.class);
-                    var written = new Random().nextInt(buffer.remaining() + 1);
-                    buffer.position(buffer.position() + written);
+                    var written = buffer.remaining();
+                    buffer.position(buffer.limit());
                     return completedFuture(written);
                 });
         // WHEN

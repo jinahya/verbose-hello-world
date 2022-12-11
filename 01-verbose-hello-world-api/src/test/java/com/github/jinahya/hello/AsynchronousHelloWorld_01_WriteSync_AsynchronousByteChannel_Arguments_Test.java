@@ -47,8 +47,10 @@ class AsynchronousHelloWorld_01_WriteSync_AsynchronousByteChannel_Arguments_Test
     @DisplayName("writeSync(null) throws NullPointerException")
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
+        // GIVEN
         var service = service();
         AsynchronousByteChannel channel = null;
+        // WHEN/THEN
         assertThrows(NullPointerException.class, () -> service.writeSync(channel));
     }
 }
