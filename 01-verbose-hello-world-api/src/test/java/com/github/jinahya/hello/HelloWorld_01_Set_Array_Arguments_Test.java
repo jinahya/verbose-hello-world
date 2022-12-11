@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.util.concurrent.ThreadLocalRandom.current;
 
 /**
@@ -42,8 +43,10 @@ class HelloWorld_01_Set_Array_Arguments_Test extends HelloWorldTest {
     @DisplayName("set(null) throws NullPointerException")
     @Test
     void set_ThrowNullPointerException_ArrayIsNull() {
+        // GIVEN
         var service = service();
         byte[] array = null;
+        // WHEN/THEN
         // TODO: Assert service.set(array) throws a NullPointerException.
     }
 
@@ -55,8 +58,10 @@ class HelloWorld_01_Set_Array_Arguments_Test extends HelloWorldTest {
     @DisplayName("set(array[<12]) throws IndexOutOfBoundsException")
     @Test
     void set_ThrowIndexOutOfBoundsException_ArrayIsNotLongEnough() {
+        // GIVEN
         var service = service();
-        var array = new byte[current().nextInt(HelloWorld.BYTES)];
+        var array = new byte[current().nextInt(BYTES)];
+        // WHEN/THEN
         // TODO: Assert service.set(array) throws an IndexOutOfBoundsException.
     }
 }
