@@ -80,7 +80,7 @@ class AsynchronousHelloWorld_01_WriteSync_AsynchronousByteChannel_Test
             return future;
         });
         // WHEN
-        service.write(channel);
+        service.writeSync(channel);
         // THEN
         verify(service, times(1)).put(bufferCaptor().capture());
         var buffer = bufferCaptor().getValue();
