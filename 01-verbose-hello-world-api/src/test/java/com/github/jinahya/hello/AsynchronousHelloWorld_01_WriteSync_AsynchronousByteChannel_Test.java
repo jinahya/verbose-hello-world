@@ -86,7 +86,7 @@ class AsynchronousHelloWorld_01_WriteSync_AsynchronousByteChannel_Test
         var buffer = bufferCaptor().getValue();
         assertEquals(BYTES, buffer.capacity());
         // THEN: channel.write(buffer) invoked at least once
-        // THEN: buffer has no remaining
+        // THEN: 12 bytes are written
     }
 
     /**
