@@ -57,7 +57,7 @@ public interface AsynchronousHelloWorld extends HelloWorld {
      * @see AsynchronousByteChannel#write(ByteBuffer)
      */
     @SuppressWarnings({
-            "java:S1854"
+            "java:S1854" // Unused assignments
     })
     default <T extends AsynchronousByteChannel> T write(T channel)
             throws InterruptedException, ExecutionException {
@@ -69,31 +69,28 @@ public interface AsynchronousHelloWorld extends HelloWorld {
 
     /**
      * Writes the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to specified
-     * channel.
+     * channel, and invokes specified completion handler when all bytes are written.
      *
      * @param <T>     channel type parameter
      * @param channel the channel to which bytes are written.
-     * @return given {@code channel}.
-     * @throws InterruptedException if interrupted while working.
-     * @throws ExecutionException   if failed to operate.
+     * @param handler the completion handler.
      * @implSpec The default implementation invokes {@link #put(ByteBuffer) put(buffer)} method with
      * a byte buffer of {@value #BYTES} bytes, flips it, and writes the buffer to {@code channel} by
      * recursively handling the callback called inside the
      * {@link AsynchronousByteChannel#write(ByteBuffer, Object, CompletionHandler) channel#(src,
-     * attachment, handler)} method.
+     * attachment, handler)} method, and eventually invokes {@code handler} when all bytes are
+     * written.
      * @see #put(ByteBuffer)
      * @see AsynchronousByteChannel#write(ByteBuffer, Object, CompletionHandler)
      */
     @SuppressWarnings({
             "java:S1854" // Unused assignments
     })
-    default <T extends AsynchronousByteChannel> T writeSync2(T channel) {
-        if (channel == null) {
-            throw new NullPointerException("channel is null");
-        }
+    default <T extends AsynchronousByteChannel> void write(
+            T channel, CompletionHandler<? super T, ?> handler) {
+        Objects.requireNonNull(channel, "channel is null");
         var buffer = put(ByteBuffer.allocate(BYTES)).flip();
         // TODO: Implement!
-        return channel;
     }
 
     /**

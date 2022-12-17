@@ -41,24 +41,26 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
- * A class for testing {@link AsynchronousHelloWorld#writeSync2(AsynchronousByteChannel)} method.
+ * A class for testing
+ * {@link AsynchronousHelloWorld#write(AsynchronousByteChannel, CompletionHandler) method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see AsynchronousHelloWorld_02_WriteSync2_AsynchronousByteChannel_Arguments_Test
+ * @see AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Arguments_Test
  */
 @Slf4j
-class AsynchronousHelloWorld_02_WriteSync2_AsynchronousByteChannel_Testa
+class AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Test
         extends AsynchronousHelloWorldTest {
 
     /**
-     * Asserts {@link AsynchronousHelloWorld#writeSync2(AsynchronousByteChannel)}
-     * writeSync2(channel)} method invokes {@link HelloWorld#put(ByteBuffer) put(buffer)} method,
-     * and writes the buffer to the {@code channel}.
+     * Asserts
+     * {@link AsynchronousHelloWorld#write(AsynchronousByteChannel, CompletionHandler)
+     * write(channel, handler)} method invokes {@link HelloWorld#put(ByteBuffer) put(buffer)}
+     * method, and writes the buffer to the {@code channel}.
      *
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
      */
-    @DisplayName("writeSync2(channel)"
+    @DisplayName("write(channel, handler)"
                  + " invokes put(buffer)"
                  + ", and writes the buffer to channel")
     @Test
@@ -83,7 +85,7 @@ class AsynchronousHelloWorld_02_WriteSync2_AsynchronousByteChannel_Testa
 //                .write(any(ByteBuffer.class), any(), any(CompletionHandler.class));
                 .write(any(), any(), any());
         // WHEN
-        service.writeSync2(channel);
+        service.write(channel);
         // THEN: put(buffer[12]) invoked
         verify(service, times(1)).put(bufferCaptor().capture());
         var buffer = bufferCaptor().getValue();
@@ -92,38 +94,38 @@ class AsynchronousHelloWorld_02_WriteSync2_AsynchronousByteChannel_Testa
         // THEN: 12 bytes are written to the channel
     }
 
-    /**
-     * Asserts
-     * {@link AsynchronousHelloWorld#writeSync2(AsynchronousByteChannel) writeSync2(channel)} method
-     * returns the {@code channel} argument.
-     *
-     * @throws InterruptedException if interrupted while testing.
-     * @throws ExecutionException   if failed to execute.
-     */
-    @DisplayName("writeSync2(channel) returns channel")
-    @Test
-    @SuppressWarnings({"unchecked"})
-    void _ReturnChannel_() throws InterruptedException, ExecutionException {
-        // GIVEN
-        var service = service();
-        var channel = mock(AsynchronousByteChannel.class);
-        lenient().
-                doAnswer(i -> {
-                    var buffer = i.getArgument(0);
-                    var attachment = i.getArgument(1);
-                    var handler = i.getArgument(2, CompletionHandler.class);
-                    if (current().nextBoolean()) {
-                        handler.completed(null, attachment);
-                    } else {
-                        handler.failed(new Throwable(), attachment);
-                    }
-                    return null;
-                })
-                .when(channel)
-                .write(any(ByteBuffer.class), any(), any(CompletionHandler.class));
-        // WHEN
-        var actual = service.writeSync2(channel);
-        // THEN
-        assertSame(channel, actual);
-    }
+//    /**
+//     * Asserts
+//     * {@link AsynchronousHelloWorld#write(AsynchronousByteChannel, CompletionHandler)
+//     * write(channel, handler)} method returns the {@code channel} argument.
+//     *
+//     * @throws InterruptedException if interrupted while testing.
+//     * @throws ExecutionException   if failed to execute.
+//     */
+//    @DisplayName("write(channel, handler) returns channel")
+//    @Test
+//    @SuppressWarnings({"unchecked"})
+//    void _ReturnChannel_() throws InterruptedException, ExecutionException {
+//        // GIVEN
+//        var service = service();
+//        var channel = mock(AsynchronousByteChannel.class);
+//        lenient().
+//                doAnswer(i -> {
+//                    var buffer = i.getArgument(0);
+//                    var attachment = i.getArgument(1);
+//                    var handler = i.getArgument(2, CompletionHandler.class);
+//                    if (current().nextBoolean()) {
+//                        handler.completed(null, attachment);
+//                    } else {
+//                        handler.failed(new Throwable(), attachment);
+//                    }
+//                    return null;
+//                })
+//                .when(channel)
+//                .write(any(ByteBuffer.class), any(), any(CompletionHandler.class));
+//        // WHEN
+//        var actual = service.write(channel);
+//        // THEN
+//        assertSame(channel, actual);
+//    }
 }
