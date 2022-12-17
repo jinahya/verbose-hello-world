@@ -59,7 +59,7 @@ public interface AsynchronousHelloWorld extends HelloWorld {
     @SuppressWarnings({
             "java:S1854"
     })
-    default <T extends AsynchronousByteChannel> T writeSync1(T channel)
+    default <T extends AsynchronousByteChannel> T write(T channel)
             throws InterruptedException, ExecutionException {
         Objects.requireNonNull(channel, "channel is null");
         var buffer = put(ByteBuffer.allocate(BYTES)).flip();

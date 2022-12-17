@@ -44,7 +44,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
- * A class for testing {@link AsynchronousHelloWorld#writeSync1(AsynchronousByteChannel)} method.
+ * A class for testing {@link AsynchronousHelloWorld#write(AsynchronousByteChannel)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see AsynchronousHelloWorld_01_WriteSync1_AsynchronousByteChannel_Arguments_Test
@@ -54,7 +54,7 @@ class AsynchronousHelloWorld_01_WriteSync1_AsynchronousByteChannel_Test
         extends AsynchronousHelloWorldTest {
 
     /**
-     * Asserts {@link AsynchronousHelloWorld#writeSync1(AsynchronousByteChannel)}
+     * Asserts {@link AsynchronousHelloWorld#write(AsynchronousByteChannel)}
      * writeSync1(channel)} method invokes {@link HelloWorld#put(ByteBuffer) put(buffer)} method,
      * and writes the buffer to the {@code channel}.
      *
@@ -80,7 +80,7 @@ class AsynchronousHelloWorld_01_WriteSync1_AsynchronousByteChannel_Test
             return future;
         });
         // WHEN
-        service.writeSync1(channel);
+        service.write(channel);
         // THEN: put(buffer[12]) invoked
         verify(service, times(1)).put(bufferCaptor().capture());
         var buffer = bufferCaptor().getValue();
@@ -91,7 +91,7 @@ class AsynchronousHelloWorld_01_WriteSync1_AsynchronousByteChannel_Test
 
     /**
      * Asserts
-     * {@link AsynchronousHelloWorld#writeSync1(AsynchronousByteChannel) writeSync1(channel)} method
+     * {@link AsynchronousHelloWorld#write(AsynchronousByteChannel) writeSync1(channel)} method
      * returns the {@code channel} argument.
      *
      * @throws InterruptedException if interrupted while testing.
@@ -112,7 +112,7 @@ class AsynchronousHelloWorld_01_WriteSync1_AsynchronousByteChannel_Test
                     return completedFuture(written);
                 });
         // WHEN
-        var actual = service.writeSync1(channel);
+        var actual = service.write(channel);
         // THEN
         assertSame(channel, actual);
     }
