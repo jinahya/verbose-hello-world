@@ -85,7 +85,6 @@ class AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Test
                     return null;
                 })
                 .when(channel)
-//                .write(any(ByteBuffer.class), any(), any(CompletionHandler.class));
                 .write(any(), same(channel), any());
         // WHEN
         service.write(channel, handler);
