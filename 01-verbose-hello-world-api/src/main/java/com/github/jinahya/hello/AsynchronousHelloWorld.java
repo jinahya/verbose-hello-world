@@ -57,7 +57,9 @@ public interface AsynchronousHelloWorld extends HelloWorld {
         Objects.requireNonNull(executor, "executor is null");
         var buffer = put(ByteBuffer.allocate(BYTES)).flip();
         // TODO: Implement!
-        return new FutureTask<>(() -> null) {
+        return new FutureTask<>(() -> {
+            return null;
+        }) {
             @Override
             public T get() throws InterruptedException, ExecutionException {
                 return channel;
