@@ -69,14 +69,14 @@ class AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Test
         var writtenSoFar = new LongAdder();
         lenient().
                 doAnswer(i -> {
-                    var b = i.getArgument(0, ByteBuffer.class);
-                    assert b.hasRemaining();
-                    var a = i.getArgument(1);
-                    var h = i.getArgument(2, CompletionHandler.class);
-                    var w = current().nextInt(b.remaining() + 1);
-                    b.position(b.position() + w);
-                    writtenSoFar.add(w);
-                    h.completed(w, a);
+                    var buffer = i.getArgument(0, ByteBuffer.class);
+                    assert buffer.hasRemaining();
+                    var attachment = i.getArgument(1);
+                    var handler = i.getArgument(2, CompletionHandler.class);
+                    var written = current().nextInt(buffer.remaining() + 1);
+                    buffer.position(buffer.position() + written);
+                    writtenSoFar.add(written);
+                    handler.completed(written, attachment);
                     return null;
                 })
                 .when(channel)
