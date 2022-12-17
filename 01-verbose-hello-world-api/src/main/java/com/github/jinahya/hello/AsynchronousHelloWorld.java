@@ -89,6 +89,7 @@ public interface AsynchronousHelloWorld extends HelloWorld {
     default <T extends AsynchronousByteChannel> void write(
             T channel, CompletionHandler<Integer, ? super T> handler) {
         Objects.requireNonNull(channel, "channel is null");
+        Objects.requireNonNull(handler, "handler is null");
         var buffer = put(ByteBuffer.allocate(BYTES)).flip();
         // TODO: Implement!
     }
