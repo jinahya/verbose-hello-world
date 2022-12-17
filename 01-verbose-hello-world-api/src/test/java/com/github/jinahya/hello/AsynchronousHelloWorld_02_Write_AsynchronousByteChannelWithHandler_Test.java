@@ -85,11 +85,11 @@ class AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Test
         CompletionHandler<Integer, AsynchronousByteChannel> handler = mock(CompletionHandler.class);
         // WHEN
         service.write(channel, handler);
+        // THEN: verify, with timeout, once, handler.completed(12, channel) invoked
         // THEN: put(buffer[12]) invoked
         verify(service, times(1)).put(bufferCaptor().capture());
         var buffer = bufferCaptor().getValue();
         assertEquals(BYTES, buffer.capacity());
-        // THEN: verify, with timeout, once, handler.completed(12, channel) invoked
         // THEN: verify, at least once, channel.write(buffer, attachment, handler) invoked
         // THEN: verify, 12 bytes are written to the channel
     }
