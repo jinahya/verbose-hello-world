@@ -29,11 +29,15 @@ import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.concurrent.atomic.LongAdder;
 
+import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.util.concurrent.ThreadLocalRandom.current;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * A class for testing
@@ -81,6 +85,9 @@ class AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Test
         CompletionHandler<Integer, AsynchronousByteChannel> handler = mock(CompletionHandler.class);
         // WHEN
         service.write(channel, handler);
+        verify(service, times(1)).put(bufferCaptor().capture());
+        var buffer = bufferCaptor().getValue();
+        assertEquals(BYTES, buffer.capacity());
         // THEN: verify, with timeout, once, handler.completed(12, channel) invoked
         // THEN: verify, once, put(buffer[12]) invoked
         // THEN: verify, at least once, channel.write(buffer, attachment, handler) invoked
