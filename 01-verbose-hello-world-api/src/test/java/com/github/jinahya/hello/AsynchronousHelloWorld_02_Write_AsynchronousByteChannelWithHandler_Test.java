@@ -33,7 +33,6 @@ import java.util.concurrent.atomic.LongAdder;
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.atLeastOnce;
@@ -102,39 +101,4 @@ class AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Test
         // either handler.completed(12, channel)
         // or failed(exc, channel)
     }
-
-//    /**
-//     * Asserts
-//     * {@link AsynchronousHelloWorld#write(AsynchronousByteChannel, CompletionHandler)
-//     * write(channel, handler)} method returns the {@code channel} argument.
-//     *
-//     * @throws InterruptedException if interrupted while testing.
-//     * @throws ExecutionException   if failed to execute.
-//     */
-//    @DisplayName("write(channel, handler) returns channel")
-//    @Test
-//    @SuppressWarnings({"unchecked"})
-//    void _ReturnChannel_() throws InterruptedException, ExecutionException {
-//        // GIVEN
-//        var service = service();
-//        var channel = mock(AsynchronousByteChannel.class);
-//        lenient().
-//                doAnswer(i -> {
-//                    var buffer = i.getArgument(0);
-//                    var attachment = i.getArgument(1);
-//                    var handler = i.getArgument(2, CompletionHandler.class);
-//                    if (current().nextBoolean()) {
-//                        handler.completed(null, attachment);
-//                    } else {
-//                        handler.failed(new Throwable(), attachment);
-//                    }
-//                    return null;
-//                })
-//                .when(channel)
-//                .write(any(ByteBuffer.class), any(), any(CompletionHandler.class));
-//        // WHEN
-//        var actual = service.write(channel);
-//        // THEN
-//        assertSame(channel, actual);
-//    }
 }
