@@ -24,6 +24,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.CompletionHandler;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -60,9 +61,7 @@ public interface AsynchronousHelloWorld extends HelloWorld {
     })
     default <T extends AsynchronousByteChannel> T writeSync1(T channel)
             throws InterruptedException, ExecutionException {
-        if (channel == null) {
-            throw new NullPointerException("channel is null");
-        }
+        Objects.requireNonNull(channel, "channel is null");
         var buffer = put(ByteBuffer.allocate(BYTES)).flip();
         // TODO: Implement!
         return channel;
