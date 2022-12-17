@@ -86,7 +86,7 @@ public interface AsynchronousHelloWorld extends HelloWorld {
      * @see AsynchronousByteChannel#write(ByteBuffer, Object, CompletionHandler)
      */
     @SuppressWarnings({
-            "java:S1854"
+            "java:S1854" // Unused assignment
     })
     default <T extends AsynchronousByteChannel> T writeSync2(T channel) {
         if (channel == null) {
