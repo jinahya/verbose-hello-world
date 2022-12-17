@@ -61,7 +61,7 @@ class AsynchronousHelloWorld_01_Write_AsynchronousByteChannel_Test
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
      */
-    @DisplayName("writeSync1(channel)"
+    @DisplayName("write(channel)"
                  + " invokes put(buffer)"
                  + ", and writes the buffer to channel")
     @Test
@@ -97,7 +97,7 @@ class AsynchronousHelloWorld_01_Write_AsynchronousByteChannel_Test
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
      */
-    @DisplayName("writeSync1(channel) returns channel")
+    @DisplayName("write(channel) returns channel")
     @Test
     void _ReturnChannel_() throws InterruptedException, ExecutionException {
         // GIVEN

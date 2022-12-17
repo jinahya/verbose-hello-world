@@ -44,7 +44,7 @@ class AsynchronousHelloWorld_01_Write_AsynchronousByteChannel_Arguments_Test
      * {@link AsynchronousHelloWorld#write(AsynchronousByteChannel) writeSync1(channel)} method
      * throws a {@link NullPointerException} when the {@code channel} argument is {@code null}.
      */
-    @DisplayName("writeSync(null) throws NullPointerException")
+    @DisplayName("write(null) throws NullPointerException")
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
         // GIVEN
