@@ -35,6 +35,8 @@ import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -69,29 +71,36 @@ class AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Test
         // GIVEN
         var service = service();
         var channel = mock(AsynchronousByteChannel.class);
+        CompletionHandler<Integer, AsynchronousByteChannel> handler = mock(CompletionHandler.class);
         var writtenSoFar = new LongAdder();
         lenient().
                 doAnswer(i -> {
-                    var buffer = i.getArgument(0, ByteBuffer.class);
-                    var attachment = i.getArgument(1);
-                    var handler = i.getArgument(2, CompletionHandler.class);
-                    var written = current().nextInt(buffer.remaining());
-                    writtenSoFar.add(written);
-                    buffer.position(buffer.position() + written);
-                    handler.completed(written, attachment);
+                    var b = i.getArgument(0, ByteBuffer.class);
+                    assert b.hasRemaining();
+                    var a = i.getArgument(1);
+                    var h = i.getArgument(2, CompletionHandler.class);
+                    var w = current().nextInt(b.remaining() + 1);
+                    b.position(b.position() + w);
+                    writtenSoFar.add(w);
+                    h.completed(w, a);
                     return null;
                 })
                 .when(channel)
 //                .write(any(ByteBuffer.class), any(), any(CompletionHandler.class));
-                .write(any(), any(), any());
+                .write(any(), same(channel), any());
         // WHEN
-        service.write(channel);
+        service.write(channel, handler);
         // THEN: put(buffer[12]) invoked
         verify(service, times(1)).put(bufferCaptor().capture());
         var buffer = bufferCaptor().getValue();
         assertEquals(BYTES, buffer.capacity());
         // THEN: channel.write(buffer, attachment, handler) invoked at least once
+        verify(channel, atLeastOnce()).write(same(buffer), same(channel), any());
         // THEN: 12 bytes are written to the channel
+        assertEquals(BYTES, writtenSoFar.intValue());
+        // THEN: invoked once,
+        // either handler.completed(12, channel)
+        // or failed(exc, channel)
     }
 
 //    /**
