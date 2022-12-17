@@ -47,10 +47,10 @@ import static org.mockito.Mockito.verify;
  * A class for testing {@link AsynchronousHelloWorld#write(AsynchronousByteChannel)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see AsynchronousHelloWorld_01_WriteSync1_AsynchronousByteChannel_Arguments_Test
+ * @see AsynchronousHelloWorld_01_Write_AsynchronousByteChannel_Arguments_Test
  */
 @Slf4j
-class AsynchronousHelloWorld_01_WriteSync1_AsynchronousByteChannel_Test
+class AsynchronousHelloWorld_01_Write_AsynchronousByteChannel_Test
         extends AsynchronousHelloWorldTest {
 
     /**
