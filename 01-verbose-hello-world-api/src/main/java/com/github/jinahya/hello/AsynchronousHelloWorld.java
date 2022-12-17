@@ -88,8 +88,7 @@ public interface AsynchronousHelloWorld extends HelloWorld {
     @SuppressWarnings({
             "java:S1854"
     })
-    default <T extends AsynchronousByteChannel> T writeSync2(T channel)
-            throws InterruptedException, ExecutionException {
+    default <T extends AsynchronousByteChannel> T writeSync2(T channel) {
         if (channel == null) {
             throw new NullPointerException("channel is null");
         }
