@@ -85,6 +85,9 @@ public interface AsynchronousHelloWorld extends HelloWorld {
      * @see #put(ByteBuffer)
      * @see AsynchronousByteChannel#write(ByteBuffer, Object, CompletionHandler)
      */
+    @SuppressWarnings({
+            "java:S1854"
+    })
     default <T extends AsynchronousByteChannel> T writeSync2(T channel)
             throws InterruptedException, ExecutionException {
         if (channel == null) {
