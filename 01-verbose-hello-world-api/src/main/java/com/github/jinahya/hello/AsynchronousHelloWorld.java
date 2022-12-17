@@ -47,7 +47,7 @@ public interface AsynchronousHelloWorld extends HelloWorld {
      *
      * @param <T>     channel type parameter
      * @param channel the channel to which bytes are written.
-     * @return a future of given {@code channel} that will, some time in the future, write the the
+     * @return a future of given {@code channel} that will, some time in the future, write the
      * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to {@code channel}.
      * @see #put(ByteBuffer)
      * @see AsynchronousByteChannel#write(ByteBuffer)
