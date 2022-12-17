@@ -66,7 +66,7 @@ class AsynchronousHelloWorld_01_Write_AsynchronousByteChannelWithExecutor_Test
                  + " invokes put(buffer)"
                  + ", and writes the buffer to channel")
     @Test
-    void _PutBufferWriteBuffer_() throws InterruptedException, ExecutionException {
+    void __() throws InterruptedException, ExecutionException {
         // GIVEN: HelloWorld
         var service = service();
         doAnswer(i -> {
