@@ -56,7 +56,7 @@ public interface AsynchronousHelloWorld extends HelloWorld {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(executor, "executor is null");
         var buffer = put(ByteBuffer.allocate(BYTES)).flip();
-        return new FutureTask<>(() -> {
+        FutureTask<T> task = new FutureTask<>(() -> {
             // TODO: Implement!
             return null;
         }) {
@@ -66,6 +66,8 @@ public interface AsynchronousHelloWorld extends HelloWorld {
                 return channel;
             }
         };
+        executor.execute(task);
+        return task;
     }
 
     /**
