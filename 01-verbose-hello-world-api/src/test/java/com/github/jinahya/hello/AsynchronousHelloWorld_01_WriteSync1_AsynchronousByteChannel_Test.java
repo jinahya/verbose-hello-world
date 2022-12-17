@@ -103,14 +103,14 @@ class AsynchronousHelloWorld_01_WriteSync1_AsynchronousByteChannel_Test
         // GIVEN
         var service = service();
         var channel = mock(AsynchronousByteChannel.class);
-//        lenient()
-//                .when(channel.write(any(ByteBuffer.class)))
-//                .thenAnswer(i -> {
-//                    var buffer = i.getArgument(0, ByteBuffer.class);
-//                    var written = buffer.remaining();
-//                    buffer.position(buffer.limit());
-//                    return completedFuture(written);
-//                });
+        lenient()
+                .when(channel.write(any(ByteBuffer.class)))
+                .thenAnswer(i -> {
+                    var buffer = i.getArgument(0, ByteBuffer.class);
+                    var written = buffer.remaining();
+                    buffer.position(buffer.limit());
+                    return completedFuture(written);
+                });
         // WHEN
         var actual = service.writeSync1(channel);
         // THEN
