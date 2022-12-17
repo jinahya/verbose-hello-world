@@ -56,9 +56,6 @@ public interface AsynchronousHelloWorld extends HelloWorld {
      * @see #put(ByteBuffer)
      * @see AsynchronousByteChannel#write(ByteBuffer)
      */
-    @SuppressWarnings({
-            "java:S1854" // Unused assignments
-    })
     default <T extends AsynchronousByteChannel> T write(T channel)
             throws InterruptedException, ExecutionException {
         Objects.requireNonNull(channel, "channel is null");
@@ -83,11 +80,8 @@ public interface AsynchronousHelloWorld extends HelloWorld {
      * @see #put(ByteBuffer)
      * @see AsynchronousByteChannel#write(ByteBuffer, Object, CompletionHandler)
      */
-    @SuppressWarnings({
-            "java:S1854" // Unused assignments
-    })
     default <T extends AsynchronousByteChannel> void write(
-            T channel, CompletionHandler<? super T, ?> handler) {
+            T channel, CompletionHandler<Integer, ? super T> handler) {
         Objects.requireNonNull(channel, "channel is null");
         var buffer = put(ByteBuffer.allocate(BYTES)).flip();
         // TODO: Implement!
