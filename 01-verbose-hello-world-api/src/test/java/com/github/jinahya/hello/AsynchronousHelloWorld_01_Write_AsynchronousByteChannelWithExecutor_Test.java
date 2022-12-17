@@ -92,7 +92,7 @@ class AsynchronousHelloWorld_01_Write_AsynchronousByteChannelWithExecutor_Test
         lenient().
                 doAnswer(i -> {
                     Runnable runnable = i.getArgument(0);
-                    runnable.run();
+                    new Thread(runnable).start();
                     return null;
                 }).when(executor).execute(notNull());
         // WHEN
