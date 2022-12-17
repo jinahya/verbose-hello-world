@@ -80,7 +80,7 @@ class AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Test
                     return null;
                 })
                 .when(channel)
-                .write(any(), same(channel), any());
+                .write(any(), any(), any());
         // GIVEN: CompletionHandler
         CompletionHandler<Integer, AsynchronousByteChannel> handler = mock(CompletionHandler.class);
         // WHEN
