@@ -72,7 +72,7 @@ class AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Argumen
         // GIVEN
         var service = service();
         var channel = mock(AsynchronousByteChannel.class);
-        CompletionHandler<AsynchronousByteChannel, ?> handler = null;
+        CompletionHandler<Integer, AsynchronousByteChannel> handler = null;
         // WHEN/THEN
         assertThrows(NullPointerException.class, () -> service.write(channel, handler));
     }
