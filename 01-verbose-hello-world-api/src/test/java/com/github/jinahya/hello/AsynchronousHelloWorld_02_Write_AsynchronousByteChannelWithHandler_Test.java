@@ -29,15 +29,11 @@ import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.concurrent.atomic.LongAdder;
 
-import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.util.concurrent.ThreadLocalRandom.current;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * A class for testing
@@ -58,17 +54,14 @@ class AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Test
      * and invokes {@link CompletionHandler#completed(Object, Object)} method, on {@code handler},
      * with {@value HelloWorld#BYTES} and {@code channel}.
      */
-    @DisplayName("write(channel, handler)"
-                 + " invokes put(buffer)"
-                 + ", writes the buffer to channel"
-                 + ", and invokes handler.completed(12, channel)")
+    @DisplayName("write(channel, handler) invokes handler.completed(12, channel)")
     @Test
     @SuppressWarnings({"unchecked"})
-    void _PutBufferWriteBufferCompleted_() {
-        // GIVEN
+    void _Completed_() {
+        // GIVEN: HelloWorld
         var service = service();
+        // GIVEN: AsynchronousByteChannel
         var channel = mock(AsynchronousByteChannel.class);
-        CompletionHandler<Integer, AsynchronousByteChannel> handler = mock(CompletionHandler.class);
         var writtenSoFar = new LongAdder();
         lenient().
                 doAnswer(i -> {
@@ -84,14 +77,13 @@ class AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Test
                 })
                 .when(channel)
                 .write(any(), same(channel), any());
+        // GIVEN: CompletionHandler
+        CompletionHandler<Integer, AsynchronousByteChannel> handler = mock(CompletionHandler.class);
         // WHEN
         service.write(channel, handler);
-        // THEN: put(buffer[12]) invoked
-        verify(service, times(1)).put(bufferCaptor().capture());
-        var buffer = bufferCaptor().getValue();
-        assertEquals(BYTES, buffer.capacity());
-        // THEN: channel.write(buffer, attachment, handler) invoked at least once
-        // THEN: 12 bytes are written to the channel
-        // THEN: handler.completed(12, channel) invoked, once
+        // THEN: verify, with timeout, once, handler.completed(12, channel) invoked
+        // THEN: verify, once, put(buffer[12]) invoked
+        // THEN: verify, at least once, channel.write(buffer, attachment, handler) invoked
+        // THEN: verify, 12 bytes are written to the channel
     }
 }
