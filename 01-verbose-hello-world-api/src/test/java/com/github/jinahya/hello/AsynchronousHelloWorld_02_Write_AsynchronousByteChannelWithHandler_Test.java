@@ -27,7 +27,6 @@ import org.junit.jupiter.api.Test;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.CompletionHandler;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.LongAdder;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
@@ -35,7 +34,6 @@ import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.same;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -55,18 +53,18 @@ class AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Test
     /**
      * Asserts
      * {@link AsynchronousHelloWorld#write(AsynchronousByteChannel, CompletionHandler)
-     * write(channel, handler)} method invokes {@link HelloWorld#put(ByteBuffer) put(buffer)}
-     * method, and writes the buffer to the {@code channel}.
-     *
-     * @throws InterruptedException if interrupted while testing.
-     * @throws ExecutionException   if failed to execute.
+     * write(channel, handler)} method invokes {@link HelloWorld#put(ByteBuffer) put(buffer)} method
+     * with a buffer of {@value HelloWorld#BYTES} bytes, writes the buffer to the {@code channel},
+     * and invokes {@link CompletionHandler#completed(Object, Object)} method, on {@code handler},
+     * with {@value HelloWorld#BYTES} and {@code channel}.
      */
     @DisplayName("write(channel, handler)"
                  + " invokes put(buffer)"
-                 + ", and writes the buffer to channel")
+                 + ", writes the buffer to channel"
+                 + ", and invokes handler.completed(12, channel)")
     @Test
     @SuppressWarnings({"unchecked"})
-    void _PutBufferWriteBuffer_() throws InterruptedException, ExecutionException {
+    void _PutBufferWriteBufferCompleted_() {
         // GIVEN
         var service = service();
         var channel = mock(AsynchronousByteChannel.class);
@@ -93,11 +91,7 @@ class AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Test
         var buffer = bufferCaptor().getValue();
         assertEquals(BYTES, buffer.capacity());
         // THEN: channel.write(buffer, attachment, handler) invoked at least once
-        verify(channel, atLeastOnce()).write(same(buffer), same(channel), any());
         // THEN: 12 bytes are written to the channel
-        assertEquals(BYTES, writtenSoFar.intValue());
-        // THEN: invoked once,
-        // either handler.completed(12, channel)
-        // or failed(exc, channel)
+        // THEN: handler.completed(12, channel) invoked, once
     }
 }
