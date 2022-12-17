@@ -42,43 +42,20 @@ import java.util.concurrent.FutureTask;
 public interface AsynchronousHelloWorld extends HelloWorld {
 
     /**
-     * Writes the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to specified
-     * channel.
-     *
-     * @param <T>     channel type parameter
-     * @param channel the channel to which bytes are written.
-     * @return given {@code channel}.
-     * @throws InterruptedException if interrupted while working.
-     * @throws ExecutionException   if failed to operate.
-     * @implSpec The default implementation invokes {@link #put(ByteBuffer) put(buffer)} method with
-     * a byte buffer of {@value #BYTES} bytes, flips it, and writes the buffer to {@code channel} by
-     * repeatedly getting the result of
-     * {@link AsynchronousByteChannel#write(ByteBuffer) chanel.write(buffer)} method while the
-     * buffer has remaining.
-     * @see #put(ByteBuffer)
-     * @see AsynchronousByteChannel#write(ByteBuffer)
-     */
-    default <T extends AsynchronousByteChannel> T write(T channel)
-            throws InterruptedException, ExecutionException {
-        Objects.requireNonNull(channel, "channel is null");
-        var buffer = put(ByteBuffer.allocate(BYTES)).flip();
-        // TODO: Implement!
-        return channel;
-    }
-
-    /**
      * Writes, asynchronously, the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>
      * to specified channel using specified executor.
      *
-     * @param <T>      channel type parameter
-     * @param channel  the channel to which bytes are written.
-     * @param executor the executor.
+     * @param <T>     channel type parameter
+     * @param channel the channel to which bytes are written.
      * @return a future of given {@code channel} that will, some time in the future, write the the
      * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to {@code channel}.
+     * @see #put(ByteBuffer)
+     * @see AsynchronousByteChannel#write(ByteBuffer)
      */
     default <T extends AsynchronousByteChannel> Future<T> write(T channel, Executor executor) {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(executor, "executor is null");
+        var buffer = put(ByteBuffer.allocate(BYTES)).flip();
         // TODO: Implement!
         return new FutureTask<>(() -> null) {
             @Override
@@ -89,8 +66,8 @@ public interface AsynchronousHelloWorld extends HelloWorld {
     }
 
     /**
-     * Writes the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to specified
-     * channel, and invokes specified completion handler when all bytes are written.
+     * Writes, asynchronously, the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>
+     * to specified channel, and invokes specified completion handler when all bytes are written.
      *
      * @param <T>     channel type parameter
      * @param channel the channel to which bytes are written.

@@ -30,7 +30,6 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.OutputStream;
@@ -40,6 +39,7 @@ import java.nio.channels.WritableByteChannel;
 import static java.util.Objects.requireNonNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.spy;
 
 /**
@@ -64,9 +64,9 @@ abstract class AbstractHelloWorldTest<T extends HelloWorld> {
     @DisplayName("set(array, index) returns array")
     @BeforeEach
     void stub_ReturnArray_SetArrayIndex() {
-        Mockito.lenient()
-                .when(service.set(any(), anyInt())) // <1>
-                .thenAnswer(i -> i.getArgument(0));    // <2>
+        lenient().
+                when(service.set(any(), anyInt()))  // <1>
+                .thenAnswer(i -> i.getArgument(0)); // <2>
     }
 
     //@Spy
