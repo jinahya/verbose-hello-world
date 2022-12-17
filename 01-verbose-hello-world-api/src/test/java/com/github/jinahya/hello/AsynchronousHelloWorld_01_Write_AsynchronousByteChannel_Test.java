@@ -54,9 +54,9 @@ class AsynchronousHelloWorld_01_Write_AsynchronousByteChannel_Test
         extends AsynchronousHelloWorldTest {
 
     /**
-     * Asserts {@link AsynchronousHelloWorld#write(AsynchronousByteChannel)}
-     * writeSync1(channel)} method invokes {@link HelloWorld#put(ByteBuffer) put(buffer)} method,
-     * and writes the buffer to the {@code channel}.
+     * Asserts {@link AsynchronousHelloWorld#write(AsynchronousByteChannel)} writeSync1(channel)}
+     * method invokes {@link HelloWorld#put(ByteBuffer) put(buffer)} method, and writes the buffer
+     * to the {@code channel}.
      *
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
@@ -90,9 +90,8 @@ class AsynchronousHelloWorld_01_Write_AsynchronousByteChannel_Test
     }
 
     /**
-     * Asserts
-     * {@link AsynchronousHelloWorld#write(AsynchronousByteChannel) writeSync1(channel)} method
-     * returns the {@code channel} argument.
+     * Asserts {@link AsynchronousHelloWorld#write(AsynchronousByteChannel) writeSync1(channel)}
+     * method returns the {@code channel} argument.
      *
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.

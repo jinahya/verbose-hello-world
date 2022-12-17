@@ -27,8 +27,10 @@ import java.nio.channels.CompletionHandler;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 
 /**
  * An interface for writing <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to
@@ -62,6 +64,28 @@ public interface AsynchronousHelloWorld extends HelloWorld {
         var buffer = put(ByteBuffer.allocate(BYTES)).flip();
         // TODO: Implement!
         return channel;
+    }
+
+    /**
+     * Writes, asynchronously, the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>
+     * to specified channel using specified executor.
+     *
+     * @param <T>      channel type parameter
+     * @param channel  the channel to which bytes are written.
+     * @param executor the executor.
+     * @return a future of given {@code channel} that will, some time in the future, write the the
+     * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to {@code channel}.
+     */
+    default <T extends AsynchronousByteChannel> Future<T> write(T channel, Executor executor) {
+        Objects.requireNonNull(channel, "channel is null");
+        Objects.requireNonNull(executor, "executor is null");
+        // TODO: Implement!
+        return new FutureTask<>(() -> null) {
+            @Override
+            public T get() throws InterruptedException, ExecutionException {
+                return channel;
+            }
+        };
     }
 
     /**
