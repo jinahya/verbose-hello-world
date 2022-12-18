@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
 
-import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
@@ -53,11 +52,7 @@ class HelloWorld_04_Send_Socket_Test extends HelloWorldTest {
     @DisplayName("write(stream) writes byte[12] to stream and returns the stream")
     @BeforeEach
     void stub_ReturnArray_SetArray() throws IOException {
-        doAnswer(i -> {
-            var stream = i.getArgument(0, OutputStream.class);
-            stream.write(new byte[BYTES]);
-            return stream;
-        }).when(service()).write(any(OutputStream.class));
+        doAnswer(i -> i.getArgument(0)).when(service()).write(any(OutputStream.class));
     }
 
     /**
