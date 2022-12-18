@@ -46,10 +46,10 @@ import static org.mockito.Mockito.spy;
 class HelloWorld_04_Send_Socket_Test extends HelloWorldTest {
 
     /**
-     * Stubs {@link HelloWorld#write(OutputStream) write(stream)} method to write
-     * {@value HelloWorld#BYTES} bytes to the {@code stream}, and returns the {@code stream}.
+     * Stubs {@link HelloWorld#write(OutputStream) write(stream)} method returns the {@code stream}
+     * argument.
      */
-    @DisplayName("write(stream) writes byte[12] to stream and returns the stream")
+    @DisplayName("write(stream) returns stream")
     @BeforeEach
     void stub_ReturnArray_SetArray() throws IOException {
         doAnswer(i -> i.getArgument(0)).when(service()).write(any(OutputStream.class));
