@@ -92,7 +92,7 @@ class HelloWorld_03_Append_File_Test extends HelloWorldTest {
      */
     @DisplayName("append(file) returns file")
     @Test
-    void append_ReturnFile_(@TempDir File tempDir) throws IOException {
+    void _ReturnFile_(@TempDir File tempDir) throws IOException {
         // GIVEN: HelloWorld
         var service = service();
         // GIVEN: File
