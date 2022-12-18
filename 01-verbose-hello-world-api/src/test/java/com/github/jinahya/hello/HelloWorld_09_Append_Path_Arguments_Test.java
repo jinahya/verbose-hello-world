@@ -34,6 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_09_Append_Path_Test
  */
+@DisplayName("append(Path) arguments")
 @Slf4j
 class HelloWorld_09_Append_Path_Arguments_Test extends HelloWorldTest {
 
@@ -41,9 +42,9 @@ class HelloWorld_09_Append_Path_Arguments_Test extends HelloWorldTest {
      * Asserts {@link HelloWorld#append(Path) append(path)} method throws a
      * {@link NullPointerException} when the {@code path} argument is {@code null}.
      */
-    @DisplayName("append((Path) null) throws NullPointerException")
+    @DisplayName("[path == null] -> NullPointerException")
     @Test
-    void append_ThrowNullPointerException_PathIsNull() {
+    void _ThrowNullPointerException_PathIsNull() {
         var service = service();
         Path path = null;
         assertThrows(NullPointerException.class, () -> service.append(path));

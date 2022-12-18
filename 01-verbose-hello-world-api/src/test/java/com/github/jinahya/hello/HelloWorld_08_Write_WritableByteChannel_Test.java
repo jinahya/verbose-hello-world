@@ -42,7 +42,7 @@ import static org.mockito.Mockito.mock;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_08_Write_WritableByteChannel_Arguments_Test
  */
-@DisplayName("write(WritableByteChannel) arguments")
+@DisplayName("write(WritableByteChannel)")
 @Slf4j
 class HelloWorld_08_Write_WritableByteChannel_Test extends HelloWorldTest {
 

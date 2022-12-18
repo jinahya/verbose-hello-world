@@ -21,17 +21,23 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.file.Path;
 
+import static com.github.jinahya.hello.HelloWorld.BYTES;
+import static java.nio.ByteBuffer.allocate;
 import static java.nio.file.Files.createTempFile;
 import static java.nio.file.Files.size;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.ArgumentMatchers.notNull;
+import static org.mockito.Mockito.lenient;
 
 /**
  * A class for testing {@link HelloWorld#append(Path)} method.
@@ -39,28 +45,47 @@ import static org.junit.jupiter.api.Assertions.assertSame;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_09_Append_Path_Arguments_Test
  */
+@DisplayName("append(Path)")
 @Slf4j
-class HelloWorld_09_Append_Path_Test
-        extends HelloWorldTest {
+class HelloWorld_09_Append_Path_Test extends HelloWorldTest {
+
+    @BeforeEach
+    void stub_WriteChannel_Write12Bytes() throws IOException {
+        var service = service();
+        lenient()
+                .doAnswer(i -> {
+                    var channel = i.getArgument(0, WritableByteChannel.class);
+                    for (var buffer = allocate(BYTES); buffer.hasRemaining(); ) {
+                        channel.write(buffer);
+                    }
+                    return channel;
+                })
+                .when(service)
+                .write((WritableByteChannel) notNull());
+    }
 
     /**
      * Asserts {@link HelloWorld#append(Path) append(path)} method invokes
      * {@link HelloWorld#write(WritableByteChannel) write(channel)} method with an instance of
-     * {@link java.nio.channels.FileChannel}, and asserts
-     * {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes are appended to specified
-     * {@code path}.
+     * {@link java.nio.channels.FileChannel}, and asserts {@value HelloWorld#BYTES} bytes are
+     * appended to specified {@code path}.
      *
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("append(path)"
-                 + " invokes write(FileChannel)"
-                 + ", 12 bytes are appended")
+    @DisplayName("-> write(FileChannel)"
+                 + " -> 12 bytes are appended")
     @Test
-    void append_InvokeWriteChannel12BytesWritten_(@TempDir Path tempDir) throws IOException {
+    void _InvokeWriteChannel12BytesWritten_(@TempDir Path tempDir) throws IOException {
+        // GIVEN: HelloWorld
+        var service = service();
+        // GIVEN: Path
         var path = createTempFile(tempDir, null, null);
         var size = size(path);
-        // TODO: Implement!
+        // WHEN
+        service.append(path);
+        // THEN: once, write(FileChannel) invoked
+        // THEN: 12 byte are appended to the path
     }
 
     /**
@@ -70,12 +95,15 @@ class HelloWorld_09_Append_Path_Test
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("append(path) returns path")
+    @DisplayName("returns path")
     @Test
     void append_ReturnPath_(@TempDir Path tempDir) throws IOException {
+        // GIVEN
         var service = service();
         var path = createTempFile(tempDir, null, null);
+        // WHEN
         var actual = service.append(path);
+        // THEN
         assertSame(path, actual);
     }
 }
