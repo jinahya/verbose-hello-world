@@ -21,6 +21,7 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -34,9 +35,7 @@ import java.util.concurrent.atomic.LongAdder;
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.notNull;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
@@ -49,9 +48,21 @@ import static org.mockito.Mockito.verify;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see AsynchronousHelloWorld_01_Write_AsynchronousByteChannelWithExecutor_Arguments_Test
  */
+@DisplayName("write(AsynchronousByteChannel, Executor) arguments")
 @Slf4j
 class AsynchronousHelloWorld_01_Write_AsynchronousByteChannelWithExecutor_Test
         extends AsynchronousHelloWorldTest {
+
+    @BeforeEach
+    void stub_PutBuffer_FillBuffer() {
+        var service = service();
+        lenient().doAnswer(i -> {
+            var buffer = i.getArgument(0, ByteBuffer.class);
+            assert buffer.remaining() >= BYTES;
+            buffer.position(buffer.position() + BYTES);
+            return buffer;
+        }).when(service).put(notNull());
+    }
 
     /**
      * Asserts
@@ -62,39 +73,32 @@ class AsynchronousHelloWorld_01_Write_AsynchronousByteChannelWithExecutor_Test
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
      */
-    @DisplayName("write(channel, executor)"
-                 + " invokes put(buffer)"
-                 + ", and writes the buffer to channel")
+    @DisplayName("-> put(buffer)"
+                 + " -> channel.write(buffer)+"
+                 + " -> future<channel>")
     @Test
     void __() throws InterruptedException, ExecutionException {
         // GIVEN: HelloWorld
         var service = service();
-        doAnswer(i -> {
-            ByteBuffer buffer = i.getArgument(0);
-            buffer.position(buffer.position() + BYTES);
-            return buffer;
-        }).when(service).put(any());
         // GIVEN: AsynchronousByteChannel
         var channel = mock(AsynchronousByteChannel.class);
         var writtenSoFar = new LongAdder();
-        lenient().
-                when(channel.write(notNull())).thenAnswer(i -> {
-                    var buffer = i.getArgument(0, ByteBuffer.class);
-                    var written = current().nextInt(buffer.remaining() + 1);
-                    buffer.position(buffer.position() + written);
-                    writtenSoFar.add(written);
-                    var future = mock(Future.class);
-                    doReturn(written).when(future).get();
-                    return future;
-                });
+        lenient().when(channel.write(notNull())).thenAnswer(i -> {
+            var buffer = i.getArgument(0, ByteBuffer.class);
+            var written = current().nextInt(buffer.remaining() + 1);
+            buffer.position(buffer.position() + written);
+            writtenSoFar.add(written);
+            var future = mock(Future.class);
+            doReturn(written).when(future).get();
+            return future;
+        });
         // GIVEN: Executor
         var executor = mock(Executor.class);
-        lenient().
-                doAnswer(i -> {
-                    Runnable runnable = i.getArgument(0);
-                    new Thread(runnable).start();
-                    return null;
-                }).when(executor).execute(notNull());
+        lenient().doAnswer(i -> {
+            var runnable = i.getArgument(0, Runnable.class);
+            new Thread(runnable).start();
+            return null;
+        }).when(executor).execute(notNull());
         // WHEN
         var future = service.write(channel, executor);
         var result = future.get();
@@ -102,8 +106,8 @@ class AsynchronousHelloWorld_01_Write_AsynchronousByteChannelWithExecutor_Test
         verify(service, times(1)).put(bufferCaptor().capture());
         var buffer = bufferCaptor().getValue();
         assertEquals(BYTES, buffer.capacity());
-        // THEN: channel.write(buffer) invoked at least once
+        // THEN: at least once, channel.write(buffer) invoked
         // THEN: 12 bytes are written
-        // THEN result is same as channel
+        // THEN: result is same as channel
     }
 }
