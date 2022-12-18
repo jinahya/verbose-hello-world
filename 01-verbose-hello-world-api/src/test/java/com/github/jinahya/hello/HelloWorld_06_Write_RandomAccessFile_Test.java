@@ -21,6 +21,7 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -29,11 +30,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
+import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.io.File.createTempFile;
-import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -44,30 +47,45 @@ import static org.mockito.Mockito.verify;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_06_Write_RandomAccessFile_Arguments_Test
  */
+@DisplayName("write(RandomAccessFile)")
 @Slf4j
 class HelloWorld_06_Write_RandomAccessFile_Test extends HelloWorldTest {
 
     /**
+     * Stubs {@link HelloWorld#set(byte[]) set(array)} method to return the {@code array} argument.
+     */
+    @DisplayName("set(array) returns array")
+    @BeforeEach
+    void stub_ReturnArray_SetArray() {
+        doAnswer(i -> i.getArgument(0))
+                .when(service())
+                .set(any(byte[].class));
+    }
+
+    /**
      * Asserts {@link HelloWorld#write(RandomAccessFile) write((RandomAccessFile) file)} method
      * invokes {@link HelloWorld#set(byte[]) set(byte[])} method with an array of
-     * {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes, and invokes
-     * {@link RandomAccessFile#write(byte[])} method on the {@code file} argument with the array.
+     * {@value HelloWorld#BYTES} bytes, and invokes {@link RandomAccessFile#write(byte[])} method on
+     * the {@code file} argument with the array.
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write((RandomAccessFile) file)"
-                 + " invokes set(array[12])"
-                 + ", and invokes file.write(array)")
+    @DisplayName("invokes set(array[12])"
+                 + ", file.write(array)")
     @Test
-    void write_InvokeSetArrayWriteArrayToFile_() throws IOException {
+    void _InvokeSetArrayWriteArrayToFile_() throws IOException {
+        // GIVEN: HelloWorld
         var service = service();
+        // GIVEN: RandomAccessFile
         var file = mock(RandomAccessFile.class);
+        // WHEN
         service.write(file);
+        // THEN: once, set(array[12]) invoked
         verify(service, times(1)).set(arrayCaptor().capture());
         var array = arrayCaptor().getValue();
         assertNotNull(array);
-        assertEquals(HelloWorld.BYTES, array.length);
-        // TODO: Verify the service invoked file.write(array)
+        assertEquals(BYTES, array.length);
+        // THEN: once, file.write(array) invoked
     }
 
     /**
@@ -76,35 +94,40 @@ class HelloWorld_06_Write_RandomAccessFile_Test extends HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write((RandomAccessFile) file) returns file")
+    @DisplayName("returns file")
     @Test
-    void write_ReturnFile_() throws IOException {
+    void _ReturnFile_() throws IOException {
+        // GIVEN: HelloWorld
         var service = service();
+        // GIVEN: RandomAccessFile
         var file = mock(RandomAccessFile.class);
+        // WHEN
         var actual = service.write(file);
+        // THEN
         assertSame(file, actual);
     }
 
     /**
      * Asserts, redundantly,
      * {@link HelloWorld#write(RandomAccessFile) write((RandomAccessFile) file)} method writes
-     * {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes.
+     * {@value HelloWorld#BYTES} bytes to the {@code file}.
      *
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write((RandomAccess) file) writes 12 bytes")
+    @DisplayName("writes 12 bytes")
     @Test
     @畵蛇添足
-    void write_InvokeSetArrayWriteArrayToFile_(@TempDir File tempDir) throws IOException {
+    void _Write12Bytes_(@TempDir File tempDir) throws IOException {
+        // GIVEN: HelloWorld
         var service = service();
-        var tf = createTempFile("tmp", null, tempDir);
-        try (var raf = new RandomAccessFile(tf, "rw")) {
-            var pos = current().nextLong(128);
-            raf.seek(pos);
-            service.write(raf);
-            raf.getFD().sync();
-            // TODO: Assert tf.length() is equals to (pos + 12)
+        var tmp = createTempFile("tmp", null, tempDir);
+        // GIVEN: RandomAccessFile
+        try (var file = new RandomAccessFile(tmp, "rw")) {
+            // WHEN
+            service.write(file);
+            file.getFD().sync();
         }
+        // THEN: tmp.length() is equal to 12(BYTES)
     }
 }
