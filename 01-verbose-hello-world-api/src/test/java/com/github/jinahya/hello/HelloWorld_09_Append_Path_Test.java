@@ -97,7 +97,7 @@ class HelloWorld_09_Append_Path_Test extends HelloWorldTest {
      */
     @DisplayName("returns path")
     @Test
-    void append_ReturnPath_(@TempDir Path tempDir) throws IOException {
+    void _ReturnPath_(@TempDir Path tempDir) throws IOException {
         // GIVEN
         var service = service();
         var path = createTempFile(tempDir, null, null);
