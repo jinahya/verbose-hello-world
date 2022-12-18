@@ -87,6 +87,5 @@ class HelloWorld_02_Write_OutputStream_Test extends HelloWorldTest {
         var stream = mock(OutputStream.class);
         // WHEN
         var actual = service.write(stream);
-        // TODO: Assert that both expected and actual refer to the same object.
     }
 }
