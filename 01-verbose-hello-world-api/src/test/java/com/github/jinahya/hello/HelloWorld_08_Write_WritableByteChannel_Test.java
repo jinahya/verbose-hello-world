@@ -42,14 +42,13 @@ import static org.mockito.Mockito.mock;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_08_Write_WritableByteChannel_Arguments_Test
  */
+@DisplayName("write(WritableByteChannel) arguments")
 @Slf4j
 class HelloWorld_08_Write_WritableByteChannel_Test extends HelloWorldTest {
 
-    // TODO: Remove this stubbing method when you implemented the put(buffer) method!
     @BeforeEach
     void stub_PutBuffer_FillBuffer() {
         var service = service();
-        // https://www.javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#13
         lenient()
                 .doAnswer(i -> {
                     var buffer = i.getArgument(0, ByteBuffer.class);
@@ -64,29 +63,32 @@ class HelloWorld_08_Write_WritableByteChannel_Test extends HelloWorldTest {
     /**
      * Asserts {@link HelloWorld#write(WritableByteChannel) write(channel)} method invokes
      * {@link HelloWorld#put(ByteBuffer) put(buffer)} method with a byte buffer of
-     * {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and writes the buffer to specified
-     * channel.
+     * {@value HelloWorld#BYTES} bytes and writes the buffer to specified channel.
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(channel)"
-                 + " invokes put(buffer[12])"
-                 + ", and writes the buffer to the channel")
+    @DisplayName("-> put(buffer[12])"
+                 + " -> channel.write(buffer)+")
     @Test
-    void write_InvokePutBufferWriteBufferToChannel_() throws IOException {
+    void _InvokePutBufferWriteBufferToChannel_() throws IOException {
+        // GIVEN: HelloWorld
         var service = service();
-        var channel = mock(WritableByteChannel.class);               // <1>
-        var writtenSoFar = new LongAdder();                          // <2>
-        lenient().when(channel.write(notNull())).thenAnswer(i -> {   // <3>
-            var buffer = i.getArgument(0, ByteBuffer.class);         // <4>
-            var written = current().nextInt(buffer.remaining() + 1); // <5>
-            buffer.position(buffer.position() + written);            // <6>
-            writtenSoFar.add(written);                               // <7>
-            return written;                                          // <8>
-        });
-        // TODO: Invoke service.write(channel)
-        // TODO: Verify service invoked, once, put(buffer[12])
-        // TODO: Verify service invoked, at least once, channel.write(buffer)
+        // GIVEN: WritableByteChannel
+        var channel = mock(WritableByteChannel.class);                       // <1>
+        var writtenSoFar = new LongAdder();                                  // <2>
+        lenient().
+                when(channel.write(notNull())).thenAnswer(i -> {             // <3>
+                    var buffer = i.getArgument(0, ByteBuffer.class);         // <4>
+                    var written = current().nextInt(buffer.remaining() + 1); // <5>
+                    buffer.position(buffer.position() + written);            // <6>
+                    writtenSoFar.add(written);                               // <7>
+                    return written;                                          // <8>
+                });
+        // WHEN
+        service.write(channel);
+        // THEN: once, put(buffer[12]) invoked
+        // THEN: at least once, channel.write(buffer) invoked
+        // THEN: 12 bytes are written to the channel
     }
 
     /**
@@ -95,9 +97,10 @@ class HelloWorld_08_Write_WritableByteChannel_Test extends HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(channel) returns channel")
+    @DisplayName("returns channel")
     @Test
-    void write_ReturnChannel_() throws IOException {
+    void _ReturnChannel_() throws IOException {
+        // GIVEN
         var service = service();
         var channel = mock(WritableByteChannel.class);
         lenient()
@@ -108,7 +111,9 @@ class HelloWorld_08_Write_WritableByteChannel_Test extends HelloWorldTest {
                     buffer.position(buffer.limit());
                     return written;
                 });
+        // WHEN
         var actual = service.write(channel);
+        // THEN
         assertSame(channel, actual);
     }
 }
