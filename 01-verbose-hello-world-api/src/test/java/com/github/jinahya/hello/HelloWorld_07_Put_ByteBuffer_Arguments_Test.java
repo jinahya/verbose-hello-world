@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 
+import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.nio.ByteBuffer.allocate;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -37,6 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_07_Put_ByteBuffer_Test
  */
+@DisplayName("put(buffer) arguments")
 @Slf4j
 class HelloWorld_07_Put_ByteBuffer_Arguments_Test extends HelloWorldTest {
 
@@ -44,9 +46,9 @@ class HelloWorld_07_Put_ByteBuffer_Arguments_Test extends HelloWorldTest {
      * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method throws a
      * {@link NullPointerException} when the {@code buffer} argument is {@code null}.
      */
-    @DisplayName("put(null) throws NullPointerException")
+    @DisplayName("[buffer == null] -> NullPointerException")
     @Test
-    void put_ThrowNullPointerException_BufferIsNull() {
+    void _ThrowNullPointerException_BufferIsNull() {
         var service = service();
         ByteBuffer buffer = null;
         assertThrows(NullPointerException.class, () -> service.put(buffer));
@@ -55,15 +57,17 @@ class HelloWorld_07_Put_ByteBuffer_Arguments_Test extends HelloWorldTest {
     /**
      * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method throws a
      * {@link BufferOverflowException} when {@link ByteBuffer#remaining() buffer.remaining} is less
-     * than {@value com.github.jinahya.hello.HelloWorld#BYTES}.
+     * than {@value HelloWorld#BYTES}.
      */
-    @DisplayName("put(buffer[<12]) throws BufferOverflowException")
+    @DisplayName("[buffer.remaining < 12] -> BufferOverflowException")
     @Test
-    void put_ThrowBufferOverflowException_BufferRemainingLessThan12() {
+    void _ThrowBufferOverflowException_BufferRemainingIsLessThan12() {
+        // GIVEN: HelloWorld
         var service = service();
-        var capacity = current().nextInt(HelloWorld.BYTES);
+        // GIVEN: ByteBuffer whose remaining is less than BYTES
+        var capacity = current().nextInt(BYTES);
         var buffer = allocate(capacity);
-        assert buffer.remaining() < HelloWorld.BYTES;
+        // WHEN/THEN
         assertThrows(BufferOverflowException.class, () -> service.put(buffer));
     }
 }
