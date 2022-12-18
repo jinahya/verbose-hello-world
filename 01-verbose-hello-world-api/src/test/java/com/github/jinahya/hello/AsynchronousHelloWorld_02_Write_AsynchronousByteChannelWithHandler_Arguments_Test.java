@@ -37,7 +37,7 @@ import static org.mockito.Mockito.mock;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Test
  */
-@DisplayName("write(channel, handler)")
+@DisplayName("write(channel, handler) arguments")
 @Slf4j
 class AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Arguments_Test
         extends AsynchronousHelloWorldTest {
