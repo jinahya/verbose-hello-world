@@ -29,7 +29,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -47,9 +47,9 @@ class HelloWorld_02_Write_OutputStream_Test extends HelloWorldTest {
     @DisplayName("set(array) returns array")
     @BeforeEach
     void stub_ReturnArray_SetArray() {
-        lenient().
-                when(service().set(any(byte[].class)))  // <1>
-                .thenAnswer(i -> i.getArgument(0));     // <2>
+        doAnswer(i -> i.getArgument(0))
+                .when(service())
+                .set(any(byte[].class));
     }
 
     /**
