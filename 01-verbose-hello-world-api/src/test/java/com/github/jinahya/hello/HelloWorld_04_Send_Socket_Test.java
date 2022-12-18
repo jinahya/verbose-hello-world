@@ -90,6 +90,9 @@ class HelloWorld_04_Send_Socket_Test extends HelloWorldTest {
         var service = service();
         // GIVEN: Socket
         var socket = spy(new Socket());
+        // GIVEN: OutputStream
+        var stream = mock(OutputStream.class);
+        lenient().doReturn(stream).when(socket).getOutputStream();
         // WHEN
         var actual = service.send(socket);
         // THEN

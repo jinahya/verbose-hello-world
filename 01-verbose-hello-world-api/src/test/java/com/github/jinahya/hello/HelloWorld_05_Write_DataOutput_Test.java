@@ -21,6 +21,7 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -32,11 +33,13 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.io.File.createTempFile;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -51,10 +54,20 @@ import static org.mockito.Mockito.verify;
 class HelloWorld_05_Write_DataOutput_Test extends HelloWorldTest {
 
     /**
+     * Stubs {@link HelloWorld#set(byte[]) set(array)} method to return the {@code array} argument.
+     */
+    @DisplayName("set(array) returns array")
+    @BeforeEach
+    void stub_ReturnArray_SetArray() {
+        doAnswer(i -> i.getArgument(0))
+                .when(service())
+                .set(any(byte[].class));
+    }
+
+    /**
      * Asserts {@link HelloWorld#write(DataOutput) write(DataOutput data)} method invokes
-     * {@link HelloWorld#set(byte[]) set(array)} method with an array of
-     * {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes, and writes the array to specified
-     * data output.
+     * {@link HelloWorld#set(byte[]) set(array)} method with an array of {@value HelloWorld#BYTES}
+     * bytes, and writes the array to specified data output.
      *
      * @throws IOException if an I/O error occurs.
      */
@@ -63,79 +76,78 @@ class HelloWorld_05_Write_DataOutput_Test extends HelloWorldTest {
                  + ", and writes the array to data")
     @Test
     void write_InvokeSetArrayWriteArrayToData_() throws IOException {
+        // GIVEN: HelloWorld
         var service = service();
-        var data = mock(DataOutput.class);                         // <1>
-        service.write(data);                                       // <2>
+        // GIVEN: DataOutput
+        var data = mock(DataOutput.class);                      // <1>
+        // WHEN
+        service.write(data);                                    // <2>
+        // THEN: once, set(array[12]) invoked
         verify(service, times(1)).set(arrayCaptor().capture()); // <3>
-        var array = arrayCaptor().getValue();                        // <4>
-        assertNotNull(array);                                        // <5>
-        assertEquals(HelloWorld.BYTES, array.length);                // <6>
-        // TODO: Verify the service invoked output.write(array) once.
+        var array = arrayCaptor().getValue();
+        assertEquals(BYTES, array.length);                      // <4>
+        // THEN: once, data.write(array) invoked
     }
 
     /**
-     * Asserts {@link HelloWorld#write(DataOutput) write(DataOutput output)} method returns the
-     * {@code output} argument.
+     * Asserts {@link HelloWorld#write(DataOutput) write(data)} method returns the {@code data}
+     * argument.
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(DataOutput data) returns output")
+    @DisplayName("write(data) returns data")
     @Test
-    void write_ReturnData_() throws IOException {
+    void _ReturnData_() throws IOException {
+        // GIVEN
         var service = service();
         var data = mock(DataOutput.class);
+        // WHEN
         var actual = service.write(data);
+        // THEN
         assertSame(data, actual);
     }
 
     /**
      * Asserts, redundantly, {@link HelloWorld#write(DataOutput) write(data)} method writes
-     * {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes to given {@code data} argument.
+     * {@value HelloWorld#BYTES} bytes to given {@code data} argument.
      *
-     * @throws IOException if an I/O error occurs.
-     */
-    @DisplayName("write(DataOutput) writes 12 bytes")
-    @Test
-    @畵蛇添足
-    void write_Appends12Bytes_() throws IOException {
-        var service = service();
-        try (var baos = new ByteArrayOutputStream();
-             var dos = new DataOutputStream(baos)) {
-            baos.write(new byte[current().nextInt(2)]); // byte[[0..1]]
-            baos.flush();
-            var size = baos.size();
-            service.write((DataOutput) dos);
-            dos.flush();
-            var expected = size + HelloWorld.BYTES;
-            var actual = baos.size();
-            // TODO: Assert that expected and actual are equal.
-        }
-    }
-
-    /**
-     * Asserts, redundantly, {@link HelloWorld#write(DataOutput) write(DataOutput data)} method
-     * writes {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes to given {@code data}
-     * arguments.
-     *
-     * @param tempDir a temporary directory to test with
      * @throws IOException if an I/O error occurs.
      */
     @DisplayName("write(data) writes 12 bytes")
     @Test
     @畵蛇添足
-    void write_Appends12Bytes_(@TempDir File tempDir) throws IOException {
+    void _Append12Bytes_() throws IOException {
+        // GIVEN
+        var service = service();
+        try (var baos = new ByteArrayOutputStream();
+             var dos = new DataOutputStream(baos)) {
+            // WHEN
+            service.write((DataOutput) dos);
+            dos.flush();
+            // THEN: baos.size() is equals to HelloWorld.BYTES
+        }
+    }
+
+    /**
+     * Asserts, redundantly, {@link HelloWorld#write(DataOutput) write(data)} method writes
+     * {@value HelloWorld#BYTES} bytes to given {@code data} arguments.
+     *
+     * @param tempDir a temporary directory to test with.
+     * @throws IOException if an I/O error occurs.
+     */
+    @DisplayName("write(data) writes 12 bytes")
+    @Test
+    @畵蛇添足
+    void _Append12Bytes_(@TempDir File tempDir) throws IOException {
+        // GIVEN
         var service = service();
         var file = createTempFile("tmp", null, tempDir);
         try (var fos = new FileOutputStream(file);
              var dos = new DataOutputStream(fos)) {
-            fos.write(new byte[current().nextInt(2)]); // byte[[0..1]]
-            fos.flush();
-            var length = file.length();
+            // WHEN
             service.write((DataOutput) dos);
             dos.flush();
-            var expected = length + HelloWorld.BYTES;
-            var actual = file.length();
-            // TODO: Assert that expected and actual are equal.
         }
+        // THEN: file.length() is equal to HelloWorld.BYTES
     }
 }

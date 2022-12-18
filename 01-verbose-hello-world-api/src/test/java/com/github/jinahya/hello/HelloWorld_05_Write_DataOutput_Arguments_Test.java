@@ -45,8 +45,11 @@ class HelloWorld_05_Write_DataOutput_Arguments_Test extends HelloWorldTest {
     @DisplayName("write((DataOutput) null) method throws NullPointerException")
     @Test
     void write_ThrowsNullPointerException_DataIsNull() {
+        // GIVEN: HelloWorld
         var service = service();
+        // GIVEN: DataOutput
         DataOutput data = null;
+        // WHEN/THEN
         assertThrows(NullPointerException.class, () -> service.write(data));
     }
 }
