@@ -85,6 +85,8 @@ class HelloWorld_07_Put_ByteBuffer_Test extends HelloWorldTest {
         }
         assert buffer.hasArray();
         assert buffer.remaining() >= BYTES;
+        var array = buffer.array();
+        var arrayOffset = buffer.arrayOffset();
         var position = buffer.position();
         // WHEN
         service.put(buffer);
