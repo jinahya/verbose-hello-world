@@ -43,9 +43,12 @@ class HelloWorld_04_Send_Socket_Arguments_Test extends HelloWorldTest {
      */
     @DisplayName("send(null) throws NullPointerException")
     @Test
-    void send_ThrowNullPointerException_SocketIsNull() {
+    void _ThrowNullPointerException_SocketIsNull() {
+        // GIVEN: HelloWorld
         var service = service();
+        // GIVEN: Socket
         Socket socket = null;
+        // WHEN/THEN
         assertThrows(NullPointerException.class, () -> service.send(socket));
     }
 }

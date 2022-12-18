@@ -21,6 +21,7 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -28,7 +29,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
 
+import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -43,6 +47,20 @@ import static org.mockito.Mockito.spy;
 class HelloWorld_04_Send_Socket_Test extends HelloWorldTest {
 
     /**
+     * Stubs {@link HelloWorld#write(OutputStream) write(stream)} method to write
+     * {@value HelloWorld#BYTES} bytes to the {@code stream}, and returns the {@code stream}.
+     */
+    @DisplayName("write(stream) writes byte[12] to stream and returns the stream")
+    @BeforeEach
+    void stub_ReturnArray_SetArray() throws IOException {
+        doAnswer(i -> {
+            var stream = i.getArgument(0, OutputStream.class);
+            stream.write(new byte[BYTES]);
+            return stream;
+        }).when(service()).write(any(OutputStream.class));
+    }
+
+    /**
      * Asserts {@link HelloWorld#send(Socket) send(socket)} method invokes the
      * {@link HelloWorld#write(OutputStream) write(stream)} method with
      * {@link Socket#getOutputStream() socket.outputStream}.
@@ -51,15 +69,17 @@ class HelloWorld_04_Send_Socket_Test extends HelloWorldTest {
      */
     @DisplayName("send(socket) invokes write(socket.outputStream)")
     @Test
-    void send_InvokeWriteStreamWithSocketOutputStream_() throws IOException {
+    void _InvokeWriteStreamWithSocketOutputStream_() throws IOException {
+        // GIVEN: HelloWorld
         var service = service();
-        var socket = spy(new Socket());        // <1>
-        var stream = mock(OutputStream.class); // <2>
-        lenient()
-                .doReturn(stream)              // <3>
-                .when(socket).getOutputStream();
-        service.send(socket);                  // <4>
-        // TODO: Verify service invoked write(socket.outputStream)
+        // GIVEN: Socket
+        var socket = spy(new Socket());                            // <1>
+        // GIVEN: OutputStream
+        var stream = mock(OutputStream.class);                     // <2>
+        lenient().doReturn(stream).when(socket).getOutputStream(); // <3>
+        // WHEN
+        service.send(socket);                                      // <4>
+        // THEN: once, write(stream) invoked
     }
 
     /**
@@ -70,13 +90,14 @@ class HelloWorld_04_Send_Socket_Test extends HelloWorldTest {
      */
     @DisplayName("send(socket) returns socket")
     @Test
-    void send_ReturnSocket_() throws IOException {
+    void _ReturnSocket_() throws IOException {
+        // GIVEN: HelloWorld
         var service = service();
-        var expected = spy(new Socket());
-        lenient(). // <1> TODO: Remove!
-                doReturn(mock(OutputStream.class)) // <2>
-                .when(expected).getOutputStream();
-        var actual = service.send(expected);
-        assertSame(expected, actual);
+        // GIVEN: Socket
+        var socket = spy(new Socket());
+        // WHEN
+        var actual = service.send(socket);
+        // THEN
+        assertSame(socket, actual);
     }
 }
