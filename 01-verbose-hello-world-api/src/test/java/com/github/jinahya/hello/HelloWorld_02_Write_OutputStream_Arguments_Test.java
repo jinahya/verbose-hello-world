@@ -47,6 +47,6 @@ class HelloWorld_02_Write_OutputStream_Arguments_Test extends HelloWorldTest {
         var service = service();
         // GIVEN: OutputStream
         OutputStream stream = null;
-        // TODO: Assert service.write(stream) throws a NullPointerException.
+        // THEN: service.write(stream) throws a NullPointerException
     }
 }
