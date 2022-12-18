@@ -21,12 +21,15 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -37,6 +40,17 @@ import static org.mockito.Mockito.mock;
  */
 @Slf4j
 class HelloWorld_02_Write_OutputStream_Test extends HelloWorldTest {
+
+    /**
+     * Stubs {@link HelloWorld#set(byte[]) set(array)} method to return the {@code array} argument.
+     */
+    @DisplayName("set(array) returns array")
+    @BeforeEach
+    void stub_ReturnArray_SetArray() {
+        lenient().
+                when(service().set(any(byte[].class)))  // <1>
+                .thenAnswer(i -> i.getArgument(0));     // <2>
+    }
 
     /**
      * Asserts {@link HelloWorld#write(OutputStream) write(stream)} method invokes
@@ -50,11 +64,11 @@ class HelloWorld_02_Write_OutputStream_Test extends HelloWorldTest {
                  + " invokes set(array[12])"
                  + ", and invokes stream.write(array)")
     @Test
-    void write_InvokeSetArrayAndWriteArrayToStream_() throws IOException {
+    void _InvokeSetArrayAndWriteArrayToStream_() throws IOException {
         var service = service();
         // TODO: Create a mock object of java.io.OutputStream, say 'stream'
         // TODO: Invoke service.write(stream)
-        // TODO: Verify service invoked write(array[12]) once
+        // TODO: Verify service invoked set(array[12]) once
         // TODO: Verify service invoked stream.write(array) once
     }
 
@@ -66,7 +80,7 @@ class HelloWorld_02_Write_OutputStream_Test extends HelloWorldTest {
      */
     @DisplayName("write(stream) returns stream")
     @Test
-    void write_ReturnStream_() throws IOException {
+    void _ReturnStream_() throws IOException {
         var service = service();
         var stream = mock(OutputStream.class);
         var actual = service.write(stream);
