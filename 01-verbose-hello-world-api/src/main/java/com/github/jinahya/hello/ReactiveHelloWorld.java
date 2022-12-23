@@ -20,6 +20,9 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * An interface for generating <a href="#hello-world-bytes">hello-world-bytes</a> to various
  * targets.
@@ -38,4 +41,12 @@ package com.github.jinahya.hello;
 @FunctionalInterface
 public interface ReactiveHelloWorld extends HelloWorld {
 
+    /**
+     * Returns a logger for this interface.
+     *
+     * @return a logger for this interface.
+     */
+    private Logger logger() {
+        return LoggerFactory.getLogger(getClass());
+    }
 }

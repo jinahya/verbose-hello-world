@@ -20,6 +20,9 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.DataOutput;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -55,13 +58,18 @@ import java.util.concurrent.ExecutionException;
 public interface HelloWorld {
 
     /**
+     * Returns a logger for this interface.
+     *
+     * @return a logger for this interface.
+     */
+    private Logger logger() {
+        return LoggerFactory.getLogger(getClass());
+    }
+
+    /**
      * The length of the <a href="#hello-world-bytes">hello-world-bytes</a> which is {@value}.
      */
     int BYTES = 12;
-
-    private System.Logger logger() {
-        return System.getLogger(getClass().getName());
-    }
 
     /**
      * Sets <a href="#hello-world-bytes">hello-world-bytes</a> on specified array starting at

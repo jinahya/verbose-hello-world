@@ -20,6 +20,9 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.AsynchronousFileChannel;
@@ -41,8 +44,13 @@ import java.util.concurrent.FutureTask;
 @FunctionalInterface
 public interface AsynchronousHelloWorld extends HelloWorld {
 
-    private System.Logger logger() {
-        return System.getLogger(getClass().getName());
+    /**
+     * Returns a logger for this interface.
+     *
+     * @return a logger for this interface.
+     */
+    private Logger logger() {
+        return LoggerFactory.getLogger(getClass());
     }
 
     /**
