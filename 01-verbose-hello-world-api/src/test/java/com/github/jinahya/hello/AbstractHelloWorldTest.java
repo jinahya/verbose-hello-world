@@ -31,16 +31,21 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.verification.VerificationMode;
 
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 
+import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.util.Objects.requireNonNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * An abstract class for testing methods defined in {@link HelloWorld} interface.
@@ -67,6 +72,30 @@ abstract class AbstractHelloWorldTest<T extends HelloWorld> {
         lenient().
                 when(service.set(any(), anyInt()))  // <1>
                 .thenAnswer(i -> i.getArgument(0)); // <2>
+    }
+
+    /**
+     * Stubs {@link HelloWorld#put(ByteBuffer) put(buffer)} method to return the {@code buffer}
+     * argument with its {@link ByteBuffer#position() position} increased by
+     * {@value HelloWorld#BYTES}.
+     */
+    void stub_PutBuffer_IncreaseBufferPositionBy12() {
+        lenient().doAnswer(i -> {
+                    var buffer = i.getArgument(0, ByteBuffer.class);
+                    buffer.position(buffer.position() + BYTES);
+                    return buffer;
+                })
+                .when(service)
+                .put(argThat(b -> b != null && b.remaining() >= BYTES));
+    }
+
+    ByteBuffer verify_PutBuffer_Invoked(VerificationMode mode) {
+        verify(service, mode).put(bufferCaptor.capture());
+        return bufferCaptor.getValue();
+    }
+
+    ByteBuffer verify_PutBuffer_Invoked_Once() {
+        return verify_PutBuffer_Invoked(times(1));
     }
 
     //@Spy
