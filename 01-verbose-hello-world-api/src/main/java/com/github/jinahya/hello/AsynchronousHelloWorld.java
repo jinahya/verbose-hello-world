@@ -101,7 +101,6 @@ public interface AsynchronousHelloWorld extends HelloWorld {
      * @param <T>     channel type parameter
      * @param channel the channel to which bytes are written.
      * @return a completable future of {@code channel}.
-     * @see #write(AsynchronousByteChannel)
      */
     default <T extends AsynchronousByteChannel> CompletableFuture<T> writeCompletable(
             T channel) {
@@ -120,7 +119,6 @@ public interface AsynchronousHelloWorld extends HelloWorld {
      * @param <T>     channel type parameter
      * @param channel the channel to which bytes are written.
      * @return a completable future of {@code channel}.
-     * @see #write(AsynchronousByteChannel)
      */
     default <T extends AsynchronousByteChannel> CompletableFuture<T> writeCompletableAsync(
             T channel) {
