@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -67,18 +68,13 @@
     <version.org.jboss.weld.se>${version.org.jboss.weld}</version.org.jboss.weld.se> <!-- weld-se-core -->
     <version.org.junit.jupiter>5.9.1</version.org.junit.jupiter>
     <version.org.mockito>4.9.0</version.org.mockito>
-    <version.org.slf4j>2.0.4</version.org.slf4j>
+    <version.org.slf4j>2.0.6</version.org.slf4j>
     <version.org.springframework>5.3.23</version.org.springframework>
     <version.org.springframework.boot>2.7.5</version.org.springframework.boot>
   </properties>
 
   <dependencyManagement>
     <dependencies>
-      <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-classic</artifactId>
-        <version>1.4.5</version>
-      </dependency>
       <dependency>
         <groupId>com.google.dagger</groupId>
         <artifactId>dagger</artifactId>
@@ -191,6 +187,11 @@
         <version>${version.org.slf4j}</version>
       </dependency>
       <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-jdk-platform-logging</artifactId>
+        <version>${version.org.slf4j}</version>
+      </dependency>
+      <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-framework-bom</artifactId>
         <version>${version.org.springframework}</version>
@@ -200,6 +201,11 @@
     </dependencies>
   </dependencyManagement>
   <dependencies>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>1.4.5</version>
+    </dependency>
     <dependency>
       <groupId>jakarta.validation</groupId>
       <artifactId>jakarta.validation-api</artifactId>
@@ -243,6 +249,24 @@
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jul-to-slf4j</artifactId>
+      <version>${version.org.slf4j}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${version.org.slf4j}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-jdk-platform-logging</artifactId>
+      <version>${version.org.slf4j}</version>
+      <scope>runtime</scope>
     </dependency>
   </dependencies>
 

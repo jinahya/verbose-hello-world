@@ -29,10 +29,12 @@ import java.io.RandomAccessFile;
 import java.net.Socket;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
+import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
+import java.util.concurrent.ExecutionException;
 
 /**
  * An interface for generating <a href="#hello-world-bytes">hello-world-bytes</a> to various
@@ -308,5 +310,29 @@ public interface HelloWorld {
         }
         // TODO: Implement!
         return path;
+    }
+
+    /**
+     * Writes the <a href="hello-world-bytes">hello-world-bytes</a> to specified channel.
+     *
+     * @param <T>     channel type parameter
+     * @param channel the channel to which bytes are written.
+     * @return given {@code channel}.
+     * @throws InterruptedException if interrupted while executing.
+     * @throws ExecutionException   if failed to execute.
+     * @see #put(ByteBuffer)
+     * @see AsynchronousByteChannel#write(ByteBuffer)
+     */
+    default <T extends AsynchronousByteChannel> T write(T channel)
+            throws InterruptedException, ExecutionException {
+        if (channel == null) {
+            throw new NullPointerException("channel is null");
+        }
+        var buffer = put(ByteBuffer.allocate(BYTES)).flip();
+        while (buffer.hasRemaining()) {
+            var future = channel.write(buffer);
+            var written = future.get();
+        }
+        return channel;
     }
 }
