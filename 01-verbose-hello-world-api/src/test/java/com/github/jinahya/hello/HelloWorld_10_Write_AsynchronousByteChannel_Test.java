@@ -110,7 +110,9 @@ class HelloWorld_10_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
             var buffer = i.getArgument(0, ByteBuffer.class);
             var written = buffer.remaining();
             buffer.position(buffer.position() + written);
-            return written;
+            var future = mock(Future.class);
+            lenient().doReturn(written).when(future).get();
+            return future;
         });
         // WHEN
         var result = service.write(channel);
