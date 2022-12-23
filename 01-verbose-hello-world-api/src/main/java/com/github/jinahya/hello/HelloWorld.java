@@ -60,7 +60,7 @@ public interface HelloWorld {
     int BYTES = 12;
 
     private System.Logger logger() {
-        return null;
+        return System.getLogger(getClass().getName());
     }
 
     /**
