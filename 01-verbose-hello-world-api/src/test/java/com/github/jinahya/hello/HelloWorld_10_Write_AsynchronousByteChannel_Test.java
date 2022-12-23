@@ -67,7 +67,7 @@ class HelloWorld_10_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
      */
     @DisplayName("-> put(buffer[12]) -> channel.write(buffer)+")
     @Test
-    void __() throws InterruptedException, ExecutionException {
+    void _PutBufferWriteBufferToChannel_() throws InterruptedException, ExecutionException {
         // GIVEN: HelloWorld
         var service = service();
         // GIVEN: AsynchronousByteChannel
