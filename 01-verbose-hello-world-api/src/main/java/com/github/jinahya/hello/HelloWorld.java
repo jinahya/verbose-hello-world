@@ -59,6 +59,10 @@ public interface HelloWorld {
      */
     int BYTES = 12;
 
+    private System.Logger logger() {
+        return null;
+    }
+
     /**
      * Sets <a href="#hello-world-bytes">hello-world-bytes</a> on specified array starting at
      * specified position.
