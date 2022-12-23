@@ -41,6 +41,10 @@ import java.util.concurrent.FutureTask;
 @FunctionalInterface
 public interface AsynchronousHelloWorld extends HelloWorld {
 
+    private System.Logger logger() {
+        return System.getLogger(getClass().getName());
+    }
+
     /**
      * Writes, asynchronously, the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>
      * to specified channel using specified executor.
