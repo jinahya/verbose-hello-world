@@ -24,12 +24,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static com.github.jinahya.hello.HelloWorld.BYTES;
+
 /**
  * A class for unit-testing {@link HelloWorld#set(byte[])} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_01_Set_Array_Arguments_Test
  */
+@DisplayName("set(array)")
 @Slf4j
 class HelloWorld_01_Set_Array_Test extends HelloWorldTest {
 
@@ -41,11 +44,12 @@ class HelloWorld_01_Set_Array_Test extends HelloWorldTest {
     @DisplayName("invokes set(array, 0)")
     @Test
     void _InvokeSetArrayWithArrayAndZero_() {
-        // GIVEN
+        // GIVEN: HelloWorld
         var service = service();
-        var array = new byte[HelloWorld.BYTES];
+        // GIVEN: array
+        var array = new byte[BYTES];
         // WHEN
-        // TODO: Invoke service.set(array)
+        // TODO: Invokes service.set(array)
         // THEN
         // TODO: Verify set(array, 0) invoked
     }
@@ -57,9 +61,10 @@ class HelloWorld_01_Set_Array_Test extends HelloWorldTest {
     @DisplayName("returns array")
     @Test
     void _ReturnArray_() {
-        // GIVEN
+        // GIVEN: HelloWorld
         var service = service();
-        var array = new byte[HelloWorld.BYTES];
+        // GIVEN: array
+        var array = new byte[BYTES];
         // WHEN
         var actual = service.set(array);
         // THEN

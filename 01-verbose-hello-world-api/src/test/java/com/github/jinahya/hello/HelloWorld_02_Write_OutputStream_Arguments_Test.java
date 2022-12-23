@@ -33,6 +33,7 @@ import java.io.OutputStream;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_02_Write_OutputStream_Test
  */
+@DisplayName("write(stream) arguments")
 @Slf4j
 class HelloWorld_02_Write_OutputStream_Arguments_Test extends HelloWorldTest {
 

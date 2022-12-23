@@ -35,7 +35,6 @@ import java.io.IOException;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.io.File.createTempFile;
-import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
@@ -50,13 +49,13 @@ import static org.mockito.Mockito.verify;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_05_Write_DataOutput_Arguments_Test
  */
+@DisplayName("write(data)")
 @Slf4j
 class HelloWorld_05_Write_DataOutput_Test extends HelloWorldTest {
 
     /**
      * Stubs {@link HelloWorld#set(byte[]) set(array)} method to return the {@code array} argument.
      */
-    @DisplayName("set(array) returns array")
     @BeforeEach
     void stub_ReturnArray_SetArray() {
         doAnswer(i -> i.getArgument(0))
@@ -65,17 +64,16 @@ class HelloWorld_05_Write_DataOutput_Test extends HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#write(DataOutput) write(DataOutput data)} method invokes
+     * Asserts {@link HelloWorld#write(DataOutput) write(data)} method invokes
      * {@link HelloWorld#set(byte[]) set(array)} method with an array of {@value HelloWorld#BYTES}
      * bytes, and writes the array to specified data output.
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(data)"
-                 + " invokes set(array[12])"
-                 + ", and writes the array to data")
+    @DisplayName("invokes set(array[12])"
+                 + ", invokes data.write(array)")
     @Test
-    void write_InvokeSetArrayWriteArrayToData_() throws IOException {
+    void _InvokeSetArrayWriteArrayToData_() throws IOException {
         // GIVEN: HelloWorld
         var service = service();
         // GIVEN: DataOutput
@@ -95,7 +93,7 @@ class HelloWorld_05_Write_DataOutput_Test extends HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(data) returns data")
+    @DisplayName("returns data")
     @Test
     void _ReturnData_() throws IOException {
         // GIVEN
@@ -113,7 +111,7 @@ class HelloWorld_05_Write_DataOutput_Test extends HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(data) writes 12 bytes")
+    @DisplayName("writes 12 bytes")
     @Test
     @畵蛇添足
     void _Append12Bytes_() throws IOException {
@@ -135,14 +133,15 @@ class HelloWorld_05_Write_DataOutput_Test extends HelloWorldTest {
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(data) writes 12 bytes")
+    @DisplayName("appends 12 bytes to a file")
     @Test
     @畵蛇添足
     void _Append12Bytes_(@TempDir File tempDir) throws IOException {
-        // GIVEN
+        // GIVEN: HelloWorld
         var service = service();
         var file = createTempFile("tmp", null, tempDir);
         try (var fos = new FileOutputStream(file);
+             // GIVEN: DataOutput
              var dos = new DataOutputStream(fos)) {
             // WHEN
             service.write((DataOutput) dos);

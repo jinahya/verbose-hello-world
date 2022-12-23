@@ -33,6 +33,7 @@ import static java.util.concurrent.ThreadLocalRandom.current;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_01_Set_Array_Test
  */
+@DisplayName("set(array) arguments")
 @Slf4j
 class HelloWorld_01_Set_Array_Arguments_Test extends HelloWorldTest {
 
@@ -43,8 +44,9 @@ class HelloWorld_01_Set_Array_Arguments_Test extends HelloWorldTest {
     @DisplayName("set(null) throws NullPointerException")
     @Test
     void _ThrowNullPointerException_ArrayIsNull() {
-        // GIVEN
+        // GIVEN: HelloWorld
         var service = service();
+        // GIVEN: array
         byte[] array = null;
         // WHEN/THEN
         // TODO: Assert service.set(array) throws a NullPointerException.
@@ -58,8 +60,9 @@ class HelloWorld_01_Set_Array_Arguments_Test extends HelloWorldTest {
     @DisplayName("set(array[<12]) throws IndexOutOfBoundsException")
     @Test
     void _ThrowIndexOutOfBoundsException_ArrayIsNotLongEnough() {
-        // GIVEN
+        // GIVEN: HelloWorld
         var service = service();
+        // GIVEN: array
         var array = new byte[current().nextInt(BYTES)];
         // WHEN/THEN
         // TODO: Assert service.set(array) throws an IndexOutOfBoundsException.

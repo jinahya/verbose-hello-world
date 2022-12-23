@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_07_Put_ByteBuffer_Test
  */
-@DisplayName("put(buffer) arguments")
+@DisplayName("put(ByteBuffer) arguments")
 @Slf4j
 class HelloWorld_07_Put_ByteBuffer_Arguments_Test extends HelloWorldTest {
 
@@ -49,8 +49,11 @@ class HelloWorld_07_Put_ByteBuffer_Arguments_Test extends HelloWorldTest {
     @DisplayName("[buffer == null] -> NullPointerException")
     @Test
     void _ThrowNullPointerException_BufferIsNull() {
+        // GIVEN: HelloWorld
         var service = service();
+        // GIVEN: ByteBuffer
         ByteBuffer buffer = null;
+        // WHEN/THEN
         assertThrows(NullPointerException.class, () -> service.put(buffer));
     }
 
@@ -65,8 +68,7 @@ class HelloWorld_07_Put_ByteBuffer_Arguments_Test extends HelloWorldTest {
         // GIVEN: HelloWorld
         var service = service();
         // GIVEN: ByteBuffer whose remaining is less than BYTES
-        var capacity = current().nextInt(BYTES);
-        var buffer = allocate(capacity);
+        var buffer = allocate(current().nextInt(BYTES));
         // WHEN/THEN
         assertThrows(BufferOverflowException.class, () -> service.put(buffer));
     }

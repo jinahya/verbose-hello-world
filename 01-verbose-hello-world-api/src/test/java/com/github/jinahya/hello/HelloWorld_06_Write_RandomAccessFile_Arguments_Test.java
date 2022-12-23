@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_06_Write_RandomAccessFile_Test
  */
-@DisplayName("write(RandomAccessFile) arguments")
+@DisplayName("write(RandomAccessFile file) arguments")
 @Slf4j
 class HelloWorld_06_Write_RandomAccessFile_Arguments_Test extends HelloWorldTest {
 

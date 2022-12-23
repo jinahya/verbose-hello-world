@@ -34,6 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_04_Send_Socket_Test
  */
+@DisplayName("send(socket) arguments")
 @Slf4j
 class HelloWorld_04_Send_Socket_Arguments_Test extends HelloWorldTest {
 

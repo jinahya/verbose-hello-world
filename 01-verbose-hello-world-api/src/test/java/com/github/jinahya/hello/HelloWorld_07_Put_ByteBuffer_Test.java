@@ -28,6 +28,7 @@ import java.nio.ByteBuffer;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.nio.ByteBuffer.allocate;
+import static java.nio.ByteBuffer.allocateDirect;
 import static java.nio.ByteBuffer.wrap;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -40,17 +41,17 @@ import static org.mockito.Mockito.spy;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_07_Put_ByteBuffer_Arguments_Test
  */
-@DisplayName("put(buffer)")
+@DisplayName("put(ByteBuffer)")
 @Slf4j
 class HelloWorld_07_Put_ByteBuffer_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method, when the buffer has a backing
-     * array, invokes {@link HelloWorld#set(byte[], int) set(array, index)} method with
-     * {@code buffer.array} and ({@code buffer.arrayOffset + buffer.position}) and asserts that the
+     * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method, when the {@code buffer} has a
+     * backing array, invokes {@link HelloWorld#set(byte[], int) set(array, index)} method with
+     * {@code buffer.array} and ({@code buffer.arrayOffset + buffer.position}), and asserts that the
      * {@code buffer.position} is increased by {@value HelloWorld#BYTES}.
      */
-    @DisplayName("[hasArray()]"
+    @DisplayName("[.hasArray()]"
                  + " -> set(.array, .arrayOffset + .position)"
                  + " -> .position += 12")
     @Test
@@ -100,21 +101,22 @@ class HelloWorld_07_Put_ByteBuffer_Test extends HelloWorldTest {
      * method with an array of {@value HelloWorld#BYTES} bytes, and puts the array to
      * {@code buffer}.
      */
-    @DisplayName("[!hasArray()]"
+    @DisplayName("[!.hasArray()]"
                  + " -> set(array[12])"
                  + " -> .put(array)")
     @Test
-    void put_InvokeSetArrayPutArrayToBuffer_BufferHasNoBackingArray() {
+    void _InvokeSetArrayPutArrayToBuffer_BufferHasNoBackingArray() {
         // GIVEN: HelloWorld
         var service = service();
         // GIVEN: ByteBuffer
         var capacity = current().nextInt(BYTES) + BYTES;
-        var buffer = spy(ByteBuffer.allocateDirect(capacity));
+        var buffer = spy(allocateDirect(capacity));
         assumeFalse(buffer.hasArray(), "a direct buffer has a backing array");
         if (buffer.limit() > BYTES) {
             buffer.position(current().nextInt(buffer.limit() - BYTES));
         }
         assert buffer.remaining() >= BYTES;
+        assert !buffer.hasArray();
         var position = buffer.position();
         // WHEN
         service.put(buffer);

@@ -31,6 +31,8 @@ import java.net.Socket;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.isNotNull;
+import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
@@ -42,17 +44,19 @@ import static org.mockito.Mockito.spy;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_04_Send_Socket_Arguments_Test
  */
+@DisplayName("send(socket)")
 @Slf4j
 class HelloWorld_04_Send_Socket_Test extends HelloWorldTest {
 
     /**
-     * Stubs {@link HelloWorld#write(OutputStream) write(stream)} method returns the {@code stream}
-     * argument.
+     * Stubs {@link HelloWorld#write(OutputStream) write(stream)} method to return the
+     * {@code stream} argument.
      */
-    @DisplayName("write(stream) returns stream")
     @BeforeEach
     void stub_ReturnArray_SetArray() throws IOException {
-        doAnswer(i -> i.getArgument(0)).when(service()).write(any(OutputStream.class));
+        doAnswer(i -> i.getArgument(0))
+                .when(service())
+                .write(any(OutputStream.class));
     }
 
     /**
@@ -62,7 +66,7 @@ class HelloWorld_04_Send_Socket_Test extends HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("send(socket) invokes write(socket.outputStream)")
+    @DisplayName("invokes write(socket.outputStream)")
     @Test
     void _InvokeWriteStreamWithSocketOutputStream_() throws IOException {
         // GIVEN: HelloWorld
@@ -83,7 +87,7 @@ class HelloWorld_04_Send_Socket_Test extends HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("send(socket) returns socket")
+    @DisplayName("returns socket")
     @Test
     void _ReturnSocket_() throws IOException {
         // GIVEN: HelloWorld

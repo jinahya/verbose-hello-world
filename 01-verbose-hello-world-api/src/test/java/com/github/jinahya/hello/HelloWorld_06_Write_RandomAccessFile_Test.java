@@ -47,7 +47,7 @@ import static org.mockito.Mockito.verify;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_06_Write_RandomAccessFile_Arguments_Test
  */
-@DisplayName("write(RandomAccessFile)")
+@DisplayName("write(RandomAccessFile file)")
 @Slf4j
 class HelloWorld_06_Write_RandomAccessFile_Test extends HelloWorldTest {
 
@@ -63,15 +63,15 @@ class HelloWorld_06_Write_RandomAccessFile_Test extends HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#write(RandomAccessFile) write((RandomAccessFile) file)} method
-     * invokes {@link HelloWorld#set(byte[]) set(byte[])} method with an array of
-     * {@value HelloWorld#BYTES} bytes, and invokes {@link RandomAccessFile#write(byte[])} method on
-     * the {@code file} argument with the array.
+     * Asserts {@link HelloWorld#write(RandomAccessFile) write(file)} method invokes
+     * {@link HelloWorld#set(byte[]) set(array)} method with an array of {@value HelloWorld#BYTES}
+     * bytes, and invokes {@link RandomAccessFile#write(byte[])} method on the {@code file} argument
+     * with the array.
      *
      * @throws IOException if an I/O error occurs.
      */
     @DisplayName("invokes set(array[12])"
-                 + ", file.write(array)")
+                 + ", invokes file.write(array)")
     @Test
     void _InvokeSetArrayWriteArrayToFile_() throws IOException {
         // GIVEN: HelloWorld
@@ -89,8 +89,8 @@ class HelloWorld_06_Write_RandomAccessFile_Test extends HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#write(RandomAccessFile) write((RandomAccessFile) file)} method
-     * returns the {@code file} argument.
+     * Asserts {@link HelloWorld#write(RandomAccessFile) write(file)} method returns the
+     * {@code file} argument.
      *
      * @throws IOException if an I/O error occurs.
      */
@@ -108,8 +108,7 @@ class HelloWorld_06_Write_RandomAccessFile_Test extends HelloWorldTest {
     }
 
     /**
-     * Asserts, redundantly,
-     * {@link HelloWorld#write(RandomAccessFile) write((RandomAccessFile) file)} method writes
+     * Asserts, redundantly, {@link HelloWorld#write(RandomAccessFile) write(file)} method writes
      * {@value HelloWorld#BYTES} bytes to the {@code file}.
      *
      * @param tempDir a temporary directory to test with.

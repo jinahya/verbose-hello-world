@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -42,6 +43,7 @@ import static org.mockito.Mockito.doAnswer;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_03_Append_File_Arguments_Test
  */
+@DisplayName("append(file)")
 @Slf4j
 class HelloWorld_03_Append_File_Test extends HelloWorldTest {
 
@@ -49,12 +51,13 @@ class HelloWorld_03_Append_File_Test extends HelloWorldTest {
      * Stubs {@link HelloWorld#write(OutputStream) write(stream)} method to write
      * {@value HelloWorld#BYTES} bytes to the {@code stream}, and returns the {@code stream}.
      */
-    @DisplayName("write(stream) writes byte[12] to stream and returns the stream")
     @BeforeEach
     void stub_ReturnArray_SetArray() throws IOException {
         doAnswer(i -> {
             var stream = i.getArgument(0, OutputStream.class);
-            stream.write(new byte[BYTES]);
+            for (int j = 0; j < BYTES; j++) {
+                stream.write(0);
+            }
             return stream;
         }).when(service()).write(any(OutputStream.class));
     }
@@ -62,14 +65,13 @@ class HelloWorld_03_Append_File_Test extends HelloWorldTest {
     /**
      * Asserts {@link HelloWorld#append(File) append(file)} method invokes
      * {@link HelloWorld#write(OutputStream) write(stream)} method with an instance of
-     * {@link java.io.FileOutputStream}, and asserts
-     * {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes are appended to the {@code file}.
+     * {@link java.io.FileOutputStream}, and asserts {@value HelloWorld#BYTES} bytes are appended to
+     * the {@code file}.
      *
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("append(file)"
-                 + " invokes write(FileOutputStream)"
+    @DisplayName("invokes write(FileOutputStream)"
                  + ", 12 bytes are appended to the file")
     @Test
     void _InvokeWriteStreamAnd12BytesAppended_(@TempDir File tempDir) throws IOException {
@@ -90,7 +92,7 @@ class HelloWorld_03_Append_File_Test extends HelloWorldTest {
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("append(file) returns file")
+    @DisplayName("returns file")
     @Test
     void _ReturnFile_(@TempDir File tempDir) throws IOException {
         // GIVEN: HelloWorld

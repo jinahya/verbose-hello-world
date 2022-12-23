@@ -38,13 +38,13 @@ import static org.mockito.Mockito.mock;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_02_Write_OutputStream_Arguments_Test
  */
+@DisplayName("write(stream)")
 @Slf4j
 class HelloWorld_02_Write_OutputStream_Test extends HelloWorldTest {
 
     /**
      * Stubs {@link HelloWorld#set(byte[]) set(array)} method to return the {@code array} argument.
      */
-    @DisplayName("set(array) returns array")
     @BeforeEach
     void stub_ReturnArray_SetArray() {
         doAnswer(i -> i.getArgument(0))
@@ -60,16 +60,20 @@ class HelloWorld_02_Write_OutputStream_Test extends HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(stream)"
-                 + " invokes set(array[12])"
-                 + ", and invokes stream.write(array)")
+    @DisplayName("invokes set(array[12])"
+                 + ", invokes stream.write(array)")
     @Test
     void _InvokeSetArrayAndWriteArrayToStream_() throws IOException {
+        // GIVEN: HelloWorld
         var service = service();
+        // GIVEN: OutputStream
         // TODO: Create a mock object of java.io.OutputStream, say 'stream'
+        // WHEN
         // TODO: Invoke service.write(stream)
-        // TODO: Verify service invoked set(array[12]) once
-        // TODO: Verify service invoked stream.write(array) once
+        // THEN: once, set(array)
+        // TODO: Verify service invoked set(array[12])
+        // THEN: once, write(array)
+        // TODO: Verify service invoked stream.write(array)
     }
 
     /**
@@ -78,7 +82,7 @@ class HelloWorld_02_Write_OutputStream_Test extends HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("write(stream) returns stream")
+    @DisplayName("returns stream")
     @Test
     void _ReturnStream_() throws IOException {
         // GIVEN: HelloWorld
@@ -88,5 +92,6 @@ class HelloWorld_02_Write_OutputStream_Test extends HelloWorldTest {
         // WHEN
         var actual = service.write(stream);
         // THEN: actual is same as stream
+        // TODO: Verify actual is same as stream
     }
 }

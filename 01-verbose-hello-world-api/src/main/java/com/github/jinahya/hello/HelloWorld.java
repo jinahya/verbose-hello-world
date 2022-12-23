@@ -93,7 +93,7 @@ public interface HelloWorld {
      * @throws NullPointerException      if {@code array} is {@code null}.
      * @throws IndexOutOfBoundsException if {@code array.length} is less than {@link #BYTES}.
      * @implSpec The default implementation invokes {@link #set(byte[], int) set(array, index)}
-     * method with specified {@code array} and {@code 0}.
+     * method with {@code array} and {@code 0}, and returns the {@code array}.
      * @see #set(byte[], int)
      */
     default byte[] set(byte[] array) {
@@ -110,8 +110,9 @@ public interface HelloWorld {
      * @throws NullPointerException if {@code stream} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @implSpec The default implementation invokes {@link #set(byte[]) set(array)} method with an
-     * array of {@value #BYTES} bytes, and writes the array to {@code stream} by invoking
-     * {@link OutputStream#write(byte[])} on {@code stream} method with the array.
+     * array of {@value #BYTES} bytes, writes the array to {@code stream} by invoking
+     * {@link OutputStream#write(byte[])} on {@code stream} method with the array, and returns the
+     * {@code stream}.
      * @see #set(byte[])
      * @see OutputStream#write(byte[])
      */
@@ -123,14 +124,14 @@ public interface HelloWorld {
     /**
      * Appends <a href="#hello-world-bytes">hello-world-bytes</a> to the end of specified file.
      *
-     * @param <T>  channel type parameter
+     * @param <T>  file type parameter
      * @param file the file to which bytes are appended.
      * @return given {@code file}.
      * @throws NullPointerException if {@code file} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @implSpec The default implementation creates a {@link FileOutputStream} from the {@code file}
-     * as {@link FileOutputStream#FileOutputStream(File, boolean) appending mode}, and invokes
-     * {@link #write(OutputStream)} method with the stream.
+     * as {@link FileOutputStream#FileOutputStream(File, boolean) appending mode}, invokes
+     * {@link #write(OutputStream)} method with the stream, and returns the {@code file}.
      * @see java.io.FileOutputStream#FileOutputStream(File, boolean)
      * @see #write(OutputStream)
      */
@@ -172,8 +173,9 @@ public interface HelloWorld {
      * @throws NullPointerException if {@code data} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @implSpec The default implementation invokes {@link #set(byte[])} method with an array of
-     * {@value #BYTES} bytes, and writes the array to specified data output by invoking
-     * {@link DataOutput#write(byte[])} method on {@code data} with the {@code array}.
+     * {@value #BYTES} bytes, writes the array to specified data output by invoking
+     * {@link DataOutput#write(byte[])} method on {@code data} with the {@code array}, and returns
+     * the {@code data}.
      * @see #set(byte[])
      * @see DataOutput#write(byte[])
      */
@@ -191,14 +193,15 @@ public interface HelloWorld {
      * Writes <a href="#hello-world-bytes">hello-world-bytes</a> to specified random access file
      * starting at its current file pointer.
      *
-     * @param <T>  channel type parameter
+     * @param <T>  random access file type parameter
      * @param file the random access file to which bytes are written.
      * @return given {@code file}.
      * @throws NullPointerException if {@code file} argument is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @implSpec The default implementation invokes {@link #set(byte[])} method with an array of
-     * {@value #BYTES} bytes, and writes the array to specified random access file by invoking
-     * {@link DataOutput#write(byte[])} method on {@code file} with the array.
+     * {@value #BYTES} bytes, writes the array to specified random access file by invoking
+     * {@link DataOutput#write(byte[])} method on {@code file} with the array, and returns the
+     * {@code file}.
      * @see #set(byte[])
      * @see RandomAccessFile#write(byte[])
      */
@@ -213,7 +216,8 @@ public interface HelloWorld {
 
     /**
      * Puts <a href="#hello-world-bytes">hello-world-bytes</a> on specified byte buffer.
-     * <p>The buffer's position, on successful return, is incremented by {@value #BYTES}.
+     * <p>
+     * The buffer's position, on successful return, is incremented by {@value #BYTES}.
      * <pre>
      * Given,
      *   0    &lt;= position                                                 &lt;= limit    &lt;= capacity
@@ -228,7 +232,7 @@ public interface HelloWorld {
      *                                                           |-remaining-|
      * </pre>
      *
-     * @param <T>    channel type parameter
+     * @param <T>    buffer type parameter
      * @param buffer the byte buffer on which bytes are put.
      * @return given {@code buffer}.
      * @throws NullPointerException    if {@code buffer} is {@code null}.
@@ -236,10 +240,10 @@ public interface HelloWorld {
      *                                 than {@value #BYTES}.
      * @implSpec The default implementation, if specified buffer
      * {@link ByteBuffer#hasArray() has a backing-array}, invokes
-     * {@link #set(byte[], int) #set(array, index)} with the buffer"s backing-array and
-     * ({@code buffer.arrayOffset} + {@code buffer.position}) and then manually increments the
+     * {@link #set(byte[], int) #set(array, index)} method with the buffer"s backing-array and
+     * ({@code buffer.arrayOffset} + {@code buffer.position}), and then manually increments the
      * buffer"s position by {@value #BYTES}. Otherwise, this method invokes
-     * {@link #set(byte[]) #set(array)} method with an array of {@value #BYTES} bytes and puts the
+     * {@link #set(byte[]) #set(array)} method with an array of {@value #BYTES} bytes, and puts the
      * array on the buffer by invoking {@link ByteBuffer#put(byte[])} method on {@code buffer} with
      * the array.
      * @see ByteBuffer#hasArray()
@@ -274,9 +278,9 @@ public interface HelloWorld {
      * @throws NullPointerException if {@code channel} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @implSpec The default implementation invokes {@link #put(ByteBuffer)} method with a buffer of
-     * {@value #BYTES} bytes, flips the buffer, and writes the buffer to {@code channel} by
-     * continuously invoking {@link WritableByteChannel#write(ByteBuffer)} method on {@code channel}
-     * with the buffer while the buffer has remaining.
+     * {@value #BYTES} bytes, writes the buffer to {@code channel} by continuously invoking
+     * {@link WritableByteChannel#write(ByteBuffer)} method on {@code channel} with the buffer while
+     * the buffer has remaining, and returns the {@code channel}.
      * @see #put(ByteBuffer)
      * @see ByteBuffer#flip()
      * @see ByteBuffer#hasRemaining()
@@ -291,17 +295,17 @@ public interface HelloWorld {
     }
 
     /**
-     * Appends <a href="#hello-world-bytes">hello-world-bytes</a> to the end of specified path. The
-     * length of the file, on successful return, is increased by {@value #BYTES}.
+     * Appends <a href="#hello-world-bytes">hello-world-bytes</a> to the end of specified path to a
+     * file. The length of the file, on successful return, is increased by {@value #BYTES}.
      *
-     * @param <T>  channel type parameter
+     * @param <T>  path type parameter
      * @param path the path a file to which bytes are appended.
      * @return given {@code path}.
      * @throws NullPointerException if {@code path} is {@code null}.
      * @throws IOException          if an I/O error occurs.
-     * @implSpec The default implementation opens a {@link FileChannel} from specified path in
-     * {@link java.nio.file.StandardOpenOption#APPEND appending mode} and invokes
-     * {@link #write(WritableByteChannel)} method with it.
+     * @implSpec The default implementation opens a {@link FileChannel} from {@code path} in
+     * {@link java.nio.file.StandardOpenOption#APPEND appending mode}, invokes
+     * {@link #write(WritableByteChannel)} method with it, and return {@code path}.
      * @see FileChannel#open(Path, OpenOption...)
      * @see #write(WritableByteChannel)
      */
