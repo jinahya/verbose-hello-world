@@ -62,7 +62,7 @@ public interface HelloWorld {
      *
      * @return a logger for this interface.
      */
-    private Logger logger() {
+    private Logger log() {
         return LoggerFactory.getLogger(getClass());
     }
 
