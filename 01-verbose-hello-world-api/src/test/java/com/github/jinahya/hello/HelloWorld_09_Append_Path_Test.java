@@ -27,7 +27,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
-import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.file.Path;
 
@@ -52,11 +51,10 @@ class HelloWorld_09_Append_Path_Test extends HelloWorldTest {
     @BeforeEach
     void stub_WriteChannel_Write12Bytes() throws IOException {
         var service = service();
-        lenient()
-                .doAnswer(i -> {
+        lenient().doAnswer(i -> {
                     var channel = i.getArgument(0, WritableByteChannel.class);
-                    for (var buffer = allocate(BYTES); buffer.hasRemaining(); ) {
-                        channel.write(buffer);
+                    for (var b = allocate(BYTES); b.hasRemaining(); ) {
+                        channel.write(b);
                     }
                     return channel;
                 })
@@ -76,7 +74,7 @@ class HelloWorld_09_Append_Path_Test extends HelloWorldTest {
     @DisplayName("-> write(FileChannel)"
                  + " -> 12 bytes are appended")
     @Test
-    void _InvokeWriteChannel12BytesWritten_(@TempDir Path tempDir) throws IOException {
+    void _InvokeWriteChannel12BytesAppended_(@TempDir Path tempDir) throws IOException {
         // GIVEN: HelloWorld
         var service = service();
         // GIVEN: Path
@@ -98,8 +96,9 @@ class HelloWorld_09_Append_Path_Test extends HelloWorldTest {
     @DisplayName("returns path")
     @Test
     void _ReturnPath_(@TempDir Path tempDir) throws IOException {
-        // GIVEN
+        // GIVEN: HelloWorld
         var service = service();
+        // GIVEN: Path
         var path = createTempFile(tempDir, null, null);
         // WHEN
         var actual = service.append(path);
