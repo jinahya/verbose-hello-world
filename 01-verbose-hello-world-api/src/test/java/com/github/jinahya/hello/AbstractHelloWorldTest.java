@@ -33,6 +33,7 @@ import org.mockito.Captor;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.verification.VerificationMode;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
@@ -96,6 +97,15 @@ abstract class AbstractHelloWorldTest<T extends HelloWorld> {
 
     ByteBuffer verify_PutBuffer_Invoked_Once() {
         return verify_PutBuffer_Invoked(times(1));
+    }
+
+    WritableByteChannel verify_WriteChannel_Invoked(VerificationMode mode) throws IOException {
+        verify(service, mode).write(channelCaptor.capture());
+        return channelCaptor.getValue();
+    }
+
+    WritableByteChannel verify_WriteChannel_Invoked_Once() throws IOException {
+        return verify_WriteChannel_Invoked(times(1));
     }
 
     //@Spy

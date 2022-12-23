@@ -86,8 +86,11 @@ class HelloWorld_10_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
         // WHEN
         service.write(channel);
         // THEN: put(buffer[12]) invoked
-        var buffer = verify_PutBuffer_Invoked_Once();
-        assertEquals(BYTES, buffer.capacity());
+        {
+            verify(service).put(bufferCaptor().capture());
+            var buffer = bufferCaptor().getValue();
+            assertEquals(BYTES, buffer.capacity());
+        }
         // THEN: at least once, channel.write(buffer) invoked
         // THEN: 12 bytes are written
     }
