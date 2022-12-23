@@ -25,6 +25,7 @@ import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.Objects;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
@@ -56,10 +57,11 @@ public interface AsynchronousHelloWorld extends HelloWorld {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(executor, "executor is null");
         var buffer = put(ByteBuffer.allocate(BYTES)).flip();
-        FutureTask<T> command = new FutureTask<>(() -> {
+        Callable<T> callable = () -> {
             // TODO: Implement!
             return null;
-        }) {
+        };
+        FutureTask<T> command = new FutureTask<>(callable) {
             @Override
             public T get() throws InterruptedException, ExecutionException {
                 // TODO: Remove this (overridden) method!
@@ -102,8 +104,7 @@ public interface AsynchronousHelloWorld extends HelloWorld {
      * @param channel the channel to which bytes are written.
      * @return a completable future of {@code channel}.
      */
-    default <T extends AsynchronousByteChannel> CompletableFuture<T> writeCompletable(
-            T channel) {
+    default <T extends AsynchronousByteChannel> CompletableFuture<T> write(T channel) {
         Objects.requireNonNull(channel, "channel is null");
         return new CompletableFuture<T>().completeAsync(() -> {
             // TODO: Implement!
