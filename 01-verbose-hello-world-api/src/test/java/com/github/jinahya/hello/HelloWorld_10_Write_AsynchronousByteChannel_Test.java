@@ -108,9 +108,9 @@ class HelloWorld_10_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
         var channel = mock(AsynchronousByteChannel.class);
         lenient().when(channel.write(argThat(b -> b != null && b.hasRemaining()))).thenAnswer(i -> {
             var buffer = i.getArgument(0, ByteBuffer.class);
-            var remaining = buffer.remaining();
-            buffer.position(buffer.position() + remaining);
-            return remaining;
+            var written = buffer.remaining();
+            buffer.position(buffer.position() + written);
+            return written;
         });
         // WHEN
         var result = service.write(channel);
