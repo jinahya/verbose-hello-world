@@ -104,10 +104,9 @@ public interface AsynchronousHelloWorld extends HelloWorld {
      */
     default <T extends AsynchronousByteChannel> CompletableFuture<T> writeCompletable(
             T channel) {
-        if (channel == null) {
-            throw new NullPointerException("channel is null");
-        }
+        Objects.requireNonNull(channel, "channel is null");
         return new CompletableFuture<T>().completeAsync(() -> {
+            // TODO: Implement!
             return null;
         });
     }
