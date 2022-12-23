@@ -95,32 +95,6 @@ public interface AsynchronousHelloWorld extends HelloWorld {
     }
 
     /**
-     * Writes, asynchronously, the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>
-     * to specified channel using specified executor.
-     *
-     * @param <T>      channel type parameter
-     * @param channel  the channel to which bytes are written.
-     * @param executor the executor service to which a task is submitted.
-     * @return A future representing the result of the operation.
-     * @implSpec The default implementation submits a task, which simply returns the result of
-     * {@link #write(AsynchronousByteChannel)} method invoked with {@code channel}, to specified
-     * executor.
-     */
-    default <T extends AsynchronousByteChannel> Future<T> write(T channel,
-                                                                ExecutorService executor) {
-        if (channel == null) {
-            throw new NullPointerException("channel is null");
-        }
-        if (executor == null) {
-            throw new NullPointerException("executor is null");
-        }
-        return executor.submit(() -> {
-            // TODO: Implement!
-            return channel;
-        });
-    }
-
-    /**
      * Returns a completable future which writes the <a
      * href="#hello-world-bytes">hello-world-bytes</a> to specified channel.
      *
