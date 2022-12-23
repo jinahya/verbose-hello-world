@@ -31,13 +31,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
 /**
- * A class for testing {@link HelloWorld#write(AsynchronousByteChannel)} method regarding arguments
- * verification.
+ * A class for testing
+ * {@link AsynchronousHelloWorld#write(AsynchronousByteChannel, CompletionHandler)} method regarding
+ * arguments verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Test
  */
-@DisplayName("write(channel, handler) arguments")
+@DisplayName("write(AsynchronousByteChannel, CompletionHandler) arguments")
 @Slf4j
 class AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Arguments_Test
         extends AsynchronousHelloWorldTest {
@@ -48,13 +49,15 @@ class AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Argumen
      * write(channel, handler)} method throws a {@link NullPointerException} when the
      * {@code channel} argument is {@code null}.
      */
-    @DisplayName("write(null, handler) throws NullPointerException")
+    @DisplayName("[channel == null] -> NullPointerException")
     @Test
     @SuppressWarnings({"unchecked"})
     void _ThrowNullPointerException_ChannelIsNull() {
-        // GIVEN
+        // GIVEN: HelloWorld
         var service = service();
+        // GIVEN: AsynchronousByteChannel
         AsynchronousByteChannel channel = null;
+        // GIVEN: CompletionHandler
         var handler = mock(CompletionHandler.class);
         // WHEN/THEN
         assertThrows(NullPointerException.class, () -> service.write(channel, handler));
@@ -66,12 +69,14 @@ class AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Argumen
      * write(channel, handler)} method throws a {@link NullPointerException} when the
      * {@code handler} argument is {@code null}.
      */
-    @DisplayName("write(channel, null) throws NullPointerException")
+    @DisplayName("[handler == null] -> NullPointerException")
     @Test
     void _ThrowNullPointerException_HandlerIsNull() {
-        // GIVEN
+        // GIVEN: HelloWorld
         var service = service();
+        // GIVEN: AsynchronousByteChannel
         var channel = mock(AsynchronousByteChannel.class);
+        // GIVEN: CompletionHandler
         CompletionHandler<Integer, AsynchronousByteChannel> handler = null;
         // WHEN/THEN
         assertThrows(NullPointerException.class, () -> service.write(channel, handler));

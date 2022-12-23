@@ -35,6 +35,7 @@ import java.util.concurrent.atomic.LongAdder;
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
@@ -53,27 +54,33 @@ import static org.mockito.Mockito.verify;
 class AsynchronousHelloWorld_01_Write_AsynchronousByteChannelWithExecutor_Test
         extends AsynchronousHelloWorldTest {
 
+    /**
+     * Stubs {@link HelloWorld#put(ByteBuffer) put(buffer)} method to return the {@code buffer}
+     * argument with its {@link ByteBuffer#position() position} increased by
+     * {@value HelloWorld#BYTES}.
+     */
     @BeforeEach
-    void stub_PutBuffer_FillBuffer() {
-        var service = service();
+    void stub_PutBuffer_IncreaseBufferPositionBy12() {
         lenient().doAnswer(i -> {
-            var buffer = i.getArgument(0, ByteBuffer.class);
-            assert buffer.remaining() >= BYTES;
-            buffer.position(buffer.position() + BYTES);
-            return buffer;
-        }).when(service).put(notNull());
+                    var buffer = i.getArgument(0, ByteBuffer.class);
+                    buffer.position(buffer.position() + BYTES);
+                    return buffer;
+                })
+                .when(service())
+                .put(argThat(b -> b != null && b.remaining() >= BYTES));
     }
 
     /**
      * Asserts
      * {@link AsynchronousHelloWorld#write(AsynchronousByteChannel, Executor) write(channel,
-     * executor)} method invokes {@link HelloWorld#put(ByteBuffer) put(buffer)} method, and writes
-     * the buffer to the {@code channel}.
+     * executor)} method invokes {@link HelloWorld#put(ByteBuffer) put(buffer)} method with a buffer
+     * of {@value HelloWorld#BYTES} bytes, writes the buffer to the {@code channel}, and returns a
+     * future of {@code channel}.
      *
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
      */
-    @DisplayName("-> put(buffer)"
+    @DisplayName("-> put(buffer[12])"
                  + " -> channel.write(buffer)+"
                  + " -> future<channel>")
     @Test
@@ -83,7 +90,7 @@ class AsynchronousHelloWorld_01_Write_AsynchronousByteChannelWithExecutor_Test
         // GIVEN: AsynchronousByteChannel
         var channel = mock(AsynchronousByteChannel.class);
         var writtenSoFar = new LongAdder();
-        lenient().when(channel.write(notNull())).thenAnswer(i -> {
+        lenient().when(channel.write(argThat(b -> b != null && b.hasRemaining()))).thenAnswer(i -> {
             var buffer = i.getArgument(0, ByteBuffer.class);
             var written = current().nextInt(buffer.remaining() + 1);
             buffer.position(buffer.position() + written);

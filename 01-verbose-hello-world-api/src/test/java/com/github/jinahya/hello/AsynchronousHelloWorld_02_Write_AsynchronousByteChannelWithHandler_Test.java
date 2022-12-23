@@ -33,7 +33,6 @@ import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -46,7 +45,7 @@ import static org.mockito.Mockito.verify;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Arguments_Test
  */
-@DisplayName("write(channel, handler) arguments")
+@DisplayName("write(AsynchronousByteChannel, CompletionHandler) arguments")
 @Slf4j
 class AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Test
         extends AsynchronousHelloWorldTest {
@@ -59,7 +58,9 @@ class AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Test
      * and invokes {@link CompletionHandler#completed(Object, Object)} method, on {@code handler},
      * with {@value HelloWorld#BYTES} and {@code channel}.
      */
-    @DisplayName("write(channel, handler) invokes handler.completed(12, channel)")
+    @DisplayName("-> put(buffer[12])"
+                 + " -> handler(12, channel)"
+    )
     @Test
     @SuppressWarnings({"unchecked"})
     void _Completed_() {
@@ -68,8 +69,7 @@ class AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Test
         // GIVEN: AsynchronousByteChannel
         var channel = mock(AsynchronousByteChannel.class);
         var writtenSoFar = new LongAdder();
-        lenient().
-                doAnswer(i -> {
+        lenient().doAnswer(i -> {
                     var buffer = i.getArgument(0, ByteBuffer.class);
                     assert buffer.hasRemaining();
                     var attachment = i.getArgument(1);
@@ -91,7 +91,7 @@ class AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Test
         verify(service, times(1)).put(bufferCaptor().capture());
         var buffer = bufferCaptor().getValue();
         assertEquals(BYTES, buffer.capacity());
-        // THEN: verify, at least once, channel.write(buffer, attachment, handler) invoked
-        // THEN: verify, 12 bytes are written to the channel
+        // THEN: at least once, channel.write(buffer, attachment, handler) invoked
+        // THEN: 12 bytes are written to the channel
     }
 }
