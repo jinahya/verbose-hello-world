@@ -59,15 +59,9 @@ public interface AsynchronousHelloWorld extends HelloWorld {
         var buffer = put(ByteBuffer.allocate(BYTES)).flip();
         Callable<T> callable = () -> {
             // TODO: Implement!
-            return null;
+            return channel;
         };
-        FutureTask<T> command = new FutureTask<>(callable) {
-            @Override
-            public T get() throws InterruptedException, ExecutionException {
-                // TODO: Remove this (overridden) method!
-                return channel;
-            }
-        };
+        FutureTask<T> command = new FutureTask<>(callable);
         executor.execute(command);
         return command;
     }
