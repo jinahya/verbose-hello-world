@@ -39,7 +39,6 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -86,11 +85,9 @@ class HelloWorld_10_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
         // WHEN
         service.write(channel);
         // THEN: once, put(buffer[12]) invoked
-        {
-            verify(service).put(bufferCaptor().capture());
-            var buffer = bufferCaptor().getValue();
-            assertEquals(BYTES, buffer.capacity());
-        }
+        verify(service).put(bufferCaptor().capture());
+        var buffer = bufferCaptor().getValue();
+        assertEquals(BYTES, buffer.capacity());
         // THEN: at least once, channel.write(buffer) invoked
         // THEN: 12 bytes are written
     }
