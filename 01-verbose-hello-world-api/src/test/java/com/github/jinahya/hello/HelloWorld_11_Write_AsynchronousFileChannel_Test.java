@@ -47,7 +47,7 @@ import static org.mockito.Mockito.verify;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_11_Write_AsynchronousFileChannel_Arguments_Test
  */
-@DisplayName("write(AsynchronousByteChannel, Executor) arguments")
+@DisplayName("write(AsynchronousFileChannel, Executor) arguments")
 @Slf4j
 class HelloWorld_11_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
 
