@@ -80,9 +80,7 @@ class AsynchronousHelloWorld_01_Write_AsynchronousByteChannelWithExecutor_Test
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
      */
-    @DisplayName("-> put(buffer[12])"
-                 + " -> channel.write(buffer)+"
-                 + " -> future<channel>")
+    @DisplayName("-> put(buffer[12]) -> channel.write(buffer)+")
     @Test
     void __() throws InterruptedException, ExecutionException {
         // GIVEN: HelloWorld

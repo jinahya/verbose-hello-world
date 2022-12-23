@@ -67,6 +67,15 @@ public interface HelloWorld {
     }
 
     /**
+     * Returns a logger for this interface.
+     *
+     * @return a logger for this interface.
+     */
+    private System.Logger logger() {
+        return System.getLogger(getClass().getName());
+    }
+
+    /**
      * The length of the <a href="#hello-world-bytes">hello-world-bytes</a> which is {@value}.
      */
     int BYTES = 12;

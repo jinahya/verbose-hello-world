@@ -49,4 +49,13 @@ public interface ReactiveHelloWorld extends HelloWorld {
     private Logger log() {
         return LoggerFactory.getLogger(getClass());
     }
+
+    /**
+     * Returns a logger for this interface.
+     *
+     * @return a logger for this interface.
+     */
+    private System.Logger logger() {
+        return System.getLogger(getClass().getName());
+    }
 }

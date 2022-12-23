@@ -58,9 +58,7 @@ class AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Test
      * and invokes {@link CompletionHandler#completed(Object, Object)} method, on {@code handler},
      * with {@value HelloWorld#BYTES} and {@code channel}.
      */
-    @DisplayName("-> put(buffer[12])"
-                 + " -> handler(12, channel)"
-    )
+    @DisplayName("put(buffer[12]) -> handler(12, channel)")
     @Test
     @SuppressWarnings({"unchecked"})
     void _Completed_() {
