@@ -352,6 +352,7 @@ public interface HelloWorld {
         var buffer = put(ByteBuffer.allocate(BYTES)).flip();
         while (buffer.hasRemaining()) {
             // TODO: Implement!
+            break;
         }
         return channel;
     }
