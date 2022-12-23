@@ -33,6 +33,7 @@ import java.net.Socket;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
+import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.file.OpenOption;
@@ -348,6 +349,35 @@ public interface HelloWorld {
             throws InterruptedException, ExecutionException {
         if (channel == null) {
             throw new NullPointerException("channel is null");
+        }
+        var buffer = put(ByteBuffer.allocate(BYTES)).flip();
+        while (buffer.hasRemaining()) {
+            // TODO: Implement!
+            break;
+        }
+        return channel;
+    }
+
+    /**
+     * Writes the <a href="hello-world-bytes">hello-world-bytes</a> to specified channel, starting
+     * at given file position.
+     *
+     * @param <T>      channel type parameter
+     * @param channel  the channel to which bytes are written.
+     * @param position the file position at which the transfer is to begin; must be non-negative.
+     * @return given {@code channel}.
+     * @throws InterruptedException if interrupted while executing.
+     * @throws ExecutionException   if failed to execute.
+     * @see #put(ByteBuffer)
+     * @see AsynchronousFileChannel#write(ByteBuffer, long)
+     */
+    default <T extends AsynchronousFileChannel> T write(T channel, long position)
+            throws InterruptedException, ExecutionException {
+        if (channel == null) {
+            throw new NullPointerException("channel is null");
+        }
+        if (position < 0L) {
+            throw new IllegalArgumentException("position(" + position + ") < 0L");
         }
         var buffer = put(ByteBuffer.allocate(BYTES)).flip();
         while (buffer.hasRemaining()) {

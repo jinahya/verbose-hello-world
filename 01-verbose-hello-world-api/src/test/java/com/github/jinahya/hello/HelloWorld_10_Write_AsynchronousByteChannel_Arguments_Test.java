@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_01_Write_AsynchronousByteChannel_Test
+ * @see HelloWorld_10_Write_AsynchronousByteChannel_Test
  */
 @DisplayName("write(AsynchronousByteChannel, Executor) arguments")
 @Slf4j

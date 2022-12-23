@@ -26,7 +26,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.nio.ByteBuffer;
-import java.nio.channels.AsynchronousByteChannel;
+import java.nio.channels.AsynchronousFileChannel;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.LongAdder;
@@ -36,19 +36,20 @@ import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.longThat;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 /**
- * A class for testing {@link HelloWorld#write(AsynchronousByteChannel)} method.
+ * A class for testing {@link HelloWorld#write(AsynchronousFileChannel, long)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_10_Write_AsynchronousByteChannel_Arguments_Test
+ * @see HelloWorld_11_Write_AsynchronousFileChannel_Arguments_Test
  */
 @DisplayName("write(AsynchronousByteChannel, Executor) arguments")
 @Slf4j
-class HelloWorld_10_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
+class HelloWorld_11_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
 
     @BeforeEach
     @Override
@@ -57,9 +58,10 @@ class HelloWorld_10_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#write(AsynchronousByteChannel) write(channel)} method invokes
-     * {@link HelloWorld#put(ByteBuffer) put(buffer)} method with a buffer of
-     * {@value HelloWorld#BYTES} bytes, and writes the buffer to specified {@code channel}.
+     * Asserts {@link HelloWorld#write(AsynchronousFileChannel, long) write(channel, position)}
+     * method invokes {@link HelloWorld#put(ByteBuffer) put(buffer)} method with a buffer of
+     * {@value HelloWorld#BYTES} bytes, and writes the buffer to specified {@code channel}, starting
+     * at {@code position}.
      *
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
@@ -70,30 +72,35 @@ class HelloWorld_10_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
         // GIVEN: HelloWorld
         var service = service();
         // GIVEN: AsynchronousByteChannel
-        var channel = mock(AsynchronousByteChannel.class);
+        var channel = mock(AsynchronousFileChannel.class);
         var writtenSoFar = new LongAdder();
-        lenient().when(channel.write(argThat(b -> b != null && b.hasRemaining()))).thenAnswer(i -> {
-            var buffer = i.getArgument(0, ByteBuffer.class);
-            var written = current().nextInt(buffer.remaining() + 1);
-            buffer.position(buffer.position() + written);
-            writtenSoFar.add(written);
-            var future = mock(Future.class);
-            lenient().doReturn(written).when(future).get();
-            return future;
-        });
+        lenient().when(channel.write(argThat(b -> b != null && b.hasRemaining()),
+                                     longThat(p -> p >= 0L)))
+                .thenAnswer(i -> {
+                    var buffer = i.getArgument(0, ByteBuffer.class);
+                    var position = i.getArgument(1, long.class);
+                    var written = current().nextInt(buffer.remaining() + 1);
+                    buffer.position(buffer.position() + written);
+                    writtenSoFar.add(written);
+                    var future = mock(Future.class);
+                    lenient().doReturn(written).when(future).get();
+                    return future;
+                });
+        // GIVEN: position
+        var position = 0L;
         // WHEN
-        service.write(channel);
+        service.write(channel, position);
         // THEN: once, put(buffer[12]) invoked
         verify(service).put(bufferCaptor().capture());
         var buffer = bufferCaptor().getValue();
         assertEquals(BYTES, buffer.capacity());
-        // THEN: at least once, channel.write(buffer) invoked
+        // THEN: at least once, channel.write(buffer, <position>) invoked
         // THEN: 12 bytes are written
     }
 
     /**
-     * Asserts {@link HelloWorld#write(AsynchronousByteChannel) write(channel)} method returns
-     * specified {@code channel}.
+     * Asserts {@link HelloWorld#write(AsynchronousFileChannel, long) write(channel, position)}
+     * method returns specified {@code channel}.
      *
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
@@ -103,18 +110,23 @@ class HelloWorld_10_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
     void _ReturnChannel_() throws InterruptedException, ExecutionException {
         // GIVEN: HelloWorld
         var service = service();
-        // GIVEN: AsynchronousByteChannel
-        var channel = mock(AsynchronousByteChannel.class);
-        lenient().when(channel.write(argThat(b -> b != null && b.hasRemaining()))).thenAnswer(i -> {
-            var buffer = i.getArgument(0, ByteBuffer.class);
-            var written = buffer.remaining();
-            buffer.position(buffer.position() + written);
-            var future = mock(Future.class);
-            lenient().doReturn(written).when(future).get();
-            return future;
-        });
+        // GIVEN: AsynchronousFileChannelChannel
+        var channel = mock(AsynchronousFileChannel.class);
+        lenient().when(channel.write(argThat(b -> b != null && b.hasRemaining()),
+                                     longThat(p -> p >= 0L)))
+                .thenAnswer(i -> {
+                    var buffer = i.getArgument(0, ByteBuffer.class);
+                    var position = i.getArgument(1, long.class);
+                    var written = buffer.remaining();
+                    buffer.position(buffer.position() + written);
+                    var future = mock(Future.class);
+                    lenient().doReturn(written).when(future).get();
+                    return future;
+                });
+        // GIVEN: position
+        var position = 0L;
         // WHEN
-        var result = service.write(channel);
+        var result = service.write(channel, position);
         // THEN: result is same as channel
         assertSame(channel, result);
     }
