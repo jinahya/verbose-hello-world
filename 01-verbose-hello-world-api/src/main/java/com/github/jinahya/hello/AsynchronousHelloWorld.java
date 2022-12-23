@@ -29,7 +29,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 
@@ -91,42 +90,6 @@ public interface AsynchronousHelloWorld extends HelloWorld {
     }
 
     /**
-     * Returns a completable future which writes the <a
-     * href="#hello-world-bytes">hello-world-bytes</a> to specified channel.
-     *
-     * @param <T>     channel type parameter
-     * @param channel the channel to which bytes are written.
-     * @return a completable future of {@code channel}.
-     */
-    default <T extends AsynchronousByteChannel> CompletableFuture<T> write(T channel) {
-        Objects.requireNonNull(channel, "channel is null");
-        return new CompletableFuture<T>().completeAsync(() -> {
-            // TODO: Implement!
-            return null;
-        });
-    }
-
-    /**
-     * Returns a completable future which writes the <a
-     * href="#hello-world-bytes">hello-world-bytes</a> to specified channel.
-     *
-     * @param <T>     channel type parameter
-     * @param channel the channel to which bytes are written.
-     * @return a completable future of {@code channel}.
-     */
-    default <T extends AsynchronousByteChannel> CompletableFuture<T> writeCompletableAsync(
-            T channel) {
-        if (channel == null) {
-            throw new NullPointerException("channel is null");
-        }
-        var future = new CompletableFuture<T>();
-        var buffer = put(ByteBuffer.allocate(BYTES)).flip();
-        // TODO: Implement!
-        future.complete(channel); // TODO: Remove!!!
-        return future;
-    }
-
-    /**
      * Writes, synchronously, the <a href="#hello-world-bytes">hello-world-bytes</a> to specified
      * channel, starting at the given file position.
      *
@@ -162,30 +125,32 @@ public interface AsynchronousHelloWorld extends HelloWorld {
 
     /**
      * Writes, asynchronously, the <a href="#hello-world-bytes">hello-world-bytes</a> to specified
-     * channel starting at the given file position.
+     * channel starting at the given file position, using specified executor.
      *
      * @param <T>      channel type parameter
      * @param channel  the channel to which bytes are written.
      * @param position the file position at which the transfer is to begin; must be non-negative.
-     * @param executor an executor service for submitting a task.
-     * @return A future representing the result of the operation.
-     * @implSpec The default implementation submits, to specified executor, a task which simply
-     * returns the result of {@link #write(AsynchronousFileChannel, long) #write(channel, position)}
-     * method.
-     * @see #write(AsynchronousFileChannel, long)
+     * @param executor the executor for submitting a task.
+     * @return a future of specified channel.
+     * @implSpec The default implementation submits, to {@code executor}, a task which invokes
+     * {@link #put(ByteBuffer) put(buffer)} with a buffer of {@value HelloWorld#BYTES}, and writes
+     * the buffer to {@code channel} starting at {@code position}.
      */
-    default <T extends AsynchronousFileChannel> Future<T> writeAsync(
-            T channel, long position, ExecutorService executor) {
-        if (channel == null) {
-            throw new NullPointerException("channel is null");
-        }
+    default <T extends AsynchronousFileChannel> Future<T> write(T channel, long position,
+                                                                Executor executor) {
+        Objects.requireNonNull(channel, "channel is null");
         if (position < 0L) {
             throw new IllegalArgumentException("position(" + position + ") is negative");
         }
-        if (executor == null) {
-            throw new NullPointerException("executor is null");
-        }
-        return executor.submit(() -> write(channel, position));
+        Objects.requireNonNull(executor, "executor is null");
+        var buffer = put(ByteBuffer.allocate(BYTES)).flip();
+        Callable<T> callable = () -> {
+            // TODO: Implement!
+            return channel;
+        };
+        FutureTask<T> command = new FutureTask<>(callable);
+        executor.execute(command);
+        return command;
     }
 
     /**
