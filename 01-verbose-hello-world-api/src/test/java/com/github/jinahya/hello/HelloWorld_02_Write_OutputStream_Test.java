@@ -49,7 +49,7 @@ class HelloWorld_02_Write_OutputStream_Test extends HelloWorldTest {
     void stub_ReturnArray_SetArray() {
         doAnswer(i -> i.getArgument(0))
                 .when(service())
-                .set(any(byte[].class));
+                .set(any());
     }
 
     /**
