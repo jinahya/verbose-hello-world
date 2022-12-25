@@ -43,7 +43,8 @@ import static org.mockito.Mockito.mock;
 class HelloWorld_02_Write_OutputStream_Test extends HelloWorldTest {
 
     /**
-     * Stubs {@link HelloWorld#set(byte[]) set(array)} method to return the {@code array} argument.
+     * Stubs {@link HelloWorld#set(byte[]) set(array)} method to just return the {@code array}
+     * argument.
      */
     @BeforeEach
     void stub_ReturnArray_SetArray() {
