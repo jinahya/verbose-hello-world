@@ -57,9 +57,9 @@ class HelloWorld_01_Set_Array_Arguments_Test extends HelloWorldTest {
      * {@link IndexOutOfBoundsException} when {@code array.length} is less than
      * {@value HelloWorld#BYTES}.
      */
-    @DisplayName("[array.length < BYTES] -> IndexOutOfBoundsException")
+    @DisplayName("[array.length < 12] -> IndexOutOfBoundsException")
     @Test
-    void _ThrowIndexOutOfBoundsException_ArrayLengthIsLessThanBytes() {
+    void _ThrowIndexOutOfBoundsException_ArrayLengthIsLessThan12() {
         // GIVEN: HelloWorld
         var service = service();
         // GIVEN: array
