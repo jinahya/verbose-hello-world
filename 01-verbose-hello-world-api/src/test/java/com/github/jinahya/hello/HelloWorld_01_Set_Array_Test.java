@@ -32,7 +32,7 @@ import static com.github.jinahya.hello.HelloWorld.BYTES;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_01_Set_Array_Arguments_Test
  */
-@DisplayName("set(array)")
+@DisplayName("set(byte[])")
 @Slf4j
 class HelloWorld_01_Set_Array_Test extends HelloWorldTest {
 

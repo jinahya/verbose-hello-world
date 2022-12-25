@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_03_Append_File_Test
  */
-@DisplayName("append(file) arguments")
+@DisplayName("append(File) arguments")
 @Slf4j
 class HelloWorld_03_Append_File_Arguments_Test extends HelloWorldTest {
 
@@ -42,7 +42,7 @@ class HelloWorld_03_Append_File_Arguments_Test extends HelloWorldTest {
      * Asserts {@link HelloWorld#append(File) append(file)} method throws a
      * {@link NullPointerException} when the {@code file} argument is {@code null}.
      */
-    @DisplayName("append(null) throws a NullPointerException")
+    @DisplayName("[file == null] -> NullPointerException")
     @Test
     void _ThrowNullPointerException_FileIsNull() {
         // GIVEN: HelloWorld

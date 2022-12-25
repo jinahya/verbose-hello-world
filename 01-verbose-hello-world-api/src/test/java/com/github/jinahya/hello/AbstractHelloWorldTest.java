@@ -46,10 +46,11 @@ import static java.util.Objects.requireNonNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -72,7 +73,7 @@ abstract class AbstractHelloWorldTest<T extends HelloWorld> {
     }
 
     /**
-     * Stubs {@link HelloWorld#set(byte[], int) set(array, index)} method to return the
+     * Stubs {@link HelloWorld#set(byte[], int) set(array, index)} method to just return the
      * {@code array} argument.
      */
     @BeforeEach
@@ -84,35 +85,58 @@ abstract class AbstractHelloWorldTest<T extends HelloWorld> {
     void verify_SetArrayIndex_Invoked(VerificationMode mode,
                                       Consumer<? super byte[]> arrayConsumer,
                                       IntConsumer indexConsumer) {
-        verify(service, mode).set(arrayCaptor.capture(), indexCaptor.getValue());
+    }
+
+    /**
+     * Verifies that the {@link HelloWorld#set(byte[], int) set(array, index)} method invoked
+     * <em>once</em>, and accepts arguments to specified consumers while verifying the following
+     * conditions.
+     * <ul>
+     *   <li>{@code array} is not {@code null}.</li>
+     *   <li>{@code index} is not negative.</li>
+     *   <li>({@code index + 12}) is less than or equal to {@code array.length}.</li>
+     * </ul>
+     *
+     * @param arrayConsumer the consumer accepts the {@code array} argument.
+     * @param indexConsumer the consumer accepts the {@code index} argument.
+     */
+    void verify_SetArrayIndex_Invoked_Once(Consumer<? super byte[]> arrayConsumer,
+                                           IntConsumer indexConsumer) {
+        verify(service, times(1)).set(arrayCaptor.capture(), indexCaptor.getValue());
         var array = arrayCaptor.getValue();
+        assertNotNull(array);
         var index = indexCaptor.getValue();
+        assertTrue(index >= 0);
+        assertTrue(index + BYTES <= array.length);
         arrayConsumer.accept(array);
         indexConsumer.accept(index);
     }
 
-    void verify_SetArrayIndex_Invoked_Once(Consumer<? super byte[]> arrayConsumer,
-                                           IntConsumer indexConsumer) {
-        verify_SetArrayIndex_Invoked(times(1), arrayConsumer, indexConsumer);
+    /**
+     * Stubs {@link HelloWorld#put(ByteBuffer) put(buffer)} method to return the {@code buffer}
+     * whose {@link ByteBuffer#position() position} increased by {@value HelloWorld#BYTES}.
+     */
+    void stub_PutBuffer_IncreaseBufferPositionBy12() {
+        doAnswer(i -> {
+            ByteBuffer buffer = i.getArgument(0);
+            buffer.position(buffer.position() + BYTES);
+            return buffer;
+        }).when(service).put(argThat(b -> b != null && b.remaining() >= BYTES));
     }
 
     /**
-     * Stubs {@link HelloWorld#put(ByteBuffer) put(buffer)} method to return the {@code buffer}
-     * argument with its {@link ByteBuffer#position() position} increased by
-     * {@value HelloWorld#BYTES}.
+     * Verifies that the {@link HelloWorld#put(ByteBuffer) service.put(buffer)} method invoked
+     * <em>once</em> while asserting the following conditions.
+     * <ul>
+     *   <li>{@code buffer} is not {@code null}.</li>
+     *   <li>{@code buffer.capacity} is equal to {@value HelloWorld#BYTES}.</li>
+     *   <li>{@code buffer} has no {@link ByteBuffer#remaining() remaining}.</li>
+     * </ul>
+     *
+     * @return the {@code buffer} argument.
      */
-    void stub_PutBuffer_IncreaseBufferPositionBy12() {
-        lenient().doAnswer(i -> {
-                    var buffer = i.getArgument(0, ByteBuffer.class);
-                    buffer.position(buffer.position() + BYTES);
-                    return buffer;
-                })
-                .when(service)
-                .put(argThat(b -> b != null && b.remaining() >= BYTES));
-    }
-
-    ByteBuffer verify_PutBuffer12_Invoked(VerificationMode mode) {
-        verify(service, mode).put(bufferCaptor.capture());
+    ByteBuffer verify_PutBuffer_Invoked_Once() {
+        verify(service, times(1)).put(bufferCaptor.capture());
         var buffer = bufferCaptor.getValue();
         assertNotNull(buffer);
         assertEquals(BYTES, buffer.capacity());
@@ -120,19 +144,21 @@ abstract class AbstractHelloWorldTest<T extends HelloWorld> {
         return buffer;
     }
 
-    ByteBuffer verify_PutBuffer12_Invoked_Once() {
-        return verify_PutBuffer12_Invoked(times(1));
-    }
-
-    WritableByteChannel verify_WriteChannel_Invoked(VerificationMode mode) throws IOException {
-        verify(service, mode).write(channelCaptor.capture());
-        var channel = channelCaptor.getValue();
+    /**
+     * Verifies that the {@link HelloWorld#write(WritableByteChannel) service.write(channel)} method
+     * invoked <em>once</em> while asserting the following conditions.
+     * <ul>
+     *   <li>{@code channel} is not {@code null}.</li>
+     * </ul>
+     *
+     * @return the {@code channel} argument captured from the invocation.
+     */
+    <U extends WritableByteChannel> U verify_WriteChannel_Invoked_Once() throws IOException {
+        verify(service, times(1)).write(channelCaptor.capture());
+        @SuppressWarnings({"unchecked"})
+        U channel = (U) channelCaptor.getValue();
         assertNotNull(channel);
         return channel;
-    }
-
-    WritableByteChannel verify_WriteChannel_Invoked_Once() throws IOException {
-        return verify_WriteChannel_Invoked(times(1));
     }
 
     //@Spy

@@ -128,7 +128,7 @@ public interface HelloWorld {
      * @throws IOException          if an I/O error occurs.
      * @implSpec The default implementation invokes {@link #set(byte[]) set(array)} method with an
      * array of {@value #BYTES} bytes, writes the array to {@code stream} by invoking
-     * {@link OutputStream#write(byte[])} on {@code stream} method with the array, and returns the
+     * {@link OutputStream#write(byte[])} method on {@code stream} with the array, and returns the
      * {@code stream}.
      * @see #set(byte[])
      * @see OutputStream#write(byte[])

@@ -78,8 +78,8 @@ class HelloWorld_11_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
         lenient().when(channel.write(argThat(b -> b != null && b.hasRemaining()),
                                      longThat(p -> p >= 0L)))
                 .thenAnswer(i -> {
-                    var buffer = i.getArgument(0, ByteBuffer.class);
-                    var position = i.getArgument(1, long.class);
+                    ByteBuffer buffer = i.getArgument(0);
+                    long position = i.getArgument(1);
                     var written = current().nextInt(buffer.remaining() + 1);
                     buffer.position(buffer.position() + written);
                     writtenSoFar.add(written);
@@ -117,8 +117,8 @@ class HelloWorld_11_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
         lenient().when(channel.write(argThat(b -> b != null && b.hasRemaining()),
                                      longThat(p -> p >= 0L)))
                 .thenAnswer(i -> {
-                    var buffer = i.getArgument(0, ByteBuffer.class);
-                    var position = i.getArgument(1, long.class);
+                    ByteBuffer buffer = i.getArgument(0);
+                    long position = i.getArgument(1);
                     var written = buffer.remaining();
                     buffer.position(buffer.position() + written);
                     var future = mock(Future.class);

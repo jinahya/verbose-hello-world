@@ -54,7 +54,7 @@ class HelloWorld_03_Append_File_Test extends HelloWorldTest {
     @BeforeEach
     void stub_ReturnArray_SetArray() throws IOException {
         doAnswer(i -> {
-            var stream = i.getArgument(0, OutputStream.class);
+            OutputStream stream = i.getArgument(0);
             for (int j = 0; j < BYTES; j++) {
                 stream.write(0);
             }
