@@ -59,7 +59,7 @@ class HelloWorld_01_Set_Array_Arguments_Test extends HelloWorldTest {
      */
     @DisplayName("[array.length < 12] -> IndexOutOfBoundsException")
     @Test
-    void _ThrowIndexOutOfBoundsException_ArrayIsNotLongEnough() {
+    void _ThrowIndexOutOfBoundsException_ArrayLengthIsLessThan12() {
         // GIVEN: HelloWorld
         var service = service();
         // GIVEN: array
