@@ -34,6 +34,7 @@ import java.util.concurrent.atomic.LongAdder;
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.longThat;
@@ -93,6 +94,7 @@ class HelloWorld_11_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
         // THEN: once, put(buffer[12]) invoked
         verify(service).put(bufferCaptor().capture());
         var buffer = bufferCaptor().getValue();
+        assertNotNull(buffer);
         assertEquals(BYTES, buffer.capacity());
         // THEN: at least once, channel.write(buffer, <position>) invoked
         // THEN: 12 bytes are written

@@ -25,21 +25,27 @@ import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.mockito.verification.VerificationMode;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
+import java.util.function.Consumer;
+import java.util.function.IntConsumer;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.util.Objects.requireNonNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -47,12 +53,14 @@ import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * An abstract class for testing methods defined in {@link HelloWorld} interface.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith({MockitoExtension.class})
 @TestInstance(TestInstance.Lifecycle.PER_METHOD) // default, implicitly.
 @Slf4j
@@ -64,15 +72,28 @@ abstract class AbstractHelloWorldTest<T extends HelloWorld> {
     }
 
     /**
-     * Stubs {@link HelloWorld#set(byte[], int) helloWorld#set(array, index)} method to return the
+     * Stubs {@link HelloWorld#set(byte[], int) set(array, index)} method to return the
      * {@code array} argument.
      */
-    @DisplayName("set(array, index) returns array")
     @BeforeEach
-    void stub_ReturnArray_SetArrayIndex() {
-        lenient().
-                when(service.set(any(), anyInt()))  // <1>
-                .thenAnswer(i -> i.getArgument(0)); // <2>
+    void stub_SetArrayIndex_ReturnArray() {
+        when(service.set(any(), anyInt()))            // <1>
+                .thenAnswer(i -> i.getArgument(0));   // <2>
+    }
+
+    void verify_SetArrayIndex_Invoked(VerificationMode mode,
+                                      Consumer<? super byte[]> arrayConsumer,
+                                      IntConsumer indexConsumer) {
+        verify(service, mode).set(arrayCaptor.capture(), indexCaptor.getValue());
+        var array = arrayCaptor.getValue();
+        var index = indexCaptor.getValue();
+        arrayConsumer.accept(array);
+        indexConsumer.accept(index);
+    }
+
+    void verify_SetArrayIndex_Invoked_Once(Consumer<? super byte[]> arrayConsumer,
+                                           IntConsumer indexConsumer) {
+        verify_SetArrayIndex_Invoked(times(1), arrayConsumer, indexConsumer);
     }
 
     /**
@@ -90,18 +111,24 @@ abstract class AbstractHelloWorldTest<T extends HelloWorld> {
                 .put(argThat(b -> b != null && b.remaining() >= BYTES));
     }
 
-    ByteBuffer verify_PutBuffer_Invoked(VerificationMode mode) {
+    ByteBuffer verify_PutBuffer12_Invoked(VerificationMode mode) {
         verify(service, mode).put(bufferCaptor.capture());
-        return bufferCaptor.getValue();
+        var buffer = bufferCaptor.getValue();
+        assertNotNull(buffer);
+        assertEquals(BYTES, buffer.capacity());
+        assertFalse(buffer.hasRemaining());
+        return buffer;
     }
 
-    ByteBuffer verify_PutBuffer_Invoked_Once() {
-        return verify_PutBuffer_Invoked(times(1));
+    ByteBuffer verify_PutBuffer12_Invoked_Once() {
+        return verify_PutBuffer12_Invoked(times(1));
     }
 
     WritableByteChannel verify_WriteChannel_Invoked(VerificationMode mode) throws IOException {
         verify(service, mode).write(channelCaptor.capture());
-        return channelCaptor.getValue();
+        var channel = channelCaptor.getValue();
+        assertNotNull(channel);
+        return channel;
     }
 
     WritableByteChannel verify_WriteChannel_Invoked_Once() throws IOException {
