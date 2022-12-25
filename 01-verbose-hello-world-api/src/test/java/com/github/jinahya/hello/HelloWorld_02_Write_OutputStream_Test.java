@@ -33,12 +33,12 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 
 /**
- * A class for testing {@link HelloWorld#write(OutputStream)} method.
+ * A class for testing {@link HelloWorld#write(OutputStream) write(stream)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_02_Write_OutputStream_Arguments_Test
  */
-@DisplayName("write(stream)")
+@DisplayName("write(OutputStream)")
 @Slf4j
 class HelloWorld_02_Write_OutputStream_Test extends HelloWorldTest {
 
@@ -55,9 +55,9 @@ class HelloWorld_02_Write_OutputStream_Test extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(OutputStream) write(stream)} method invokes
-     * {@link HelloWorld#set(byte[]) set(array)} method with an array of
-     * {@value com.github.jinahya.hello.HelloWorld#BYTES} bytes and invokes
-     * {@link OutputStream#write(byte[])} method on {@code stream} with the array.
+     * {@link HelloWorld#set(byte[]) set(array)} method with an array of {@value HelloWorld#BYTES}
+     * bytes, and invokes {@link OutputStream#write(byte[])} method on {@code stream} with the
+     * array.
      *
      * @throws IOException if an I/O error occurs.
      */
@@ -71,7 +71,7 @@ class HelloWorld_02_Write_OutputStream_Test extends HelloWorldTest {
         // TODO: Create a mock object of java.io.OutputStream, say 'stream'
         // WHEN
         // TODO: Invoke service.write(stream)
-        // THEN: once, set(array)
+        // THEN: once, set(array[12])
         // TODO: Verify service invoked set(array[12])
         // THEN: once, write(array)
         // TODO: Verify service invoked stream.write(array)

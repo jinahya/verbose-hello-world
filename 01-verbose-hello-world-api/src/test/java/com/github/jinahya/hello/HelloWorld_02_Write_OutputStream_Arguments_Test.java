@@ -27,13 +27,13 @@ import org.junit.jupiter.api.Test;
 import java.io.OutputStream;
 
 /**
- * A class for testing {@link HelloWorld#write(OutputStream)} method regarding arguments
- * verification.
+ * A class for testing {@link HelloWorld#write(OutputStream) write(stream)} method regarding
+ * arguments verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_02_Write_OutputStream_Test
  */
-@DisplayName("write(stream) arguments")
+@DisplayName("write(OutputStream) arguments")
 @Slf4j
 class HelloWorld_02_Write_OutputStream_Arguments_Test extends HelloWorldTest {
 
