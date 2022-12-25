@@ -36,8 +36,10 @@ import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.longThat;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -53,9 +55,14 @@ import static org.mockito.Mockito.verify;
 class HelloWorld_11_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
 
     @BeforeEach
-    @Override
     void stub_PutBuffer_IncreaseBufferPositionBy12() {
-        super.stub_PutBuffer_IncreaseBufferPositionBy12();
+        doAnswer(i -> {
+            ByteBuffer buffer = i.getArgument(0);
+            buffer.position(buffer.position() + BYTES);
+            return buffer;
+        })
+                .when(service())
+                .put(any());
     }
 
     /**
