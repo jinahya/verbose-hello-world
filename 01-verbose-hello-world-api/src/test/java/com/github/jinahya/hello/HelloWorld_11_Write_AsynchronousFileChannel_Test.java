@@ -43,6 +43,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * A class for testing {@link HelloWorld#write(AsynchronousFileChannel, long)} method.
@@ -82,13 +83,12 @@ class HelloWorld_11_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
         // GIVEN: AsynchronousByteChannel
         var channel = mock(AsynchronousFileChannel.class);
         var writtenSoFar = new LongAdder();
-        when(channel.write(argThat(b -> b != null && b.hasRemaining()),
-                           longThat(p -> p >= 0L)))
+        when(channel.write(argThat(s -> s != null && s.hasRemaining()), longThat(p -> p >= 0L)))
                 .thenAnswer(i -> {
-                    ByteBuffer buffer = i.getArgument(0);
+                    ByteBuffer src = i.getArgument(0);
                     long position = i.getArgument(1);
-                    var written = current().nextInt(buffer.remaining() + 1);
-                    buffer.position(buffer.position() + written);
+                    var written = current().nextInt(src.remaining() + 1);
+                    src.position(src.position() + written);
                     writtenSoFar.add(written);
                     var future = mock(Future.class);
                     doReturn(written).when(future).get();
