@@ -33,7 +33,7 @@ import static java.util.concurrent.ThreadLocalRandom.current;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_01_Set_Array_Test
  */
-@DisplayName("set(byte[]) arguments")
+@DisplayName("set(array) arguments")
 @Slf4j
 class HelloWorld_01_Set_Array_Arguments_Test extends HelloWorldTest {
 
@@ -57,9 +57,9 @@ class HelloWorld_01_Set_Array_Arguments_Test extends HelloWorldTest {
      * {@link IndexOutOfBoundsException} when {@code array.length} is less than
      * {@value HelloWorld#BYTES}.
      */
-    @DisplayName("[array.length < 12] -> IndexOutOfBoundsException")
+    @DisplayName("[array.length < BYTES] -> IndexOutOfBoundsException")
     @Test
-    void _ThrowIndexOutOfBoundsException_ArrayLengthIsLessThan12() {
+    void _ThrowIndexOutOfBoundsException_ArrayLengthIsLessThanBytes() {
         // GIVEN: HelloWorld
         var service = service();
         // GIVEN: array
