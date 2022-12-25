@@ -35,8 +35,9 @@ import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.notNull;
-import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * A class for testing {@link HelloWorld#write(WritableByteChannel)} method.
@@ -55,11 +56,11 @@ class HelloWorld_08_Write_WritableByteChannel_Test extends HelloWorldTest {
     @BeforeEach
     void stub_PutBuffer_ReturnBufferAsItsPositionIncreasedBy12() {
         var service = service();
-        lenient().doAnswer(i -> {
-                    var buffer = i.getArgument(0, ByteBuffer.class);
-                    buffer.position(buffer.position() + BYTES);
-                    return buffer;
-                })
+        doAnswer(i -> {
+            var buffer = i.getArgument(0, ByteBuffer.class);
+            buffer.position(buffer.position() + BYTES);
+            return buffer;
+        })
                 .when(service)
                 .put(argThat(b -> b != null && b.remaining() >= BYTES));
     }
@@ -80,7 +81,7 @@ class HelloWorld_08_Write_WritableByteChannel_Test extends HelloWorldTest {
         // GIVEN: WritableByteChannel
         var channel = mock(WritableByteChannel.class);               // <1>
         var writtenSoFar = new LongAdder();                          // <2>
-        lenient().when(channel.write(notNull())).thenAnswer(i -> {   // <3>
+        when(channel.write(notNull())).thenAnswer(i -> {   // <3>
             var buffer = i.getArgument(0, ByteBuffer.class);         // <4>
             var written = current().nextInt(buffer.remaining() + 1); // <5>
             buffer.position(buffer.position() + written);            // <6>
@@ -107,7 +108,7 @@ class HelloWorld_08_Write_WritableByteChannel_Test extends HelloWorldTest {
         var service = service();
         // GIVEN: WritableByteChannel
         var channel = mock(WritableByteChannel.class);
-        lenient().when(channel.write(notNull())).thenAnswer(i -> {
+        when(channel.write(notNull())).thenAnswer(i -> {
             var buffer = i.getArgument(0, ByteBuffer.class);
             var written = buffer.remaining();
             buffer.position(buffer.limit());

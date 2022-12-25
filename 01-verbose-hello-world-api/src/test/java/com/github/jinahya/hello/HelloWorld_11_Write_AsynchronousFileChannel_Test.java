@@ -40,7 +40,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.longThat;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -82,8 +82,8 @@ class HelloWorld_11_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
         // GIVEN: AsynchronousByteChannel
         var channel = mock(AsynchronousFileChannel.class);
         var writtenSoFar = new LongAdder();
-        lenient().when(channel.write(argThat(b -> b != null && b.hasRemaining()),
-                                     longThat(p -> p >= 0L)))
+        when(channel.write(argThat(b -> b != null && b.hasRemaining()),
+                           longThat(p -> p >= 0L)))
                 .thenAnswer(i -> {
                     ByteBuffer buffer = i.getArgument(0);
                     long position = i.getArgument(1);
@@ -91,7 +91,7 @@ class HelloWorld_11_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
                     buffer.position(buffer.position() + written);
                     writtenSoFar.add(written);
                     var future = mock(Future.class);
-                    lenient().doReturn(written).when(future).get();
+                    doReturn(written).when(future).get();
                     return future;
                 });
         // GIVEN: position
@@ -121,15 +121,15 @@ class HelloWorld_11_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
         var service = service();
         // GIVEN: AsynchronousFileChannelChannel
         var channel = mock(AsynchronousFileChannel.class);
-        lenient().when(channel.write(argThat(b -> b != null && b.hasRemaining()),
-                                     longThat(p -> p >= 0L)))
+        when(channel.write(argThat(b -> b != null && b.hasRemaining()),
+                           longThat(p -> p >= 0L)))
                 .thenAnswer(i -> {
                     ByteBuffer buffer = i.getArgument(0);
                     long position = i.getArgument(1);
                     var written = buffer.remaining();
                     buffer.position(buffer.position() + written);
                     var future = mock(Future.class);
-                    lenient().doReturn(written).when(future).get();
+                    doReturn(written).when(future).get();
                     return future;
                 });
         // GIVEN: position

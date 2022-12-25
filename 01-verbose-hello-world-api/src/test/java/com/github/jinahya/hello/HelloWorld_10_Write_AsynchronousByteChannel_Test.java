@@ -38,9 +38,11 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * A class for testing {@link HelloWorld#write(AsynchronousByteChannel)} method.
@@ -79,13 +81,13 @@ class HelloWorld_10_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
         // GIVEN: AsynchronousByteChannel
         var channel = mock(AsynchronousByteChannel.class);
         var writtenSoFar = new LongAdder();
-        lenient().when(channel.write(argThat(b -> b != null && b.hasRemaining()))).thenAnswer(i -> {
+        when(channel.write(argThat(b -> b != null && b.hasRemaining()))).thenAnswer(i -> {
             var buffer = i.getArgument(0, ByteBuffer.class);
             var written = current().nextInt(buffer.remaining() + 1);
             buffer.position(buffer.position() + written);
             writtenSoFar.add(written);
             var future = mock(Future.class);
-            lenient().doReturn(written).when(future).get();
+            doReturn(written).when(future).get();
             return future;
         });
         // WHEN
@@ -112,12 +114,12 @@ class HelloWorld_10_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
         var service = service();
         // GIVEN: AsynchronousByteChannel
         var channel = mock(AsynchronousByteChannel.class);
-        lenient().when(channel.write(argThat(b -> b != null && b.hasRemaining()))).thenAnswer(i -> {
+        when(channel.write(argThat(b -> b != null && b.hasRemaining()))).thenAnswer(i -> {
             var buffer = i.getArgument(0, ByteBuffer.class);
             var written = buffer.remaining();
             buffer.position(buffer.position() + written);
             var future = mock(Future.class);
-            lenient().doReturn(written).when(future).get();
+            doReturn(written).when(future).get();
             return future;
         });
         // WHEN

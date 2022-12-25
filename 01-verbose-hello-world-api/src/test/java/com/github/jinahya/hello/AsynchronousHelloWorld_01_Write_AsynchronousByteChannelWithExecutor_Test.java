@@ -37,11 +37,12 @@ import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.notNull;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * A class for testing {@link AsynchronousHelloWorld#write(AsynchronousByteChannel)} method.
@@ -61,11 +62,11 @@ class AsynchronousHelloWorld_01_Write_AsynchronousByteChannelWithExecutor_Test
      */
     @BeforeEach
     void stub_PutBuffer_IncreaseBufferPositionBy12() {
-        lenient().doAnswer(i -> {
-                    var buffer = i.getArgument(0, ByteBuffer.class);
-                    buffer.position(buffer.position() + BYTES);
-                    return buffer;
-                })
+        doAnswer(i -> {
+            var buffer = i.getArgument(0, ByteBuffer.class);
+            buffer.position(buffer.position() + BYTES);
+            return buffer;
+        })
                 .when(service())
                 .put(argThat(b -> b != null && b.remaining() >= BYTES));
     }
@@ -88,7 +89,7 @@ class AsynchronousHelloWorld_01_Write_AsynchronousByteChannelWithExecutor_Test
         // GIVEN: AsynchronousByteChannel
         var channel = mock(AsynchronousByteChannel.class);
         var writtenSoFar = new LongAdder();
-        lenient().when(channel.write(argThat(b -> b != null && b.hasRemaining()))).thenAnswer(i -> {
+        when(channel.write(argThat(b -> b != null && b.hasRemaining()))).thenAnswer(i -> {
             var buffer = i.getArgument(0, ByteBuffer.class);
             var written = current().nextInt(buffer.remaining() + 1);
             buffer.position(buffer.position() + written);
@@ -99,7 +100,7 @@ class AsynchronousHelloWorld_01_Write_AsynchronousByteChannelWithExecutor_Test
         });
         // GIVEN: Executor
         var executor = mock(Executor.class);
-        lenient().doAnswer(i -> {
+        doAnswer(i -> {
             var runnable = i.getArgument(0, Runnable.class);
             new Thread(runnable).start();
             return null;

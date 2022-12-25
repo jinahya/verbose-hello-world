@@ -31,9 +31,8 @@ import java.net.Socket;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.isNotNull;
-import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -75,7 +74,7 @@ class HelloWorld_04_Send_Socket_Test extends HelloWorldTest {
         var socket = spy(new Socket());                            // <1>
         // GIVEN: OutputStream
         var stream = mock(OutputStream.class);                     // <2>
-        lenient().doReturn(stream).when(socket).getOutputStream(); // <3>
+        doReturn(stream).when(socket).getOutputStream(); // <3>
         // WHEN
         service.send(socket);                                      // <4>
         // THEN: once, write(stream) invoked
@@ -96,7 +95,7 @@ class HelloWorld_04_Send_Socket_Test extends HelloWorldTest {
         var socket = spy(new Socket());
         // GIVEN: OutputStream
         var stream = mock(OutputStream.class);
-        lenient().doReturn(stream).when(socket).getOutputStream();
+        doReturn(stream).when(socket).getOutputStream();
         // WHEN
         var actual = service.send(socket);
         // THEN

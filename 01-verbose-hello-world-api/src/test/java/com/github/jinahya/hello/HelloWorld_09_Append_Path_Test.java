@@ -36,7 +36,7 @@ import static java.nio.file.Files.createTempFile;
 import static java.nio.file.Files.size;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.notNull;
-import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.doAnswer;
 
 /**
  * A class for testing {@link HelloWorld#append(Path)} method.
@@ -51,13 +51,13 @@ class HelloWorld_09_Append_Path_Test extends HelloWorldTest {
     @BeforeEach
     void stub_WriteChannel_Write12Bytes() throws IOException {
         var service = service();
-        lenient().doAnswer(i -> {
-                    var channel = i.getArgument(0, WritableByteChannel.class);
-                    for (var b = allocate(BYTES); b.hasRemaining(); ) {
-                        channel.write(b);
-                    }
-                    return channel;
-                })
+        doAnswer(i -> {
+            WritableByteChannel channel = i.getArgument(0);
+            for (var b = allocate(BYTES); b.hasRemaining(); ) {
+                channel.write(b);
+            }
+            return channel;
+        })
                 .when(service)
                 .write((WritableByteChannel) notNull());
     }
