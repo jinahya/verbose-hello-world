@@ -65,7 +65,7 @@ class HelloWorld_01_Set_Array_Test extends HelloWorldTest {
         var array = new byte[BYTES];
         // WHEN
         // TODO: Invokes service.set(array)
-        // THEN
+        // THEN: once, set(array, 0) invoked
         // TODO: Verify set(array, 0) invoked
     }
 
