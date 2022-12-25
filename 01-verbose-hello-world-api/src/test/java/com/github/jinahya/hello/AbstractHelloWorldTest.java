@@ -76,10 +76,12 @@ abstract class AbstractHelloWorldTest<T extends HelloWorld> {
      * Stubs {@link HelloWorld#set(byte[], int) set(array, index)} method to just return the
      * {@code array} argument.
      */
-    @BeforeEach
+//    @BeforeEach
     void stub_SetArrayIndex_ReturnArray() {
         when(service.set(any(), anyInt()))            // <1>
-                .thenAnswer(i -> i.getArgument(0));   // <2>
+                .thenAnswer(i -> {
+                    return i.getArgument(0);
+                });   // <2>
     }
 
     void verify_SetArrayIndex_Invoked(VerificationMode mode,
@@ -110,6 +112,17 @@ abstract class AbstractHelloWorldTest<T extends HelloWorld> {
         assertTrue(index + BYTES <= array.length);
         arrayConsumer.accept(array);
         indexConsumer.accept(index);
+    }
+
+    /**
+     * Stubs {@link HelloWorld#set(byte[], int) set(array, index)} method to just return the
+     * {@code array} argument.
+     */
+    void stub_SetArray_ReturnArray() {
+        when(service.set(any()))          // <1>
+                .thenAnswer(i -> {
+                    return i.getArgument(0);
+                });   // <2>
     }
 
     /**

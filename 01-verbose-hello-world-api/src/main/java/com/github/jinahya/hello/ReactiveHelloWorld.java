@@ -23,6 +23,10 @@ package com.github.jinahya.hello;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
+import java.util.concurrent.Flow;
+
 /**
  * An interface for generating <a href="#hello-world-bytes">hello-world-bytes</a> to various
  * targets.
@@ -57,5 +61,54 @@ public interface ReactiveHelloWorld extends HelloWorld {
      */
     private System.Logger logger() {
         return System.getLogger(getClass().getName());
+    }
+
+    default void subscribe(Flow.Subscriber<String> subscriber) {
+        Objects.requireNonNull(subscriber, "subscriber is null");
+        var subscription = new Flow.Subscription() {
+            @Override
+            public synchronized void request(long n) {
+                if (canceled) {
+                    log().warn("already canceled");
+                    return;
+                }
+                if (n <= 0L) {
+                    subscriber.onError(
+                            new IllegalArgumentException("n(" + n + ") is not positive"));
+                }
+                if (thread != null) {
+                    log().debug("joining the read...");
+                    try {
+                        thread.join();
+                        log().debug("joined to the thread");
+                    } catch (InterruptedException ie) {
+                        log().error("interrupted while joining the thread", ie);
+                        Thread.currentThread().interrupt();
+                    }
+                }
+                thread = new Thread(() -> {
+                    var array = new byte[BYTES];
+                    array = set(array);
+                    var string = new String(array, StandardCharsets.US_ASCII);
+                    for (int i = 0; i < n && !canceled; i++) {
+                        subscriber.onNext(string);
+                    }
+                    if (!canceled) {
+                        subscriber.onComplete();
+                    }
+                });
+                thread.start();
+            }
+
+            @Override
+            public synchronized void cancel() {
+                canceled = true;
+            }
+
+            private volatile boolean canceled = false;
+
+            private Thread thread = null;
+        };
+        subscriber.onSubscribe(subscription);
     }
 }

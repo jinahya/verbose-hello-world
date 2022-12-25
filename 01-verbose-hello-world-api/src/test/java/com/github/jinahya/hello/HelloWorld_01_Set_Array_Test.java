@@ -21,10 +21,14 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 
 /**
  * A class for unit-testing {@link HelloWorld#set(byte[])} method.
@@ -35,6 +39,13 @@ import static com.github.jinahya.hello.HelloWorld.BYTES;
 @DisplayName("set(byte[])")
 @Slf4j
 class HelloWorld_01_Set_Array_Test extends HelloWorldTest {
+
+    @BeforeEach
+    void stub_SetArrayIndex_ReturnArray() {
+        Mockito.doAnswer(i -> {
+            return i.getArgument(0);
+        }).when(service()).set(any(), anyInt());
+    }
 
     /**
      * Asserts {@link HelloWorld#set(byte[]) set(array)} method invokes
