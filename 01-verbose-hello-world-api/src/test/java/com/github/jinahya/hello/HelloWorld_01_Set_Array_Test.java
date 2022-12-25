@@ -24,11 +24,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doAnswer;
 
 /**
  * A class for unit-testing {@link HelloWorld#set(byte[])} method.
@@ -40,9 +40,13 @@ import static org.mockito.ArgumentMatchers.anyInt;
 @Slf4j
 class HelloWorld_01_Set_Array_Test extends HelloWorldTest {
 
+    /**
+     * Stubs {@link HelloWorld#set(byte[], int) set(array, index)} method to just return the
+     * {@code array} argument.
+     */
     @BeforeEach
     void stub_SetArrayIndex_ReturnArray() {
-        Mockito.doAnswer(i -> {
+        doAnswer(i -> {
             return i.getArgument(0);
         }).when(service()).set(any(), anyInt());
     }
