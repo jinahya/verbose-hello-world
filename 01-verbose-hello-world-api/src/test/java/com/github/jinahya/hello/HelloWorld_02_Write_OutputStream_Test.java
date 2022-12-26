@@ -48,6 +48,9 @@ class HelloWorld_02_Write_OutputStream_Test extends HelloWorldTest {
      */
     @BeforeEach
     void _ReturnArray_SetArray() {
+        // GIVEN
+        var service = service();
+        // WHEN service.set(array) invoked THEN just return array
         doAnswer(i -> i.getArgument(0))
                 .when(service())
                 .set(any());

@@ -21,7 +21,6 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -45,7 +44,7 @@ class HelloWorld_01_Set_Array_Test extends HelloWorldTest {
      * {@code array} argument.
      */
     @DisplayName("set(array, index) returns array")
-    @BeforeEach
+    @org.junit.jupiter.api.BeforeEach
     void _ReturnArray_SetArrayIndex() {
         when(service().set(any(), anyInt()))
                 .thenAnswer(i -> i.getArgument(0));
