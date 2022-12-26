@@ -24,6 +24,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -37,7 +39,10 @@ import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 
 import static java.util.Objects.requireNonNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 /**
  * An abstract class for testing methods defined in {@link HelloWorld} interface.
@@ -53,6 +58,17 @@ abstract class AbstractHelloWorldTest<T extends HelloWorld> {
     AbstractHelloWorldTest(final Class<T> serviceClass) {
         super();
         service = spy(requireNonNull(serviceClass, "serviceClass is null"));
+    }
+
+    /**
+     * Stubs {@link HelloWorld#set(byte[], int) set(array, index)} method to just return the
+     * {@code array} argument.
+     */
+    @DisplayName("set(array, index) returns array")
+    @BeforeEach
+    void _ReturnArray_SetArrayIndex() {
+        when(service().set(any(), anyInt()))        // <1>
+                .thenAnswer(i -> i.getArgument(0)); // <2>
     }
 
     @Accessors(fluent = true)

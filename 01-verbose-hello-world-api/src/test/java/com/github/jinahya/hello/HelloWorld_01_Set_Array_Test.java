@@ -25,9 +25,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.when;
 
 /**
  * A class for unit-testing {@link HelloWorld#set(byte[])} method.
@@ -38,17 +35,6 @@ import static org.mockito.Mockito.when;
 @DisplayName("set(array)")
 @Slf4j
 class HelloWorld_01_Set_Array_Test extends HelloWorldTest {
-
-    /**
-     * Stubs {@link HelloWorld#set(byte[], int) set(array, index)} method to just return the
-     * {@code array} argument.
-     */
-    @DisplayName("set(array, index) returns array")
-    @org.junit.jupiter.api.BeforeEach
-    void _ReturnArray_SetArrayIndex() {
-        when(service().set(any(), anyInt()))        // <1>
-                .thenAnswer(i -> i.getArgument(0)); // <2>
-    }
 
     /**
      * Asserts {@link HelloWorld#set(byte[]) set(array)} method invokes

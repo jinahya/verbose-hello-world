@@ -50,12 +50,13 @@ class HelloWorld_03_Append_File_Test extends HelloWorldTest {
      * Stubs {@link HelloWorld#write(OutputStream) write(stream)} method to write
      * {@value HelloWorld#BYTES} bytes to the {@code stream}, and returns the {@code stream}.
      */
-    @BeforeEach
-    void stub_ReturnArray_SetArray() throws IOException {
+    @DisplayName("[stubbing] write(stream) writes 12 bytes and returns stream")
+    @org.junit.jupiter.api.BeforeEach
+    void _Write12BytesReturnArray_WriteStream() throws IOException {
         doAnswer(i -> {
-            OutputStream stream = i.getArgument(0);
-            for (int j = 0; j < BYTES; j++) {
-                stream.write(0);
+            OutputStream stream = i.getArgument(0); // <1>
+            for (int j = 0; j < BYTES; j++) {       // <2>
+                stream.write(0);                    // <3>
             }
             return stream;
         }).when(service()).write(any(OutputStream.class));
