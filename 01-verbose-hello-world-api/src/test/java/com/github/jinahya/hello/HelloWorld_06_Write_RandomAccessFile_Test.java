@@ -131,5 +131,6 @@ class HelloWorld_06_Write_RandomAccessFile_Test extends HelloWorldTest {
             file.getFD().sync();
         }
         // THEN: tmp.length() is equal to (pos + 12)
+        // TODO: Verify tmp.length() is equal to (pos + BYTES)
     }
 }
