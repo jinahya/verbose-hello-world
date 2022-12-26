@@ -28,7 +28,6 @@ import org.junit.jupiter.api.Test;
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
 /**
@@ -45,12 +44,11 @@ class HelloWorld_01_Set_Array_Test extends HelloWorldTest {
      * Stubs {@link HelloWorld#set(byte[], int) set(array, index)} method to just return the
      * {@code array} argument.
      */
+    @DisplayName("set(array, index) returns array")
     @BeforeEach
-    void stub_SetArrayIndex_ReturnArray() {
-        when(service().set(any(), anyInt())).thenAnswer(i -> i.getArgument(0));
-//        doAnswer(i -> i.getArgument(0)) // <3>
-//                .when(service())        // <1>
-//                .set(any(), anyInt());  // <2>
+    void _ReturnArray_SetArrayIndex() {
+        when(service().set(any(), anyInt()))
+                .thenAnswer(i -> i.getArgument(0));
     }
 
     /**
@@ -66,7 +64,7 @@ class HelloWorld_01_Set_Array_Test extends HelloWorldTest {
         // GIVEN: array
         var array = new byte[BYTES];
         // WHEN
-        // TODO: Invokes service.set(array)
+        // TODO: Invoke service.set(array)
         // THEN: once, set(array, 0) invoked
         // TODO: Verify set(array, 0) invoked
     }
