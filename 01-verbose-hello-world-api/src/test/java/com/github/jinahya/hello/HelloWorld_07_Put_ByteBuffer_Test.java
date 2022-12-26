@@ -27,6 +27,9 @@ import org.junit.jupiter.api.Test;
 import java.nio.ByteBuffer;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
+import static java.nio.ByteBuffer.allocate;
+import static java.nio.ByteBuffer.wrap;
+import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
@@ -120,5 +123,42 @@ class HelloWorld_07_Put_ByteBuffer_Test extends HelloWorldTest {
         var actual = service.put(buffer);
         // THEN
         assertSame(buffer, actual);
+    }
+
+    /**
+     * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method, when the {@code buffer} has a
+     * backing array, invokes {@link HelloWorld#set(byte[], int) set(array, index)} method with
+     * {@code buffer.array} and ({@code buffer.arrayOffset + buffer.position}), and asserts that the
+     * {@code buffer.position} is increased by {@value HelloWorld#BYTES}.
+     */
+    @DisplayName("[.hasArray()]"
+                 + " -> set(.array, .arrayOffset + .position)"
+                 + " -> .position += 12")
+    @Test
+    @畵蛇添足
+    void _InvokeSetArrayIndexAndIncrementPosition_BufferHasArray2() {
+        // GIVEN
+        var service = service();
+        var capacity = BYTES + (BYTES << 1); // BYTES * 3
+        var buffer = current().nextBoolean() ? wrap(new byte[capacity]) : allocate(capacity);
+        assert buffer.hasArray();
+        ByteBuffer slice;
+        {
+            var index = current().nextInt(BYTES);
+            var length = buffer.capacity() - index;
+            slice = buffer.slice(index, length);
+            if (slice.remaining() > BYTES) {
+            }
+        }
+        assert slice.hasArray();
+        assert slice.remaining() >= BYTES;
+        assert slice.position() == 0;
+        var arrayOffset = slice.arrayOffset();
+        var position = slice.position();
+        log.debug("arrayOffset: {}", arrayOffset);
+        // WHEN
+        service.put(buffer);
+        // THEN: once, set(array, arrayOffset + position) invoked
+        // THEN: once, buffer.position(position + 12) invoked
     }
 }
