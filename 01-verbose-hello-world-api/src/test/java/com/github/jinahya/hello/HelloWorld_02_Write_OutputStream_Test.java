@@ -56,7 +56,7 @@ class HelloWorld_02_Write_OutputStream_Test extends HelloWorldTest {
      * Asserts {@link HelloWorld#write(OutputStream) write(stream)} method invokes
      * {@link HelloWorld#set(byte[]) set(array)} method with an array of {@value HelloWorld#BYTES}
      * bytes, and invokes {@link OutputStream#write(byte[])} method on {@code stream} with the
-     * array.
+     * {@code array}.
      *
      * @throws IOException if an I/O error occurs.
      */
