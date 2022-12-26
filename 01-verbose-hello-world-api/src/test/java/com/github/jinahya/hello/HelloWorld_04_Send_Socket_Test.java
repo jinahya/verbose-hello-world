@@ -73,7 +73,7 @@ class HelloWorld_04_Send_Socket_Test extends HelloWorldTest {
         when(socket.getOutputStream()).thenReturn(stream); // <3>
         // WHEN
         service.send(socket);                              // <4>
-        // THEN: once, socket.getOutputStream() invoked    // <5>
+        // THEN: only, socket.getOutputStream() invoked    // <5>
         // TODO: Verify socket.getOutputStream invoked
         // THEN: once, write(stream) invoked               // <6>
         // TODO: Verify write(stream) invoked
