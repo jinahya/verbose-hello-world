@@ -119,11 +119,13 @@ class HelloWorld_05_Write_DataOutput_Test extends HelloWorldTest {
         var service = service();
         try (var baos = new ByteArrayOutputStream();
              var dos = new DataOutputStream(baos)) {
+            // TODO: Write some to baos
+            var size = baos.size();
             // WHEN
             service.write((DataOutput) dos);
             dos.flush();
-            // THEN: baos.size() is equals to HelloWorld.BYTES
-            // TODO: Verify baos.size() is equal to BYTES
+            // THEN: baos.size() is equals to (size + HelloWorld.BYTES)
+            // TODO: Verify baos.size() is equal to (size + BYTES)
         }
     }
 
