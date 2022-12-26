@@ -44,7 +44,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
- * A class for testing {@link HelloWorld#write(DataOutput)} method.
+ * A class for testing {@link HelloWorld#write(DataOutput) write(data)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_05_Write_DataOutput_Arguments_Test
@@ -60,7 +60,7 @@ class HelloWorld_05_Write_DataOutput_Test extends HelloWorldTest {
     void stub_ReturnArray_SetArray() {
         doAnswer(i -> i.getArgument(0))
                 .when(service())
-                .set(any(byte[].class));
+                .set(any());
     }
 
     /**
@@ -74,9 +74,8 @@ class HelloWorld_05_Write_DataOutput_Test extends HelloWorldTest {
                  + ", invokes data.write(array)")
     @Test
     void _InvokeSetArrayWriteArrayToData_() throws IOException {
-        // GIVEN: HelloWorld
+        // GIVEN
         var service = service();
-        // GIVEN: DataOutput
         var data = mock(DataOutput.class);                      // <1>
         // WHEN
         service.write(data);                                    // <2>
@@ -84,7 +83,8 @@ class HelloWorld_05_Write_DataOutput_Test extends HelloWorldTest {
         verify(service, times(1)).set(arrayCaptor().capture()); // <3>
         var array = arrayCaptor().getValue();
         assertEquals(BYTES, array.length);                      // <4>
-        // THEN: once, data.write(array) invoked
+        // THEN: only, data.write(array) invoked
+        // TODO: Verify data.write(array) invoked
     }
 
     /**
@@ -114,7 +114,7 @@ class HelloWorld_05_Write_DataOutput_Test extends HelloWorldTest {
     @DisplayName("writes 12 bytes")
     @Test
     @畵蛇添足
-    void _Append12Bytes_() throws IOException {
+    void _Write12Bytes_() throws IOException {
         // GIVEN
         var service = service();
         try (var baos = new ByteArrayOutputStream();
@@ -123,6 +123,7 @@ class HelloWorld_05_Write_DataOutput_Test extends HelloWorldTest {
             service.write((DataOutput) dos);
             dos.flush();
             // THEN: baos.size() is equals to HelloWorld.BYTES
+            // TODO: Verify baos.size() is equal to BYTES
         }
     }
 
@@ -137,16 +138,16 @@ class HelloWorld_05_Write_DataOutput_Test extends HelloWorldTest {
     @Test
     @畵蛇添足
     void _Append12Bytes_(@TempDir File tempDir) throws IOException {
-        // GIVEN: HelloWorld
+        // GIVEN
         var service = service();
         var file = createTempFile("tmp", null, tempDir);
         try (var fos = new FileOutputStream(file);
-             // GIVEN: DataOutput
              var dos = new DataOutputStream(fos)) {
             // WHEN
             service.write((DataOutput) dos);
             dos.flush();
         }
         // THEN: file.length() is equal to HelloWorld.BYTES
+        // TODO: Verify file.length() is equal to BYTES
     }
 }

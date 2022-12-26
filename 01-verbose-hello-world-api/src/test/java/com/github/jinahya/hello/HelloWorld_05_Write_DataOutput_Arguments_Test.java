@@ -29,7 +29,7 @@ import java.io.DataOutput;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
- * A class for testing {@link HelloWorld#write(DataOutput)} method regarding arguments
+ * A class for testing {@link HelloWorld#write(DataOutput) write(data)} method regarding arguments
  * verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
@@ -43,12 +43,11 @@ class HelloWorld_05_Write_DataOutput_Arguments_Test extends HelloWorldTest {
      * Asserts {@link HelloWorld#write(DataOutput) write(data)} method throws a
      * {@link NullPointerException} when the {@code data} argument is {@code null}.
      */
-    @DisplayName("write(null) throws NullPointerException")
+    @DisplayName("[data == null] -> NullPointerException")
     @Test
-    void _ThrowsNullPointerException_DataIsNull() {
-        // GIVEN: HelloWorld
+    void _ThrowNullPointerException_DataIsNull() {
+        // GIVEN
         var service = service();
-        // GIVEN: DataOutput
         DataOutput data = null;
         // WHEN/THEN
         assertThrows(NullPointerException.class, () -> service.write(data));
