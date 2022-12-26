@@ -41,7 +41,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
-import static org.mockito.Mockito.withSettings;
 
 /**
  * A class for testing {@link HelloWorld#append(File)} method.
@@ -73,7 +72,7 @@ class HelloWorld_03_Append_File_Test extends HelloWorldTest {
      * Asserts {@link HelloWorld#append(File) append(file)} method invokes
      * {@link HelloWorld#write(OutputStream) write(stream)} method with an instance of
      * {@link FileOutputStream}, and asserts {@value HelloWorld#BYTES} bytes are written to the
-     * passed {@code stream}.
+     * passed {@code stream}. {@link FileOutputStream#FileOutputStream(File, boolean)}
      *
      * @throws IOException if an I/O error occurs.
      */
@@ -98,9 +97,17 @@ class HelloWorld_03_Append_File_Test extends HelloWorldTest {
             // TODO: Assert a is true
             return stream;
         };
+        MockedConstruction.MockInitializer<FileOutputStream> initializer = (m, c) -> {
+            var constructor = c.constructor();
+            // TODO: Assert constructor is FileOutputStream#FileOutputStream(File, boolean)
+            var arguments = c.arguments();
+            // TODO: Assert arguments[0] is file
+            // TODO: Assert arguments[1] is true
+            var count = c.getCount();
+            // TODO: Assert count == 1
+        };
         try (MockedConstruction<FileOutputStream> construction
-                     = mockConstruction(FileOutputStream.class,
-                                        withSettings().spiedInstance(stream))) {
+                     = mockConstruction(FileOutputStream.class, initializer)) {
             // WHEN
             service.append(file);
             // THEN: once, new FileOutputStream() invoked
