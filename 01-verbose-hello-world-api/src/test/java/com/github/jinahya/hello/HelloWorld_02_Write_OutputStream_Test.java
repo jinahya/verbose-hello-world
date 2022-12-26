@@ -29,8 +29,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * A class for testing {@link HelloWorld#write(OutputStream) write(stream)} method.
@@ -38,7 +38,7 @@ import static org.mockito.Mockito.mock;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_02_Write_OutputStream_Arguments_Test
  */
-@DisplayName("write(OutputStream)")
+@DisplayName("write(stream)")
 @Slf4j
 class HelloWorld_02_Write_OutputStream_Test extends HelloWorldTest {
 
@@ -47,10 +47,9 @@ class HelloWorld_02_Write_OutputStream_Test extends HelloWorldTest {
      * argument.
      */
     @BeforeEach
-    void stub_ReturnArray_SetArray() {
-        doAnswer(i -> i.getArgument(0))
-                .when(service())
-                .set(any());
+    void _ReturnArray_SetArray() {
+        when(service().set(any()))                  // <1>
+                .thenAnswer(i -> i.getArgument(0)); // <2>
     }
 
     /**
@@ -71,10 +70,10 @@ class HelloWorld_02_Write_OutputStream_Test extends HelloWorldTest {
         // TODO: Create a mock object of java.io.OutputStream, say 'stream'
         // WHEN
         // TODO: Invoke service.write(stream)
-        // THEN: once, set(array[12])
-        // TODO: Verify service invoked set(array[12])
-        // THEN: once, write(array)
-        // TODO: Verify service invoked stream.write(array)
+        // THEN: once, set(array[12]) invoked
+        // TODO: Verify set(array[12]) invoked
+        // THEN: once, write(array) invoked
+        // TODO: Verify stream.write(array) invoked
     }
 
     /**

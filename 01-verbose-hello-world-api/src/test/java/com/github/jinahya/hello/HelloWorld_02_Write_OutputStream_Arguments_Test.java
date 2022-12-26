@@ -33,7 +33,7 @@ import java.io.OutputStream;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_02_Write_OutputStream_Test
  */
-@DisplayName("write(OutputStream) arguments")
+@DisplayName("write(stream) arguments")
 @Slf4j
 class HelloWorld_02_Write_OutputStream_Arguments_Test extends HelloWorldTest {
 
@@ -41,7 +41,7 @@ class HelloWorld_02_Write_OutputStream_Arguments_Test extends HelloWorldTest {
      * Asserts {@link HelloWorld#write(OutputStream) write(stream)} method throws a
      * {@link NullPointerException} when the {@code stream} argument is {@code null}.
      */
-    @DisplayName("write(null) throws NullPointerException")
+    @DisplayName("[stream == null] -> NullPointerException")
     @Test
     void _ThrowNullPointerException_StreamIsNull() {
         // GIVEN: HelloWorld
