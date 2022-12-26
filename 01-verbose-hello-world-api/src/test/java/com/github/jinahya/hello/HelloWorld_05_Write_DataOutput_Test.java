@@ -141,14 +141,15 @@ class HelloWorld_05_Write_DataOutput_Test extends HelloWorldTest {
         // GIVEN
         var service = service();
         var file = createTempFile("tmp", null, tempDir);
+        // TODO: write some to file
         var length = file.length();
-        try (var fos = new FileOutputStream(file);
+        try (var fos = new FileOutputStream(file, true);
              var dos = new DataOutputStream(fos)) {
             // WHEN
             service.write((DataOutput) dos);
             dos.flush();
         }
-        // THEN: file.length() is equal to HelloWorld.BYTES
+        // THEN: file.length() is equal to (length + HelloWorld.BYTES)
         // TODO: Verify file.length() is equal to (length + BYTES)
     }
 }
