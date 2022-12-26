@@ -31,7 +31,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
-import java.util.concurrent.atomic.LongAdder;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.io.File.createTempFile;
@@ -103,10 +102,29 @@ class HelloWorld_03_Append_File_Test extends HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#append(File) append(file)} method invokes
-     * {@link HelloWorld#write(OutputStream) write(stream)} method with an instance of
-     * {@link FileOutputStream}, and asserts {@value HelloWorld#BYTES} bytes are appended to the
-     * {@code file}.
+     * Asserts {@link HelloWorld#append(File) append(file)} returns given {@code file} arguments.
+     *
+     * @throws IOException if an I/O error occurs.
+     */
+    @DisplayName("returns file")
+    @Test
+    void _ReturnFile_() throws IOException {
+        // GIVEN
+        var service = service();
+        var file = mock(File.class);
+        try (MockedConstruction<FileOutputStream> construction
+                     = mockConstruction(FileOutputStream.class, (m, c) -> {
+        })) {
+            // WHEN
+            var actual = service.append(file);
+            // THEN
+            assertSame(file, actual);
+        }
+    }
+
+    /**
+     * Asserts {@link HelloWorld#append(File) append(file)} method appends {@value HelloWorld#BYTES}
+     * bytes to the {@code file}.
      *
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
@@ -114,6 +132,7 @@ class HelloWorld_03_Append_File_Test extends HelloWorldTest {
     @DisplayName("invokes write(FileOutputStream)"
                  + ", 12 bytes are appended to the file")
     @Test
+    @畵蛇添足
     void _InvokeWriteStreamAnd12BytesAppended_(@TempDir File tempDir) throws IOException {
         // GIVEN: HelloWorld
         var service = service();
@@ -122,7 +141,6 @@ class HelloWorld_03_Append_File_Test extends HelloWorldTest {
         var length = file.length();
         // WHEN
         service.append(file);
-        // THEN: once, service.write(FileOutputStream) invoked
         // THEN: file.length() increased by 12
     }
 
@@ -135,9 +153,8 @@ class HelloWorld_03_Append_File_Test extends HelloWorldTest {
     @DisplayName("returns file")
     @Test
     void _ReturnFile_(@TempDir File tempDir) throws IOException {
-        // GIVEN: HelloWorld
+        // GIVEN
         var service = service();
-        // GIVEN: File
         var file = createTempFile("tmp", null, tempDir);
         // WHEN
         var actual = service.append(file);
