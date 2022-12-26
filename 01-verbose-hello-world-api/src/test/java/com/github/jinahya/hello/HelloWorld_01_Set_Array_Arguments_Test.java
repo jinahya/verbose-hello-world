@@ -33,7 +33,7 @@ import static java.util.concurrent.ThreadLocalRandom.current;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_01_Set_Array_Test
  */
-@DisplayName("set(byte[]) arguments")
+@DisplayName("set(array) arguments")
 @Slf4j
 class HelloWorld_01_Set_Array_Arguments_Test extends HelloWorldTest {
 

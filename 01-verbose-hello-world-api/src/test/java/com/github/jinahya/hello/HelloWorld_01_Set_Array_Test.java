@@ -27,7 +27,9 @@ import org.junit.jupiter.api.Test;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.when;
 
 /**
  * A class for unit-testing {@link HelloWorld#set(byte[])} method.
@@ -35,7 +37,7 @@ import static org.mockito.Mockito.doAnswer;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_01_Set_Array_Arguments_Test
  */
-@DisplayName("set(byte[])")
+@DisplayName("set(array)")
 @Slf4j
 class HelloWorld_01_Set_Array_Test extends HelloWorldTest {
 
@@ -45,9 +47,10 @@ class HelloWorld_01_Set_Array_Test extends HelloWorldTest {
      */
     @BeforeEach
     void stub_SetArrayIndex_ReturnArray() {
-        doAnswer(i -> i.getArgument(0))
-                .when(service())
-                .set(any(), any());
+        when(service().set(any(), anyInt())).thenAnswer(i -> i.getArgument(0));
+//        doAnswer(i -> i.getArgument(0)) // <3>
+//                .when(service())        // <1>
+//                .set(any(), anyInt());  // <2>
     }
 
     /**
