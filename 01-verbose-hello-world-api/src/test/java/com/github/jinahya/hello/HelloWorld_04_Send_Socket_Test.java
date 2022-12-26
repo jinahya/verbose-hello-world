@@ -32,9 +32,8 @@ import java.net.Socket;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 /**
  * A class for testing {@link HelloWorld#send(Socket)} method.
@@ -51,7 +50,7 @@ class HelloWorld_04_Send_Socket_Test extends HelloWorldTest {
      * {@code stream} argument.
      */
     @BeforeEach
-    void stub_ReturnArray_SetArray() throws IOException {
+    void stub_ReturnStream_WriteStream() throws IOException {
         doAnswer(i -> i.getArgument(0))
                 .when(service())
                 .write(any(OutputStream.class));
@@ -67,16 +66,17 @@ class HelloWorld_04_Send_Socket_Test extends HelloWorldTest {
     @DisplayName("invokes write(socket.outputStream)")
     @Test
     void _InvokeWriteStreamWithSocketOutputStream_() throws IOException {
-        // GIVEN: HelloWorld
+        // GIVEN
         var service = service();
-        // GIVEN: Socket
-        var socket = spy(new Socket());                            // <1>
-        // GIVEN: OutputStream
-        var stream = mock(OutputStream.class);                     // <2>
-        doReturn(stream).when(socket).getOutputStream(); // <3>
+        var socket = mock(Socket.class);                   // <1>
+        var stream = mock(OutputStream.class);             // <2>
+        when(socket.getOutputStream()).thenReturn(stream); // <3>
         // WHEN
-        service.send(socket);                                      // <4>
-        // THEN: once, write(stream) invoked
+        service.send(socket);                              // <4>
+        // THEN: once, socket.getOutputStream() invoked    // <5>
+        // TODO: Verify socket.getOutputStream invoked
+        // THEN: once, write(stream) invoked               // <6>
+        // TODO: Verify write(stream) invoked
     }
 
     /**
@@ -88,13 +88,11 @@ class HelloWorld_04_Send_Socket_Test extends HelloWorldTest {
     @DisplayName("returns socket")
     @Test
     void _ReturnSocket_() throws IOException {
-        // GIVEN: HelloWorld
+        // GIVEN:
         var service = service();
-        // GIVEN: Socket
-        var socket = spy(new Socket());
-        // GIVEN: OutputStream
+        var socket = mock(Socket.class);
         var stream = mock(OutputStream.class);
-        doReturn(stream).when(socket).getOutputStream();
+        when(socket.getOutputStream()).thenReturn(stream);
         // WHEN
         var actual = service.send(socket);
         // THEN
