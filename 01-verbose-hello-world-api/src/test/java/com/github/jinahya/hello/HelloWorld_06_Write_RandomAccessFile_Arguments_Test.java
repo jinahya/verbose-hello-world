@@ -29,8 +29,8 @@ import java.io.RandomAccessFile;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
- * A class for testing {@link HelloWorld#write(RandomAccessFile)} method regarding arguments
- * verification.
+ * A class for testing {@link HelloWorld#write(RandomAccessFile) write(RandomAccessFile file)}
+ * method regarding arguments verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_06_Write_RandomAccessFile_Test
@@ -40,15 +40,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class HelloWorld_06_Write_RandomAccessFile_Arguments_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#write(RandomAccessFile file)} method throws a
-     * {@link NullPointerException} when the {@code file} argument is {@code null}.
+     * Asserts {@link HelloWorld#write(RandomAccessFile file) write(RandomAccessFile file)} method
+     * throws a {@link NullPointerException} when the {@code file} argument is {@code null}.
      */
-    @DisplayName("write(null) throws NullPointerException")
+    @DisplayName("[file == null] -> NullPointerException")
     @Test
     void _ThrowNullPointerException_FileIsNull() {
-        // GIVEN: HelloWorld
+        // GIVEN
         var service = service();
-        // GIVEN: RandomAccessFile
         RandomAccessFile file = null;
         // WHEN/THEN
         assertThrows(NullPointerException.class, () -> service.write(file));
