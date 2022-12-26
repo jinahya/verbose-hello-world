@@ -61,9 +61,7 @@ class HelloWorld_03_Append_File_Test extends HelloWorldTest {
     void _Write12BytesReturnStream_WriteStream() throws IOException {
         doAnswer(i -> {
             OutputStream stream = i.getArgument(0); // <1>
-            for (int j = 0; j < BYTES; j++) {       // <2>
-                stream.write(0);                    // <3>
-            }
+            stream.write(new byte[BYTES]);          // <2>
             return stream;
         }).when(service()).write(any(OutputStream.class));
     }
