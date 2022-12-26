@@ -47,9 +47,9 @@ class HelloWorld_02_Write_OutputStream_Test extends HelloWorldTest {
      */
     @org.junit.jupiter.api.BeforeEach
     void _ReturnArray_SetArray() {
-        doAnswer(i -> i.getArgument(0)) // <3>
-                .when(service())        // <1>
-                .set(any());            // <2>
+        doAnswer(i -> i.getArgument(0)) // <1>
+                .when(service())        // <2>
+                .set(any());            // <3>
     }
 
     /**
