@@ -46,8 +46,8 @@ class HelloWorld_01_Set_Array_Test extends HelloWorldTest {
     @DisplayName("set(array, index) returns array")
     @org.junit.jupiter.api.BeforeEach
     void _ReturnArray_SetArrayIndex() {
-        when(service().set(any(), anyInt()))
-                .thenAnswer(i -> i.getArgument(0));
+        when(service().set(any(), anyInt()))        // <1>
+                .thenAnswer(i -> i.getArgument(0)); // <2>
     }
 
     /**
