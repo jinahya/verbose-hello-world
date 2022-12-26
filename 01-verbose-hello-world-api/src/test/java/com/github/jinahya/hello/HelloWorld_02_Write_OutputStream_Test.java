@@ -21,7 +21,6 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -46,14 +45,11 @@ class HelloWorld_02_Write_OutputStream_Test extends HelloWorldTest {
      * Stubs {@link HelloWorld#set(byte[]) set(array)} method to just return the {@code array}
      * argument.
      */
-    @BeforeEach
+    @org.junit.jupiter.api.BeforeEach
     void _ReturnArray_SetArray() {
-        // GIVEN
-        var service = service();
-        // WHEN service.set(array) invoked THEN just return array
-        doAnswer(i -> i.getArgument(0))
-                .when(service())
-                .set(any());
+        doAnswer(i -> i.getArgument(0)) // <3>
+                .when(service())        // <1>
+                .set(any());            // <2>
     }
 
     /**
