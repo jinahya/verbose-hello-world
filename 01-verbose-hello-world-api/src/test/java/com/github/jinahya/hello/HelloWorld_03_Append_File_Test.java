@@ -131,9 +131,8 @@ class HelloWorld_03_Append_File_Test extends HelloWorldTest {
     @Test
     @畵蛇添足
     void _12BytesAppended_(@TempDir File tempDir) throws IOException {
-        // GIVEN: HelloWorld
+        // GIVEN
         var service = service();
-        // GIVEN: File
         var file = createTempFile("tmp", null, tempDir);
         var length = file.length();
         // WHEN
