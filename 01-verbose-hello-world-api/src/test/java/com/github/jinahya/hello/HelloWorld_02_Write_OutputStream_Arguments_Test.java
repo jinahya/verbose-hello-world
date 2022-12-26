@@ -44,11 +44,10 @@ class HelloWorld_02_Write_OutputStream_Arguments_Test extends HelloWorldTest {
     @DisplayName("[stream == null] -> NullPointerException")
     @Test
     void _ThrowNullPointerException_StreamIsNull() {
-        // GIVEN: HelloWorld
+        // GIVEN
         var service = service();
-        // GIVEN: OutputStream
         OutputStream stream = null;
-        // THEN: service.write(stream) throws a NullPointerException
-        // TODO: Assert a NullPointerException thrown when service.write(stream) invoked
+        // WHEN/THEN
+        // TODO: Assert service.write(stream) throws a NullPointerException
     }
 }

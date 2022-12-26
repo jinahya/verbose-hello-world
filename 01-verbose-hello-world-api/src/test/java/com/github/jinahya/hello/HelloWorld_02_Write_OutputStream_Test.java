@@ -64,9 +64,8 @@ class HelloWorld_02_Write_OutputStream_Test extends HelloWorldTest {
                  + ", invokes stream.write(array)")
     @Test
     void _InvokeSetArrayAndWriteArrayToStream_() throws IOException {
-        // GIVEN: HelloWorld
+        // GIVEN
         var service = service();
-        // GIVEN: OutputStream
         // TODO: Create a mock object of java.io.OutputStream, say 'stream'
         // WHEN
         // TODO: Invoke service.write(stream)
@@ -85,9 +84,8 @@ class HelloWorld_02_Write_OutputStream_Test extends HelloWorldTest {
     @DisplayName("returns stream")
     @Test
     void _ReturnStream_() throws IOException {
-        // GIVEN: HelloWorld
+        // GIVEN
         var service = service();
-        // GIVEN: OutputStream
         var stream = mock(OutputStream.class);
         // WHEN
         var actual = service.write(stream);
