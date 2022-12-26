@@ -27,7 +27,6 @@ import org.junit.jupiter.api.Test;
 import java.util.concurrent.Flow;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doAnswer;
 
 /**

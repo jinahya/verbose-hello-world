@@ -34,7 +34,6 @@ import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -69,16 +68,16 @@ class AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Test
         var channel = mock(AsynchronousByteChannel.class);
         var writtenSoFar = new LongAdder();
         doAnswer(i -> {
-                    var buffer = i.getArgument(0, ByteBuffer.class);
-                    assert buffer.hasRemaining();
-                    var attachment = i.getArgument(1);
-                    var handler = i.getArgument(2, CompletionHandler.class);
-                    var written = current().nextInt(buffer.remaining() + 1);
-                    buffer.position(buffer.position() + written);
-                    writtenSoFar.add(written);
-                    handler.completed(written, attachment);
-                    return null;
-                })
+            var buffer = i.getArgument(0, ByteBuffer.class);
+            assert buffer.hasRemaining();
+            var attachment = i.getArgument(1);
+            var handler = i.getArgument(2, CompletionHandler.class);
+            var written = current().nextInt(buffer.remaining() + 1);
+            buffer.position(buffer.position() + written);
+            writtenSoFar.add(written);
+            handler.completed(written, attachment);
+            return null;
+        })
                 .when(channel)
                 .write(any(), any(), any());
         // GIVEN: CompletionHandler

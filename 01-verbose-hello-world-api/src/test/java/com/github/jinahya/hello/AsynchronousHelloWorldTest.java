@@ -21,9 +21,6 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.mockito.Mockito;
-
-import static org.mockito.Mockito.spy;
 
 /**
  * An abstract class for testing methods defined in {@link AsynchronousHelloWorld} interface.
