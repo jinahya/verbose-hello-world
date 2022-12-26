@@ -27,13 +27,11 @@ import org.junit.jupiter.api.Test;
 import java.nio.ByteBuffer;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
-import static java.nio.ByteBuffer.allocate;
-import static java.nio.ByteBuffer.allocateDirect;
-import static java.nio.ByteBuffer.wrap;
-import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assumptions.assumeFalse;
-import static org.mockito.Mockito.spy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * A class for testing {@link HelloWorld#put(ByteBuffer)} method.
@@ -41,9 +39,21 @@ import static org.mockito.Mockito.spy;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_07_Put_ByteBuffer_Arguments_Test
  */
-@DisplayName("put(ByteBuffer)")
+@DisplayName("put(buffer)")
 @Slf4j
 class HelloWorld_07_Put_ByteBuffer_Test extends HelloWorldTest {
+
+    /**
+     * Stubs {@link HelloWorld#set(byte[]) set(array)} method to just return the {@code array}
+     * argument.
+     */
+    @DisplayName("[stubbing] set(array) returns array")
+    @org.junit.jupiter.api.BeforeEach
+    void stub_ReturnArray_SetArray() {
+        doAnswer(i -> i.getArgument(0))
+                .when(service())
+                .set(any());
+    }
 
     /**
      * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method, when the {@code buffer} has a
@@ -56,39 +66,15 @@ class HelloWorld_07_Put_ByteBuffer_Test extends HelloWorldTest {
                  + " -> .position += 12")
     @Test
     void _InvokeSetArrayIndexAndIncrementPosition_BufferHasBackingArray() {
-        // GIVEN: HelloWorld
+        // GIVEN
         var service = service();
-        // GIVEN: ByteBuffer
-        var buffer = ByteBuffer.allocate(BYTES + current().nextInt(BYTES));
-        if (buffer.remaining() > BYTES) {
-            buffer.position(current().nextInt(buffer.remaining() - BYTES));
-        }
-        if (current().nextBoolean()) {
-            var array = new byte[BYTES * 3];
-            var wrapper = wrap(array);
-            assert wrapper.hasArray();
-            assert wrapper.array() == array;
-            assert wrapper.arrayOffset() == 0;
-            assert wrapper.capacity() == array.length;
-            assert wrapper.limit() == wrapper.capacity();
-            assert wrapper.position() == 0;
-            assert wrapper.remaining() == wrapper.limit();
-            var index = current().nextInt(BYTES);
-            var length = current().nextInt(BYTES) + BYTES;
-            buffer = wrapper.slice(index, length);
-            assert buffer.array() == array;
-            assert buffer.hasArray();
-            assert buffer.arrayOffset() == index;
-            assert buffer.position() == 0;
-            if (buffer.remaining() > BYTES) {
-                buffer.position(current().nextInt(buffer.remaining() - BYTES));
-            }
-        }
-        assert buffer.hasArray();
-        assert buffer.remaining() >= BYTES;
-        var array = buffer.array();
-        var arrayOffset = buffer.arrayOffset();
-        var position = buffer.position();
+        var array = new byte[BYTES];
+        var buffer = mock(ByteBuffer.class);
+        when(buffer.remaining()).thenReturn(array.length);
+        when(buffer.hasArray()).thenReturn(true);
+        when(buffer.array()).thenReturn(array);
+        when(buffer.arrayOffset()).thenReturn(0);
+        when(buffer.position()).thenReturn(0);
         // WHEN
         service.put(buffer);
         // THEN: once, set(buffer.array, buffer.arrayOffset + buffer.position) invoked
@@ -106,18 +92,11 @@ class HelloWorld_07_Put_ByteBuffer_Test extends HelloWorldTest {
                  + " -> .put(array)")
     @Test
     void _InvokeSetArrayPutArrayToBuffer_BufferHasNoBackingArray() {
-        // GIVEN: HelloWorld
+        // GIVEN
         var service = service();
-        // GIVEN: ByteBuffer
-        var capacity = current().nextInt(BYTES) + BYTES;
-        var buffer = spy(allocateDirect(capacity));
-        assumeFalse(buffer.hasArray(), "a direct buffer has a backing array");
-        if (buffer.limit() > BYTES) {
-            buffer.position(current().nextInt(buffer.limit() - BYTES));
-        }
-        assert buffer.remaining() >= BYTES;
-        assert !buffer.hasArray();
-        var position = buffer.position();
+        var buffer = mock(ByteBuffer.class);
+        when(buffer.remaining()).thenReturn(BYTES);
+        when(buffer.hasArray()).thenReturn(false);
         // WHEN
         service.put(buffer);
         // THEN: once, set(array[12]) invoked
@@ -133,7 +112,8 @@ class HelloWorld_07_Put_ByteBuffer_Test extends HelloWorldTest {
     void _ReturnBuffer_() {
         // GIVEN
         var service = service();
-        var buffer = allocate(BYTES);
+        var buffer = mock(ByteBuffer.class);
+        when(buffer.remaining()).thenReturn(BYTES);
         // WHEN
         var actual = service.put(buffer);
         // THEN
