@@ -25,7 +25,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.MockedConstruction;
-import org.mockito.stubbing.Answer;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -76,27 +75,12 @@ class HelloWorld_03_Append_File_Test extends HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("invokes write(new FileOutputStream(file, true))"
-                 + ", 12 bytes are writen to the stream")
+    @DisplayName("invokes write(new FileOutputStream(file, true))")
     @Test
-    void _InvokeWriteStreamAnd12BytesWritten_() throws IOException {
+    void _InvokeWriteStream_() throws IOException {
         // GIVEN: HelloWorld
         var service = service();
         var file = mock(File.class);
-        var stream = mock(FileOutputStream.class);
-        var written = new LongAdder();
-        doAnswer(i -> {
-            byte[] array = i.getArgument(0);
-            written.add(array.length);
-            return null;
-        }).when(stream).write(any(byte[].class));
-        Answer<FileOutputStream> answer = i -> {
-            File f = i.getArgument(0);    // <1>
-            // TODO: Assert f is same as file
-            boolean a = i.getArgument(1); // <2>
-            // TODO: Assert a is true
-            return stream;
-        };
         MockedConstruction.MockInitializer<FileOutputStream> initializer = (m, c) -> {
             var constructor = c.constructor();
             // TODO: Assert constructor is FileOutputStream#FileOutputStream(File, boolean)
@@ -110,16 +94,11 @@ class HelloWorld_03_Append_File_Test extends HelloWorldTest {
                      = mockConstruction(FileOutputStream.class, initializer)) {
             // WHEN
             service.append(file);
-            // THEN: once, new FileOutputStream() invoked
-            {
-                List<FileOutputStream> constructed = construction.constructed();
-                // TODO: Assert constructed.size() is one
-                // TODO: Assert constructed[0] is same as the stream
-            }
-            // THEN: once, write(stream) invoked
-            // TODO: Verify write(stream) invoked
-            // THEN: 12 bytes written
-            // TODO: Verify 12 bytes written
+            // THEN: once, new FileOutputStream(file, true) invoked
+            List<FileOutputStream> constructed = construction.constructed();
+            // TODO: Assert constructed.size() is one
+            // THEN: once, write(constructed[0]) invoked
+            // TODO: Verify write(constructed[0]) invoked
         }
     }
 
