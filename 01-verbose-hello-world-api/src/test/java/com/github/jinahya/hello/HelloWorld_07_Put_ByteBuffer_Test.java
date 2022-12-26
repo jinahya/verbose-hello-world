@@ -65,7 +65,7 @@ class HelloWorld_07_Put_ByteBuffer_Test extends HelloWorldTest {
                  + " -> set(.array, .arrayOffset + .position)"
                  + " -> .position += 12")
     @Test
-    void _InvokeSetArrayIndexAndIncrementPosition_BufferHasBackingArray() {
+    void _InvokeSetArrayIndexAndIncrementPosition_BufferHasArray() {
         // GIVEN
         var service = service();
         var array = new byte[BYTES];
@@ -93,7 +93,7 @@ class HelloWorld_07_Put_ByteBuffer_Test extends HelloWorldTest {
                  + " -> set(array[12])"
                  + " -> .put(array)")
     @Test
-    void _InvokeSetArrayPutArrayToBuffer_BufferHasNoBackingArray() {
+    void _InvokeSetArrayPutArray_BufferDoesNotHaveArray() {
         // GIVEN
         var service = service();
         var buffer = mock(ByteBuffer.class);
