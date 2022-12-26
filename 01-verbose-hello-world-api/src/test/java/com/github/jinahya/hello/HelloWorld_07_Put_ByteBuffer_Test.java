@@ -75,10 +75,12 @@ class HelloWorld_07_Put_ByteBuffer_Test extends HelloWorldTest {
         when(buffer.array()).thenReturn(array);
         when(buffer.arrayOffset()).thenReturn(0);
         when(buffer.position()).thenReturn(0);
+        var arrayOffset = buffer.arrayOffset();
+        var position = buffer.position();
         // WHEN
         service.put(buffer);
-        // THEN: once, set(buffer.array, buffer.arrayOffset + buffer.position) invoked
-        // THEN: buffer.position increased by 12
+        // THEN: once, set(array, arrayOffset + position) invoked
+        // THEN: once, buffer.position(position + 12) invoked
     }
 
     /**
