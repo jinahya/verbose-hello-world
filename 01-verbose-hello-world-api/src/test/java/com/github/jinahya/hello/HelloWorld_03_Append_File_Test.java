@@ -129,8 +129,7 @@ class HelloWorld_03_Append_File_Test extends HelloWorldTest {
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("invokes write(FileOutputStream)"
-                 + ", 12 bytes are appended to the file")
+    @DisplayName("12 bytes are appended to the file")
     @Test
     @畵蛇添足
     void _12BytesAppended_(@TempDir File tempDir) throws IOException {
