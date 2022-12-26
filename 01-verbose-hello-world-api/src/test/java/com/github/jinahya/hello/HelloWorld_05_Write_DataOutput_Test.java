@@ -134,13 +134,14 @@ class HelloWorld_05_Write_DataOutput_Test extends HelloWorldTest {
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("appends 12 bytes to a file")
+    @DisplayName("writes 12 bytes to a file")
     @Test
     @畵蛇添足
-    void _Append12Bytes_(@TempDir File tempDir) throws IOException {
+    void _Write12Bytes_(@TempDir File tempDir) throws IOException {
         // GIVEN
         var service = service();
         var file = createTempFile("tmp", null, tempDir);
+        var length = file.length();
         try (var fos = new FileOutputStream(file);
              var dos = new DataOutputStream(fos)) {
             // WHEN
@@ -148,6 +149,6 @@ class HelloWorld_05_Write_DataOutput_Test extends HelloWorldTest {
             dos.flush();
         }
         // THEN: file.length() is equal to HelloWorld.BYTES
-        // TODO: Verify file.length() is equal to BYTES
+        // TODO: Verify file.length() is equal to (length + BYTES)
     }
 }
