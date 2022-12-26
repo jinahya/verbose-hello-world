@@ -342,6 +342,11 @@ public interface HelloWorld {
      * @return given {@code channel}.
      * @throws InterruptedException if interrupted while executing.
      * @throws ExecutionException   if failed to execute.
+     * @implSpec The default implementation invokes {@link #put(ByteBuffer) put(buffer)} method with
+     * a byte buffer of {@value #BYTES} bytes, flips it, and writes the buffer to the
+     * {@code channel} by, continuously while the {@code buffer}
+     * {@link ByteBuffer#hasRemaining() has remaining}, invoking
+     * {@link AsynchronousByteChannel#write(ByteBuffer)} method with the {@code buffer}.
      * @see #put(ByteBuffer)
      * @see AsynchronousByteChannel#write(ByteBuffer)
      */
@@ -368,6 +373,11 @@ public interface HelloWorld {
      * @return given {@code channel}.
      * @throws InterruptedException if interrupted while executing.
      * @throws ExecutionException   if failed to execute.
+     * @implSpec The default implementation invokes {@link #put(ByteBuffer) put(buffer)} with a byte
+     * buffer of {@value #BYTES} bytes, flips it, and writes the {@code buffer} to {@code channel}
+     * by continuously, while the {@code buffer} {@link ByteBuffer#hasRemaining() has remaining},
+     * invoking {@link AsynchronousFileChannel#write(ByteBuffer, long)} method with the
+     * {@code buffer} and adjusted {@code position}.
      * @see #put(ByteBuffer)
      * @see AsynchronousFileChannel#write(ByteBuffer, long)
      */

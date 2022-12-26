@@ -37,8 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.longThat;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -83,17 +82,17 @@ class HelloWorld_11_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
         // GIVEN: AsynchronousByteChannel
         var channel = mock(AsynchronousFileChannel.class);
         var writtenSoFar = new LongAdder();
-        when(channel.write(argThat(s -> s != null && s.hasRemaining()), longThat(p -> p >= 0L)))
-                .thenAnswer(i -> {
-                    ByteBuffer src = i.getArgument(0);
-                    long position = i.getArgument(1);
-                    var written = current().nextInt(src.remaining() + 1);
-                    src.position(src.position() + written);
-                    writtenSoFar.add(written);
-                    var future = mock(Future.class);
-                    doReturn(written).when(future).get();
-                    return future;
-                });
+        when(channel.write(any(), anyLong())).thenAnswer(i -> {
+            ByteBuffer src = i.getArgument(0);
+            assert src.hasRemaining();
+            long position = i.getArgument(1);
+            var written = current().nextInt(src.remaining() + 1);
+            src.position(src.position() + written);
+            writtenSoFar.add(written);
+            var future = mock(Future.class);
+            doReturn(written).when(future).get();
+            return future;
+        });
         // GIVEN: position
         var position = 0L;
         // WHEN
@@ -121,17 +120,15 @@ class HelloWorld_11_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
         var service = service();
         // GIVEN: AsynchronousFileChannelChannel
         var channel = mock(AsynchronousFileChannel.class);
-        when(channel.write(argThat(b -> b != null && b.hasRemaining()),
-                           longThat(p -> p >= 0L)))
-                .thenAnswer(i -> {
-                    ByteBuffer buffer = i.getArgument(0);
-                    long position = i.getArgument(1);
-                    var written = buffer.remaining();
-                    buffer.position(buffer.position() + written);
-                    var future = mock(Future.class);
-                    doReturn(written).when(future).get();
-                    return future;
-                });
+        when(channel.write(any(), anyLong())).thenAnswer(i -> {
+            ByteBuffer buffer = i.getArgument(0);
+            long position = i.getArgument(1);
+            var written = buffer.remaining();
+            buffer.position(buffer.position() + written);
+            var future = mock(Future.class);
+            doReturn(written).when(future).get();
+            return future;
+        });
         // GIVEN: position
         var position = 0L;
         // WHEN
