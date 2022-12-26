@@ -40,7 +40,8 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockConstructionWithAnswer;
+import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.withSettings;
 
 /**
  * A class for testing {@link HelloWorld#append(File)} method.
@@ -61,7 +62,9 @@ class HelloWorld_03_Append_File_Test extends HelloWorldTest {
     void _Write12BytesReturnStream_WriteStream() throws IOException {
         doAnswer(i -> {
             OutputStream stream = i.getArgument(0); // <1>
-            stream.write(new byte[BYTES]);          // <2>
+            for (int j = 0; j < BYTES; j++) {       // <2>
+                stream.write(0);                    // <3>
+            }
             return stream;
         }).when(service()).write(any(OutputStream.class));
     }
@@ -96,7 +99,8 @@ class HelloWorld_03_Append_File_Test extends HelloWorldTest {
             return stream;
         };
         try (MockedConstruction<FileOutputStream> construction
-                     = mockConstructionWithAnswer(FileOutputStream.class, answer)) {
+                     = mockConstruction(FileOutputStream.class,
+                                        withSettings().spiedInstance(stream))) {
             // WHEN
             service.append(file);
             // THEN: once, new FileOutputStream() invoked
