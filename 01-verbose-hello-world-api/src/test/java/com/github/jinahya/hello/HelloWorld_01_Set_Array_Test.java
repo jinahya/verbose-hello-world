@@ -27,7 +27,6 @@ import org.junit.jupiter.api.Test;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doAnswer;
 
 /**
@@ -46,9 +45,9 @@ class HelloWorld_01_Set_Array_Test extends HelloWorldTest {
      */
     @BeforeEach
     void stub_SetArrayIndex_ReturnArray() {
-        doAnswer(i -> {
-            return i.getArgument(0);
-        }).when(service()).set(any(), anyInt());
+        doAnswer(i -> i.getArgument(0))
+                .when(service())
+                .set(any(), any());
     }
 
     /**
