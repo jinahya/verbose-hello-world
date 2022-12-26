@@ -44,9 +44,8 @@ class HelloWorld_01_Set_Array_Arguments_Test extends HelloWorldTest {
     @DisplayName("[array == null] -> NullPointerException")
     @Test
     void _ThrowNullPointerException_ArrayIsNull() {
-        // GIVEN: HelloWorld
+        // GIVEN
         var service = service();
-        // GIVEN: array
         byte[] array = null;
         // WHEN/THEN
         // TODO: Assert service.set(array) throws a NullPointerException.
@@ -60,9 +59,8 @@ class HelloWorld_01_Set_Array_Arguments_Test extends HelloWorldTest {
     @DisplayName("[array.length < 12] -> IndexOutOfBoundsException")
     @Test
     void _ThrowIndexOutOfBoundsException_ArrayLengthIsLessThan12() {
-        // GIVEN: HelloWorld
+        // GIVEN
         var service = service();
-        // GIVEN: array
         var array = new byte[current().nextInt(BYTES)];
         // WHEN/THEN
         // TODO: Assert service.set(array) throws an IndexOutOfBoundsException.

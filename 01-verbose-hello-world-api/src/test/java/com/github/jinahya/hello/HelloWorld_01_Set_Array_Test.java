@@ -44,9 +44,8 @@ class HelloWorld_01_Set_Array_Test extends HelloWorldTest {
     @DisplayName("invokes set(array, 0)")
     @Test
     void _InvokeSetArrayWithArrayAndZero_() {
-        // GIVEN: HelloWorld
+        // GIVEN
         var service = service();
-        // GIVEN: array
         var array = new byte[BYTES];
         // WHEN
         // TODO: Invoke service.set(array)
@@ -61,9 +60,8 @@ class HelloWorld_01_Set_Array_Test extends HelloWorldTest {
     @DisplayName("returns array")
     @Test
     void _ReturnArray_() {
-        // GIVEN: HelloWorld
+        // GIVEN
         var service = service();
-        // GIVEN: array
         var array = new byte[BYTES];
         // WHEN
         var actual = service.set(array);
