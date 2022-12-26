@@ -133,7 +133,7 @@ class HelloWorld_03_Append_File_Test extends HelloWorldTest {
                  + ", 12 bytes are appended to the file")
     @Test
     @畵蛇添足
-    void _InvokeWriteStreamAnd12BytesAppended_(@TempDir File tempDir) throws IOException {
+    void _12BytesAppended_(@TempDir File tempDir) throws IOException {
         // GIVEN: HelloWorld
         var service = service();
         // GIVEN: File
