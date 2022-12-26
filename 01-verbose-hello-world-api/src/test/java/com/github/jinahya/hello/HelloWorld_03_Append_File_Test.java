@@ -21,20 +21,26 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockito.MockedConstruction;
+import org.mockito.stubbing.Answer;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
+import java.util.concurrent.atomic.LongAdder;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.io.File.createTempFile;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstructionWithAnswer;
 
 /**
  * A class for testing {@link HelloWorld#append(File)} method.
@@ -52,7 +58,7 @@ class HelloWorld_03_Append_File_Test extends HelloWorldTest {
      */
     @DisplayName("[stubbing] write(stream) writes 12 bytes and returns stream")
     @org.junit.jupiter.api.BeforeEach
-    void _Write12BytesReturnArray_WriteStream() throws IOException {
+    void _Write12BytesReturnStream_WriteStream() throws IOException {
         doAnswer(i -> {
             OutputStream stream = i.getArgument(0); // <1>
             for (int j = 0; j < BYTES; j++) {       // <2>
@@ -65,8 +71,54 @@ class HelloWorld_03_Append_File_Test extends HelloWorldTest {
     /**
      * Asserts {@link HelloWorld#append(File) append(file)} method invokes
      * {@link HelloWorld#write(OutputStream) write(stream)} method with an instance of
-     * {@link java.io.FileOutputStream}, and asserts {@value HelloWorld#BYTES} bytes are appended to
-     * the {@code file}.
+     * {@link FileOutputStream}, and asserts {@value HelloWorld#BYTES} bytes are written to the
+     * passed {@code stream}.
+     *
+     * @throws IOException if an I/O error occurs.
+     */
+    @DisplayName("invokes write(new FileOutputStream(file, true))"
+                 + ", 12 bytes are writen to the stream")
+    @Test
+    void _InvokeWriteStreamAnd12BytesWritten_() throws IOException {
+        // GIVEN: HelloWorld
+        var service = service();
+        var file = mock(File.class);
+        var stream = mock(FileOutputStream.class);
+        var written = new LongAdder();
+        doAnswer(i -> {
+            byte[] array = i.getArgument(0);
+            written.add(array.length);
+            return null;
+        }).when(stream).write(any(byte[].class));
+        Answer<FileOutputStream> answer = i -> {
+            File f = i.getArgument(0);    // <1>
+            // TODO: Assert f is same as file
+            boolean a = i.getArgument(1); // <2>
+            // TODO: Assert a is true
+            return stream;
+        };
+        try (MockedConstruction<FileOutputStream> construction
+                     = mockConstructionWithAnswer(FileOutputStream.class, answer)) {
+            // WHEN
+            service.append(file);
+            // THEN: once, new FileOutputStream() invoked
+            {
+                List<FileOutputStream> constructed = construction.constructed();
+                // TODO: Assert constructed.size() is one
+                // TODO: Assert constructed[0] is same as the stream
+            }
+            // THEN: once, write(stream) invoked
+            // TODO: Verify write(stream) invoked
+            // THEN: 12 bytes written
+            // TODO: Verify 12 bytes written
+        }
+    }
+
+    /**
+     * Asserts {@link HelloWorld#append(File) append(file)} method invokes
+     * {@link HelloWorld#write(OutputStream) write(stream)} method with an instance of
+     * {@link FileOutputStream}, and asserts {@value HelloWorld#BYTES} bytes are appended to the
+     * {@code file}.
      *
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
