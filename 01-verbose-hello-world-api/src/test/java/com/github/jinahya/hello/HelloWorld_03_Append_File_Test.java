@@ -112,9 +112,7 @@ class HelloWorld_03_Append_File_Test extends HelloWorldTest {
         // GIVEN
         var service = service();
         var file = mock(File.class);
-        try (MockedConstruction<FileOutputStream> construction
-                     = mockConstruction(FileOutputStream.class, (m, c) -> {
-        })) {
+        try (MockedConstruction<FileOutputStream> c = mockConstruction(FileOutputStream.class)) {
             // WHEN
             var actual = service.append(file);
             // THEN
