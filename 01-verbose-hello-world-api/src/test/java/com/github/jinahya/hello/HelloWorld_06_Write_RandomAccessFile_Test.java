@@ -21,7 +21,6 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -29,7 +28,6 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.concurrent.ThreadLocalRandom;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.io.File.createTempFile;
@@ -58,7 +56,7 @@ class HelloWorld_06_Write_RandomAccessFile_Test extends HelloWorldTest {
      * argument.
      */
     @DisplayName("[stubbing] set(array) returns array")
-    @BeforeEach
+    @org.junit.jupiter.api.BeforeEach
     void stub_ReturnArray_SetArray() {
         doAnswer(i -> i.getArgument(0))
                 .when(service())
