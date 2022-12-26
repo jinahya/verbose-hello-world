@@ -122,7 +122,7 @@ class HelloWorld_03_Append_File_Test extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#append(File) append(file)} method appends {@value HelloWorld#BYTES}
-     * bytes to the {@code file}.
+     * bytes to the end of the {@code file}.
      *
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
