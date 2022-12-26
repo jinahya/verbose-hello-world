@@ -29,8 +29,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * A class for testing {@link HelloWorld#write(OutputStream) write(stream)} method.
@@ -48,8 +48,9 @@ class HelloWorld_02_Write_OutputStream_Test extends HelloWorldTest {
      */
     @BeforeEach
     void _ReturnArray_SetArray() {
-        when(service().set(any()))                  // <1>
-                .thenAnswer(i -> i.getArgument(0)); // <2>
+        doAnswer(i -> i.getArgument(0))
+                .when(service())
+                .set(any());
     }
 
     /**
