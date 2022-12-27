@@ -26,12 +26,10 @@ import java.nio.ByteBuffer;
 import java.util.Objects;
 
 /**
- * An abstract class for testing methods defined in {@link HelloWorld} interface.
+ * A utility class for test classes.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-//@ExtendWith({MockitoExtension.class})
-//@TestInstance(TestInstance.Lifecycle.PER_METHOD) // default, implicitly.
 @Slf4j
 final class HelloWorldTestUtils {
 
@@ -47,21 +45,16 @@ final class HelloWorldTestUtils {
             System.out.printf("%1$" + padding + "s: %2$d%n", "arrayOffset", buffer.arrayOffset());
         }
         System.out.println("---------------------------------------------------------------------");
-
         var arrayOffset = buffer.hasArray() ? buffer.arrayOffset() : 0;
         var pstring = String.format("%1$s(%2$d)", "pos", buffer.position());
         var ppadding = padding + arrayOffset + buffer.position() + 2;
-        System.out.printf("%1$" + (ppadding + pstring.length() ) + "s", pstring);
-
+        System.out.printf("%1$" + (ppadding + pstring.length()) + "s", pstring);
         var lstring = String.format("%1$s(%2$d)", "lim", buffer.limit());
         var lpadding = padding + arrayOffset + buffer.limit() - ppadding + 2;
         System.out.printf("%1$" + (lpadding + 1) + "s", lstring);
-
         System.out.printf("%n");
-
         System.out.printf("%1$" + (ppadding + 1) + "c", '↓');
         System.out.printf("%1$" + lpadding + "c", '↓');
-
         System.out.printf("%n");
         System.out.printf("%1$" + padding + "s: ", "buffer");
         for (int i = 0; i < arrayOffset; i++) {
@@ -72,7 +65,6 @@ final class HelloWorldTestUtils {
         }
         System.out.printf(" %1$c cap(%2$d)", '←', buffer.capacity());
         System.out.printf("%n");
-
         System.out.printf("%n");
         if (buffer.hasArray()) {
             var ostring = String.format("%1$s(%2$d)", "arrayOffset", buffer.arrayOffset());
