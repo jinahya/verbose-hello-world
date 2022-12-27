@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import java.nio.ByteBuffer;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
+import static com.github.jinahya.hello.HelloWorldTestUtils.drawBuffer;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteBuffer.allocateDirect;
 import static java.nio.ByteBuffer.wrap;
@@ -150,8 +151,7 @@ class HelloWorld_07_Put_ByteBuffer_Test extends HelloWorldTest {
             slice.position(current().nextInt(BYTES >> 1));
             slice.limit(slice.capacity() - current().nextInt(BYTES >> 1));
         }
-        log.debug("slice: {}, remaining: {}, arrayOffset: {}, ", slice, slice.remaining(),
-                  slice.arrayOffset());
+        drawBuffer(slice);
         assert slice.remaining() >= BYTES;
         var position = slice.position();
         // WHEN
@@ -162,8 +162,8 @@ class HelloWorld_07_Put_ByteBuffer_Test extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method, when invoked with a byte
-     * buffer which does not have a backing array, invokes {@link ByteBuffer#put(byte[])}, on the
-     * {@code buffer}, with an array of {@value HelloWorld#BYTES}.
+     * buffer which does not have a backing array, increments the {@code buffer}'s position by
+     * {@value HelloWorld#BYTES}.
      */
     @DisplayName("[!.hasArray()] -> .position += 12")
     @Test
@@ -182,7 +182,7 @@ class HelloWorld_07_Put_ByteBuffer_Test extends HelloWorldTest {
             slice.position(current().nextInt(BYTES >> 1));
             slice.limit(slice.capacity() - current().nextInt(BYTES >> 1));
         }
-        log.debug("slice: {}, remaining: {}", slice, slice.remaining());
+        drawBuffer(slice);
         assert slice.remaining() >= BYTES;
         var position = slice.position();
         // WHEN
