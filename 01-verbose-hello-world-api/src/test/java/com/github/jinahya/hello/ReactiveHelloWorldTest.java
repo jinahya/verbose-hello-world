@@ -21,9 +21,6 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Test;
-
-import java.util.concurrent.Flow;
 
 /**
  * An abstract class for testing methods defined in {@link ReactiveHelloWorld} interface.
@@ -37,36 +34,5 @@ abstract class ReactiveHelloWorldTest extends AbstractHelloWorldTest<ReactiveHel
 
     ReactiveHelloWorldTest() {
         super(ReactiveHelloWorld.class);
-    }
-
-    @Test
-    void __() {
-        ReactiveHelloWorld service = new ReactiveHelloWorld() {
-            @Override
-            public byte[] set(byte[] array, int index) {
-                return array;
-            }
-        };
-        service.subscribe(new Flow.Subscriber<String>() {
-            @Override
-            public void onSubscribe(Flow.Subscription subscription) {
-                subscription.request(1);
-            }
-
-            @Override
-            public void onNext(String item) {
-                log.info("item: {}", item);
-            }
-
-            @Override
-            public void onError(Throwable throwable) {
-                log.error("message: {}", throwable.getMessage(), throwable);
-            }
-
-            @Override
-            public void onComplete() {
-                log.info("completed");
-            }
-        });
     }
 }
