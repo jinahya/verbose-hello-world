@@ -28,9 +28,11 @@ import java.nio.ByteBuffer;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.nio.ByteBuffer.allocate;
+import static java.nio.ByteBuffer.allocateDirect;
 import static java.nio.ByteBuffer.wrap;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -148,6 +150,39 @@ class HelloWorld_07_Put_ByteBuffer_Test extends HelloWorldTest {
             slice.position(current().nextInt(BYTES >> 1));
             slice.limit(slice.capacity() - current().nextInt(BYTES >> 1));
         }
+        log.debug("slice: {}, remaining: {}, arrayOffset: {}, ", slice, slice.remaining(),
+                  slice.arrayOffset());
+        assert slice.remaining() >= BYTES;
+        var position = slice.position();
+        // WHEN
+        service.put(slice);
+        // THEN: slice.position incremented by 12
+        // TODO: Assert slice.position is equal to (position + 12)
+    }
+
+    /**
+     * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method, when invoked with a byte
+     * buffer which does not have a backing array, invokes {@link ByteBuffer#put(byte[])}, on the
+     * {@code buffer}, with an array of {@value HelloWorld#BYTES}.
+     */
+    @DisplayName("[!.hasArray()] -> .position += 12")
+    @Test
+    void _PositionIncrementedBy12_BufferDoesNotHaveArray() {
+        // GIVEN
+        var service = service();
+        ByteBuffer slice;
+        {
+            var capacity = BYTES * 3;
+            var buffer = allocateDirect(capacity);
+            assumeFalse(buffer.hasArray(), "a direct byte buffer has a backing array");
+            var index = current().nextInt(BYTES >> 1);
+            var length = capacity - index - current().nextInt(BYTES >> 1);
+            slice = buffer.slice(index, length);
+            assert !slice.hasArray();
+            slice.position(current().nextInt(BYTES >> 1));
+            slice.limit(slice.capacity() - current().nextInt(BYTES >> 1));
+        }
+        log.debug("slice: {}, remaining: {}", slice, slice.remaining());
         assert slice.remaining() >= BYTES;
         var position = slice.position();
         // WHEN
