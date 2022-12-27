@@ -27,8 +27,6 @@ import lombok.extern.slf4j.Slf4j;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-//@ExtendWith({MockitoExtension.class})
-//@TestInstance(TestInstance.Lifecycle.PER_METHOD) // default, implicitly.
 @Slf4j
 abstract class ReactiveHelloWorldTest extends AbstractHelloWorldTest<ReactiveHelloWorld> {
 
