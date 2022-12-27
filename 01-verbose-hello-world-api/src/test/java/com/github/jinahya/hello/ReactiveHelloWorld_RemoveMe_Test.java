@@ -24,8 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.concurrent.Flow;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 
@@ -41,35 +39,11 @@ class ReactiveHelloWorld_RemoveMe_Test extends ReactiveHelloWorldTest {
 
     @BeforeEach
     void stub_() {
-        doAnswer(i -> {
-            return i.getArgument(0);
-        })
-                .when(service()).set(any());
+        doAnswer(i -> i.getArgument(0)).when(service()).set(any());
     }
 
     @Test
     void __() {
-        ReactiveHelloWorld service = service();
-        service.subscribe(new Flow.Subscriber<>() {
-            @Override
-            public void onSubscribe(Flow.Subscription subscription) {
-                subscription.request(1);
-            }
-
-            @Override
-            public void onNext(String item) {
-                log.info("item: {}", item);
-            }
-
-            @Override
-            public void onError(Throwable throwable) {
-                log.error("message: {}", throwable.getMessage(), throwable);
-            }
-
-            @Override
-            public void onComplete() {
-                log.info("completed");
-            }
-        });
+        var service = service();
     }
 }

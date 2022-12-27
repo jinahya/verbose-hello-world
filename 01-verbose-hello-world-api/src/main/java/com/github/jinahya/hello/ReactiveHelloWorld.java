@@ -26,6 +26,8 @@ import org.slf4j.LoggerFactory;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.concurrent.Flow;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.function.Function;
 
 /**
  * An interface for generating <a href="#hello-world-bytes">hello-world-bytes</a> to various
@@ -35,15 +37,15 @@ import java.util.concurrent.Flow;
  *
  * <h2 id="hello-world-bytes">hello-world-bytes</h2>
  * A sequence of {@value #BYTES} bytes, representing the "{@code hello, world}" string encoded in
- * {@link java.nio.charset.StandardCharsets#US_ASCII US_ASCII} character set, which consists of
- * {@code 0x68("h")} followed by {@code 0x65("e")}, {@code 0x6C("l")}, {@code 0x6C("l")},
- * {@code 0x6F("o")}, {@code 0x2C(",")}, {@code 0x20(" ")}, {@code 0x77("w")}, {@code 0x6F("o")},
- * {@code 0x72("r")}, {@code 0x6C("l")}, and {@code 0x64("d")}.
+ * {@link StandardCharsets#US_ASCII US_ASCII} character set, which consists of {@code 0x68("h")}
+ * followed by {@code 0x65("e")}, {@code 0x6C("l")}, {@code 0x6C("l")}, {@code 0x6F("o")},
+ * {@code 0x2C(",")}, {@code 0x20(" ")}, {@code 0x77("w")}, {@code 0x6F("o")}, {@code 0x72("r")},
+ * {@code 0x6C("l")}, and {@code 0x64("d")}.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @FunctionalInterface
-public interface ReactiveHelloWorld extends HelloWorld {
+public interface ReactiveHelloWorld extends AsynchronousHelloWorld {
 
     /**
      * Returns a logger for this interface.
@@ -63,52 +65,23 @@ public interface ReactiveHelloWorld extends HelloWorld {
         return System.getLogger(getClass().getName());
     }
 
-    default void subscribe(Flow.Subscriber<String> subscriber) {
+//    default void subscribe(Flow.Subscriber<String> subscriber) {
+//        Objects.requireNonNull(subscriber, "subscriber is null");
+//        var item = new String(set(new byte[BYTES]), StandardCharsets.US_ASCII);
+//        var queue = new LinkedBlockingQueue<Long>();
+//        var subscription = new ReactiveHelloWorldSubscription(item, subscriber, queue);
+//        subscriber.onSubscribe(subscription);
+//    }
+
+    default <T> void subscribe(Flow.Subscriber<? super T> subscriber,
+                               Function<? super ReactiveHelloWorld, ? extends T> function) {
         Objects.requireNonNull(subscriber, "subscriber is null");
-        var subscription = new Flow.Subscription() {
-            @Override
-            public synchronized void request(long n) {
-                if (canceled) {
-                    log().warn("already canceled");
-                    return;
-                }
-                if (n <= 0L) {
-                    subscriber.onError(
-                            new IllegalArgumentException("n(" + n + ") is not positive"));
-                }
-                if (thread != null) {
-                    log().debug("joining the read...");
-                    try {
-                        thread.join();
-                        log().debug("joined to the thread");
-                    } catch (InterruptedException ie) {
-                        log().error("interrupted while joining the thread", ie);
-                        Thread.currentThread().interrupt();
-                    }
-                }
-                thread = new Thread(() -> {
-                    var array = new byte[BYTES];
-                    array = set(array);
-                    var string = new String(array, StandardCharsets.US_ASCII);
-                    for (int i = 0; i < n && !canceled; i++) {
-                        subscriber.onNext(string);
-                    }
-                    if (!canceled) {
-                        subscriber.onComplete();
-                    }
-                });
-                thread.start();
-            }
-
-            @Override
-            public synchronized void cancel() {
-                canceled = true;
-            }
-
-            private volatile boolean canceled = false;
-
-            private Thread thread = null;
-        };
+        Objects.requireNonNull(function, "function is null");
+        var subscription = new ReactiveHelloWorldSubscription(
+                subscriber,
+                () -> function.apply(this),
+                new LinkedBlockingQueue<Long>()
+        );
         subscriber.onSubscribe(subscription);
     }
 }
