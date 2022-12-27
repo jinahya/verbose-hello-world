@@ -68,7 +68,7 @@ class HelloWorld_07_Put_ByteBuffer_Test extends HelloWorldTest {
                  + " -> set(.array, .arrayOffset + .position)"
                  + " -> .position += 12")
     @Test
-    void _InvokeSetArrayIndexAndIncrementPosition_BufferHasArray() {
+    void _InvokeSetArrayIndexPositionIncrementedBy12_BufferHasArray() {
         // GIVEN
         var service = service();
         var array = new byte[BYTES];
@@ -126,39 +126,33 @@ class HelloWorld_07_Put_ByteBuffer_Test extends HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method, when the {@code buffer} has a
-     * backing array, invokes {@link HelloWorld#set(byte[], int) set(array, index)} method with
-     * {@code buffer.array} and ({@code buffer.arrayOffset + buffer.position}), and asserts that the
-     * {@code buffer.position} is increased by {@value HelloWorld#BYTES}.
+     * Asserts, redundantly, {@link HelloWorld#put(ByteBuffer) put(buffer)} method, when the
+     * {@code buffer} has a backing array, increments the {@code buffer}'s position by
+     * {@value HelloWorld#BYTES}.
      */
-    @DisplayName("[.hasArray()]"
-                 + " -> set(.array, .arrayOffset + .position)"
-                 + " -> .position += 12")
+    @DisplayName("[.hasArray()] -> .position += 12")
     @Test
     @畵蛇添足
-    void _InvokeSetArrayIndexAndIncrementPosition_BufferHasArray2() {
+    void PositionIncrementedBy12_BufferHasArray() {
         // GIVEN
         var service = service();
-        var capacity = BYTES + (BYTES << 1); // BYTES * 3
-        var buffer = current().nextBoolean() ? wrap(new byte[capacity]) : allocate(capacity);
-        assert buffer.hasArray();
         ByteBuffer slice;
         {
-            var index = current().nextInt(BYTES);
-            var length = buffer.capacity() - index;
+            var capacity = BYTES + (BYTES << 1); // BYTES * 3
+            var buffer = current().nextBoolean() ? wrap(new byte[capacity]) : allocate(capacity);
+            assert buffer.hasArray();
+            var index = current().nextInt(BYTES >> 1);
+            var length = capacity - index - current().nextInt(BYTES >> 1);
             slice = buffer.slice(index, length);
-            if (slice.remaining() > BYTES) {
-            }
+            assert slice.hasArray();
+            slice.position(current().nextInt(BYTES >> 1));
+            slice.limit(slice.capacity() - current().nextInt(BYTES >> 1));
         }
-        assert slice.hasArray();
         assert slice.remaining() >= BYTES;
-        assert slice.position() == 0;
-        var arrayOffset = slice.arrayOffset();
         var position = slice.position();
-        log.debug("arrayOffset: {}", arrayOffset);
         // WHEN
-        service.put(buffer);
-        // THEN: once, set(array, arrayOffset + position) invoked
-        // THEN: once, buffer.position(position + 12) invoked
+        service.put(slice);
+        // THEN: slice.position incremented by 12
+        // TODO: Assert slice.position is equal to (position + 12)
     }
 }
