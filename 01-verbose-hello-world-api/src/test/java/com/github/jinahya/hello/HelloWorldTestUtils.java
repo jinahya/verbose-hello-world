@@ -51,11 +51,9 @@ final class HelloWorldTestUtils {
         System.out.printf("%1$" + (ppadding + pstring.length()) + "s", pstring);
         var lstring = String.format("%1$s(%2$d)", "lim", buffer.limit());
         var lpadding = padding + arrayOffset + buffer.limit() - ppadding + 2;
-        System.out.printf("%1$" + (lpadding + 1) + "s", lstring);
-        System.out.printf("%n");
+        System.out.printf("%1$" + (lpadding + 1) + "s%n", lstring);
         System.out.printf("%1$" + (ppadding + 1) + "c", '↓');
-        System.out.printf("%1$" + lpadding + "c", '↓');
-        System.out.printf("%n");
+        System.out.printf("%1$" + lpadding + "c%n", '↓');
         System.out.printf("%1$" + padding + "s: ", "buffer");
         for (int i = 0; i < arrayOffset; i++) {
             System.out.print(' ');
@@ -63,23 +61,19 @@ final class HelloWorldTestUtils {
         for (int i = 0; i < buffer.capacity(); i++) {
             System.out.print('-');
         }
-        System.out.printf(" %1$c cap(%2$d)", '←', buffer.capacity());
-        System.out.printf("%n");
+        System.out.printf(" %1$c cap(%2$d)%n", '←', buffer.capacity());
         System.out.printf("%n");
         if (buffer.hasArray()) {
             var ostring = String.format("%1$s(%2$d)", "arrayOffset", buffer.arrayOffset());
             var opadding = padding + arrayOffset + 2;
-            System.out.printf("%1$" + (opadding + ostring.length()) + "s", ostring);
-            System.out.printf("%n");
-            System.out.printf("%1$" + (opadding + 1) + "c", '↓');
-            System.out.printf("%n");
+            System.out.printf("%1$" + (opadding + ostring.length()) + "s%n", ostring);
+            System.out.printf("%1$" + (opadding + 1) + "c%n", '↓');
             var array = buffer.array();
             System.out.printf("%1$" + padding + "s: ", "array");
             for (int i = 0; i < buffer.array().length; i++) {
                 System.out.print('-');
             }
-            System.out.printf(" %1$c len(%2$d)", '←', array.length);
-            System.out.println();
+            System.out.printf(" %1$c len(%2$d)%n", '←', array.length);
         }
         System.out.println("---------------------------------------------------------------------");
     }
