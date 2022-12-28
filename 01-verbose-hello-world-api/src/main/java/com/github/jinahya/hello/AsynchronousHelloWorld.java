@@ -30,7 +30,6 @@ import java.nio.channels.CompletionHandler;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
@@ -111,40 +110,6 @@ public interface AsynchronousHelloWorld extends HelloWorld {
     }
 
     /**
-     * Writes, synchronously, the <a href="#hello-world-bytes">hello-world-bytes</a> to specified
-     * channel, starting at the given file position.
-     *
-     * @param <T>      channel type parameter
-     * @param channel  the channel to which bytes are written.
-     * @param position the file position at which the transfer is to begin; must be non-negative.
-     * @return given {@code channel}.
-     * @throws InterruptedException if interrupted while working.
-     * @throws ExecutionException   if failed to operate.
-     * @implSpec The default implementation invokes {@link #put(ByteBuffer)} method with a byte
-     * buffer of {@value #BYTES} bytes, flips it, and writes the buffer to {@code channel} by
-     * repeatedly getting the result of
-     * {@link AsynchronousFileChannel#write(ByteBuffer, long) channel.write(buffer)} method while
-     * the buffer has remaining.
-     * @see #put(ByteBuffer)
-     * @see AsynchronousFileChannel#write(ByteBuffer, long)
-     */
-    default <T extends AsynchronousFileChannel> T write(T channel, long position)
-            throws InterruptedException, ExecutionException {
-        if (channel == null) {
-            throw new NullPointerException("channel is null");
-        }
-        if (position < 0L) {
-            throw new IllegalArgumentException("position(" + position + ") is negative");
-        }
-        for (var buffer = put(ByteBuffer.allocate(BYTES)).flip(); buffer.hasRemaining(); ) {
-            var future = channel.write(buffer, position); // <1>
-            int written = future.get();                   // <2>
-            position += written;                          // <3>
-        }
-        return channel;
-    }
-
-    /**
      * Writes, asynchronously, the <a href="#hello-world-bytes">hello-world-bytes</a> to specified
      * channel starting at the given file position, using specified executor.
      *
@@ -175,19 +140,30 @@ public interface AsynchronousHelloWorld extends HelloWorld {
     }
 
     /**
-     * Writes, asynchronously, the <a href="#hello-world-bytes">hello-world-bytes</a> to specified
-     * asynchronous file channel, starting at the given file position.
+     * Writes, asynchronously, the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>
+     * to specified channel, and invokes specified completion handler when all bytes are written.
      *
      * @param <T>      channel type parameter
-     * @param channel  the asynchronous file channel to which bytes are written.
+     * @param channel  the channel to which bytes are written.
      * @param position the file position at which the transfer is to begin; must be non-negative.
-     * @return A completable future representing the result of the operation.
-     * @implSpec The default implementation invokes {@link #put(ByteBuffer)} method with a byte
-     * buffer of {@value #BYTES} bytes, flips it, and writes the buffer to {@code channel} using
-     * {@link AsynchronousFileChannel#write(ByteBuffer, long, Object, CompletionHandler)} method
-     * while the buffer has remaining.
-     * @see #write(AsynchronousFileChannel, long)
+     * @param handler  the completion handler.
+     * @implSpec The default implementation invokes {@link #put(ByteBuffer) put(buffer)} method with
+     * a byte buffer of {@value #BYTES} bytes, flips it, and writes the buffer to {@code channel} by
+     * recursively handling the callback called inside the
+     * {@link AsynchronousFileChannel#write(ByteBuffer, long, Object, CompletionHandler)
+     * channel#(src, position, attachment, handler)} method, and eventually invokes {@code handler}
+     * when all bytes are written.
+     * @see #put(ByteBuffer)
+     * @see AsynchronousFileChannel#write(ByteBuffer, long, Object, CompletionHandler)
      */
+    default <T extends AsynchronousFileChannel> void write(
+            T channel, long position, CompletionHandler<Integer, ? super T> handler) {
+        Objects.requireNonNull(channel, "channel is null");
+        Objects.requireNonNull(handler, "handler is null");
+        var buffer = put(ByteBuffer.allocate(BYTES)).flip();
+        // TODO: Implement!
+    }
+
     default <T extends AsynchronousFileChannel> CompletableFuture<T> writeCompletable(
             T channel, long position) {
         if (channel == null) {
