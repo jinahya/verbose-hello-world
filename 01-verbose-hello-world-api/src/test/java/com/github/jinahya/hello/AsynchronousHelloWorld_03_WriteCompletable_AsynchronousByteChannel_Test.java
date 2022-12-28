@@ -80,7 +80,7 @@ class AsynchronousHelloWorld_03_WriteCompletable_AsynchronousByteChannel_Test
         doAnswer(i -> {
             AsynchronousByteChannel channel = i.getArgument(0);
             var handler = i.getArgument(1, CompletionHandler.class);
-            new Thread(() -> handler.completed(BYTES, null)).start();
+            new Thread(() -> handler.completed(BYTES, channel)).start();
             return null;
         }).when(service).write(any(), any(CompletionHandler.class));
         var channel = mock(AsynchronousByteChannel.class);
