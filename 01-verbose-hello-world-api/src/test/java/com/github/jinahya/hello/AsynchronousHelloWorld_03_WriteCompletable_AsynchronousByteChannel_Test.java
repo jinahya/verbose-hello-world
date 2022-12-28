@@ -21,7 +21,6 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -47,7 +46,7 @@ import static org.mockito.Mockito.mock;
 class AsynchronousHelloWorld_03_WriteCompletable_AsynchronousByteChannel_Test
         extends AsynchronousHelloWorldTest {
 
-    @BeforeEach
+    //    @BeforeEach
     @SuppressWarnings({"unchecked"})
     void stub__() {
         // GIVEN
@@ -76,27 +75,16 @@ class AsynchronousHelloWorld_03_WriteCompletable_AsynchronousByteChannel_Test
     void _Completed_() throws InterruptedException, ExecutionException {
         // GIVEN
         var service = service();
+        doAnswer(i -> {
+            AsynchronousByteChannel channel = i.getArgument(0);
+            var handler = i.getArgument(1, CompletionHandler.class);
+            new Thread(() -> handler.completed(BYTES, null)).start();
+            return null;
+        }).when(service).write(any(), any(CompletionHandler.class));
         var channel = mock(AsynchronousByteChannel.class);
-//        doAnswer(i -> {
-//            var buffer = i.getArgument(0, ByteBuffer.class);
-//            assert buffer.hasRemaining();
-//            var attachment = i.getArgument(1);
-//            var handler = i.getArgument(2, CompletionHandler.class);
-//            var remaining = buffer.remaining();
-//            buffer.position(buffer.position() + remaining);
-//            handler.completed(remaining, attachment);
-//            return null;
-//        }).when(channel).write(any(), any(), any());
         // WHEN
-        var future = spy(service.writeCompletable(channel));
+        var future = service.writeCompletable(channel);
         // THEN: once, write(channel, handlerCaptor().capture()) invoked
         // TODO: Verify, once, write(channel, handlerCaptor().capture()) invoked
-//        AsynchronousByteChannel result;
-//        try {
-//            result = future.get(1L, TimeUnit.SECONDS);
-//        } catch (TimeoutException te) {
-//            return;
-//        }
-//        // THEN: at least once, result.write(ByteBuffer, CompletionHandler) invoked
     }
 }
