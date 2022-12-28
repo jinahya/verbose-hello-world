@@ -112,8 +112,9 @@ class AsynchronousHelloWorld_04_Write_AsynchronousFileChannelWithExecutor_Test
             new Thread(runnable).start();
             return null;
         }).when(executor).execute(any());
+        var position = 0L;
         // WHEN
-        var future = service.write(channel, 0L, executor);
+        var future = service.write(channel, position, executor);
         // THEN: once, executor.execute(Runnable)
         verify(executor, times(1)).execute(notNull());
         var result = future.get();
@@ -121,7 +122,7 @@ class AsynchronousHelloWorld_04_Write_AsynchronousFileChannelWithExecutor_Test
         verify(service, times(1)).put(bufferCaptor().capture());
         var buffer = bufferCaptor().getValue();
         assertEquals(BYTES, buffer.capacity());
-        // THEN: at least once, channel.write(buffer, ge(position)) invoked
+        // THEN: at least once, channel.write(buffer, >= position) invoked
         // TODO: Verify, at least once, channel.write(buffer, position) invoked
         // THEN: 12 bytes are written
         // TODO: Asserts writtenSoFar.intValue() is equal to BYTES
