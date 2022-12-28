@@ -38,17 +38,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class HelloWorld_Constants_Test {
 
     /**
-     * Asserts the value of {@link HelloWorld#BYTES} constant equals to the actual number of bytes
+     * Asserts the value of {@link HelloWorld#BYTES} constant is equal to the actual number of bytes
      * of "{@code hello, world}" string encoded in {@link StandardCharsets#US_ASCII US-ASCII}
      * character set.
      *
      * @see StandardCharsets#US_ASCII
      * @see String#getBytes(Charset)
      */
-    @DisplayName("BYTES equals to the actual number of \"hello, world\" bytes")
+    @DisplayName("BYTES == \"hello, world\".length")
     @Test
-    void BYTES_EqualsToActualNumberOfHelloWorldBytes_() {
-        var expected = "hello, world".getBytes(StandardCharsets.US_ASCII).length;
+    void BYTES_IsEqualTo_ActualNumberOfHelloWorldBytes() {
+        var charset = StandardCharsets.US_ASCII;
+        var expected = "hello, world".getBytes(charset).length;
         assertEquals(expected, HelloWorld.BYTES);
     }
 }
