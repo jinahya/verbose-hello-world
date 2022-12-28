@@ -38,6 +38,7 @@ import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -67,11 +68,11 @@ class AsynchronousHelloWorld_04_Write_AsynchronousFileChannelWithExecutor_Test
         // GIVEN
         var service = service();
         // WHEN/THEN
-        when(service.put(any())).thenAnswer(i -> {
+        doAnswer(i -> {
             ByteBuffer buffer = i.getArgument(0);
             buffer.position(buffer.position() + BYTES);
             return buffer;
-        });
+        }).when(service).put(any());
     }
 
     /**
@@ -114,7 +115,7 @@ class AsynchronousHelloWorld_04_Write_AsynchronousFileChannelWithExecutor_Test
         // WHEN
         var future = service.write(channel, 0L, executor);
         // THEN: once, executor.execute(Runnable)
-        // TODO: Verify executor.execute(Runnable) invoked
+        verify(executor, times(1)).execute(notNull());
         var result = future.get();
         // THEN: put(buffer[12]) invoked
         verify(service, times(1)).put(bufferCaptor().capture());
