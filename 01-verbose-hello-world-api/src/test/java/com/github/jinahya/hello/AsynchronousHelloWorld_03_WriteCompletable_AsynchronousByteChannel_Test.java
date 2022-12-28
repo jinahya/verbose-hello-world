@@ -99,7 +99,9 @@ class AsynchronousHelloWorld_03_WriteCompletable_AsynchronousByteChannel_Test
             te.printStackTrace();
             return;
         }
+        // THEN: once, future.complete(BYTES) invoked
         // TODO: Verify, once, future.complete(BYTES) invoked
+        // THEN: result is same as channel
         // TODO: Assert result is same as channel
     }
 }
