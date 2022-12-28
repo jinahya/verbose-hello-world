@@ -117,7 +117,9 @@ public interface AsynchronousHelloWorld extends HelloWorld {
      * @param channel  the channel to which bytes are written.
      * @param position the file position at which the transfer is to begin; must be non-negative.
      * @param executor the executor for submitting a task.
-     * @return a future of specified channel.
+     * @return a future of specified channel which, some time in the future, writes the <a
+     * href="HelloWorld#hello-world-bytes">hello-world-bytes</a> to {@code channel} starting at
+     * {@code position}.
      * @implSpec The default implementation submits, to {@code executor}, a task which invokes
      * {@link #put(ByteBuffer) put(buffer)} with a buffer of {@value HelloWorld#BYTES}, and writes
      * the buffer to {@code channel} starting at {@code position}.
@@ -129,8 +131,8 @@ public interface AsynchronousHelloWorld extends HelloWorld {
             throw new IllegalArgumentException("position(" + position + ") is negative");
         }
         Objects.requireNonNull(executor, "executor is null");
-        var buffer = put(ByteBuffer.allocate(BYTES)).flip();
         Callable<T> callable = () -> {
+            var buffer = put(ByteBuffer.allocate(BYTES)).flip();
             // TODO: Implement!
             return channel;
         };
