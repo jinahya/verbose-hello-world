@@ -47,7 +47,7 @@ class HelloWorld_Constants_Test {
      */
     @DisplayName("BYTES == \"hello, world\".length")
     @Test
-    void BYTES_EqualsActualNumberOfHelloWorldBytes_() {
+    void BYTES_isEqualToActualNumberOfHelloWorldBytes_() {
         var charset = StandardCharsets.US_ASCII;
         var expected = "hello, world".getBytes(charset).length;
         assertEquals(expected, HelloWorld.BYTES);
