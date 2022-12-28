@@ -98,8 +98,10 @@ class AsynchronousHelloWorld_04_Write_AsynchronousFileChannelWithExecutor_Test
             ByteBuffer src = i.getArgument(0);
             assert src != null && src.hasRemaining();
             long position = i.getArgument(1);
-            Long firstPosition = firstPositionRef.getAndSet(position);
-            assert firstPosition == null || position == firstPosition + src.position();
+            var set = firstPositionRef.compareAndSet(null, position);
+            assert set;
+            var firstPosition = firstPositionRef.get();
+            assert position == firstPosition + src.position();
             var written = current().nextInt(src.remaining() + 1);
             src.position(src.position() + written);
             writtenSoFar.add(written);
@@ -124,7 +126,7 @@ class AsynchronousHelloWorld_04_Write_AsynchronousFileChannelWithExecutor_Test
         var buffer = bufferCaptor().getValue();
         assertEquals(BYTES, buffer.capacity());
         // THEN: at least once, channel.write(buffer, >= position) invoked
-        // TODO: Verify, at least once, channel.write(buffer, position) invoked
+        // TODO: Verify, at least once, channel.write(buffer, >= position) invoked
         // THEN: 12 bytes are written
         // TODO: Asserts writtenSoFar.intValue() is equal to BYTES
         // THEN: result is same as channel
