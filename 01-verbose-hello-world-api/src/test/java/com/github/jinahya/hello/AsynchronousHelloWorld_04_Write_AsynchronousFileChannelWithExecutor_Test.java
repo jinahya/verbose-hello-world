@@ -93,14 +93,13 @@ class AsynchronousHelloWorld_04_Write_AsynchronousFileChannelWithExecutor_Test
         var service = service();
         var channel = mock(AsynchronousFileChannel.class);
         var writtenSoFar = new LongAdder();
-        var firstPositionRef = new AtomicReference<Long>();
+        var firstPosition = new AtomicReference<Long>();
         when(channel.write(any(), anyLong())).thenAnswer(i -> {
             ByteBuffer src = i.getArgument(0);
             assert src != null && src.hasRemaining();
             long position = i.getArgument(1);
-            firstPositionRef.compareAndSet(null, position);
-            var firstPosition = firstPositionRef.get();
-            assert position == firstPosition + src.position();
+            firstPosition.compareAndSet(null, position);
+            assert position == firstPosition.get() + src.position();
             var written = current().nextInt(src.remaining() + 1);
             src.position(src.position() + written);
             writtenSoFar.add(written);
