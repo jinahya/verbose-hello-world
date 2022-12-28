@@ -21,17 +21,23 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
+import static java.util.concurrent.TimeUnit.MINUTES;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 
 /**
  * A class for testing
@@ -83,8 +89,17 @@ class AsynchronousHelloWorld_03_WriteCompletable_AsynchronousByteChannel_Test
         }).when(service).write(any(), any(CompletionHandler.class));
         var channel = mock(AsynchronousByteChannel.class);
         // WHEN
-        var future = service.writeCompletable(channel);
-        // THEN: once, write(channel, handlerCaptor().capture()) invoked
-        // TODO: Verify, once, write(channel, handlerCaptor().capture()) invoked
+        var future = spy(service.writeCompletable(channel));
+        // THEN: once, write(same(channel), handlerCaptor().capture()) invoked
+        // TODO: Verify, once, write(same(channel), handlerCaptor().capture()) invoked
+        AsynchronousByteChannel result;
+        try {
+            result = future.get(8L, SECONDS);
+        } catch (TimeoutException te) {
+            te.printStackTrace();
+            return;
+        }
+        // TODO: Verify, once, future.complete(BYTES) invoked
+        // TODO: Assert result is same as channel
     }
 }
