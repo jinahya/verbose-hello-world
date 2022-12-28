@@ -109,6 +109,13 @@ public interface AsynchronousHelloWorld extends HelloWorld {
         // TODO: Implement!
     }
 
+    default <T extends AsynchronousByteChannel> CompletableFuture<T> writeCompletable(T channel) {
+        Objects.requireNonNull(channel, "channel is null");
+        var future = new CompletableFuture<T>();
+        // TODO: Implement!
+        return future;
+    }
+
     /**
      * Writes, asynchronously, the <a href="#hello-world-bytes">hello-world-bytes</a> to specified
      * channel starting at the given file position, using specified executor.
