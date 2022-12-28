@@ -98,8 +98,7 @@ class AsynchronousHelloWorld_04_Write_AsynchronousFileChannelWithExecutor_Test
             ByteBuffer src = i.getArgument(0);
             assert src != null && src.hasRemaining();
             long position = i.getArgument(1);
-            var set = firstPositionRef.compareAndSet(null, position);
-            assert set;
+            firstPositionRef.compareAndSet(null, position);
             var firstPosition = firstPositionRef.get();
             assert position == firstPosition + src.position();
             var written = current().nextInt(src.remaining() + 1);
