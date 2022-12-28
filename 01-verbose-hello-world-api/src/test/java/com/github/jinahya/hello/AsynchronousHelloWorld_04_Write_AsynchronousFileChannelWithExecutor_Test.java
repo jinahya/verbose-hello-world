@@ -99,7 +99,7 @@ class AsynchronousHelloWorld_04_Write_AsynchronousFileChannelWithExecutor_Test
             assert src != null && src.hasRemaining();
             long position = i.getArgument(1);
             Long firstPosition = firstPositionRef.getAndSet(position);
-            assert firstPosition == null || firstPosition == src.position();
+            assert firstPosition == null || position == firstPosition + src.position();
             var written = current().nextInt(src.remaining() + 1);
             src.position(src.position() + written);
             writtenSoFar.add(written);
