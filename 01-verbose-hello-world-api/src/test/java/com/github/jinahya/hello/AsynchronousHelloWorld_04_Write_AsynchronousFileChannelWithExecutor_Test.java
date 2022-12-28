@@ -36,6 +36,7 @@ import java.util.concurrent.atomic.LongAdder;
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.notNull;
@@ -127,6 +128,6 @@ class AsynchronousHelloWorld_04_Write_AsynchronousFileChannelWithExecutor_Test
         // THEN: 12 bytes are written
         // TODO: Asserts writtenSoFar.intValue() is equal to BYTES
         // THEN: result is same as channel
-        // TODO: Assert result is same as channel
+        assertSame(channel, result);
     }
 }
