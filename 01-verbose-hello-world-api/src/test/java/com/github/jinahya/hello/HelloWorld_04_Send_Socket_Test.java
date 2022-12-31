@@ -21,7 +21,6 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -57,10 +56,11 @@ class HelloWorld_04_Send_Socket_Test extends HelloWorldTest {
      * Stubs {@link HelloWorld#write(OutputStream) write(stream)} method to return the
      * {@code stream} argument.
      */
-    @BeforeEach
+    @org.junit.jupiter.api.BeforeEach
     void stub_ReturnStream_WriteStream() throws IOException {
+        var service = service();
         doAnswer(i -> i.getArgument(0))
-                .when(service())
+                .when(service)
                 .write(any(OutputStream.class));
     }
 
@@ -112,6 +112,11 @@ class HelloWorld_04_Send_Socket_Test extends HelloWorldTest {
     @Test
     void _12BytesWritten_() throws IOException, InterruptedException {
         var service = service();
+        doAnswer(i -> {
+            OutputStream stream = i.getArgument(0);
+            stream.write(new byte[BYTES]);
+            return stream;
+        }).when(service).write(any(OutputStream.class));
         try (var server = new ServerSocket()) {
             var addr = InetAddress.getLoopbackAddress();
             var port = 0;
