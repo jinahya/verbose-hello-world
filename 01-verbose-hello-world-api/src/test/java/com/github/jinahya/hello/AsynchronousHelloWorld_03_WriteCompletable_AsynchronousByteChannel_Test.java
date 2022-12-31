@@ -86,8 +86,8 @@ class AsynchronousHelloWorld_03_WriteCompletable_AsynchronousByteChannel_Test
         var channel = mock(AsynchronousByteChannel.class);
         // WHEN
         var future = service.writeCompletable(channel);
-        // THEN: once, write(same(channel), handlerCaptor().capture()) invoked
-        // TODO: Verify, once, write(same(channel), handlerCaptor().capture()) invoked
+        // THEN: once, write(same(channel), notNull())
+        // TODO: Verify, once, write(same(channel), notNull()) invoked
         AsynchronousByteChannel result;
         try {
             result = future.get(8L, SECONDS);
