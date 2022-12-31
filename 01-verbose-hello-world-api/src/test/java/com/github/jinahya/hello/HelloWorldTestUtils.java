@@ -46,31 +46,38 @@ final class HelloWorldTestUtils {
         }
         System.out.println("---------------------------------------------------------------------");
         var arrayOffset = buffer.hasArray() ? buffer.arrayOffset() : 0;
-        var pstring = String.format("%1$s(%2$d)", "pos", buffer.position());
-        var ppadding = padding + arrayOffset + buffer.position() + 2;
-        System.out.printf("%1$" + (ppadding + pstring.length()) + "s", pstring);
-        var lstring = String.format("%1$s(%2$d)", "lim", buffer.limit());
-        var lpadding = padding + arrayOffset + buffer.limit() - ppadding + 2;
-        System.out.printf("%1$" + (lpadding + 1) + "s%n", lstring);
-        System.out.printf("%1$" + (ppadding + 1) + "c", '↓');
-        System.out.printf("%1$" + lpadding + "c%n", '↓');
+        var ppadding = padding + arrayOffset + buffer.position() + 3;
+        System.out.printf("%1$" + ppadding + "c pos(%2$d)%n", '↓', buffer.position()); //   ↓ pos(p)
         System.out.printf("%1$" + padding + "s: ", "buffer");
         for (int i = 0; i < arrayOffset; i++) {
             System.out.print(' ');
         }
-        for (int i = 0; i < buffer.capacity(); i++) {
+        for (int i = 0; i < buffer.position(); i++) {
             System.out.print('-');
         }
-        System.out.printf(" %1$c cap(%2$d)%n", '←', buffer.capacity());
-        System.out.printf("%n");
+        for (int i = 0; i < buffer.remaining(); i++) {
+            System.out.print('*');
+        }
+        for (int i = buffer.position() + buffer.remaining(); i < buffer.capacity(); i++) {
+            System.out.print('-');
+        }
+        System.out.printf(" %1$c cap(%2$d)%n", '←', buffer.capacity()); //                  ← cap(c)
+        var lpadding = padding + arrayOffset + buffer.limit() + 3;
+        System.out.printf("%1$" + lpadding + "c lim(%2$d)%n", '↑', buffer.limit()); //      ↑ lim(l)
         if (buffer.hasArray()) {
-            var ostring = String.format("%1$s(%2$d)", "arrayOffset", buffer.arrayOffset());
-            var opadding = padding + arrayOffset + 2;
-            System.out.printf("%1$" + (opadding + ostring.length()) + "s%n", ostring);
-            System.out.printf("%1$" + (opadding + 1) + "c%n", '↓');
-            var array = buffer.array();
+            for (int i = 0; i < (padding + buffer.arrayOffset() + 2); i++) {
+                System.out.print(' ');
+            }
+            System.out.printf("%1$c arrayOffset(%2$d)%n", '↓', buffer.arrayOffset());
             System.out.printf("%1$" + padding + "s: ", "array");
-            for (int i = 0; i < buffer.array().length; i++) {
+            for (int i = 0; i < buffer.arrayOffset(); i++) {
+                System.out.print('-');
+            }
+            var array = buffer.array();
+            for (int i = buffer.arrayOffset(); i < buffer.arrayOffset() + buffer.capacity(); i++) {
+                System.out.print('+');
+            }
+            for (int i = buffer.arrayOffset() + buffer.capacity(); i < array.length; i++) {
                 System.out.print('-');
             }
             System.out.printf(" %1$c len(%2$d)%n", '←', array.length);

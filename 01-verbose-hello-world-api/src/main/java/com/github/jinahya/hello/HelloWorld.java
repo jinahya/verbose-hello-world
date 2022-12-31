@@ -207,7 +207,7 @@ public interface HelloWorld {
     }
 
     /**
-     * Writes <a href="#hello-world-bytes">hello-world-bytes</a> to specified random access file
+     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified random access file
      * starting at its current file pointer.
      *
      * @param <T>  random access file type parameter
