@@ -32,7 +32,6 @@ import java.io.PipedOutputStream;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.lang.Thread.currentThread;
-import static java.nio.charset.StandardCharsets.US_ASCII;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -131,7 +130,6 @@ class HelloWorld_02_Write_OutputStream_Test extends HelloWorldTest {
                     }
                 }
                 assertEquals(BYTES, off);
-                log.debug("string: {}", new String(b, US_ASCII));
             });
             thread.start();
             service.write(pos);
