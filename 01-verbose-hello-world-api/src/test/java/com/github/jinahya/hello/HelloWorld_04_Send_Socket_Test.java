@@ -25,10 +25,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.ServerSocket;
 import java.net.Socket;
 
+import static com.github.jinahya.hello.HelloWorld.BYTES;
+import static java.lang.Thread.currentThread;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
@@ -97,5 +105,43 @@ class HelloWorld_04_Send_Socket_Test extends HelloWorldTest {
         var actual = service.send(socket);
         // THEN
         assertSame(socket, actual);
+    }
+
+    @org.junit.jupiter.api.Disabled("enable when implemented")
+    @DisplayName("12 bytes are written")
+    @Test
+    void _12BytesWritten_() throws IOException, InterruptedException {
+        var service = service();
+        try (var server = new ServerSocket()) {
+            var addr = InetAddress.getLoopbackAddress();
+            var port = 0;
+            var endpoint = new InetSocketAddress(addr, port);
+            server.bind(endpoint);
+            log.debug("server bound to {}", server.getLocalSocketAddress());
+            var thread = new Thread(() -> {
+                try (var client = new Socket()) {
+                    client.connect(server.getLocalSocketAddress());
+                    log.debug("connected to {}", client.getRemoteSocketAddress());
+                    byte[] b = new byte[BYTES];
+                    int off;
+                    for (off = 0; currentThread().isInterrupted() && off < b.length; ) {
+                        int r = client.getInputStream().read(b, off, b.length - off);
+                        if (r == -1) {
+                            throw new EOFException("unexpected eof");
+                        }
+                        off += r;
+                    }
+                    assertEquals(BYTES, off);
+                } catch (IOException ioe) {
+                    log.error("failed to work with the server", ioe);
+                }
+            });
+            thread.start();
+            try (var client = server.accept()) {
+                service.send(client);
+                client.getOutputStream().flush();
+            }
+            thread.join(SECONDS.toMillis(1L));
+        }
     }
 }
