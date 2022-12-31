@@ -24,9 +24,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 
+import static com.github.jinahya.hello.HelloWorld.BYTES;
+import static java.lang.Thread.currentThread;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -91,5 +98,34 @@ class HelloWorld_02_Write_OutputStream_Test extends HelloWorldTest {
         var actual = service.write(stream);
         // THEN: actual is same as stream
         // TODO: Verify actual is same as stream
+    }
+
+    @org.junit.jupiter.api.Disabled("enable when implemented")
+    @Test
+    void __() throws IOException, InterruptedException {
+        var service = service();
+        try (PipedOutputStream pos = new PipedOutputStream();
+             PipedInputStream pis = new PipedInputStream(pos, BYTES)) {
+            var thread = new Thread(() -> {
+                byte[] b = new byte[BYTES];
+                int off = 0;
+                while (!currentThread().isInterrupted() && off < b.length) {
+                    try {
+                        int r = pis.read(b, off, b.length - off);
+                        if (r == -1) {
+                            throw new EOFException("unexpected eof");
+                        }
+                        off += r;
+                    } catch (IOException ioe) {
+                        log.error("failed to read", ioe);
+                    }
+                }
+                assertEquals(BYTES, off);
+            });
+            thread.start();
+            service.write(pos);
+            pos.flush();
+            thread.join(SECONDS.toMillis(1L));
+        }
     }
 }
