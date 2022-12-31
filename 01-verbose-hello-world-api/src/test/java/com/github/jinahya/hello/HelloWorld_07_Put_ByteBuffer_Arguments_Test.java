@@ -31,6 +31,8 @@ import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.nio.ByteBuffer.allocate;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * A class for testing {@link HelloWorld#put(ByteBuffer)} method regarding arguments verification.
@@ -66,7 +68,8 @@ class HelloWorld_07_Put_ByteBuffer_Arguments_Test extends HelloWorldTest {
     void _ThrowBufferOverflowException_BufferRemainingIsLessThan12() {
         // GIVEN
         var service = service();
-        var buffer = allocate(current().nextInt(BYTES));
+        var buffer = mock(ByteBuffer.class);
+        when(buffer.remaining()).thenReturn(current().nextInt(BYTES));
         // WHEN/THEN
         assertThrows(BufferOverflowException.class, () -> service.put(buffer));
     }
