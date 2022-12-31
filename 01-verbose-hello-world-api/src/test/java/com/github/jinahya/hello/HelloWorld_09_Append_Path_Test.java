@@ -71,11 +71,6 @@ class HelloWorld_09_Append_Path_Test extends HelloWorldTest {
         }).when(service).write(any(WritableByteChannel.class));
     }
 
-    /**
-     * {@link FileChannel#FileChannel()}
-     *
-     * @throws IOException
-     */
     @DisplayName("-> write(FileChannel)"
                  + " -> 12 bytes are appended")
     @Test
