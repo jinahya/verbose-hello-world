@@ -33,7 +33,7 @@ import java.util.concurrent.atomic.LongAdder;
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -54,15 +54,17 @@ class HelloWorld_08_Write_WritableByteChannel_Test extends HelloWorldTest {
      * its {@link ByteBuffer#position() position} increased by {@value HelloWorld#BYTES}.
      */
     @BeforeEach
-    void stub_PutBuffer_ReturnBufferAsItsPositionIncreasedBy12() {
+    void stub_ReturnBufferAsItsPositionIncreasedBy12_PutBuffer() {
         var service = service();
         doAnswer(i -> {
-            var buffer = i.getArgument(0, ByteBuffer.class);
-            buffer.position(buffer.position() + BYTES);
+            ByteBuffer buffer = i.getArgument(0);
+            assert buffer != null;
+            assert buffer.capacity() == BYTES;
+            assert buffer.position() == 0;
+            assert buffer.remaining() == BYTES;
+            buffer.position(BYTES);
             return buffer;
-        })
-                .when(service)
-                .put(argThat(b -> b != null && b.remaining() >= BYTES));
+        }).when(service).put(any());
     }
 
     /**
@@ -76,13 +78,14 @@ class HelloWorld_08_Write_WritableByteChannel_Test extends HelloWorldTest {
                  + " -> channel.write(buffer)+")
     @Test
     void _InvokePutBufferWriteBufferToChannel_() throws IOException {
-        // GIVEN: HelloWorld
+        // GIVEN
         var service = service();
-        // GIVEN: WritableByteChannel
         var channel = mock(WritableByteChannel.class);               // <1>
         var writtenSoFar = new LongAdder();                          // <2>
-        when(channel.write(notNull())).thenAnswer(i -> {   // <3>
-            var buffer = i.getArgument(0, ByteBuffer.class);         // <4>
+        when(channel.write(any())).thenAnswer(i -> {                 // <3>
+            ByteBuffer buffer = i.getArgument(0);                    // <4>
+            assert buffer != null;
+            assert buffer.hasRemaining();
             var written = current().nextInt(buffer.remaining() + 1); // <5>
             buffer.position(buffer.position() + written);            // <6>
             writtenSoFar.add(written);                               // <7>
@@ -104,9 +107,8 @@ class HelloWorld_08_Write_WritableByteChannel_Test extends HelloWorldTest {
     @DisplayName("returns channel")
     @Test
     void _ReturnChannel_() throws IOException {
-        // GIVEN: HelloWorld
+        // GIVEN
         var service = service();
-        // GIVEN: WritableByteChannel
         var channel = mock(WritableByteChannel.class);
         when(channel.write(notNull())).thenAnswer(i -> {
             var buffer = i.getArgument(0, ByteBuffer.class);
