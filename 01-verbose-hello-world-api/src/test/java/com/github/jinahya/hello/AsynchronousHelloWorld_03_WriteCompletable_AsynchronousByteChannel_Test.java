@@ -97,7 +97,5 @@ class AsynchronousHelloWorld_03_WriteCompletable_AsynchronousByteChannel_Test
         }
         // THEN: result is same as channel
         // TODO: Assert result is same as channel
-        // THEN: once, handlerCaptor().getValue().completed(BYTES, channel) invoked
-        // TODO: Verify, once, handlerCaptor().getValue().completed(Bytes, channel) invoked
     }
 }
