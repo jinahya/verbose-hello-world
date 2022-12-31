@@ -119,26 +119,29 @@ class HelloWorld_04_Send_Socket_Test extends HelloWorldTest {
             server.bind(endpoint);
             log.debug("server bound to {}", server.getLocalSocketAddress());
             var thread = new Thread(() -> {
-                try (var client = new Socket()) {
-                    client.connect(server.getLocalSocketAddress());
-                    log.debug("connected to {}", client.getRemoteSocketAddress());
-                    byte[] b = new byte[BYTES];
-                    int off;
-                    for (off = 0; !currentThread().isInterrupted() && off < b.length; ) {
-                        int r = client.getInputStream().read(b, off, b.length - off);
-                        if (r == -1) {
-                            throw new EOFException("unexpected eof");
-                        }
-                        off += r;
-                    }
-                    assertEquals(BYTES, off);
+                try (var client = server.accept()) {
+                    log.debug("accepted from {}", client.getRemoteSocketAddress());
+                    service.send(client);
                 } catch (IOException ioe) {
-                    log.error("failed to work with the server", ioe);
+                    log.error("failed to accept/work", ioe);
                 }
             });
             thread.start();
-            try (var client = server.accept()) {
-                service.send(client);
+            try (var client = new Socket()) {
+                client.connect(server.getLocalSocketAddress());
+                log.debug("connected to {}", client.getRemoteSocketAddress());
+                byte[] b = new byte[BYTES];
+                int off;
+                for (off = 0; !currentThread().isInterrupted() && off < b.length; ) {
+                    int r = client.getInputStream().read(b, off, b.length - off);
+                    if (r == -1) {
+                        throw new EOFException("unexpected eof");
+                    }
+                    off += r;
+                }
+                assertEquals(BYTES, off);
+            } catch (IOException ioe) {
+                log.error("failed to work with the server", ioe);
             }
             thread.join(SECONDS.toMillis(1L));
         }
