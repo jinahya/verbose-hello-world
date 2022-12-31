@@ -124,7 +124,7 @@ class HelloWorld_04_Send_Socket_Test extends HelloWorldTest {
                     log.debug("connected to {}", client.getRemoteSocketAddress());
                     byte[] b = new byte[BYTES];
                     int off;
-                    for (off = 0; currentThread().isInterrupted() && off < b.length; ) {
+                    for (off = 0; !currentThread().isInterrupted() && off < b.length; ) {
                         int r = client.getInputStream().read(b, off, b.length - off);
                         if (r == -1) {
                             throw new EOFException("unexpected eof");
