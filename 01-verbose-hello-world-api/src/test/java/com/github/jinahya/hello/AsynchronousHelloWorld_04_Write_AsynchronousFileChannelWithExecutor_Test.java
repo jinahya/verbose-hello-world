@@ -125,7 +125,8 @@ class AsynchronousHelloWorld_04_Write_AsynchronousFileChannelWithExecutor_Test
         verify(executor, only()).execute(notNull());
         var result = future.get();
         // THEN: put(buffer[12]) invoked
-        verify(service, times(1)).put(any());
+        verify(service, times(1)).put(bufferCaptor().capture());
+        var buffer = bufferCaptor().getValue();
         // THEN: at least once, channel.write(buffer, >= position) invoked
         // TODO: Verify, at least once, channel.write(buffer, >= position) invoked
         // THEN: 12 bytes are written
