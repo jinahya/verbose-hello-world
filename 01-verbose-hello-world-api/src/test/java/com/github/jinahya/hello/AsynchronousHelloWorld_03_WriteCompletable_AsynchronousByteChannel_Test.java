@@ -32,6 +32,7 @@ import java.util.concurrent.TimeoutException;
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 
@@ -82,15 +83,15 @@ class AsynchronousHelloWorld_03_WriteCompletable_AsynchronousByteChannel_Test
             var handler = i.getArgument(1, CompletionHandler.class);
             new Thread(() -> handler.completed(BYTES, channel)).start();
             return null;
-        }).when(service).write(any(), any(CompletionHandler.class));
+        }).when(service).write(notNull(), any(CompletionHandler.class));
         var channel = mock(AsynchronousByteChannel.class);
         // WHEN
         var future = service.writeCompletable(channel);
         // THEN: once, write(same(channel), any(CompletionHandler.class))
-        // TODO: Verify, once, write(same(channel), notNull()) invoked
+        // TODO: Verify, once, write(same(channel), any(CompletionHandler.class)) invoked
         AsynchronousByteChannel result;
         try {
-            result = future.get(8L, SECONDS);
+            result = future.get(4L, SECONDS);
         } catch (TimeoutException te) {
             te.printStackTrace();
             return;
