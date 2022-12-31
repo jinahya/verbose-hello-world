@@ -25,10 +25,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.nio.channels.AsynchronousByteChannel;
-import java.nio.channels.CompletionHandler;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
 
 /**
  * A class for testing
@@ -51,14 +49,10 @@ class AsynchronousHelloWorld_03_WriteCompletable_AsynchronousByteChannel_Argumen
      */
     @DisplayName("[channel == null] -> NullPointerException")
     @Test
-    @SuppressWarnings({"unchecked"})
     void _ThrowNullPointerException_ChannelIsNull() {
-        // GIVEN: HelloWorld
+        // GIVEN
         var service = service();
-        // GIVEN: AsynchronousByteChannel
         AsynchronousByteChannel channel = null;
-        // GIVEN: CompletionHandler
-        var handler = mock(CompletionHandler.class);
         // WHEN/THEN
         assertThrows(NullPointerException.class, () -> service.writeCompletable(channel));
     }
