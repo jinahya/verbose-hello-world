@@ -85,8 +85,8 @@ class HelloWorld_06_Write_RandomAccessFile_Test extends HelloWorldTest {
         var array = arrayCaptor().getValue();
         assertNotNull(array);
         assertEquals(BYTES, array.length);
-        // THEN: only, file.write(array) invoked
-        // TODO: Verify file.write(array) invoked
+        // THEN: once and only, file.write(array) invoked
+        // TODO: Verify file.write(array) invoked, once and only
     }
 
     /**

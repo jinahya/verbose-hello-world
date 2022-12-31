@@ -145,7 +145,7 @@ class HelloWorld_05_Write_DataOutput_Test extends HelloWorldTest {
         var file = createTempFile("tmp", null, tempDir);
         // TODO: write some to file
         var length = file.length();
-        try (var fos = new FileOutputStream(file, true);
+        try (var fos = new FileOutputStream(file, true); // append
              var dos = new DataOutputStream(fos)) {
             // WHEN
             service.write((DataOutput) dos);
