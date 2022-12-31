@@ -33,7 +33,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
-import static java.lang.Thread.currentThread;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
