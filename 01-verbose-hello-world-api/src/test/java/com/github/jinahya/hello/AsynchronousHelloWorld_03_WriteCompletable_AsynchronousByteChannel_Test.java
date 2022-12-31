@@ -68,9 +68,10 @@ class AsynchronousHelloWorld_03_WriteCompletable_AsynchronousByteChannel_Test
      * {@link AsynchronousHelloWorld#writeCompletable(AsynchronousByteChannel)
      * writeCompletable(channel)} method invokes
      * {@link AsynchronousHelloWorld#write(AsynchronousByteChannel, CompletionHandler)
-     * write(channel, handler)} method with a handler invokes either
-     * {@link java.util.concurrent.CompletableFuture#complete(Object)} or
-     * {@link java.util.concurrent.CompletableFuture#completeExceptionally(Throwable)}.
+     * write(channel, handler)} method with specified {@code channel} and a {@code handler}, and
+     * returns a completable future of specified {@code channel} which will be completed when the
+     * {@code handler}'s {@link CompletionHandler#completed(Object, Object) completed(Integer, T)}
+     * method is invoked with {@value HelloWorld#BYTES} and {@code channel}.
      */
     @DisplayName("write(channel, handler)")
     @Test
