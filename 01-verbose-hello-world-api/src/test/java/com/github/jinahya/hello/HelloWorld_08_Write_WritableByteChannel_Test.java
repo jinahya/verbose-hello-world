@@ -34,7 +34,6 @@ import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -110,8 +109,10 @@ class HelloWorld_08_Write_WritableByteChannel_Test extends HelloWorldTest {
         // GIVEN
         var service = service();
         var channel = mock(WritableByteChannel.class);
-        when(channel.write(notNull())).thenAnswer(i -> {
-            var buffer = i.getArgument(0, ByteBuffer.class);
+        when(channel.write(any())).thenAnswer(i -> {
+            ByteBuffer buffer = i.getArgument(0);
+            assert buffer != null;
+            assert buffer.hasRemaining();
             var written = buffer.remaining();
             buffer.position(buffer.limit());
             return written;
