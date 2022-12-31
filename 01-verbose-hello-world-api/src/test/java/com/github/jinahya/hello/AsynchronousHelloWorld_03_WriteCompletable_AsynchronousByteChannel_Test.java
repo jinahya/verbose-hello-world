@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.CompletionHandler;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -73,7 +74,7 @@ class AsynchronousHelloWorld_03_WriteCompletable_AsynchronousByteChannel_Test
      * {@code handler}'s {@link CompletionHandler#completed(Object, Object) completed(Integer, T)}
      * method is invoked with {@value HelloWorld#BYTES} and {@code channel}.
      */
-    @DisplayName("write(channel, handler)")
+    @DisplayName("-> write(channel, handler <- completed)")
     @Test
     @SuppressWarnings({"unchecked"})
     void _Completed_() throws InterruptedException, ExecutionException {
@@ -99,5 +100,46 @@ class AsynchronousHelloWorld_03_WriteCompletable_AsynchronousByteChannel_Test
         }
         // THEN: result is same as channel
         // TODO: Assert result is same as channel
+    }
+
+    /**
+     * Asserts
+     * {@link AsynchronousHelloWorld#writeCompletable(AsynchronousByteChannel)
+     * writeCompletable(channel)} method invokes
+     * {@link AsynchronousHelloWorld#write(AsynchronousByteChannel, CompletionHandler)
+     * write(channel, handler)} method with specified {@code channel} and a {@code handler}, and
+     * returns a completable future of specified {@code channel} which will be
+     * {@link CompletableFuture#completeExceptionally(Throwable) complted exceptionally} when the
+     * {@code handler}'s {@link CompletionHandler#failed(Throwable, Object) failed(Throwable, T)}
+     * method is invoked with a throwable and {@code channel}.
+     */
+    @DisplayName("-> write(channel, handler <- failed)")
+    @Test
+    @SuppressWarnings({"unchecked"})
+    void _Failed_() throws InterruptedException, ExecutionException {
+        // GIVEN
+        var service = service();
+        var exc = mock(Throwable.class);
+        doAnswer(i -> {
+            AsynchronousByteChannel channel = i.getArgument(0);
+            var handler = i.getArgument(1, CompletionHandler.class);
+            new Thread(() -> handler.failed(exc, channel)).start();
+            return null;
+        }).when(service).write(notNull(), any(CompletionHandler.class));
+        var channel = mock(AsynchronousByteChannel.class);
+        // WHEN
+        var future = service.writeCompletable(channel);
+        // THEN: once, write(same(channel), any(CompletionHandler.class))
+        // TODO: Verify, once, write(same(channel), any(CompletionHandler.class)) invoked
+        // THEN: future.get throws an ExecutionException
+        AsynchronousByteChannel result;
+        try {
+            result = future.get(4L, SECONDS);
+        } catch (ExecutionException ee) {
+            // TODO: Assert ee.getCause() is same as `exc`
+        } catch (TimeoutException te) {
+            te.printStackTrace();
+            return;
+        }
     }
 }
