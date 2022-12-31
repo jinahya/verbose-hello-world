@@ -42,6 +42,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -65,13 +66,17 @@ class AsynchronousHelloWorld_04_Write_AsynchronousFileChannelWithExecutor_Test
      */
     @DisplayName("[stubbing] put(buffer) returns buffer as its position increased by 12")
     @BeforeEach
-    void stub_IncreaseBufferPositionBy12_PutBuffer() {
+    void stub_ReturnBufferAsitsPositionIncreasedBy12_PutBuffer() {
         // GIVEN
         var service = service();
         // WHEN/THEN
         doAnswer(i -> {
             ByteBuffer buffer = i.getArgument(0);
-            buffer.position(buffer.position() + BYTES);
+            assert buffer != null;
+            assert buffer.position() == 0;
+            assert buffer.capacity() == BYTES;
+            assert buffer.limit() == buffer.capacity();
+            buffer.position(BYTES);
             return buffer;
         }).when(service).put(any());
     }
@@ -116,13 +121,11 @@ class AsynchronousHelloWorld_04_Write_AsynchronousFileChannelWithExecutor_Test
         var position = 0L;
         // WHEN
         var future = service.write(channel, position, executor);
-        // THEN: once, executor.execute(Runnable)
-        verify(executor, times(1)).execute(notNull());
+        // THEN: only, executor.execute(Runnable) invoked
+        verify(executor, only()).execute(notNull());
         var result = future.get();
         // THEN: put(buffer[12]) invoked
-        verify(service, times(1)).put(bufferCaptor().capture());
-        var buffer = bufferCaptor().getValue();
-        assertEquals(BYTES, buffer.capacity());
+        verify(service, times(1)).put(any());
         // THEN: at least once, channel.write(buffer, >= position) invoked
         // TODO: Verify, at least once, channel.write(buffer, >= position) invoked
         // THEN: 12 bytes are written
