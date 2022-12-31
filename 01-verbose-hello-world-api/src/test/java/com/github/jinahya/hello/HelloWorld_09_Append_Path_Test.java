@@ -21,35 +21,46 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockito.MockedStatic;
 
 import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.file.Path;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.nio.ByteBuffer.allocate;
+import static java.nio.channels.FileChannel.open;
 import static java.nio.file.Files.createTempFile;
 import static java.nio.file.Files.size;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.ArgumentMatchers.notNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 
 /**
- * A class for testing {@link HelloWorld#append(Path)} method.
+ * A class for testing {@link HelloWorld#append(Path) append(path)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_09_Append_Path_Arguments_Test
  */
-@DisplayName("append(Path)")
+@DisplayName("append(path)")
 @Slf4j
 class HelloWorld_09_Append_Path_Test extends HelloWorldTest {
 
-    @BeforeEach
-    void stub_WriteChannel_Write12Bytes() throws IOException {
+    /**
+     * Stubs {@link HelloWorld#write(WritableByteChannel) write(channel)} method writes
+     * {@value HelloWorld#BYTES} bytes, and returns the {@code channel}.
+     *
+     * @throws IOException if an I/O error occurs.
+     */
+    @org.junit.jupiter.api.BeforeEach
+    void stub_Write12Bytes_WriteChannel() throws IOException {
         var service = service();
         doAnswer(i -> {
             WritableByteChannel channel = i.getArgument(0);
@@ -57,16 +68,46 @@ class HelloWorld_09_Append_Path_Test extends HelloWorldTest {
                 channel.write(b);
             }
             return channel;
-        })
-                .when(service)
-                .write((WritableByteChannel) notNull());
+        }).when(service).write(any(WritableByteChannel.class));
+    }
+
+    /**
+     * {@link FileChannel#FileChannel()}
+     *
+     * @throws IOException
+     */
+    @DisplayName("-> write(FileChannel)"
+                 + " -> 12 bytes are appended")
+    @Test
+    void _InvokeWriteChannel_() throws IOException {
+        // GIVEN
+        var service = service();
+        var path = mock(Path.class);
+        var channel = mock(FileChannel.class);
+        try (MockedStatic<FileChannel> factory = mockStatic(FileChannel.class)) {
+            factory.when(() -> open(same(path), any())).thenAnswer(i -> {
+                var arguments = i.getRawArguments(); // Path, OpenOption...
+                // TODO: Assert arguments.length == 2
+                // TODO: Assert arguments[0] is same as `path` variable
+                // TODO: Assert arguments[1] is instance of OpenOption[].class
+                // TODO: Assert arguments[1] contains StandardOpenOption.WRITE
+                // TODO: Assert arguments[1] contains StandardOpenOption.APPEND
+                return channel;
+            });
+            // WHEN
+            service.append(path);
+            // THEN, once, FileChannel.open(path, WRITE, APPEND... invoked
+            // TODO: Verify FileChannel.open(path, WRITE, APPEND... invoked
+            // THEN: once, write(channel) invoked
+            // TODO: Assert write(channel) invoked, once
+        }
     }
 
     /**
      * Asserts {@link HelloWorld#append(Path) append(path)} method invokes
      * {@link HelloWorld#write(WritableByteChannel) write(channel)} method with an instance of
-     * {@link java.nio.channels.FileChannel}, and asserts {@value HelloWorld#BYTES} bytes are
-     * appended to specified {@code path}.
+     * {@link FileChannel}, and asserts {@value HelloWorld#BYTES} bytes are appended to specified
+     * {@code path}.
      *
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.

@@ -29,7 +29,8 @@ import java.nio.file.Path;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
- * A class for testing {@link HelloWorld#append(Path)} method regarding arguments verification.
+ * A class for testing {@link HelloWorld#append(Path) append(path)} method regarding arguments
+ * verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_09_Append_Path_Test
@@ -45,9 +46,8 @@ class HelloWorld_09_Append_Path_Arguments_Test extends HelloWorldTest {
     @DisplayName("[path == null] -> NullPointerException")
     @Test
     void _ThrowNullPointerException_PathIsNull() {
-        // GIVEN: HelloWorld
+        // GIVEN
         var service = service();
-        // GIVEN: Path
         Path path = null;
         // WHEN/THEN
         assertThrows(NullPointerException.class, () -> service.append(path));
