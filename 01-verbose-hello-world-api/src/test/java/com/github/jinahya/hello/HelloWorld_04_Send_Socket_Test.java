@@ -139,7 +139,6 @@ class HelloWorld_04_Send_Socket_Test extends HelloWorldTest {
             thread.start();
             try (var client = server.accept()) {
                 service.send(client);
-                client.getOutputStream().flush();
             }
             thread.join(SECONDS.toMillis(1L));
         }
