@@ -38,7 +38,7 @@ import static org.mockito.Mockito.mock;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_11_Write_AsynchronousFileChannel_Test
  */
-@DisplayName("write(AsynchronousFileChannel, long) arguments")
+@DisplayName("write(channel, position) arguments")
 @Slf4j
 class HelloWorld_11_Write_AsynchronousFileChannel_Arguments_Test extends HelloWorldTest {
 
@@ -50,11 +50,9 @@ class HelloWorld_11_Write_AsynchronousFileChannel_Arguments_Test extends HelloWo
     @DisplayName("[channel == null] -> NullPointerException")
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
-        // GIVEN: HelloWorld
+        // GIVEN
         var service = service();
-        // GIVEN: AsynchronousByteChannel
         AsynchronousFileChannel channel = null;
-        // GIVEN: position
         var position = 0L;
         // WHEN/THEN
         assertThrows(NullPointerException.class, () -> service.write(channel, position));
@@ -68,11 +66,9 @@ class HelloWorld_11_Write_AsynchronousFileChannel_Arguments_Test extends HelloWo
     @DisplayName("[position < 0L] -> IllegalArgumentException")
     @Test
     void _ThrowIllegalArgumentException_PositionIsNegative() {
-        // GIVEN: HelloWorld
+        // GIVEN
         var service = service();
-        // GIVEN: AsynchronousByteChannel
         var channel = mock(AsynchronousFileChannel.class);
-        // GIVEN: position
         var position = current().nextLong() | MIN_VALUE;
         // WHEN/THEN
         assertThrows(IllegalArgumentException.class, () -> service.write(channel, position));
