@@ -105,7 +105,7 @@ class HelloWorld_09_Append_Path_Test extends HelloWorldTest {
             // WHEN
             service.append(path);
             // THEN, once, FileChannel.open(path, WRITE, APPEND, ...) invoked
-            // TODO: Verify FileChannel.open(path, WRITE, APPEND... invoked
+            // TODO: Verify FileChannel.open(path, WRITE, APPEND...) invoked, once
             // THEN: once, write(channel) invoked
             // TODO: Assert write(channel) invoked, once
         }
