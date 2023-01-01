@@ -27,25 +27,19 @@ import org.junit.jupiter.api.io.TempDir;
 import org.mockito.MockedStatic;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.file.Path;
-import java.util.concurrent.atomic.LongAdder;
 
-import static com.github.jinahya.hello.HelloWorld.BYTES;
-import static java.nio.ByteBuffer.allocate;
 import static java.nio.channels.FileChannel.open;
 import static java.nio.file.Files.createTempFile;
 import static java.nio.file.Files.size;
-import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.when;
 
 /**
  * A class for testing {@link HelloWorld#append(Path) append(path)} method.
@@ -58,40 +52,27 @@ import static org.mockito.Mockito.when;
 class HelloWorld_09_Append_Path_Test extends HelloWorldTest {
 
     /**
-     * Stubs {@link HelloWorld#write(WritableByteChannel) write(channel)} method writes
-     * {@value HelloWorld#BYTES} bytes, and returns the {@code channel}.
+     * Stubs {@link HelloWorld#write(WritableByteChannel) write(channel)} method to just return the
+     * {@code channel} argument.
      *
      * @throws IOException if an I/O error occurs.
      */
+    @DisplayName("[stubbing] write(channel) -> return channel")
     @org.junit.jupiter.api.BeforeEach
-    void stub_Write12Bytes_WriteChannel() throws IOException {
+    void stub_ReturnChannel_WriteChannel() throws IOException {
         var service = service();
-        doAnswer(i -> {
-            WritableByteChannel channel = i.getArgument(0);
-            for (var b = allocate(BYTES); b.hasRemaining(); ) {
-                channel.write(b);
-            }
-            return channel;
-        }).when(service).write(any(WritableByteChannel.class));
+        doAnswer(i -> i.getArgument(0))
+                .when(service)
+                .write(any(WritableByteChannel.class));
     }
 
-    @DisplayName("-> write(FileChannel)"
-                 + " -> 12 bytes are appended")
+    @DisplayName("invokes write(channel opened from path)")
     @Test
-    void _InvokeWriteChannel_() throws IOException {
+    void _InvokeWriteChannelOpenedFromPath_() throws IOException {
         // GIVEN
         var service = service();
         var path = mock(Path.class);
         var channel = mock(FileChannel.class);
-        var writtenSoFar = new LongAdder();
-        when(channel.write(any(ByteBuffer.class))).thenAnswer(i -> {
-            ByteBuffer src = i.getArgument(0);
-            assert src.hasRemaining();
-            var written = current().nextInt(src.remaining() + 1);
-            src.position(src.position() + written);
-            writtenSoFar.add(written);
-            return written;
-        });
         try (MockedStatic<FileChannel> mocked = mockStatic(FileChannel.class)) {
             mocked.when(() -> open(same(path), any())).thenAnswer(i -> {
                 var arguments = i.getRawArguments(); // Path, OpenOption...
@@ -101,10 +82,31 @@ class HelloWorld_09_Append_Path_Test extends HelloWorldTest {
             });
             // WHEN
             service.append(path);
-            // THEN, once, FileChannel.open(path, WRITE, APPEND, ...) invoked
-            // TODO: Verify FileChannel.open(path, WRITE, APPEND...) invoked, once
+            // THEN, once and once, FileChannel.open(path, WRITE, APPEND, ...) invoked
+            // TODO: Verify FileChannel.open(path, WRITE, APPEND...) invoked, once, and only
             // THEN: once, write(channel) invoked
             // TODO: Assert write(channel) invoked, once
+        }
+    }
+
+    /**
+     * Asserts {@link HelloWorld#append(Path) append(path)} method returns the {@code path}
+     * argument.
+     *
+     * @throws IOException if an I/O error occurs.
+     */
+    @DisplayName("returns path")
+    @Test
+    void _ReturnPath_() throws IOException {
+        // GIVEN
+        var service = service();
+        var path = mock(Path.class);
+        var channel = mock(FileChannel.class);
+        try (MockedStatic<FileChannel> mocked = mockStatic(FileChannel.class)) {
+            mocked.when(() -> open(same(path), any())).thenReturn(channel);
+            // WHEN
+            var result = service.append(path);
+            assertSame(path, result);
         }
     }
 
