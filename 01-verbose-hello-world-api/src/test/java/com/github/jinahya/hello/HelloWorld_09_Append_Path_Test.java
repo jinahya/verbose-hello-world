@@ -108,6 +108,7 @@ class HelloWorld_09_Append_Path_Test extends HelloWorldTest {
             mocked.when(() -> open(same(path), any())).thenReturn(channel);
             // WHEN
             var result = service.append(path);
+            // THEN
             assertSame(path, result);
         }
     }
@@ -131,9 +132,7 @@ class HelloWorld_09_Append_Path_Test extends HelloWorldTest {
                 channel.write(src);
             }
             return channel;
-        })
-                .when(service)
-                .write(any(WritableByteChannel.class));
+        }).when(service).write(any(WritableByteChannel.class));
         var path = createTempFile(tempDir, null, null);
         var size = size(path);
         // WHEN
