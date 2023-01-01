@@ -58,12 +58,12 @@ public interface ReactiveHelloWorld extends AsynchronousHelloWorld {
     }
 
     default <T> void subscribe(Flow.Subscriber<? super T> subscriber,
-                               Function<? super ReactiveHelloWorld, ? extends T> function) {
+                               Function<? super ReactiveHelloWorld, ? extends T> generator) {
         Objects.requireNonNull(subscriber, "subscriber is null");
-        Objects.requireNonNull(function, "function is null");
+        Objects.requireNonNull(generator, "generator is null");
         var subscription = new ReactiveHelloWorldSubscription<T>(
                 subscriber,
-                () -> function.apply(this),
+                () -> generator.apply(this),
                 new LinkedBlockingQueue<>()
         );
         subscriber.onSubscribe(subscription);
