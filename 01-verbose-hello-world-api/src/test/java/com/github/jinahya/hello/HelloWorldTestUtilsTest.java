@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import static com.github.jinahya.hello.HelloWorldTestUtils.drawBuffer;
+import static com.github.jinahya.hello.HelloWorldTestUtils.print;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteBuffer.allocateDirect;
 import static java.nio.ByteBuffer.wrap;
@@ -42,22 +42,22 @@ class HelloWorldTestUtilsTest {
 
         @Test
         void drawBuffer__Empty() {
-            drawBuffer(allocate(0));
+            print(allocate(0));
         }
 
         @Test
         void drawBuffer__One() {
-            drawBuffer(allocate(1));
+            print(allocate(1));
         }
 
         @Test
         void drawBuffer__Two() {
-            drawBuffer(allocate(2));
+            print(allocate(2));
         }
 
         @Test
         void drawBuffer__Six() {
-            drawBuffer(allocate(6));
+            print(allocate(6));
         }
 
         @Test
@@ -66,7 +66,7 @@ class HelloWorldTestUtilsTest {
             var slice = buffer.slice(3, 14);
             slice.position(3);
             slice.limit(slice.limit() - 4);
-            drawBuffer(slice);
+            print(slice);
         }
     }
 
@@ -75,22 +75,22 @@ class HelloWorldTestUtilsTest {
 
         @Test
         void drawBuffer__Empty() {
-            drawBuffer(allocateDirect(0));
+            print(allocateDirect(0));
         }
 
         @Test
         void drawBuffer__One() {
-            drawBuffer(allocateDirect(1));
+            print(allocateDirect(1));
         }
 
         @Test
         void drawBuffer__Two() {
-            drawBuffer(allocateDirect(2));
+            print(allocateDirect(2));
         }
 
         @Test
         void drawBuffer__Six() {
-            drawBuffer(allocateDirect(6));
+            print(allocateDirect(6));
         }
 
         @Test
@@ -99,7 +99,7 @@ class HelloWorldTestUtilsTest {
             var slice = buffer.slice(3, 14);
             slice.position(3);
             slice.limit(slice.limit() - 4);
-            drawBuffer(slice);
+            print(slice);
         }
     }
 }

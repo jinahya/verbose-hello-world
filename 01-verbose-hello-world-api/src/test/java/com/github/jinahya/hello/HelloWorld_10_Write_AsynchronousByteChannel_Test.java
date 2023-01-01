@@ -21,7 +21,6 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -32,16 +31,17 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.LongAdder;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
+import static com.github.jinahya.hello.HelloWorldTestUtils.print;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 
 /**
  * A class for testing {@link HelloWorld#write(AsynchronousByteChannel)} method.
@@ -49,19 +49,27 @@ import static org.mockito.Mockito.when;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_10_Write_AsynchronousByteChannel_Arguments_Test
  */
-@DisplayName("write(AsynchronousByteChannel, Executor) arguments")
+@DisplayName("write(channel)")
 @Slf4j
 class HelloWorld_10_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
 
-    @BeforeEach
-    void stub_PutBuffer_IncreaseBufferPositionBy12() {
+    /**
+     * Stubs the {@link HelloWorld#put(ByteBuffer) put(buffer)} method to just return the
+     * {@code buffer} as its {@code position} is increased by {@value HelloWorld#BYTES}.
+     */
+    @DisplayName("[stubbing] put(buffer[12]) returns buffer as its position increased by 12")
+    @org.junit.jupiter.api.BeforeEach
+    void stub_ReturnBufferPositionIncreaseBy12_PutBuffer() {
         doAnswer(i -> {
             ByteBuffer buffer = i.getArgument(0);
-            buffer.position(buffer.position() + BYTES);
+            assert buffer != null;
+            print(buffer);
+            assert buffer.capacity() == BYTES;
+            assert buffer.limit() == buffer.capacity();
+            assert buffer.remaining() == BYTES;
+            buffer.position(buffer.limit());
             return buffer;
-        })
-                .when(service())
-                .put(any());
+        }).when(service()).put(any());
     }
 
     /**
@@ -75,18 +83,19 @@ class HelloWorld_10_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
     @DisplayName("-> put(buffer[12]) -> channel.write(buffer)+")
     @Test
     void _PutBufferWriteBufferToChannel_() throws InterruptedException, ExecutionException {
-        // GIVEN: HelloWorld
+        // GIVEN
         var service = service();
-        // GIVEN: AsynchronousByteChannel
         var channel = mock(AsynchronousByteChannel.class);
         var writtenSoFar = new LongAdder();
-        when(channel.write(argThat(b -> b != null && b.hasRemaining()))).thenAnswer(i -> {
-            var buffer = i.getArgument(0, ByteBuffer.class);
-            var written = current().nextInt(buffer.remaining() + 1);
-            buffer.position(buffer.position() + written);
+        when(channel.write(any())).thenAnswer(i -> {
+            ByteBuffer src = i.getArgument(0);
+            assert src != null;
+            assert src.hasRemaining();
+            var written = current().nextInt(src.remaining() + 1);
+            src.position(src.position() + written);
             writtenSoFar.add(written);
             var future = mock(Future.class);
-            doReturn(written).when(future).get();
+            when(future.get()).thenReturn(written);
             return future;
         });
         // WHEN
@@ -96,12 +105,14 @@ class HelloWorld_10_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
         var buffer = bufferCaptor().getValue();
         assertEquals(BYTES, buffer.capacity());
         // THEN: at least once, channel.write(buffer) invoked
+        // TODO: Verify channel.write(buffer) invoked, at least once
         // THEN: 12 bytes are written
+        // TODO: Assert writtenSoFar.intValue() is euqal to BYTES
     }
 
     /**
      * Asserts {@link HelloWorld#write(AsynchronousByteChannel) write(channel)} method returns
-     * specified {@code channel}.
+     * {@code channel}.
      *
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
@@ -109,16 +120,15 @@ class HelloWorld_10_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
     @DisplayName("returns channel")
     @Test
     void _ReturnChannel_() throws InterruptedException, ExecutionException {
-        // GIVEN: HelloWorld
+        // GIVEN
         var service = service();
-        // GIVEN: AsynchronousByteChannel
         var channel = mock(AsynchronousByteChannel.class);
-        when(channel.write(argThat(b -> b != null && b.hasRemaining()))).thenAnswer(i -> {
-            var buffer = i.getArgument(0, ByteBuffer.class);
-            var written = buffer.remaining();
-            buffer.position(buffer.position() + written);
+        when(channel.write(any())).thenAnswer(i -> {
+            ByteBuffer src = i.getArgument(0);
+            var written = src.remaining();
+            src.position(src.position() + written);
             var future = mock(Future.class);
-            doReturn(written).when(future).get();
+            when(future.get()).thenReturn(written);
             return future;
         });
         // WHEN

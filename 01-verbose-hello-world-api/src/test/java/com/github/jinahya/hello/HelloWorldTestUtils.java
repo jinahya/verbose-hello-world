@@ -33,7 +33,7 @@ import java.util.Objects;
 @Slf4j
 final class HelloWorldTestUtils {
 
-    static void drawBuffer(ByteBuffer buffer) {
+    static <T extends ByteBuffer> T print(T buffer) {
         Objects.requireNonNull(buffer, "buffer is null");
         var padding = 11;
         System.out.println("---------------------------------------------------------------------");
@@ -83,6 +83,7 @@ final class HelloWorldTestUtils {
             System.out.printf(" %1$c len(%2$d)%n", '←', array.length);
         }
         System.out.println("---------------------------------------------------------------------");
+        return buffer;
     }
 
     HelloWorldTestUtils() {

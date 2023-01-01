@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_10_Write_AsynchronousByteChannel_Test
  */
-@DisplayName("write(AsynchronousByteChannel, Executor) arguments")
+@DisplayName("write(channel) arguments")
 @Slf4j
 class HelloWorld_10_Write_AsynchronousByteChannel_Arguments_Test extends HelloWorldTest {
 
@@ -46,9 +46,8 @@ class HelloWorld_10_Write_AsynchronousByteChannel_Arguments_Test extends HelloWo
     @DisplayName("[channel == null] -> NullPointerException")
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
-        // GIVEN: HelloWorld
+        // GIVEN
         var service = service();
-        // GIVEN: AsynchronousByteChannel
         AsynchronousByteChannel channel = null;
         // WHEN/THEN
         assertThrows(NullPointerException.class, () -> service.write(channel));
