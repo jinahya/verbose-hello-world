@@ -92,8 +92,8 @@ class HelloWorld_09_Append_Path_Test extends HelloWorldTest {
             writtenSoFar.add(written);
             return written;
         });
-        try (MockedStatic<FileChannel> factory = mockStatic(FileChannel.class)) {
-            factory.when(() -> open(same(path), any())).thenAnswer(i -> {
+        try (MockedStatic<FileChannel> mocked = mockStatic(FileChannel.class)) {
+            mocked.when(() -> open(same(path), any())).thenAnswer(i -> {
                 var arguments = i.getRawArguments(); // Path, OpenOption...
                 // TODO: Assert arguments.length == 2
                 // TODO: Assert arguments[0] is same as `path` variable
