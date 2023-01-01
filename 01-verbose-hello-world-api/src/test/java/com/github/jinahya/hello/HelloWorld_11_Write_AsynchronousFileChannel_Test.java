@@ -118,7 +118,7 @@ class HelloWorld_11_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
         // THEN: once, put(buffer[12]) invoked
         verify(service).put(bufferCaptor().capture());
         var buffer = bufferCaptor().getValue();
-        // THEN: at least once, channel.write(buffer, <position>) invoked
+        // THEN: at least once, channel.write(buffer, >= position) invoked
         // THEN: 12 bytes are written
     }
 
