@@ -67,6 +67,7 @@
     <version.org.jboss.weld.se>${version.org.jboss.weld}</version.org.jboss.weld.se> <!-- weld-se-core -->
     <version.org.junit.jupiter>5.9.1</version.org.junit.jupiter>
     <version.org.mockito>4.9.0</version.org.mockito>
+    <vesion.org.reactivestreams>1.0.4</vesion.org.reactivestreams>
     <version.org.slf4j>2.0.6</version.org.slf4j>
     <version.org.springframework>5.3.23</version.org.springframework>
     <version.org.springframework.boot>2.7.5</version.org.springframework.boot>
