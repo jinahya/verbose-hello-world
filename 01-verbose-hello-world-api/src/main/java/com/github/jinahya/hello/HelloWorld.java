@@ -39,7 +39,11 @@ import java.nio.channels.WritableByteChannel;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * An interface for generating <a href="#hello-world-bytes">hello-world-bytes</a> to various
@@ -310,6 +314,41 @@ public interface HelloWorld {
         }
         // TODO: Implement!
         return channel;
+    }
+
+    /**
+     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to a path supplied by specified
+     * supplier, passing a channel, applied to specified function with the {@code path}, to
+     * {@link #write(WritableByteChannel) write(channel)} method, and eventually accepting the
+     * channel to specified consumer.
+     *
+     * @param <T>     path type parameter
+     * @param <U>     channel type parameter
+     * @param locator a supplier for locating the path to write.
+     * @param opener  a function for opening a channel from the {@code path} supplied from
+     *                {@code locator}.
+     * @param closer  a consumer for closing the channel opened by {@code opener}.
+     * @return the {@code path} to which bytes have been written.
+     * @throws NullPointerException if either {@code locator}, {@code opener}, or {@code closer} is
+     *                              {@code null}.
+     * @throws IOException          if an I/O error occurs.
+     * @see #write(WritableByteChannel)
+     */
+    default <T extends Path, U extends WritableByteChannel> T write(
+            Supplier<? extends T> locator, Function<? super T, ? extends U> opener,
+            Consumer<? super U> closer)
+            throws IOException {
+        Objects.requireNonNull(locator, "locator is null");
+        Objects.requireNonNull(opener, "opener is null");
+        Objects.requireNonNull(closer, "closer is null");
+        T path = Objects.requireNonNull(locator.get(), "locator supplied null");
+        U channel = Objects.requireNonNull(opener.apply(path), "opener applied null");
+        try {
+            write(channel);
+        } finally {
+            closer.accept(channel);
+        }
+        return path;
     }
 
     /**
