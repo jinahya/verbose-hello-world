@@ -23,9 +23,13 @@ package com.github.jinahya.hello;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousFileChannel;
+import java.nio.channels.FileChannel;
+import java.nio.file.Path;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
@@ -33,12 +37,17 @@ import java.util.concurrent.atomic.LongAdder;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static com.github.jinahya.hello.HelloWorldTestUtils.print;
+import static java.nio.ByteBuffer.allocate;
+import static java.nio.channels.AsynchronousFileChannel.open;
+import static java.nio.file.Files.createTempFile;
+import static java.nio.file.Files.size;
+import static java.nio.file.StandardOpenOption.WRITE;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -140,5 +149,26 @@ class HelloWorld_11_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
         var result = service.write(channel, position);
         // THEN: result is same as channel
         assertSame(channel, result);
+    }
+
+    @org.junit.jupiter.api.Disabled("enable when implemented")
+    @Test
+    void _12BytesAreWritten_(@TempDir Path dir)
+            throws IOException, InterruptedException, ExecutionException {
+        // GIVEN
+        var service = service();
+        var path = createTempFile(dir, null, null);
+        try (var channel = FileChannel.open(path, WRITE)) {
+            for (var buffer = allocate(current().nextInt(1024)); buffer.hasRemaining(); ) {
+                channel.write(buffer);
+            }
+            channel.force(false);
+        }
+        var position = current().nextLong(1024L);
+        try (var channel = open(path, WRITE)) {
+            service.write(channel, position);
+            channel.force(false);
+        }
+        assertTrue(size(path) >= position + BYTES);
     }
 }
