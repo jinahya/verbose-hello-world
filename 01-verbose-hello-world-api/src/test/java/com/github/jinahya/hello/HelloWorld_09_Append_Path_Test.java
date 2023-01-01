@@ -115,7 +115,7 @@ class HelloWorld_09_Append_Path_Test extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#append(Path) append(path)} method appends {@value HelloWorld#BYTES}
-     * byte to {@code path}.
+     * bytes to {@code path}.
      *
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
