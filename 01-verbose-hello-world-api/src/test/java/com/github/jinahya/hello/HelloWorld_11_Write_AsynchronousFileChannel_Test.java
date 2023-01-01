@@ -167,9 +167,11 @@ class HelloWorld_11_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
         }
         var position = current().nextLong(1024L);
         try (var channel = open(path, WRITE)) {
+            // WHEN
             service.write(channel, position);
             channel.force(false);
         }
+        // THEN
         assertTrue(size(path) >= position + BYTES);
     }
 }
