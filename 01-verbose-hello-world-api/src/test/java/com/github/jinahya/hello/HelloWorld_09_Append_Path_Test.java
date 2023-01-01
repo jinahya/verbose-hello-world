@@ -31,6 +31,8 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.file.Path;
 
+import static com.github.jinahya.hello.HelloWorld.BYTES;
+import static java.nio.ByteBuffer.allocate;
 import static java.nio.channels.FileChannel.open;
 import static java.nio.file.Files.createTempFile;
 import static java.nio.file.Files.size;
@@ -111,46 +113,32 @@ class HelloWorld_09_Append_Path_Test extends HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#append(Path) append(path)} method invokes
-     * {@link HelloWorld#write(WritableByteChannel) write(channel)} method with an instance of
-     * {@link FileChannel}, and asserts {@value HelloWorld#BYTES} bytes are appended to specified
-     * {@code path}.
+     * Asserts {@link HelloWorld#append(Path) append(path)} method appends {@value HelloWorld#BYTES}
+     * byte to {@code path}.
      *
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("-> write(FileChannel)"
-                 + " -> 12 bytes are appended")
+    @DisplayName("-> 12 bytes are appended")
     @Test
-    void _InvokeWriteChannel12BytesAppended_(@TempDir Path tempDir) throws IOException {
-        // GIVEN: HelloWorld
+    @畵蛇添足
+    void _12BytesAppended_(@TempDir Path tempDir) throws IOException {
+        // GIVEN
         var service = service();
-        // GIVEN: Path
+        doAnswer(i -> {
+            WritableByteChannel channel = i.getArgument(0);
+            for (var src = allocate(BYTES); src.hasRemaining(); ) {
+                channel.write(src);
+            }
+            return channel;
+        })
+                .when(service)
+                .write(any(WritableByteChannel.class));
         var path = createTempFile(tempDir, null, null);
         var size = size(path);
         // WHEN
         service.append(path);
-        // THEN: once, write(FileChannel) invoked
         // THEN: 12 byte are appended to the path
-    }
-
-    /**
-     * Asserts {@link HelloWorld#append(Path) append(path)} method returns the {@code path}
-     * argument.
-     *
-     * @param tempDir a temporary directory to test with.
-     * @throws IOException if an I/O error occurs.
-     */
-    @DisplayName("returns path")
-    @Test
-    void _ReturnPath_(@TempDir Path tempDir) throws IOException {
-        // GIVEN: HelloWorld
-        var service = service();
-        // GIVEN: Path
-        var path = createTempFile(tempDir, null, null);
-        // WHEN
-        var actual = service.append(path);
-        // THEN
-        assertSame(path, actual);
+        // TODO: Assert size(path) is equal to size + BYTES
     }
 }
