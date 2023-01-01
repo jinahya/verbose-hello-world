@@ -32,7 +32,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
 /**
- * A class for testing {@link HelloWorld#write(AsynchronousFileChannel, long)} method regarding
+ * A class for testing
+ * {@link HelloWorld#write(AsynchronousFileChannel, long) write(channel, position)} method regarding
  * arguments verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
