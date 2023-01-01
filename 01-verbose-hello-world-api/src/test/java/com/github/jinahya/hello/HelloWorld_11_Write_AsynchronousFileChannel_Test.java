@@ -153,6 +153,7 @@ class HelloWorld_11_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
 
     @org.junit.jupiter.api.Disabled("enable when implemented")
     @Test
+    @畵蛇添足
     void _12BytesAreWritten_(@TempDir Path dir)
             throws IOException, InterruptedException, ExecutionException {
         // GIVEN
