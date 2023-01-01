@@ -38,6 +38,7 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -287,7 +288,7 @@ public interface HelloWorld {
     }
 
     /**
-     * Writes <a href="#hello-world-bytes">hello-world-bytes</a> to specified channel.
+     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified channel.
      *
      * @param <T>     channel type parameter
      * @param channel the channel to which bytes are written.
@@ -295,9 +296,9 @@ public interface HelloWorld {
      * @throws NullPointerException if {@code channel} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @implSpec The default implementation invokes {@link #put(ByteBuffer)} method with a buffer of
-     * {@value #BYTES} bytes, writes the buffer to {@code channel} by continuously invoking
-     * {@link WritableByteChannel#write(ByteBuffer)} method on {@code channel} with the buffer while
-     * the buffer has remaining, and returns the {@code channel}.
+     * {@value #BYTES} bytes, flips it, writes the buffer to {@code channel} by continuously
+     * invoking {@link WritableByteChannel#write(ByteBuffer)} method on {@code channel} with the
+     * buffer while the buffer has remaining, and returns the {@code channel}.
      * @see #put(ByteBuffer)
      * @see ByteBuffer#flip()
      * @see ByteBuffer#hasRemaining()
@@ -312,17 +313,17 @@ public interface HelloWorld {
     }
 
     /**
-     * Appends <a href="#hello-world-bytes">hello-world-bytes</a> to the end of specified path to a
-     * file. The length of the file, on successful return, is increased by {@value #BYTES}.
+     * Appends the <a href="#hello-world-bytes">hello-world-bytes</a> to the end of specified path
+     * to a file. The length of the file, on successful return, is increased by {@value #BYTES}.
      *
      * @param <T>  path type parameter
      * @param path the path a file to which bytes are appended.
      * @return given {@code path}.
      * @throws NullPointerException if {@code path} is {@code null}.
      * @throws IOException          if an I/O error occurs.
-     * @implSpec The default implementation opens a {@link FileChannel} from {@code path} in
-     * {@link java.nio.file.StandardOpenOption#APPEND appending mode}, invokes
-     * {@link #write(WritableByteChannel)} method with it, and return {@code path}.
+     * @implSpec The default implementation opens a {@link FileChannel} from specified {@code path}
+     * in {@link StandardOpenOption#APPEND appending mode}, invokes
+     * {@link #write(WritableByteChannel) write(channel)} method with it, and return {@code path}.
      * @see FileChannel#open(Path, OpenOption...)
      * @see #write(WritableByteChannel)
      */
