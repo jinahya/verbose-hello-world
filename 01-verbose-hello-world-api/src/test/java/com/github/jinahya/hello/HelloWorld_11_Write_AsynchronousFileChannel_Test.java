@@ -65,11 +65,11 @@ class HelloWorld_11_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
 
     /**
      * Stubs the {@link HelloWorld#put(ByteBuffer) put(buffer)} method to just return the
-     * {@code buffer} as its {@code position} is increased by {@value HelloWorld#BYTES}.
+     * {@code buffer} as its {@code position} increased by {@value HelloWorld#BYTES}.
      */
     @DisplayName("[stubbing] put(buffer[12]) returns buffer as its position increased by 12")
     @org.junit.jupiter.api.BeforeEach
-    void stub_ReturnBufferPositionIncreaseBy12_PutBuffer() {
+    void stub_ReturnBufferAsItsPositionIncreaseBy12_PutBuffer() {
         doAnswer(i -> {
             ByteBuffer buffer = i.getArgument(0);
             assert buffer != null;

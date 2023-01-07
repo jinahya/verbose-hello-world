@@ -80,7 +80,7 @@ final class HelloWorldTestUtils {
             for (int i = buffer.arrayOffset() + buffer.capacity(); i < array.length; i++) {
                 System.out.print('-');
             }
-            System.out.printf(" %1$c len(%2$d)%n", '←', array.length);
+            System.out.printf(" %1$c length(%2$d)%n", '←', array.length);
         }
         System.out.println("---------------------------------------------------------------------");
         return buffer;

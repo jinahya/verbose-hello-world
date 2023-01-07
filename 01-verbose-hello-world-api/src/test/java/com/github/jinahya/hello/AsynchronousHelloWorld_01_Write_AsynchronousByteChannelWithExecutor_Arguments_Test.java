@@ -38,7 +38,7 @@ import static org.mockito.Mockito.mock;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see AsynchronousHelloWorld_01_Write_AsynchronousByteChannelWithExecutor_Test
  */
-@DisplayName("write(AsynchronousByteChannel, Executor) arguments")
+@DisplayName("write(channel, executor) arguments")
 @Slf4j
 class AsynchronousHelloWorld_01_Write_AsynchronousByteChannelWithExecutor_Arguments_Test
         extends AsynchronousHelloWorldTest {
