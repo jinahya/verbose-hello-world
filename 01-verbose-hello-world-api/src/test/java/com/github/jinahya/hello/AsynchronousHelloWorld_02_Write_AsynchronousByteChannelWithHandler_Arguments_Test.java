@@ -53,11 +53,9 @@ class AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Argumen
     @Test
     @SuppressWarnings({"unchecked"})
     void _ThrowNullPointerException_ChannelIsNull() {
-        // GIVEN: HelloWorld
+        // GIVEN
         var service = service();
-        // GIVEN: AsynchronousByteChannel
         AsynchronousByteChannel channel = null;
-        // GIVEN: CompletionHandler
         var handler = mock(CompletionHandler.class);
         // WHEN/THEN
         assertThrows(NullPointerException.class, () -> service.write(channel, handler));
@@ -72,11 +70,9 @@ class AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Argumen
     @DisplayName("[handler == null] -> NullPointerException")
     @Test
     void _ThrowNullPointerException_HandlerIsNull() {
-        // GIVEN: HelloWorld
+        // GIVEN
         var service = service();
-        // GIVEN: AsynchronousByteChannel
         var channel = mock(AsynchronousByteChannel.class);
-        // GIVEN: CompletionHandler
         CompletionHandler<Integer, AsynchronousByteChannel> handler = null;
         // WHEN/THEN
         assertThrows(NullPointerException.class, () -> service.write(channel, handler));

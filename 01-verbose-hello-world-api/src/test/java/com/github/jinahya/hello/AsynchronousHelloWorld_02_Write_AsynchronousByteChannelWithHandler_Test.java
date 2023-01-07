@@ -33,6 +33,7 @@ import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -62,9 +63,8 @@ class AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Test
     @Test
     @SuppressWarnings({"unchecked"})
     void _Completed_() {
-        // GIVEN: HelloWorld
+        // GIVEN
         var service = service();
-        // GIVEN: AsynchronousByteChannel
         var channel = mock(AsynchronousByteChannel.class);
         var writtenSoFar = new LongAdder();
         doAnswer(i -> {
@@ -77,19 +77,18 @@ class AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Test
             writtenSoFar.add(written);
             handler.completed(written, attachment);
             return null;
-        })
-                .when(channel)
-                .write(any(), any(), any());
-        // GIVEN: CompletionHandler
+        }).when(channel).write(any(), any(), any());
         CompletionHandler<Integer, AsynchronousByteChannel> handler = mock(CompletionHandler.class);
         // WHEN
         service.write(channel, handler);
-        // THEN: verify, with timeout, once, handler.completed(12, channel) invoked
+        // THEN: once with timeout, handler.completed(12, channel) invoked
         // THEN: put(buffer[12]) invoked
         verify(service, times(1)).put(bufferCaptor().capture());
         var buffer = bufferCaptor().getValue();
         assertEquals(BYTES, buffer.capacity());
         // THEN: at least once, channel.write(buffer, attachment, handler) invoked
+        verify(channel, atLeastOnce()).write(buffer)
         // THEN: 12 bytes are written to the channel
+        // TODO: Assert writtenSoFar.intValue() is equal to BYTES
     }
 }
