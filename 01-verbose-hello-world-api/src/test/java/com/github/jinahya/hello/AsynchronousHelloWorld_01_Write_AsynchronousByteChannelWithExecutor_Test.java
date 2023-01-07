@@ -21,7 +21,6 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -35,6 +34,7 @@ import java.util.concurrent.atomic.LongAdder;
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doAnswer;
@@ -60,15 +60,16 @@ class AsynchronousHelloWorld_01_Write_AsynchronousByteChannelWithExecutor_Test
      * argument with its {@link ByteBuffer#position() position} increased by
      * {@value HelloWorld#BYTES}.
      */
-    @BeforeEach
+    @DisplayName("[stubbing] put(buffer) -> return buffer as its position increased by 12")
+    @org.junit.jupiter.api.BeforeEach
     void stub_PutBuffer_IncreaseBufferPositionBy12() {
         doAnswer(i -> {
-            var buffer = i.getArgument(0, ByteBuffer.class);
+            ByteBuffer buffer = i.getArgument(0);
+            assert buffer != null;
+            assert buffer.remaining() >= BYTES;
             buffer.position(buffer.position() + BYTES);
             return buffer;
-        })
-                .when(service())
-                .put(argThat(b -> b != null && b.remaining() >= BYTES));
+        }).when(service()).put(any());
     }
 
     /**

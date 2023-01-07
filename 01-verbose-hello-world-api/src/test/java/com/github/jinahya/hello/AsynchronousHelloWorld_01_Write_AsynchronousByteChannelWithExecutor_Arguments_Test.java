@@ -28,6 +28,7 @@ import java.nio.channels.AsynchronousByteChannel;
 import java.util.concurrent.Executor;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -51,11 +52,9 @@ class AsynchronousHelloWorld_01_Write_AsynchronousByteChannelWithExecutor_Argume
     @DisplayName("[channel == null] -> NullPointerException")
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
-        // GIVEN: HelloWorld
+        // GIVEN
         var service = service();
-        // GIVEN: AsynchronousByteChannel
         AsynchronousByteChannel channel = null;
-        // GIVEN: Executor
         var executor = mock(Executor.class);
         // WHEN/THEN
         assertThrows(NullPointerException.class, () -> service.write(channel, executor));
@@ -70,11 +69,9 @@ class AsynchronousHelloWorld_01_Write_AsynchronousByteChannelWithExecutor_Argume
     @DisplayName("[executor == null] -> NullPointerException")
     @Test
     void _ThrowNullPointerException_ExecutorIsNull() {
-        // GIVEN: HelloWorld
+        // GIVEN
         var service = service();
-        // GIVEN: AsynchronousByteChannel
         var channel = mock(AsynchronousByteChannel.class);
-        // GIVEN: Executor
         Executor executor = null;
         // WHEN/THEN
         assertThrows(NullPointerException.class, () -> service.write(channel, executor));

@@ -64,7 +64,7 @@ abstract class AbstractHelloWorldTest<T extends HelloWorld> {
      * Stubs {@link HelloWorld#set(byte[], int) set(array, index)} method to just return the
      * {@code array} argument.
      */
-    @DisplayName("set(array, index) returns array")
+    @DisplayName("[stubbing] set(array, index) returns array")
     @BeforeEach
     void _ReturnArray_SetArrayIndex() {
         when(service().set(any(), anyInt()))        // <1>
@@ -76,7 +76,7 @@ abstract class AbstractHelloWorldTest<T extends HelloWorld> {
     private final T service;
 
     /**
-     * An argument captor for capturing arguments of {@code byte[]}.
+     * An argument captor for capturing an argument of {@code byte[]}.
      *
      * @see HelloWorld#set(byte[])
      * @see HelloWorld#set(byte[], int)
@@ -87,7 +87,7 @@ abstract class AbstractHelloWorldTest<T extends HelloWorld> {
     private ArgumentCaptor<byte[]> arrayCaptor;
 
     /**
-     * An argument captor for capturing arguments of {@code int}.
+     * An argument captor for capturing an argument of {@code int}.
      *
      * @see HelloWorld#set(byte[], int)
      */
@@ -97,7 +97,7 @@ abstract class AbstractHelloWorldTest<T extends HelloWorld> {
     private ArgumentCaptor<Integer> indexCaptor;
 
     /**
-     * An argument captor for capturing arguments of {@link OutputStream}.
+     * An argument captor for capturing an argument of {@link OutputStream}.
      *
      * @see HelloWorld#write(OutputStream)
      */
@@ -107,7 +107,7 @@ abstract class AbstractHelloWorldTest<T extends HelloWorld> {
     private ArgumentCaptor<OutputStream> streamCaptor;
 
     /**
-     * An argument captor for capturing arguments of {@link ByteBuffer}.
+     * An argument captor for capturing an argument of {@link ByteBuffer}.
      *
      * @see HelloWorld#put(ByteBuffer)
      */
@@ -117,7 +117,7 @@ abstract class AbstractHelloWorldTest<T extends HelloWorld> {
     private ArgumentCaptor<ByteBuffer> bufferCaptor;
 
     /**
-     * An argument captor for capturing arguments of {@link WritableByteChannel}.
+     * An argument captor for capturing an argument of {@link WritableByteChannel}.
      *
      * @see HelloWorld#write(WritableByteChannel)
      */
