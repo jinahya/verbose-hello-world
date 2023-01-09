@@ -36,14 +36,11 @@ import static com.github.jinahya.hello.HelloWorldTestUtils.print;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.notNull;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * A class for testing
@@ -65,7 +62,7 @@ class AsynchronousHelloWorld_01_Write_AsynchronousByteChannelWithExecutor_Test
     @DisplayName("[stubbing] put(buffer[12]) returns buffer as its position increased by 12")
     @org.junit.jupiter.api.BeforeEach
     void stub_ReturnBufferAsItsPositionIncreaseBy12_PutBuffer() {
-        doAnswer(i -> {
+        willAnswer(i -> {
             ByteBuffer buffer = i.getArgument(0);
             assert buffer != null;
             print(buffer);
@@ -74,7 +71,7 @@ class AsynchronousHelloWorld_01_Write_AsynchronousByteChannelWithExecutor_Test
             assert buffer.remaining() == BYTES;
             buffer.position(buffer.limit());
             return buffer;
-        }).when(service()).put(any());
+        }).given(service()).put(any());
     }
 
     /**
@@ -92,7 +89,7 @@ class AsynchronousHelloWorld_01_Write_AsynchronousByteChannelWithExecutor_Test
         var service = service();
         var channel = mock(AsynchronousByteChannel.class);
         var writtenSoFar = new LongAdder();
-        when(channel.write(any())).thenAnswer(i -> {
+        given(channel.write((any()))).willAnswer(i -> {
             ByteBuffer buffer = i.getArgument(0);
             assert buffer != null;
             assert buffer.hasRemaining();
@@ -100,16 +97,16 @@ class AsynchronousHelloWorld_01_Write_AsynchronousByteChannelWithExecutor_Test
             buffer.position(buffer.position() + written);
             writtenSoFar.add(written);
             var future = mock(Future.class);
-            doReturn(written).when(future).get();
+            given(future.get()).willReturn(written);
             return future;
         });
         var executor = mock(Executor.class);
-        doAnswer(i -> {
+        willAnswer(i -> {
             Runnable runnable = i.getArgument(0);
             assert runnable != null;
             new Thread(runnable).start();
             return null;
-        }).when(executor).execute(any());
+        }).given(executor).execute(any());
         // WHEN
         var future = service.write(channel, executor);
         // THEN: put(buffer[12]) invoked
