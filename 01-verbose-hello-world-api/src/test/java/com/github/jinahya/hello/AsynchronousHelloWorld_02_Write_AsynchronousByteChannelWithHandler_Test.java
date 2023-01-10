@@ -30,11 +30,11 @@ import java.nio.channels.CompletionHandler;
 import java.util.concurrent.atomic.LongAdder;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
+import static com.github.jinahya.hello.HelloWorldTestUtils.print;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.doAnswer;
+import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -52,6 +52,25 @@ class AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Test
         extends AsynchronousHelloWorldTest {
 
     /**
+     * Stubs the {@link HelloWorld#put(ByteBuffer) put(buffer)} method to just return the
+     * {@code buffer} as its {@code position} increased by {@value HelloWorld#BYTES}.
+     */
+    @DisplayName("[stubbing] put(buffer[12]) returns buffer as its position increased by 12")
+    @org.junit.jupiter.api.BeforeEach
+    void stub_ReturnBufferAsItsPositionIncreaseBy12_PutBuffer() {
+        willAnswer(i -> {
+            ByteBuffer buffer = i.getArgument(0);
+            assert buffer != null;
+            print(buffer);
+            assert buffer.capacity() == BYTES;
+            assert buffer.limit() == buffer.capacity();
+            assert buffer.remaining() == BYTES;
+            buffer.position(buffer.limit());
+            return buffer;
+        }).given(service()).put(any());
+    }
+
+    /**
      * Asserts
      * {@link AsynchronousHelloWorld#write(AsynchronousByteChannel, CompletionHandler)
      * write(channel, handler)} method invokes {@link HelloWorld#put(ByteBuffer) put(buffer)} method
@@ -59,7 +78,7 @@ class AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Test
      * and invokes {@link CompletionHandler#completed(Object, Object)} method, on {@code handler},
      * with {@value HelloWorld#BYTES} and {@code channel}.
      */
-    @DisplayName("put(buffer[12]) -> handler(12, channel)")
+    @DisplayName("-> put(buffer[12]) -> handler(12, channel)")
     @Test
     @SuppressWarnings({"unchecked"})
     void _Completed_() {
@@ -67,8 +86,8 @@ class AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Test
         var service = service();
         var channel = mock(AsynchronousByteChannel.class);
         var writtenSoFar = new LongAdder();
-        doAnswer(i -> {
-            var buffer = i.getArgument(0, ByteBuffer.class);
+        willAnswer(i -> {
+            ByteBuffer buffer = i.getArgument(0);
             assert buffer.hasRemaining();
             var attachment = i.getArgument(1);
             var handler = i.getArgument(2, CompletionHandler.class);
@@ -77,7 +96,7 @@ class AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Test
             writtenSoFar.add(written);
             handler.completed(written, attachment);
             return null;
-        }).when(channel).write(any(), any(), any());
+        }).given(channel).write(any(), any(), any());
         CompletionHandler<Integer, AsynchronousByteChannel> handler = mock(CompletionHandler.class);
         // WHEN
         service.write(channel, handler);
@@ -85,8 +104,9 @@ class AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Test
         verify(service, times(1)).put(bufferCaptor().capture());
         var buffer = bufferCaptor().getValue();
         assertEquals(BYTES, buffer.capacity());
-        // THEN: once with timeout, handler.completed(12, channel) invoked
-        // THEN: at least once, channel.write(buffer, attachment, handler) invoked
+        assertEquals(buffer.capacity(), buffer.limit());
+        // THEN: once in timeout, handler.completed(12, channel) invoked
+        // THEN: at least once, channel.write(buffer, <whatever>, <whatever>) invoked
         // THEN: 12 bytes are written to the channel
     }
 }
