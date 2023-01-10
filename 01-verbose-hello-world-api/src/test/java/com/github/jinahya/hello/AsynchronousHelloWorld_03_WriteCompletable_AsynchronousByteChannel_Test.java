@@ -141,7 +141,6 @@ class AsynchronousHelloWorld_03_WriteCompletable_AsynchronousByteChannel_Test
             // TODO: Assert ee.getCause() is same as `exc`
         } catch (TimeoutException te) {
             te.printStackTrace();
-            return;
         }
     }
 }
