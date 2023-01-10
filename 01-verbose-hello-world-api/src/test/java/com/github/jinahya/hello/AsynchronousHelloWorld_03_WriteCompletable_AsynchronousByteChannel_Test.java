@@ -92,6 +92,7 @@ class AsynchronousHelloWorld_03_WriteCompletable_AsynchronousByteChannel_Test
         var channel = mock(AsynchronousByteChannel.class);
         // WHEN
         var future = service.writeCompletable(channel);
+        // THEN: once, write(same(channel), any(CompletionHandler.class)) invoked
         AsynchronousByteChannel result;
         try {
             result = future.get(4L, SECONDS);
@@ -99,7 +100,6 @@ class AsynchronousHelloWorld_03_WriteCompletable_AsynchronousByteChannel_Test
             te.printStackTrace();
             return;
         }
-        // THEN: once, write(same(channel), any(CompletionHandler.class)) invoked
         // THEN: result is same as channel
     }
 
