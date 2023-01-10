@@ -56,7 +56,7 @@ import static org.mockito.Mockito.when;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see AsynchronousHelloWorld_04_Write_AsynchronousFileChannelWithExecutor_Arguments_Test
  */
-@DisplayName("write(channel, position, executor")
+@DisplayName("write(channel, position, executor)")
 @Slf4j
 class AsynchronousHelloWorld_04_Write_AsynchronousFileChannelWithExecutor_Test
         extends AsynchronousHelloWorldTest {

@@ -33,6 +33,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
+import java.util.concurrent.atomic.LongAdder;
 
 /**
  * An interface for writing <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to
@@ -150,7 +151,10 @@ public interface AsynchronousHelloWorld extends HelloWorld {
 
     /**
      * Writes, asynchronously, the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>
-     * to specified channel, and invokes specified completion handler when all bytes are written.
+     * to specified channel, starting at specified file position, and invokes
+     * {@link CompletionHandler#completed(Object, Object) complete(result, attachment)} method, on
+     * specified completion handler, with {@value #BYTES} and specified file channel, when all bytes
+     * are written.
      *
      * @param <T>      channel type parameter
      * @param channel  the channel to which bytes are written.
@@ -160,17 +164,45 @@ public interface AsynchronousHelloWorld extends HelloWorld {
      * a byte buffer of {@value #BYTES} bytes, flips it, and writes the buffer to {@code channel} by
      * recursively handling the callback called inside the
      * {@link AsynchronousFileChannel#write(ByteBuffer, long, Object, CompletionHandler)
-     * channel#(src, position, attachment, handler)} method, and eventually invokes {@code handler}
-     * when all bytes are written.
+     * channel#(src, position, attachment, handler)} method, and eventually invokes
+     * {@code handler.completed(12, channel)} when all bytes are written.
      * @see #put(ByteBuffer)
      * @see AsynchronousFileChannel#write(ByteBuffer, long, Object, CompletionHandler)
      */
     default <T extends AsynchronousFileChannel> void write(
             T channel, long position, CompletionHandler<Integer, ? super T> handler) {
         Objects.requireNonNull(channel, "channel is null");
+        if (position < 0L) {
+            throw new IllegalArgumentException("position(" + position + ") is negative");
+        }
         Objects.requireNonNull(handler, "handler is null");
         var buffer = put(ByteBuffer.allocate(BYTES)).flip();
-        // TODO: Implement!
+        channel.write(
+                buffer,
+                position,
+                new LongAdder(),
+                new CompletionHandler<>() {
+                    @Override
+                    public void completed(Integer result, LongAdder attachment) {
+                        attachment.add(result);
+                        if (!buffer.hasRemaining()) {
+                            handler.completed(attachment.intValue(), channel);
+                            return;
+                        }
+                        channel.write(
+                                buffer,
+                                position + attachment.longValue(),
+                                attachment,
+                                this
+                        );
+                    }
+
+                    @Override
+                    public void failed(Throwable exc, LongAdder attachment) {
+                        handler.failed(exc, channel);
+                    }
+                }
+        );
     }
 
     default <T extends AsynchronousFileChannel> CompletableFuture<T> writeCompletable(
