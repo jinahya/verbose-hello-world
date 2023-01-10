@@ -50,20 +50,6 @@ import static org.mockito.Mockito.mock;
 class AsynchronousHelloWorld_03_WriteCompletable_AsynchronousByteChannel_Test
         extends AsynchronousHelloWorldTest {
 
-    //    @BeforeEach
-    @SuppressWarnings({"unchecked"})
-    void stub_Write12Bytes_WriteChannelHandler() {
-        // GIVEN
-        var service = service();
-        // WHEN/THEN
-        doAnswer(i -> {
-            AsynchronousByteChannel channel = i.getArgument(0);
-            var handler = i.getArgument(1, CompletionHandler.class);
-            new Thread(() -> handler.completed(BYTES, null)).start();
-            return null;
-        }).when(service).write(any(), any(CompletionHandler.class));
-    }
-
     /**
      * Asserts
      * {@link AsynchronousHelloWorld#writeCompletable(AsynchronousByteChannel)
