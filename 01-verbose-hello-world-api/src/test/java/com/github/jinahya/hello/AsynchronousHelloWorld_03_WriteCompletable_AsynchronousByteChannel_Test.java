@@ -52,7 +52,7 @@ class AsynchronousHelloWorld_03_WriteCompletable_AsynchronousByteChannel_Test
 
     //    @BeforeEach
     @SuppressWarnings({"unchecked"})
-    void stub__() {
+    void stub_Write12Bytes_WriteChannelHandler() {
         // GIVEN
         var service = service();
         // WHEN/THEN
@@ -73,6 +73,9 @@ class AsynchronousHelloWorld_03_WriteCompletable_AsynchronousByteChannel_Test
      * returns a completable future of specified {@code channel} which will be completed when the
      * {@code handler}'s {@link CompletionHandler#completed(Object, Object) completed(Integer, T)}
      * method is invoked with {@value HelloWorld#BYTES} and {@code channel}.
+     *
+     * @throws InterruptedException when interrupted getting a result from the future.
+     * @throws ExecutionException   when the result future fails to execute.
      */
     @DisplayName("-> write(channel, handler <- completed)")
     @Test
@@ -89,8 +92,7 @@ class AsynchronousHelloWorld_03_WriteCompletable_AsynchronousByteChannel_Test
         var channel = mock(AsynchronousByteChannel.class);
         // WHEN
         var future = service.writeCompletable(channel);
-        // THEN: once, write(same(channel), any(CompletionHandler.class))
-        // TODO: Verify, once, write(same(channel), any(CompletionHandler.class)) invoked
+        // THEN: once, write(same(channel), any(CompletionHandler.class)) invoked
         AsynchronousByteChannel result;
         try {
             result = future.get(4L, SECONDS);
@@ -99,7 +101,6 @@ class AsynchronousHelloWorld_03_WriteCompletable_AsynchronousByteChannel_Test
             return;
         }
         // THEN: result is same as channel
-        // TODO: Assert result is same as channel
     }
 
     /**
@@ -111,12 +112,14 @@ class AsynchronousHelloWorld_03_WriteCompletable_AsynchronousByteChannel_Test
      * returns a completable future of specified {@code channel} which will be
      * {@link CompletableFuture#completeExceptionally(Throwable) complted exceptionally} when the
      * {@code handler}'s {@link CompletionHandler#failed(Throwable, Object) failed(Throwable, T)}
-     * method is invoked with a throwable and {@code channel}.
+     * method is invoked with an instance of {@link Throwable} and {@code channel}.
+     *
+     * @throws InterruptedException when interrupted getting a result from the future.
      */
     @DisplayName("-> write(channel, handler <- failed)")
     @Test
     @SuppressWarnings({"unchecked"})
-    void _Failed_() throws InterruptedException, ExecutionException {
+    void _Failed_() throws InterruptedException {
         // GIVEN
         var service = service();
         var exc = mock(Throwable.class);
@@ -129,9 +132,8 @@ class AsynchronousHelloWorld_03_WriteCompletable_AsynchronousByteChannel_Test
         var channel = mock(AsynchronousByteChannel.class);
         // WHEN
         var future = service.writeCompletable(channel);
-        // THEN: once, write(same(channel), any(CompletionHandler.class))
-        // TODO: Verify, once, write(same(channel), any(CompletionHandler.class)) invoked
-        // THEN: future.get throws an ExecutionException
+        // THEN: once, write(same(channel), any(CompletionHandler.class)) invoked
+        // THEN: future.get() throws an ExecutionException
         AsynchronousByteChannel result;
         try {
             result = future.get(4L, SECONDS);
