@@ -58,7 +58,7 @@ class AsynchronousHelloWorld_04_Write_AsynchronousFileChannelWithExecutor_Argume
         // GIVEN
         var service = service();
         AsynchronousFileChannel channel = null;
-        var position = 0L;
+        var position = current().nextLong() & MAX_VALUE;
         var executor = mock(Executor.class);
         // WHEN/THEN
         assertThrows(NullPointerException.class, () -> service.write(channel, position, executor));

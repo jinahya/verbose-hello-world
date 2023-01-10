@@ -36,6 +36,7 @@ import java.util.concurrent.atomic.LongAdder;
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -66,17 +67,16 @@ class AsynchronousHelloWorld_04_Write_AsynchronousFileChannelWithExecutor_Test
      */
     @DisplayName("[stubbing] put(buffer) returns buffer as its position increased by 12")
     @BeforeEach
-    void stub_ReturnBufferAsitsPositionIncreasedBy12_PutBuffer() {
+    void stub_ReturnBufferAsItsPositionIncreasedBy12_PutBuffer() {
         // GIVEN
         var service = service();
         // WHEN/THEN
         doAnswer(i -> {
             ByteBuffer buffer = i.getArgument(0);
             assert buffer != null;
-            assert buffer.position() == 0;
             assert buffer.capacity() == BYTES;
-            assert buffer.limit() == buffer.capacity();
-            buffer.position(BYTES);
+            assert buffer.remaining() == buffer.capacity();
+            buffer.position(buffer.limit());
             return buffer;
         }).when(service).put(any());
     }
@@ -91,7 +91,7 @@ class AsynchronousHelloWorld_04_Write_AsynchronousFileChannelWithExecutor_Test
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
      */
-    @DisplayName("-> put(buffer[12]) -> channel.write(buffer, ge(position))+")
+    @DisplayName("-> put(buffer[12]) -> channel.write(buffer, >= position)+")
     @Test
     void __() throws InterruptedException, ExecutionException {
         // GIVEN
@@ -127,10 +127,9 @@ class AsynchronousHelloWorld_04_Write_AsynchronousFileChannelWithExecutor_Test
         // THEN: put(buffer[12]) invoked
         verify(service, times(1)).put(bufferCaptor().capture());
         var buffer = bufferCaptor().getValue();
+        assertEquals(BYTES, buffer.capacity());
         // THEN: at least once, channel.write(buffer, >= position) invoked
-        // TODO: Verify, at least once, channel.write(buffer, >= position) invoked
         // THEN: 12 bytes are written
-        // TODO: Asserts writtenSoFar.intValue() is equal to BYTES
         // THEN: result is same as channel
         assertSame(channel, result);
     }
