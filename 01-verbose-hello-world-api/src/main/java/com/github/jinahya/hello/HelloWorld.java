@@ -84,6 +84,7 @@ public interface HelloWorld {
     /**
      * The length of the <a href="#hello-world-bytes">hello-world-bytes</a> which is {@value}.
      */
+    public static final /* redundant */
     int BYTES = 12;
 
     /**
@@ -104,6 +105,7 @@ public interface HelloWorld {
      * @throws IndexOutOfBoundsException if {@code index} is negative or {@code array.length} is
      *                                   less than or equal to ({@code index} + {@value #BYTES}).
      */
+    abstract /* discouraged */
     byte[] set(byte[] array, int index);
 
     /**
