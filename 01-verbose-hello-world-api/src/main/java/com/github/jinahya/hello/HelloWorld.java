@@ -85,7 +85,7 @@ public interface HelloWorld {
      * The length of the <a href="#hello-world-bytes">hello-world-bytes</a> which is {@value}.
      */
     public static final /* redundant */
-    int BYTES = 12;
+            int BYTES = 12;
 
     /**
      * Sets <a href="#hello-world-bytes">hello-world-bytes</a> on specified array starting at
@@ -105,6 +105,7 @@ public interface HelloWorld {
      * @throws IndexOutOfBoundsException if {@code index} is negative or {@code array.length} is
      *                                   less than or equal to ({@code index} + {@value #BYTES}).
      */
+    public /* redundant */
     abstract /* discouraged */
     byte[] set(byte[] array, int index);
 
@@ -114,8 +115,8 @@ public interface HelloWorld {
      *
      * @param array the array on which bytes are set.
      * @return given {@code array}.
-     * @throws NullPointerException      if {@code array} is {@code null}.
-     * @throws IndexOutOfBoundsException if {@code array.length} is less than {@link #BYTES}.
+     * @throws NullPointerException           if {@code array} is {@code null}.
+     * @throws ArrayIndexOutOfBoundsException if {@code array.length} is less than {@value #BYTES}.
      * @implSpec The default implementation invokes {@link #set(byte[], int) set(array, index)}
      * method with {@code array} and {@code 0}, and returns the {@code array}.
      * @see #set(byte[], int)
