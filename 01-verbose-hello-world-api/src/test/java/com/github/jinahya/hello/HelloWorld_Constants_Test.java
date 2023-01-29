@@ -45,7 +45,7 @@ class HelloWorld_Constants_Test {
      * @see StandardCharsets#US_ASCII
      * @see String#getBytes(Charset)
      */
-    @DisplayName("BYTES == \"hello, world\".length")
+    @DisplayName("BYTES == \"hello, world\"getBytes(\"ASCII\").length")
     @Test
     void BYTES_isEqualToActualNumberOfHelloWorldBytes_() {
         var charset = StandardCharsets.US_ASCII;
