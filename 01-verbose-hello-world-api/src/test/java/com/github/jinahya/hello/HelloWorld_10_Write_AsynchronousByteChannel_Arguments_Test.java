@@ -43,7 +43,7 @@ class HelloWorld_10_Write_AsynchronousByteChannel_Arguments_Test extends HelloWo
      * Asserts {@link HelloWorld#write(AsynchronousByteChannel) write(channel)} method throws a
      * {@link NullPointerException} when the {@code channel} argument is {@code null}.
      */
-    @DisplayName("[channel == null] -> NullPointerException")
+    @DisplayName("write(null) -> NullPointerException")
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
         // GIVEN
