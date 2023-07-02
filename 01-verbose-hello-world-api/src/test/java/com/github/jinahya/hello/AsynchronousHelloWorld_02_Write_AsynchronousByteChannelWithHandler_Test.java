@@ -41,12 +41,13 @@ import static org.mockito.Mockito.verify;
 
 /**
  * A class for testing
- * {@link AsynchronousHelloWorld#write(AsynchronousByteChannel, CompletionHandler) method.
+ * {@link AsynchronousHelloWorld#write(AsynchronousByteChannel, CompletionHandler, Object)
+ * write(channel, handler, attachment)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Arguments_Test
  */
-@DisplayName("write(AsynchronousByteChannel, CompletionHandler) arguments")
+@DisplayName("write(channel, handler, attachment)")
 @Slf4j
 class AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Test
         extends AsynchronousHelloWorldTest {
@@ -55,7 +56,7 @@ class AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Test
      * Stubs the {@link HelloWorld#put(ByteBuffer) put(buffer)} method to just return the
      * {@code buffer} as its {@code position} increased by {@value HelloWorld#BYTES}.
      */
-    @DisplayName("[stubbing] put(buffer[12]) returns buffer as its position increased by 12")
+    @DisplayName("[stubbing] put(buffer[12]) returns buffer as its position increased by BYTES")
     @org.junit.jupiter.api.BeforeEach
     void stub_ReturnBufferAsItsPositionIncreaseBy12_PutBuffer() {
         willAnswer(i -> {
@@ -72,11 +73,12 @@ class AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Test
 
     /**
      * Asserts
-     * {@link AsynchronousHelloWorld#write(AsynchronousByteChannel, CompletionHandler)
-     * write(channel, handler)} method invokes {@link HelloWorld#put(ByteBuffer) put(buffer)} method
-     * with a buffer of {@value HelloWorld#BYTES} bytes, writes the buffer to the {@code channel},
-     * and invokes {@link CompletionHandler#completed(Object, Object)} method, on {@code handler},
-     * with {@value HelloWorld#BYTES} and {@code channel}.
+     * {@link AsynchronousHelloWorld#write(AsynchronousByteChannel, CompletionHandler, Object)
+     * write(channel, handler, attachment)} method invokes
+     * {@link HelloWorld#put(ByteBuffer) put(buffer)} method with a buffer of
+     * {@value HelloWorld#BYTES} bytes, writes the buffer to the {@code channel}, and invokes
+     * {@link CompletionHandler#completed(Object, Object)} method, on {@code handler}, with
+     * {@value HelloWorld#BYTES} and {@code channel}.
      */
     @DisplayName("-> put(buffer[12]) -> handler(12, channel)")
     @Test
@@ -97,9 +99,9 @@ class AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Test
             handler.completed(written, attachment);
             return null;
         }).given(channel).write(any(), any(), any());
-        CompletionHandler<Integer, AsynchronousByteChannel> handler = mock(CompletionHandler.class);
+        CompletionHandler<AsynchronousByteChannel, Void> handler = mock(CompletionHandler.class);
         // WHEN
-        service.write(channel, handler);
+        service.write(channel, handler, null);
         // THEN: once, put(buffer[12]) invoked
         verify(service, times(1)).put(bufferCaptor().capture());
         var buffer = bufferCaptor().getValue();

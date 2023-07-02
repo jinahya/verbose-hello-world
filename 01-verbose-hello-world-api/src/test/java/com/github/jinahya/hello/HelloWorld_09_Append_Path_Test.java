@@ -59,7 +59,7 @@ class HelloWorld_09_Append_Path_Test extends HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("[stubbing] write(channel) -> return channel")
+    @DisplayName("[stubbing] write(channel)channel")
     @org.junit.jupiter.api.BeforeEach
     void stub_ReturnChannel_WriteChannel() throws IOException {
         var service = service();

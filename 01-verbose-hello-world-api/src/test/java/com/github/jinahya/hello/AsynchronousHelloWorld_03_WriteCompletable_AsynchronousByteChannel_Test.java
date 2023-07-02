@@ -74,7 +74,7 @@ class AsynchronousHelloWorld_03_WriteCompletable_AsynchronousByteChannel_Test
             var handler = i.getArgument(1, CompletionHandler.class);
             new Thread(() -> handler.completed(BYTES, channel)).start();
             return null;
-        }).when(service).write(notNull(), any(CompletionHandler.class));
+        }).when(service).write(notNull(), any(CompletionHandler.class), any());
         var channel = mock(AsynchronousByteChannel.class);
         // WHEN
         var future = service.writeCompletable(channel);
@@ -114,7 +114,7 @@ class AsynchronousHelloWorld_03_WriteCompletable_AsynchronousByteChannel_Test
             var handler = i.getArgument(1, CompletionHandler.class);
             new Thread(() -> handler.failed(exc, channel)).start();
             return null;
-        }).when(service).write(notNull(), any(CompletionHandler.class));
+        }).when(service).write(notNull(), any(CompletionHandler.class), any());
         var channel = mock(AsynchronousByteChannel.class);
         // WHEN
         var future = service.writeCompletable(channel);

@@ -66,8 +66,9 @@ public interface AsynchronousHelloWorld extends HelloWorld {
      * Writes, asynchronously, the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>
      * to specified channel using specified executor.
      *
-     * @param <T>     channel type parameter
-     * @param channel the channel to which bytes are written.
+     * @param <T>      channel type parameter
+     * @param channel  the channel to which bytes are written.
+     * @param executor the executor.
      * @return a future of given {@code channel} that will, some time in the future, write the
      * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to {@code channel}.
      * @see #put(ByteBuffer)
@@ -76,34 +77,28 @@ public interface AsynchronousHelloWorld extends HelloWorld {
     default <T extends AsynchronousByteChannel> Future<T> write(T channel, Executor executor) {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(executor, "executor is null");
-        var buffer = put(ByteBuffer.allocate(BYTES)).flip();
         Callable<T> callable = () -> {
-            // TODO: Implement!
-            return channel;
+            // TODO: Write hello-world-bytes to the channel!
+            return null;
         };
         FutureTask<T> command = new FutureTask<>(callable);
-        executor.execute(command);
-        return command;
+        executor.execute(command); // Runnable
+        return command;            // Future<T>
     }
 
     /**
      * Writes, asynchronously, the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>
-     * to specified channel, and invokes specified completion handler when all bytes are written.
+     * to specified channel, and handles completion on specified handler along with specified
+     * attachment.
      *
-     * @param <T>     channel type parameter
-     * @param channel the channel to which bytes are written.
-     * @param handler the completion handler.
-     * @implSpec The default implementation invokes {@link #put(ByteBuffer) put(buffer)} method with
-     * a byte buffer of {@value #BYTES} bytes, flips it, and writes the buffer to {@code channel} by
-     * recursively handling the callback called inside the
-     * {@link AsynchronousByteChannel#write(ByteBuffer, Object, CompletionHandler) channel#(src,
-     * attachment, handler)} method, and eventually invokes {@code handler} when all bytes are
-     * written.
-     * @see #put(ByteBuffer)
+     * @param <T>        channel type parameter
+     * @param channel    the channel to which bytes are written.
+     * @param handler    the completion handler.
+     * @param attachment the attachment for the {@code handler}.
      * @see AsynchronousByteChannel#write(ByteBuffer, Object, CompletionHandler)
      */
-    default <T extends AsynchronousByteChannel> void write(
-            T channel, CompletionHandler<Integer, ? super T> handler) {
+    default <T extends AsynchronousByteChannel, U> void write(
+            T channel, CompletionHandler<? super T, ? super U> handler, final U attachment) {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(handler, "handler is null");
         var buffer = put(ByteBuffer.allocate(BYTES)).flip();

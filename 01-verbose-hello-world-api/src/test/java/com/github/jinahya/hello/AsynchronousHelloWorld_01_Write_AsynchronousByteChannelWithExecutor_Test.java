@@ -34,13 +34,10 @@ import java.util.concurrent.atomic.LongAdder;
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static com.github.jinahya.hello.HelloWorldTestUtils.print;
 import static java.util.concurrent.ThreadLocalRandom.current;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * A class for testing
@@ -109,13 +106,7 @@ class AsynchronousHelloWorld_01_Write_AsynchronousByteChannelWithExecutor_Test
         }).given(executor).execute(any());
         // WHEN
         var future = service.write(channel, executor);
-        // THEN: put(buffer[12]) invoked
-        verify(service, times(1)).put(bufferCaptor().capture());
-        var buffer = bufferCaptor().getValue();
-        assertEquals(BYTES, buffer.capacity());
         var result = future.get();
-        // THEN: at least once, channel.write(buffer) invoked
-        // THEN: 12 bytes are written
-        // THEN: result is same as channel
+        // THEN: once, write(channel) invoked
     }
 }

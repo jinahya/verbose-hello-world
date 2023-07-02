@@ -55,6 +55,11 @@ import static org.mockito.Mockito.when;
 @Slf4j
 abstract class AbstractHelloWorldTest<T extends HelloWorld> {
 
+    /**
+     * Creates a new instance for testing specified class.
+     *
+     * @param serviceClass the class to test.
+     */
     AbstractHelloWorldTest(final Class<T> serviceClass) {
         super();
         service = spy(requireNonNull(serviceClass, "serviceClass is null"));

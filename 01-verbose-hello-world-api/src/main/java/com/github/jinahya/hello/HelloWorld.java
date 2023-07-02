@@ -303,9 +303,10 @@ public interface HelloWorld {
      * @throws NullPointerException if {@code channel} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @implSpec The default implementation invokes {@link #put(ByteBuffer)} method with a buffer of
-     * {@value #BYTES} bytes, flips it, writes the buffer to {@code channel} by continuously
-     * invoking {@link WritableByteChannel#write(ByteBuffer)} method on {@code channel} with the
-     * buffer while the buffer has remaining, and returns the {@code channel}.
+     * {@value #BYTES} bytes, {@link ByteBuffer#flip() flips} it, writes the buffer to
+     * {@code channel} by continuously invoking
+     * {@link WritableByteChannel#write(ByteBuffer) channel.write(buffer)} while the buffer has
+     * remaining, and returns the {@code channel}.
      * @see #put(ByteBuffer)
      * @see ByteBuffer#flip()
      * @see ByteBuffer#hasRemaining()
@@ -363,9 +364,10 @@ public interface HelloWorld {
      * @return given {@code path}.
      * @throws NullPointerException if {@code path} is {@code null}.
      * @throws IOException          if an I/O error occurs.
-     * @implSpec The default implementation opens a {@link FileChannel} from specified {@code path}
-     * in {@link StandardOpenOption#APPEND appending mode}, invokes
-     * {@link #write(WritableByteChannel) write(channel)} method with it, and return {@code path}.
+     * @implSpec The default implementation opens a {@link FileChannel} from {@code path} in
+     * {@link StandardOpenOption#APPEND appending mode}, invokes
+     * {@link #write(WritableByteChannel) write(channel)} method with it, and returns the
+     * {@code path}.
      * @see FileChannel#open(Path, OpenOption...)
      * @see #write(WritableByteChannel)
      */
@@ -400,18 +402,18 @@ public interface HelloWorld {
         }
         var buffer = put(ByteBuffer.allocate(BYTES)).flip();
         while (buffer.hasRemaining()) {
-            // TODO: Implement!
+            // TODO: write buffer to channel.
             break;
         }
         return channel;
     }
 
     /**
-     * Writes the <a href="hello-world-bytes">hello-world-bytes</a> to specified channel, starting
-     * at given file position.
+     * Writes the <a href="hello-world-bytes">hello-world-bytes</a> to specified file channel,
+     * starting at given file position.
      *
      * @param <T>      channel type parameter
-     * @param channel  the channel to which bytes are written.
+     * @param channel  the file channel to which bytes are written.
      * @param position the file position at which the transfer is to begin; must be non-negative.
      * @return given {@code channel}.
      * @throws InterruptedException if interrupted while executing.
