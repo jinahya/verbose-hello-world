@@ -2,4 +2,4 @@
 git add .
 git commit -m wip
 git switch impl
-git merge sketch
+git merge sketch -m wip
