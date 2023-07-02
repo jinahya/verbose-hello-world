@@ -21,6 +21,7 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -31,12 +32,11 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.LongAdder;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
-import static com.github.jinahya.hello.HelloWorldTestUtils.print;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -50,23 +50,9 @@ import static org.mockito.Mockito.when;
 @Slf4j
 class HelloWorld_20_Write_AsynchronousByteChannel_Test extends _HelloWorldTest {
 
-    /**
-     * Stubs the {@link HelloWorld#put(ByteBuffer) put(buffer)} method to just return the
-     * {@code buffer} as its {@code position} is increased by {@value HelloWorld#BYTES}.
-     */
-    @DisplayName("[stubbing] put(buffer[12]) returns buffer as its position increased by 12")
-    @org.junit.jupiter.api.BeforeEach
-    void stub_ReturnBufferPositionIncreaseBy12_PutBuffer() {
-        doAnswer(i -> {
-            ByteBuffer buffer = i.getArgument(0);
-            assert buffer != null;
-            print(buffer);
-            assert buffer.capacity() == BYTES;
-            assert buffer.limit() == buffer.capacity();
-            assert buffer.remaining() == BYTES;
-            buffer.position(buffer.limit());
-            return buffer;
-        }).when(serviceInstance()).put(any());
+    @BeforeEach
+    void _beforeEach() {
+        stubPutBufferToIncreasePositionBy12();
     }
 
     /**
@@ -77,10 +63,10 @@ class HelloWorld_20_Write_AsynchronousByteChannel_Test extends _HelloWorldTest {
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
      */
-    @DisplayName("-> put(buffer[12]) -> channel.write(buffer)+")
+    @DisplayName("channel.write(buffer)+")
     @Test
     void _PutBufferWriteBufferToChannel_() throws InterruptedException, ExecutionException {
-        // GIVEN
+        // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
         var channel = mock(AsynchronousByteChannel.class);
         var writtenSoFar = new LongAdder();
@@ -95,41 +81,41 @@ class HelloWorld_20_Write_AsynchronousByteChannel_Test extends _HelloWorldTest {
             when(future.get()).thenReturn(written);
             return future;
         });
-        // WHEN
+        // ------------------------------------------------------------------------------------ WHEN
         service.write(channel);
-        // THEN: once, put(buffer[12]) invoked
-        verify(service).put(bufferCaptor().capture());
+        // ------------------------------------------------------------------------------------ THEN
+        verify(service, times(1)).put(bufferCaptor().capture());
         var buffer = bufferCaptor().getValue();
-        // THEN: at least once, channel.write(buffer) invoked
+        assert buffer.capacity() == BYTES;
+        assert !buffer.hasRemaining(); // the buffer has been drained
         // TODO: Verify channel.write(buffer) invoked, at least once
-        // THEN: 12 bytes are written
-        // TODO: Assert writtenSoFar.intValue() is euqal to BYTES
+        // TODO: Assert writtenSoFar.intValue() is equal to the BYTES
     }
 
     /**
-     * Asserts {@link HelloWorld#write(AsynchronousByteChannel) write(channel)} method returns
+     * Verifies {@link HelloWorld#write(AsynchronousByteChannel) write(channel)} method returns
      * {@code channel}.
      *
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
      */
-    @DisplayName("returns channel")
+    @DisplayName("channel")
     @Test
     void _ReturnChannel_() throws InterruptedException, ExecutionException {
-        // GIVEN
+        // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
         var channel = mock(AsynchronousByteChannel.class);
         when(channel.write(any())).thenAnswer(i -> {
             ByteBuffer src = i.getArgument(0);
             var written = src.remaining();
-            src.position(src.position() + written);
+            src.position(src.limit());
             var future = mock(Future.class);
             when(future.get()).thenReturn(written);
             return future;
         });
-        // WHEN
+        // ------------------------------------------------------------------------------------ WHEN
         var result = service.write(channel);
-        // THEN: result is same as channel
+        // ------------------------------------------------------------------------------------ THEN
         assertSame(channel, result);
     }
 }
