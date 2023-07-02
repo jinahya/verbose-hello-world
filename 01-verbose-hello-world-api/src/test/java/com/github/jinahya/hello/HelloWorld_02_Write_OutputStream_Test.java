@@ -46,7 +46,7 @@ import static org.mockito.Mockito.mock;
  */
 @DisplayName("write(stream)")
 @Slf4j
-class HelloWorld_02_Write_OutputStream_Test extends HelloWorldTest {
+class HelloWorld_02_Write_OutputStream_Test extends _HelloWorldTest {
 
     /**
      * Stubs {@link HelloWorld#set(byte[]) set(array)} method to just return the {@code array}
@@ -55,7 +55,7 @@ class HelloWorld_02_Write_OutputStream_Test extends HelloWorldTest {
     @org.junit.jupiter.api.BeforeEach
     void _ReturnArray_SetArray() {
         doAnswer(i -> i.getArgument(0)) // <1>
-                .when(service())        // <2>
+                .when(serviceInstance())        // <2>
                 .set(any());            // <3>
     }
 
@@ -72,7 +72,7 @@ class HelloWorld_02_Write_OutputStream_Test extends HelloWorldTest {
     @Test
     void _InvokeSetArrayAndWriteArrayToStream_() throws IOException {
         // GIVEN
-        var service = service();
+        var service = serviceInstance();
         // TODO: Create a mock object of java.io.OutputStream, say 'stream'
         // WHEN
         // TODO: Invoke service.write(stream)
@@ -92,7 +92,7 @@ class HelloWorld_02_Write_OutputStream_Test extends HelloWorldTest {
     @Test
     void _ReturnStream_() throws IOException {
         // GIVEN
-        var service = service();
+        var service = serviceInstance();
         var stream = mock(OutputStream.class);
         // WHEN
         var actual = service.write(stream);
@@ -112,7 +112,7 @@ class HelloWorld_02_Write_OutputStream_Test extends HelloWorldTest {
     @org.junit.jupiter.api.Disabled("enable when implemented")
     @Test
     void _ReadPipedInputStream_WritePipedOutputStream() throws IOException, InterruptedException {
-        var service = service();
+        var service = serviceInstance();
         try (PipedOutputStream pos = new PipedOutputStream();
              PipedInputStream pis = new PipedInputStream(pos, BYTES)) {
             var thread = new Thread(() -> {

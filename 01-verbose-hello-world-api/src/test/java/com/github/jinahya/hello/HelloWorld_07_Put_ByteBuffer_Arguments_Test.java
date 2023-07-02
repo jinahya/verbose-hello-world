@@ -28,7 +28,6 @@ import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
-import static java.nio.ByteBuffer.allocate;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
@@ -42,7 +41,7 @@ import static org.mockito.Mockito.when;
  */
 @DisplayName("put(buffer) arguments")
 @Slf4j
-class HelloWorld_07_Put_ByteBuffer_Arguments_Test extends HelloWorldTest {
+class HelloWorld_07_Put_ByteBuffer_Arguments_Test extends _HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method throws a
@@ -52,7 +51,7 @@ class HelloWorld_07_Put_ByteBuffer_Arguments_Test extends HelloWorldTest {
     @Test
     void _ThrowNullPointerException_BufferIsNull() {
         // GIVEN
-        var service = service();
+        var service = serviceInstance();
         ByteBuffer buffer = null;
         // WHEN/THEN
         assertThrows(NullPointerException.class, () -> service.put(buffer));
@@ -67,7 +66,7 @@ class HelloWorld_07_Put_ByteBuffer_Arguments_Test extends HelloWorldTest {
     @Test
     void _ThrowBufferOverflowException_BufferRemainingIsLessThan12() {
         // GIVEN
-        var service = service();
+        var service = serviceInstance();
         var buffer = mock(ByteBuffer.class);
         when(buffer.remaining()).thenReturn(current().nextInt(BYTES));
         // WHEN/THEN

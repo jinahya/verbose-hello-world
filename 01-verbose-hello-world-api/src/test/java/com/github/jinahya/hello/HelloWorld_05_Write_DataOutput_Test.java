@@ -51,7 +51,7 @@ import static org.mockito.Mockito.verify;
  */
 @DisplayName("write(data)")
 @Slf4j
-class HelloWorld_05_Write_DataOutput_Test extends HelloWorldTest {
+class HelloWorld_05_Write_DataOutput_Test extends _HelloWorldTest {
 
     /**
      * Stubs {@link HelloWorld#set(byte[]) set(array)} method to return the {@code array} argument.
@@ -59,7 +59,7 @@ class HelloWorld_05_Write_DataOutput_Test extends HelloWorldTest {
     @BeforeEach
     void stub_ReturnArray_SetArray() {
         doAnswer(i -> i.getArgument(0))
-                .when(service())
+                .when(serviceInstance())
                 .set(any());
     }
 
@@ -75,7 +75,7 @@ class HelloWorld_05_Write_DataOutput_Test extends HelloWorldTest {
     @Test
     void _InvokeSetArrayWriteArrayToData_() throws IOException {
         // GIVEN
-        var service = service();
+        var service = serviceInstance();
         var data = mock(DataOutput.class);                      // <1>
         // WHEN
         service.write(data);                                    // <2>
@@ -97,7 +97,7 @@ class HelloWorld_05_Write_DataOutput_Test extends HelloWorldTest {
     @Test
     void _ReturnData_() throws IOException {
         // GIVEN
-        var service = service();
+        var service = serviceInstance();
         var data = mock(DataOutput.class);
         // WHEN
         var actual = service.write(data);
@@ -116,7 +116,7 @@ class HelloWorld_05_Write_DataOutput_Test extends HelloWorldTest {
     @畵蛇添足
     void _Write12Bytes_() throws IOException {
         // GIVEN
-        var service = service();
+        var service = serviceInstance();
         try (var baos = new ByteArrayOutputStream();
              var dos = new DataOutputStream(baos)) {
             // TODO: Write some to baos
@@ -141,7 +141,7 @@ class HelloWorld_05_Write_DataOutput_Test extends HelloWorldTest {
     @畵蛇添足
     void _Write12Bytes_(@TempDir File tempDir) throws IOException {
         // GIVEN
-        var service = service();
+        var service = serviceInstance();
         var file = createTempFile("tmp", null, tempDir);
         // TODO: write some to file
         var length = file.length();

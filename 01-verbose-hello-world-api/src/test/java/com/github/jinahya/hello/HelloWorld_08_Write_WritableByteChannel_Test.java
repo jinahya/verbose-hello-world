@@ -46,7 +46,7 @@ import static org.mockito.Mockito.when;
  */
 @DisplayName("write(channel)")
 @Slf4j
-class HelloWorld_08_Write_WritableByteChannel_Test extends HelloWorldTest {
+class HelloWorld_08_Write_WritableByteChannel_Test extends _HelloWorldTest {
 
     /**
      * Stubs {@link HelloWorld#put(ByteBuffer) put(buffer)} method to return the {@code buffer} as
@@ -54,7 +54,7 @@ class HelloWorld_08_Write_WritableByteChannel_Test extends HelloWorldTest {
      */
     @BeforeEach
     void stub_ReturnBufferAsItsPositionIncreasedBy12_PutBuffer() {
-        var service = service();
+        var service = serviceInstance();
         doAnswer(i -> {
             ByteBuffer buffer = i.getArgument(0);
             assert buffer != null;
@@ -78,7 +78,7 @@ class HelloWorld_08_Write_WritableByteChannel_Test extends HelloWorldTest {
     @Test
     void _InvokePutBufferWriteBufferToChannel_() throws IOException {
         // GIVEN
-        var service = service();
+        var service = serviceInstance();
         var channel = mock(WritableByteChannel.class);               // <1>
         var writtenSoFar = new LongAdder();                          // <2>
         when(channel.write(any())).thenAnswer(i -> {                 // <3>
@@ -107,7 +107,7 @@ class HelloWorld_08_Write_WritableByteChannel_Test extends HelloWorldTest {
     @Test
     void _ReturnChannel_() throws IOException {
         // GIVEN
-        var service = service();
+        var service = serviceInstance();
         var channel = mock(WritableByteChannel.class);
         when(channel.write(any())).thenAnswer(i -> {
             ByteBuffer buffer = i.getArgument(0);

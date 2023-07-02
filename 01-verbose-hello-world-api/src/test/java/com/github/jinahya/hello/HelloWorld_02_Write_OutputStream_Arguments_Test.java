@@ -35,7 +35,7 @@ import java.io.OutputStream;
  */
 @DisplayName("write(stream) arguments")
 @Slf4j
-class HelloWorld_02_Write_OutputStream_Arguments_Test extends HelloWorldTest {
+class HelloWorld_02_Write_OutputStream_Arguments_Test extends _HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(OutputStream) write(stream)} method throws a
@@ -45,7 +45,7 @@ class HelloWorld_02_Write_OutputStream_Arguments_Test extends HelloWorldTest {
     @Test
     void _ThrowNullPointerException_StreamIsNull() {
         // GIVEN
-        var service = service();
+        var service = serviceInstance();
         OutputStream stream = null;
         // WHEN/THEN
         // TODO: Assert service.write(stream) throws a NullPointerException

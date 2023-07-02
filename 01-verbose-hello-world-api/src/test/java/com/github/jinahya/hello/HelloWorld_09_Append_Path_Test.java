@@ -51,7 +51,7 @@ import static org.mockito.Mockito.mockStatic;
  */
 @DisplayName("append(path)")
 @Slf4j
-class HelloWorld_09_Append_Path_Test extends HelloWorldTest {
+class HelloWorld_09_Append_Path_Test extends _HelloWorldTest {
 
     /**
      * Stubs {@link HelloWorld#write(WritableByteChannel) write(channel)} method to just return the
@@ -62,7 +62,7 @@ class HelloWorld_09_Append_Path_Test extends HelloWorldTest {
     @DisplayName("[stubbing] write(channel)channel")
     @org.junit.jupiter.api.BeforeEach
     void stub_ReturnChannel_WriteChannel() throws IOException {
-        var service = service();
+        var service = serviceInstance();
         doAnswer(i -> i.getArgument(0))
                 .when(service)
                 .write(any(WritableByteChannel.class));
@@ -72,7 +72,7 @@ class HelloWorld_09_Append_Path_Test extends HelloWorldTest {
     @Test
     void _InvokeWriteChannelOpenedFromPath_() throws IOException {
         // GIVEN
-        var service = service();
+        var service = serviceInstance();
         var path = mock(Path.class);
         var channel = mock(FileChannel.class);
         try (MockedStatic<FileChannel> mocked = mockStatic(FileChannel.class)) {
@@ -101,7 +101,7 @@ class HelloWorld_09_Append_Path_Test extends HelloWorldTest {
     @Test
     void _ReturnPath_() throws IOException {
         // GIVEN
-        var service = service();
+        var service = serviceInstance();
         var path = mock(Path.class);
         var channel = mock(FileChannel.class);
         try (MockedStatic<FileChannel> mocked = mockStatic(FileChannel.class)) {
@@ -125,7 +125,7 @@ class HelloWorld_09_Append_Path_Test extends HelloWorldTest {
     @畵蛇添足
     void _12BytesAppended_(@TempDir Path tempDir) throws IOException {
         // GIVEN
-        var service = service();
+        var service = serviceInstance();
         doAnswer(i -> {
             WritableByteChannel channel = i.getArgument(0);
             for (var src = allocate(BYTES); src.hasRemaining(); ) {

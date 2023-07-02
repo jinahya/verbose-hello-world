@@ -45,7 +45,7 @@ import static org.mockito.Mockito.mock;
 @DisplayName("write(channel, position, handler) arguments")
 @Slf4j
 class AsynchronousHelloWorld_05_Write_AsynchronousFileChannelWithHandler_Arguments_Test
-        extends AsynchronousHelloWorldTest {
+        extends _AsynchronousHelloWorldTest {
 
     /**
      * Asserts
@@ -57,7 +57,7 @@ class AsynchronousHelloWorld_05_Write_AsynchronousFileChannelWithHandler_Argumen
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
         // GIVEN
-        var service = service();
+        var service = serviceInstance();
         AsynchronousFileChannel channel = null;
         var position = current().nextLong() & MAX_VALUE;
         var handler = mock(CompletionHandler.class);
@@ -75,7 +75,7 @@ class AsynchronousHelloWorld_05_Write_AsynchronousFileChannelWithHandler_Argumen
     @Test
     void _ThrowIllegalArgumentException_PositionIsNegative() {
         // GIVEN
-        var service = service();
+        var service = serviceInstance();
         var channel = mock(AsynchronousFileChannel.class);
         var position = current().nextLong() | MIN_VALUE;
         var handler = mock(CompletionHandler.class);
@@ -94,7 +94,7 @@ class AsynchronousHelloWorld_05_Write_AsynchronousFileChannelWithHandler_Argumen
     @Test
     void _ThrowNullPointerException_ExecutorIsNull() {
         // GIVEN
-        var service = service();
+        var service = serviceInstance();
         var channel = mock(AsynchronousFileChannel.class);
         var position = current().nextLong() & MAX_VALUE;
         CompletionHandler<Integer, AsynchronousFileChannel> handler = null;

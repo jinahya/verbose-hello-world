@@ -34,7 +34,7 @@ import static com.github.jinahya.hello.HelloWorld.BYTES;
  */
 @DisplayName("set(array)")
 @Slf4j
-class HelloWorld_01_Set_Array_Test extends HelloWorldTest {
+class HelloWorld_01_Set_Array_Test extends _HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#set(byte[]) set(array)} method invokes
@@ -44,10 +44,10 @@ class HelloWorld_01_Set_Array_Test extends HelloWorldTest {
     @DisplayName("invokes set(array, 0)")
     @Test
     void _InvokeSetArrayWithArrayAndZero_() {
-        // GIVEN
-        var service = service();
+        // ----------------------------------------------------------------------------------- GIVEN
+        var service = serviceInstance();
         var array = new byte[BYTES];
-        // WHEN
+        // ------------------------------------------------------------------------------------ WHEN
         // TODO: Invoke service.set(array)
         // THEN: once, set(array, 0) invoked
         // TODO: Verify set(array, 0) invoked
@@ -60,12 +60,12 @@ class HelloWorld_01_Set_Array_Test extends HelloWorldTest {
     @DisplayName("returns array")
     @Test
     void _ReturnArray_() {
-        // GIVEN
-        var service = service();
+        // ----------------------------------------------------------------------------------- GIVEN
+        var service = serviceInstance();
         var array = new byte[BYTES];
-        // WHEN
+        // ------------------------------------------------------------------------------------ WHEN
         var actual = service.set(array);
-        // THEN
+        // ------------------------------------------------------------------------------------ THEN
         // TODO: Assert that the actual is same as expected.
     }
 }

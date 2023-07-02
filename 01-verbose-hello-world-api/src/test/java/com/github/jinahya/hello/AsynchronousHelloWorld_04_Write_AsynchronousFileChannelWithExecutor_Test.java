@@ -59,7 +59,7 @@ import static org.mockito.Mockito.when;
 @DisplayName("write(channel, position, executor)")
 @Slf4j
 class AsynchronousHelloWorld_04_Write_AsynchronousFileChannelWithExecutor_Test
-        extends AsynchronousHelloWorldTest {
+        extends _AsynchronousHelloWorldTest {
 
     /**
      * Stubs {@link HelloWorld#put(ByteBuffer) put(buffer)} method to just return the {@code buffer}
@@ -69,7 +69,7 @@ class AsynchronousHelloWorld_04_Write_AsynchronousFileChannelWithExecutor_Test
     @BeforeEach
     void stub_ReturnBufferAsItsPositionIncreasedBy12_PutBuffer() {
         // GIVEN
-        var service = service();
+        var service = serviceInstance();
         // WHEN/THEN
         doAnswer(i -> {
             ByteBuffer buffer = i.getArgument(0);
@@ -95,7 +95,7 @@ class AsynchronousHelloWorld_04_Write_AsynchronousFileChannelWithExecutor_Test
     @Test
     void __() throws InterruptedException, ExecutionException {
         // GIVEN
-        var service = service();
+        var service = serviceInstance();
         var channel = mock(AsynchronousFileChannel.class);
         var writtenSoFar = new LongAdder();
         var firstPosition = new AtomicReference<Long>();

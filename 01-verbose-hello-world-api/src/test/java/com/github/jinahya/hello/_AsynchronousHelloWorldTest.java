@@ -30,9 +30,13 @@ import lombok.extern.slf4j.Slf4j;
 //@ExtendWith({MockitoExtension.class})
 //@TestInstance(TestInstance.Lifecycle.PER_METHOD) // default, implicitly.
 @Slf4j
-abstract class AsynchronousHelloWorldTest extends AbstractHelloWorldTest<AsynchronousHelloWorld> {
+abstract class _AsynchronousHelloWorldTest
+        extends __AbstractHelloWorldTest<AsynchronousHelloWorld> {
 
-    AsynchronousHelloWorldTest() {
+    /**
+     * Creates a new instance.
+     */
+    _AsynchronousHelloWorldTest() {
         super(AsynchronousHelloWorld.class);
     }
 }

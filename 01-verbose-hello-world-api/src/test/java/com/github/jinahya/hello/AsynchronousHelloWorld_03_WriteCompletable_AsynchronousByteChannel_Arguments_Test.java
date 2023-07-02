@@ -39,7 +39,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @DisplayName("writeCompletable(channel) arguments")
 @Slf4j
 class AsynchronousHelloWorld_03_WriteCompletable_AsynchronousByteChannel_Arguments_Test
-        extends AsynchronousHelloWorldTest {
+        extends _AsynchronousHelloWorldTest {
 
     /**
      * Asserts
@@ -51,7 +51,7 @@ class AsynchronousHelloWorld_03_WriteCompletable_AsynchronousByteChannel_Argumen
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
         // GIVEN
-        var service = service();
+        var service = serviceInstance();
         AsynchronousByteChannel channel = null;
         // WHEN/THEN
         assertThrows(NullPointerException.class, () -> service.writeCompletable(channel));

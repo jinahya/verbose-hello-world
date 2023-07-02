@@ -49,7 +49,7 @@ import static org.mockito.Mockito.verify;
  */
 @DisplayName("write(RandomAccessFile file)")
 @Slf4j
-class HelloWorld_06_Write_RandomAccessFile_Test extends HelloWorldTest {
+class HelloWorld_06_Write_RandomAccessFile_Test extends _HelloWorldTest {
 
     /**
      * Stubs {@link HelloWorld#set(byte[]) set(array)} method to just return the {@code array}
@@ -59,7 +59,7 @@ class HelloWorld_06_Write_RandomAccessFile_Test extends HelloWorldTest {
     @org.junit.jupiter.api.BeforeEach
     void stub_ReturnArray_SetArray() {
         doAnswer(i -> i.getArgument(0))
-                .when(service())
+                .when(serviceInstance())
                 .set(any());
     }
 
@@ -76,7 +76,7 @@ class HelloWorld_06_Write_RandomAccessFile_Test extends HelloWorldTest {
     @Test
     void _InvokeSetArrayWriteArrayToFile_() throws IOException {
         // GIVEN
-        var service = service();
+        var service = serviceInstance();
         var file = mock(RandomAccessFile.class);
         // WHEN
         service.write(file);
@@ -99,7 +99,7 @@ class HelloWorld_06_Write_RandomAccessFile_Test extends HelloWorldTest {
     @Test
     void _ReturnFile_() throws IOException {
         // GIVEN
-        var service = service();
+        var service = serviceInstance();
         var file = mock(RandomAccessFile.class);
         // WHEN
         var actual = service.write(file);
@@ -119,7 +119,7 @@ class HelloWorld_06_Write_RandomAccessFile_Test extends HelloWorldTest {
     @畵蛇添足
     void _Write12Bytes_(@TempDir File tempDir) throws IOException {
         // GIVEN
-        var service = service();
+        var service = serviceInstance();
         var tmp = createTempFile("tmp", null, tempDir);
         var pos = current().nextLong(1024);
         try (var file = new RandomAccessFile(tmp, "rw")) {

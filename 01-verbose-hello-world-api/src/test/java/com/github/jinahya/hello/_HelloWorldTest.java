@@ -23,14 +23,19 @@ package com.github.jinahya.hello;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * An abstract class for testing methods defined in {@link ReactiveHelloWorld} interface.
+ * An abstract class for testing methods defined in {@link HelloWorld} interface.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+//@ExtendWith({MockitoExtension.class})
+//@TestInstance(TestInstance.Lifecycle.PER_METHOD) // default, implicitly.
 @Slf4j
-abstract class ReactiveHelloWorldTest extends AbstractHelloWorldTest<ReactiveHelloWorld> {
+abstract class _HelloWorldTest extends __AbstractHelloWorldTest<HelloWorld> {
 
-    ReactiveHelloWorldTest() {
-        super(ReactiveHelloWorld.class);
+    /**
+     * Creates a new instance.
+     */
+    _HelloWorldTest() {
+        super(HelloWorld.class);
     }
 }

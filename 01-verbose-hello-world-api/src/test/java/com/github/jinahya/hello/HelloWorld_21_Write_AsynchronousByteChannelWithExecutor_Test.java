@@ -26,81 +26,88 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
-import java.nio.channels.CompletionHandler;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.LongAdder;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static com.github.jinahya.hello.HelloWorldTestUtils.print;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.Mockito.mock;
 
 /**
  * A class for testing
- * {@link AsynchronousHelloWorld#write(AsynchronousByteChannel, CompletionHandler, Object)
- * write(channel, handler, attachment)} method.
+ * {@link HelloWorld#write(AsynchronousByteChannel, Executor) write(channel,executor)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Arguments_Test
+ * @see HelloWorld_21_Write_AsynchronousByteChannelWithExecutor_Arguments_Test
  */
-@DisplayName("write(channel, handler, attachment)")
+@DisplayName("write(channel, executor)")
 @Slf4j
-class AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Test
-        extends _AsynchronousHelloWorldTest {
+class HelloWorld_21_Write_AsynchronousByteChannelWithExecutor_Test
+        extends _HelloWorldTest {
 
     /**
      * Stubs the {@link HelloWorld#put(ByteBuffer) put(buffer)} method to just return the
      * {@code buffer} as its {@code position} increased by {@value HelloWorld#BYTES}.
      */
-    @DisplayName("[stubbing] put(buffer[12]) returns buffer as its position increased by BYTES")
+    @DisplayName("[stubbing] put(buffer[12]) returns buffer as its position increased by 12")
     @org.junit.jupiter.api.BeforeEach
     void stub_ReturnBufferAsItsPositionIncreaseBy12_PutBuffer() {
         willAnswer(i -> {
             ByteBuffer buffer = i.getArgument(0);
             assert buffer != null;
             print(buffer);
-            final var remaining = buffer.remaining();
-            assert remaining >= BYTES :
-                    "buffer.remaining(" + remaining + ") should be equal or greater than " + BYTES;
-            buffer.position(buffer.position() + BYTES);
-            print(buffer);
+            assert buffer.capacity() == BYTES;
+            assert buffer.limit() == buffer.capacity();
+            assert buffer.remaining() == BYTES;
+            buffer.position(buffer.limit());
             return buffer;
         }).given(serviceInstance()).put(any());
     }
 
     /**
-     * Asserts
-     * {@link AsynchronousHelloWorld#write(AsynchronousByteChannel, CompletionHandler, Object)
-     * write(channel, handler, attachment)} method invokes
-     * {@link CompletionHandler#completed(Object, Object) handler.completed(channel, attachment)}.
+     * Asserts {@link HelloWorld#write(AsynchronousByteChannel, Executor) write(channel, executor)}
+     * method writes {@value HelloWorld#BYTES} byte to the {@code channel}.
+     *
+     * @throws InterruptedException if interrupted while testing.
+     * @throws ExecutionException   if failed to execute.
      */
-    @DisplayName("handler.completed(channel, attachment)")
+    @DisplayName("channel.write(buffer)+")
     @Test
-    @SuppressWarnings({"unchecked"})
-    void _Completed_() {
+    void __() throws InterruptedException, ExecutionException {
         // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
         var channel = mock(AsynchronousByteChannel.class);
+        // channel.write(buffer) returns a future increments buffer's position by a random value
         var writtenSoFar = new LongAdder();
-        willAnswer(i -> {
+        given(channel.write((any()))).willAnswer(i -> {
             ByteBuffer buffer = i.getArgument(0);
+            assert buffer != null;
             assert buffer.hasRemaining();
-            var attachment = i.getArgument(1);
-            var handler = i.getArgument(2, CompletionHandler.class);
             var written = current().nextInt(1, buffer.remaining() + 1);
             buffer.position(buffer.position() + written);
             writtenSoFar.add(written);
-            handler.completed(written, attachment);
+            var future = mock(Future.class);
+            given(future.get()).willReturn(written);
+            return future;
+        });
+        var executor = mock(Executor.class);
+        // executor.execute(runnable) starts a new thread runs the runnable
+        willAnswer(i -> {
+            Runnable runnable = i.getArgument(0);
+            assert runnable != null;
+            new Thread(runnable).start();
             return null;
-        }).given(channel).write(any(), any(), any());
-        CompletionHandler<AsynchronousByteChannel, Void> handler = mock(CompletionHandler.class);
+        }).given(executor).execute(any());
         // ------------------------------------------------------------------------------------ WHEN
-        service.write(channel, handler, null);
+        var future = service.write(channel, executor);
+        var result = future.get();
         // ------------------------------------------------------------------------------------ THEN
-        // TODO: verify handler.completed(channel, null) invoked, once, in a handful seconds
-        // TODO: Verify put(buffer[12]) invoked, once
-        // TODO: Verify channel.write(buffer, <whatever>, <whatever>) invoked, at least once
-        // THEN: 12 bytes are written to the channel
+        // THEN: once, write(channel) invoked
     }
 }

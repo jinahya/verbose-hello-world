@@ -56,7 +56,7 @@ import static org.mockito.Mockito.verify;
 @DisplayName("write(channel, position, handler)")
 @Slf4j
 class AsynchronousHelloWorld_05_Write_AsynchronousFileChannelWithHandler_Test
-        extends AsynchronousHelloWorldTest {
+        extends _AsynchronousHelloWorldTest {
 
     /**
      * Stubs {@link HelloWorld#put(ByteBuffer) put(buffer)} method to just return the {@code buffer}
@@ -66,7 +66,7 @@ class AsynchronousHelloWorld_05_Write_AsynchronousFileChannelWithHandler_Test
     @org.junit.jupiter.api.BeforeEach
     void stub_ReturnBufferAsItsPositionIncreasedBy12_PutBuffer() {
         // GIVEN
-        var service = service();
+        var service = serviceInstance();
         // WHEN/THEN
         doAnswer(i -> {
             ByteBuffer buffer = i.getArgument(0);
@@ -91,7 +91,7 @@ class AsynchronousHelloWorld_05_Write_AsynchronousFileChannelWithHandler_Test
     @Test
     void _Completed_() {
         // GIVEN
-        var service = service();
+        var service = serviceInstance();
         var channel = mock(AsynchronousFileChannel.class);
         var writtenSoFar = new LongAdder();
         var firstPosition = new AtomicReference<Long>();
@@ -137,7 +137,7 @@ class AsynchronousHelloWorld_05_Write_AsynchronousFileChannelWithHandler_Test
     @Test
     void _Failed_() {
         // GIVEN
-        var service = service();
+        var service = serviceInstance();
         var channel = mock(AsynchronousFileChannel.class);
         var exc = mock(Throwable.class);
         doAnswer(i -> {

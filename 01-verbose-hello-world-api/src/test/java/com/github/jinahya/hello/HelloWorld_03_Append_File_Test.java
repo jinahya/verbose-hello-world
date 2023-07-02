@@ -48,7 +48,7 @@ import static org.mockito.Mockito.mockConstruction;
  */
 @DisplayName("append(file)")
 @Slf4j
-class HelloWorld_03_Append_File_Test extends HelloWorldTest {
+class HelloWorld_03_Append_File_Test extends _HelloWorldTest {
 
     /**
      * Stubs {@link HelloWorld#write(OutputStream) write(stream)} method to write
@@ -63,7 +63,7 @@ class HelloWorld_03_Append_File_Test extends HelloWorldTest {
                 stream.write(0);                    // <3>
             }
             return stream;
-        }).when(service()).write(any(OutputStream.class));
+        }).when(serviceInstance()).write(any(OutputStream.class));
     }
 
     /**
@@ -78,7 +78,7 @@ class HelloWorld_03_Append_File_Test extends HelloWorldTest {
     @Test
     void _InvokeWriteStream_() throws IOException {
         // GIVEN: HelloWorld
-        var service = service();
+        var service = serviceInstance();
         var file = mock(File.class);
         MockedConstruction.MockInitializer<FileOutputStream> initializer = (m, c) -> {
             var constructor = c.constructor();
@@ -110,7 +110,7 @@ class HelloWorld_03_Append_File_Test extends HelloWorldTest {
     @Test
     void _ReturnFile_() throws IOException {
         // GIVEN
-        var service = service();
+        var service = serviceInstance();
         var file = mock(File.class);
         try (MockedConstruction<FileOutputStream> c = mockConstruction(FileOutputStream.class)) {
             // WHEN
@@ -132,7 +132,7 @@ class HelloWorld_03_Append_File_Test extends HelloWorldTest {
     @畵蛇添足
     void _12BytesAppended_(@TempDir File tempDir) throws IOException {
         // GIVEN
-        var service = service();
+        var service = serviceInstance();
         var file = createTempFile("tmp", null, tempDir);
         var length = file.length();
         // WHEN
@@ -151,7 +151,7 @@ class HelloWorld_03_Append_File_Test extends HelloWorldTest {
     @畵蛇添足
     void _ReturnFile_(@TempDir File tempDir) throws IOException {
         // GIVEN
-        var service = service();
+        var service = serviceInstance();
         var file = createTempFile("tmp", null, tempDir);
         // WHEN
         var actual = service.append(file);

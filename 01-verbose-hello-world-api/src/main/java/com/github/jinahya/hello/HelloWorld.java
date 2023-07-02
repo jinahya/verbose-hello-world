@@ -40,7 +40,11 @@ import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Objects;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -440,5 +444,29 @@ public interface HelloWorld {
             break;
         }
         return channel;
+    }
+
+    /**
+     * Writes, asynchronously, the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>
+     * to specified channel using specified executor.
+     *
+     * @param <T>      channel type parameter
+     * @param channel  the channel to which bytes are written.
+     * @param executor the executor.
+     * @return a future of given {@code channel} that will, some time in the future, write the
+     * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to {@code channel}.
+     * @see #put(ByteBuffer)
+     * @see AsynchronousByteChannel#write(ByteBuffer)
+     */
+    default <T extends AsynchronousByteChannel> Future<T> write(T channel, Executor executor) {
+        Objects.requireNonNull(channel, "channel is null");
+        Objects.requireNonNull(executor, "executor is null");
+        Callable<T> callable = () -> {
+            // TODO: Write hello-world-bytes to the channel!
+            return null;
+        };
+        FutureTask<T> command = new FutureTask<>(callable);
+        executor.execute(command); // Runnable
+        return command;            // Future<T>
     }
 }

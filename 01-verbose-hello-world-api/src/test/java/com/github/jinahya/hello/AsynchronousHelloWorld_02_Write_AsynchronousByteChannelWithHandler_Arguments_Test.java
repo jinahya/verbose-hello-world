@@ -41,7 +41,7 @@ import static org.mockito.Mockito.mock;
 @DisplayName("write(channel, handler, attachment) arguments")
 @Slf4j
 class AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Arguments_Test
-        extends AsynchronousHelloWorldTest {
+        extends _AsynchronousHelloWorldTest {
 
     /**
      * Asserts
@@ -54,7 +54,7 @@ class AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Argumen
     @SuppressWarnings({"unchecked"})
     void _ThrowNullPointerException_ChannelIsNull() {
         // GIVEN
-        var service = service();
+        var service = serviceInstance();
         AsynchronousByteChannel channel = null;
         var handler = mock(CompletionHandler.class);
         // WHEN/THEN
@@ -71,7 +71,7 @@ class AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Argumen
     @Test
     void _ThrowNullPointerException_HandlerIsNull() {
         // GIVEN
-        var service = service();
+        var service = serviceInstance();
         var channel = mock(AsynchronousByteChannel.class);
         CompletionHandler<AsynchronousByteChannel, Void> handler = null;
         // WHEN/THEN

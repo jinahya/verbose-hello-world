@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  */
 @DisplayName("append(file) arguments")
 @Slf4j
-class HelloWorld_03_Append_File_Arguments_Test extends HelloWorldTest {
+class HelloWorld_03_Append_File_Arguments_Test extends _HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#append(File) append(file)} method throws a
@@ -46,7 +46,7 @@ class HelloWorld_03_Append_File_Arguments_Test extends HelloWorldTest {
     @Test
     void _ThrowNullPointerException_FileIsNull() {
         // GIVEN: HelloWorld
-        var service = service();
+        var service = serviceInstance();
         // GIVEN: File
         File file = null;
         // WHEN/THEN

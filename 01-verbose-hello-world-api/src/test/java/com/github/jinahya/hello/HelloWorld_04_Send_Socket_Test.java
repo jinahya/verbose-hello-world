@@ -49,7 +49,7 @@ import static org.mockito.Mockito.when;
  */
 @DisplayName("send(socket)")
 @Slf4j
-class HelloWorld_04_Send_Socket_Test extends HelloWorldTest {
+class HelloWorld_04_Send_Socket_Test extends _HelloWorldTest {
 
     /**
      * Stubs {@link HelloWorld#write(OutputStream) write(stream)} method to return the
@@ -57,7 +57,7 @@ class HelloWorld_04_Send_Socket_Test extends HelloWorldTest {
      */
     @org.junit.jupiter.api.BeforeEach
     void stub_ReturnStream_WriteStream() throws IOException {
-        var service = service();
+        var service = serviceInstance();
         doAnswer(i -> i.getArgument(0))
                 .when(service)
                 .write(any(OutputStream.class));
@@ -74,7 +74,7 @@ class HelloWorld_04_Send_Socket_Test extends HelloWorldTest {
     @Test
     void _InvokeWriteStreamWithSocketOutputStream_() throws IOException {
         // GIVEN
-        var service = service();
+        var service = serviceInstance();
         var socket = mock(Socket.class);                   // <1>
         var stream = mock(OutputStream.class);             // <2>
         when(socket.getOutputStream()).thenReturn(stream); // <3>
@@ -96,7 +96,7 @@ class HelloWorld_04_Send_Socket_Test extends HelloWorldTest {
     @Test
     void _ReturnSocket_() throws IOException {
         // GIVEN:
-        var service = service();
+        var service = serviceInstance();
         var socket = mock(Socket.class);
         var stream = mock(OutputStream.class);
         when(socket.getOutputStream()).thenReturn(stream);
@@ -110,7 +110,7 @@ class HelloWorld_04_Send_Socket_Test extends HelloWorldTest {
     @DisplayName("12 bytes are written")
     @Test
     void _12BytesWritten_() throws IOException, InterruptedException {
-        var service = service();
+        var service = serviceInstance();
         doAnswer(i -> {
             OutputStream stream = i.getArgument(0);
             stream.write(new byte[BYTES]);

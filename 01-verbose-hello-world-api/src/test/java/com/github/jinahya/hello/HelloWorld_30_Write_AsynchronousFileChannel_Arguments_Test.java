@@ -37,11 +37,11 @@ import static org.mockito.Mockito.mock;
  * arguments verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_11_Write_AsynchronousFileChannel_Test
+ * @see HelloWorld_30_Write_AsynchronousFileChannel_Test
  */
 @DisplayName("write(channel, position) arguments")
 @Slf4j
-class HelloWorld_11_Write_AsynchronousFileChannel_Arguments_Test extends HelloWorldTest {
+class HelloWorld_30_Write_AsynchronousFileChannel_Arguments_Test extends _HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(AsynchronousFileChannel, long) write(channel, position)}
@@ -52,7 +52,7 @@ class HelloWorld_11_Write_AsynchronousFileChannel_Arguments_Test extends HelloWo
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
         // GIVEN
-        var service = service();
+        var service = serviceInstance();
         AsynchronousFileChannel channel = null;
         var position = 0L;
         // WHEN/THEN
@@ -68,7 +68,7 @@ class HelloWorld_11_Write_AsynchronousFileChannel_Arguments_Test extends HelloWo
     @Test
     void _ThrowIllegalArgumentException_PositionIsNegative() {
         // GIVEN
-        var service = service();
+        var service = serviceInstance();
         var channel = mock(AsynchronousFileChannel.class);
         var position = current().nextLong() | MIN_VALUE;
         // WHEN/THEN

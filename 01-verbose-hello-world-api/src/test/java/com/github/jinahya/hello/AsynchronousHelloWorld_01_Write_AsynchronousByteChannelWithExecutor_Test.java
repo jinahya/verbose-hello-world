@@ -50,7 +50,7 @@ import static org.mockito.Mockito.mock;
 @DisplayName("write(channel, executor)")
 @Slf4j
 class AsynchronousHelloWorld_01_Write_AsynchronousByteChannelWithExecutor_Test
-        extends AsynchronousHelloWorldTest {
+        extends _AsynchronousHelloWorldTest {
 
     /**
      * Stubs the {@link HelloWorld#put(ByteBuffer) put(buffer)} method to just return the
@@ -68,7 +68,7 @@ class AsynchronousHelloWorld_01_Write_AsynchronousByteChannelWithExecutor_Test
             assert buffer.remaining() == BYTES;
             buffer.position(buffer.limit());
             return buffer;
-        }).given(service()).put(any());
+        }).given(serviceInstance()).put(any());
     }
 
     /**
@@ -83,7 +83,7 @@ class AsynchronousHelloWorld_01_Write_AsynchronousByteChannelWithExecutor_Test
     @Test
     void __() throws InterruptedException, ExecutionException {
         // GIVEN
-        var service = service();
+        var service = serviceInstance();
         var channel = mock(AsynchronousByteChannel.class);
         var writtenSoFar = new LongAdder();
         given(channel.write((any()))).willAnswer(i -> {

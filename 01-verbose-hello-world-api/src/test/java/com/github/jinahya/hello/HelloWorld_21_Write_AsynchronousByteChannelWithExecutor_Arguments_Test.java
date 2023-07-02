@@ -31,48 +31,47 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
 /**
- * A class for testing {@link HelloWorld#write(AsynchronousByteChannel)} method regarding arguments
- * verification.
+ * A class for testing
+ * {@link HelloWorld#write(AsynchronousByteChannel, Executor) write(channel, executor)} method
+ * regarding arguments verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see AsynchronousHelloWorld_01_Write_AsynchronousByteChannelWithExecutor_Test
+ * @see HelloWorld_21_Write_AsynchronousByteChannelWithExecutor_Test
  */
 @DisplayName("write(channel, executor) arguments")
 @Slf4j
-class AsynchronousHelloWorld_01_Write_AsynchronousByteChannelWithExecutor_Arguments_Test
-        extends _AsynchronousHelloWorldTest {
+class HelloWorld_21_Write_AsynchronousByteChannelWithExecutor_Arguments_Test
+        extends _HelloWorldTest {
 
     /**
-     * Asserts
-     * {@link AsynchronousHelloWorld#write(AsynchronousByteChannel, Executor) write(channel,
-     * executor)} method throws a {@link NullPointerException} when the {@code channel} argument is
+     * Asserts {@link HelloWorld#write(AsynchronousByteChannel, Executor) write(channel, executor)}
+     * method throws a {@link NullPointerException} when the {@code channel} argument is
      * {@code null}.
      */
-    @DisplayName("[channel == null] -> NullPointerException")
+    @DisplayName("(null, )NullPointerException")
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
-        // GIVEN
+        // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
         AsynchronousByteChannel channel = null;
         var executor = mock(Executor.class);
-        // WHEN/THEN
+        // ------------------------------------------------------------------------------- WHEN/THEN
         assertThrows(NullPointerException.class, () -> service.write(channel, executor));
     }
 
     /**
-     * Asserts
-     * {@link AsynchronousHelloWorld#write(AsynchronousByteChannel, Executor) write(channel,
-     * executor)} method throws a {@link NullPointerException} when the {@code executor} argument is
+     * Asserts {@link HelloWorld#write(AsynchronousByteChannel, Executor) write(channel, executor)}
+     * method throws a {@link NullPointerException} when the {@code executor} argument is
      * {@code null}.
      */
-    @DisplayName("[executor == null] -> NullPointerException")
+    @DisplayName("(, null)NullPointerException")
     @Test
     void _ThrowNullPointerException_ExecutorIsNull() {
-        // GIVEN
+        // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
         var channel = mock(AsynchronousByteChannel.class);
         Executor executor = null;
-        // WHEN/THEN
+        // ------------------------------------------------------------------------------- WHEN/THEN
         assertThrows(NullPointerException.class, () -> service.write(channel, executor));
     }
 }

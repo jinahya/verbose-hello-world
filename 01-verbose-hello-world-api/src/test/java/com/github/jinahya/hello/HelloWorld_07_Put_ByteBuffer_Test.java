@@ -47,7 +47,7 @@ import static org.mockito.Mockito.when;
  */
 @DisplayName("put(buffer)")
 @Slf4j
-class HelloWorld_07_Put_ByteBuffer_Test extends HelloWorldTest {
+class HelloWorld_07_Put_ByteBuffer_Test extends _HelloWorldTest {
 
     /**
      * Stubs {@link HelloWorld#set(byte[]) set(array)} method to just return the {@code array}
@@ -57,7 +57,7 @@ class HelloWorld_07_Put_ByteBuffer_Test extends HelloWorldTest {
     @org.junit.jupiter.api.BeforeEach
     void stub_ReturnArray_SetArray() {
         doAnswer(i -> i.getArgument(0))
-                .when(service())
+                .when(serviceInstance())
                 .set(any());
     }
 
@@ -73,7 +73,7 @@ class HelloWorld_07_Put_ByteBuffer_Test extends HelloWorldTest {
     @Test
     void _InvokeSetArrayIndexPositionIncrementedBy12_BufferHasArray() {
         // GIVEN
-        var service = service();
+        var service = serviceInstance();
         var array = new byte[BYTES];
         var buffer = mock(ByteBuffer.class);
         when(buffer.remaining()).thenReturn(array.length);
@@ -101,7 +101,7 @@ class HelloWorld_07_Put_ByteBuffer_Test extends HelloWorldTest {
     @Test
     void _InvokeSetArrayPutArray_BufferDoesNotHaveArray() {
         // GIVEN
-        var service = service();
+        var service = serviceInstance();
         var buffer = mock(ByteBuffer.class);
         when(buffer.remaining()).thenReturn(BYTES);
         when(buffer.hasArray()).thenReturn(false);
@@ -119,7 +119,7 @@ class HelloWorld_07_Put_ByteBuffer_Test extends HelloWorldTest {
     @Test
     void _ReturnBuffer_() {
         // GIVEN
-        var service = service();
+        var service = serviceInstance();
         var buffer = mock(ByteBuffer.class);
         when(buffer.remaining()).thenReturn(BYTES);
         // WHEN
@@ -138,7 +138,7 @@ class HelloWorld_07_Put_ByteBuffer_Test extends HelloWorldTest {
     @畵蛇添足
     void PositionIncrementedBy12_BufferHasArray() {
         // GIVEN
-        var service = service();
+        var service = serviceInstance();
         ByteBuffer slice;
         {
             var capacity = BYTES + (BYTES << 1); // BYTES * 3
@@ -169,7 +169,7 @@ class HelloWorld_07_Put_ByteBuffer_Test extends HelloWorldTest {
     @Test
     void _PositionIncrementedBy12_BufferDoesNotHaveArray() {
         // GIVEN
-        var service = service();
+        var service = serviceInstance();
         ByteBuffer slice;
         {
             var capacity = BYTES * 3;

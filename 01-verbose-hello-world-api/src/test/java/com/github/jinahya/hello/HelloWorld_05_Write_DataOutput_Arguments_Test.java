@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  */
 @DisplayName("write(data) arguments")
 @Slf4j
-class HelloWorld_05_Write_DataOutput_Arguments_Test extends HelloWorldTest {
+class HelloWorld_05_Write_DataOutput_Arguments_Test extends _HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(DataOutput) write(data)} method throws a
@@ -47,7 +47,7 @@ class HelloWorld_05_Write_DataOutput_Arguments_Test extends HelloWorldTest {
     @Test
     void _ThrowNullPointerException_DataIsNull() {
         // GIVEN
-        var service = service();
+        var service = serviceInstance();
         DataOutput data = null;
         // WHEN/THEN
         assertThrows(NullPointerException.class, () -> service.write(data));

@@ -53,16 +53,16 @@ import static org.mockito.Mockito.when;
 @ExtendWith({MockitoExtension.class})
 @TestInstance(TestInstance.Lifecycle.PER_METHOD) // default, implicitly.
 @Slf4j
-abstract class AbstractHelloWorldTest<T extends HelloWorld> {
+abstract class __AbstractHelloWorldTest<T extends HelloWorld> {
 
     /**
      * Creates a new instance for testing specified class.
      *
      * @param serviceClass the class to test.
      */
-    AbstractHelloWorldTest(final Class<T> serviceClass) {
+    __AbstractHelloWorldTest(final Class<T> serviceClass) {
         super();
-        service = spy(requireNonNull(serviceClass, "serviceClass is null"));
+        serviceInstance = spy(requireNonNull(serviceClass, "serviceClass is null"));
     }
 
     /**
@@ -72,13 +72,13 @@ abstract class AbstractHelloWorldTest<T extends HelloWorld> {
     @DisplayName("[stubbing] set(array, index) returns array")
     @BeforeEach
     void _ReturnArray_SetArrayIndex() {
-        when(service().set(any(), anyInt()))        // <1>
+        when(serviceInstance().set(any(), anyInt()))        // <1>
                 .thenAnswer(i -> i.getArgument(0)); // <2>
     }
 
     @Accessors(fluent = true)
     @Getter(AccessLevel.PACKAGE)
-    private final T service;
+    private final T serviceInstance;
 
     /**
      * An argument captor for capturing an argument of {@code byte[]}.

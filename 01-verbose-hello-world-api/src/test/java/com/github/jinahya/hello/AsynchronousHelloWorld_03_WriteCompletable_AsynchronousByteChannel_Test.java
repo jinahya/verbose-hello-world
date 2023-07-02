@@ -48,7 +48,7 @@ import static org.mockito.Mockito.mock;
 @DisplayName("writeCompletable(channel)")
 @Slf4j
 class AsynchronousHelloWorld_03_WriteCompletable_AsynchronousByteChannel_Test
-        extends AsynchronousHelloWorldTest {
+        extends _AsynchronousHelloWorldTest {
 
     /**
      * Asserts
@@ -68,7 +68,7 @@ class AsynchronousHelloWorld_03_WriteCompletable_AsynchronousByteChannel_Test
     @SuppressWarnings({"unchecked"})
     void _Completed_() throws InterruptedException, ExecutionException {
         // GIVEN
-        var service = service();
+        var service = serviceInstance();
         doAnswer(i -> {
             AsynchronousByteChannel channel = i.getArgument(0);
             var handler = i.getArgument(1, CompletionHandler.class);
@@ -107,7 +107,7 @@ class AsynchronousHelloWorld_03_WriteCompletable_AsynchronousByteChannel_Test
     @SuppressWarnings({"unchecked"})
     void _Failed_() throws InterruptedException {
         // GIVEN
-        var service = service();
+        var service = serviceInstance();
         var exc = mock(Throwable.class);
         doAnswer(i -> {
             AsynchronousByteChannel channel = i.getArgument(0);
