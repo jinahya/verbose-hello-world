@@ -1,0 +1,5 @@
+#!/bin/sh
+git add .
+git commit -m wip
+git switch impl
+git merge sketch
