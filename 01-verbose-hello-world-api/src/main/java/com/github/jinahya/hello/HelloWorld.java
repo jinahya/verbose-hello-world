@@ -397,7 +397,6 @@ public interface HelloWorld {
      * {@link ByteBuffer#hasRemaining() has remaining}, invoking
      * {@link AsynchronousByteChannel#write(ByteBuffer)} method with the {@code buffer}.
      * @see #put(ByteBuffer)
-     * @see AsynchronousByteChannel#write(ByteBuffer)
      */
     default <T extends AsynchronousByteChannel> T write(T channel)
             throws InterruptedException, ExecutionException {
