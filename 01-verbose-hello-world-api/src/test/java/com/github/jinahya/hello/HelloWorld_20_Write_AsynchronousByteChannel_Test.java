@@ -63,7 +63,7 @@ class HelloWorld_20_Write_AsynchronousByteChannel_Test extends _HelloWorldTest {
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
      */
-    @DisplayName("channel.write(buffer)+")
+    @DisplayName("(channel) -> channel.write(buffer)+")
     @Test
     void _PutBufferWriteBufferToChannel_() throws InterruptedException, ExecutionException {
         // ----------------------------------------------------------------------------------- GIVEN
@@ -94,12 +94,12 @@ class HelloWorld_20_Write_AsynchronousByteChannel_Test extends _HelloWorldTest {
 
     /**
      * Verifies {@link HelloWorld#write(AsynchronousByteChannel) write(channel)} method returns
-     * {@code channel}.
+     * given {@code channel}.
      *
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
      */
-    @DisplayName("channel")
+    @DisplayName("(channel)channel")
     @Test
     void _ReturnChannel_() throws InterruptedException, ExecutionException {
         // ----------------------------------------------------------------------------------- GIVEN
