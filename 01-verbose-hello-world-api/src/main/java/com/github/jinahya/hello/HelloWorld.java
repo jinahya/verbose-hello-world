@@ -405,8 +405,8 @@ public interface HelloWorld {
         }
         var buffer = put(ByteBuffer.allocate(BYTES)).flip();
         while (buffer.hasRemaining()) {
-            var future = channel.write(buffer);
-            var written = future.get();
+            // TODO: implement!
+            break;
         }
         return channel;
     }
