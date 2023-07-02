@@ -38,9 +38,12 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 
+import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.util.Objects.requireNonNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
@@ -63,6 +66,18 @@ abstract class __AbstractHelloWorldTest<T extends HelloWorld> {
     __AbstractHelloWorldTest(final Class<T> serviceClass) {
         super();
         serviceInstance = spy(requireNonNull(serviceClass, "serviceClass is null"));
+    }
+
+    /**
+     * Stubs {@link #serviceInstance}'s {@link HelloWorld#put(ByteBuffer) put(buffer)} method to
+     * return given {@code buffer} as its position increased by {@value HelloWorld#BYTES}.
+     */
+    void stubPutBufferToIncreasePositionBy12() {
+        doAnswer(i -> {
+            ByteBuffer buffer = i.getArgument(0);
+            buffer.position(buffer.position() + BYTES);
+            return buffer;
+        }).when(serviceInstance()).put(argThat(b -> b != null && b.remaining() > BYTES));
     }
 
     /**
