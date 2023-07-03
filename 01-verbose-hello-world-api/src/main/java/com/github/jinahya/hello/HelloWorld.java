@@ -485,7 +485,7 @@ public interface HelloWorld {
      * @param channel the channel to which bytes are written.
      * @return a completable future.
      */
-    default <T extends AsynchronousByteChannel> CompletableFuture<T> writeCompletable(T channel) {
+    default <T extends AsynchronousByteChannel> CompletableFuture<T> writeAsync(T channel) {
         Objects.requireNonNull(channel, "channel is null");
         var future = new CompletableFuture<T>();
         // TODO: Implement!
