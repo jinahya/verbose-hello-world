@@ -39,7 +39,7 @@ import static org.mockito.Mockito.mock;
 
 /**
  * A class for testing
- * {@link AsynchronousHelloWorld#writeCompletable(AsynchronousByteChannel)
+ * {@link AsynchronousHelloWorld#writeAsync(AsynchronousByteChannel)
  * writeCompletable(channel)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
@@ -52,7 +52,7 @@ class AsynchronousHelloWorld_03_WriteCompletable_AsynchronousByteChannel_Test
 
     /**
      * Asserts
-     * {@link AsynchronousHelloWorld#writeCompletable(AsynchronousByteChannel)
+     * {@link AsynchronousHelloWorld#writeAsync(AsynchronousByteChannel)
      * writeCompletable(channel)} method invokes
      * {@link AsynchronousHelloWorld#writeAsync(AsynchronousByteChannel, CompletionHandler)
      * write(channel, handler)} method with specified {@code channel} and a {@code handler}, and
@@ -77,7 +77,7 @@ class AsynchronousHelloWorld_03_WriteCompletable_AsynchronousByteChannel_Test
         }).when(service).write(notNull(), any(CompletionHandler.class), any());
         var channel = mock(AsynchronousByteChannel.class);
         // WHEN
-        var future = service.writeCompletable(channel);
+        var future = service.writeAsync(channel);
         // THEN: once, write(same(channel), any(CompletionHandler.class)) invoked
         AsynchronousByteChannel result;
         try {
@@ -91,7 +91,7 @@ class AsynchronousHelloWorld_03_WriteCompletable_AsynchronousByteChannel_Test
 
     /**
      * Asserts
-     * {@link AsynchronousHelloWorld#writeCompletable(AsynchronousByteChannel)
+     * {@link AsynchronousHelloWorld#writeAsync(AsynchronousByteChannel)
      * writeCompletable(channel)} method invokes
      * {@link AsynchronousHelloWorld#writeAsync(AsynchronousByteChannel, CompletionHandler)
      * write(channel, handler)} method with specified {@code channel} and a {@code handler}, and
@@ -117,7 +117,7 @@ class AsynchronousHelloWorld_03_WriteCompletable_AsynchronousByteChannel_Test
         }).when(service).write(notNull(), any(CompletionHandler.class), any());
         var channel = mock(AsynchronousByteChannel.class);
         // WHEN
-        var future = service.writeCompletable(channel);
+        var future = service.writeAsync(channel);
         // THEN: once, write(same(channel), any(CompletionHandler.class)) invoked
         // THEN: future.get() throws an ExecutionException
         AsynchronousByteChannel result;
