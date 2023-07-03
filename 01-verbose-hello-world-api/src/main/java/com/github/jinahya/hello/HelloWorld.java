@@ -441,14 +441,13 @@ public interface HelloWorld {
      * to specified channel, and handles completion on specified handler along with specified
      * attachment.
      *
-     * @param <T>        channel type parameter
-     * @param channel    the channel to which bytes are written.
-     * @param handler    the completion handler.
-     * @param attachment the attachment for the {@code handler}.
+     * @param <T>     channel type parameter
+     * @param channel the channel to which bytes are written.
+     * @param handler the completion handler.
      * @see AsynchronousByteChannel#write(ByteBuffer, Object, CompletionHandler)
      */
-    default <T extends AsynchronousByteChannel, U> void write(
-            T channel, CompletionHandler<? super T, ? super U> handler, final U attachment) {
+    default <T extends AsynchronousByteChannel> void write(
+            T channel, CompletionHandler<? super T, ?> handler) {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(handler, "handler is null");
         var buffer = put(ByteBuffer.allocate(BYTES)).flip();
