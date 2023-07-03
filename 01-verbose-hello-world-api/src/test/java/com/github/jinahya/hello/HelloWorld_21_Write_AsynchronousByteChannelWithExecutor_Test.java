@@ -31,13 +31,11 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.LongAdder;
 
-import static com.github.jinahya.hello.HelloWorld.BYTES;
-import static com.github.jinahya.hello.HelloWorldTestUtils.print;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willAnswer;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * A class for testing
@@ -58,21 +56,13 @@ class HelloWorld_21_Write_AsynchronousByteChannelWithExecutor_Test
     @DisplayName("[stubbing] put(buffer[12]) returns buffer as its position increased by 12")
     @org.junit.jupiter.api.BeforeEach
     void stub_ReturnBufferAsItsPositionIncreaseBy12_PutBuffer() {
-        willAnswer(i -> {
-            ByteBuffer buffer = i.getArgument(0);
-            assert buffer != null;
-            print(buffer);
-            assert buffer.capacity() == BYTES;
-            assert buffer.limit() == buffer.capacity();
-            assert buffer.remaining() == BYTES;
-            buffer.position(buffer.limit());
-            return buffer;
-        }).given(serviceInstance()).put(any());
+        stubPutBufferToIncreasePositionBy12();
     }
 
     /**
      * Asserts {@link HelloWorld#write(AsynchronousByteChannel, Executor) write(channel, executor)}
-     * method writes {@value HelloWorld#BYTES} byte to the {@code channel}.
+     * method returns a future whose result is same as given {@code channel}, and asserts
+     * {@value HelloWorld#BYTES} bytes has been written to the {@code channel}.
      *
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
@@ -83,31 +73,33 @@ class HelloWorld_21_Write_AsynchronousByteChannelWithExecutor_Test
         // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
         var channel = mock(AsynchronousByteChannel.class);
-        // channel.write(buffer) returns a future increments buffer's position by a random value
         var writtenSoFar = new LongAdder();
-        given(channel.write((any()))).willAnswer(i -> {
-            ByteBuffer buffer = i.getArgument(0);
-            assert buffer != null;
-            assert buffer.hasRemaining();
-            var written = current().nextInt(1, buffer.remaining() + 1);
-            buffer.position(buffer.position() + written);
-            writtenSoFar.add(written);
+        doAnswer(w -> {
             var future = mock(Future.class);
-            given(future.get()).willReturn(written);
+            when(future.get()).thenAnswer(g -> {
+                ByteBuffer buffer = w.getArgument(0);
+                assert buffer != null;
+                assert buffer.hasRemaining();
+                var written = current().nextInt(1, buffer.remaining() + 1);
+                buffer.position(buffer.position() + written);
+                writtenSoFar.add(written);
+                return written;
+            });
             return future;
-        });
+        }).when(channel).write(any());
         var executor = mock(Executor.class);
-        // executor.execute(runnable) starts a new thread runs the runnable
-        willAnswer(i -> {
+        doAnswer(i -> {
             Runnable runnable = i.getArgument(0);
             assert runnable != null;
             new Thread(runnable).start();
             return null;
-        }).given(executor).execute(any());
+        }).when(executor).execute(any());
         // ------------------------------------------------------------------------------------ WHEN
         var future = service.write(channel, executor);
         var result = future.get();
         // ------------------------------------------------------------------------------------ THEN
-        // THEN: once, write(channel) invoked
+        // TODO: Assert result is same as the channel
+        // TODO: Assert 12 bytes were written to the channel
+        // TODO: Assert put(buffer[12]) invoked, once
     }
 }

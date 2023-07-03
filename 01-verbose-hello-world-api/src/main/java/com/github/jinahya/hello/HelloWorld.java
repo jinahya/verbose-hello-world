@@ -34,6 +34,7 @@ import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.AsynchronousFileChannel;
+import java.nio.channels.CompletionHandler;
 import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.file.OpenOption;
@@ -433,6 +434,25 @@ public interface HelloWorld {
         FutureTask<T> command = new FutureTask<>(callable);
         executor.execute(command); // Runnable
         return command;            // Future<T>
+    }
+
+    /**
+     * Writes, asynchronously, the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>
+     * to specified channel, and handles completion on specified handler along with specified
+     * attachment.
+     *
+     * @param <T>        channel type parameter
+     * @param channel    the channel to which bytes are written.
+     * @param handler    the completion handler.
+     * @param attachment the attachment for the {@code handler}.
+     * @see AsynchronousByteChannel#write(ByteBuffer, Object, CompletionHandler)
+     */
+    default <T extends AsynchronousByteChannel, U> void write(
+            T channel, CompletionHandler<? super T, ? super U> handler, final U attachment) {
+        Objects.requireNonNull(channel, "channel is null");
+        Objects.requireNonNull(handler, "handler is null");
+        var buffer = put(ByteBuffer.allocate(BYTES)).flip();
+        // TODO: Implement!
     }
 
     /**
