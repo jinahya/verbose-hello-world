@@ -42,6 +42,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Objects;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
@@ -424,7 +425,7 @@ public interface HelloWorld {
      * @see #put(ByteBuffer)
      * @see AsynchronousByteChannel#write(ByteBuffer)
      */
-    default <T extends AsynchronousByteChannel> Future<T> write(T channel, Executor executor) {
+    default <T extends AsynchronousByteChannel> Future<T> writeAsync(T channel, Executor executor) {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(executor, "executor is null");
         Callable<T> callable = () -> {
@@ -446,7 +447,7 @@ public interface HelloWorld {
      * @param handler the completion handler.
      * @see AsynchronousByteChannel#write(ByteBuffer, Object, CompletionHandler)
      */
-    default <T extends AsynchronousByteChannel> void write(
+    default <T extends AsynchronousByteChannel> void writeAsync(
             T channel, CompletionHandler<? super T, ?> handler) {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(handler, "handler is null");
@@ -474,6 +475,13 @@ public interface HelloWorld {
                     }
                 }
         );
+    }
+
+    default <T extends AsynchronousByteChannel> CompletableFuture<T> writeCompletable(T channel) {
+        Objects.requireNonNull(channel, "channel is null");
+        var future = new CompletableFuture<T>();
+        // TODO: Implement!
+        return future;
     }
 
     /**

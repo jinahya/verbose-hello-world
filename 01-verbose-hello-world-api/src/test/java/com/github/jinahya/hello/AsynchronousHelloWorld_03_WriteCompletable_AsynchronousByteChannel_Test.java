@@ -54,7 +54,7 @@ class AsynchronousHelloWorld_03_WriteCompletable_AsynchronousByteChannel_Test
      * Asserts
      * {@link AsynchronousHelloWorld#writeCompletable(AsynchronousByteChannel)
      * writeCompletable(channel)} method invokes
-     * {@link AsynchronousHelloWorld#write(AsynchronousByteChannel, CompletionHandler)
+     * {@link AsynchronousHelloWorld#writeAsync(AsynchronousByteChannel, CompletionHandler)
      * write(channel, handler)} method with specified {@code channel} and a {@code handler}, and
      * returns a completable future of specified {@code channel} which will be completed when the
      * {@code handler}'s {@link CompletionHandler#completed(Object, Object) completed(Integer, T)}
@@ -93,7 +93,7 @@ class AsynchronousHelloWorld_03_WriteCompletable_AsynchronousByteChannel_Test
      * Asserts
      * {@link AsynchronousHelloWorld#writeCompletable(AsynchronousByteChannel)
      * writeCompletable(channel)} method invokes
-     * {@link AsynchronousHelloWorld#write(AsynchronousByteChannel, CompletionHandler)
+     * {@link AsynchronousHelloWorld#writeAsync(AsynchronousByteChannel, CompletionHandler)
      * write(channel, handler)} method with specified {@code channel} and a {@code handler}, and
      * returns a completable future of specified {@code channel} which will be
      * {@link CompletableFuture#completeExceptionally(Throwable) complted exceptionally} when the

@@ -32,24 +32,24 @@ import static org.mockito.Mockito.mock;
 
 /**
  * A class for testing
- * {@link HelloWorld#write(AsynchronousByteChannel, CompletionHandler, Object) write(channel,
- * hanldler, attachment)} method regarding arguments verification.
+ * {@link HelloWorld#writeAsync(AsynchronousByteChannel, CompletionHandler) write(channel, hanldler)}
+ * method regarding arguments verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_22_Write_AsynchronousByteChannelWithHandler_Test
+ * @see HelloWorld_22_WriteAsync_AsynchronousByteChannelWithHandler_Test
  */
 @DisplayName("write(channel, handler, attachment) arguments")
 @Slf4j
-class HelloWorld_22_Write_AsynchronousByteChannelWithHandler_Arguments_Test
+class HelloWorld_22_WriteAsync_AsynchronousByteChannelWithHandler_Arguments_Test
         extends _HelloWorldTest {
 
     /**
      * Asserts
-     * {@link HelloWorld#write(AsynchronousByteChannel, CompletionHandler, Object) write(channel,
-     * handler, attchement)} method throws a {@link NullPointerException} when the {@code channel}
-     * argument is {@code null}.
+     * {@link HelloWorld#writeAsync(AsynchronousByteChannel, CompletionHandler) write(channel, handler,
+     * attchement)} method throws a {@link NullPointerException} when the {@code channel} argument
+     * is {@code null}.
      */
-    @DisplayName("(null, , )NullPointerException")
+    @DisplayName("(null, )NullPointerException")
     @Test
     @SuppressWarnings({"unchecked"})
     void _ThrowNullPointerException_ChannelIsNull() {
@@ -60,17 +60,17 @@ class HelloWorld_22_Write_AsynchronousByteChannelWithHandler_Arguments_Test
         // ------------------------------------------------------------------------------- WHEN/THEN
         assertThrows(
                 NullPointerException.class,
-                () -> service.write(channel, handler, null)
+                () -> service.writeAsync(channel, handler)
         );
     }
 
     /**
      * Asserts
-     * {@link HelloWorld#write(AsynchronousByteChannel, CompletionHandler, Object) write(channel,
-     * handler, attachment)} method throws a {@link NullPointerException} when the {@code handler}
-     * argument is {@code null}.
+     * {@link HelloWorld#writeAsync(AsynchronousByteChannel, CompletionHandler) write(channel, handler,
+     * attachment)} method throws a {@link NullPointerException} when the {@code handler} argument
+     * is {@code null}.
      */
-    @DisplayName("(, null, )NullPointerException")
+    @DisplayName("(, null)NullPointerException")
     @Test
     void _ThrowNullPointerException_HandlerIsNull() {
         // ----------------------------------------------------------------------------------- GIVEN
@@ -80,7 +80,7 @@ class HelloWorld_22_Write_AsynchronousByteChannelWithHandler_Arguments_Test
         // ------------------------------------------------------------------------------- WHEN/THEN
         assertThrows(
                 NullPointerException.class,
-                () -> service.write(channel, handler, null)
+                () -> service.writeAsync(channel, handler)
         );
     }
 }

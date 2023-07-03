@@ -36,13 +36,17 @@ import org.mockito.quality.Strictness;
 
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
+import java.nio.channels.AsynchronousByteChannel;
+import java.nio.channels.CompletionHandler;
 import java.nio.channels.WritableByteChannel;
+import java.util.concurrent.atomic.LongAdder;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.util.Objects.requireNonNull;
+import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -68,16 +72,47 @@ abstract class __AbstractHelloWorldTest<T extends HelloWorld> {
         serviceInstance = spy(requireNonNull(serviceClass, "serviceClass is null"));
     }
 
+    @SuppressWarnings({"unchecked"})
+    void stubToFail(AsynchronousByteChannel channel, LongAdder adder) {
+        willAnswer(i -> {
+            ByteBuffer src = i.getArgument(0);
+            assert src != null : "src should not be null";
+            assert src.hasRemaining() : "src should have remaining";
+            var attachment = i.getArgument(1);
+            var handler = i.getArgument(2, CompletionHandler.class);
+            assert handler != null : "handler should not be null";
+            handler.failed(new Throwable("just failing"), attachment);
+            return null;
+        }).given(channel).write(any(), any(), any());
+    }
+
+    void stubToComplete(AsynchronousByteChannel channel, LongAdder adder) {
+        willAnswer(i -> {
+            ByteBuffer src = i.getArgument(0);
+            assert src != null : "src should not be null";
+            assert src.hasRemaining() : "src should have remaining";
+            var attachment = i.getArgument(1);
+            var handler = i.getArgument(2, CompletionHandler.class);
+            assert handler != null : "handler should not be null";
+            var written = current().nextInt(1, src.remaining() + 1);
+            src.position(src.position() + written);
+            adder.add(written);
+            handler.completed(written, attachment);
+            return null;
+        }).given(channel).write(any(), any(), any());
+    }
+
     /**
      * Stubs {@link #serviceInstance}'s {@link HelloWorld#put(ByteBuffer) put(buffer)} method to
      * return given {@code buffer} as its position increased by {@value HelloWorld#BYTES}.
      */
-    void stubPutBufferToIncreasePositionBy12() {
+    void stubPutBufferToReturnTheBufferAsItsPositionIncreasedBy12() {
         doAnswer(i -> {
             ByteBuffer buffer = i.getArgument(0);
-            buffer.position(buffer.position() + BYTES);
+            assert buffer != null : "buffer should not be null";
+            buffer.position(buffer.position() + BYTES); // IllegalArgumentException
             return buffer;
-        }).when(serviceInstance()).put(argThat(b -> b != null && b.remaining() >= BYTES));
+        }).when(serviceInstance()).put(any());
     }
 
     /**
