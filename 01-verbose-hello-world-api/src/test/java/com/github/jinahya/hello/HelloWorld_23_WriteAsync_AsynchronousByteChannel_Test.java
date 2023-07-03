@@ -26,10 +26,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.nio.channels.AsynchronousByteChannel;
-import java.nio.channels.CompletionHandler;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.LongAdder;
 
+import static com.github.jinahya.hello.HelloWorld.BYTES;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
@@ -54,10 +55,12 @@ class HelloWorld_23_WriteAsync_AsynchronousByteChannel_Test
     /**
      * Verifies {@link HelloWorld#writeAsync(AsynchronousByteChannel) writeAsync(channel)} method
      * returns a completable future being completed with the {@code channel}.
+     *
+     * @throws Exception when failed to ge the result of the future.
      */
     @DisplayName("(channel)completed<channel>")
     @Test
-    void _Completed_() {
+    void _Completed_() throws Exception {
         // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
         var channel = mock(AsynchronousByteChannel.class);
@@ -69,8 +72,8 @@ class HelloWorld_23_WriteAsync_AsynchronousByteChannel_Test
         assertNotNull(future);
         assertFalse(future.isCancelled());
         var result = future.get(8L, TimeUnit.SECONDS);
-        // TODO: Get result of the future and verify it's the same as channel
-        // TODO: Verify 12 bytes has been written to the channel
+        assertEquals(channel, result);
+        assertEquals(BYTES, writtenSoFar.intValue());
     }
 
     /**

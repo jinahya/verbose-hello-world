@@ -488,7 +488,17 @@ public interface HelloWorld {
     default <T extends AsynchronousByteChannel> CompletableFuture<T> writeAsync(T channel) {
         Objects.requireNonNull(channel, "channel is null");
         var future = new CompletableFuture<T>();
-        // TODO: Implement!
+        writeAsync(channel, new CompletionHandler<>() {
+            @Override
+            public void completed(T result, Object attachment) {
+                future.complete(result);
+            }
+
+            @Override
+            public void failed(Throwable exc, Object attachment) {
+                future.completeExceptionally(exc);
+            }
+        });
         return future;
     }
 
