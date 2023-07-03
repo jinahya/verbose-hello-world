@@ -457,9 +457,10 @@ public interface HelloWorld {
                 null,                       // attachment
                 new CompletionHandler<>() { // handler
                     @Override
-                    public void completed(Integer result, Object a) {
+                    public void completed(Integer r, Object a) {
                         if (!buffer.hasRemaining()) {
                             handler.completed(channel, attachment);
+                            return;
                         }
                         channel.write(
                                 buffer, // src
@@ -469,12 +470,11 @@ public interface HelloWorld {
                     }
 
                     @Override
-                    public void failed(Throwable exc, Object a) {
-                        handler.failed(exc, attachment);
+                    public void failed(Throwable t, Object a) {
+                        handler.failed(t, attachment);
                     }
                 }
         );
-        // TODO: Implement!
     }
 
     /**
