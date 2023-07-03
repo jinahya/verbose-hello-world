@@ -30,39 +30,36 @@ import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.concurrent.atomic.LongAdder;
 
-import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * A class for testing
- * {@link HelloWorld#write(AsynchronousByteChannel, CompletionHandler, Object) write(channel,
- * handler, attachment)} method.
+ * {@link HelloWorld#writeAsync(AsynchronousByteChannel, CompletionHandler) write(channel, handler)}
+ * method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_22_Write_AsynchronousByteChannelWithHandler_Arguments_Test
+ * @see HelloWorld_22_WriteAsync_AsynchronousByteChannelWithHandler_Arguments_Test
  */
 @DisplayName("write(channel, handler, attachment)")
 @Slf4j
-class HelloWorld_22_Write_AsynchronousByteChannelWithHandler_Test
+class HelloWorld_22_WriteAsync_AsynchronousByteChannelWithHandler_Test
         extends _HelloWorldTest {
 
     @BeforeEach
     void beforeEach() {
-        stubPutBufferToIncreasePositionBy12();
+        stubPutBufferToReturnTheBufferAsItsPositionIncreasedBy12();
     }
 
     /**
      * Asserts
-     * {@link HelloWorld#write(AsynchronousByteChannel, CompletionHandler, Object) write(channel,
-     * handler, attachment)} method invokes
-     * {@link CompletionHandler#completed(Object, Object) handler.completed(channel, attachment)}.
+     * {@link HelloWorld#writeAsync(AsynchronousByteChannel, CompletionHandler) writeAsync(channel,
+     * handler)} method invokes
+     * {@link CompletionHandler#completed(Object, Object) handler.completed(channel, null)}.
      */
-    @DisplayName("(channel, handler, attachment) -> handler.completed(channel, attachment)")
+    @DisplayName("(channel, handler) -> handler.completed(channel, null)")
     @Test
     @SuppressWarnings({"unchecked"})
     void _Completed_() {
@@ -70,20 +67,10 @@ class HelloWorld_22_Write_AsynchronousByteChannelWithHandler_Test
         var service = serviceInstance();
         var channel = mock(AsynchronousByteChannel.class);
         var writtenSoFar = new LongAdder();
-        willAnswer(i -> {
-            ByteBuffer buffer = i.getArgument(0);
-            assert buffer.hasRemaining();
-            var attachment = i.getArgument(1);
-            var handler = i.getArgument(2, CompletionHandler.class);
-            var written = current().nextInt(1, buffer.remaining() + 1);
-            buffer.position(buffer.position() + written);
-            writtenSoFar.add(written);
-            handler.completed(written, attachment);
-            return null;
-        }).given(channel).write(any(), any(), any());
+        stubToComplete(channel, writtenSoFar);
         CompletionHandler<AsynchronousByteChannel, Object> handler = mock(CompletionHandler.class);
         // ------------------------------------------------------------------------------------ WHEN
-        service.write(channel, handler);
+        service.writeAsync(channel, handler);
         // ------------------------------------------------------------------------------------ THEN
         // TODO: Verify handler.completed(channel, null) invoked, once, in a handful seconds
         // TODO: Verify 12 bytes has been written to the channel

@@ -21,6 +21,7 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -39,28 +40,25 @@ import static org.mockito.Mockito.when;
 
 /**
  * A class for testing
- * {@link HelloWorld#write(AsynchronousByteChannel, Executor) write(channel,executor)} method.
+ * {@link HelloWorld#writeAsync(AsynchronousByteChannel, Executor) writeAsync(channel,executor)}
+ * method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_21_Write_AsynchronousByteChannelWithExecutor_Arguments_Test
+ * @see HelloWorld_21_WriteAsync_AsynchronousByteChannelWithExecutor_Arguments_Test
  */
 @DisplayName("write(channel, executor)")
 @Slf4j
-class HelloWorld_21_Write_AsynchronousByteChannelWithExecutor_Test
+class HelloWorld_21_WriteAsync_AsynchronousByteChannelWithExecutor_Test
         extends _HelloWorldTest {
 
-    /**
-     * Stubs the {@link HelloWorld#put(ByteBuffer) put(buffer)} method to just return the
-     * {@code buffer} as its {@code position} increased by {@value HelloWorld#BYTES}.
-     */
-    @DisplayName("[stubbing] put(buffer[12]) returns buffer as its position increased by 12")
-    @org.junit.jupiter.api.BeforeEach
-    void stub_ReturnBufferAsItsPositionIncreaseBy12_PutBuffer() {
-        stubPutBufferToIncreasePositionBy12();
+    @BeforeEach
+    void beforeEach() {
+        stubPutBufferToReturnTheBufferAsItsPositionIncreasedBy12();
     }
 
     /**
-     * Asserts {@link HelloWorld#write(AsynchronousByteChannel, Executor) write(channel, executor)}
+     * Asserts
+     * {@link HelloWorld#writeAsync(AsynchronousByteChannel, Executor) write(channel, executor)}
      * method returns a future whose result is same as given {@code channel}, and asserts
      * {@value HelloWorld#BYTES} bytes has been written to the {@code channel}.
      *
@@ -95,7 +93,7 @@ class HelloWorld_21_Write_AsynchronousByteChannelWithExecutor_Test
             return null;
         }).when(executor).execute(any());
         // ------------------------------------------------------------------------------------ WHEN
-        var future = service.write(channel, executor);
+        var future = service.writeAsync(channel, executor);
         var result = future.get();
         // ------------------------------------------------------------------------------------ THEN
         // TODO: Assert result is same as the channel

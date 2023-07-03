@@ -74,7 +74,7 @@ public interface AsynchronousHelloWorld extends HelloWorld {
      * @see #put(ByteBuffer)
      * @see AsynchronousByteChannel#write(ByteBuffer)
      */
-    default <T extends AsynchronousByteChannel> Future<T> write(T channel, Executor executor) {
+    default <T extends AsynchronousByteChannel> Future<T> writeAsync(T channel, Executor executor) {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(executor, "executor is null");
         Callable<T> callable = () -> {

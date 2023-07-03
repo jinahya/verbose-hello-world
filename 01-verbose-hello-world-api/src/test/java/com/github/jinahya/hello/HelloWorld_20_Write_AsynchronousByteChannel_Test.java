@@ -52,7 +52,7 @@ class HelloWorld_20_Write_AsynchronousByteChannel_Test extends _HelloWorldTest {
 
     @BeforeEach
     void _beforeEach() {
-        stubPutBufferToIncreasePositionBy12();
+        stubPutBufferToReturnTheBufferAsItsPositionIncreasedBy12();
     }
 
     /**
