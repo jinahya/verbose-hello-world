@@ -46,7 +46,7 @@ import static org.mockito.Mockito.verify;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_22_WriteAsync_AsynchronousByteChannelWithHandler_Arguments_Test
  */
-@DisplayName("write(channel, handler, attachment)")
+@DisplayName("write(channel, handler)")
 @Slf4j
 class HelloWorld_22_WriteAsync_AsynchronousByteChannelWithHandler_Test
         extends _HelloWorldTest {
