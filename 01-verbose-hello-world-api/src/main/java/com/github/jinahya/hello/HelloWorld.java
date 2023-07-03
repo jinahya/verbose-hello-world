@@ -455,6 +455,14 @@ public interface HelloWorld {
         // TODO: Implement!
     }
 
+    /**
+     * Returns a completable future of specified channel which writes the <a
+     * href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to the channel.
+     *
+     * @param <T>     channel type parameter
+     * @param channel the channel to which bytes are written.
+     * @return a completable future.
+     */
     default <T extends AsynchronousByteChannel> CompletableFuture<T> writeCompletable(T channel) {
         Objects.requireNonNull(channel, "channel is null");
         var future = new CompletableFuture<T>();
