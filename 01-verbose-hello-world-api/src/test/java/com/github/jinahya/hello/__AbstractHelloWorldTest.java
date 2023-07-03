@@ -73,7 +73,7 @@ abstract class __AbstractHelloWorldTest<T extends HelloWorld> {
     }
 
     @SuppressWarnings({"unchecked"})
-    void stubToFail(AsynchronousByteChannel channel, LongAdder adder) {
+    void stubToFail(AsynchronousByteChannel channel) {
         willAnswer(i -> {
             ByteBuffer src = i.getArgument(0);
             assert src != null : "src should not be null";

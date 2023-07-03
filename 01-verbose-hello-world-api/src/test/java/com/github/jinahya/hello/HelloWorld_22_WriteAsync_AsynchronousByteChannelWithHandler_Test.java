@@ -25,14 +25,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.concurrent.atomic.LongAdder;
 
-import static java.util.concurrent.ThreadLocalRandom.current;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -74,5 +70,27 @@ class HelloWorld_22_WriteAsync_AsynchronousByteChannelWithHandler_Test
         // ------------------------------------------------------------------------------------ THEN
         // TODO: Verify handler.completed(channel, null) invoked, once, in a handful seconds
         // TODO: Verify 12 bytes has been written to the channel
+    }
+
+    /**
+     * Asserts
+     * {@link HelloWorld#writeAsync(AsynchronousByteChannel, CompletionHandler) writeAsync(channel,
+     * handler)} method invokes
+     * {@link CompletionHandler#failed(Throwable, Object) handler.failed(exe, null)}.
+     */
+    @DisplayName("(channel, handler) -> handler.failed(exe, null)")
+    @Test
+    @SuppressWarnings({"unchecked"})
+    void _Failed_() {
+        // ----------------------------------------------------------------------------------- GIVEN
+        var service = serviceInstance();
+        var channel = mock(AsynchronousByteChannel.class);
+        var writtenSoFar = new LongAdder();
+        stubToFail(channel);
+        CompletionHandler<AsynchronousByteChannel, Object> handler = mock(CompletionHandler.class);
+        // ------------------------------------------------------------------------------------ WHEN
+        service.writeAsync(channel, handler);
+        // ------------------------------------------------------------------------------------ THEN
+        // TODO: Verify handler.failed(notNull(), null) invoked, once, in a handful seconds
     }
 }
