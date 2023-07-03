@@ -84,11 +84,10 @@ class HelloWorld_22_Write_AsynchronousByteChannelWithHandler_Test
             return null;
         }).given(channel).write(any(), any(), any());
         CompletionHandler<AsynchronousByteChannel, Object> handler = mock(CompletionHandler.class);
-        var attachment = current().nextBoolean() ? null : new Object();
         // ------------------------------------------------------------------------------------ WHEN
-        service.write(channel, handler, attachment);
+        service.write(channel, handler);
         // ------------------------------------------------------------------------------------ THEN
-        verify(handler, timeout(SECONDS.toMillis(8L)).times(1)).completed(channel, attachment);
+        verify(handler, timeout(SECONDS.toMillis(8L)).times(1)).completed(channel, null);
         assertEquals(BYTES, writtenSoFar.intValue());
     }
 }
