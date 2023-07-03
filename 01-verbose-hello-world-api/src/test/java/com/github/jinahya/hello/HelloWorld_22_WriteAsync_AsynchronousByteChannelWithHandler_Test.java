@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 
 import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.CompletionHandler;
@@ -32,6 +33,8 @@ import java.util.concurrent.atomic.LongAdder;
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
@@ -75,5 +78,27 @@ class HelloWorld_22_WriteAsync_AsynchronousByteChannelWithHandler_Test
         // ------------------------------------------------------------------------------------ THEN
         verify(handler, timeout(SECONDS.toMillis(8L)).times(1)).completed(channel, null);
         assertEquals(BYTES, writtenSoFar.intValue());
+    }
+
+    /**
+     * Asserts
+     * {@link HelloWorld#writeAsync(AsynchronousByteChannel, CompletionHandler) writeAsync(channel,
+     * handler)} method invokes
+     * {@link CompletionHandler#failed(Throwable, Object) handler.failed(exe, null)}.
+     */
+    @DisplayName("(channel, handler) -> handler.failed(exe, null)")
+    @Test
+    @SuppressWarnings({"unchecked"})
+    void _Failed_() {
+        // ----------------------------------------------------------------------------------- GIVEN
+        var service = serviceInstance();
+        var channel = mock(AsynchronousByteChannel.class);
+        var writtenSoFar = new LongAdder();
+        stubToFail(channel);
+        CompletionHandler<AsynchronousByteChannel, Object> handler = mock(CompletionHandler.class);
+        // ------------------------------------------------------------------------------------ WHEN
+        service.writeAsync(channel, handler);
+        // ------------------------------------------------------------------------------------ THEN
+        verify(handler, timeout(SECONDS.toMillis(8L)).times(1)).failed(notNull(), isNull());
     }
 }
