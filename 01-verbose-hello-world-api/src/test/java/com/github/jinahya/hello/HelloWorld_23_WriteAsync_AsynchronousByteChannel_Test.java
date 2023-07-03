@@ -77,7 +77,7 @@ class HelloWorld_23_WriteAsync_AsynchronousByteChannel_Test
     }
 
     /**
-     * Verify {@link HelloWorld#writeAsync(AsynchronousByteChannel) writeAsync(channel)} method
+     * Verifies {@link HelloWorld#writeAsync(AsynchronousByteChannel) writeAsync(channel)} method
      * returns a completable future being completed exceptionally.
      */
     @DisplayName("(channel)completedExceptionally")
@@ -88,8 +88,10 @@ class HelloWorld_23_WriteAsync_AsynchronousByteChannel_Test
         var channel = mock(AsynchronousByteChannel.class);
         stubToFail(channel);
         // ------------------------------------------------------------------------------------ WHEN
-        service.writeAsync(channel);
+        var future = service.writeAsync(channel);
         // ------------------------------------------------------------------------------------ THEN
-        // TODO: Verify handler.failed(notNull(), isNull()) invoked, once, in a handful seconds
+        assertNotNull(future);
+        assertFalse(future.isCancelled());
+        // TODO: Verify future.join() throws a CompletionException
     }
 }
