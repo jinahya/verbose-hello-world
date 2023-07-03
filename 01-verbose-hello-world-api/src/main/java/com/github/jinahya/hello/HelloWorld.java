@@ -452,6 +452,28 @@ public interface HelloWorld {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(handler, "handler is null");
         var buffer = put(ByteBuffer.allocate(BYTES)).flip();
+        channel.write(
+                buffer,                     // src
+                null,                       // attachment
+                new CompletionHandler<>() { // handler
+                    @Override
+                    public void completed(Integer result, Object a) {
+                        if (!buffer.hasRemaining()) {
+                            handler.completed(channel, attachment);
+                        }
+                        channel.write(
+                                buffer, // src
+                                a,      // attachment
+                                this    // handler
+                        );
+                    }
+
+                    @Override
+                    public void failed(Throwable exc, Object a) {
+                        handler.failed(exc, attachment);
+                    }
+                }
+        );
         // TODO: Implement!
     }
 

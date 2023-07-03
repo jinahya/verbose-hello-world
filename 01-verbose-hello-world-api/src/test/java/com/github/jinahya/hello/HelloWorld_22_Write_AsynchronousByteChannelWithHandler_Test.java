@@ -32,10 +32,12 @@ import java.util.concurrent.atomic.LongAdder;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.util.concurrent.ThreadLocalRandom.current;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -86,7 +88,7 @@ class HelloWorld_22_Write_AsynchronousByteChannelWithHandler_Test
         // ------------------------------------------------------------------------------------ WHEN
         service.write(channel, handler, attachment);
         // ------------------------------------------------------------------------------------ THEN
-        // TODO: Verify handler.completed(channel, attachment) invoked, once, in a handful seconds
-        // TODO: Verify 12 bytes has been written to the channel
+        verify(handler, timeout(SECONDS.toMillis(8L)).times(1)).completed(channel, attachment);
+        assertEquals(BYTES, writtenSoFar.intValue());
     }
 }
