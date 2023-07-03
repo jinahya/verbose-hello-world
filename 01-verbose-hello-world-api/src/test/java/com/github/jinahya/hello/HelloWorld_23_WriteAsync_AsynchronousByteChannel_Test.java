@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.CompletionHandler;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.LongAdder;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -67,6 +68,7 @@ class HelloWorld_23_WriteAsync_AsynchronousByteChannel_Test
         // ------------------------------------------------------------------------------------ THEN
         assertNotNull(future);
         assertFalse(future.isCancelled());
+        var result = future.get(8L, TimeUnit.SECONDS);
         // TODO: Get result of the future and verify it's the same as channel
         // TODO: Verify 12 bytes has been written to the channel
     }
