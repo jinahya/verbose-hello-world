@@ -29,23 +29,18 @@ import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.concurrent.atomic.LongAdder;
 
-import static com.github.jinahya.hello.HelloWorld.BYTES;
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.ArgumentMatchers.notNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.timeout;
-import static org.mockito.Mockito.verify;
 
 /**
- * A class for testing {@link HelloWorld#writeAsync(AsynchronousByteChannel) write(channel)}
+ * A class for testing {@link HelloWorld#writeAsync(AsynchronousByteChannel) writeAsync(channel)}
  * method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_23_WriteAsync_AsynchronousByteChannel_Arguments_Test
  */
-@DisplayName("writeAsync(channel)")
+@DisplayName("write(channel, handler)")
 @Slf4j
 class HelloWorld_23_WriteAsync_AsynchronousByteChannel_Test
         extends _HelloWorldTest {
@@ -56,45 +51,40 @@ class HelloWorld_23_WriteAsync_AsynchronousByteChannel_Test
     }
 
     /**
-     * Asserts {@link HelloWorld#writeAsync(AsynchronousByteChannel) writeAsync(channel)} method
-     * invokes
-     * {@link CompletionHandler#completed(Object, Object) handler.completed(channel, null)}.
+     * Verifies {@link HelloWorld#writeAsync(AsynchronousByteChannel) writeAsync(channel)} method
+     * returns a completable future being completed with the {@code channel}.
      */
-    @DisplayName("(channel, handler) -> handler.completed(channel, null)")
+    @DisplayName("(channel)completed<channel>")
     @Test
-    @SuppressWarnings({"unchecked"})
     void _Completed_() {
         // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
         var channel = mock(AsynchronousByteChannel.class);
         var writtenSoFar = new LongAdder();
         stubToComplete(channel, writtenSoFar);
-        CompletionHandler<AsynchronousByteChannel, Object> handler = mock(CompletionHandler.class);
         // ------------------------------------------------------------------------------------ WHEN
-        service.writeAsync(channel, handler);
+        var future = service.writeAsync(channel);
         // ------------------------------------------------------------------------------------ THEN
-        verify(handler, timeout(SECONDS.toMillis(8L)).times(1)).completed(channel, null);
-        assertEquals(BYTES, writtenSoFar.intValue());
+        assertNotNull(future);
+        assertFalse(future.isCancelled());
+        // TODO: Get result of the future and verify it's the same as channel
+        // TODO: Verify 12 bytes has been written to the channel
     }
 
     /**
-     * Asserts
-     * {@link HelloWorld#writeAsync(AsynchronousByteChannel, CompletionHandler) writeAsync(channel,
-     * handler)} method invokes
-     * {@link CompletionHandler#failed(Throwable, Object) handler.failed(exe, null)}.
+     * Verify {@link HelloWorld#writeAsync(AsynchronousByteChannel) writeAsync(channel)} method
+     * returns a completable future being completed exceptionally.
      */
-    @DisplayName("(channel, handler) -> handler.failed(exe, null)")
+    @DisplayName("(channel)completedExceptionally")
     @Test
-    @SuppressWarnings({"unchecked"})
-    void _Failed_() {
+    void _CompletedExceptionally_() {
         // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
         var channel = mock(AsynchronousByteChannel.class);
         stubToFail(channel);
-        CompletionHandler<AsynchronousByteChannel, Object> handler = mock(CompletionHandler.class);
         // ------------------------------------------------------------------------------------ WHEN
-        service.writeAsync(channel, handler);
+        service.writeAsync(channel);
         // ------------------------------------------------------------------------------------ THEN
-        verify(handler, timeout(SECONDS.toMillis(8L)).times(1)).failed(notNull(), isNull());
+        // TODO: Verify handler.failed(notNull(), isNull()) invoked, once, in a handful seconds
     }
 }

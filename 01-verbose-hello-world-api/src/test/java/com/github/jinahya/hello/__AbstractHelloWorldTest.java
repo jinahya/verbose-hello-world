@@ -86,6 +86,7 @@ abstract class __AbstractHelloWorldTest<T extends HelloWorld> {
         }).given(channel).write(any(), any(), any());
     }
 
+    @SuppressWarnings({"unchecked"})
     void stubToComplete(AsynchronousByteChannel channel, LongAdder adder) {
         willAnswer(i -> {
             ByteBuffer src = i.getArgument(0);

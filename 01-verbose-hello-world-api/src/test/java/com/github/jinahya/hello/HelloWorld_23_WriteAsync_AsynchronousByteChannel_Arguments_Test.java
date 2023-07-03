@@ -25,14 +25,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.nio.channels.AsynchronousByteChannel;
-import java.nio.channels.CompletionHandler;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
 
 /**
- * A class for testing {@link HelloWorld#writeAsync(AsynchronousByteChannel) writeAsync(channel)}
- * method regarding arguments verification.
+ * A class for testing {@link HelloWorld#writeAsync(AsynchronousByteChannel) write(channel)} method
+ * regarding arguments verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_23_WriteAsync_AsynchronousByteChannel_Test
@@ -43,17 +41,15 @@ class HelloWorld_23_WriteAsync_AsynchronousByteChannel_Arguments_Test
         extends _HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#writeAsync(AsynchronousByteChannel) writeAsync(channel)} method
-     * throws a {@link NullPointerException} when the {@code channel} argument is {@code null}.
+     * Asserts {@link HelloWorld#writeAsync(AsynchronousByteChannel) write(channel)} method throws a
+     * {@link NullPointerException} when the {@code channel} argument is {@code null}.
      */
     @DisplayName("(null)NullPointerException")
     @Test
-    @SuppressWarnings({"unchecked"})
     void _ThrowNullPointerException_ChannelIsNull() {
         // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
         AsynchronousByteChannel channel = null;
-        var handler = mock(CompletionHandler.class);
         // ------------------------------------------------------------------------------- WHEN/THEN
         assertThrows(
                 NullPointerException.class,
