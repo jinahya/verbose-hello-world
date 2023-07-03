@@ -24,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 
 import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.CompletionHandler;
@@ -93,7 +92,6 @@ class HelloWorld_22_WriteAsync_AsynchronousByteChannelWithHandler_Test
         // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
         var channel = mock(AsynchronousByteChannel.class);
-        var writtenSoFar = new LongAdder();
         stubToFail(channel);
         CompletionHandler<AsynchronousByteChannel, Object> handler = mock(CompletionHandler.class);
         // ------------------------------------------------------------------------------------ WHEN
