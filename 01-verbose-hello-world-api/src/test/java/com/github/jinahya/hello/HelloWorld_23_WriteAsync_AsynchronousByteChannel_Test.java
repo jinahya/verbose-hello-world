@@ -26,7 +26,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.nio.channels.AsynchronousByteChannel;
-import java.nio.channels.CompletionHandler;
 import java.util.concurrent.atomic.LongAdder;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -53,10 +52,12 @@ class HelloWorld_23_WriteAsync_AsynchronousByteChannel_Test
     /**
      * Verifies {@link HelloWorld#writeAsync(AsynchronousByteChannel) writeAsync(channel)} method
      * returns a completable future being completed with the {@code channel}.
+     *
+     * @throws Exception when failed to ge the result of the future.
      */
     @DisplayName("(channel)completed<channel>")
     @Test
-    void _Completed_() {
+    void _Completed_() throws Exception {
         // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
         var channel = mock(AsynchronousByteChannel.class);
