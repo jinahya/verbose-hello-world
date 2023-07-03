@@ -21,6 +21,7 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -30,52 +31,38 @@ import java.nio.channels.CompletionHandler;
 import java.util.concurrent.atomic.LongAdder;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
-import static com.github.jinahya.hello.HelloWorldTestUtils.print;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * A class for testing
- * {@link AsynchronousHelloWorld#write(AsynchronousByteChannel, CompletionHandler, Object)
- * write(channel, handler, attachment)} method.
+ * {@link HelloWorld#write(AsynchronousByteChannel, CompletionHandler, Object) write(channel,
+ * handler, attachment)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Arguments_Test
+ * @see HelloWorld_22_Write_AsynchronousByteChannelWithHandler_Arguments_Test
  */
 @DisplayName("write(channel, handler, attachment)")
 @Slf4j
-class AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Test
-        extends _AsynchronousHelloWorldTest {
+class HelloWorld_22_Write_AsynchronousByteChannelWithHandler_Test
+        extends _HelloWorldTest {
 
-    /**
-     * Stubs the {@link HelloWorld#put(ByteBuffer) put(buffer)} method to just return the
-     * {@code buffer} as its {@code position} increased by {@value HelloWorld#BYTES}.
-     */
-    @DisplayName("[stubbing] put(buffer[12]) returns buffer as its position increased by BYTES")
-    @org.junit.jupiter.api.BeforeEach
-    void stub_ReturnBufferAsItsPositionIncreaseBy12_PutBuffer() {
-        willAnswer(i -> {
-            ByteBuffer buffer = i.getArgument(0);
-            assert buffer != null;
-            print(buffer);
-            final var remaining = buffer.remaining();
-            assert remaining >= BYTES :
-                    "buffer.remaining(" + remaining + ") should be equal or greater than " + BYTES;
-            buffer.position(buffer.position() + BYTES);
-            print(buffer);
-            return buffer;
-        }).given(serviceInstance()).put(any());
+    @BeforeEach
+    void beforeEach() {
+        stubPutBufferToIncreasePositionBy12();
     }
 
     /**
      * Asserts
-     * {@link AsynchronousHelloWorld#write(AsynchronousByteChannel, CompletionHandler, Object)
-     * write(channel, handler, attachment)} method invokes
+     * {@link HelloWorld#write(AsynchronousByteChannel, CompletionHandler, Object) write(channel,
+     * handler, attachment)} method invokes
      * {@link CompletionHandler#completed(Object, Object) handler.completed(channel, attachment)}.
      */
-    @DisplayName("handler.completed(channel, attachment)")
+    @DisplayName("(channel, handler, attachment) -> handler.completed(channel, attachment)")
     @Test
     @SuppressWarnings({"unchecked"})
     void _Completed_() {
@@ -94,13 +81,12 @@ class AsynchronousHelloWorld_02_Write_AsynchronousByteChannelWithHandler_Test
             handler.completed(written, attachment);
             return null;
         }).given(channel).write(any(), any(), any());
-        CompletionHandler<AsynchronousByteChannel, Void> handler = mock(CompletionHandler.class);
+        CompletionHandler<AsynchronousByteChannel, Object> handler = mock(CompletionHandler.class);
+        var attachment = current().nextBoolean() ? null : new Object();
         // ------------------------------------------------------------------------------------ WHEN
-        service.write(channel, handler, null);
+        service.write(channel, handler, attachment);
         // ------------------------------------------------------------------------------------ THEN
-        // TODO: verify handler.completed(channel, null) invoked, once, in a handful seconds
-        // TODO: Verify put(buffer[12]) invoked, once
-        // TODO: Verify channel.write(buffer, <whatever>, <whatever>) invoked, at least once
-        // THEN: 12 bytes are written to the channel
+        // TODO: Verify handler.completed(channel, attachment) invoked, once, in a handful seconds
+        // TODO: Verify 12 bytes has been written to the channel
     }
 }
