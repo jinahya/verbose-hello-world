@@ -77,7 +77,7 @@ abstract class __AbstractHelloWorldTest<T extends HelloWorld> {
             ByteBuffer buffer = i.getArgument(0);
             buffer.position(buffer.position() + BYTES);
             return buffer;
-        }).when(serviceInstance()).put(argThat(b -> b != null && b.remaining() > BYTES));
+        }).when(serviceInstance()).put(argThat(b -> b != null && b.remaining() >= BYTES));
     }
 
     /**
