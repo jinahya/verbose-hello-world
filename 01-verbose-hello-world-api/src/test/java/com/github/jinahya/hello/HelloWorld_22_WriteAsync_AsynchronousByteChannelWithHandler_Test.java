@@ -29,7 +29,12 @@ import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.concurrent.atomic.LongAdder;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.verify;
 
 /**
  * A class for testing
@@ -91,6 +96,6 @@ class HelloWorld_22_WriteAsync_AsynchronousByteChannelWithHandler_Test
         // ------------------------------------------------------------------------------------ WHEN
         service.writeAsync(channel, handler);
         // ------------------------------------------------------------------------------------ THEN
-        // TODO: Verify handler.failed(notNull(), null) invoked, once, in a handful seconds
+        verify(handler, timeout(SECONDS.toMillis(8L)).times(1)).failed(notNull(), isNull());
     }
 }
