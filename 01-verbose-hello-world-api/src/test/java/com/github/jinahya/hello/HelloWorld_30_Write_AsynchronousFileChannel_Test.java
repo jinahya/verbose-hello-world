@@ -38,6 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.longThat;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -96,7 +97,7 @@ class HelloWorld_30_Write_AsynchronousFileChannel_Test extends _HelloWorldTest {
         verify(service, times(1)).put(bufferCaptor().capture());
         var buffer = bufferCaptor().getValue();
         assertEquals(BYTES, buffer.capacity());
-        verify(channel, atLeastOnce()).write(buffer, longThat(p -> p >= position));
+        verify(channel, atLeastOnce()).write(same(buffer), longThat(p -> p >= position));
         assertEquals(BYTES, writtenSoFar.intValue());
     }
 
