@@ -80,7 +80,7 @@ class HelloWorld_30_Write_AsynchronousFileChannel_Test extends _HelloWorldTest {
                     var future = mock(Future.class);
                     when(future.get()).thenAnswer(g -> {
                         var src = w.getArgument(0, ByteBuffer.class);
-                        var position = w.getArgument(1, long.class);
+                        var position = w.getArgument(1, Long.class);
                         var written = current().nextInt(src.remaining() + 1);
                         src.position(src.position() + written);
                         writtenSoFar.add(written);
