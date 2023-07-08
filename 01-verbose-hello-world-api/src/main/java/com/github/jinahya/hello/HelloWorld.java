@@ -544,4 +544,27 @@ public interface HelloWorld {
         }
         return channel;
     }
+
+    /**
+     * Writes, asynchronously, the <a href="hello-world-bytes">hello-world-bytes</a> to specified
+     * file channel, starting at given file position.
+     *
+     * @param <T>      channel type parameter
+     * @param channel  the file channel to which bytes are written.
+     * @param position the file position at which the transfer is to begin; must be non-negative.
+     * @param executor an executor.
+     * @return a future of {@code channel}.
+     * @see #write(AsynchronousFileChannel, long)
+     */
+    default <T extends AsynchronousFileChannel> Future<T> writeAsync(T channel, long position,
+                                                                     Executor executor) {
+        Objects.requireNonNull(channel, "channel is null");
+        if (position < 0L) {
+            throw new IllegalArgumentException("position(" + position + ") < 0L");
+        }
+        Objects.requireNonNull(executor, "executor is null");
+        FutureTask<T> command = new FutureTask<>(() -> write(channel, position));
+        executor.execute(command); // Runnable
+        return command;            // Future<T>
+    }
 }
