@@ -429,8 +429,7 @@ public interface HelloWorld {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(executor, "executor is null");
         Callable<T> callable = () -> {
-            // TODO: Write hello-world-bytes to the channel!
-            return null;
+            return write(channel);
         };
         FutureTask<T> command = new FutureTask<>(callable);
         executor.execute(command); // Runnable
