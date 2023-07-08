@@ -113,17 +113,17 @@ abstract class __AbstractHelloWorldTest<T extends HelloWorld> {
             assert buffer != null : "buffer should not be null";
             buffer.position(buffer.position() + BYTES); // IllegalArgumentException
             return buffer;
-        }).when(serviceInstance()).put(any());
+        }).when(serviceInstance).put(any());
     }
 
     /**
      * Stubs {@link HelloWorld#set(byte[], int) set(array, index)} method to just return the
      * {@code array} argument.
      */
-    @DisplayName("[stubbing] set(array, index) returns array")
+    @DisplayName("[stubbing] set(array, index)array")
     @BeforeEach
-    void _ReturnArray_SetArrayIndex() {
-        when(serviceInstance().set(any(), anyInt()))        // <1>
+    void stubSetArrayWithIndexToReturnTheArray() {
+        when(serviceInstance.set(any(), anyInt()))  // <1>
                 .thenAnswer(i -> i.getArgument(0)); // <2>
     }
 

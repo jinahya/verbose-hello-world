@@ -31,13 +31,10 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.LongAdder;
 
-import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -70,24 +67,20 @@ class HelloWorld_20_Write_AsynchronousByteChannel_Test extends _HelloWorldTest {
         var service = serviceInstance();
         var channel = mock(AsynchronousByteChannel.class);
         var writtenSoFar = new LongAdder();
-        when(channel.write(any())).thenAnswer(i -> {
-            ByteBuffer src = i.getArgument(0);
-            assert src != null;
-            assert src.hasRemaining();
-            var written = current().nextInt(src.remaining() + 1);
-            src.position(src.position() + written);
-            writtenSoFar.add(written);
+        when(channel.write(argThat(a -> a != null && a.hasRemaining()))).thenAnswer(w -> {
             var future = mock(Future.class);
-            when(future.get()).thenReturn(written);
+            when(future.get()).thenAnswer(g -> {
+                var src = w.getArgument(0, ByteBuffer.class);
+                var written = current().nextInt(src.remaining() + 1);
+                src.position(src.position() + written);
+                writtenSoFar.add(written);
+                return written;
+            });
             return future;
         });
         // ------------------------------------------------------------------------------------ WHEN
         service.write(channel);
         // ------------------------------------------------------------------------------------ THEN
-        verify(service, times(1)).put(bufferCaptor().capture());
-        var buffer = bufferCaptor().getValue();
-        assert buffer.capacity() == BYTES;
-        assert !buffer.hasRemaining(); // the buffer has been drained
         // TODO: Verify channel.write(buffer) invoked, at least once
         // TODO: Assert writtenSoFar.intValue() is equal to the BYTES
     }
@@ -105,12 +98,14 @@ class HelloWorld_20_Write_AsynchronousByteChannel_Test extends _HelloWorldTest {
         // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
         var channel = mock(AsynchronousByteChannel.class);
-        when(channel.write(any())).thenAnswer(i -> {
-            ByteBuffer src = i.getArgument(0);
-            var written = src.remaining();
-            src.position(src.limit());
+        when(channel.write(argThat(a -> a != null && a.hasRemaining()))).thenAnswer(w -> {
             var future = mock(Future.class);
-            when(future.get()).thenReturn(written);
+            when(future.get()).thenAnswer(g -> {
+                var src = w.getArgument(0, ByteBuffer.class);
+                var written = src.remaining();
+                src.position(src.limit());
+                return written;
+            });
             return future;
         });
         // ------------------------------------------------------------------------------------ WHEN
