@@ -34,7 +34,9 @@ import java.util.concurrent.atomic.LongAdder;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -81,6 +83,7 @@ class HelloWorld_20_Write_AsynchronousByteChannel_Test extends _HelloWorldTest {
         // ------------------------------------------------------------------------------------ WHEN
         service.write(channel);
         // ------------------------------------------------------------------------------------ THEN
+        verify(channel, atLeastOnce()).write(bufferCaptor())
         // TODO: Verify channel.write(buffer) invoked, at least once
         // TODO: Assert writtenSoFar.intValue() is equal to the BYTES
     }
