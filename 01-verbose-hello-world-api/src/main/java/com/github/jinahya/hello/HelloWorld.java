@@ -29,6 +29,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
+import java.io.UncheckedIOException;
 import java.net.Socket;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
@@ -488,7 +489,7 @@ public interface HelloWorld {
      * @param channel the channel to which bytes are written.
      * @return a completable future.
      */
-    default <T extends AsynchronousByteChannel> CompletableFuture<T> writeAsync(T channel) {
+    default <T extends AsynchronousByteChannel> CompletableFuture<T> writeCompletable(T channel) {
         Objects.requireNonNull(channel, "channel is null");
         var future = new CompletableFuture<T>();
         writeAsync(
@@ -564,7 +565,208 @@ public interface HelloWorld {
         }
         Objects.requireNonNull(executor, "executor is null");
         FutureTask<T> command = new FutureTask<>(() -> write(channel, position));
-        executor.execute(command); // Runnable
-        return command;            // Future<T>
+        executor.execute(command); // Runnable  <- RunnableFuture<V> <- FutureTask<V>
+        return command;            // Future<V> <- RunnableFuture<V> <- FutureTask<V>
+    }
+
+    @SuppressWarnings({
+            "java:S117" // attachment_
+    })
+    private <T extends AsynchronousFileChannel, A> void writeAsync1(
+            T channel, long position, CompletionHandler<? super T, ? super A> handler,
+            A attachment) {
+        final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
+        final var finalPosition = position + BYTES;
+        channel.write(
+                buffer,                     // <src>
+                position,                   // <position>
+                position,                   // <attachment>
+                new CompletionHandler<>() { // <handler>
+                    @Override
+                    public void completed(Integer result, Long attachment_) {
+                        if ((attachment_ = attachment_ + result) == finalPosition) {
+                            handler.completed(channel, attachment);
+                            return;
+                        }
+                        channel.write(
+                                buffer,      // <src>
+                                attachment_, // <position>
+                                attachment_, // <attachment>
+                                this         // <handler>
+                        );
+                    }
+
+                    @Override
+                    public void failed(Throwable exc, Long attachment_) {
+                        handler.failed(exc, attachment);
+                    }
+                }
+        );
+    }
+
+    @SuppressWarnings({
+            "java:S117" // attachment_
+    })
+    private <T extends AsynchronousFileChannel, A> void writeAsync2(
+            T channel, long position, CompletionHandler<? super T, ? super A> handler,
+            A attachment) {
+        final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
+        channel.write(
+                buffer,                     // <src>
+                position,                   // <position>
+                buffer,                     // <attachment>
+                new CompletionHandler<>() { // <handler>
+                    @Override
+                    public void completed(Integer result, ByteBuffer attachment_) {
+                        if (!attachment_.hasRemaining()) {
+                            handler.completed(channel, attachment);
+                            return;
+                        }
+                        channel.write(
+                                buffer,                            // <src>
+                                position + attachment_.position(), // <position>
+                                attachment_,                       // <attachment>
+                                this                               // <handler>
+                        );
+                    }
+
+                    @Override
+                    public void failed(Throwable exc, ByteBuffer attachment_) {
+                        handler.failed(exc, attachment);
+                    }
+                }
+        );
+    }
+
+    /**
+     * Writes, asynchronously, the <a href="hello-world-bytes">hello-world-bytes</a> to specified
+     * channel, starting at specified position, and handles a completion on specified handler.
+     *
+     * @param <T>        channel type parameter
+     * @param <A>        attachment type parameter
+     * @param channel    the file channel to which bytes are written.
+     * @param position   the file position at which the transfer is to begin; must be non-negative.
+     * @param handler    the handler.
+     * @param attachment an attachment.
+     * @throws NullPointerException  either {@code channel} or {@code handler} is {@code null}.
+     * @throws IllegalStateException if {@code position} is negative.
+     * @see AsynchronousFileChannel#write(ByteBuffer, long, Object, CompletionHandler)
+     */
+    @SuppressWarnings({
+            "java:S117" // attachment_
+    })
+    default <T extends AsynchronousFileChannel, A> void writeAsync(
+            T channel, long position, CompletionHandler<? super T, ? super A> handler,
+            A attachment) {
+        Objects.requireNonNull(channel, "channel is null");
+        if (position < 0L) {
+            throw new IllegalArgumentException("position(" + position + ") < 0L");
+        }
+        Objects.requireNonNull(handler, "handler is null");
+        writeAsync1(channel, position, handler, attachment);
+    }
+
+    @SuppressWarnings({
+            "java:S4274" // assert
+    })
+    private <T extends AsynchronousFileChannel> CompletableFuture<T> writeCompletable1(
+            T channel, long position) {
+        var future = new CompletableFuture<T>();
+        writeAsync(
+                channel,                    // <channel>
+                position,                   // <position>
+                new CompletionHandler<>() { // <handler>
+                    @Override
+                    public void completed(T result, Object attachment) {
+                        future.complete(result);
+                    }
+
+                    @Override
+                    public void failed(Throwable exc, Object attachment) {
+                        future.completeExceptionally(exc);
+                    }
+                },
+                null                        // <attachment>
+        );
+        return future;
+    }
+
+    @SuppressWarnings({
+            "java:S4274" // assert
+    })
+    private <T extends AsynchronousFileChannel> CompletableFuture<T> writeCompletable2(
+            T channel, long position) {
+        var future = new CompletableFuture<T>();
+        writeAsync(
+                channel,                    // <channel>
+                position,                   // <position>
+                new CompletionHandler<>() { // <handler>
+                    @Override
+                    public void completed(T result, T attachment) {
+                        assert result == channel;
+                        assert attachment == channel;
+                        future.complete(attachment);
+                    }
+
+                    @Override
+                    public void failed(Throwable exc, T attachment) {
+                        assert exc != null;
+                        assert attachment == channel;
+                        future.completeExceptionally(exc);
+                    }
+                },
+                channel                     // <attachment>
+        );
+        return future;
+    }
+
+    /**
+     * Returns a completable future of specified channel which writes the <a
+     * href="#hello-world-bytes">hello-world-bytes</a> to the channel starting at specified
+     * position.
+     *
+     * @param channel  the channel to which bytes are written.
+     * @param position the starting position to which the bytes are transferred; must not be
+     *                 negative.
+     * @param <T>      channel type parameter
+     * @return a completable future of {@code channel}.
+     * @throws NullPointerException     when {@code channel} is {@code null}.
+     * @throws IllegalArgumentException when {@code position} is negative.
+     */
+    default <T extends AsynchronousFileChannel> CompletableFuture<T> writeCompletable(
+            T channel, long position) {
+        Objects.requireNonNull(channel, "channel is null");
+        if (position < 0L) {
+            throw new IllegalArgumentException("position(" + position + ") < 0L");
+        }
+        return writeCompletable1(channel, position);
+    }
+
+    /**
+     * Returns a completable future of specified path which writes the <a
+     * href="#hello-world-bytes">hello-world-bytes</a> to the end of the path.
+     *
+     * @param path the path to the file to which bytes are appended.
+     * @param <T>  path type parameter
+     * @return a completable future of {@code path}.
+     * @throws NullPointerException when {@code channel} is {@code null}.
+     */
+    @SuppressWarnings({
+            "java:S2095" // no try-with-resources
+    })
+    default <T extends Path> CompletableFuture<T> appendCompletable(T path) throws IOException {
+        Objects.requireNonNull(path, "path is null");
+        var channel = AsynchronousFileChannel.open(
+                path, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+        return writeCompletable(channel, channel.size())
+                .thenApply(c -> {
+                    try {
+                        channel.force(false);
+                        channel.close();
+                    } catch (IOException ioe) {
+                        throw new UncheckedIOException("unable to force " + channel, ioe);
+                    }
+                    return path;
+                });
     }
 }

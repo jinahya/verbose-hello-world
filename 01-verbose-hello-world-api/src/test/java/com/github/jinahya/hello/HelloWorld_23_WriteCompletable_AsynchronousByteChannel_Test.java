@@ -36,15 +36,15 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 
 /**
- * A class for testing {@link HelloWorld#writeAsync(AsynchronousByteChannel) writeAsync(channel)}
- * method.
+ * A class for testing
+ * {@link HelloWorld#writeCompletable(AsynchronousByteChannel) writeCompletable(channel)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_23_WriteAsync_AsynchronousByteChannel_Arguments_Test
+ * @see HelloWorld_23_WriteCompletable_AsynchronousByteChannel_Arguments_Test
  */
-@DisplayName("write(channel, handler)")
+@DisplayName("writeCompletable(channel)")
 @Slf4j
-class HelloWorld_23_WriteAsync_AsynchronousByteChannel_Test
+class HelloWorld_23_WriteCompletable_AsynchronousByteChannel_Test
         extends _HelloWorldTest {
 
     @BeforeEach
@@ -53,8 +53,8 @@ class HelloWorld_23_WriteAsync_AsynchronousByteChannel_Test
     }
 
     /**
-     * Verifies {@link HelloWorld#writeAsync(AsynchronousByteChannel) writeAsync(channel)} method
-     * returns a completable future being completed with the {@code channel}.
+     * Verifies {@link HelloWorld#writeCompletable(AsynchronousByteChannel) writeAsync(channel)}
+     * method returns a completable future being completed with the {@code channel}.
      *
      * @throws Exception when failed to ge the result of the future.
      */
@@ -67,7 +67,7 @@ class HelloWorld_23_WriteAsync_AsynchronousByteChannel_Test
         var writtenSoFar = new LongAdder();
         stubToComplete(channel, writtenSoFar);
         // ------------------------------------------------------------------------------------ WHEN
-        var future = service.writeAsync(channel);
+        var future = service.writeCompletable(channel);
         // ------------------------------------------------------------------------------------ THEN
         assertNotNull(future);
         assertFalse(future.isCancelled());
@@ -77,8 +77,8 @@ class HelloWorld_23_WriteAsync_AsynchronousByteChannel_Test
     }
 
     /**
-     * Verifies {@link HelloWorld#writeAsync(AsynchronousByteChannel) writeAsync(channel)} method
-     * returns a completable future being completed exceptionally.
+     * Verifies {@link HelloWorld#writeCompletable(AsynchronousByteChannel) writeAsync(channel)}
+     * method returns a completable future being completed exceptionally.
      */
     @DisplayName("(channel)completedExceptionally")
     @Test
@@ -88,7 +88,7 @@ class HelloWorld_23_WriteAsync_AsynchronousByteChannel_Test
         var channel = mock(AsynchronousByteChannel.class);
         stubToFail(channel);
         // ------------------------------------------------------------------------------------ WHEN
-        var future = service.writeAsync(channel);
+        var future = service.writeCompletable(channel);
         // ------------------------------------------------------------------------------------ THEN
         assertNotNull(future);
         assertFalse(future.isCancelled());

@@ -105,7 +105,7 @@ public interface AsynchronousHelloWorld extends HelloWorld {
         // TODO: Implement!
     }
 
-    default <T extends AsynchronousByteChannel> CompletableFuture<T> writeAsync(T channel) {
+    default <T extends AsynchronousByteChannel> CompletableFuture<T> writeCompletable(T channel) {
         Objects.requireNonNull(channel, "channel is null");
         var future = new CompletableFuture<T>();
         // TODO: Implement!

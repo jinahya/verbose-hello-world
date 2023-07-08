@@ -29,20 +29,22 @@ import java.nio.channels.AsynchronousByteChannel;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
- * A class for testing {@link HelloWorld#writeAsync(AsynchronousByteChannel) write(channel)} method
+ * A class for testing
+ * {@link HelloWorld#writeCompletable(AsynchronousByteChannel) writeCompletable(channel)} method
  * regarding arguments verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_23_WriteAsync_AsynchronousByteChannel_Test
+ * @see HelloWorld_23_WriteCompletable_AsynchronousByteChannel_Test
  */
-@DisplayName("write(channel) arguments")
+@DisplayName("writeCompletable(channel) arguments")
 @Slf4j
-class HelloWorld_23_WriteAsync_AsynchronousByteChannel_Arguments_Test
+class HelloWorld_23_WriteCompletable_AsynchronousByteChannel_Arguments_Test
         extends _HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#writeAsync(AsynchronousByteChannel) write(channel)} method throws a
-     * {@link NullPointerException} when the {@code channel} argument is {@code null}.
+     * Asserts
+     * {@link HelloWorld#writeCompletable(AsynchronousByteChannel) writeCompletable(channel)} method
+     * throws a {@link NullPointerException} when the {@code channel} argument is {@code null}.
      */
     @DisplayName("(null)NullPointerException")
     @Test
@@ -53,7 +55,7 @@ class HelloWorld_23_WriteAsync_AsynchronousByteChannel_Arguments_Test
         // ------------------------------------------------------------------------------- WHEN/THEN
         assertThrows(
                 NullPointerException.class,
-                () -> service.writeAsync(channel)
+                () -> service.writeCompletable(channel)
         );
     }
 }

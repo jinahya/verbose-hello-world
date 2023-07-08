@@ -25,7 +25,6 @@ import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -37,6 +36,7 @@ import org.mockito.quality.Strictness;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
+import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.channels.WritableByteChannel;
 import java.util.concurrent.atomic.LongAdder;
@@ -46,8 +46,12 @@ import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.longThat;
+import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mockingDetails;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
@@ -72,8 +76,63 @@ abstract class __AbstractHelloWorldTest<T extends HelloWorld> {
         serviceInstance = spy(requireNonNull(serviceClass, "serviceClass is null"));
     }
 
+    /**
+     * Stubs specified channel, on its
+     * {@link AsynchronousFileChannel#write(ByteBuffer, long, Object, CompletionHandler)
+     * write(channel, position, attachment, handler)} method invokes
+     * {@code handler.failed(exc, attachment)}.
+     *
+     * @param channel the channel to stub.
+     */
+    @SuppressWarnings({"unchecked"})
+    void stubToFail(AsynchronousFileChannel channel) {
+        if (!mockingDetails(requireNonNull(channel, "channel is null")).isMock()) {
+            throw new IllegalArgumentException("not a mock: " + channel);
+        }
+        willAnswer(i -> {
+            var src = i.getArgument(0, ByteBuffer.class);
+            var position = i.getArgument(1, Long.class);
+            var attachment = i.getArgument(2);
+            var handler = i.getArgument(3, CompletionHandler.class);
+            handler.failed(new Throwable("just failing"), attachment);
+            return null;
+        }).given(channel).write(
+                argThat(b -> b != null && b.hasRemaining()),
+                longThat(v -> v >= 0L),
+                any(),
+                notNull()
+        );
+    }
+
+    @SuppressWarnings({"unchecked"})
+    void stubToComplete(AsynchronousFileChannel channel, LongAdder adder) {
+        if (!mockingDetails(requireNonNull(channel, "channel is null")).isMock()) {
+            throw new IllegalArgumentException("not a mock: " + channel);
+        }
+        requireNonNull(adder, "adder is null");
+        willAnswer(i -> {
+            var src = i.getArgument(0, ByteBuffer.class);
+            var position = i.getArgument(1, Long.class);
+            var attachment = i.getArgument(2);
+            var handler = i.getArgument(3, CompletionHandler.class);
+            var written = current().nextInt(1, src.remaining() + 1);
+            src.position(src.position() + written);
+            adder.add(written);
+            handler.completed(written, attachment);
+            return null;
+        }).given(channel).write(
+                argThat(b -> b != null && b.hasRemaining()),
+                longThat(v -> v >= 0L),
+                any(),
+                notNull()
+        );
+    }
+
     @SuppressWarnings({"unchecked"})
     void stubToFail(AsynchronousByteChannel channel) {
+        if (!mockingDetails(requireNonNull(channel, "channel is null")).isMock()) {
+            throw new IllegalArgumentException("not a mock: " + channel);
+        }
         willAnswer(i -> {
             ByteBuffer src = i.getArgument(0);
             assert src != null : "src should not be null";
@@ -88,6 +147,10 @@ abstract class __AbstractHelloWorldTest<T extends HelloWorld> {
 
     @SuppressWarnings({"unchecked"})
     void stubToComplete(AsynchronousByteChannel channel, LongAdder adder) {
+        if (!mockingDetails(requireNonNull(channel, "channel is null")).isMock()) {
+            throw new IllegalArgumentException("not a mock: " + channel);
+        }
+        requireNonNull(adder, "adder is null");
         willAnswer(i -> {
             ByteBuffer src = i.getArgument(0);
             assert src != null : "src should not be null";
@@ -104,23 +167,22 @@ abstract class __AbstractHelloWorldTest<T extends HelloWorld> {
     }
 
     /**
-     * Stubs {@link #serviceInstance}'s {@link HelloWorld#put(ByteBuffer) put(buffer)} method to
+     * Stubs {@link #serviceInstance()}'s {@link HelloWorld#put(ByteBuffer) put(buffer)} method to
      * return given {@code buffer} as its position increased by {@value HelloWorld#BYTES}.
      */
     void stubPutBufferToReturnTheBufferAsItsPositionIncreasedBy12() {
         doAnswer(i -> {
-            ByteBuffer buffer = i.getArgument(0);
-            assert buffer != null : "buffer should not be null";
+            var buffer = i.getArgument(0, ByteBuffer.class);
             buffer.position(buffer.position() + BYTES); // IllegalArgumentException
             return buffer;
-        }).when(serviceInstance).put(any());
+        }).when(serviceInstance).put(argThat(b -> b != null && b.remaining() >= BYTES));
     }
 
     /**
-     * Stubs {@link HelloWorld#set(byte[], int) set(array, index)} method to just return the
-     * {@code array} argument.
+     * Stubs {@link #serviceInstance() serviceInstance}'s
+     * {@link HelloWorld#set(byte[], int) set(array, index)} method to just return the {@code array}
+     * argument.
      */
-    @DisplayName("[stubbing] set(array, index)array")
     @BeforeEach
     void stubSetArrayWithIndexToReturnTheArray() {
         when(serviceInstance.set(any(), anyInt()))  // <1>
@@ -173,7 +235,7 @@ abstract class __AbstractHelloWorldTest<T extends HelloWorld> {
     private ArgumentCaptor<ByteBuffer> bufferCaptor;
 
     /**
-     * An argument captor for capturing an argument of {@link WritableByteChannel}.
+     * A captor for capturing an argument of {@link WritableByteChannel}.
      *
      * @see HelloWorld#write(WritableByteChannel)
      */
@@ -181,4 +243,15 @@ abstract class __AbstractHelloWorldTest<T extends HelloWorld> {
     @Accessors(fluent = true)
     @Getter(AccessLevel.PROTECTED)
     private ArgumentCaptor<WritableByteChannel> channelCaptor;
+
+    /**
+     * A captor for capturing the {@code position} argument of
+     * {@link HelloWorld#write(AsynchronousFileChannel, long)} method.
+     *
+     * @see HelloWorld#write(AsynchronousFileChannel, long)
+     */
+    @Captor
+    @Accessors(fluent = true)
+    @Getter(AccessLevel.PROTECTED)
+    private ArgumentCaptor<Long> positionCaptor;
 }
