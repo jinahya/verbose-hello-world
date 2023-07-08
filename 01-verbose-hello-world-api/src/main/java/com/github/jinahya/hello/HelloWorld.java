@@ -438,27 +438,27 @@ public interface HelloWorld {
 
     /**
      * Writes, asynchronously, the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>
-     * to specified channel, and handles completion on specified handler along with specified
-     * attachment.
+     * to specified channel, and handles completion on specified handler with specified attachment.
      *
-     * @param <T>     channel type parameter
-     * @param channel the channel to which bytes are written.
-     * @param handler the completion handler.
+     * @param <C>        channel type parameter
+     * @param channel    the channel to which bytes are written.
+     * @param handler    the completion handler.
+     * @param attachment the attachment.
      * @see AsynchronousByteChannel#write(ByteBuffer, Object, CompletionHandler)
      */
-    default <T extends AsynchronousByteChannel> void writeAsync(
-            T channel, CompletionHandler<? super T, ?> handler) {
+    default <C extends AsynchronousByteChannel, A> void writeAsync(
+            C channel, CompletionHandler<? super C, ? super A> handler, A attachment) {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(handler, "handler is null");
         var buffer = put(ByteBuffer.allocate(BYTES)).flip();
         channel.write(
                 buffer,                     // src
-                null,                       // attachment
+                attachment,                 // attachment
                 new CompletionHandler<>() { // handler
                     @Override
-                    public void completed(Integer result, Object attachment) {
+                    public void completed(Integer result, A attachment) {
                         if (!buffer.hasRemaining()) {
-                            handler.completed(channel, null);
+                            handler.completed(channel, attachment);
                             return;
                         }
                         channel.write(
@@ -469,8 +469,8 @@ public interface HelloWorld {
                     }
 
                     @Override
-                    public void failed(Throwable exe, Object attachment) {
-                        handler.failed(exe, null);
+                    public void failed(Throwable exe, A attachment) {
+                        handler.failed(exe, attachment);
                     }
                 }
         );
@@ -487,17 +487,21 @@ public interface HelloWorld {
     default <T extends AsynchronousByteChannel> CompletableFuture<T> writeAsync(T channel) {
         Objects.requireNonNull(channel, "channel is null");
         var future = new CompletableFuture<T>();
-        writeAsync(channel, new CompletionHandler<>() {
-            @Override
-            public void completed(T result, Object attachment) {
-                future.complete(result);
-            }
+        writeAsync(
+                channel,                    // channel
+                new CompletionHandler<>() { // handler
+                    @Override
+                    public void completed(T result, Object attachment) {
+                        future.complete(result);
+                    }
 
-            @Override
-            public void failed(Throwable exc, Object attachment) {
-                future.completeExceptionally(exc);
-            }
-        });
+                    @Override
+                    public void failed(Throwable exc, Object attachment) {
+                        future.completeExceptionally(exc);
+                    }
+                },
+                null                        // attachment
+        );
         return future;
     }
 
