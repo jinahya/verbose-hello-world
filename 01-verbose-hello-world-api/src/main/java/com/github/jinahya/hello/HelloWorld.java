@@ -399,7 +399,9 @@ public interface HelloWorld {
      * {@link ByteBuffer#hasRemaining() has remaining}, invoking
      * {@link AsynchronousByteChannel#write(ByteBuffer)} method with the {@code buffer}.
      * @see #put(ByteBuffer)
+     * @deprecated Use {@link #writeAsync(AsynchronousByteChannel, CompletionHandler, Object)}
      */
+    @Deprecated
     default <T extends AsynchronousByteChannel> T write(T channel)
             throws InterruptedException, ExecutionException {
         if (channel == null) {
@@ -424,7 +426,9 @@ public interface HelloWorld {
      * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to {@code channel}.
      * @see #put(ByteBuffer)
      * @see AsynchronousByteChannel#write(ByteBuffer)
+     * @deprecated Use {@link #writeAsync(AsynchronousByteChannel, CompletionHandler, Object)}
      */
+    @Deprecated
     default <T extends AsynchronousByteChannel> Future<T> writeAsync(T channel, Executor executor) {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(executor, "executor is null");
@@ -481,10 +485,12 @@ public interface HelloWorld {
      * @throws InterruptedException if interrupted while executing.
      * @throws ExecutionException   if failed to execute.
      * @implSpec The default implementation invokes {@link #put(ByteBuffer) put(buffer)} with a byte
-     * buffer of {@value #BYTES} bytes, flips it, and writes the {@code buffer} to {@code channel}
-     * by continuously, while the {@code buffer} {@link ByteBuffer#hasRemaining() has remaining},
-     * invoking {@link AsynchronousFileChannel#write(ByteBuffer, long)} method with the
-     * {@code buffer} and adjusted {@code position}.
+     * buffer of {@value #BYTES} bytes, flips it, and writes the {@code buffer} to {@code channel},
+     * while the {@code buffer} {@link ByteBuffer#hasRemaining() has remaining}, by continuously
+     * invoking
+     * {@link AsynchronousFileChannel#write(ByteBuffer, long) channel.write(buffer, position)}
+     * method with the {@code buffer} and {@code position} adjusted with the result of previous
+     * result.
      * @see #put(ByteBuffer)
      * @see AsynchronousFileChannel#write(ByteBuffer, long)
      */
