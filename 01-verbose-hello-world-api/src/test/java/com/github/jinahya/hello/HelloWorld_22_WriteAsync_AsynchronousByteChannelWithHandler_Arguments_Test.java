@@ -32,8 +32,8 @@ import static org.mockito.Mockito.mock;
 
 /**
  * A class for testing
- * {@link HelloWorld#writeAsync(AsynchronousByteChannel, CompletionHandler) write(channel, hanldler)}
- * method regarding arguments verification.
+ * {@link HelloWorld#writeAsync(AsynchronousByteChannel, CompletionHandler, Object) write(channel,
+ * hanldler, attachment)} method regarding arguments verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_22_WriteAsync_AsynchronousByteChannelWithHandler_Test
@@ -45,9 +45,9 @@ class HelloWorld_22_WriteAsync_AsynchronousByteChannelWithHandler_Arguments_Test
 
     /**
      * Asserts
-     * {@link HelloWorld#writeAsync(AsynchronousByteChannel, CompletionHandler) write(channel, handler,
-     * attchement)} method throws a {@link NullPointerException} when the {@code channel} argument
-     * is {@code null}.
+     * {@link HelloWorld#writeAsync(AsynchronousByteChannel, CompletionHandler, Object)
+     * write(channel, handler, attachment)} method throws a {@link NullPointerException} when the
+     * {@code channel} argument is {@code null}.
      */
     @DisplayName("(null, )NullPointerException")
     @Test
@@ -60,15 +60,15 @@ class HelloWorld_22_WriteAsync_AsynchronousByteChannelWithHandler_Arguments_Test
         // ------------------------------------------------------------------------------- WHEN/THEN
         assertThrows(
                 NullPointerException.class,
-                () -> service.writeAsync(channel, handler)
+                () -> service.writeAsync(channel, handler, null)
         );
     }
 
     /**
      * Asserts
-     * {@link HelloWorld#writeAsync(AsynchronousByteChannel, CompletionHandler) write(channel, handler,
-     * attachment)} method throws a {@link NullPointerException} when the {@code handler} argument
-     * is {@code null}.
+     * {@link HelloWorld#writeAsync(AsynchronousByteChannel, CompletionHandler, Object)
+     * write(channel, handler, attachment)} method throws a {@link NullPointerException} when the
+     * {@code handler} argument is {@code null}.
      */
     @DisplayName("(, null)NullPointerException")
     @Test
@@ -76,11 +76,11 @@ class HelloWorld_22_WriteAsync_AsynchronousByteChannelWithHandler_Arguments_Test
         // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
         var channel = mock(AsynchronousByteChannel.class);
-        CompletionHandler<AsynchronousByteChannel, Void> handler = null;
+        CompletionHandler<AsynchronousByteChannel, Object> handler = null;
         // ------------------------------------------------------------------------------- WHEN/THEN
         assertThrows(
                 NullPointerException.class,
-                () -> service.writeAsync(channel, handler)
+                () -> service.writeAsync(channel, handler, null)
         );
     }
 }

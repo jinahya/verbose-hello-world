@@ -439,16 +439,16 @@ public interface HelloWorld {
 
     /**
      * Writes, asynchronously, the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>
-     * to specified channel, and handles completion on specified handler along with specified
-     * attachment.
+     * to specified channel, and handles completion on specified handler with specified attachment.
      *
-     * @param <T>     channel type parameter
-     * @param channel the channel to which bytes are written.
-     * @param handler the completion handler.
+     * @param <C>        channel type parameter
+     * @param channel    the channel to which bytes are written.
+     * @param handler    the completion handler.
+     * @param attachment the attachment.
      * @see AsynchronousByteChannel#write(ByteBuffer, Object, CompletionHandler)
      */
-    default <T extends AsynchronousByteChannel> void writeAsync(
-            T channel, CompletionHandler<? super T, ?> handler) {
+    default <C extends AsynchronousByteChannel, A> void writeAsync(
+            C channel, CompletionHandler<? super C, ? super A> handler, A attachment) {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(handler, "handler is null");
         var buffer = put(ByteBuffer.allocate(BYTES)).flip();

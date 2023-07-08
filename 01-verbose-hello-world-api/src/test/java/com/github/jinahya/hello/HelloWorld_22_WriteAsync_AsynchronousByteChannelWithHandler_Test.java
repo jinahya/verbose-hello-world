@@ -29,6 +29,7 @@ import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.concurrent.atomic.LongAdder;
 
+import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -51,9 +52,9 @@ class HelloWorld_22_WriteAsync_AsynchronousByteChannelWithHandler_Test
 
     /**
      * Asserts
-     * {@link HelloWorld#writeAsync(AsynchronousByteChannel, CompletionHandler) writeAsync(channel,
-     * handler)} method invokes
-     * {@link CompletionHandler#completed(Object, Object) handler.completed(channel, null)}.
+     * {@link HelloWorld#writeAsync(AsynchronousByteChannel, CompletionHandler, Object)
+     * writeAsync(channel, handler, attachment)} method invokes
+     * {@link CompletionHandler#completed(Object, Object) handler.completed(channel, attachment)}.
      */
     @DisplayName("(channel, handler) -> handler.completed(channel, null)")
     @Test
@@ -65,18 +66,19 @@ class HelloWorld_22_WriteAsync_AsynchronousByteChannelWithHandler_Test
         var writtenSoFar = new LongAdder();
         stubToComplete(channel, writtenSoFar);
         CompletionHandler<AsynchronousByteChannel, Object> handler = mock(CompletionHandler.class);
+        var attachment = current().nextBoolean() ? null : new Object();
         // ------------------------------------------------------------------------------------ WHEN
-        service.writeAsync(channel, handler);
+        service.writeAsync(channel, handler, attachment);
         // ------------------------------------------------------------------------------------ THEN
-        // TODO: Verify handler.completed(channel, null) invoked, once, in a handful seconds
-        // TODO: Verify 12 bytes has been written to the channel
+        // TODO: Verify handler.completed(channel, attachment) invoked, once, in a handful seconds
+        // TODO: Assert writtenSoFar#intValue() is equal to HelloWorld.BYTES
     }
 
     /**
      * Asserts
-     * {@link HelloWorld#writeAsync(AsynchronousByteChannel, CompletionHandler) writeAsync(channel,
-     * handler)} method invokes
-     * {@link CompletionHandler#failed(Throwable, Object) handler.failed(exe, null)}.
+     * {@link HelloWorld#writeAsync(AsynchronousByteChannel, CompletionHandler, Object)
+     * writeAsync(channel, handler, attachment)} method invokes
+     * {@link CompletionHandler#failed(Throwable, Object) handler.failed(exe, attachment)}.
      */
     @DisplayName("(channel, handler) -> handler.failed(exe, null)")
     @Test
@@ -87,9 +89,10 @@ class HelloWorld_22_WriteAsync_AsynchronousByteChannelWithHandler_Test
         var channel = mock(AsynchronousByteChannel.class);
         stubToFail(channel);
         CompletionHandler<AsynchronousByteChannel, Object> handler = mock(CompletionHandler.class);
+        var attachment = current().nextBoolean() ? null : new Object();
         // ------------------------------------------------------------------------------------ WHEN
-        service.writeAsync(channel, handler);
+        service.writeAsync(channel, handler, attachment);
         // ------------------------------------------------------------------------------------ THEN
-        // TODO: Verify handler.failed(notNull(), isNull()) invoked, once, in a handful seconds
+        // TODO: Verify handler.failed(notNull(), attachment) invoked, once, in a handful seconds
     }
 }
