@@ -32,10 +32,12 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.LongAdder;
 
 import static java.util.concurrent.ThreadLocalRandom.current;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -83,9 +85,10 @@ class HelloWorld_20_Write_AsynchronousByteChannel_Test extends _HelloWorldTest {
         // ------------------------------------------------------------------------------------ WHEN
         service.write(channel);
         // ------------------------------------------------------------------------------------ THEN
-        verify(channel, atLeastOnce()).write(bufferCaptor())
-        // TODO: Verify channel.write(buffer) invoked, at least once
-        // TODO: Assert writtenSoFar.intValue() is equal to the BYTES
+        verify(service, times(1)).put(bufferCaptor().capture());
+        var buffer = bufferCaptor().getValue();
+        verify(channel, atLeastOnce()).write(buffer);            // <1>
+        assertEquals(HelloWorld.BYTES, writtenSoFar.intValue()); // <2>
     }
 
     /**
