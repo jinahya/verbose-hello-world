@@ -29,14 +29,13 @@ import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.LongAdder;
 
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static java.util.concurrent.ThreadLocalRandom.current;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -91,6 +90,7 @@ class HelloWorld_21_WriteAsync_AsynchronousByteChannelWithExecutor_Test
         var future = service.writeAsync(channel, executor);
         var result = future.get();
         // ------------------------------------------------------------------------------------ THEN
+        assertEquals(channel, result);
         // TODO: Assert result is same as the channel
         // TODO: Verify put(buffer[12]) invoked, once
         // TODO: Assert writtenSoFar#intValue() is equal to HelloWorld#BYTES
