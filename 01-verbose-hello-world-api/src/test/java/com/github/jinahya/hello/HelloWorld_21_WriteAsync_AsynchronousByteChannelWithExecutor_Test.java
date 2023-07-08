@@ -29,11 +29,14 @@ import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.LongAdder;
 
+import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static java.util.concurrent.ThreadLocalRandom.current;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -75,29 +78,21 @@ class HelloWorld_21_WriteAsync_AsynchronousByteChannelWithExecutor_Test
         doAnswer(w -> {
             var future = mock(Future.class);
             when(future.get()).thenAnswer(g -> {
-                ByteBuffer buffer = w.getArgument(0);
-                assert buffer != null;
-                assert buffer.hasRemaining();
+                var buffer = w.getArgument(0, ByteBuffer.class);
                 var written = current().nextInt(1, buffer.remaining() + 1);
                 buffer.position(buffer.position() + written);
                 writtenSoFar.add(written);
                 return written;
             });
             return future;
-        }).when(channel).write(any());
-        var executor = mock(Executor.class);
-        doAnswer(i -> {
-            Runnable runnable = i.getArgument(0);
-            assert runnable != null;
-            new Thread(runnable).start();
-            return null;
-        }).when(executor).execute(any());
+        }).when(channel).write(argThat(b -> b != null && b.hasRemaining()));
+        var executor = newSingleThreadExecutor();
         // ------------------------------------------------------------------------------------ WHEN
         var future = service.writeAsync(channel, executor);
         var result = future.get();
         // ------------------------------------------------------------------------------------ THEN
         // TODO: Assert result is same as the channel
-        // TODO: Assert 12 bytes were written to the channel
-        // TODO: Assert put(buffer[12]) invoked, once
+        // TODO: Verify put(buffer[12]) invoked, once
+        // TODO: Assert writtenSoFar#intValue() is equal to HelloWorld#BYTES
     }
 }
