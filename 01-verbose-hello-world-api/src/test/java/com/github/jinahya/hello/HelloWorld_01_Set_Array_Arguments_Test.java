@@ -41,12 +41,12 @@ class HelloWorld_01_Set_Array_Arguments_Test extends _HelloWorldTest {
      * Asserts {@link HelloWorld#set(byte[]) set(array)} method throws a
      * {@link NullPointerException} when the {@code array} argument is {@code null}.
      */
-    @DisplayName("[array == null] -> NullPointerException")
+    @DisplayName("(null, )NullPointerException")
     @Test
     void _ThrowNullPointerException_ArrayIsNull() {
         // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
-        byte[] array = null;
+        var array = (byte[]) null;
         // ------------------------------------------------------------------------------- WHEN/THEN
         // TODO: Assert service.set(array) throws a NullPointerException.
     }
@@ -56,7 +56,7 @@ class HelloWorld_01_Set_Array_Arguments_Test extends _HelloWorldTest {
      * {@link IndexOutOfBoundsException} when {@code array.length} is less than
      * {@value HelloWorld#BYTES}.
      */
-    @DisplayName("[array.length < 12] -> IndexOutOfBoundsException")
+    @DisplayName("(array, .length < 12)IndexOutOfBoundsException")
     @Test
     void _ThrowIndexOutOfBoundsException_ArrayLengthIsLessThan12() {
         // ----------------------------------------------------------------------------------- GIVEN

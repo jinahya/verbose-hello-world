@@ -27,13 +27,16 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.AsynchronousFileChannel;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.atomic.LongAdder;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -46,8 +49,7 @@ import static org.mockito.Mockito.mock;
  */
 @DisplayName("write(channel, position)")
 @Slf4j
-class HelloWorld_33_WriteCompletable_AsynchronousFileChannel_Test
-        extends _HelloWorldTest {
+class HelloWorld_33_WriteCompletable_AsynchronousFileChannel_Test extends _HelloWorldTest {
 
     @BeforeEach
     void beforeEach() {
@@ -74,14 +76,14 @@ class HelloWorld_33_WriteCompletable_AsynchronousFileChannel_Test
         // ------------------------------------------------------------------------------------ THEN
         assertNotNull(future);
         assertFalse(future.isCancelled());
-        var result = future.get(8L, TimeUnit.SECONDS);
-        assertEquals(channel, result);
+        var result = future.get(8L, SECONDS);
+        assertSame(channel, result);
         assertEquals(BYTES, writtenSoFar.intValue());
     }
 
     /**
-     * Verifies {@link HelloWorld#writeCompletable(AsynchronousByteChannel) writeAsync(channel)} method
-     * returns a completable future being completed exceptionally.
+     * Verifies {@link HelloWorld#writeCompletable(AsynchronousByteChannel) writeAsync(channel)}
+     * method returns a completable future being completed exceptionally.
      */
     @DisplayName("(channel)completedExceptionally")
     @Test
@@ -95,6 +97,6 @@ class HelloWorld_33_WriteCompletable_AsynchronousFileChannel_Test
         // ------------------------------------------------------------------------------------ THEN
         assertNotNull(future);
         assertFalse(future.isCancelled());
-        // TODO: Verify future.join() throws a CompletionException
+        assertThrows(CompletionException.class, future::join);
     }
 }

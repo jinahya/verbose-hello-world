@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorld_Constants_Test {
+class _HelloWorld_Constants_Test {
 
     /**
      * Asserts the value of {@link HelloWorld#BYTES} constant is equal to the actual number of bytes

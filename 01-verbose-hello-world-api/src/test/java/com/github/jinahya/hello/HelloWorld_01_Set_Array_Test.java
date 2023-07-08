@@ -41,31 +41,15 @@ class HelloWorld_01_Set_Array_Test extends _HelloWorldTest {
      * {@link HelloWorld#set(byte[], int) set(array, index)} method with given {@code array} and
      * {@code 0}.
      */
-    @DisplayName("invokes set(array, 0)")
     @Test
-    void _InvokeSetArrayWithArrayAndZero_() {
+    void __() {
         // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
         var array = new byte[BYTES];
         // ------------------------------------------------------------------------------------ WHEN
-        // TODO: Invoke service.set(array)
-        // THEN: once, set(array, 0) invoked
-        // TODO: Verify set(array, 0) invoked
-    }
-
-    /**
-     * Asserts {@link HelloWorld#set(byte[]) set(array)} method returns given {@code array}
-     * argument.
-     */
-    @DisplayName("returns array")
-    @Test
-    void _ReturnArray_() {
-        // ----------------------------------------------------------------------------------- GIVEN
-        var service = serviceInstance();
-        var array = new byte[BYTES];
-        // ------------------------------------------------------------------------------------ WHEN
-        var actual = service.set(array);
+        var result = service.set(array);
         // ------------------------------------------------------------------------------------ THEN
-        // TODO: Assert that the actual is same as expected.
+        // TODO: Verify service.set(array, 0) invoked, once
+        // TODO: Assert result is same as array
     }
 }

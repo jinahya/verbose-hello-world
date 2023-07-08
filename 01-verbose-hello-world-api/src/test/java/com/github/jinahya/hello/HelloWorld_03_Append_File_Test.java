@@ -21,6 +21,7 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -30,12 +31,13 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.List;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.io.File.createTempFile;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
@@ -50,54 +52,45 @@ import static org.mockito.Mockito.mockConstruction;
 @Slf4j
 class HelloWorld_03_Append_File_Test extends _HelloWorldTest {
 
-    /**
-     * Stubs {@link HelloWorld#write(OutputStream) write(stream)} method to write
-     * {@value HelloWorld#BYTES} bytes to the {@code stream}, and returns the {@code stream}.
-     */
-    @DisplayName("[stubbing] write(stream) writes 12 bytes and returns stream")
-    @org.junit.jupiter.api.BeforeEach
-    void _Write12BytesReturnStream_WriteStream() throws IOException {
+    @BeforeEach
+    void beforeEach() throws IOException {
         doAnswer(i -> {
-            OutputStream stream = i.getArgument(0); // <1>
-            for (int j = 0; j < BYTES; j++) {       // <2>
-                stream.write(0);                    // <3>
+            var stream = i.getArgument(0, OutputStream.class); // <1>
+            for (int j = 0; j < BYTES; j++) {                  // <2>
+                stream.write(0);                               // <3>
             }
             return stream;
-        }).when(serviceInstance()).write(any(OutputStream.class));
+        }).when(serviceInstance()).write(notNull(OutputStream.class));
     }
 
     /**
      * Asserts {@link HelloWorld#append(File) append(file)} method invokes
-     * {@link HelloWorld#write(OutputStream) write(stream)} method with an instance of
-     * {@link FileOutputStream}, and asserts {@value HelloWorld#BYTES} bytes are written to the
-     * passed {@code stream}. {@link FileOutputStream#FileOutputStream(File, boolean)}
+     * {@link HelloWorld#write(OutputStream) write(stream)} method with a value of
+     * {@link FileOutputStream#FileOutputStream(File, boolean) new FileOutputStream(file, true)}.
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("invokes write(new FileOutputStream(file, true))")
+    @DisplayName("(file) -> write(new FileOutputStream(file, true))")
     @Test
-    void _InvokeWriteStream_() throws IOException {
-        // GIVEN: HelloWorld
+    void _InvokeWriteWithFileOutputStreamWithAppendingMode_() throws IOException {
+        // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
         var file = mock(File.class);
         MockedConstruction.MockInitializer<FileOutputStream> initializer = (m, c) -> {
-            var constructor = c.constructor();
-            // TODO: Assert constructor is FileOutputStream#FileOutputStream(File, boolean)
+            assertSame(FileOutputStream.class.getConstructor(File.class, boolean.class),
+                       c.constructor());
             var arguments = c.arguments();
-            // TODO: Assert arguments[0] is file
-            // TODO: Assert arguments[1] is true
-            var count = c.getCount();
-            // TODO: Assert count == 1
+            assertEquals(file, arguments.get(0));
+            assertTrue((boolean) arguments.get(1));
+            assertEquals(1, c.getCount());
         };
-        try (MockedConstruction<FileOutputStream> construction
-                     = mockConstruction(FileOutputStream.class, initializer)) {
-            // WHEN
+        try (var construction = mockConstruction(FileOutputStream.class, initializer)) {
+            // -------------------------------------------------------------------------------- WHEN
             service.append(file);
-            // THEN: once, new FileOutputStream(file, true) invoked
-            List<FileOutputStream> constructed = construction.constructed();
-            // TODO: Assert constructed.size() is one
-            // THEN: once, write(constructed[0]) invoked
-            // TODO: Verify write(constructed[0]) invoked
+            // ---------------------------------------------------------------------------------THEN
+            var constructed = construction.constructed();
+            // TODO: Assert, constructed.size() is equal to 1
+            // TODO: Verify, service.write(constructed.get(0)) invoked, once
         }
     }
 
@@ -109,7 +102,7 @@ class HelloWorld_03_Append_File_Test extends _HelloWorldTest {
     @DisplayName("returns file")
     @Test
     void _ReturnFile_() throws IOException {
-        // GIVEN
+        // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
         var file = mock(File.class);
         try (MockedConstruction<FileOutputStream> c = mockConstruction(FileOutputStream.class)) {
@@ -131,7 +124,7 @@ class HelloWorld_03_Append_File_Test extends _HelloWorldTest {
     @Test
     @畵蛇添足
     void _12BytesAppended_(@TempDir File tempDir) throws IOException {
-        // GIVEN
+        // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
         var file = createTempFile("tmp", null, tempDir);
         var length = file.length();

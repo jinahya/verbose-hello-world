@@ -43,13 +43,13 @@ class HelloWorld_05_Write_DataOutput_Arguments_Test extends _HelloWorldTest {
      * Asserts {@link HelloWorld#write(DataOutput) write(data)} method throws a
      * {@link NullPointerException} when the {@code data} argument is {@code null}.
      */
-    @DisplayName("[data == null] -> NullPointerException")
+    @DisplayName("(null)NullPointerException")
     @Test
     void _ThrowNullPointerException_DataIsNull() {
-        // GIVEN
+        // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
         DataOutput data = null;
-        // WHEN/THEN
+        // ------------------------------------------------------------------------------- WHEN/THEN
         assertThrows(NullPointerException.class, () -> service.write(data));
     }
 }

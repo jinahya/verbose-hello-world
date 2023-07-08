@@ -21,6 +21,7 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -41,13 +42,16 @@ class HelloWorld_02_Write_OutputStream_Arguments_Test extends _HelloWorldTest {
      * Asserts {@link HelloWorld#write(OutputStream) write(stream)} method throws a
      * {@link NullPointerException} when the {@code stream} argument is {@code null}.
      */
-    @DisplayName("[stream == null] -> NullPointerException")
+    @DisplayName("(null)NullPointerException")
     @Test
     void _ThrowNullPointerException_StreamIsNull() {
-        // GIVEN
+        // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
-        OutputStream stream = null;
-        // WHEN/THEN
-        // TODO: Assert service.write(stream) throws a NullPointerException
+        var stream = (OutputStream) null;
+        // ------------------------------------------------------------------------------- WHEN/THEN
+        Assertions.assertThrows(
+                NullPointerException.class,
+                () -> service.write(stream)
+        );
     }
 }

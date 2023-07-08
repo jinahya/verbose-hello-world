@@ -21,9 +21,12 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -52,11 +55,11 @@ class HelloWorld_02_Write_OutputStream_Test extends _HelloWorldTest {
      * Stubs {@link HelloWorld#set(byte[]) set(array)} method to just return the {@code array}
      * argument.
      */
-    @org.junit.jupiter.api.BeforeEach
-    void _ReturnArray_SetArray() {
-        doAnswer(i -> i.getArgument(0)) // <1>
-                .when(serviceInstance())        // <2>
-                .set(any());            // <3>
+    @BeforeEach
+    void beforeEach() {
+        doAnswer(i -> i.getArgument(0))  // <1>
+                .when(serviceInstance()) // <2>
+                .set(any());             // <3>
     }
 
     /**
@@ -67,54 +70,37 @@ class HelloWorld_02_Write_OutputStream_Test extends _HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("invokes set(array[12])"
-                 + ", invokes stream.write(array)")
+    @DisplayName("(stream) -> stream.write(set(array))")
     @Test
-    void _InvokeSetArrayAndWriteArrayToStream_() throws IOException {
-        // GIVEN
-        var service = serviceInstance();
-        // TODO: Create a mock object of java.io.OutputStream, say 'stream'
-        // WHEN
-        // TODO: Invoke service.write(stream)
-        // THEN: once, set(array[12]) invoked
-        // TODO: Verify set(array[12]) invoked
-        // THEN: once, write(array) invoked
-        // TODO: Verify stream.write(array) invoked
-    }
-
-    /**
-     * Asserts {@link HelloWorld#write(OutputStream) write(stream)} method returns given
-     * {@code stream} argument.
-     *
-     * @throws IOException if an I/O error occurs.
-     */
-    @DisplayName("returns stream")
-    @Test
-    void _ReturnStream_() throws IOException {
-        // GIVEN
+    void __() throws IOException {
+        // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
         var stream = mock(OutputStream.class);
-        // WHEN
-        var actual = service.write(stream);
-        // THEN: actual is same as stream
-        // TODO: Verify actual is same as stream
+        // ------------------------------------------------------------------------------------ WHEN
+        var result = service.write(stream);
+        // ------------------------------------------------------------------------------------ THEN
+        // TODO: Verify, service.set(array[12]) invoked, once
+        // TODO: Verify, stream.write(array) invoked, once
+        // TODO: Assert, result is same as stream
     }
 
-    /**
-     * Reads {@value HelloWorld#BYTES} bytes from a {@link PipedInputStream} connected to a
-     * {@link PipedOutputStream} while invoking {@link HelloWorld#write(OutputStream) write(stream)}
-     * method with the {@code PipedOutputStream}.
-     *
-     * @throws IOException          if an I/O error occurs.
-     * @throws InterruptedException if interrupted while executing.
-     * @see HelloWorld#write(OutputStream)
-     */
-    @org.junit.jupiter.api.Disabled("enable when implemented")
+    @org.junit.jupiter.api.Disabled("not implemented yet") // TODO: remove when implemented
+    @Test
+    void _ReadByteArrayInputStream_WriteByteArrayOutputStream() throws IOException {
+        var service = serviceInstance();
+        var outputStream = service.write(new ByteArrayOutputStream(BYTES));
+        var inputStream = new ByteArrayInputStream(outputStream.toByteArray());
+        var array = new byte[BYTES];
+        var read = inputStream.read(array);
+        assertEquals(BYTES, read);
+    }
+
+    @org.junit.jupiter.api.Disabled("not implemented yet") // TODO: remove when implemented
     @Test
     void _ReadPipedInputStream_WritePipedOutputStream() throws IOException, InterruptedException {
         var service = serviceInstance();
-        try (PipedOutputStream pos = new PipedOutputStream();
-             PipedInputStream pis = new PipedInputStream(pos, BYTES)) {
+        try (var pos = new PipedOutputStream();
+             var pis = new PipedInputStream(pos, BYTES)) {
             var thread = new Thread(() -> {
                 byte[] b = new byte[BYTES];
                 int off = 0;

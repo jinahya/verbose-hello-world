@@ -24,31 +24,35 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
+import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
- * A class for testing {@link HelloWorld#append(File)} method regarding arguments verification.
+ * A class for testing {@link HelloWorld#appendCompletable(Path) appendCompletable(path)} method
+ * regarding arguments verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_03_Append_File_Test
+ * @see HelloWorld_34_AppendCompletable_Path_Test
  */
-@DisplayName("append(file) arguments")
+@DisplayName("appendCompletable(path) arguments")
 @Slf4j
-class HelloWorld_03_Append_File_Arguments_Test extends _HelloWorldTest {
+class HelloWorld_34_AppendCompletable_Path_Arguments_Test extends _HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#append(File) append(file)} method throws a
-     * {@link NullPointerException} when the {@code file} argument is {@code null}.
+     * Asserts {@link HelloWorld#appendCompletable(Path) appendCompletable(path)} method throws a
+     * {@link NullPointerException} when the {@code path} argument is {@code null}.
      */
     @DisplayName("(null)NullPointerException")
     @Test
-    void _ThrowNullPointerException_FileIsNull() {
+    void _ThrowNullPointerException_PathIsNull() {
         // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
-        var file = (File) null;
+        var path = (Path) null;
         // ------------------------------------------------------------------------------- WHEN/THEN
-        assertThrows(NullPointerException.class, () -> service.append(file));
+        assertThrows(
+                NullPointerException.class,
+                () -> service.appendCompletable(path)
+        );
     }
 }
