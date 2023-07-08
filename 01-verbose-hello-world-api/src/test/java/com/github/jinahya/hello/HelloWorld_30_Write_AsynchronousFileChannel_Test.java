@@ -38,6 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.longThat;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -80,7 +81,7 @@ class HelloWorld_30_Write_AsynchronousFileChannel_Test extends _HelloWorldTest {
                     var future = mock(Future.class);
                     when(future.get()).thenAnswer(g -> {
                         var src = w.getArgument(0, ByteBuffer.class);
-                        var position = w.getArgument(1, long.class);
+                        var position = w.getArgument(1, Long.class);
                         var written = current().nextInt(src.remaining() + 1);
                         src.position(src.position() + written);
                         writtenSoFar.add(written);
@@ -95,8 +96,8 @@ class HelloWorld_30_Write_AsynchronousFileChannel_Test extends _HelloWorldTest {
         verify(service, times(1)).put(bufferCaptor().capture());
         var buffer = bufferCaptor().getValue();
         assertEquals(BYTES, buffer.capacity());
-        // TODO: Verify channel.write(buffer, >= position) invoked, at least once
-        // TODO: Assert writtenSoFar.intValue() is equal to the BYTES
+        verify(channel, atLeastOnce()).write(buffer, longThat(p -> p >= position));
+        assertEquals(BYTES, writtenSoFar.intValue());
     }
 
     /**
