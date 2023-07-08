@@ -91,8 +91,8 @@ class HelloWorld_21_WriteAsync_AsynchronousByteChannelWithExecutor_Test
         var future = service.writeAsync(channel, executor);
         var result = future.get();
         // ------------------------------------------------------------------------------------ THEN
-        // TODO: Assert result is same as the channel
         // TODO: Verify put(buffer[12]) invoked, once
+        // TODO: Assert result is same as the channel
         // TODO: Assert writtenSoFar#intValue() is equal to HelloWorld#BYTES
     }
 }
