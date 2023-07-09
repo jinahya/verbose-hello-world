@@ -383,6 +383,7 @@ public interface HelloWorld {
      * {@link #write(WritableByteChannel) write(channel)} method with it, and returns the
      * {@code path}.
      * @see FileChannel#open(Path, OpenOption...)
+     * @see StandardOpenOption#APPEND
      * @see #write(WritableByteChannel)
      */
     default <T extends Path> T append(T path) throws IOException {

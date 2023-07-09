@@ -37,6 +37,7 @@ import static java.nio.ByteBuffer.allocate;
 import static java.nio.channels.FileChannel.open;
 import static java.nio.file.Files.createTempFile;
 import static java.nio.file.Files.size;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.ArgumentMatchers.same;
@@ -85,10 +86,10 @@ class HelloWorld_09_Append_Path_Test extends _HelloWorldTest {
             // -------------------------------------------------------------------------------- WHEN
             var result = service.append(path);
             // -------------------------------------------------------------------------------- THEN
-            // THEN, once and once, FileChannel.open(path, WRITE, APPEND, ...) invoked
-            // TODO: Verify FileChannel.open(path, WRITE, APPEND...) invoked, once, and only
-            // THEN: once, write(channel) invoked
-            // TODO: Assert write(channel) invoked, once
+            // TODO: Verify, write(channel) invoked, once.
+            // TODO: Verify, channel.force(false) invoked, once.
+            // TODO: Verify, channel.close() invoked, once.
+            assertSame(path, result);
         }
     }
 
