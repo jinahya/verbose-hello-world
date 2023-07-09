@@ -109,7 +109,6 @@ class HelloWorld_07_Put_ByteBuffer_Test extends _HelloWorldTest {
         // ------------------------------------------------------------------------------------ THEN
         // TODO: Verify, set(array[12]) invoked, once.
         // TODO: Verify, buffer.put(array) invoked, once.
-        // TODO: Verify, no more interactions with the buffer.
         assertSame(result, buffer);
     }
 }
