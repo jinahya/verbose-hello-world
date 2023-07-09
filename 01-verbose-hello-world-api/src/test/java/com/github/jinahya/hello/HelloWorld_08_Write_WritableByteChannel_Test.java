@@ -33,6 +33,7 @@ import java.nio.channels.WritableByteChannel;
 import java.util.concurrent.atomic.LongAdder;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
+import static java.nio.ByteBuffer.allocate;
 import static java.nio.channels.Channels.newChannel;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -91,9 +92,10 @@ class HelloWorld_08_Write_WritableByteChannel_Test extends _HelloWorldTest {
         var service = serviceInstance();
         var output = new ByteArrayOutputStream(BYTES);
         var writable = service.write(newChannel(output));
+        service.write(writable);
         var input = new ByteArrayInputStream(output.toByteArray());
         var readable = newChannel(input);
-        var buffer = ByteBuffer.allocate(BYTES);
+        var buffer = allocate(BYTES);
         while (buffer.hasRemaining()) {
             readable.read(buffer);
         }
