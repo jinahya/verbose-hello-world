@@ -35,6 +35,7 @@ import static java.nio.ByteBuffer.wrap;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
+import static org.mockito.Mockito.spy;
 
 /**
  * A class for testing {@link HelloWorld#put(ByteBuffer)} method.
@@ -70,7 +71,7 @@ class HelloWorld_07_Put_ByteBuffer_Test extends _HelloWorldTest {
             assert whole.hasArray();
             var index = current().nextInt(BYTES >> 1);
             var length = capacity - index - current().nextInt(BYTES >> 1);
-            buffer = whole.slice(index, length);
+            buffer = spy(whole.slice(index, length));
             assert buffer.hasArray();
             buffer.position(current().nextInt(BYTES >> 1));
             buffer.limit(buffer.capacity() - current().nextInt(BYTES >> 1));
@@ -83,6 +84,7 @@ class HelloWorld_07_Put_ByteBuffer_Test extends _HelloWorldTest {
         // ------------------------------------------------------------------------------------ THEN
         // TODO: Verify, set(buffer.array, buffer.arrayOffset + buffer.position) invoked, once.
         // TODO: Assert, buffer.position is equal to (position + 12).
+        // TODO: Verify, no more interactions with the buffer.
         assertSame(buffer, result);
     }
 
@@ -97,7 +99,7 @@ class HelloWorld_07_Put_ByteBuffer_Test extends _HelloWorldTest {
     void __BufferDoesNotHaveBackingArray() {
         // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
-        var buffer = allocateDirect(BYTES + (BYTES << 1)); // BYTES * 3
+        var buffer = spy(allocateDirect(BYTES + (BYTES << 1))); // BYTES * 3
         buffer.position(current().nextInt(BYTES));
         buffer.limit(buffer.capacity() - current().nextInt(BYTES));
         assert buffer.remaining() >= BYTES;
@@ -109,6 +111,7 @@ class HelloWorld_07_Put_ByteBuffer_Test extends _HelloWorldTest {
         // ------------------------------------------------------------------------------------ THEN
         // TODO: Verify, set(array[12]) invoked, once.
         // TODO: Verify, buffer.put(array) invoked, once.
+        // TODO: Verify, no more interactions with the buffer.
         assertSame(result, buffer);
     }
 }
