@@ -21,10 +21,11 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.io.EOFException;
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetAddress;
@@ -34,9 +35,8 @@ import java.net.Socket;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -55,67 +55,47 @@ class HelloWorld_04_Send_Socket_Test extends _HelloWorldTest {
      * Stubs {@link HelloWorld#write(OutputStream) write(stream)} method to return the
      * {@code stream} argument.
      */
-    @org.junit.jupiter.api.BeforeEach
-    void stub_ReturnStream_WriteStream() throws IOException {
-        var service = serviceInstance();
-        doAnswer(i -> i.getArgument(0))
-                .when(service)
-                .write(any(OutputStream.class));
+    @DisplayName("write(stream) -> write 12 bytes to the stream; return stream")
+    @BeforeEach
+    void beforeEach() throws IOException {
+        doAnswer(i -> {
+            var stream = i.getArgument(0, OutputStream.class);
+            stream.write(new byte[BYTES]);
+            return stream;
+        })
+                .when(serviceInstance())
+                .write(notNull(OutputStream.class));
     }
 
     /**
      * Asserts {@link HelloWorld#send(Socket) send(socket)} method invokes the
      * {@link HelloWorld#write(OutputStream) write(stream)} method with
-     * {@link Socket#getOutputStream() socket.outputStream}.
+     * {@link Socket#getOutputStream() socket.outputStream}, and returns the {@code stream}.
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("invokes write(socket.outputStream)")
+    @DisplayName("(socket) -> write(socket.outputStream)")
     @Test
     void _InvokeWriteStreamWithSocketOutputStream_() throws IOException {
-        // GIVEN
+        // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
         var socket = mock(Socket.class);                   // <1>
         var stream = mock(OutputStream.class);             // <2>
         when(socket.getOutputStream()).thenReturn(stream); // <3>
-        // WHEN
-        service.send(socket);                              // <4>
-        // THEN: only, socket.getOutputStream() invoked    // <5>
-        // TODO: Verify socket.getOutputStream invoked
-        // THEN: once, write(stream) invoked               // <6>
-        // TODO: Verify write(stream) invoked
+        // ------------------------------------------------------------------------------------ WHEN
+        var result = service.send(socket);                 // <4>
+        // ------------------------------------------------------------------------------------ THEN
+        // TODO: Verify, socket.getOutputStream() (which returns stream) invoked, once.
+        // TODO: Verify, write(stream) invoked, once.
+        // TODO: Verify, no more interactions with the socket
+        assertSame(socket, result);
     }
 
-    /**
-     * Asserts {@link HelloWorld#send(Socket) send(socket)} method returns the {@code socket}
-     * argument.
-     *
-     * @throws IOException if an I/O error occurs.
-     */
-    @DisplayName("returns socket")
-    @Test
-    void _ReturnSocket_() throws IOException {
-        // GIVEN:
-        var service = serviceInstance();
-        var socket = mock(Socket.class);
-        var stream = mock(OutputStream.class);
-        when(socket.getOutputStream()).thenReturn(stream);
-        // WHEN
-        var actual = service.send(socket);
-        // THEN
-        assertSame(socket, actual);
-    }
-
-    @org.junit.jupiter.api.Disabled("enable when implemented")
-    @DisplayName("12 bytes are written")
+    @org.junit.jupiter.api.Disabled("not implemented yet") // TODO: remove when implemented
+    @DisplayName("(socket) 12 bytes are written to the socket")
     @Test
     void _12BytesWritten_() throws IOException, InterruptedException {
         var service = serviceInstance();
-        doAnswer(i -> {
-            OutputStream stream = i.getArgument(0);
-            stream.write(new byte[BYTES]);
-            return stream;
-        }).when(service).write(any(OutputStream.class));
         try (var server = new ServerSocket()) {
             var addr = InetAddress.getLoopbackAddress();
             var port = 0;
@@ -135,17 +115,9 @@ class HelloWorld_04_Send_Socket_Test extends _HelloWorldTest {
                 client.connect(server.getLocalSocketAddress());
                 log.debug("connected to {}", client.getRemoteSocketAddress());
                 byte[] b = new byte[BYTES];
-                int off;
-                for (off = 0; off < b.length; ) {
-                    int r = client.getInputStream().read(b, off, b.length - off);
-                    if (r == -1) {
-                        throw new EOFException("unexpected eof");
-                    }
-                    off += r;
-                }
-                assertEquals(BYTES, off);
+                new DataInputStream(client.getInputStream()).readFully(b);
             } catch (IOException ioe) {
-                log.error("failed to work with the server", ioe);
+                log.error("failed to connect/read to/from the server", ioe);
             }
             thread.join(SECONDS.toMillis(1L));
         }
