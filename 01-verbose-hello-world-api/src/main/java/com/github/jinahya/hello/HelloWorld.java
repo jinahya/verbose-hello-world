@@ -386,9 +386,7 @@ public interface HelloWorld {
      * @see #write(WritableByteChannel)
      */
     default <T extends Path> T append(T path) throws IOException {
-        if (path == null) {
-            throw new NullPointerException("path is null");
-        }
+        Objects.requireNonNull(path, "path is null");
         // TODO: Implement!
         return path;
     }

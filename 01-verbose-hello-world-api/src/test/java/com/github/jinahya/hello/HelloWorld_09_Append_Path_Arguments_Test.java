@@ -43,13 +43,13 @@ class HelloWorld_09_Append_Path_Arguments_Test extends _HelloWorldTest {
      * Asserts {@link HelloWorld#append(Path) append(path)} method throws a
      * {@link NullPointerException} when the {@code path} argument is {@code null}.
      */
-    @DisplayName("[path == null] -> NullPointerException")
+    @DisplayName("(null)NullPointerException")
     @Test
     void _ThrowNullPointerException_PathIsNull() {
-        // GIVEN
+        // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
-        Path path = null;
-        // WHEN/THEN
+        var path = (Path) null;
+        // ------------------------------------------------------------------------------- WHEN/THEN
         assertThrows(NullPointerException.class, () -> service.append(path));
     }
 }

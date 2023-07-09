@@ -21,23 +21,24 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.mockito.MockedStatic;
 
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.file.Path;
+import java.util.Set;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.channels.FileChannel.open;
 import static java.nio.file.Files.createTempFile;
 import static java.nio.file.Files.size;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -53,63 +54,41 @@ import static org.mockito.Mockito.mockStatic;
 @Slf4j
 class HelloWorld_09_Append_Path_Test extends _HelloWorldTest {
 
-    /**
-     * Stubs {@link HelloWorld#write(WritableByteChannel) write(channel)} method to just return the
-     * {@code channel} argument.
-     *
-     * @throws IOException if an I/O error occurs.
-     */
-    @DisplayName("[stubbing] write(channel)channel")
-    @org.junit.jupiter.api.BeforeEach
-    void stub_ReturnChannel_WriteChannel() throws IOException {
-        var service = serviceInstance();
-        doAnswer(i -> i.getArgument(0))
-                .when(service)
-                .write(any(WritableByteChannel.class));
+    @BeforeEach
+    void _beforeEach() throws IOException {
+        // stubs serviceInstance() as its write(channel) method to write 12 bytes to the channel
+        doAnswer(i -> {
+            var channel = i.getArgument(0, WritableByteChannel.class);
+            for (var buffer = allocate(BYTES); buffer.hasRemaining(); ) {
+                channel.write(buffer);
+            }
+            return channel;
+        }).when(serviceInstance()).write(notNull(WritableByteChannel.class));
     }
 
-    @DisplayName("invokes write(channel opened from path)")
+    @DisplayName("(path) -> write(FileChannel.open(path, CREATE, WRITE, APPEND))")
     @Test
     void _InvokeWriteChannelOpenedFromPath_() throws IOException {
-        // GIVEN
+        // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
         var path = mock(Path.class);
         var channel = mock(FileChannel.class);
-        try (MockedStatic<FileChannel> mocked = mockStatic(FileChannel.class)) {
-            mocked.when(() -> open(same(path), any())).thenAnswer(i -> {
-                var arguments = i.getRawArguments(); // Path, OpenOption...
-                // TODO: Assert arguments[1] contains StandardOpenOption.WRITE
-                // TODO: Assert arguments[1] contains StandardOpenOption.APPEND
+        try (var mockedStatic = mockStatic(FileChannel.class)) {
+            mockedStatic.when(() -> open(same(path), notNull())).thenAnswer(i -> {
+                var arguments = i.getRawArguments(); // [path, options]
+                var options = Set.of(arguments[1]);
+                // TODO: Assert, options contains StandardOpenOption.CREATE
+                // TODO: Assert, options contains StandardOpenOption.WRITE
+                // TODO: Assert, options contains StandardOpenOption.APPEND
                 return channel;
             });
-            // WHEN
-            service.append(path);
+            // -------------------------------------------------------------------------------- WHEN
+            var result = service.append(path);
+            // -------------------------------------------------------------------------------- THEN
             // THEN, once and once, FileChannel.open(path, WRITE, APPEND, ...) invoked
             // TODO: Verify FileChannel.open(path, WRITE, APPEND...) invoked, once, and only
             // THEN: once, write(channel) invoked
             // TODO: Assert write(channel) invoked, once
-        }
-    }
-
-    /**
-     * Asserts {@link HelloWorld#append(Path) append(path)} method returns the {@code path}
-     * argument.
-     *
-     * @throws IOException if an I/O error occurs.
-     */
-    @DisplayName("returns path")
-    @Test
-    void _ReturnPath_() throws IOException {
-        // GIVEN
-        var service = serviceInstance();
-        var path = mock(Path.class);
-        var channel = mock(FileChannel.class);
-        try (MockedStatic<FileChannel> mocked = mockStatic(FileChannel.class)) {
-            mocked.when(() -> open(same(path), any())).thenReturn(channel);
-            // WHEN
-            var result = service.append(path);
-            // THEN
-            assertSame(path, result);
         }
     }
 
