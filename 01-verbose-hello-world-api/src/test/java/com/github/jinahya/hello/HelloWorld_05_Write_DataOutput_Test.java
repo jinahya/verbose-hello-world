@@ -104,7 +104,7 @@ class HelloWorld_05_Write_DataOutput_Test extends _HelloWorldTest {
             var size = baos.size();
             try (var dos = new DataOutputStream(baos)) {
                 // ---------------------------------------------------------------------------- WHEN
-                service.write((DataOutput) dos);
+                var result = service.write((DataOutput) dos);
                 dos.flush();
                 // --------------------------------------------------------------------------- THEN
                 // TODO: Assert, baos.size() is equal to (size + BYTES)
