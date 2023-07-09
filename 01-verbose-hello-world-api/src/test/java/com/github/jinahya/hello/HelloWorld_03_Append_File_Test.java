@@ -25,18 +25,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.mockito.MockedConstruction;
 import org.mockito.MockedConstruction.MockInitializer;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.io.File.createTempFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.notNull;
@@ -58,10 +57,8 @@ class HelloWorld_03_Append_File_Test extends _HelloWorldTest {
     @BeforeEach
     void beforeEach() throws IOException {
         doAnswer(i -> {
-            var stream = i.getArgument(0, OutputStream.class); // <1>
-            for (int j = 0; j < BYTES; j++) {                  // <2>
-                stream.write(0);                               // <3>
-            }
+            var stream = i.getArgument(0, OutputStream.class);
+            stream.write(new byte[BYTES]);
             return stream;
         }).when(serviceInstance()).write(notNull(OutputStream.class));
     }
@@ -93,28 +90,11 @@ class HelloWorld_03_Append_File_Test extends _HelloWorldTest {
             var result = service.append(file);
             // ---------------------------------------------------------------------------------THEN
             var constructed = construction.constructed();
-            // TODO: Assert, constructed.size() is equal to 1
-            // TODO: Verify, service.write(constructed.get(0)) invoked, once
-            // TODO: Verify, constructed.get(0).flush() invoked, once
-        }
-    }
-
-    /**
-     * Asserts {@link HelloWorld#append(File) append(file)} returns given {@code file} arguments.
-     *
-     * @throws IOException if an I/O error occurs.
-     */
-    @DisplayName("returns file")
-    @Test
-    void _ReturnFile_() throws IOException {
-        // ----------------------------------------------------------------------------------- GIVEN
-        var service = serviceInstance();
-        var file = mock(File.class);
-        try (MockedConstruction<FileOutputStream> c = mockConstruction(FileOutputStream.class)) {
-            // WHEN
-            var actual = service.append(file);
-            // THEN
-            assertSame(file, actual);
+            // TODO: Assert, constructed.size() is equal to 1.
+            // TODO: Verify, service.write(constructed.get(0)) invoked, once.
+            // TODO: Verify, constructed.get(0).flush() invoked, once.
+            // TODO: Verify, constructed.get(0).close() invoked, once.
+            // TODO: Assert, result is same as file.
         }
     }
 
@@ -125,35 +105,20 @@ class HelloWorld_03_Append_File_Test extends _HelloWorldTest {
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("12 bytes are appended to the file")
+    @DisplayName("(file) -> 12 bytes are appended to the file")
     @Test
-    @畵蛇添足
     void _12BytesAppended_(@TempDir File tempDir) throws IOException {
         // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
         var file = createTempFile("tmp", null, tempDir);
+        if (ThreadLocalRandom.current().nextBoolean()) {
+            // TODO: Write some bytes to the file
+        }
         var length = file.length();
-        // WHEN
-        service.append(file);
-        // THEN: file.length() increased by 12
-    }
-
-    /**
-     * Asserts {@link HelloWorld#append(File) append(file)} returns given {@code file} arguments.
-     *
-     * @param tempDir a temporary directory to test with.
-     * @throws IOException if an I/O error occurs.
-     */
-    @DisplayName("returns file")
-    @Test
-    @畵蛇添足
-    void _ReturnFile_(@TempDir File tempDir) throws IOException {
-        // GIVEN
-        var service = serviceInstance();
-        var file = createTempFile("tmp", null, tempDir);
-        // WHEN
-        var actual = service.append(file);
-        // THEN
-        assertSame(file, actual);
+        // ------------------------------------------------------------------------------------ WHEN
+        var result = service.append(file);
+        // ------------------------------------------------------------------------------------ THEN
+        // TODO: Assert, result is same as file
+        // TODO: Assert, 12 bytes are appended to the file
     }
 }
