@@ -77,6 +77,7 @@ class HelloWorld_08_Write_WritableByteChannel_Test extends _HelloWorldTest {
         // ------------------------------------------------------------------------------------ THEN
         // TODO: Verify, service.put(buffer[12]) invoked, once.
         // TODO: Verify, channel.write(buffer) invoked, at least once.
+        // TODO: Assert, writtenSoFar.intValue() is equal to BYTES.
         assertEquals(channel, result);
     }
 }
