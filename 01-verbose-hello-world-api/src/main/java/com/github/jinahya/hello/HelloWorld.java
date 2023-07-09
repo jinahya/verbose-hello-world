@@ -272,18 +272,19 @@ public interface HelloWorld {
      *
      * @param <T>    buffer type parameter
      * @param buffer the byte buffer on which bytes are put.
-     * @return given {@code buffer}.
+     * @return given {@code buffer} whose {@link ByteBuffer#position() position} increased by
+     * {@value BYTES}.
      * @throws NullPointerException    if {@code buffer} is {@code null}.
      * @throws BufferOverflowException if {@link ByteBuffer#remaining() buffer.remaining} is less
      *                                 than {@value #BYTES}.
-     * @implSpec The default implementation, if specified buffer
+     * @implSpec The default implementation, if {@code buffer}
      * {@link ByteBuffer#hasArray() has a backing-array}, invokes
-     * {@link #set(byte[], int) #set(array, index)} method with the buffer"s backing-array and
-     * ({@code buffer.arrayOffset} + {@code buffer.position}), and then manually increments the
-     * buffer"s position by {@value #BYTES}. Otherwise, this method invokes
-     * {@link #set(byte[]) #set(array)} method with an array of {@value #BYTES} bytes, and puts the
-     * array on the buffer by invoking {@link ByteBuffer#put(byte[])} method on {@code buffer} with
-     * the array.
+     * {@link #set(byte[], int) #set(array, index)} method with the buffer's
+     * {@link ByteBuffer#array() backing-array} and ({@code buffer.arrayOffset} +
+     * {@code buffer.position}), and then manually increments the buffer"s position by
+     * {@value #BYTES}. Otherwise, this method invokes {@link #set(byte[]) #set(array)} method with
+     * an array of {@value #BYTES} bytes, and puts the array on the buffer by invoking
+     * {@link ByteBuffer#put(byte[])} method on {@code buffer} with the array.
      * @see ByteBuffer#hasArray()
      * @see ByteBuffer#array()
      * @see ByteBuffer#arrayOffset()

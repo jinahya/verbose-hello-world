@@ -21,6 +21,7 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -34,10 +35,6 @@ import static java.nio.ByteBuffer.wrap;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * A class for testing {@link HelloWorld#put(ByteBuffer)} method.
@@ -49,145 +46,71 @@ import static org.mockito.Mockito.when;
 @Slf4j
 class HelloWorld_07_Put_ByteBuffer_Test extends _HelloWorldTest {
 
-    /**
-     * Stubs {@link HelloWorld#set(byte[]) set(array)} method to just return the {@code array}
-     * argument.
-     */
-    @DisplayName("[stubbing] set(array) returns array")
-    @org.junit.jupiter.api.BeforeEach
-    void stub_ReturnArray_SetArray() {
-        doAnswer(i -> i.getArgument(0))
-                .when(serviceInstance())
-                .set(any());
+    @BeforeEach
+    void _beforeEach() {
+        _stubSetArrayToReturnTheArray();
     }
 
     /**
      * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method, when the {@code buffer} has a
      * backing array, invokes {@link HelloWorld#set(byte[], int) set(array, index)} method with
-     * {@code buffer.array} and ({@code buffer.arrayOffset + buffer.position}), and asserts that the
-     * {@code buffer.position} is increased by {@value HelloWorld#BYTES}.
+     * {@code buffer.array} and ({@code buffer.arrayOffset + buffer.position}), and returns the
+     * {@code buffer} as its {@link ByteBuffer#position() position} increased by
+     * {@value HelloWorld#BYTES}.
      */
-    @DisplayName("[.hasArray()]"
-                 + " -> set(.array, .arrayOffset + .position)"
-                 + " -> .position += 12")
+    @DisplayName("(buffer.hasArray()) -> set(buffer.array, buffer.arrayOffset + buffer.position)")
     @Test
-    void _InvokeSetArrayIndexPositionIncrementedBy12_BufferHasArray() {
-        // GIVEN
+    void __BufferHasBackingArray() {
+        // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
-        var array = new byte[BYTES];
-        var buffer = mock(ByteBuffer.class);
-        when(buffer.remaining()).thenReturn(array.length);
-        when(buffer.hasArray()).thenReturn(true);
-        when(buffer.array()).thenReturn(array);
-        when(buffer.arrayOffset()).thenReturn(0);
-        when(buffer.position()).thenReturn(0);
-        var arrayOffset = buffer.arrayOffset();
+        ByteBuffer buffer;
+        {
+            var capacity = BYTES + (BYTES << 1); // BYTES * 3
+            var whole = current().nextBoolean() ? wrap(new byte[capacity]) : allocate(capacity);
+            assert whole.hasArray();
+            var index = current().nextInt(BYTES >> 1);
+            var length = capacity - index - current().nextInt(BYTES >> 1);
+            buffer = whole.slice(index, length);
+            assert buffer.hasArray();
+            buffer.position(current().nextInt(BYTES >> 1));
+            buffer.limit(buffer.capacity() - current().nextInt(BYTES >> 1));
+        }
+        print(buffer);
+        assert buffer.remaining() >= BYTES;
         var position = buffer.position();
-        // WHEN
-        service.put(buffer);
-        // THEN: once, set(array, arrayOffset + position) invoked
-        // THEN: once, buffer.position(position + 12) invoked
+        // ------------------------------------------------------------------------------------ WHEN
+        var result = service.put(buffer);
+        // ------------------------------------------------------------------------------------ THEN
+        // TODO: Verify, set(buffer.array, buffer.arrayOffset + buffer.position) invoked, once.
+        // TODO: Assert, buffer.position is equal to (position + 12).
+        // TODO: Verify no more interactions with the buffer.
+        assertSame(buffer, result);
     }
 
     /**
      * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method, when invoked with a byte
      * buffer which does not have a backing array, invokes {@link HelloWorld#set(byte[]) set(array)}
-     * method with an array of {@value HelloWorld#BYTES} bytes, and puts the array to
-     * {@code buffer}.
+     * method with an array of {@value HelloWorld#BYTES} bytes, puts the array to {@code buffer},
+     * and returns the {@code buffer}.
      */
-    @DisplayName("[!.hasArray()]"
-                 + " -> set(array[12])"
-                 + " -> .put(array)")
+    @DisplayName("(!buffer.hasArray()) -> buffer.put(set(array[12]))")
     @Test
-    void _InvokeSetArrayPutArray_BufferDoesNotHaveArray() {
-        // GIVEN
+    void __BufferDoesNotHaveBackingArray() {
+        // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
-        var buffer = mock(ByteBuffer.class);
-        when(buffer.remaining()).thenReturn(BYTES);
-        when(buffer.hasArray()).thenReturn(false);
-        // WHEN
-        service.put(buffer);
-        // THEN: once, set(array[12]) invoked
-        // THEN: once, buffer.put(array) invoked
-    }
-
-    /**
-     * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method returns given {@code buffer}
-     * argument.
-     */
-    @DisplayName("returns buffer")
-    @Test
-    void _ReturnBuffer_() {
-        // GIVEN
-        var service = serviceInstance();
-        var buffer = mock(ByteBuffer.class);
-        when(buffer.remaining()).thenReturn(BYTES);
-        // WHEN
-        var actual = service.put(buffer);
-        // THEN
-        assertSame(buffer, actual);
-    }
-
-    /**
-     * Asserts, redundantly, {@link HelloWorld#put(ByteBuffer) put(buffer)} method, when the
-     * {@code buffer} has a backing array, increments the {@code buffer}'s position by
-     * {@value HelloWorld#BYTES}.
-     */
-    @DisplayName("[.hasArray()] -> .position += 12")
-    @Test
-    @畵蛇添足
-    void PositionIncrementedBy12_BufferHasArray() {
-        // GIVEN
-        var service = serviceInstance();
-        ByteBuffer slice;
-        {
-            var capacity = BYTES + (BYTES << 1); // BYTES * 3
-            var buffer = current().nextBoolean() ? wrap(new byte[capacity]) : allocate(capacity);
-            assert buffer.hasArray();
-            var index = current().nextInt(BYTES >> 1);
-            var length = capacity - index - current().nextInt(BYTES >> 1);
-            slice = buffer.slice(index, length);
-            assert slice.hasArray();
-            slice.position(current().nextInt(BYTES >> 1));
-            slice.limit(slice.capacity() - current().nextInt(BYTES >> 1));
-        }
-        print(slice);
-        assert slice.remaining() >= BYTES;
-        var position = slice.position();
-        // WHEN
-        service.put(slice);
-        // THEN: slice.position incremented by 12
-        // TODO: Assert slice.position is equal to (position + 12)
-    }
-
-    /**
-     * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method, when invoked with a byte
-     * buffer which does not have a backing array, increments the {@code buffer}'s position by
-     * {@value HelloWorld#BYTES}.
-     */
-    @DisplayName("[!.hasArray()] -> .position += 12")
-    @Test
-    void _PositionIncrementedBy12_BufferDoesNotHaveArray() {
-        // GIVEN
-        var service = serviceInstance();
-        ByteBuffer slice;
-        {
-            var capacity = BYTES * 3;
-            var buffer = allocateDirect(capacity);
-            assumeFalse(buffer.hasArray(), "a direct byte buffer has a backing array");
-            var index = current().nextInt(BYTES >> 1);
-            var length = capacity - index - current().nextInt(BYTES >> 1);
-            slice = buffer.slice(index, length);
-            assert !slice.hasArray();
-            slice.position(current().nextInt(BYTES >> 1));
-            slice.limit(slice.capacity() - current().nextInt(BYTES >> 1));
-        }
-        print(slice);
-        assert slice.remaining() >= BYTES;
-        var position = slice.position();
-        // WHEN
-        service.put(slice);
-        // THEN: slice.position incremented by 12
-        // TODO: Assert slice.position is equal to (position + 12)
+        var buffer = allocateDirect(BYTES + (BYTES << 1)); // BYTES * 3
+        buffer.position(current().nextInt(BYTES));
+        buffer.limit(buffer.capacity() - current().nextInt(BYTES));
+        assert buffer.remaining() >= BYTES;
+        print(buffer);
+        var position = buffer.position();
+        assumeFalse(buffer.hasArray(), "a direct buffer hase a backing array, aborting...");
+        // ------------------------------------------------------------------------------------ WHEN
+        var result = service.put(buffer);
+        // ------------------------------------------------------------------------------------ THEN
+        // TODO: Verify, set(array[12]) invoked, once.
+        // TODO: Verify, buffer.put(array) invoked, once.
+        // TODO: Verify, no more interactions with the buffer.
+        assertSame(result, buffer);
     }
 }

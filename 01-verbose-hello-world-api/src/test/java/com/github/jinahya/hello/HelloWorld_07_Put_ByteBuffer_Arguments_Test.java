@@ -47,13 +47,13 @@ class HelloWorld_07_Put_ByteBuffer_Arguments_Test extends _HelloWorldTest {
      * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method throws a
      * {@link NullPointerException} when the {@code buffer} argument is {@code null}.
      */
-    @DisplayName("[buffer == null] -> NullPointerException")
+    @DisplayName("(null)NullPointerException")
     @Test
     void _ThrowNullPointerException_BufferIsNull() {
-        // GIVEN
+        // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
-        ByteBuffer buffer = null;
-        // WHEN/THEN
+        var buffer = (ByteBuffer) null;
+        // ------------------------------------------------------------------------------- WHEN/THEN
         assertThrows(NullPointerException.class, () -> service.put(buffer));
     }
 
@@ -62,14 +62,14 @@ class HelloWorld_07_Put_ByteBuffer_Arguments_Test extends _HelloWorldTest {
      * {@link BufferOverflowException} when {@link ByteBuffer#remaining() buffer.remaining} is less
      * than {@value HelloWorld#BYTES}.
      */
-    @DisplayName("[buffer.remaining < 12] -> BufferOverflowException")
+    @DisplayName("(buffer.remaining < 12)BufferOverflowException")
     @Test
     void _ThrowBufferOverflowException_BufferRemainingIsLessThan12() {
-        // GIVEN
+        // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
         var buffer = mock(ByteBuffer.class);
         when(buffer.remaining()).thenReturn(current().nextInt(BYTES));
-        // WHEN/THEN
+        // ------------------------------------------------------------------------------- WHEN/THEN
         assertThrows(BufferOverflowException.class, () -> service.put(buffer));
     }
 }
