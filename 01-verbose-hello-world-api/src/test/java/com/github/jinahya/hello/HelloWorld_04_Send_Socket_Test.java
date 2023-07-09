@@ -73,6 +73,7 @@ class HelloWorld_04_Send_Socket_Test extends _HelloWorldTest {
      * {@link Socket#getOutputStream() socket.outputStream}, and returns the {@code stream}.
      *
      * @throws IOException if an I/O error occurs.
+     * @see org.mockito.Mockito#verifyNoMoreInteractions(Object...)
      */
     @DisplayName("(socket) -> write(socket.outputStream)")
     @Test
@@ -86,8 +87,8 @@ class HelloWorld_04_Send_Socket_Test extends _HelloWorldTest {
         var result = service.send(socket);                 // <4>
         // ------------------------------------------------------------------------------------ THEN
         // TODO: Verify, socket.getOutputStream() (which returns stream) invoked, once.
-        // TODO: Verify, write(stream) invoked, once.
         // TODO: Verify, no more interactions with the socket
+        // TODO: Verify, write(stream) invoked, once.
         assertSame(socket, result);
     }
 
