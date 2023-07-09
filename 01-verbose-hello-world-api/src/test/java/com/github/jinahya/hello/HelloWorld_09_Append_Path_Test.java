@@ -29,8 +29,8 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
+import java.nio.file.OpenOption;
 import java.nio.file.Path;
-import java.util.Set;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.nio.ByteBuffer.allocate;
@@ -75,17 +75,12 @@ class HelloWorld_09_Append_Path_Test extends _HelloWorldTest {
         var path = mock(Path.class);
         var channel = mock(FileChannel.class);
         try (var mockedStatic = mockStatic(FileChannel.class)) {
-            mockedStatic.when(() -> open(same(path), notNull())).thenAnswer(i -> {
-                var arguments = i.getRawArguments(); // [path, options]
-                var options = Set.of(arguments[1]);
-                // TODO: Assert, options contains StandardOpenOption.CREATE
-                // TODO: Assert, options contains StandardOpenOption.WRITE
-                // TODO: Assert, options contains StandardOpenOption.APPEND
-                return channel;
-            });
+            mockedStatic.when(() -> open(same(path), any(OpenOption[].class))).thenReturn(channel);
             // -------------------------------------------------------------------------------- WHEN
             var result = service.append(path);
             // -------------------------------------------------------------------------------- THEN
+            // TODO: Verify, FileChannel.open(path, options) invoked, once
+            // TODO: Assert, options contains both WRITE and APPEND
             // TODO: Verify, write(channel) invoked, once.
             // TODO: Verify, channel.force(false) invoked, once.
             // TODO: Verify, channel.close() invoked, once.
