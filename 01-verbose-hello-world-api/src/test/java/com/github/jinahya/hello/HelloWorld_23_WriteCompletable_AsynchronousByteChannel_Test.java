@@ -49,7 +49,7 @@ class HelloWorld_23_WriteCompletable_AsynchronousByteChannel_Test
 
     @BeforeEach
     void beforeEach() {
-        stubPutBufferToReturnTheBufferAsItsPositionIncreasedBy12();
+        _stubPutBufferToReturnTheBufferAsItsPositionIncreasedBy12();
     }
 
     /**

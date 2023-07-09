@@ -30,11 +30,9 @@ import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 import java.util.concurrent.atomic.LongAdder;
 
-import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.util.concurrent.ThreadLocalRandom.current;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -48,22 +46,9 @@ import static org.mockito.Mockito.when;
 @Slf4j
 class HelloWorld_08_Write_WritableByteChannel_Test extends _HelloWorldTest {
 
-    /**
-     * Stubs {@link HelloWorld#put(ByteBuffer) put(buffer)} method to return the {@code buffer} as
-     * its {@link ByteBuffer#position() position} increased by {@value HelloWorld#BYTES}.
-     */
     @BeforeEach
-    void stub_ReturnBufferAsItsPositionIncreasedBy12_PutBuffer() {
-        var service = serviceInstance();
-        doAnswer(i -> {
-            ByteBuffer buffer = i.getArgument(0);
-            assert buffer != null;
-            assert buffer.capacity() == BYTES;
-            assert buffer.position() == 0;
-            assert buffer.remaining() == BYTES;
-            buffer.position(BYTES);
-            return buffer;
-        }).when(service).put(any());
+    void _beforeEach() {
+        _stubPutBufferToReturnTheBufferAsItsPositionIncreasedBy12();
     }
 
     /**
@@ -73,53 +58,25 @@ class HelloWorld_08_Write_WritableByteChannel_Test extends _HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("put(buffer[12])"
-                 + " -> channel.write(buffer)+")
+    @DisplayName("(channel) -> channel.write(put(buffer[12]))+")
     @Test
-    void _InvokePutBufferWriteBufferToChannel_() throws IOException {
-        // GIVEN
+    void __() throws IOException {
+        // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
         var channel = mock(WritableByteChannel.class);               // <1>
         var writtenSoFar = new LongAdder();                          // <2>
-        when(channel.write(any())).thenAnswer(i -> {                 // <3>
-            ByteBuffer buffer = i.getArgument(0);                    // <4>
-            assert buffer != null;
-            assert buffer.hasRemaining();
-            var written = current().nextInt(buffer.remaining() + 1); // <5>
-            buffer.position(buffer.position() + written);            // <6>
-            writtenSoFar.add(written);                               // <7>
-            return written;                                          // <8>
-        });
-        // WHEN
-        service.write(channel);
-        // THEN: once, put(buffer[12]) invoked
-        // THEN: at least once, channel.write(buffer) invoked
-        // THEN: 12 bytes are written to the channel
-    }
-
-    /**
-     * Asserts {@link HelloWorld#write(WritableByteChannel) write(channel)} method returns the
-     * {@code channel} argument.
-     *
-     * @throws IOException if an I/O error occurs.
-     */
-    @DisplayName("returns channel")
-    @Test
-    void _ReturnChannel_() throws IOException {
-        // GIVEN
-        var service = serviceInstance();
-        var channel = mock(WritableByteChannel.class);
-        when(channel.write(any())).thenAnswer(i -> {
-            ByteBuffer buffer = i.getArgument(0);
-            assert buffer != null;
-            assert buffer.hasRemaining();
-            var written = buffer.remaining();
-            buffer.position(buffer.limit());
+        when(channel.write(argThat(b -> b != null && b.hasRemaining()))).thenAnswer(i -> { // <3>
+            var src = i.getArgument(0, ByteBuffer.class);
+            var written = current().nextInt(src.remaining() + 1);
+            src.position(src.position() + written);
+            writtenSoFar.add(written);
             return written;
         });
-        // WHEN
-        var actual = service.write(channel);
-        // THEN
-        assertSame(channel, actual);
+        // ------------------------------------------------------------------------------------ WHEN
+        var result = service.write(channel);
+        // ------------------------------------------------------------------------------------ THEN
+        // TODO: Verify, service.put(buffer[12]) invoked, once.
+        // TODO: Verify, channel.write(buffer) invoked, at least once.
+        assertEquals(channel, result);
     }
 }

@@ -43,13 +43,13 @@ class HelloWorld_08_Write_WritableByteChannel_Arguments_Test extends _HelloWorld
      * Asserts {@link HelloWorld#write(WritableByteChannel) write(channel)} method throws a
      * {@link NullPointerException} when {@code channel} argument is {@code null}.
      */
-    @DisplayName("[channel == null] -> throws NullPointerException")
+    @DisplayName("(null)NullPointerException")
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
-        // GIVEN
+        // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
-        WritableByteChannel channel = null;
-        // WHEN/THEN
+        var channel = (WritableByteChannel) null;
+        // ------------------------------------------------------------------------------- WHEN/THEN
         assertThrows(NullPointerException.class, () -> service.write(channel));
     }
 }

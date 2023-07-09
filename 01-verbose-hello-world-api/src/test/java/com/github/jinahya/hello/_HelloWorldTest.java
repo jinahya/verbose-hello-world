@@ -34,6 +34,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
@@ -163,16 +164,33 @@ abstract class _HelloWorldTest {
         }).given(channel).write(any(), any(), any());
     }
 
+    @SuppressWarnings({"unchecked"})
+    void stubToWriteSome(WritableByteChannel channel, LongAdder adder) throws IOException {
+        if (!mockingDetails(requireNonNull(channel, "channel is null")).isMock()) {
+            throw new IllegalArgumentException("not a mock: " + channel);
+        }
+        requireNonNull(adder, "adder is null");
+        willAnswer(i -> {
+            var src = i.getArgument(0, ByteBuffer.class);
+            var written = current().nextInt(1, src.remaining() + 1);
+            src.position(src.position() + written);
+            adder.add(written);
+            return written;
+        }).given(channel).write(argThat(b -> b != null && b.hasRemaining()));
+    }
+
     /**
-     * Stubs {@link #serviceInstance()}'s {@link HelloWorld#put(ByteBuffer) put(buffer)} method to
-     * return given {@code buffer} as its position increased by {@value HelloWorld#BYTES}.
+     * Stubs {@link #serviceInstance()} as its {@link HelloWorld#put(ByteBuffer) put(buffer[12])}
+     * method to return given {@code buffer} as its position increased by
+     * {@value HelloWorld#BYTES}.
      */
-    void stubPutBufferToReturnTheBufferAsItsPositionIncreasedBy12() {
+    void _stubPutBufferToReturnTheBufferAsItsPositionIncreasedBy12() {
         doAnswer(i -> {
             var buffer = i.getArgument(0, ByteBuffer.class);
-            buffer.position(buffer.position() + BYTES); // IllegalArgumentException
+            buffer.position(buffer.limit());
             return buffer;
-        }).when(serviceInstance).put(argThat(b -> b != null && b.remaining() >= BYTES));
+        }).when(serviceInstance)
+                .put(argThat(b -> b != null && b.capacity() == BYTES && b.remaining() == BYTES));
     }
 
     /**
