@@ -149,7 +149,10 @@ public interface HelloWorld {
      * @see OutputStream#write(byte[])
      */
     default <T extends OutputStream> T write(T stream) throws IOException {
-        // TODO: Implement!
+        Objects.requireNonNull(stream, "stream is null");
+        // TODO: create an array of 12 bytes
+        // TODO: invoke set(byte[]) method with the array
+        // TODO: write the byte to the stream
         return null;
     }
 

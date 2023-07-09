@@ -26,6 +26,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.MockedConstruction;
+import org.mockito.MockedConstruction.MockInitializer;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -76,7 +77,8 @@ class HelloWorld_03_Append_File_Test extends _HelloWorldTest {
         // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
         var file = mock(File.class);
-        MockedConstruction.MockInitializer<FileOutputStream> initializer = (m, c) -> {
+        MockInitializer<FileOutputStream> initializer = (m, c) -> {
+            log.debug("mock: {}", m);
             assertSame(FileOutputStream.class.getConstructor(File.class, boolean.class),
                        c.constructor());
             var arguments = c.arguments();
