@@ -41,6 +41,8 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * A class for testing {@link HelloWorld#write(DataOutput) write(data)} method.
@@ -79,7 +81,8 @@ class HelloWorld_05_Write_DataOutput_Test extends _HelloWorldTest {
         // ------------------------------------------------------------------------------------ WHEN
         var result = service.write(data);                       // <2>
         // ------------------------------------------------------------------------------------ THEN
-        // TODO: Verify, service.set(array[12]) invoked, once.
+        verify(service, times(1)).set(arrayCaptor().capture());
+        var array = arrayCaptor().getValue();
         // TODO: Verify, data.write(array) invoked, once.
         // TODO: Verify, no more interactions with data.
         assertSame(data, result);
