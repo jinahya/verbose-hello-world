@@ -43,13 +43,13 @@ class HelloWorld_06_Write_RandomAccessFile_Arguments_Test extends _HelloWorldTes
      * Asserts {@link HelloWorld#write(RandomAccessFile file) write(RandomAccessFile file)} method
      * throws a {@link NullPointerException} when the {@code file} argument is {@code null}.
      */
-    @DisplayName("[file == null] -> NullPointerException")
+    @DisplayName("(null)NullPointerException")
     @Test
     void _ThrowNullPointerException_FileIsNull() {
-        // GIVEN
+        // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
-        RandomAccessFile file = null;
-        // WHEN/THEN
+        var file = (RandomAccessFile) null;
+        // ------------------------------------------------------------------------------- WHEN/THEN
         assertThrows(NullPointerException.class, () -> service.write(file));
     }
 }

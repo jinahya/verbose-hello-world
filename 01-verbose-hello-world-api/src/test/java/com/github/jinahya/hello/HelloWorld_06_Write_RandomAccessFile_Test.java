@@ -21,6 +21,7 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -35,8 +36,6 @@ import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -51,16 +50,9 @@ import static org.mockito.Mockito.verify;
 @Slf4j
 class HelloWorld_06_Write_RandomAccessFile_Test extends _HelloWorldTest {
 
-    /**
-     * Stubs {@link HelloWorld#set(byte[]) set(array)} method to just return the {@code array}
-     * argument.
-     */
-    @DisplayName("[stubbing] set(array) returns array")
-    @org.junit.jupiter.api.BeforeEach
-    void stub_ReturnArray_SetArray() {
-        doAnswer(i -> i.getArgument(0))
-                .when(serviceInstance())
-                .set(any());
+    @BeforeEach
+    void _beforeEach() {
+        _stubSetArrayToReturnTheArray();
     }
 
     /**
@@ -71,40 +63,21 @@ class HelloWorld_06_Write_RandomAccessFile_Test extends _HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("invokes set(array[12])"
-                 + ", invokes file.write(array)")
+    @DisplayName("(file) -> file.write(set(array[12])) -> file")
     @Test
     void _InvokeSetArrayWriteArrayToFile_() throws IOException {
-        // GIVEN
+        // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
         var file = mock(RandomAccessFile.class);
-        // WHEN
-        service.write(file);
-        // THEN: once, set(array[12]) invoked
+        // ------------------------------------------------------------------------------------ WHEN
+        var result = service.write(file);
+        // ------------------------------------------------------------------------------------ THEN
         verify(service, times(1)).set(arrayCaptor().capture());
         var array = arrayCaptor().getValue();
         assertNotNull(array);
         assertEquals(BYTES, array.length);
-        // THEN: once and only, file.write(array) invoked
         // TODO: Verify file.write(array) invoked, once and only
-    }
-
-    /**
-     * Asserts {@link HelloWorld#write(RandomAccessFile) write(RandomAccessFile file)} method
-     * returns the {@code file} argument.
-     *
-     * @throws IOException if an I/O error occurs.
-     */
-    @DisplayName("returns file")
-    @Test
-    void _ReturnFile_() throws IOException {
-        // GIVEN
-        var service = serviceInstance();
-        var file = mock(RandomAccessFile.class);
-        // WHEN
-        var actual = service.write(file);
-        // THEN
-        assertSame(file, actual);
+        assertSame(result, file);
     }
 
     /**
@@ -114,21 +87,21 @@ class HelloWorld_06_Write_RandomAccessFile_Test extends _HelloWorldTest {
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("writes 12 bytes")
+    @DisplayName("(file) -> writes 12 bytes")
     @Test
     @畵蛇添足
     void _Write12Bytes_(@TempDir File tempDir) throws IOException {
-        // GIVEN
+        // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
         var tmp = createTempFile("tmp", null, tempDir);
         var pos = current().nextLong(1024);
+        // ------------------------------------------------------------------------------------ WHEN
         try (var file = new RandomAccessFile(tmp, "rw")) {
             file.seek(pos);
-            // WHEN
-            service.write(file);
+            var result = service.write(file);
             file.getFD().sync();
         }
-        // THEN: tmp.length() is equal to (pos + 12)
-        // TODO: Verify tmp.length() is equal to (pos + BYTES)
+        // ------------------------------------------------------------------------------------ THEN
+        // TODO: Verify, tmp.length() is equal to (pos + BYTES)
     }
 }
