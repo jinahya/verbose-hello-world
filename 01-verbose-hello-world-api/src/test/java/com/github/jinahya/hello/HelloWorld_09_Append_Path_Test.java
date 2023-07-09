@@ -37,6 +37,7 @@ import static java.nio.ByteBuffer.allocate;
 import static java.nio.channels.FileChannel.open;
 import static java.nio.file.Files.createTempFile;
 import static java.nio.file.Files.size;
+import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.notNull;
@@ -95,24 +96,20 @@ class HelloWorld_09_Append_Path_Test extends _HelloWorldTest {
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("-> 12 bytes are appended")
+    @DisplayName("(path) -> 12 bytes are appended")
     @Test
     @畵蛇添足
     void _12BytesAppended_(@TempDir Path tempDir) throws IOException {
-        // GIVEN
+        // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
-        doAnswer(i -> {
-            WritableByteChannel channel = i.getArgument(0);
-            for (var src = allocate(BYTES); src.hasRemaining(); ) {
-                channel.write(src);
-            }
-            return channel;
-        }).when(service).write(any(WritableByteChannel.class));
         var path = createTempFile(tempDir, null, null);
+        if (current().nextBoolean()) {
+            // TODO: (Optional) write some bytes to the path
+        }
         var size = size(path);
-        // WHEN
-        service.append(path);
-        // THEN: 12 byte are appended to the path
-        // TODO: Assert size(path) is equal to size + BYTES
+        // ------------------------------------------------------------------------------------ WHEN
+        var result = service.append(path);
+        // ------------------------------------------------------------------------------------ THEN
+        // TODO: Assert, size(path) is equal to (size + BYTES)
     }
 }
