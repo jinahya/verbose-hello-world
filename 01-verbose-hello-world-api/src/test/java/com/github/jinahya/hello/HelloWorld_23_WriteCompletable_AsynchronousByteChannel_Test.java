@@ -26,14 +26,18 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.nio.channels.AsynchronousByteChannel;
-import java.util.concurrent.TimeUnit;
+import java.nio.channels.CompletionHandler;
 import java.util.concurrent.atomic.LongAdder;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentCaptor.forClass;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * A class for testing
@@ -48,13 +52,13 @@ class HelloWorld_23_WriteCompletable_AsynchronousByteChannel_Test
         extends _HelloWorldTest {
 
     @BeforeEach
-    void beforeEach() {
+    void _beforeEach() {
         _stub_PutBuffer_ToReturnTheBuffer_AsItsPositionIncreasedBy12();
     }
 
     /**
      * Verifies {@link HelloWorld#writeCompletable(AsynchronousByteChannel) writeAsync(channel)}
-     * method returns a completable future being completed with the {@code channel}.
+     * method returns a completable future being completed} with the {@code channel}.
      *
      * @throws Exception when failed to ge the result of the future.
      */
@@ -69,16 +73,19 @@ class HelloWorld_23_WriteCompletable_AsynchronousByteChannel_Test
         // ------------------------------------------------------------------------------------ WHEN
         var future = service.writeCompletable(channel);
         // ------------------------------------------------------------------------------------ THEN
-        assertNotNull(future);
-        assertFalse(future.isCancelled());
-        var result = future.get(8L, TimeUnit.SECONDS);
+        var result = future.handle((r, t) -> {
+            assertNotNull(r);
+            assertNull(t);
+            return r;
+        }).get(1L, SECONDS);
         assertEquals(channel, result);
         assertEquals(BYTES, writtenSoFar.intValue());
     }
 
     /**
-     * Verifies {@link HelloWorld#writeCompletable(AsynchronousByteChannel) writeAsync(channel)}
-     * method returns a completable future being completed exceptionally.
+     * Verifies
+     * {@link HelloWorld#writeCompletable(AsynchronousByteChannel) writeCompletable(channel)} method
+     * returns a completable future being completed exceptionally.
      */
     @DisplayName("(channel)completedExceptionally")
     @Test
@@ -90,8 +97,11 @@ class HelloWorld_23_WriteCompletable_AsynchronousByteChannel_Test
         // ------------------------------------------------------------------------------------ WHEN
         var future = service.writeCompletable(channel);
         // ------------------------------------------------------------------------------------ THEN
-        assertNotNull(future);
-        assertFalse(future.isCancelled());
-        // TODO: Verify future.join() throws a CompletionException
+        var thrown = future.handle((r, t) -> {
+            assertNull(r);
+            assertNotNull(t);
+            return t;
+        }).join();
+        log.info("completed exceptionally", thrown);
     }
 }

@@ -51,7 +51,7 @@ class HelloWorld_23_WriteCompletable_AsynchronousByteChannel_Arguments_Test
     void _ThrowNullPointerException_ChannelIsNull() {
         // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
-        AsynchronousByteChannel channel = null;
+        var channel = (AsynchronousByteChannel) null;
         // ------------------------------------------------------------------------------- WHEN/THEN
         assertThrows(
                 NullPointerException.class,

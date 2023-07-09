@@ -25,6 +25,7 @@ import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -132,15 +133,16 @@ abstract class _HelloWorldTest {
             throw new IllegalArgumentException("not a mock: " + channel);
         }
         willAnswer(i -> {
-            ByteBuffer src = i.getArgument(0);
-            assert src != null : "src should not be null";
-            assert src.hasRemaining() : "src should have remaining";
+            var src = i.getArgument(0, ByteBuffer.class);
             var attachment = i.getArgument(1);
             var handler = i.getArgument(2, CompletionHandler.class);
-            assert handler != null : "handler should not be null";
             handler.failed(new Throwable("just failing"), attachment);
             return null;
-        }).given(channel).write(any(), any(), any());
+        }).given(channel).write(
+                argThat(b -> b != null && b.hasRemaining()), // <src>
+                any(),                                       // <attachment>
+                notNull()                                    // handler
+        );
     }
 
     @SuppressWarnings({"unchecked"})
@@ -150,7 +152,7 @@ abstract class _HelloWorldTest {
         }
         requireNonNull(adder, "adder is null");
         willAnswer(i -> {
-            ByteBuffer src = i.getArgument(0);
+            var src = i.getArgument(0, ByteBuffer.class);
             var attachment = i.getArgument(1);
             var handler = i.getArgument(2, CompletionHandler.class);
             var written = current().nextInt(1, src.remaining() + 1);

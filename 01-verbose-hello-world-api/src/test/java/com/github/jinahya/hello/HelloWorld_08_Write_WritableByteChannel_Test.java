@@ -25,11 +25,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 import java.util.concurrent.atomic.LongAdder;
 
+import static com.github.jinahya.hello.HelloWorld.BYTES;
+import static java.nio.channels.Channels.newChannel;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -79,5 +83,19 @@ class HelloWorld_08_Write_WritableByteChannel_Test extends _HelloWorldTest {
         // TODO: Verify, channel.write(buffer) invoked, at least once.
         // TODO: Assert, writtenSoFar.intValue() is equal to BYTES.
         assertEquals(channel, result);
+    }
+
+    @org.junit.jupiter.api.Disabled("not implemented yet") // TODO: remove when implemented
+    @Test
+    void _ReadByteArrayInputStream_WriteByteArrayOutputStream() throws IOException {
+        var service = serviceInstance();
+        var output = new ByteArrayOutputStream(BYTES);
+        var writable = service.write(newChannel(output));
+        var input = new ByteArrayInputStream(output.toByteArray());
+        var readable = newChannel(input);
+        var buffer = ByteBuffer.allocate(BYTES);
+        while (buffer.hasRemaining()) {
+            readable.read(buffer);
+        }
     }
 }

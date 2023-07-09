@@ -31,9 +31,9 @@ import java.util.Objects;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-final class HelloWorldTestUtils {
+public final class HelloWorldTestUtils {
 
-    static <T extends ByteBuffer> T print(T buffer) {
+    public static <T extends ByteBuffer> T print(T buffer) {
         Objects.requireNonNull(buffer, "buffer is null");
         var padding = 11;
         System.out.println("---------------------------------------------------------------------");

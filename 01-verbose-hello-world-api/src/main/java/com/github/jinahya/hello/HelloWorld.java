@@ -150,9 +150,9 @@ public interface HelloWorld {
      */
     default <T extends OutputStream> T write(T stream) throws IOException {
         Objects.requireNonNull(stream, "stream is null");
-        // TODO: create an array of 12 bytes
-        // TODO: invoke set(byte[]) method with the array
-        // TODO: write the byte to the stream
+        // TODO: Create an array of 12 bytes
+        // TODO: Invoke set(byte[]) method with the array
+        // TODO: Write the array to the stream
         return null;
     }
 
@@ -174,10 +174,10 @@ public interface HelloWorld {
         if (file == null) {
             throw new NullPointerException("file is null");
         }
-        // TODO: Construct a FileOutputStream with file in appending mode
-        // TODO: Invoke write(stream) method with it
-        // TODO: Flush the stream
-        // TODO: Close the stream
+        // TODO: Create a new FileOutputStream with file in appending mode.
+        // TODO: Invoke write(stream) method with it.
+        // TODO: Flush the stream.
+        // TODO: Close the stream.
         return file;
     }
 
@@ -198,14 +198,14 @@ public interface HelloWorld {
         if (socket == null) {
             throw new NullPointerException("socket is null");
         }
-        // TODO: Implement!
+        // TODO: Invoke write(stream) with socket.outputStream.
         return socket;
     }
 
     /**
      * Writes <a href="#hello-world-bytes">hello-world-bytes</a> to specified data output.
      *
-     * @param <T>  output type parameter
+     * @param <T>  data output type parameter
      * @param data the data output to which bytes are written.
      * @return given {@code data}.
      * @throws NullPointerException if {@code data} is {@code null}.
@@ -258,16 +258,22 @@ public interface HelloWorld {
      * The buffer's position, on successful return, is incremented by {@value #BYTES}.
      * <pre>
      * Given,
-     *   0    &lt;= position                                                 &lt;= limit    &lt;= capacity
-     *   ↓       ↓                                                           ↓           ↓
-     * |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
-     *           |------------------------ remaining ------------------------|
+     *
+     *          4                                        25          31
+     *  0    &lt;= position                           &lt;= limit &lt;= capacity
+     *  ↓       ↓                                         ↓           ↓
+     * | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |
+     *          |<------------- remaining ------------->|
+     *                                 21
      *
      * Then, on successful return,
-     *   0                                                    &lt;= position &lt;= limit    &lt;= capacity
-     *   ↓                                                       ↓           ↓           ↓
-     * |   |   |'h'|'e'|'l'|'l'|'o'|','|' '|'w'|'o'|'r'|'l'|'d'|   |   |   |   |   |   |
-     *                                                           |-remaining-|
+     *
+     *                                 16                25          31
+     *  0                     &lt;= position          &lt;= limit &lt;= capacity
+     *  ↓                               ↓                 ↓           ↓
+     * | | | | |h|e|l|l|o|,| |w|o|r|l|d| | | | | | | | | | | | | | | |
+     *                                  |<- remaining ->|
+     *                                              9
      * </pre>
      *
      * @param <T>    buffer type parameter
@@ -499,8 +505,8 @@ public interface HelloWorld {
         Objects.requireNonNull(channel, "channel is null");
         var future = new CompletableFuture<T>();
         writeAsync(
-                channel,                    // channel
-                new CompletionHandler<>() { // handler
+                channel,                    // <channel>
+                new CompletionHandler<>() { // <handler>
                     @Override
                     public void completed(T result, Object attachment) {
                         future.complete(result);
@@ -511,7 +517,7 @@ public interface HelloWorld {
                         future.completeExceptionally(exc);
                     }
                 },
-                null                        // attachment
+                null                        // <attachment>
         );
         return future;
     }
