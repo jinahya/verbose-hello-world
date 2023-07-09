@@ -117,6 +117,7 @@ class HelloWorld_04_Send_Socket_Test extends _HelloWorldTest {
                 log.debug("connected to {}", client.getRemoteSocketAddress());
                 byte[] b = new byte[BYTES];
                 new DataInputStream(client.getInputStream()).readFully(b);
+                log.debug("{} bytes fully read from the server", b.length);
             } catch (IOException ioe) {
                 log.error("failed to connect/read to/from the server", ioe);
             }
