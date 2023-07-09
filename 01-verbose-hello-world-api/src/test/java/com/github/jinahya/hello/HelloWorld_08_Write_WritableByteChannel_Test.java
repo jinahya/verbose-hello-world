@@ -75,7 +75,7 @@ class HelloWorld_08_Write_WritableByteChannel_Test extends _HelloWorldTest {
         var writtenSoFar = new LongAdder();                          // <2>
         when(channel.write(argThat(b -> b != null && b.hasRemaining()))).thenAnswer(i -> { // <3>
             var src = i.getArgument(0, ByteBuffer.class);
-            var written = current().nextInt(src.remaining() + 1);
+            var written = current().nextInt(1, src.remaining() + 1);
             src.position(src.position() + written);
             writtenSoFar.add(written);
             return written;
