@@ -49,7 +49,7 @@ class HelloWorld_23_WriteCompletable_AsynchronousByteChannel_Test
 
     @BeforeEach
     void beforeEach() {
-        _stubPutBufferToReturnTheBufferAsItsPositionIncreasedBy12();
+        _stub_PutBuffer_ToReturnTheBuffer_AsItsPositionIncreasedBy12();
     }
 
     /**
@@ -65,7 +65,7 @@ class HelloWorld_23_WriteCompletable_AsynchronousByteChannel_Test
         var service = serviceInstance();
         var channel = mock(AsynchronousByteChannel.class);
         var writtenSoFar = new LongAdder();
-        stubToComplete(channel, writtenSoFar);
+        _stub_ToComplete(channel, writtenSoFar);
         // ------------------------------------------------------------------------------------ WHEN
         var future = service.writeCompletable(channel);
         // ------------------------------------------------------------------------------------ THEN
@@ -86,7 +86,7 @@ class HelloWorld_23_WriteCompletable_AsynchronousByteChannel_Test
         // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
         var channel = mock(AsynchronousByteChannel.class);
-        stubToFail(channel);
+        _stub_ToFail(channel);
         // ------------------------------------------------------------------------------------ WHEN
         var future = service.writeCompletable(channel);
         // ------------------------------------------------------------------------------------ THEN

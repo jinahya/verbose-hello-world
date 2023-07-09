@@ -48,7 +48,7 @@ class HelloWorld_08_Write_WritableByteChannel_Test extends _HelloWorldTest {
 
     @BeforeEach
     void _beforeEach() {
-        _stubPutBufferToReturnTheBufferAsItsPositionIncreasedBy12();
+        _stub_PutBuffer_ToReturnTheBuffer_AsItsPositionIncreasedBy12();
     }
 
     /**

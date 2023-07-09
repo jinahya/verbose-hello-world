@@ -127,7 +127,7 @@ abstract class _HelloWorldTest {
     }
 
     @SuppressWarnings({"unchecked"})
-    void stubToFail(AsynchronousByteChannel channel) {
+    void _stub_ToFail(AsynchronousByteChannel channel) {
         if (!mockingDetails(requireNonNull(channel, "channel is null")).isMock()) {
             throw new IllegalArgumentException("not a mock: " + channel);
         }
@@ -144,24 +144,25 @@ abstract class _HelloWorldTest {
     }
 
     @SuppressWarnings({"unchecked"})
-    void stubToComplete(AsynchronousByteChannel channel, LongAdder adder) {
+    void _stub_ToComplete(AsynchronousByteChannel channel, LongAdder adder) {
         if (!mockingDetails(requireNonNull(channel, "channel is null")).isMock()) {
             throw new IllegalArgumentException("not a mock: " + channel);
         }
         requireNonNull(adder, "adder is null");
         willAnswer(i -> {
             ByteBuffer src = i.getArgument(0);
-            assert src != null : "src should not be null";
-            assert src.hasRemaining() : "src should have remaining";
             var attachment = i.getArgument(1);
             var handler = i.getArgument(2, CompletionHandler.class);
-            assert handler != null : "handler should not be null";
             var written = current().nextInt(1, src.remaining() + 1);
             src.position(src.position() + written);
             adder.add(written);
             handler.completed(written, attachment);
             return null;
-        }).given(channel).write(any(), any(), any());
+        }).given(channel).write(
+                argThat(b -> b != null && b.hasRemaining()), // <src>
+                any(),                                       // <attachment>
+                notNull()                                    // handler
+        );
     }
 
     @SuppressWarnings({"unchecked"})
@@ -184,7 +185,7 @@ abstract class _HelloWorldTest {
      * method to return given {@code buffer} as its position increased by
      * {@value HelloWorld#BYTES}.
      */
-    void _stubPutBufferToReturnTheBufferAsItsPositionIncreasedBy12() {
+    void _stub_PutBuffer_ToReturnTheBuffer_AsItsPositionIncreasedBy12() {
         doAnswer(i -> {
             var buffer = i.getArgument(0, ByteBuffer.class);
             buffer.position(buffer.limit());

@@ -31,9 +31,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.LongAdder;
 
+import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
@@ -53,7 +53,7 @@ class HelloWorld_20_Write_AsynchronousByteChannel_Test extends _HelloWorldTest {
 
     @BeforeEach
     void _beforeEach() {
-        _stubPutBufferToReturnTheBufferAsItsPositionIncreasedBy12();
+        _stub_PutBuffer_ToReturnTheBuffer_AsItsPositionIncreasedBy12();
     }
 
     /**
@@ -64,7 +64,7 @@ class HelloWorld_20_Write_AsynchronousByteChannel_Test extends _HelloWorldTest {
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
      */
-    @DisplayName("(channel) -> channel.write(buffer)+")
+    @DisplayName("(channel) -> channel.write(put(buffer))+")
     @Test
     void _PutBufferWriteBufferToChannel_() throws InterruptedException, ExecutionException {
         // ----------------------------------------------------------------------------------- GIVEN
@@ -75,7 +75,7 @@ class HelloWorld_20_Write_AsynchronousByteChannel_Test extends _HelloWorldTest {
             var future = mock(Future.class);
             when(future.get()).thenAnswer(g -> {
                 var src = w.getArgument(0, ByteBuffer.class);
-                var written = current().nextInt(src.remaining() + 1);
+                var written = current().nextInt(1, src.remaining() + 1);
                 src.position(src.position() + written);
                 writtenSoFar.add(written);
                 return written;
@@ -83,40 +83,12 @@ class HelloWorld_20_Write_AsynchronousByteChannel_Test extends _HelloWorldTest {
             return future;
         });
         // ------------------------------------------------------------------------------------ WHEN
-        service.write(channel);
+        var result = service.write(channel);
         // ------------------------------------------------------------------------------------ THEN
         verify(service, times(1)).put(bufferCaptor().capture());
         var buffer = bufferCaptor().getValue();
-        verify(channel, atLeastOnce()).write(buffer);            // <1>
-        assertEquals(HelloWorld.BYTES, writtenSoFar.intValue()); // <2>
-    }
-
-    /**
-     * Verifies {@link HelloWorld#write(AsynchronousByteChannel) write(channel)} method returns
-     * given {@code channel}.
-     *
-     * @throws InterruptedException if interrupted while testing.
-     * @throws ExecutionException   if failed to execute.
-     */
-    @DisplayName("(channel)channel")
-    @Test
-    void _ReturnChannel_() throws InterruptedException, ExecutionException {
-        // ----------------------------------------------------------------------------------- GIVEN
-        var service = serviceInstance();
-        var channel = mock(AsynchronousByteChannel.class);
-        when(channel.write(argThat(a -> a != null && a.hasRemaining()))).thenAnswer(w -> {
-            var future = mock(Future.class);
-            when(future.get()).thenAnswer(g -> {
-                var src = w.getArgument(0, ByteBuffer.class);
-                var written = src.remaining();
-                src.position(src.limit());
-                return written;
-            });
-            return future;
-        });
-        // ------------------------------------------------------------------------------------ WHEN
-        var result = service.write(channel);
-        // ------------------------------------------------------------------------------------ THEN
-        assertSame(channel, result);
+        verify(channel, atLeastOnce()).write(buffer); // <1>
+        assertEquals(BYTES, writtenSoFar.intValue()); // <2>
+        assertEquals(channel, result);
     }
 }

@@ -36,7 +36,9 @@ import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -58,19 +60,19 @@ class HelloWorld_21_WriteAsync_AsynchronousByteChannelWithExecutor_Test
 
     @BeforeEach
     void beforeEach() {
-        _stubPutBufferToReturnTheBufferAsItsPositionIncreasedBy12();
+        _stub_PutBuffer_ToReturnTheBuffer_AsItsPositionIncreasedBy12();
     }
 
     /**
      * Asserts
      * {@link HelloWorld#writeAsync(AsynchronousByteChannel, Executor) write(channel, executor)}
-     * method returns a future whose result is same as given {@code channel}, and asserts
-     * {@value HelloWorld#BYTES} bytes has been written to the {@code channel}.
+     * method returns a future of {@code channel}, and asserts {@value HelloWorld#BYTES} bytes has
+     * been written to the {@code channel}.
      *
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
      */
-    @DisplayName("channel.write(buffer)+")
+    @DisplayName("(channel) -> channel.write(buffer)+")
     @Test
     void __() throws InterruptedException, ExecutionException {
         // ----------------------------------------------------------------------------------- GIVEN
@@ -80,9 +82,9 @@ class HelloWorld_21_WriteAsync_AsynchronousByteChannelWithExecutor_Test
         doAnswer(w -> {
             var future = mock(Future.class);
             when(future.get()).thenAnswer(g -> {
-                var buffer = w.getArgument(0, ByteBuffer.class);
-                var written = current().nextInt(1, buffer.remaining() + 1);
-                buffer.position(buffer.position() + written);
+                var src = w.getArgument(0, ByteBuffer.class);
+                var written = current().nextInt(1, src.remaining() + 1);
+                src.position(src.position() + written);
                 writtenSoFar.add(written);
                 return written;
             });
@@ -95,7 +97,9 @@ class HelloWorld_21_WriteAsync_AsynchronousByteChannelWithExecutor_Test
         // ------------------------------------------------------------------------------------ THEN
         verify(service, times(1)).put(bufferCaptor().capture());
         var buffer = bufferCaptor().getValue();
+        assertNotNull(buffer);
         assertEquals(BYTES, buffer.capacity());
+        verify(channel, atLeastOnce()).write(buffer);
         assertEquals(channel, result);
     }
 }

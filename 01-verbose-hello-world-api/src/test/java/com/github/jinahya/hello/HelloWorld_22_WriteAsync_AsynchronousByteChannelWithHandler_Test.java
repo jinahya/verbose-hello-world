@@ -33,10 +33,13 @@ import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -53,8 +56,8 @@ class HelloWorld_22_WriteAsync_AsynchronousByteChannelWithHandler_Test
         extends _HelloWorldTest {
 
     @BeforeEach
-    void beforeEach() {
-        _stubPutBufferToReturnTheBufferAsItsPositionIncreasedBy12();
+    void _beforeEach() {
+        _stub_PutBuffer_ToReturnTheBuffer_AsItsPositionIncreasedBy12();
     }
 
     /**
@@ -71,13 +74,19 @@ class HelloWorld_22_WriteAsync_AsynchronousByteChannelWithHandler_Test
         var service = serviceInstance();
         var channel = mock(AsynchronousByteChannel.class);
         var writtenSoFar = new LongAdder();
-        stubToComplete(channel, writtenSoFar);
+        _stub_ToComplete(channel, writtenSoFar);
         CompletionHandler<AsynchronousByteChannel, Object> handler = mock(CompletionHandler.class);
         var attachment = current().nextBoolean() ? null : new Object();
         // ------------------------------------------------------------------------------------ WHEN
         service.writeAsync(channel, handler, attachment);
         // ------------------------------------------------------------------------------------ THEN
         verify(handler, timeout(SECONDS.toMillis(8L)).times(1)).completed(channel, attachment);
+        verify(service, times(1)).put(bufferCaptor().capture());
+        var buffer = bufferCaptor().getValue();
+        assertNotNull(buffer);
+        assertEquals(BYTES, buffer.capacity());
+        verify(channel, atLeastOnce())
+                .write(same(buffer), same(attachment), notNull(CompletionHandler.class));
         assertEquals(BYTES, writtenSoFar.intValue());
     }
 
@@ -94,13 +103,12 @@ class HelloWorld_22_WriteAsync_AsynchronousByteChannelWithHandler_Test
         // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
         var channel = mock(AsynchronousByteChannel.class);
-        stubToFail(channel);
+        _stub_ToFail(channel);
         CompletionHandler<AsynchronousByteChannel, Object> handler = mock(CompletionHandler.class);
         var attachment = current().nextBoolean() ? null : new Object();
         // ------------------------------------------------------------------------------------ WHEN
         service.writeAsync(channel, handler, attachment);
         // ------------------------------------------------------------------------------------ THEN
-        verify(handler, timeout(SECONDS.toMillis(8L)).times(1))
-                .failed(notNull(), same(attachment));
+        verify(handler, timeout(SECONDS.toMillis(8L)).times(1)).failed(notNull(), same(attachment));
     }
 }

@@ -442,9 +442,9 @@ public interface HelloWorld {
         Callable<T> callable = () -> {
             return write(channel);
         };
-        FutureTask<T> command = new FutureTask<>(callable);
-        executor.execute(command); // Runnable
-        return command;            // Future<T>
+        var command = new FutureTask<>(callable);
+        executor.execute(command); // as Runnable
+        return command;            // as Future<T>
     }
 
     /**
@@ -463,9 +463,9 @@ public interface HelloWorld {
         Objects.requireNonNull(handler, "handler is null");
         var buffer = put(ByteBuffer.allocate(BYTES)).flip();
         channel.write(
-                buffer,                     // src
-                attachment,                 // attachment
-                new CompletionHandler<>() { // handler
+                buffer,                     // <src>
+                attachment,                 // <attachment>
+                new CompletionHandler<>() { // <handler>
                     @Override
                     public void completed(Integer result, A attachment) {
                         if (!buffer.hasRemaining()) {
@@ -473,9 +473,9 @@ public interface HelloWorld {
                             return;
                         }
                         channel.write(
-                                buffer,     // src
-                                attachment, // attachment
-                                this        // handler
+                                buffer,     // <src>
+                                attachment, // <attachment>
+                                this        // <handler>
                         );
                     }
 

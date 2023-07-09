@@ -53,7 +53,7 @@ class HelloWorld_33_WriteCompletable_AsynchronousFileChannel_Test extends _Hello
 
     @BeforeEach
     void beforeEach() {
-        _stubPutBufferToReturnTheBufferAsItsPositionIncreasedBy12();
+        _stub_PutBuffer_ToReturnTheBuffer_AsItsPositionIncreasedBy12();
     }
 
     /**
@@ -70,7 +70,7 @@ class HelloWorld_33_WriteCompletable_AsynchronousFileChannel_Test extends _Hello
         var service = serviceInstance();
         var channel = mock(AsynchronousByteChannel.class);
         var writtenSoFar = new LongAdder();
-        stubToComplete(channel, writtenSoFar);
+        _stub_ToComplete(channel, writtenSoFar);
         // ------------------------------------------------------------------------------------ WHEN
         var future = service.writeCompletable(channel);
         // ------------------------------------------------------------------------------------ THEN
@@ -91,7 +91,7 @@ class HelloWorld_33_WriteCompletable_AsynchronousFileChannel_Test extends _Hello
         // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
         var channel = mock(AsynchronousByteChannel.class);
-        stubToFail(channel);
+        _stub_ToFail(channel);
         // ------------------------------------------------------------------------------------ WHEN
         var future = service.writeCompletable(channel);
         // ------------------------------------------------------------------------------------ THEN

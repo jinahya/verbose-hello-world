@@ -70,7 +70,7 @@ class HelloWorld_09_Append_Path_Test extends _HelloWorldTest {
 
     @DisplayName("(path) -> write(FileChannel.open(path, CREATE, WRITE, APPEND))")
     @Test
-    void _InvokeWriteChannelOpenedFromPath_() throws IOException {
+    void __() throws IOException {
         // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
         var path = mock(Path.class);
@@ -99,7 +99,7 @@ class HelloWorld_09_Append_Path_Test extends _HelloWorldTest {
     @DisplayName("(path) -> 12 bytes are appended")
     @Test
     @畵蛇添足
-    void _12BytesAppended_(@TempDir Path tempDir) throws IOException {
+    void __(@TempDir Path tempDir) throws IOException {
         // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
         var path = createTempFile(tempDir, null, null);
