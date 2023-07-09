@@ -28,7 +28,9 @@ import org.junit.jupiter.api.Test;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
+import java.nio.channels.Pipe;
 import java.nio.channels.WritableByteChannel;
 import java.util.concurrent.atomic.LongAdder;
 
@@ -36,6 +38,7 @@ import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.channels.Channels.newChannel;
 import static java.util.concurrent.ThreadLocalRandom.current;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
@@ -99,5 +102,24 @@ class HelloWorld_08_Write_WritableByteChannel_Test extends _HelloWorldTest {
         while (buffer.hasRemaining()) {
             readable.read(buffer);
         }
+    }
+
+    @org.junit.jupiter.api.Disabled("not implemented yet") // TODO: remove when implemented
+    @Test
+    void _ReadPipeSource_WritePipeSink() throws IOException, InterruptedException {
+        var service = serviceInstance();
+        var pipe = Pipe.open();
+        var thread = new Thread(() -> {
+            try {
+                service.write(pipe.sink());
+            } catch (final IOException ioe) {
+                throw new UncheckedIOException("failed to write", ioe);
+            }
+        });
+        thread.start();
+        for (var buffer = ByteBuffer.allocate(BYTES); buffer.hasRemaining(); ) {
+            pipe.source().read(buffer);
+        }
+        thread.join(SECONDS.toMillis(1L));
     }
 }
