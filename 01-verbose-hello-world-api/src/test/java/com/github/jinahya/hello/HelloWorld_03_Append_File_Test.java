@@ -36,6 +36,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.io.File.createTempFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.notNull;
@@ -94,7 +95,7 @@ class HelloWorld_03_Append_File_Test extends _HelloWorldTest {
             // TODO: Verify, service.write(constructed.get(0)) invoked, once.
             // TODO: Verify, constructed.get(0).flush() invoked, once.
             // TODO: Verify, constructed.get(0).close() invoked, once.
-            // TODO: Assert, result is same as file.
+            assertSame(file, result);
         }
     }
 
@@ -118,7 +119,7 @@ class HelloWorld_03_Append_File_Test extends _HelloWorldTest {
         // ------------------------------------------------------------------------------------ WHEN
         var result = service.append(file);
         // ------------------------------------------------------------------------------------ THEN
-        // TODO: Assert, result is same as file
         // TODO: Assert, 12 bytes are appended to the file
+        assertSame(file, result);
     }
 }
