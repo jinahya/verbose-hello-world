@@ -106,6 +106,7 @@ class HelloWorld_04_Send_Socket_Test extends _HelloWorldTest {
                 try (var client = server.accept()) {
                     log.debug("accepted from {}", client.getRemoteSocketAddress());
                     service.send(client);
+                    client.getOutputStream().flush();
                 } catch (IOException ioe) {
                     log.error("failed to accept/work", ioe);
                 }
