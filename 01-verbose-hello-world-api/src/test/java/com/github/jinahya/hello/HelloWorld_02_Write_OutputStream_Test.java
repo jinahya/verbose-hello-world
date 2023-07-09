@@ -27,14 +27,13 @@ import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.EOFException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
+import java.io.UncheckedIOException;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
-import static java.lang.Thread.currentThread;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -100,22 +99,13 @@ class HelloWorld_02_Write_OutputStream_Test extends _HelloWorldTest {
     void _ReadPipedInputStream_WritePipedOutputStream() throws IOException, InterruptedException {
         var service = serviceInstance();
         try (var pos = new PipedOutputStream();
-             var pis = new PipedInputStream(pos, BYTES)) {
+             var pis = new PipedInputStream(pos, 1)) {
             var thread = new Thread(() -> {
-                byte[] b = new byte[BYTES];
-                int off = 0;
-                while (!currentThread().isInterrupted() && off < b.length) {
-                    try {
-                        int r = pis.read(b, off, b.length - off);
-                        if (r == -1) {
-                            throw new EOFException("unexpected eof");
-                        }
-                        off += r;
-                    } catch (IOException ioe) {
-                        log.error("failed to read", ioe);
-                    }
+                try {
+                    var array = pis.readNBytes(BYTES);
+                } catch (final IOException ioe) {
+                    throw new UncheckedIOException("failed to read", ioe);
                 }
-                assertEquals(BYTES, off);
             });
             thread.start();
             service.write(pos);
