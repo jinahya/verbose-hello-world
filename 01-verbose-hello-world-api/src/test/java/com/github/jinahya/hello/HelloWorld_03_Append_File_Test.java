@@ -38,8 +38,10 @@ import static java.io.File.createTempFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 
@@ -78,21 +80,22 @@ class HelloWorld_03_Append_File_Test extends _HelloWorldTest {
         var service = serviceInstance();
         var file = mock(File.class);
         MockInitializer<FileOutputStream> initializer = (m, c) -> {
-            log.debug("mock: {}", m);
-            assertSame(FileOutputStream.class.getConstructor(File.class, boolean.class),
-                       c.constructor());
+            assertEquals(FileOutputStream.class.getConstructor(File.class, boolean.class),
+                         c.constructor());
             var arguments = c.arguments();
             assertEquals(file, arguments.get(0));
             assertTrue((boolean) arguments.get(1));
             assertEquals(1, c.getCount());
+            doNothing().when(m).write(any(byte[].class));
         };
         try (var construction = mockConstruction(FileOutputStream.class, initializer)) {
             // -------------------------------------------------------------------------------- WHEN
-            service.append(file);
+            var result = service.append(file);
             // ---------------------------------------------------------------------------------THEN
             var constructed = construction.constructed();
             // TODO: Assert, constructed.size() is equal to 1
             // TODO: Verify, service.write(constructed.get(0)) invoked, once
+            // TODO: Verify, constructed.get(0).flush() invoked, once
         }
     }
 
