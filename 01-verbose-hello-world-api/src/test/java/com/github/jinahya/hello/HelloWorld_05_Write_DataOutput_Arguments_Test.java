@@ -48,7 +48,7 @@ class HelloWorld_05_Write_DataOutput_Arguments_Test extends _HelloWorldTest {
     void _ThrowNullPointerException_DataIsNull() {
         // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
-        DataOutput data = null;
+        var data = (DataOutput) null;
         // ------------------------------------------------------------------------------- WHEN/THEN
         assertThrows(NullPointerException.class, () -> service.write(data));
     }

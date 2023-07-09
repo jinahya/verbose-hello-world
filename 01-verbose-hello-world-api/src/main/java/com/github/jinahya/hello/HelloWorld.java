@@ -205,7 +205,7 @@ public interface HelloWorld {
     /**
      * Writes <a href="#hello-world-bytes">hello-world-bytes</a> to specified data output.
      *
-     * @param <T>  channel type parameter
+     * @param <T>  output type parameter
      * @param data the data output to which bytes are written.
      * @return given {@code data}.
      * @throws NullPointerException if {@code data} is {@code null}.
