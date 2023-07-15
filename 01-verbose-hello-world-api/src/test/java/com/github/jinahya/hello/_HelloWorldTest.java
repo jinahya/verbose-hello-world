@@ -53,6 +53,7 @@ import static org.mockito.ArgumentMatchers.longThat;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockingDetails;
 import static org.mockito.Mockito.when;
 
@@ -149,8 +150,12 @@ abstract class _HelloWorldTest {
         );
     }
 
+    <T extends AsynchronousByteChannel> T _stub_ToComplete(T channel) {
+        return _stub_ToComplete(channel, mock(LongAdder.class));
+    }
+
     @SuppressWarnings({"unchecked"})
-    void _stub_ToComplete(AsynchronousByteChannel channel, LongAdder adder) {
+    <T extends AsynchronousByteChannel> T _stub_ToComplete(T channel, LongAdder adder) {
         if (!mockingDetails(requireNonNull(channel, "channel is null")).isMock()) {
             throw new IllegalArgumentException("not a mock: " + channel);
         }
@@ -169,6 +174,7 @@ abstract class _HelloWorldTest {
                 any(),                                       // <attachment>
                 notNull()                                    // <handler>
         );
+        return channel;
     }
 
     @SuppressWarnings({"unchecked"})
