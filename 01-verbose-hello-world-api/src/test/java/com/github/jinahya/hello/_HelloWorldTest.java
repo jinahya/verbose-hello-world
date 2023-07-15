@@ -127,13 +127,12 @@ abstract class _HelloWorldTest {
         );
     }
 
-    @SuppressWarnings({"unchecked"})
-    void _stub_ToFail(AsynchronousByteChannel channel) {
-        _stub_ToFail(channel, new Throwable("just failing"));
+    Throwable _stub_ToFail(AsynchronousByteChannel channel) {
+        return _stub_ToFail(channel, new Throwable("just failing"));
     }
 
     @SuppressWarnings({"unchecked"})
-    void _stub_ToFail(AsynchronousByteChannel channel, Throwable exc) {
+    <T extends Throwable> T _stub_ToFail(AsynchronousByteChannel channel, T exc) {
         if (!mockingDetails(requireNonNull(channel, "channel is null")).isMock()) {
             throw new IllegalArgumentException("not a mock: " + channel);
         }
@@ -146,8 +145,9 @@ abstract class _HelloWorldTest {
         }).given(channel).write(
                 argThat(b -> b != null && b.hasRemaining()), // <src>
                 any(),                                       // <attachment>
-                notNull()                                    // handler
+                notNull()                                    // <handler>
         );
+        return exc;
     }
 
     <T extends AsynchronousByteChannel> T _stub_ToComplete(T channel) {

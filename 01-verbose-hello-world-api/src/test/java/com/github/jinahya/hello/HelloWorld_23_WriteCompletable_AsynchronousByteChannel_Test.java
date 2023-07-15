@@ -106,8 +106,7 @@ class HelloWorld_23_WriteCompletable_AsynchronousByteChannel_Test
         // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
         var channel = mock(AsynchronousByteChannel.class);
-        var exc = mock(Throwable.class);
-        _stub_ToFail(channel, exc);
+        var exc = _stub_ToFail(channel, mock(Throwable.class));
         // ------------------------------------------------------------------------------------ WHEN
         var future = service.writeCompletable(channel);
         // ------------------------------------------------------------------------------------ THEN
