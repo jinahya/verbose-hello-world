@@ -37,6 +37,7 @@ import static java.nio.ByteBuffer.allocate;
 import static java.nio.channels.FileChannel.open;
 import static java.nio.file.Files.createTempFile;
 import static java.nio.file.Files.size;
+import static java.nio.file.StandardOpenOption.WRITE;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -106,7 +107,14 @@ class HelloWorld_09_Append_Path_Test extends _HelloWorldTest {
         var service = serviceInstance();
         var path = createTempFile(tempDir, null, null);
         if (current().nextBoolean()) {
-            // TODO: (Optional) write some bytes to the path
+            // write some bytes to the path
+            try (var channel = open(path, WRITE)) {
+                var buffer = allocate(current().nextInt(1024));
+                while (buffer.hasRemaining()) {
+                    var written = channel.write(buffer);
+                }
+                channel.force(false);
+            }
         }
         var size = size(path);
         // ------------------------------------------------------------------------------------ WHEN
