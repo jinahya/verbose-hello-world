@@ -38,6 +38,7 @@ import static java.nio.channels.FileChannel.open;
 import static java.nio.file.Files.createTempFile;
 import static java.nio.file.Files.size;
 import static java.util.concurrent.ThreadLocalRandom.current;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.notNull;
@@ -62,7 +63,7 @@ class HelloWorld_09_Append_Path_Test extends _HelloWorldTest {
         doAnswer(i -> {
             var channel = i.getArgument(0, WritableByteChannel.class);
             for (var buffer = allocate(BYTES); buffer.hasRemaining(); ) {
-                channel.write(buffer);
+                var written = channel.write(buffer);
             }
             return channel;
         }).when(serviceInstance()).write(notNull(WritableByteChannel.class));
@@ -81,7 +82,7 @@ class HelloWorld_09_Append_Path_Test extends _HelloWorldTest {
             var result = service.append(path);
             // -------------------------------------------------------------------------------- THEN
             // TODO: Verify, FileChannel.open(path, options) invoked, once
-            // TODO: Assert, options contains both WRITE and APPEND
+            // TODO: Assert, options contains WRITE, CREATE, and APPEND, only
             // TODO: Verify, write(channel) invoked, once.
             // TODO: Verify, channel.force(false) invoked, once.
             // TODO: Verify, channel.close() invoked, once.
@@ -96,6 +97,7 @@ class HelloWorld_09_Append_Path_Test extends _HelloWorldTest {
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
+    @org.junit.jupiter.api.Disabled("not implemented yet") // TODO: Remove when implemented
     @DisplayName("(path) -> 12 bytes are appended")
     @Test
     @畵蛇添足
@@ -110,6 +112,6 @@ class HelloWorld_09_Append_Path_Test extends _HelloWorldTest {
         // ------------------------------------------------------------------------------------ WHEN
         var result = service.append(path);
         // ------------------------------------------------------------------------------------ THEN
-        // TODO: Assert, size(path) is equal to (size + BYTES)
+        assertEquals(size + BYTES, size(path));
     }
 }

@@ -343,17 +343,19 @@ public interface HelloWorld {
      * @return given {@code path}.
      * @throws NullPointerException if {@code path} is {@code null}.
      * @throws IOException          if an I/O error occurs.
-     * @implSpec The default implementation opens a {@link FileChannel} from {@code path} in
-     * {@link StandardOpenOption#APPEND appending mode}, invokes
-     * {@link #write(WritableByteChannel) write(channel)} method with it, and returns the
-     * {@code path}.
+     * @implSpec The default implementation opens a {@link FileChannel} from {@code path} with
+     * {@link StandardOpenOption#CREATE}, {@link StandardOpenOption#WRITE}, and
+     * {@link StandardOpenOption#APPEND}, and invokes
+     * {@link #write(WritableByteChannel) write(channel)} method with it,
+     * {@link FileChannel#force(boolean) forces}/{@link WritableByteChannel#close() closes} the
+     * channel, and returns the {@code path}.
      * @see FileChannel#open(Path, OpenOption...)
      * @see StandardOpenOption#APPEND
      * @see #write(WritableByteChannel)
      */
     default <T extends Path> T append(T path) throws IOException {
         Objects.requireNonNull(path, "path is null");
-        // TODO: Implement!
+        // TODO: Open a file channel from the path and invoke write(channel) method with it.
         return path;
     }
 
