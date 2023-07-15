@@ -98,7 +98,10 @@ class HelloWorld_22_WriteAsync_AsynchronousByteChannelWithHandler_Test
      * writeAsync(channel, handler, attachment)} method invokes
      * {@link CompletionHandler#failed(Throwable, Object) handler.failed(exc, attachment)}.
      */
-    @DisplayName("(channel, handler, attachment) -> handler.failed(exc, attachment)")
+    @DisplayName("""
+            (channel, handler, attachment)
+            -> put(buffer[12])
+            -> handler.failed(exc, attachment)""")
     @Test
     @SuppressWarnings({"unchecked"})
     void _Failed_() {
