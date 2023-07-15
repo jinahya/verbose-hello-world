@@ -70,6 +70,7 @@ class HelloWorld_20_Write_AsynchronousByteChannel_Test extends _HelloWorldTest {
         var service = serviceInstance();
         var channel = mock(AsynchronousByteChannel.class);
         var writtenSoFar = new LongAdder();
+        _stub_ToWriteSome(channel, writtenSoFar);
         when(channel.write(argThat(s -> s != null && s.hasRemaining()))).thenAnswer(w -> {
             var future = mock(Future.class);
             when(future.get()).thenAnswer(g -> {

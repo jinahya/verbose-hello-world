@@ -41,6 +41,7 @@ import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.channels.WritableByteChannel;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.LongAdder;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
@@ -177,7 +178,24 @@ abstract class _HelloWorldTest {
         return channel;
     }
 
-    @SuppressWarnings({"unchecked"})
+    void _stub_ToWriteSome(AsynchronousByteChannel channel, LongAdder adder) {
+        if (!mockingDetails(requireNonNull(channel, "channel is null")).isMock()) {
+            throw new IllegalArgumentException("not a mock: " + channel);
+        }
+        requireNonNull(adder, "adder is null");
+        willAnswer(w -> {
+            var future = mock(Future.class);
+            when(future.get()).thenAnswer(g -> {
+                var src = w.getArgument(0, ByteBuffer.class);
+                var written = current().nextInt(1, src.remaining() + 1);
+                src.position(src.position() + written);
+                adder.add(written);
+                return written;
+            });
+            return future;
+        }).given(channel).write(argThat(b -> b != null && b.hasRemaining()));
+    }
+
     void stubToWriteSome(WritableByteChannel channel, LongAdder adder) throws IOException {
         if (!mockingDetails(requireNonNull(channel, "channel is null")).isMock()) {
             throw new IllegalArgumentException("not a mock: " + channel);

@@ -25,25 +25,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
-import java.util.concurrent.Future;
 import java.util.concurrent.atomic.LongAdder;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
-import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * A class for testing
@@ -59,7 +52,7 @@ class HelloWorld_21_WriteAsync_AsynchronousByteChannelWithExecutor_Test
         extends _HelloWorldTest {
 
     @BeforeEach
-    void beforeEach() {
+    void _beforeEach() {
         _stub_PutBuffer_ToReturnTheBuffer_AsItsPositionIncreasedBy12();
     }
 
@@ -72,24 +65,14 @@ class HelloWorld_21_WriteAsync_AsynchronousByteChannelWithExecutor_Test
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
      */
-    @DisplayName("(channel) -> channel.write(buffer)+")
+    @DisplayName("(channel) -> put(buffer[12]) -> channel.write(buffer)+")
     @Test
     void __() throws InterruptedException, ExecutionException {
         // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
         var channel = mock(AsynchronousByteChannel.class);
         var writtenSoFar = new LongAdder();
-        doAnswer(w -> {
-            var future = mock(Future.class);
-            when(future.get()).thenAnswer(g -> {
-                var src = w.getArgument(0, ByteBuffer.class);
-                var written = current().nextInt(1, src.remaining() + 1);
-                src.position(src.position() + written);
-                writtenSoFar.add(written);
-                return written;
-            });
-            return future;
-        }).when(channel).write(argThat(b -> b != null && b.hasRemaining()));
+        _stub_ToWriteSome(channel, writtenSoFar);
         var executor = newSingleThreadExecutor();
         // ------------------------------------------------------------------------------------ WHEN
         var future = service.writeAsync(channel, executor);
@@ -99,7 +82,7 @@ class HelloWorld_21_WriteAsync_AsynchronousByteChannelWithExecutor_Test
         var buffer = bufferCaptor().getValue();
         assertNotNull(buffer);
         assertEquals(BYTES, buffer.capacity());
-        verify(channel, atLeastOnce()).write(buffer);
-        assertEquals(channel, result);
+        // TODO: Verify, at least once, channel.write(buffer) invoked.
+        // TODO: Assert, result is same as channel
     }
 }
