@@ -21,7 +21,6 @@ package com.github.jinahya.hello;
  */
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.DataOutput;
 import java.io.File;
@@ -48,9 +47,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 /**
  * An interface for generating <a href="#hello-world-bytes">hello-world-bytes</a> to various
@@ -76,7 +72,7 @@ public interface HelloWorld {
      * @return a logger for this interface.
      */
     private Logger log() {
-        return LoggerFactory.getLogger(getClass());
+        return HelloWorldLoggers.log(getClass());
     }
 
     /**
@@ -85,7 +81,7 @@ public interface HelloWorld {
      * @return a logger for this interface.
      */
     private System.Logger logger() {
-        return System.getLogger(getClass().getName());
+        return HelloWorldLoggers.logger(getClass());
     }
 
     /**
@@ -95,12 +91,12 @@ public interface HelloWorld {
             int BYTES = 12;
 
     /**
-     * Sets <a href="#hello-world-bytes">hello-world-bytes</a> on specified array starting at
+     * Sets the <a href="#hello-world-bytes">hello-world-bytes</a> on specified array starting at
      * specified position.
      * <p>
      * The elements in the array, on successful return, will be set as follows.
      * <pre>
-     *   0    &lt;= index                                  index + 12    &lt;= array.length
+     *   0    &lt;= index                                 (index + 12)   &lt;= array.length
      *   ↓       ↓                                               ↓       ↓
      * |   |...|'h'|'e'|'l'|'l'|'o'|','|' '|'w'|'o'|'r'|'l'|'d'|...|   |
      * </pre>
@@ -117,7 +113,7 @@ public interface HelloWorld {
     byte[] set(byte[] array, int index);
 
     /**
-     * Sets <a href="#hello-world-bytes">hello-world-bytes</a> on specified array starting at
+     * Sets the <a href="#hello-world-bytes">hello-world-bytes</a> on specified array starting at
      * {@code 0}.
      *
      * @param array the array on which bytes are set.
@@ -134,7 +130,7 @@ public interface HelloWorld {
     }
 
     /**
-     * Writes <a href="#hello-world-bytes">hello-world-bytes</a> to specified output stream.
+     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified output stream.
      *
      * @param <T>    stream type parameter
      * @param stream the output stream to which bytes are written.
@@ -157,7 +153,7 @@ public interface HelloWorld {
     }
 
     /**
-     * Appends <a href="#hello-world-bytes">hello-world-bytes</a> to the end of specified file.
+     * Appends the <a href="#hello-world-bytes">hello-world-bytes</a> to the end of specified file.
      *
      * @param <T>  file type parameter
      * @param file the file to which bytes are appended.
@@ -182,7 +178,7 @@ public interface HelloWorld {
     }
 
     /**
-     * Sends <a href="#hello-world-bytes">hello-world-bytes</a> through specified socket.
+     * Sends the <a href="#hello-world-bytes">hello-world-bytes</a> through specified socket.
      *
      * @param <T>    socket type parameter
      * @param socket the socket through which bytes are sent.
@@ -203,7 +199,7 @@ public interface HelloWorld {
     }
 
     /**
-     * Writes <a href="#hello-world-bytes">hello-world-bytes</a> to specified data output.
+     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified data output.
      *
      * @param <T>  data output type parameter
      * @param data the data output to which bytes are written.
@@ -253,7 +249,7 @@ public interface HelloWorld {
     }
 
     /**
-     * Puts <a href="#hello-world-bytes">hello-world-bytes</a> on specified byte buffer.
+     * Puts the <a href="#hello-world-bytes">hello-world-bytes</a> on specified byte buffer.
      * <p>
      * The buffer's position, on successful return, is incremented by {@value #BYTES}.
      * <pre>
@@ -263,7 +259,7 @@ public interface HelloWorld {
      *  0    &lt;= position                           &lt;= limit &lt;= capacity
      *  ↓       ↓                                         ↓           ↓
      * | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |
-     *          |<------------- remaining ------------->|
+     *         |--------------- remaining ---------------|
      *                                 21
      *
      * Then, on successful return,
@@ -272,7 +268,7 @@ public interface HelloWorld {
      *  0                     &lt;= position          &lt;= limit &lt;= capacity
      *  ↓                               ↓                 ↓           ↓
      * | | | | |h|e|l|l|o|,| |w|o|r|l|d| | | | | | | | | | | | | | | |
-     *                                  |<- remaining ->|
+     *                                 |--- remaining ---|
      *                                              9
      * </pre>
      *
@@ -307,9 +303,11 @@ public interface HelloWorld {
             throw new BufferOverflowException();
         }
         if (buffer.hasArray()) {
-            // TODO: Implement!
+            // TODO: Invoke set(buffer.array(), (buffer.arrayOffset() + buffer.position())
+            // TODO: Increment buffer.position by 12
         } else {
-            // TODO: Implement!
+            // TODO: Invoke set(array[12])
+            // TODO: Put the array to the buffer
         }
         return buffer;
     }
@@ -338,41 +336,6 @@ public interface HelloWorld {
         }
         // TODO: Implement!
         return channel;
-    }
-
-    /**
-     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to a path supplied by specified
-     * supplier, passing a channel, applied to specified function with the {@code path}, to
-     * {@link #write(WritableByteChannel) write(channel)} method, and eventually accepting the
-     * channel to specified consumer.
-     *
-     * @param <T>     path type parameter
-     * @param <U>     channel type parameter
-     * @param locator a supplier for locating the path to write.
-     * @param opener  a function for opening a channel from the {@code path} supplied from
-     *                {@code locator}.
-     * @param closer  a consumer for closing the channel opened by {@code opener}.
-     * @return the {@code path} to which bytes have been written.
-     * @throws NullPointerException if either {@code locator}, {@code opener}, or {@code closer} is
-     *                              {@code null}.
-     * @throws IOException          if an I/O error occurs.
-     * @see #write(WritableByteChannel)
-     */
-    default <T extends Path, U extends WritableByteChannel> T write(
-            Supplier<? extends T> locator, Function<? super T, ? extends U> opener,
-            Consumer<? super U> closer)
-            throws IOException {
-        Objects.requireNonNull(locator, "locator is null");
-        Objects.requireNonNull(opener, "opener is null");
-        Objects.requireNonNull(closer, "closer is null");
-        T path = Objects.requireNonNull(locator.get(), "locator supplied null");
-        U channel = Objects.requireNonNull(opener.apply(path), "opener applied null");
-        try {
-            write(channel);
-        } finally {
-            closer.accept(channel);
-        }
-        return path;
     }
 
     /**
@@ -412,18 +375,15 @@ public interface HelloWorld {
      * {@link ByteBuffer#hasRemaining() has remaining}, invoking
      * {@link AsynchronousByteChannel#write(ByteBuffer)} method with the {@code buffer}.
      * @see #put(ByteBuffer)
-     * @deprecated Use {@link #writeAsync(AsynchronousByteChannel, CompletionHandler, Object)}
      */
-    @Deprecated
     default <T extends AsynchronousByteChannel> T write(T channel)
             throws InterruptedException, ExecutionException {
-        if (channel == null) {
-            throw new NullPointerException("channel is null");
-        }
+        Objects.requireNonNull(channel, "channel is null");
         var buffer = put(ByteBuffer.allocate(BYTES)).flip();
         while (buffer.hasRemaining()) {
-            var future = channel.write(buffer);
-            var written = future.get();
+            // TODO: Invoke channel.write(buffer) which returns a <future> of Integer.
+            // TODO: Get the result of the <future>.
+            break;
         }
         return channel;
     }
@@ -439,9 +399,7 @@ public interface HelloWorld {
      * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to {@code channel}.
      * @see #put(ByteBuffer)
      * @see AsynchronousByteChannel#write(ByteBuffer)
-     * @deprecated Use {@link #writeAsync(AsynchronousByteChannel, CompletionHandler, Object)}
      */
-    @Deprecated
     default <T extends AsynchronousByteChannel> Future<T> writeAsync(T channel, Executor executor) {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(executor, "executor is null");
@@ -756,7 +714,7 @@ public interface HelloWorld {
 
     /**
      * Returns a completable future of specified path which writes the <a
-     * href="#hello-world-bytes">hello-world-bytes</a> to the end of the path.
+     * href="#hello-world-bytes">hello-world-bytes</a> to the end of specified path.
      *
      * @param path the path to the file to which bytes are appended.
      * @param <T>  path type parameter

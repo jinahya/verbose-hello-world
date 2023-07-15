@@ -86,13 +86,13 @@
         <artifactId>dagger-compiler</artifactId>
         <version>${version.com.google.dagger}</version>
       </dependency>
-<!--      <dependency>-->
-<!--        <groupId>com.google.inject</groupId>-->
-<!--        <artifactId>guice-bom</artifactId>-->
-<!--        <version>7.0.0</version>-->
-<!--        <type>pom</type>-->
-<!--        <scope>import</scope>-->
-<!--      </dependency>-->
+      <!--      <dependency>-->
+      <!--        <groupId>com.google.inject</groupId>-->
+      <!--        <artifactId>guice-bom</artifactId>-->
+      <!--        <version>7.0.0</version>-->
+      <!--        <type>pom</type>-->
+      <!--        <scope>import</scope>-->
+      <!--      </dependency>-->
       <dependency>
         <groupId>com.google.inject</groupId>
         <artifactId>guice</artifactId>
@@ -158,13 +158,13 @@
         <artifactId>junit-jupiter</artifactId>
         <version>${version.org.junit.jupiter}</version>
       </dependency>
-<!--      <dependency>-->
-<!--        <groupId>org.mockito</groupId>-->
-<!--        <artifactId>mockito-bom</artifactId>-->
-<!--        <version>5.4.0</version>-->
-<!--        <type>pom</type>-->
-<!--        <scope>import</scope>-->
-<!--      </dependency>-->
+      <!--      <dependency>-->
+      <!--        <groupId>org.mockito</groupId>-->
+      <!--        <artifactId>mockito-bom</artifactId>-->
+      <!--        <version>5.4.0</version>-->
+      <!--        <type>pom</type>-->
+      <!--        <scope>import</scope>-->
+      <!--      </dependency>-->
       <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-core</artifactId>
@@ -509,6 +509,10 @@
       <!--          </execution>-->
       <!--        </executions>-->
       <!--      </plugin>-->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+      </plugin>
     </plugins>
   </build>
 
@@ -539,14 +543,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <configuration>
-          <!--          <detectLinks>true</detectLinks>-->
-          <links>
-            <link>https://static.javadoc.io/org.mockito/mockito-core/${version.org.mockito}</link>
-            <link>https://static.javadoc.io/org.mockito/junit-jupiter/${version.org.mockito}</link>
-            <link>https://junit.org/junit5/docs/current/api/</link>
-          </links>
-        </configuration>
       </plugin>
     </plugins>
   </reporting>

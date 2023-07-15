@@ -3,6 +3,7 @@ package com.github.jinahya.hello;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.WeakHashMap;
@@ -17,7 +18,8 @@ final class HelloWorldLoggers {
     /**
      * A map of classes and {@link Logger}s.
      */
-    private static Map<Class<?>, Logger> LOGS = new WeakHashMap<>();
+    private static final Map<Class<?>, Logger> LOGS
+            = Collections.synchronizedMap(new WeakHashMap<>());
 
     /**
      * Returns a logger for specified class.
@@ -27,15 +29,14 @@ final class HelloWorldLoggers {
      */
     static Logger log(final Class<?> clazz) {
         Objects.requireNonNull(clazz, "clazz is null");
-        synchronized (LOGS) {
-            return LOGS.computeIfAbsent(clazz, LoggerFactory::getLogger);
-        }
+        return LOGS.computeIfAbsent(clazz, LoggerFactory::getLogger);
     }
 
     /**
      * A map of classes and {@link System.Logger}s.
      */
-    private static Map<Class<?>, System.Logger> LOGGERS = new WeakHashMap<>();
+    private static final Map<Class<?>, System.Logger> LOGGERS
+            = Collections.synchronizedMap(new WeakHashMap<>());
 
     /**
      * Returns a logger for specified class.
@@ -45,9 +46,7 @@ final class HelloWorldLoggers {
      */
     static System.Logger logger(final Class<?> clazz) {
         Objects.requireNonNull(clazz, "clazz is null");
-        synchronized (LOGGERS) {
-            return LOGGERS.computeIfAbsent(clazz, k -> System.getLogger(k.getName()));
-        }
+        return LOGGERS.computeIfAbsent(clazz, k -> System.getLogger(k.getName()));
     }
 
     /**

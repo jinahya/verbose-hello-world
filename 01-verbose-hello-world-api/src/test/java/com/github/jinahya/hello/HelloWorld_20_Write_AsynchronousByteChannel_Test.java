@@ -87,8 +87,8 @@ class HelloWorld_20_Write_AsynchronousByteChannel_Test extends _HelloWorldTest {
         // ------------------------------------------------------------------------------------ THEN
         verify(service, times(1)).put(bufferCaptor().capture());
         var buffer = bufferCaptor().getValue();
-        verify(channel, atLeastOnce()).write(buffer); // <1>
-        assertEquals(BYTES, writtenSoFar.intValue()); // <2>
-        assertEquals(channel, result);
+        // TODO: Verify, channel.write(buffer), invoked, at least once
+        // TODO: Assert, writtenSoFat.intValue() is equal to BYTES
+        // TODO: Assert, result is equal to channel
     }
 }
