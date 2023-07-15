@@ -31,22 +31,21 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.concurrent.ThreadLocalRandom;
+import java.nio.file.Files;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.io.File.createTempFile;
+import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 
 /**
- * A class for testing {@link HelloWorld#append(File)} method.
+ * A class for testing {@link HelloWorld#append(File) append(file)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_03_Append_File_Arguments_Test
@@ -78,13 +77,15 @@ class HelloWorld_03_Append_File_Test extends _HelloWorldTest {
         var service = serviceInstance();
         var file = mock(File.class);
         MockInitializer<FileOutputStream> initializer = (m, c) -> {
+            // new FileOutputStream(file, true)
             assertEquals(FileOutputStream.class.getConstructor(File.class, boolean.class),
                          c.constructor());
             var arguments = c.arguments();
+            assert arguments.size() == 2;
             assertEquals(file, arguments.get(0));
             assertTrue((boolean) arguments.get(1));
             assertEquals(1, c.getCount());
-            doNothing().when(m).write(any(byte[].class));
+//            doNothing().when(m).write(any(byte[].class));
         };
         try (var construction = mockConstruction(FileOutputStream.class, initializer)) {
             // -------------------------------------------------------------------------------- WHEN
@@ -112,14 +113,14 @@ class HelloWorld_03_Append_File_Test extends _HelloWorldTest {
         // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
         var file = createTempFile("tmp", null, tempDir);
-        if (ThreadLocalRandom.current().nextBoolean()) {
-            // TODO: Write some bytes to the file
+        if (current().nextBoolean()) {
+            // TODO: (Optional) Write some bytes to the file
         }
         var length = file.length();
         // ------------------------------------------------------------------------------------ WHEN
         var result = service.append(file);
         // ------------------------------------------------------------------------------------ THEN
-        // TODO: Assert, 12 bytes are appended to the file
+        // TODO: Assert, 12 bytes are appended to the end of the file.
         assertSame(file, result);
     }
 }

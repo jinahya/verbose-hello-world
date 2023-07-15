@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.CompletionHandler;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.LongAdder;
 import java.util.function.BiFunction;
@@ -74,7 +75,7 @@ class HelloWorld_23_WriteCompletable_AsynchronousByteChannel_Test
      * @throws Exception if thrown while getting the result of the future returned from the
      *                   {@link HelloWorld#writeCompletable(AsynchronousByteChannel)
      *                   writeCompletable(channel)} method.
-     * @see java.util.concurrent.CompletableFuture#get(long, TimeUnit)
+     * @see CompletableFuture#get(long, TimeUnit)
      */
     @DisplayName("(channel)completed<channel>")
     @Test
@@ -98,7 +99,8 @@ class HelloWorld_23_WriteCompletable_AsynchronousByteChannel_Test
      * {@link HelloWorld#writeCompletable(AsynchronousByteChannel) writeCompletable(channel)} method
      * returns a completable future being completed exceptionally.
      *
-     * @see java.util.concurrent.CompletableFuture#handle(BiFunction)
+     * @see CompletableFuture#handle(BiFunction)
+     * @see CompletableFuture#join()
      */
     @DisplayName("(channel)completedExceptionally")
     @Test
@@ -110,7 +112,7 @@ class HelloWorld_23_WriteCompletable_AsynchronousByteChannel_Test
         // ------------------------------------------------------------------------------------ WHEN
         var future = service.writeCompletable(channel);
         // ------------------------------------------------------------------------------------ THEN
-        // TODO: Get the result of the <future> handling to return what has been thrown
+        // TODO: Join the result of the <future> handling to return what has been thrown
         // TODO: Assert, the thrown is same as <exc>
     }
 }

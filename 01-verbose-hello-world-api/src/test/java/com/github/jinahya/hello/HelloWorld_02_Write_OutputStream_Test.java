@@ -35,8 +35,7 @@ import java.io.UncheckedIOException;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 
@@ -50,15 +49,11 @@ import static org.mockito.Mockito.mock;
 @Slf4j
 class HelloWorld_02_Write_OutputStream_Test extends _HelloWorldTest {
 
-    /**
-     * Stubs {@link HelloWorld#set(byte[]) set(array)} method to just return the {@code array}
-     * argument.
-     */
     @BeforeEach
-    void beforeEach() {
-        doAnswer(i -> i.getArgument(0))  // <1>
-                .when(serviceInstance()) // <2>
-                .set(any());             // <3>
+    void _beforeEach() {
+        doAnswer(i -> i.getArgument(0))                             // <1>
+                .when(serviceInstance())                            // <2>
+                .set(argThat(a -> a != null && a.length == BYTES)); // <3>
     }
 
     /**
@@ -88,10 +83,9 @@ class HelloWorld_02_Write_OutputStream_Test extends _HelloWorldTest {
     void _ReadByteArrayInputStream_WriteByteArrayOutputStream() throws IOException {
         var service = serviceInstance();
         var outputStream = service.write(new ByteArrayOutputStream(BYTES));
+        outputStream.flush();
         var inputStream = new ByteArrayInputStream(outputStream.toByteArray());
-        var array = new byte[BYTES];
-        var read = inputStream.read(array);
-        assertEquals(BYTES, read);
+        var array = inputStream.readNBytes(BYTES);
     }
 
     @org.junit.jupiter.api.Disabled("not implemented yet") // TODO: remove when implemented
@@ -108,8 +102,7 @@ class HelloWorld_02_Write_OutputStream_Test extends _HelloWorldTest {
                 }
             });
             thread.start();
-            service.write(pos);
-            pos.flush();
+            service.write(pos).flush();
             thread.join(SECONDS.toMillis(1L));
         }
     }

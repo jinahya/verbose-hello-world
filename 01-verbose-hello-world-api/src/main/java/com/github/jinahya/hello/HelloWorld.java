@@ -160,9 +160,10 @@ public interface HelloWorld {
      * @return given {@code file}.
      * @throws NullPointerException if {@code file} is {@code null}.
      * @throws IOException          if an I/O error occurs.
-     * @implSpec The default implementation creates a {@link FileOutputStream} from the {@code file}
-     * as {@link FileOutputStream#FileOutputStream(File, boolean) appending mode}, invokes
-     * {@link #write(OutputStream)} method with the stream, and returns the {@code file}.
+     * @implSpec The default implementation creates a new {@link FileOutputStream} with {@code file}
+     * and {@code true}, invokes the {@link #write(OutputStream) write(stream)} method with it,
+     * {@link OutputStream#flush() flushes} and {@link OutputStream#close() closes} the stream, and
+     * returns the {@code file}.
      * @see java.io.FileOutputStream#FileOutputStream(File, boolean)
      * @see #write(OutputStream)
      */

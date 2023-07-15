@@ -29,7 +29,8 @@ import java.io.File;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
- * A class for testing {@link HelloWorld#append(File)} method regarding arguments verification.
+ * A class for testing {@link HelloWorld#append(File) append(file)} method regarding arguments
+ * verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_03_Append_File_Test

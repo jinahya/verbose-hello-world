@@ -27,6 +27,8 @@ import org.junit.jupiter.api.Test;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
+import static com.github.jinahya.hello.HelloWorld.BYTES;
+import static java.nio.charset.StandardCharsets.US_ASCII;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -48,9 +50,9 @@ class _HelloWorld_Constants_Test {
     @DisplayName("BYTES == \"hello, world\"getBytes(\"ASCII\").length")
     @Test
     void BYTES_isEqualToActualNumberOfHelloWorldBytes_() {
-        var charset = StandardCharsets.US_ASCII;
-        var expected = "hello, world".getBytes(charset).length;
-        var actual = HelloWorld.BYTES;
+        var expected = BYTES;
+        var charset = US_ASCII;
+        var actual = "hello, world".getBytes(charset).length;
         assertEquals(expected, actual);
     }
 }
