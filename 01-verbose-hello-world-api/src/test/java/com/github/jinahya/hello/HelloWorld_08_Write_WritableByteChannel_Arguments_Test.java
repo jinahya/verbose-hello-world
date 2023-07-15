@@ -29,8 +29,8 @@ import java.nio.channels.WritableByteChannel;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
- * A class for testing {@link HelloWorld#write(WritableByteChannel)} method regarding argument
- * verification.
+ * A class for testing {@link HelloWorld#write(WritableByteChannel) write(channel)} method regarding
+ * argument verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_08_Write_WritableByteChannel_Test

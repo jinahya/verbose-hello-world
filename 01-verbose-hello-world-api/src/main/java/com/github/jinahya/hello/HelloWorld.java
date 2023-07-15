@@ -293,9 +293,7 @@ public interface HelloWorld {
      * @see ByteBuffer#put(byte[])
      */
     default <T extends ByteBuffer> T put(T buffer) {
-        if (buffer == null) {
-            throw new NullPointerException("buffer is null");
-        }
+        Objects.requireNonNull(buffer, "buffer is null");
         if (buffer.remaining() < BYTES) {
             throw new BufferOverflowException();
         }
@@ -328,10 +326,11 @@ public interface HelloWorld {
      * @see WritableByteChannel#write(ByteBuffer)
      */
     default <T extends WritableByteChannel> T write(T channel) throws IOException {
-        if (channel == null) {
-            throw new NullPointerException("channel is null");
-        }
-        // TODO: Implement!
+        Objects.requireNonNull(channel, "channel is null");
+        var buffer = ByteBuffer.allocate(BYTES);
+        put(buffer);
+        buffer.flip();
+        // TODO: Invoke channel.write(buffer), continuously, while buffer.hasRemaining()
         return channel;
     }
 

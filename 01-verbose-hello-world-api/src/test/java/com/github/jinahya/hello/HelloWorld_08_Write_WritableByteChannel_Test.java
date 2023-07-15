@@ -42,10 +42,12 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * A class for testing {@link HelloWorld#write(WritableByteChannel)} method.
+ * A class for testing {@link HelloWorld#write(WritableByteChannel) write(channel)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_08_Write_WritableByteChannel_Arguments_Test
@@ -83,7 +85,9 @@ class HelloWorld_08_Write_WritableByteChannel_Test extends _HelloWorldTest {
         // ------------------------------------------------------------------------------------ WHEN
         var result = service.write(channel);
         // ------------------------------------------------------------------------------------ THEN
-        // TODO: Verify, service.put(buffer[12]) invoked, once.
+        verify(service, times(1)).put(bufferCaptor().capture());
+        var buffer = bufferCaptor().getValue();
+        assertEquals(BYTES, buffer.capacity());
         // TODO: Verify, channel.write(buffer) invoked, at least once.
         // TODO: Assert, writtenSoFar.intValue() is equal to BYTES.
         assertEquals(channel, result);
