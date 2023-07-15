@@ -26,10 +26,16 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.nio.channels.AsynchronousByteChannel;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
+import java.nio.channels.CompletionHandler;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.LongAdder;
+import java.util.function.BiFunction;
 
+import static com.github.jinahya.hello.HelloWorld.BYTES;
+import static java.nio.ByteBuffer.allocate;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.notNull;
+import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -45,19 +51,34 @@ class HelloWorld_23_WriteCompletable_AsynchronousByteChannel_Test
         extends _HelloWorldTest {
 
     @BeforeEach
+    @SuppressWarnings({
+            "unchecked" // handler.completed
+    })
     void _beforeEach() {
-        _stub_PutBuffer_ToReturnTheBuffer_AsItsPositionIncreasedBy12();
+        willAnswer(i -> {
+            var channel = i.getArgument(0, AsynchronousByteChannel.class);
+            var handler = i.getArgument(1, CompletionHandler.class);
+            var attachment = i.getArgument(2);
+            for (final var b = allocate(BYTES); b.hasRemaining(); channel.write(b).get()) {
+                // empty
+            }
+            handler.completed(channel, attachment);
+            return null;
+        }).given(serviceInstance()).writeAsync(notNull(), notNull(), any());
     }
 
     /**
      * Verifies {@link HelloWorld#writeCompletable(AsynchronousByteChannel) writeAsync(channel)}
      * method returns a completable future being completed} with the {@code channel}.
      *
-     * @throws Exception when failed to ge the result of the future.
+     * @throws Exception if thrown while getting the result of the future returned from the
+     *                   {@link HelloWorld#writeCompletable(AsynchronousByteChannel)
+     *                   writeCompletable(channel)} method.
+     * @see java.util.concurrent.CompletableFuture#get(long, TimeUnit)
      */
     @DisplayName("(channel)completed<channel>")
     @Test
-    void _Completed_() throws InterruptedException, ExecutionException, TimeoutException {
+    void _Completed_() throws Exception {
         // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
         var channel = mock(AsynchronousByteChannel.class);
@@ -66,9 +87,9 @@ class HelloWorld_23_WriteCompletable_AsynchronousByteChannel_Test
         // ------------------------------------------------------------------------------------ WHEN
         var future = service.writeCompletable(channel);
         // ------------------------------------------------------------------------------------ THEN
-        // TODO: Get the <result> of the <future> with timeout.
+        // TODO: Get the result of the <future> with a timeout.
         // TODO: Verify, service.writeAsync(chanel, a-handler, null) invoked, once.
-        // TODO: Assert, <result> is same as channel.
+        // TODO: Assert, result is same as channel.
         // TODO: Assert, writtenSoFar.intValue() is equal to BYTES.
     }
 
@@ -76,6 +97,8 @@ class HelloWorld_23_WriteCompletable_AsynchronousByteChannel_Test
      * Verifies
      * {@link HelloWorld#writeCompletable(AsynchronousByteChannel) writeCompletable(channel)} method
      * returns a completable future being completed exceptionally.
+     *
+     * @see java.util.concurrent.CompletableFuture#handle(BiFunction)
      */
     @DisplayName("(channel)completedExceptionally")
     @Test
