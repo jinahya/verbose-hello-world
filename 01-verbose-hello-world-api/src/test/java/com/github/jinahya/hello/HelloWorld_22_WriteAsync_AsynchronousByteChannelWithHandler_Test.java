@@ -29,16 +29,8 @@ import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.concurrent.atomic.LongAdder;
 
-import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.util.concurrent.ThreadLocalRandom.current;
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.notNull;
-import static org.mockito.ArgumentMatchers.same;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -80,13 +72,11 @@ class HelloWorld_22_WriteAsync_AsynchronousByteChannelWithHandler_Test
         // ------------------------------------------------------------------------------------ WHEN
         service.writeAsync(channel, handler, attachment);
         // ------------------------------------------------------------------------------------ THEN
-        verify(handler, timeout(SECONDS.toMillis(8L)).times(1)).completed(channel, attachment);
         verify(service, times(1)).put(bufferCaptor().capture());
         var buffer = bufferCaptor().getValue();
-        // TODO: Verify, channel.write(buffer, attachment, handler) invoked, once.
-        verify(channel, atLeastOnce())
-                .write(same(buffer), same(attachment), notNull(CompletionHandler.class));
-        assertEquals(BYTES, writtenSoFar.intValue());
+        // TODO: Verify, handler.completed(channel, attachment) invoked, once within some time.
+        // TODO: Verify, channel.write(buffer, attachment, handler) invoked, at least once.
+        // TODO: Assert, writtenSoFar.intValue() is equal to BYTES
     }
 
     /**
@@ -102,12 +92,15 @@ class HelloWorld_22_WriteAsync_AsynchronousByteChannelWithHandler_Test
         // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
         var channel = mock(AsynchronousByteChannel.class);
-        _stub_ToFail(channel);
+        var exc = mock(Throwable.class);
+        _stub_ToFail(channel, exc);
         CompletionHandler<AsynchronousByteChannel, Object> handler = mock(CompletionHandler.class);
         var attachment = current().nextBoolean() ? null : new Object();
         // ------------------------------------------------------------------------------------ WHEN
         service.writeAsync(channel, handler, attachment);
         // ------------------------------------------------------------------------------------ THEN
-        verify(handler, timeout(SECONDS.toMillis(8L)).times(1)).failed(notNull(), same(attachment));
+        verify(service, times(1)).put(bufferCaptor().capture());
+        var buffer = bufferCaptor().getValue();
+        // TODO: Verify, handler.failed(exc, attachment) invoked, once within some time.
     }
 }

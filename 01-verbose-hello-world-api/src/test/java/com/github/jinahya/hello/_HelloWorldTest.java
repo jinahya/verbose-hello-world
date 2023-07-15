@@ -25,7 +25,6 @@ import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -137,6 +136,24 @@ abstract class _HelloWorldTest {
             var attachment = i.getArgument(1);
             var handler = i.getArgument(2, CompletionHandler.class);
             handler.failed(new Throwable("just failing"), attachment);
+            return null;
+        }).given(channel).write(
+                argThat(b -> b != null && b.hasRemaining()), // <src>
+                any(),                                       // <attachment>
+                notNull()                                    // handler
+        );
+    }
+
+    @SuppressWarnings({"unchecked"})
+    void _stub_ToFail(AsynchronousByteChannel channel, Throwable exc) {
+        if (!mockingDetails(requireNonNull(channel, "channel is null")).isMock()) {
+            throw new IllegalArgumentException("not a mock: " + channel);
+        }
+        willAnswer(i -> {
+            var src = i.getArgument(0, ByteBuffer.class);
+            var attachment = i.getArgument(1);
+            var handler = i.getArgument(2, CompletionHandler.class);
+            handler.failed(exc, attachment);
             return null;
         }).given(channel).write(
                 argThat(b -> b != null && b.hasRemaining()), // <src>
