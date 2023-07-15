@@ -35,14 +35,13 @@ import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * A class for testing {@link HelloWorld#write(AsynchronousByteChannel)} method.
+ * A class for testing {@link HelloWorld#write(AsynchronousByteChannel) write(channel)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_20_Write_AsynchronousByteChannel_Arguments_Test
@@ -64,7 +63,7 @@ class HelloWorld_20_Write_AsynchronousByteChannel_Test extends _HelloWorldTest {
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
      */
-    @DisplayName("(channel) -> channel.write(put(buffer))+")
+    @DisplayName("(channel) -> put(buffer[12]) -> channel.write(buffer)+")
     @Test
     void __() throws InterruptedException, ExecutionException {
         // ----------------------------------------------------------------------------------- GIVEN
@@ -87,8 +86,9 @@ class HelloWorld_20_Write_AsynchronousByteChannel_Test extends _HelloWorldTest {
         // ------------------------------------------------------------------------------------ THEN
         verify(service, times(1)).put(bufferCaptor().capture());
         var buffer = bufferCaptor().getValue();
+        assertEquals(BYTES, buffer.capacity());
         // TODO: Verify, channel.write(buffer), invoked, at least once
         // TODO: Assert, writtenSoFat.intValue() is equal to BYTES
-        // TODO: Assert, result is equal to channel
+        // TODO: Assert, result is same as channel
     }
 }

@@ -117,11 +117,11 @@ class HelloWorld_09_Append_Path_Test extends _HelloWorldTest {
             }
         }
         var size = size(path);
-        log.debug("path.size before appended: {}", size);
+        log.debug("path.size before: {}", size);
         // ------------------------------------------------------------------------------------ WHEN
         var result = service.append(path);
         // ------------------------------------------------------------------------------------ THEN
-        log.debug("path.size after appended: {}", size(path));
+        log.debug("path.size after: {}", size(path));
         assertEquals(size + BYTES, size(path));
     }
 }

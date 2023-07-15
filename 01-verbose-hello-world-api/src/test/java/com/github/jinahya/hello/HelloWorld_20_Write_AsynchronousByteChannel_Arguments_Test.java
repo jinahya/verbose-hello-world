@@ -29,8 +29,8 @@ import java.nio.channels.AsynchronousByteChannel;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
- * A class for testing {@link HelloWorld#write(AsynchronousByteChannel)} method regarding arguments
- * verification.
+ * A class for testing {@link HelloWorld#write(AsynchronousByteChannel) write(channel)} method
+ * regarding arguments verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_20_Write_AsynchronousByteChannel_Test
