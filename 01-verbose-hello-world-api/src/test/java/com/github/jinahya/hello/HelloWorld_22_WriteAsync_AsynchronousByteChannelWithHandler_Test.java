@@ -44,13 +44,13 @@ import static org.mockito.Mockito.verify;
 
 /**
  * A class for testing
- * {@link HelloWorld#writeAsync(AsynchronousByteChannel, CompletionHandler, Object) write(channel,
- * handler, attachment)} method.
+ * {@link HelloWorld#writeAsync(AsynchronousByteChannel, CompletionHandler, Object)
+ * writeAsync(channel, handler, attachment)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_22_WriteAsync_AsynchronousByteChannelWithHandler_Arguments_Test
  */
-@DisplayName("write(channel, handler)")
+@DisplayName("write(channel, handler, attachment)")
 @Slf4j
 class HelloWorld_22_WriteAsync_AsynchronousByteChannelWithHandler_Test
         extends _HelloWorldTest {
@@ -83,8 +83,7 @@ class HelloWorld_22_WriteAsync_AsynchronousByteChannelWithHandler_Test
         verify(handler, timeout(SECONDS.toMillis(8L)).times(1)).completed(channel, attachment);
         verify(service, times(1)).put(bufferCaptor().capture());
         var buffer = bufferCaptor().getValue();
-        assertNotNull(buffer);
-        assertEquals(BYTES, buffer.capacity());
+        // TODO: Verify, channel.write(buffer, attachment, handler) invoked, once.
         verify(channel, atLeastOnce())
                 .write(same(buffer), same(attachment), notNull(CompletionHandler.class));
         assertEquals(BYTES, writtenSoFar.intValue());

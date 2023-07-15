@@ -46,16 +46,16 @@ class HelloWorld_22_WriteAsync_AsynchronousByteChannelWithHandler_Arguments_Test
     /**
      * Asserts
      * {@link HelloWorld#writeAsync(AsynchronousByteChannel, CompletionHandler, Object)
-     * write(channel, handler, attachment)} method throws a {@link NullPointerException} when the
-     * {@code channel} argument is {@code null}.
+     * writeAsync(channel, handler, attachment)} method throws a {@link NullPointerException} when
+     * the {@code channel} argument is {@code null}.
      */
-    @DisplayName("(null, )NullPointerException")
+    @DisplayName("(null, , )NullPointerException")
     @Test
     @SuppressWarnings({"unchecked"})
     void _ThrowNullPointerException_ChannelIsNull() {
         // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
-        AsynchronousByteChannel channel = null;
+        var channel = (AsynchronousByteChannel) null;
         var handler = mock(CompletionHandler.class);
         // ------------------------------------------------------------------------------- WHEN/THEN
         assertThrows(
@@ -67,10 +67,10 @@ class HelloWorld_22_WriteAsync_AsynchronousByteChannelWithHandler_Arguments_Test
     /**
      * Asserts
      * {@link HelloWorld#writeAsync(AsynchronousByteChannel, CompletionHandler, Object)
-     * write(channel, handler, attachment)} method throws a {@link NullPointerException} when the
-     * {@code handler} argument is {@code null}.
+     * writeAsync(channel, handler, attachment)} method throws a {@link NullPointerException} when
+     * the {@code handler} argument is {@code null}.
      */
-    @DisplayName("(, null)NullPointerException")
+    @DisplayName("(, null, )NullPointerException")
     @Test
     void _ThrowNullPointerException_HandlerIsNull() {
         // ----------------------------------------------------------------------------------- GIVEN

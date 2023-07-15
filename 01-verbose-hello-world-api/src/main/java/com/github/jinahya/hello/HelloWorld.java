@@ -403,9 +403,7 @@ public interface HelloWorld {
     default <T extends AsynchronousByteChannel> Future<T> writeAsync(T channel, Executor executor) {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(executor, "executor is null");
-        Callable<T> callable = () -> {
-            return write(channel);
-        };
+        Callable<T> callable = () -> write(channel);
         var command = new FutureTask<>(callable);
         executor.execute(command); // as Runnable
         return command;            // as Future<T>
@@ -426,29 +424,7 @@ public interface HelloWorld {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(handler, "handler is null");
         var buffer = put(ByteBuffer.allocate(BYTES)).flip();
-        channel.write(
-                buffer,                     // <src>
-                attachment,                 // <attachment>
-                new CompletionHandler<>() { // <handler>
-                    @Override
-                    public void completed(Integer result, A attachment) {
-                        if (!buffer.hasRemaining()) {
-                            handler.completed(channel, attachment);
-                            return;
-                        }
-                        channel.write(
-                                buffer,     // <src>
-                                attachment, // <attachment>
-                                this        // <handler>
-                        );
-                    }
-
-                    @Override
-                    public void failed(Throwable exe, A attachment) {
-                        handler.failed(exe, attachment);
-                    }
-                }
-        );
+        // TODO: Implement!
     }
 
     /**
