@@ -422,7 +422,7 @@ public interface HelloWorld {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(handler, "handler is null");
         var buffer = put(ByteBuffer.allocate(BYTES)).flip();
-        // TODO: Implement!
+        // TODO: Invoke channel.write(buffer, attachment, a-handler)
     }
 
     /**

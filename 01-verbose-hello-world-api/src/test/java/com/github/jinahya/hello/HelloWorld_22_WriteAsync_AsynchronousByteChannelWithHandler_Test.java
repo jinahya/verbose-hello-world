@@ -25,11 +25,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.concurrent.atomic.LongAdder;
 
+import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.util.concurrent.ThreadLocalRandom.current;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -56,9 +60,16 @@ class HelloWorld_22_WriteAsync_AsynchronousByteChannelWithHandler_Test
      * Asserts
      * {@link HelloWorld#writeAsync(AsynchronousByteChannel, CompletionHandler, Object)
      * writeAsync(channel, handler, attachment)} method invokes
-     * {@link CompletionHandler#completed(Object, Object) handler.completed(channel, attachment)}.
+     * {@link HelloWorld#put(ByteBuffer) put(buffer[12])}, continuously invokes
+     * {@link AsynchronousByteChannel#write(ByteBuffer, Object, CompletionHandler)
+     * channel.write(buffer, attachment, a-handler)}, and eventually invokes
+     * {@link CompletionHandler#completed(Object, Object) handler.completed(Object, Object)
+     * handler.completed(channel, attachment)}.
      */
-    @DisplayName("(channel, handler, attachment) -> handler.completed(channel, attachment)")
+    @DisplayName("""
+            (channel, handler, attachment)
+            -> put(buffer[12])
+            -> handler.completed(channel, attachment)""")
     @Test
     @SuppressWarnings({"unchecked"})
     void _Completed_() {
@@ -74,6 +85,8 @@ class HelloWorld_22_WriteAsync_AsynchronousByteChannelWithHandler_Test
         // ------------------------------------------------------------------------------------ THEN
         verify(service, times(1)).put(bufferCaptor().capture());
         var buffer = bufferCaptor().getValue();
+        assertNotNull(buffer);
+        assertEquals(BYTES, buffer.capacity());
         // TODO: Verify, handler.completed(channel, attachment) invoked, once within some time.
         // TODO: Verify, channel.write(buffer, attachment, handler) invoked, at least once.
         // TODO: Assert, writtenSoFar.intValue() is equal to BYTES
