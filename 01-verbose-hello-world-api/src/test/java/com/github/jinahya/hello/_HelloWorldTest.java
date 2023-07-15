@@ -211,7 +211,7 @@ abstract class _HelloWorldTest {
      * {@link HelloWorld#set(byte[]) set(array[12])} method to just return the {@code array}.
      */
     @BeforeEach
-    void _stubSetArrayToReturnTheArray() {
+    void _stub_SetArray_ToReturnTheArray() {
         when(serviceInstance.set(argThat(a -> a != null && a.length == BYTES))) // <1>
                 .thenAnswer(i -> i.getArgument(0));                             // <2>
     }

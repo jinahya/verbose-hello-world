@@ -34,12 +34,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.io.File.createTempFile;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -54,15 +51,9 @@ import static org.mockito.Mockito.verify;
 @Slf4j
 class HelloWorld_05_Write_DataOutput_Test extends _HelloWorldTest {
 
-    /**
-     * Stubs {@link HelloWorld#set(byte[]) set(array)} method to return the {@code array} argument.
-     */
-    @DisplayName("set(array[12])array")
     @BeforeEach
-    void stub_ReturnArray_SetArray() {
-        doAnswer(i -> i.getArgument(0))
-                .when(serviceInstance())
-                .set(argThat(a -> a != null && a.length == BYTES));
+    void _beforeEach() {
+        _stub_SetArray_ToReturnTheArray();
     }
 
     /**

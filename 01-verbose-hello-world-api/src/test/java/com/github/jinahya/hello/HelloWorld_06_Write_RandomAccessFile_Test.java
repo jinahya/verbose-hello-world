@@ -52,18 +52,18 @@ class HelloWorld_06_Write_RandomAccessFile_Test extends _HelloWorldTest {
 
     @BeforeEach
     void _beforeEach() {
-        _stubSetArrayToReturnTheArray();
+        _stub_SetArray_ToReturnTheArray();
     }
 
     /**
-     * Asserts {@link HelloWorld#write(RandomAccessFile) write(RandomAccessFile file)} method
-     * invokes {@link HelloWorld#set(byte[]) set(array)} method with an array of
-     * {@value HelloWorld#BYTES} bytes, and invokes {@link RandomAccessFile#write(byte[])} method on
-     * the {@code file} argument with the array.
+     * Asserts {@link HelloWorld#write(RandomAccessFile) write(file)} method invokes
+     * {@link HelloWorld#set(byte[]) set(array)} method with an array of {@value HelloWorld#BYTES}
+     * bytes, and invokes {@link RandomAccessFile#write(byte[])} method on the {@code file} argument
+     * with the array.
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("(file) -> file.write(set(array[12])) -> file")
+    @DisplayName("(file) -> file.write(set(array[12]))")
     @Test
     void _InvokeSetArrayWriteArrayToFile_() throws IOException {
         // ----------------------------------------------------------------------------------- GIVEN
@@ -87,6 +87,7 @@ class HelloWorld_06_Write_RandomAccessFile_Test extends _HelloWorldTest {
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
+    @org.junit.jupiter.api.Disabled("not implemented yet") // TODO: Remove when implemented
     @DisplayName("(file) -> writes 12 bytes")
     @Test
     @畵蛇添足
@@ -102,6 +103,6 @@ class HelloWorld_06_Write_RandomAccessFile_Test extends _HelloWorldTest {
             file.getFD().sync();
         }
         // ------------------------------------------------------------------------------------ THEN
-        // TODO: Verify, tmp.length() is equal to (pos + BYTES)
+        assertEquals((pos + BYTES), tmp.length());
     }
 }

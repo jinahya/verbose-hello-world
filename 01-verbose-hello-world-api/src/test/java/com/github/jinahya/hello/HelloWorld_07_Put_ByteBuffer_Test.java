@@ -49,7 +49,7 @@ class HelloWorld_07_Put_ByteBuffer_Test extends _HelloWorldTest {
 
     @BeforeEach
     void _beforeEach() {
-        _stubSetArrayToReturnTheArray();
+        _stub_SetArray_ToReturnTheArray();
     }
 
     /**

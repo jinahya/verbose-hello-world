@@ -29,8 +29,8 @@ import java.io.RandomAccessFile;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
- * A class for testing {@link HelloWorld#write(RandomAccessFile) write(RandomAccessFile file)}
- * method regarding arguments verification.
+ * A class for testing {@link HelloWorld#write(RandomAccessFile) write(file)} method regarding
+ * arguments verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_06_Write_RandomAccessFile_Test
