@@ -168,9 +168,7 @@ public interface HelloWorld {
      * @see #write(OutputStream)
      */
     default <T extends File> T append(T file) throws IOException {
-        if (file == null) {
-            throw new NullPointerException("file is null");
-        }
+        Objects.requireNonNull(file, "file is null");
         // TODO: Create a new FileOutputStream with file in appending mode.
         // TODO: Invoke write(stream) method with it.
         // TODO: Flush the stream.
@@ -192,9 +190,7 @@ public interface HelloWorld {
      * @see #write(OutputStream)
      */
     default <T extends Socket> T send(T socket) throws IOException {
-        if (socket == null) {
-            throw new NullPointerException("socket is null");
-        }
+        Objects.requireNonNull(socket, "socket is null");
         // TODO: Invoke write(stream) with socket.outputStream.
         return socket;
     }

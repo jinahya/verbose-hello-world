@@ -25,15 +25,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
+import static java.net.InetAddress.getLoopbackAddress;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.notNull;
@@ -42,7 +43,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * A class for testing {@link HelloWorld#send(Socket)} method.
+ * A class for testing {@link HelloWorld#send(Socket) send(socket)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_04_Send_Socket_Arguments_Test
@@ -51,26 +52,19 @@ import static org.mockito.Mockito.when;
 @Slf4j
 class HelloWorld_04_Send_Socket_Test extends _HelloWorldTest {
 
-    /**
-     * Stubs {@link HelloWorld#write(OutputStream) write(stream)} method to return the
-     * {@code stream} argument.
-     */
-    @DisplayName("write(stream) -> write 12 bytes to the stream; return stream")
     @BeforeEach
-    void beforeEach() throws IOException {
+    void _beforeEach() throws IOException {
         doAnswer(i -> {
             var stream = i.getArgument(0, OutputStream.class);
             stream.write(new byte[BYTES]);
             return stream;
-        })
-                .when(serviceInstance())
-                .write(notNull(OutputStream.class));
+        }).when(serviceInstance()).write(notNull(OutputStream.class));
     }
 
     /**
      * Asserts {@link HelloWorld#send(Socket) send(socket)} method invokes the
      * {@link HelloWorld#write(OutputStream) write(stream)} method with
-     * {@link Socket#getOutputStream() socket.outputStream}, and returns the {@code stream}.
+     * {@link Socket#getOutputStream() socket.outputStream}, and returns the {@code socket}.
      *
      * @throws IOException if an I/O error occurs.
      * @see org.mockito.Mockito#verifyNoMoreInteractions(Object...)
@@ -98,29 +92,25 @@ class HelloWorld_04_Send_Socket_Test extends _HelloWorldTest {
     void _12BytesWritten_() throws IOException, InterruptedException {
         var service = serviceInstance();
         try (var server = new ServerSocket()) {
-            var addr = InetAddress.getLoopbackAddress();
-            var port = 0;
-            var endpoint = new InetSocketAddress(addr, port);
-            server.bind(endpoint);
-            log.debug("server bound to {}", server.getLocalSocketAddress());
+            server.bind(new InetSocketAddress(getLoopbackAddress(), 0));
+            log.debug("[server] bound to {}", server.getLocalSocketAddress());
             var thread = new Thread(() -> {
                 try (var client = server.accept()) {
-                    log.debug("accepted from {}", client.getRemoteSocketAddress());
+                    log.debug("[server] accepted from {}", client.getRemoteSocketAddress());
                     service.send(client);
                     client.getOutputStream().flush();
                 } catch (IOException ioe) {
-                    log.error("failed to accept/work", ioe);
+                    log.error("[server] failed to accept/send", ioe);
                 }
             });
             thread.start();
             try (var client = new Socket()) {
                 client.connect(server.getLocalSocketAddress());
-                log.debug("connected to {}", client.getRemoteSocketAddress());
-                byte[] b = new byte[BYTES];
-                new DataInputStream(client.getInputStream()).readFully(b);
-                log.debug("{} bytes fully read from the server", b.length);
+                log.debug("[client] connected to {}", client.getRemoteSocketAddress());
+                var array = client.getInputStream().readNBytes(BYTES);
+                log.debug("[client] successfully read from the server");
             } catch (IOException ioe) {
-                log.error("failed to connect/read to/from the server", ioe);
+                log.error("[client] failed to connect/read to/from the server", ioe);
             }
             thread.join(SECONDS.toMillis(1L));
         }

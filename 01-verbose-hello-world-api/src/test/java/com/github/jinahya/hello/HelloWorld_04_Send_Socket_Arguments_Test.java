@@ -29,7 +29,8 @@ import java.net.Socket;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
- * A class for testing {@link HelloWorld#send(Socket)} method regarding arguments verification.
+ * A class for testing {@link HelloWorld#send(Socket) send(socket)} method regarding arguments
+ * verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_04_Send_Socket_Test
