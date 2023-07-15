@@ -167,7 +167,7 @@ abstract class _HelloWorldTest {
         }).given(channel).write(
                 argThat(b -> b != null && b.hasRemaining()), // <src>
                 any(),                                       // <attachment>
-                notNull()                                    // handler
+                notNull()                                    // <handler>
         );
     }
 

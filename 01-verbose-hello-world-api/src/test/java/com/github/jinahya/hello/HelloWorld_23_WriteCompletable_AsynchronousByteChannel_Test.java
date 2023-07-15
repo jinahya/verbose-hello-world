@@ -26,18 +26,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.nio.channels.AsynchronousByteChannel;
-import java.nio.channels.CompletionHandler;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.LongAdder;
 
-import static com.github.jinahya.hello.HelloWorld.BYTES;
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.ArgumentCaptor.forClass;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * A class for testing
@@ -64,7 +57,7 @@ class HelloWorld_23_WriteCompletable_AsynchronousByteChannel_Test
      */
     @DisplayName("(channel)completed<channel>")
     @Test
-    void _Completed_() throws Exception {
+    void _Completed_() throws InterruptedException, ExecutionException, TimeoutException {
         // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
         var channel = mock(AsynchronousByteChannel.class);
@@ -73,13 +66,10 @@ class HelloWorld_23_WriteCompletable_AsynchronousByteChannel_Test
         // ------------------------------------------------------------------------------------ WHEN
         var future = service.writeCompletable(channel);
         // ------------------------------------------------------------------------------------ THEN
-        var result = future.handle((r, t) -> {
-            assertNotNull(r);
-            assertNull(t);
-            return r;
-        }).get(1L, SECONDS);
-        assertEquals(channel, result);
-        assertEquals(BYTES, writtenSoFar.intValue());
+        // TODO: Get the <result> of the <future> with timeout.
+        // TODO: Verify, service.writeAsync(chanel, a-handler, null) invoked, once.
+        // TODO: Assert, <result> is same as channel.
+        // TODO: Assert, writtenSoFar.intValue() is equal to BYTES.
     }
 
     /**
@@ -93,15 +83,12 @@ class HelloWorld_23_WriteCompletable_AsynchronousByteChannel_Test
         // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
         var channel = mock(AsynchronousByteChannel.class);
-        _stub_ToFail(channel);
+        var exc = mock(Throwable.class);
+        _stub_ToFail(channel, exc);
         // ------------------------------------------------------------------------------------ WHEN
         var future = service.writeCompletable(channel);
         // ------------------------------------------------------------------------------------ THEN
-        var thrown = future.handle((r, t) -> {
-            assertNull(r);
-            assertNotNull(t);
-            return t;
-        }).join();
-        log.info("completed exceptionally", thrown);
+        // TODO: Get the result of the <future> handling to return what has been thrown
+        // TODO: Assert, the thrown is same as <exc>
     }
 }
