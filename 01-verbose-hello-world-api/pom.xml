@@ -16,11 +16,11 @@
   <description>Verbose Hello World API</description>
 
   <dependencies>
-<!--    <dependency>-->
-<!--      <groupId>org.reactivestreams</groupId>-->
-<!--      <artifactId>reactive-streams</artifactId>-->
-<!--      <scope>compile</scope>-->
-<!--    </dependency>-->
+    <!--    <dependency>-->
+    <!--      <groupId>org.reactivestreams</groupId>-->
+    <!--      <artifactId>reactive-streams</artifactId>-->
+    <!--      <scope>compile</scope>-->
+    <!--    </dependency>-->
   </dependencies>
 
   <build>
