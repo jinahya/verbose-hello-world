@@ -76,7 +76,7 @@ class HelloWorld_09_Append_Path_Test extends _HelloWorldTest {
         // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
         var path = mock(Path.class);
-        var channel = mock(FileChannel.class);
+        var channel = _stub_ToWriteSome(mock(FileChannel.class));
         try (var mockedStatic = mockStatic(FileChannel.class)) {
             mockedStatic.when(() -> open(same(path), any(OpenOption[].class))).thenReturn(channel);
             // -------------------------------------------------------------------------------- WHEN

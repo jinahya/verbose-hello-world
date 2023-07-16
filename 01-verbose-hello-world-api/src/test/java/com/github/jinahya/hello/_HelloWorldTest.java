@@ -196,7 +196,8 @@ abstract class _HelloWorldTest {
         }).given(channel).write(argThat(b -> b != null && b.hasRemaining()));
     }
 
-    void stubToWriteSome(WritableByteChannel channel, LongAdder adder) throws IOException {
+    <T extends WritableByteChannel> T _stub_ToWriteSome(T channel, LongAdder adder)
+            throws IOException {
         if (!mockingDetails(requireNonNull(channel, "channel is null")).isMock()) {
             throw new IllegalArgumentException("not a mock: " + channel);
         }
@@ -208,6 +209,11 @@ abstract class _HelloWorldTest {
             adder.add(written);
             return written;
         }).given(channel).write(argThat(b -> b != null && b.hasRemaining()));
+        return channel;
+    }
+
+    <T extends WritableByteChannel> T _stub_ToWriteSome(T channel) throws IOException {
+        return _stub_ToWriteSome(channel, new LongAdder());
     }
 
     /**
