@@ -82,8 +82,7 @@ class HelloWorld_34_AppendCompletable_Path_Test extends _HelloWorldTest {
         try (var mockedStatic = mockStatic(AsynchronousFileChannel.class)) {
             mockedStatic.when(() -> open(same(path), any(OpenOption[].class))).thenReturn(channel);
             // -------------------------------------------------------------------------------- WHEN
-            var future = service.appendCompletable(path);
-            var result = future.join();
+            var result = service.appendCompletable(path).join();
             // -------------------------------------------------------------------------------- THEN
             var optionsCaptor = forClass(OpenOption[].class);
             mockedStatic.verify(() -> open(same(path), optionsCaptor.capture()), times(1));
