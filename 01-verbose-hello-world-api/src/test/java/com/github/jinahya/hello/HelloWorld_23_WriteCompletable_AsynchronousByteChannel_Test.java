@@ -69,8 +69,9 @@ class HelloWorld_23_WriteCompletable_AsynchronousByteChannel_Test
     }
 
     /**
-     * Verifies {@link HelloWorld#writeCompletable(AsynchronousByteChannel) writeAsync(channel)}
-     * method returns a completable future being completed} with the {@code channel}.
+     * Verifies
+     * {@link HelloWorld#writeCompletable(AsynchronousByteChannel) writeCompletable(channel)} method
+     * returns a completable future completes with the {@code channel}.
      *
      * @throws Exception if thrown while getting the result of the future returned from the
      *                   {@link HelloWorld#writeCompletable(AsynchronousByteChannel)
