@@ -27,11 +27,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousFileChannel;
+import java.nio.channels.CompletionHandler;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.LongAdder;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.lang.Long.MAX_VALUE;
@@ -39,7 +43,6 @@ import static java.nio.channels.AsynchronousFileChannel.open;
 import static java.nio.file.Files.createTempFile;
 import static java.nio.file.Files.size;
 import static java.util.Arrays.asList;
-import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -68,8 +71,26 @@ class HelloWorld_34_AppendCompletable_Path_Test extends _HelloWorldTest {
 
     @BeforeEach
     void _beforeEach() {
-        willAnswer(i -> completedFuture(i.getArgument(0, AsynchronousFileChannel.class)))
-                .given(serviceInstance()).writeCompletable(notNull(), longThat(v -> v >= 0L));
+        willAnswer(i -> {
+            var channel = i.getArgument(0, AsynchronousFileChannel.class);
+            var position = i.getArgument(1, Long.class);
+            var future = new CompletableFuture<>();
+            var src = ByteBuffer.allocate(BYTES);
+            channel.write(src, position, position, new CompletionHandler<>() { // @formatter:off
+                @Override public void completed(Integer result, Long attachment) {
+                    if (!src.hasRemaining()) {
+                        future.complete(channel);
+                        return;
+                    }
+                    attachment += result;
+                    channel.write(src, attachment, attachment, this);
+                }
+                @Override public void failed(Throwable exc, Long attachment) {
+                    future.completeExceptionally(exc);
+                } // @formatter:on
+            });
+            return future;
+        }).given(serviceInstance()).writeCompletable(notNull(), longThat(v -> v >= 0L));
     }
 
     @Test
@@ -77,6 +98,7 @@ class HelloWorld_34_AppendCompletable_Path_Test extends _HelloWorldTest {
         var service = serviceInstance();
         var path = mock(Path.class);
         var channel = mock(AsynchronousFileChannel.class);
+        _stub_ToComplete(channel, new LongAdder());
         var size = current().nextLong(MAX_VALUE - BYTES);
         given(channel.size()).willReturn(size);
         try (var mockedStatic = mockStatic(AsynchronousFileChannel.class)) {
@@ -97,7 +119,6 @@ class HelloWorld_34_AppendCompletable_Path_Test extends _HelloWorldTest {
         }
     }
 
-    @org.junit.jupiter.api.Disabled("not implemented yet") // TODO: Remove when implemented
     @Test
     void __(@TempDir Path tempDir) throws IOException {
         // ----------------------------------------------------------------------------------- GIVEN

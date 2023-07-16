@@ -274,12 +274,11 @@ abstract class _HelloWorldTest {
      * {@value HelloWorld#BYTES} bytes to the {@code stream} and returns the {@code stream}.
      */
     void _stub_WriteStream_Writes12BytesAndReturnTheStream() throws IOException {
-        when(serviceInstance.write(notNull(OutputStream.class))) // <1>
-                .thenAnswer(i -> {                               // <2>
-                    var stream = i.getArgument(0, OutputStream.class);
-                    stream.write(new byte[BYTES]);
-                    return stream;
-                });
+        willAnswer(i -> {
+            var stream = i.getArgument(0, OutputStream.class);
+            stream.write(new byte[BYTES]);
+            return stream;
+        }).given(serviceInstance).write(notNull(OutputStream.class));
     }
 
     /**

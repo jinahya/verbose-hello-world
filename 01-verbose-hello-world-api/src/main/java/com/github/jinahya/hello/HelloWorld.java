@@ -701,7 +701,7 @@ public interface HelloWorld {
                         channel.force(false);
                         channel.close();
                     } catch (IOException ioe) {
-                        throw new UncheckedIOException("unable to force " + channel, ioe);
+                        throw new UncheckedIOException("unable to force/close " + channel, ioe);
                     }
                     return path;
                 });
