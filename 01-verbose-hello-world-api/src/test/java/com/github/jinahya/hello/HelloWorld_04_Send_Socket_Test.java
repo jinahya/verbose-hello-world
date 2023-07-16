@@ -90,6 +90,7 @@ class HelloWorld_04_Send_Socket_Test extends _HelloWorldTest {
                     log.debug("[server] handling client on {}", client.getLocalSocketAddress());
                     service.send(client);
                     client.getOutputStream().flush();
+                    log.debug("[server] successfully sent to the client.");
                 } catch (IOException ioe) {
                     log.error("[server] failed to accept/send", ioe);
                 }
