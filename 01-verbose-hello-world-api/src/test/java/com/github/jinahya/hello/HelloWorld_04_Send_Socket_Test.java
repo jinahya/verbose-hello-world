@@ -25,8 +25,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
@@ -37,8 +35,6 @@ import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.net.InetAddress.getLoopbackAddress;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.ArgumentMatchers.notNull;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -54,11 +50,7 @@ class HelloWorld_04_Send_Socket_Test extends _HelloWorldTest {
 
     @BeforeEach
     void _beforeEach() throws IOException {
-        doAnswer(i -> {
-            var stream = i.getArgument(0, OutputStream.class);
-            stream.write(new byte[BYTES]);
-            return stream;
-        }).when(serviceInstance()).write(notNull(OutputStream.class));
+        _stub_WriteStream_Writes12BytesAndReturnTheStream();
     }
 
     /**
@@ -80,9 +72,8 @@ class HelloWorld_04_Send_Socket_Test extends _HelloWorldTest {
         // ------------------------------------------------------------------------------------ WHEN
         var result = service.send(socket);                 // <4>
         // ------------------------------------------------------------------------------------ THEN
-        // TODO: Verify, socket.getOutputStream() (which returns stream) invoked, once.
-        // TODO: Verify, no more interactions with the socket
-        // TODO: Verify, write(stream) invoked, once.
+        // TODO: Verify, once, write(stream) invoked.
+        // TODO: Verify, no more interactions with the socket.
         assertSame(socket, result);
     }
 

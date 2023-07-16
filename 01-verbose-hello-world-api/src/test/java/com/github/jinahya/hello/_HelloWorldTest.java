@@ -53,7 +53,6 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.longThat;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.BDDMockito.willAnswer;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockingDetails;
 import static org.mockito.Mockito.when;
@@ -77,24 +76,62 @@ abstract class _HelloWorldTest {
     }
 
     /**
-     * Stubs specified channel, on its
-     * {@link AsynchronousFileChannel#write(ByteBuffer, long, Object, CompletionHandler)
-     * write(channel, position, attachment, handler)} method invokes
-     * {@code handler.failed(exc, attachment)}.
+     * Stubs specified channel's
+     * {@link AsynchronousFileChannel#write(ByteBuffer, long) write(src, position)} method to return
+     * a future writes some bytes from {@code src} starting at specified position while adding the
+     * number of written bytes to specified adder.
      *
-     * @param channel the channel to stub.
+     * @param channel the channel whose
+     *                {@link AsynchronousFileChannel#write(ByteBuffer, long) write(src, position)}
+     *                method is stubbed.
+     * @param adder   the adder to which the number of written bytes is added.
+     * @param <T>     channel type parameter
+     * @return given {@code channel}.
      */
-    @SuppressWarnings({"unchecked"})
-    void stubToFail(AsynchronousFileChannel channel) {
+    <T extends AsynchronousFileChannel> T _stub_ToWriteSome(T channel, LongAdder adder) {
         if (!mockingDetails(requireNonNull(channel, "channel is null")).isMock()) {
             throw new IllegalArgumentException("not a mock: " + channel);
         }
+        requireNonNull(adder, "adder is null");
+        willAnswer(w -> { // invocation of channel.write
+            var future = mock(Future.class);
+            when(future.get()).thenAnswer(g -> { // invocation of future.get
+                var src = w.getArgument(0, ByteBuffer.class);
+                var position = w.getArgument(1, Long.class);
+                var written = current().nextInt(1, src.remaining() + 1);
+                src.position(src.position() + written);
+                adder.add(written);
+                return written;
+            });
+            return future;
+        }).given(channel).write(
+                argThat(b -> b != null && b.hasRemaining()), // <src>
+                longThat(v -> v >= 0L)                       // <position>
+        );
+        return channel;
+    }
+
+    /**
+     * Stubs specified channel's
+     * {@link AsynchronousFileChannel#write(ByteBuffer, long, Object, CompletionHandler)
+     * write(channel, position, attachment, handler)} method invokes
+     * {@link CompletionHandler#failed(Throwable, Object) handler.failed(exc, attachment)}.
+     *
+     * @param channel the channel to be stubbed.
+     * @param exc     the error for the {@code exc} parameter.
+     */
+    @SuppressWarnings({"unchecked"})
+    <T extends Throwable> T _stub_ToFail(AsynchronousFileChannel channel, final T exc) {
+        if (!mockingDetails(requireNonNull(channel, "channel is null")).isMock()) {
+            throw new IllegalArgumentException("not a mock: " + channel);
+        }
+        requireNonNull(exc, "exc is null");
         willAnswer(i -> {
             var src = i.getArgument(0, ByteBuffer.class);
             var position = i.getArgument(1, Long.class);
             var attachment = i.getArgument(2);
             var handler = i.getArgument(3, CompletionHandler.class);
-            handler.failed(new Throwable("just failing"), attachment);
+            handler.failed(exc, attachment);
             return null;
         }).given(channel).write(
                 argThat(b -> b != null && b.hasRemaining()),
@@ -102,10 +139,11 @@ abstract class _HelloWorldTest {
                 any(),
                 notNull()
         );
+        return exc;
     }
 
     @SuppressWarnings({"unchecked"})
-    void stubToComplete(AsynchronousFileChannel channel, LongAdder adder) {
+    void _stub_ToComplete(AsynchronousFileChannel channel, LongAdder adder) {
         if (!mockingDetails(requireNonNull(channel, "channel is null")).isMock()) {
             throw new IllegalArgumentException("not a mock: " + channel);
         }
@@ -152,7 +190,7 @@ abstract class _HelloWorldTest {
     }
 
     <T extends AsynchronousByteChannel> T _stub_ToComplete(T channel) {
-        return _stub_ToComplete(channel, mock(LongAdder.class));
+        return _stub_ToComplete(channel, new LongAdder());
     }
 
     @SuppressWarnings({"unchecked"})
@@ -217,27 +255,40 @@ abstract class _HelloWorldTest {
     }
 
     /**
-     * Stubs {@link #serviceInstance()} as its {@link HelloWorld#put(ByteBuffer) put(buffer[12])}
-     * method to return given {@code buffer} as its position increased by
-     * {@value HelloWorld#BYTES}.
+     * Stubs {@link #serviceInstance()}'s {@link HelloWorld#put(ByteBuffer) put(buffer[12])} method
+     * to return given {@code buffer} as its position increased by {@value HelloWorld#BYTES}.
      */
     void _stub_PutBuffer_ToReturnTheBuffer_AsItsPositionIncreasedBy12() {
-        doAnswer(i -> {
+        willAnswer(i -> {
             var buffer = i.getArgument(0, ByteBuffer.class);
             buffer.position(buffer.limit());
             return buffer;
-        }).when(serviceInstance)
-                .put(argThat(b -> b != null && b.capacity() == BYTES && b.remaining() == BYTES));
+        }).given(serviceInstance).put(
+                argThat(b -> b != null && b.capacity() == BYTES && b.remaining() == BYTES)
+        );
     }
 
     /**
      * Stubs {@link #serviceInstance() serviceInstance}'s
-     * {@link HelloWorld#set(byte[]) set(array[12])} method to just return the {@code array}.
+     * {@link HelloWorld#write(OutputStream) write(stream)} method to write
+     * {@value HelloWorld#BYTES} bytes to the {@code stream} and returns the {@code stream}.
      */
-    @BeforeEach
+    void _stub_WriteStream_Writes12BytesAndReturnTheStream() throws IOException {
+        when(serviceInstance.write(notNull(OutputStream.class))) // <1>
+                .thenAnswer(i -> {                               // <2>
+                    var stream = i.getArgument(0, OutputStream.class);
+                    stream.write(new byte[BYTES]);
+                    return stream;
+                });
+    }
+
+    /**
+     * Stubs {@link #serviceInstance() serviceInstance}'s {@link HelloWorld#set(byte[]) set(array)}
+     * method to just return the {@code array}.
+     */
     void _stub_SetArray_ToReturnTheArray() {
-        when(serviceInstance.set(argThat(a -> a != null && a.length == BYTES))) // <1>
-                .thenAnswer(i -> i.getArgument(0));                             // <2>
+        when(serviceInstance.set(any()))            // <1>
+                .thenAnswer(i -> i.getArgument(0)); // <2>
     }
 
     /**
@@ -246,7 +297,7 @@ abstract class _HelloWorldTest {
      * argument.
      */
     @BeforeEach
-    void stubSetArrayWithIndexToReturnTheArray() {
+    void _stub_SetArrayWithIndex_ToReturnTheArray() {
         when(serviceInstance.set(any(), anyInt()))  // <1>
                 .thenAnswer(i -> i.getArgument(0)); // <2>
     }

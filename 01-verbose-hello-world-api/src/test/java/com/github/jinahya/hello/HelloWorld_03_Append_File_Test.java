@@ -31,16 +31,12 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.file.Files;
 
-import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.io.File.createTempFile;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.notNull;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 
@@ -55,12 +51,8 @@ import static org.mockito.Mockito.mockConstruction;
 class HelloWorld_03_Append_File_Test extends _HelloWorldTest {
 
     @BeforeEach
-    void beforeEach() throws IOException {
-        doAnswer(i -> {
-            var stream = i.getArgument(0, OutputStream.class);
-            stream.write(new byte[BYTES]);
-            return stream;
-        }).when(serviceInstance()).write(notNull(OutputStream.class));
+    void _beforeEach() throws IOException {
+        _stub_WriteStream_Writes12BytesAndReturnTheStream();
     }
 
     /**

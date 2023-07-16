@@ -73,7 +73,7 @@ class HelloWorld_32_WriteAsync_AsynchronousFileChannelWithHandler_Arguments_Test
      * write(channel, position, handler, attachment)} method throws an
      * {@link IllegalArgumentException} when the {@code position} argument is negative.
      */
-    @DisplayName("(, negative, , )IllegalArgumentException")
+    @DisplayName("(, < 0, , )IllegalArgumentException")
     @Test
     @SuppressWarnings({"unchecked"})
     void _ThrowIllegalArgumentException_PositionIsNegative() {

@@ -25,24 +25,21 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousFileChannel;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
-import java.util.concurrent.Future;
 import java.util.concurrent.atomic.LongAdder;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
-import static java.util.concurrent.Executors.newSingleThreadExecutor;
+import static java.nio.ByteBuffer.allocate;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.longThat;
-import static org.mockito.Mockito.doAnswer;
+import static org.mockito.ArgumentMatchers.notNull;
+import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * A class for testing
@@ -54,20 +51,26 @@ import static org.mockito.Mockito.when;
  */
 @DisplayName("write(channel, position, executor)")
 @Slf4j
-class HelloWorld_31_WriteAsync_AsynchronousFileChannelWithExecutor_Test
-        extends _HelloWorldTest {
+class HelloWorld_31_WriteAsync_AsynchronousFileChannelWithExecutor_Test extends _HelloWorldTest {
 
     @BeforeEach
-    void beforeEach() {
-        _stub_PutBuffer_ToReturnTheBuffer_AsItsPositionIncreasedBy12();
+    void _beforeEach() throws InterruptedException, ExecutionException {
+        willAnswer(i -> {
+            var channel = i.getArgument(0, AsynchronousFileChannel.class);
+            var position = i.getArgument(1, Long.class);
+            for (var src = allocate(BYTES); src.hasRemaining(); ) {
+                position += channel.write(src, position).get();
+            }
+            return channel;
+        }).given(serviceInstance()).write(notNull(), longThat(v -> v >= 0));
     }
 
     /**
      * Asserts
      * {@link HelloWorld#writeAsync(AsynchronousFileChannel, long, Executor) write(channel,
      * position, executor)} method returns a future whose result is same as given {@code channel},
-     * and asserts {@value HelloWorld#BYTES} bytes has been written to the {@code channel} starting
-     * at {@code position}.
+     * and asserts {@link HelloWorld#write(AsynchronousFileChannel, long)} method invoked with
+     * {@code channel} and {@code position}.
      *
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
@@ -77,22 +80,14 @@ class HelloWorld_31_WriteAsync_AsynchronousFileChannelWithExecutor_Test
     void __() throws InterruptedException, ExecutionException {
         // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
-        var channel = mock(AsynchronousFileChannel.class);
-        var writtenSoFar = new LongAdder();
-        doAnswer(w -> {
-            var future = mock(Future.class);
-            when(future.get()).thenAnswer(g -> {
-                var buffer = w.getArgument(0, ByteBuffer.class);
-                var position = w.getArgument(1, Long.class);
-                var written = current().nextInt(1, buffer.remaining() + 1);
-                buffer.position(buffer.position() + written);
-                writtenSoFar.add(written);
-                return written;
-            });
-            return future;
-        }).when(channel).write(argThat(b -> b != null && b.hasRemaining()), longThat(p -> p >= 0L));
+        var channel = _stub_ToWriteSome(mock(AsynchronousFileChannel.class), new LongAdder());
         var position = current().nextLong(0, Long.MAX_VALUE - BYTES);
-        var executor = newSingleThreadExecutor();
+        var executor = mock(Executor.class);
+        willAnswer(i -> {
+            var command = i.getArgument(0, Runnable.class);
+            new Thread(command).start();
+            return null;
+        }).given(executor).execute(notNull());
         // ------------------------------------------------------------------------------------ WHEN
         var future = service.writeAsync(channel, position, executor);
         var result = future.get();

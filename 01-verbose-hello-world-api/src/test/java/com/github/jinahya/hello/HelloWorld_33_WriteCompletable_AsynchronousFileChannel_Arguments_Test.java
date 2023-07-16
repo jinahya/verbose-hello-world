@@ -69,7 +69,7 @@ class HelloWorld_33_WriteCompletable_AsynchronousFileChannel_Arguments_Test
      * position)} method throws an {@link IllegalArgumentException} when the {@code position}
      * argument is negative.
      */
-    @DisplayName("(, negative)IllegalArgumentException")
+    @DisplayName("(, < 0L)IllegalArgumentException")
     @Test
     void _ThrowIllegalArgumentException_PositionIsNegative() {
         // ----------------------------------------------------------------------------------- GIVEN

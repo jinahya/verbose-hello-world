@@ -47,6 +47,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
+import java.util.concurrent.atomic.LongAccumulator;
 
 /**
  * An interface for generating <a href="#hello-world-bytes">hello-world-bytes</a> to various
@@ -443,6 +444,37 @@ public interface HelloWorld {
     /**
      * Writes the <a href="hello-world-bytes">hello-world-bytes</a> to specified file channel,
      * starting at given file position.
+     * <pre>
+     * Given,
+     *
+     *                  p(0)
+     *                  ↓
+     * buffer:         |h|e|l|l|o|,| |w|o|r|l|d|
+     *
+     *                 &lt;position&gt; + 0
+     *                  ↓
+     * &lt;channel&gt;: ...| | | | | | | | | | | | | | |...
+     *
+     * Then, in an intermediate state, possibly,
+     *
+     *                        p(3)
+     *                        ↓
+     * buffer:         |h|e|l|l|o|,| |w|o|r|l|d|
+     *
+     *                    &lt;position&gt; + 3
+     *                     ↓
+     * &lt;channel&gt;: ...| |h|e|l| | | | | | | | | | |...
+     *
+     * And, on successful return,
+     *
+     *                                          p(12)
+     *                                          ↓
+     * buffer:         |h|e|l|l|o|,| |w|o|r|l|d|
+     *
+     *                                         &lt;position&gt; + 12
+     *                                          ↓
+     * &lt;channel&gt;: ...| |h|e|l|l|o|,| |w|o|r|l|d| |...
+     * </pre>
      *
      * @param <T>      channel type parameter
      * @param channel  the file channel to which bytes are written.
@@ -462,9 +494,7 @@ public interface HelloWorld {
      */
     default <T extends AsynchronousFileChannel> T write(T channel, long position)
             throws InterruptedException, ExecutionException {
-        if (channel == null) {
-            throw new NullPointerException("channel is null");
-        }
+        Objects.requireNonNull(channel, "channel is null");
         if (position < 0L) {
             throw new IllegalArgumentException("position(" + position + ") < 0L");
         }
@@ -485,6 +515,9 @@ public interface HelloWorld {
      * @param position the file position at which the transfer is to begin; must be non-negative.
      * @param executor an executor.
      * @return a future of {@code channel}.
+     * @implSpec The default implementation returns a future of {@code channel} which invokes
+     * {@link #write(AsynchronousFileChannel, long) write(channel, position)} method with
+     * {@code channel}, and {@code position}.
      * @see #write(AsynchronousFileChannel, long)
      */
     default <T extends AsynchronousFileChannel> Future<T> writeAsync(T channel, long position,
@@ -497,75 +530,6 @@ public interface HelloWorld {
         FutureTask<T> command = new FutureTask<>(() -> write(channel, position));
         executor.execute(command); // Runnable  <- RunnableFuture<V> <- FutureTask<V>
         return command;            // Future<V> <- RunnableFuture<V> <- FutureTask<V>
-    }
-
-    @SuppressWarnings({
-            "java:S117" // attachment_
-    })
-    private <T extends AsynchronousFileChannel, A> void writeAsync1(
-            T channel, long position, CompletionHandler<? super T, ? super A> handler,
-            A attachment) {
-        final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
-        final var finalPosition = position + BYTES;
-        channel.write(
-                buffer,                     // <src>
-                position,                   // <position>
-                position,                   // <attachment>
-                new CompletionHandler<>() { // <handler>
-                    @Override
-                    public void completed(Integer result, Long attachment_) {
-                        if ((attachment_ = attachment_ + result) == finalPosition) {
-                            handler.completed(channel, attachment);
-                            return;
-                        }
-                        channel.write(
-                                buffer,      // <src>
-                                attachment_, // <position>
-                                attachment_, // <attachment>
-                                this         // <handler>
-                        );
-                    }
-
-                    @Override
-                    public void failed(Throwable exc, Long attachment_) {
-                        handler.failed(exc, attachment);
-                    }
-                }
-        );
-    }
-
-    @SuppressWarnings({
-            "java:S117" // attachment_
-    })
-    private <T extends AsynchronousFileChannel, A> void writeAsync2(
-            T channel, long position, CompletionHandler<? super T, ? super A> handler,
-            A attachment) {
-        final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
-        channel.write(
-                buffer,                     // <src>
-                position,                   // <position>
-                buffer,                     // <attachment>
-                new CompletionHandler<>() { // <handler>
-                    @Override
-                    public void completed(Integer result, ByteBuffer attachment_) {
-                        if (!attachment_.hasRemaining()) {
-                            handler.completed(channel, attachment);
-                            return;
-                        }
-                        channel.write(
-                                buffer,                            // <src>
-                                position + attachment_.position(), // <position>
-                                attachment_,                       // <attachment>
-                                this                               // <handler>
-                        );
-                    }
-
-                    @Override
-                    public void failed(Throwable exc, ByteBuffer attachment_) {
-                        handler.failed(exc, attachment);
-                    }
-                }
-        );
     }
 
     /**
@@ -593,7 +557,33 @@ public interface HelloWorld {
             throw new IllegalArgumentException("position(" + position + ") < 0L");
         }
         Objects.requireNonNull(handler, "handler is null");
-        writeAsync1(channel, position, handler, attachment);
+        final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
+        channel.write(
+                buffer,                                   // <src>
+                position,                                 // <position>
+                new LongAccumulator(Long::sum, position), // <attachment> <1>
+                new CompletionHandler<>() {               // <handler>
+                    @Override
+                    public void completed(Integer result, LongAccumulator attachment_) {
+                        if (!buffer.hasRemaining()) {
+                            handler.completed(channel, attachment);
+                            return;
+                        }
+                        attachment_.accumulate(result); //                <2>
+                        channel.write(
+                                buffer,            // <src>
+                                attachment_.get(), // <position>          <3>
+                                attachment_,       // <attachment>        <4>
+                                this               // <handler>
+                        );
+                    }
+
+                    @Override
+                    public void failed(Throwable exc, LongAccumulator attachment_) {
+                        handler.failed(exc, attachment);
+                    }
+                }
+        );
     }
 
     @SuppressWarnings({
@@ -669,7 +659,24 @@ public interface HelloWorld {
         if (position < 0L) {
             throw new IllegalArgumentException("position(" + position + ") < 0L");
         }
-        return writeCompletable1(channel, position);
+        var future = new CompletableFuture<T>();
+        writeAsync(
+                channel,                    // <channel>
+                position,                   // <position>
+                new CompletionHandler<>() { // <handler>
+                    @Override
+                    public void completed(T result, Object attachment) {
+                        future.complete(result);
+                    }
+
+                    @Override
+                    public void failed(Throwable exc, Object attachment) {
+                        future.completeExceptionally(exc);
+                    }
+                },
+                null                        // <attachment>
+        );
+        return future;
     }
 
     /**

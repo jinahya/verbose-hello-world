@@ -30,10 +30,10 @@ import java.nio.channels.CompletionHandler;
 import java.util.concurrent.atomic.LongAdder;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
+import static java.lang.Long.MAX_VALUE;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.timeout;
@@ -49,11 +49,10 @@ import static org.mockito.Mockito.verify;
  */
 @DisplayName("writeAsync(channel, position, handler, attachment)")
 @Slf4j
-class HelloWorld_32_WriteAsync_AsynchronousFileChannelWithHandler_Test
-        extends _HelloWorldTest {
+class HelloWorld_32_WriteAsync_AsynchronousFileChannelWithHandler_Test extends _HelloWorldTest {
 
     @BeforeEach
-    void beforeEach() {
+    void _beforeEach() {
         _stub_PutBuffer_ToReturnTheBuffer_AsItsPositionIncreasedBy12();
     }
 
@@ -63,7 +62,9 @@ class HelloWorld_32_WriteAsync_AsynchronousFileChannelWithHandler_Test
      * writeAsync(channel, position, handler, attachment)} method invokes
      * {@link CompletionHandler#completed(Object, Object) handler.completed(channel, attachment)}.
      */
-    @DisplayName("-> handler.completed(channel, attachment)")
+    @DisplayName("""
+            (channel, position, handler, attachment)
+            -> handler.completed(channel, attachment)""")
     @Test
     @SuppressWarnings({"unchecked"})
     void _Completed_() {
@@ -71,9 +72,9 @@ class HelloWorld_32_WriteAsync_AsynchronousFileChannelWithHandler_Test
         var service = serviceInstance();
         var channel = mock(AsynchronousFileChannel.class);
         var writtenSoFar = new LongAdder();
-        stubToComplete(channel, writtenSoFar);
+        _stub_ToComplete(channel, writtenSoFar);
         var position = 0L;
-        CompletionHandler<AsynchronousFileChannel, Object> handler = mock(CompletionHandler.class);
+        var handler = mock(CompletionHandler.class);
         var attachment = current().nextBoolean() ? null : new Object();
         // ------------------------------------------------------------------------------------ WHEN
         service.writeAsync(channel, position, handler, attachment);
@@ -88,21 +89,21 @@ class HelloWorld_32_WriteAsync_AsynchronousFileChannelWithHandler_Test
      * writeAsync(channel, handler, attachment)} method invokes
      * {@link CompletionHandler#failed(Throwable, Object) handler.failed(exc, attachment)}.
      */
-    @DisplayName("-> handler.failed(exc, attachment)")
+    @DisplayName("(channel, position, handler, attachment) -> handler.failed(exc, attachment)")
     @Test
     @SuppressWarnings({"unchecked"})
     void _Failed_() {
         // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
         var channel = mock(AsynchronousFileChannel.class);
-        stubToFail(channel);
-        var position = 0L;
-        CompletionHandler<AsynchronousFileChannel, Object> handler = mock(CompletionHandler.class);
+        var exc = _stub_ToFail(channel, mock(Throwable.class));
+        var position = current().nextLong(MAX_VALUE - BYTES);
+        var handler = mock(CompletionHandler.class);
         var attachment = current().nextBoolean() ? null : new Object();
         // ------------------------------------------------------------------------------------ WHEN
         service.writeAsync(channel, position, handler, attachment);
         // ------------------------------------------------------------------------------------ THEN
         verify(handler, timeout(SECONDS.toMillis(8L)).times(1))
-                .failed(notNull(), same(attachment));
+                .failed(same(exc), same(attachment));
     }
 }

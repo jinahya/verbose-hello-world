@@ -25,8 +25,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.nio.channels.AsynchronousFileChannel;
-import java.util.concurrent.ThreadLocalRandom;
 
+import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
@@ -71,8 +71,8 @@ class HelloWorld_30_Write_AsynchronousFileChannel_Arguments_Test extends _HelloW
     void _ThrowIllegalArgumentException_PositionIsNegative() {
         // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
-        AsynchronousFileChannel channel = mock(AsynchronousFileChannel.class);
-        var position = ThreadLocalRandom.current().nextLong() | Long.MIN_VALUE;
+        var channel = mock(AsynchronousFileChannel.class);
+        var position = current().nextLong() | Long.MIN_VALUE;
         // ------------------------------------------------------------------------------- WHEN/THEN
         assertThrows(
                 IllegalArgumentException.class,
