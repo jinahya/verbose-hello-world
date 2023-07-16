@@ -100,7 +100,7 @@ class HelloWorld_04_Send_Socket_Test extends _HelloWorldTest {
                 client.connect(server.getLocalSocketAddress());
                 log.debug("[client] connected to {}", client.getRemoteSocketAddress());
                 var array = client.getInputStream().readNBytes(BYTES);
-                log.debug("[client] successfully read from the server");
+                log.debug("[client] successfully read from the server.");
             } catch (IOException ioe) {
                 log.error("[client] failed to connect/read to/from the server", ioe);
             }
