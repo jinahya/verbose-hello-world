@@ -40,6 +40,7 @@ import static java.nio.channels.Channels.newChannel;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -87,6 +88,7 @@ class HelloWorld_08_Write_WritableByteChannel_Test extends _HelloWorldTest {
         // ------------------------------------------------------------------------------------ THEN
         verify(service, times(1)).put(bufferCaptor().capture());
         var buffer = bufferCaptor().getValue();
+        assertNotNull(buffer);
         assertEquals(BYTES, buffer.capacity());
         // TODO: Verify, channel.write(buffer) invoked, at least once.
         // TODO: Assert, writtenSoFar.intValue() is equal to BYTES.

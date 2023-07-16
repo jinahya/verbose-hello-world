@@ -103,6 +103,6 @@ class HelloWorld_06_Write_RandomAccessFile_Test extends _HelloWorldTest {
             file.getFD().sync();
         }
         // ------------------------------------------------------------------------------------ THEN
-        assertEquals((pos + BYTES), tmp.length());
+        assertEquals(pos + BYTES, tmp.length());
     }
 }

@@ -97,8 +97,7 @@ class HelloWorld_23_WriteCompletable_AsynchronousByteChannel_Test
     void _Completed_() throws Exception {
         // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
-        var channel = mock(AsynchronousByteChannel.class);
-        _stub_ToComplete(channel);
+        var channel = _stub_ToComplete(mock(AsynchronousByteChannel.class));
         // ------------------------------------------------------------------------------------ WHEN
         var future = service.writeCompletable(channel);
         // ------------------------------------------------------------------------------------ THEN
