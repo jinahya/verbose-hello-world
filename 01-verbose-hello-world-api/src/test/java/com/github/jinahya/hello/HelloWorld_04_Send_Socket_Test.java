@@ -87,7 +87,6 @@ class HelloWorld_04_Send_Socket_Test extends _HelloWorldTest {
             var thread = new Thread(() -> {
                 try (var client = server.accept()) {
                     log.debug("[server] accepted from {}", client.getRemoteSocketAddress());
-                    log.debug("[server] handling on {}", client.getLocalSocketAddress());
                     service.send(client);
                     client.getOutputStream().flush();
                     log.debug("[server] successfully sent to the client.");
