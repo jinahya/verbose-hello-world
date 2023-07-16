@@ -72,8 +72,7 @@ class HelloWorld_04_Send_Socket_Test extends _HelloWorldTest {
         // ------------------------------------------------------------------------------------ WHEN
         var result = service.send(socket);                 // <4>
         // ------------------------------------------------------------------------------------ THEN
-        // TODO: Verify, once, write(stream) invoked.
-        // TODO: Verify, no more interactions with the socket.
+        // TODO: Verify, once, service.write(socket.getOutputStream) invoked.
         assertSame(socket, result);
     }
 
