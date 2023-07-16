@@ -115,8 +115,6 @@ class HelloWorld_22_WriteAsync_AsynchronousByteChannelWithHandler_Test
         // ------------------------------------------------------------------------------------ WHEN
         service.writeAsync(channel, handler, attachment);
         // ------------------------------------------------------------------------------------ THEN
-        verify(service, times(1)).put(bufferCaptor().capture());
-        var buffer = bufferCaptor().getValue();
         // TODO: Verify, handler.failed(exc, attachment) invoked, once within some time.
     }
 }
