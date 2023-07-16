@@ -77,7 +77,7 @@ class HelloWorld_04_Send_Socket_Test extends _HelloWorldTest {
     }
 
     @org.junit.jupiter.api.Disabled("not implemented yet") // TODO: remove when implemented
-    @DisplayName("(socket) 12 bytes are written to the socket")
+    @DisplayName("(socket) 12 bytes are sent to the socket")
     @Test
     void _12BytesWritten_() throws IOException, InterruptedException {
         var service = serviceInstance();
