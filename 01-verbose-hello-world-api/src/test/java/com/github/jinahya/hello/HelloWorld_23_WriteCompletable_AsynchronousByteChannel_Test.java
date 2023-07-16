@@ -60,10 +60,24 @@ class HelloWorld_23_WriteCompletable_AsynchronousByteChannel_Test
             var channel = i.getArgument(0, AsynchronousByteChannel.class);
             var handler = i.getArgument(1, CompletionHandler.class);
             var attachment = i.getArgument(2);
-            for (final var b = allocate(BYTES); b.hasRemaining(); channel.write(b).get()) {
-                // empty
-            }
-            handler.completed(channel, attachment);
+            var src = allocate(BYTES);
+            channel.write(
+                    src,
+                    attachment,
+                    new CompletionHandler<>() {
+                        @Override
+                        public void completed(Integer result, Object attachment) {
+                            if (!src.hasRemaining()) {
+                                handler.completed(channel, attachment);
+                            }
+                            channel.write(src, attachment, this);
+                        }
+
+                        @Override
+                        public void failed(Throwable exc, Object attachment) {
+                            handler.failed(exc, attachment);
+                        }
+                    });
             return null;
         }).given(serviceInstance()).writeAsync(notNull(), notNull(), any());
     }
@@ -84,15 +98,13 @@ class HelloWorld_23_WriteCompletable_AsynchronousByteChannel_Test
         // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
         var channel = mock(AsynchronousByteChannel.class);
-        var writtenSoFar = new LongAdder();
-        _stub_ToComplete(channel, writtenSoFar);
+        _stub_ToComplete(channel);
         // ------------------------------------------------------------------------------------ WHEN
         var future = service.writeCompletable(channel);
         // ------------------------------------------------------------------------------------ THEN
         // TODO: Get the result of the <future> with a timeout.
-        // TODO: Verify, service.writeAsync(chanel, a-handler, null) invoked, once.
+        // TODO: Verify, service.writeAsync(same(chanel), notNull(), any()) invoked, once.
         // TODO: Assert, result is same as channel.
-        // TODO: Assert, writtenSoFar.intValue() is equal to BYTES.
     }
 
     /**
