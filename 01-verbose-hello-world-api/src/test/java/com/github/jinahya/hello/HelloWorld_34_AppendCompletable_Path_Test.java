@@ -27,7 +27,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.file.OpenOption;
@@ -39,6 +38,7 @@ import java.util.concurrent.atomic.LongAdder;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.lang.Long.MAX_VALUE;
+import static java.nio.ByteBuffer.allocate;
 import static java.nio.channels.AsynchronousFileChannel.open;
 import static java.nio.file.Files.createTempFile;
 import static java.nio.file.Files.size;
@@ -75,7 +75,7 @@ class HelloWorld_34_AppendCompletable_Path_Test extends _HelloWorldTest {
             var channel = i.getArgument(0, AsynchronousFileChannel.class);
             var position = i.getArgument(1, Long.class);
             var future = new CompletableFuture<>();
-            var src = ByteBuffer.allocate(BYTES);
+            var src = allocate(BYTES);
             channel.write(src, position, position, new CompletionHandler<>() { // @formatter:off
                 @Override public void completed(Integer result, Long attachment) {
                     if (!src.hasRemaining()) {

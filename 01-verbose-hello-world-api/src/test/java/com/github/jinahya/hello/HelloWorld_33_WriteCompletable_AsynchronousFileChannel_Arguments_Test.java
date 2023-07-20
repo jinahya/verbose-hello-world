@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.channels.AsynchronousFileChannel;
 
+import static java.lang.Long.MIN_VALUE;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
@@ -75,7 +76,7 @@ class HelloWorld_33_WriteCompletable_AsynchronousFileChannel_Arguments_Test
         // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
         var channel = mock(AsynchronousFileChannel.class);
-        var position = current().nextLong() | Long.MIN_VALUE;
+        var position = current().nextLong() | MIN_VALUE;
         // ------------------------------------------------------------------------------- WHEN/THEN
         assertThrows(
                 IllegalArgumentException.class,

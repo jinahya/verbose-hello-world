@@ -25,8 +25,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.AsynchronousFileChannel;
+import java.nio.channels.CompletionHandler;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.atomic.LongAdder;
@@ -39,8 +41,10 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.longThat;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -58,16 +62,38 @@ import static org.mockito.Mockito.verify;
 class HelloWorld_33_WriteCompletable_AsynchronousFileChannel_Test extends _HelloWorldTest {
 
     @BeforeEach
-    void beforeEach() {
-        _stub_PutBuffer_ToReturnTheBuffer_AsItsPositionIncreasedBy12();
+    @SuppressWarnings({"unchecked"})
+    void _beforeEach() {
+        willAnswer(i -> {
+            var channel = i.getArgument(0, AsynchronousFileChannel.class);
+            var position = i.getArgument(1, Long.class);
+            var handler = i.getArgument(2, CompletionHandler.class);
+            var attachment = i.getArgument(3);
+            var src = ByteBuffer.allocate(BYTES);
+            channel.write(src, position, position, new CompletionHandler<>() {
+                @Override
+                public void completed(Integer result, Long attachment_) {
+                    if (!src.hasRemaining()) {
+                        handler.completed(channel, attachment);
+                        return;
+                    }
+                    attachment_ += result;
+                    channel.write(src, attachment_, attachment_, this);
+                }
+
+                @Override
+                public void failed(Throwable exc, Long attachment_) {
+                    handler.failed(exc, attachment);
+                }
+            });
+            return null;
+        }).given(serviceInstance()).writeAsync(notNull(), longThat(v -> v >= 0L), notNull(), any());
     }
 
     /**
      * Verifies
      * {@link HelloWorld#writeCompletable(AsynchronousFileChannel, long) writeCompletable(channel,
      * position)} method returns a completable future results the {@code channel}.
-     *
-     * @throws Exception when failed to ge the result of the future.
      */
     @DisplayName("(channel, position)completed<channel>")
     @Test
