@@ -126,7 +126,7 @@ public interface HelloWorld {
      * @see #set(byte[], int)
      */
     default byte[] set(byte[] array) {
-        // TODO: Implement!
+        // TODO: set 'hello, world' bytes on array.
         return null;
     }
 
