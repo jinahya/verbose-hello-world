@@ -29,7 +29,8 @@ class HelloWorldSpiTest extends HelloWorldTest {
 
     @Override
     HelloWorld serviceInstance() {
-        // TODO: Implement!
+        // TODO: Replace with the following statement!
+        // return java.util.ServiceLoader.load(HelloWorld.class).iterator().next();
         return new HelloWorldDemo();
     }
 }
