@@ -54,23 +54,26 @@
     <maven.compiler.testSource>${maven.compiler.source}</maven.compiler.testSource>
     <maven.compiler.testTarget>${maven.compiler.testSource}</maven.compiler.testTarget>
     <maven.compiler.testRelase>${maven.compiler.testTarget}</maven.compiler.testRelase>
-    <version.asciidoctorj>2.5.8</version.asciidoctorj>
-    <version.asciidoctorj-pdf>2.3.7</version.asciidoctorj-pdf>
-    <version.com.google.dagger>2.46.1</version.com.google.dagger>
+    <!--    <version.asciidoctorj>2.5.8</version.asciidoctorj>-->
+    <version.asciidoctorj>3.0.0-alpha.1</version.asciidoctorj>
+    <version.asciidoctorj-pdf>2.3.9</version.asciidoctorj-pdf>
+    <version.com.google.dagger>2.47</version.com.google.dagger>
     <version.maven-surefire>3.1.2</version.maven-surefire>
     <version.maven-failsafe>${version.maven-surefire}</version.maven-failsafe>
     <version.maven-javadoc-plugin>3.5.0</version.maven-javadoc-plugin>
     <version.org.apache.openwebbeans>2.0.27</version.org.apache.openwebbeans>
     <version.org.glassfish.hk2>3.0.4</version.org.glassfish.hk2>
     <version.org.hibernate.validator>8.0.1.Final</version.org.hibernate.validator>
-    <version.org.jboss.weld>5.1.1.Final</version.org.jboss.weld> <!-- weld-junit5 -->
+    <!--    <version.org.jboss.weld>5.1.1.Final</version.org.jboss.weld> &lt;!&ndash; weld-junit5 &ndash;&gt;-->
+    <version.org.jboss.weld>5.1.1.SP1</version.org.jboss.weld> <!-- weld-junit5 -->
     <version.org.jboss.weld.se>${version.org.jboss.weld}</version.org.jboss.weld.se> <!-- weld-se-core -->
-    <version.org.junit.jupiter>5.9.3</version.org.junit.jupiter>
+    <!--    <version.org.junit.jupiter>5.9.3</version.org.junit.jupiter>-->
+    <version.org.junit.jupiter>5.10.0-RC2</version.org.junit.jupiter>
     <version.org.mockito>5.4.0</version.org.mockito>
     <version.org.mockito.mockito-inline>5.2.0</version.org.mockito.mockito-inline> <!-- https://search.maven.org/artifact/org.mockito/mockito-inline -->
     <vesion.org.reactivestreams>1.0.4</vesion.org.reactivestreams>
     <version.org.slf4j>2.0.7</version.org.slf4j>
-    <version.org.springframework>6.0.10</version.org.springframework>
+    <version.org.springframework>6.0.11</version.org.springframework>
     <version.org.springframework.boot>3.1.2</version.org.springframework.boot>
   </properties>
 
@@ -106,7 +109,8 @@
       <dependency>
         <groupId>jakarta.inject</groupId>
         <artifactId>jakarta.inject-api</artifactId>
-        <version>2.0.1</version>
+        <!--        <version>2.0.1</version>-->
+        <version>2.0.1.MR</version>
       </dependency>
       <dependency>
         <groupId>javax.annotation</groupId>
@@ -334,7 +338,14 @@
               </goals>
               <configuration>
                 <rules>
-                  <dependencyConvergence/>
+                  <dependencyConvergence>
+                    <excludes>
+                      <exclude>com.google.guava:guava</exclude> <!-- from dagger-compiler -->
+                      <exclude>jakarta.annotation:jakarta.annotation-api</exclude> <!-- jakarta-.enterprise.cdi-api - weld-se-core -->
+                      <exclude>jakarta.el:jakarta.el-api</exclude> <!-- jakarta-.enterprise.cdi-api - weld-se-core -->
+                      <exclude>org.jetbrains.kotlin:kotlin-stdlib</exclude>  <!-- from dagger-compiler -->
+                    </excludes>
+                  </dependencyConvergence>
                 </rules>
               </configuration>
             </execution>
