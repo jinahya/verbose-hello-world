@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.lang.Integer.MAX_VALUE;
 import static java.util.concurrent.ThreadLocalRandom.current;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
@@ -108,6 +109,6 @@ abstract class HelloWorldTest {
         var result = service.set(array, index);
         // ------------------------------------------------------------------------------------ THEN
         // TODO: Assert, array contains 'hello, world' bytes.
-        // TODO: Assert, result is same as array.
+        assertSame(array, result);
     }
 }
