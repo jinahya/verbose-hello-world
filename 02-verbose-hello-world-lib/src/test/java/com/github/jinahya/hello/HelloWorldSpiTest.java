@@ -28,7 +28,7 @@ package com.github.jinahya.hello;
 class HelloWorldSpiTest extends HelloWorldTest {
 
     @Override
-    HelloWorld helloWorld() {
+    HelloWorld serviceInstance() {
         // TODO: Implement!
         return new HelloWorldDemo();
     }

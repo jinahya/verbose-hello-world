@@ -20,6 +20,8 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import java.util.Objects;
+
 /**
  * A class implements the {@link HelloWorld} interface.
  *
@@ -29,15 +31,13 @@ public class HelloWorldImpl implements HelloWorld {
 
     @Override
     public byte[] set(byte[] array, int index) {
-        if (array == null) {
-            throw new NullPointerException("array is null");
-        }
+        Objects.requireNonNull(array, "array is null");
         if (index < 0) {
             throw new ArrayIndexOutOfBoundsException("index(" + index + ") < 0");
         }
         if (index + BYTES > array.length) {
             throw new ArrayIndexOutOfBoundsException(
-                    "index(" + index + ")" + BYTES + " > array.length(" + array.length + ")");
+                    "index(" + index + ") + " + BYTES + " > array.length(" + array.length + ")");
         }
         // TODO: Set 'hello, world' on array starting at index
         return array;

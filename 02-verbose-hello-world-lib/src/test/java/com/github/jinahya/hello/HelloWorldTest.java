@@ -20,15 +20,13 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.concurrent.ThreadLocalRandom;
-
+import static com.github.jinahya.hello.HelloWorld.BYTES;
+import static java.lang.Integer.MAX_VALUE;
 import static java.util.concurrent.ThreadLocalRandom.current;
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * An abstract class for testing classes implement {@link HelloWorld} interface.
@@ -42,7 +40,7 @@ abstract class HelloWorldTest {
      *
      * @return an instance of {@link HelloWorld} interface.
      */
-    abstract HelloWorld helloWorld();
+    abstract HelloWorld serviceInstance();
 
     /**
      * Asserts {@link HelloWorld#set(byte[], int) set(array, index)} method throws a
@@ -51,26 +49,27 @@ abstract class HelloWorldTest {
     @DisplayName("set(null, index) throws NullPointerException")
     @Test
     void set_ThrowNullPointerException_ArrayIsNull() {
-        var helloWorld = helloWorld();
-        Assumptions.assumeTrue(helloWorld != null);
-        byte[] array = null;
-        var index = ThreadLocalRandom.current().nextInt() & Integer.MAX_VALUE;
-        Assertions.assertThrows(NullPointerException.class, () -> helloWorld.set(null, 0));
+        // ----------------------------------------------------------------------------------- GIVEN
+        var service = serviceInstance();
+        var array = (byte[]) null;
+        var index = current().nextInt() & MAX_VALUE;
+        // ------------------------------------------------------------------------------- WHEN/THEN
+        assertThrows(NullPointerException.class, () -> service.set(null, 0));
     }
 
     /**
      * Asserts {@link HelloWorld#set(byte[], int) set(array, index)} method throws an
      * {@code IndexOutOfBoundsException} when {@code index} argument is negative.
      */
-    @DisplayName("set(array, !positive) throws IndexOutOfBoundsException")
+    @DisplayName("set(array, index < 0)IndexOutOfBoundsException")
     @Test
     void set_ThrowIndexOutOfBoundsException_IndexIsNegative() {
-        var helloWorld = helloWorld();
-        Assumptions.assumeTrue(helloWorld != null);
+        // ----------------------------------------------------------------------------------- GIVEN
+        var service = serviceInstance();
         var array = new byte[0];
         var index = current().nextInt() | Integer.MIN_VALUE;
-        Assertions.assertThrows(IndexOutOfBoundsException.class,
-                                () -> helloWorld.set(array, index));
+        // ------------------------------------------------------------------------------- WHEN/THEN
+        assertThrows(IndexOutOfBoundsException.class, () -> service.set(array, index));
     }
 
     /**
@@ -78,46 +77,34 @@ abstract class HelloWorldTest {
      * {@code IndexOutOfBoundsException} when ({@code index} +
      * {@value com.github.jinahya.hello.HelloWorld#BYTES}) is greater than {@code array.length}.
      */
-    @DisplayName("set(array, index) throws IndexOutOfBoundsException"
-                 + " when (index + 12) > array.length")
+    @DisplayName("set(array, index > (array.length - 12))IndexOutOfBoundsException")
     @Test
     void set_ThrowsIndexOutOfBoundsException_SpaceIsNotEnough() {
-        HelloWorld helloWorld = helloWorld();
-        Assumptions.assumeTrue(helloWorld != null);
-        var array = new byte[HelloWorld.BYTES];
-        var index = ThreadLocalRandom.current().nextInt(HelloWorld.BYTES - 1) + 1;
-        Assertions.assertThrows(IndexOutOfBoundsException.class,
-                                () -> helloWorld.set(array, index));
+        // ----------------------------------------------------------------------------------- GIVEN
+        var service = serviceInstance();
+        var array = new byte[BYTES << 1];
+        var index = current().nextInt(BYTES + 1, MAX_VALUE);
+        // ------------------------------------------------------------------------------- WHEN/THEN
+        assertThrows(IndexOutOfBoundsException.class, () -> service.set(array, index));
     }
 
     /**
      * Asserts {@link HelloWorld#set(byte[], int) set(array, index)} method sets
      * "{@code hello, world}" bytes on specified array starting at specified index.
      */
-    @DisplayName("set(array, index) sets 'hello, world' bytes"
-                 + " on array starting at index")
+    @DisplayName("""
+            set(array, index) sets 'hello, world' bytes
+            on array starting at index""")
     @Test
-    void set_SetsHelloWorldBytesOnArrayStartingAtIndex_() {
-        var helloWorld = helloWorld();
-        Assumptions.assumeTrue(helloWorld != null);
-        var array = new byte[HelloWorld.BYTES];
+    void set_SetHelloWorldBytesOnArrayStartingAtIndex_() {
+        // ----------------------------------------------------------------------------------- GIVEN
+        var service = serviceInstance();
+        var array = new byte[BYTES];
         var index = 0;
-        helloWorld.set(array, index);
-        // TODO: implement!
-    }
-
-    /**
-     * Asserts {@link HelloWorld#set(byte[], int) set(array, index)} method returns specified
-     * array.
-     */
-    @DisplayName("set(array, index) returns array")
-    @Test
-    void set_ReturnArray_() {
-        var helloWorld = helloWorld();
-        Assumptions.assumeTrue(helloWorld != null);
-        var array = new byte[HelloWorld.BYTES];
-        var index = 0;
-        var actual = helloWorld.set(array, index);
-        assertSame(array, actual);
+        // ------------------------------------------------------------------------------------ WHEN
+        var result = service.set(array, index);
+        // ------------------------------------------------------------------------------------ THEN
+        // TODO: Assert, array contains 'hello, world' bytes.
+        // TODO: Assert, result is same as array.
     }
 }

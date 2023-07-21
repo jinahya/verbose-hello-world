@@ -34,7 +34,7 @@ class HelloWorldDemoTest extends HelloWorldTest {
      * @return {@inheritDoc}
      */
     @Override
-    HelloWorld helloWorld() {
+    HelloWorld serviceInstance() {
         return new HelloWorldDemo();
     }
 }

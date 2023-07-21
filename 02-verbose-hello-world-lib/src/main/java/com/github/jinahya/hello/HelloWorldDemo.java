@@ -23,7 +23,7 @@ package com.github.jinahya.hello;
 import java.nio.charset.StandardCharsets;
 
 /**
- * A class implements the {@link HelloWorld} interface for demonstration purposes only.
+ * A class, for demonstration purposes only, implements the {@link HelloWorld} interface.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */

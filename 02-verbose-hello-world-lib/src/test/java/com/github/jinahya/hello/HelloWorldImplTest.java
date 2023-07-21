@@ -34,7 +34,7 @@ class HelloWorldImplTest extends HelloWorldTest {
      * @implNote This implementation returns a new instance of {@link HelloWorldImpl} class.
      */
     @Override
-    HelloWorld helloWorld() {
+    HelloWorld serviceInstance() {
         return new HelloWorldImpl();
     }
 }

@@ -43,7 +43,7 @@ abstract class HelloWorldDiTest extends HelloWorldTest {
     static final String IMPL = "impl";
 
     @Override
-    HelloWorld helloWorld() {
+    HelloWorld serviceInstance() {
         switch (current().nextInt(4)) {
             case 0:
                 return namedDemo;
