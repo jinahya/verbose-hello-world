@@ -20,8 +20,11 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import com.sun.tools.javac.Main;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import jakarta.enterprise.inject.se.SeContainerInitializer;
+import jakarta.enterprise.inject.spi.CDI;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 
@@ -44,6 +47,8 @@ public class HelloWorldMain {
      * @throws IOException if an I/O error occurs.
      */
     public static void main(String... args) throws IOException {
+        var cdi = CDI.current();
+        var main = cdi.getBeanContainer().getBeans(Main.class);
         // TODO: Create a new instance of this class
         // TODO: Inject values to the instance
         // TODO: Print 'hello, world' to System.out using instance.helloWorld

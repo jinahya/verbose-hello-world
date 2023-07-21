@@ -20,6 +20,7 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import com.google.inject.Guice;
 import jakarta.inject.Inject;
 
 import java.io.IOException;
@@ -40,8 +41,9 @@ public class HelloWorldMain {
      * @throws IOException if an I/O error occurs.
      */
     public static void main(String... args) throws IOException {
+        var injector = Guice.createInjector(new HelloWorldModule());
         // TODO: Create a new instance of this class
-        // TODO: Inject values to the instance
+        // TODO: Inject values to the instance using the injector
         // TODO: Print 'hello, world' to System.out using instance.helloWorld
     }
 
@@ -56,5 +58,5 @@ public class HelloWorldMain {
      * An injected instance of {@link HelloWorld} interface.
      */
     @Inject
-    HelloWorld helloWorld;
+    HelloWorld service;
 }
