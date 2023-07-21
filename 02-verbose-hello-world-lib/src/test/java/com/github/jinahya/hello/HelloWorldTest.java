@@ -20,6 +20,7 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -33,6 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@Slf4j
 abstract class HelloWorldTest {
 
     /**
@@ -99,6 +101,7 @@ abstract class HelloWorldTest {
     void set_SetHelloWorldBytesOnArrayStartingAtIndex_() {
         // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
+        log.debug("service: {}", service);
         var array = new byte[BYTES];
         var index = 0;
         // ------------------------------------------------------------------------------------ WHEN
