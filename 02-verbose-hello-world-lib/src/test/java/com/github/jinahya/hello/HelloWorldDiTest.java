@@ -35,46 +35,36 @@ abstract class HelloWorldDiTest extends HelloWorldTest {
     /**
      * An injection qualifier for {@link HelloWorldDemo}.
      */
-    static final String DEMO = "demo";
+    static final String _NAMED_DEMO = "demo";
 
     /**
      * An injection qualifier for {@link HelloWorldImpl}.
      */
-    static final String IMPL = "impl";
+    static final String _NAMED_IMPL = "impl";
 
     @Override
     HelloWorld serviceInstance() {
-        switch (current().nextInt(4)) {
-            case 0:
-                return namedDemo;
-            case 1:
-                return namedImpl;
-            case 2:
-                return qualifiedDemo;
-            default: // 3
-                return qualifiedImpl;
-        }
+        return switch (current().nextInt(4)) {
+            case 0 -> namedDemo;
+            case 1 -> namedImpl;
+            case 2 -> qualifiedDemo;
+            default -> qualifiedImpl;
+        };
     }
 
-    //    @javax.inject.Named(DEMO) // Guice
-    @javax.inject.Inject // Guice
-    @Named(DEMO)
+    @Named(_NAMED_DEMO)
     @Inject
     HelloWorld namedDemo;
 
-    //    @javax.inject.Named(IMPL) // Guice
-    @javax.inject.Inject // Guice
-    @Named(IMPL)
+    @Named(_NAMED_IMPL)
     @Inject
     HelloWorld namedImpl;
 
-    //    @javax.inject.Inject // Guice
-    @QualifiedDemo
+    @_QualifiedDemo
     @Inject
     HelloWorld qualifiedDemo;
 
-    //    @javax.inject.Inject // Guice
-    @QualifiedImpl
+    @_QualifiedImpl
     @Inject
     HelloWorld qualifiedImpl;
 }

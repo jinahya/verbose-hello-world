@@ -20,7 +20,6 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import jakarta.enterprise.inject.se.SeContainer;
 import jakarta.enterprise.inject.se.SeContainerInitializer;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -34,19 +33,16 @@ import org.junit.jupiter.api.extension.TestInstantiationException;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorldCdiSeTestInstanceFactory
-        implements TestInstanceFactory {
+class HelloWorldCdiSeTestInstanceFactory implements TestInstanceFactory {
 
     @Override
-    public Object createTestInstance(
-            TestInstanceFactoryContext testInstanceFactoryContext,
-            ExtensionContext extensionContext)
+    public Object createTestInstance(TestInstanceFactoryContext testInstanceFactoryContext,
+                                     ExtensionContext extensionContext)
             throws TestInstantiationException {
-        Class<?> testClass = testInstanceFactoryContext.getTestClass();
-        SeContainerInitializer seContainerInitializer
-                = SeContainerInitializer.newInstance()
+        var testClass = testInstanceFactoryContext.getTestClass();
+        var seContainerInitializer = SeContainerInitializer.newInstance()
                 .addBeanClasses(HelloWorldCdiFactory.class, testClass);
-        try (SeContainer container = seContainerInitializer.initialize()) {
+        try (var container = seContainerInitializer.initialize()) {
             return container.select(testClass).get();
         }
     }

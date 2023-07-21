@@ -38,24 +38,24 @@ class HelloWorldProvider {
      * Produces an instance of {@link HelloWorld} interface.
      *
      * @return an instance of {@link HelloWorld} interface.
-     * @see #disposeService(HelloWorld)
+     * @see #dispose(HelloWorld)
      */
     @Produces
-    public HelloWorld produceService() {
+    public HelloWorld produce() {
         var loader = ServiceLoader.load(HelloWorld.class);
         var iterator = loader.iterator();
-        var service = iterator.next(); // NoSuchElementException
-        log.debug("producing {}...", service);
-        return service;
+        var bean = iterator.next(); // NoSuchElementException
+        log.debug("producing {}...", bean);
+        return bean;
     }
 
     /**
      * Disposes specified instance of {@link HelloWorld} interface.
      *
-     * @param service the instance of {@link HelloWorld} interface to dispose.
-     * @see #produceService()
+     * @param bean the instance of {@link HelloWorld} interface to dispose.
+     * @see #produce()
      */
-    void disposeService(@Disposes HelloWorld service) {
-        log.debug("disposing {}...", service);
+    void dispose(@Disposes HelloWorld bean) {
+        log.debug("disposing {}...", bean);
     }
 }

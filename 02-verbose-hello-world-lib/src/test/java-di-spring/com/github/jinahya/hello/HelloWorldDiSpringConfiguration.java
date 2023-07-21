@@ -24,8 +24,8 @@ import jakarta.inject.Named;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static com.github.jinahya.hello.HelloWorldDiTest.DEMO;
-import static com.github.jinahya.hello.HelloWorldDiTest.IMPL;
+import static com.github.jinahya.hello.HelloWorldDiTest._NAMED_DEMO;
+import static com.github.jinahya.hello.HelloWorldDiTest._NAMED_IMPL;
 
 /**
  * A configuration for providing {@link HelloWorld} beans.
@@ -33,27 +33,25 @@ import static com.github.jinahya.hello.HelloWorldDiTest.IMPL;
 @Configuration
 class HelloWorldDiSpringConfiguration {
 
-    @javax.inject.Named(DEMO)
-    @Named(DEMO)
+    @Named(_NAMED_DEMO)
     @Bean
     HelloWorld namedDemo() {
         return new HelloWorldDemo();
     }
 
-    @javax.inject.Named(IMPL)
-    @Named(IMPL)
+    @Named(_NAMED_IMPL)
     @Bean
     HelloWorld namedImpl() {
         return new HelloWorldImpl();
     }
 
-    @QualifiedDemo
+    @_QualifiedDemo
     @Bean
     HelloWorld qualifiedDemo() {
         return new HelloWorldDemo();
     }
 
-    @QualifiedImpl
+    @_QualifiedImpl
     @Bean
     HelloWorld qualifiedImpl() {
         return new HelloWorldImpl();

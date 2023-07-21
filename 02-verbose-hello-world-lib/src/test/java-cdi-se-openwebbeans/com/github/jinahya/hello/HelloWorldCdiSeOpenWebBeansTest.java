@@ -28,12 +28,10 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
  * A class extends {@link HelloWorldCdiSeTest} for Apache OpenWebBeans.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see <a href="<a href="https://openwebbeans.apache.org/">Apache
- * OpenWebBeans</a>
+ * @see <a href="<a href="https://openwebbeans.apache.org/">Apache OpenWebBeans</a>
  */
 @Slf4j
-class HelloWorldCdiSeOpenWebBeansTest
-        extends HelloWorldCdiSeTest {
+class HelloWorldCdiSeOpenWebBeansTest extends HelloWorldCdiSeTest {
 
     /**
      * Removes handlers from the root logger and installs SLF4J bridge handler.
@@ -42,7 +40,7 @@ class HelloWorldCdiSeOpenWebBeansTest
      * @see SLF4JBridgeHandler#install()
      */
     @BeforeAll
-    static void bridgetSlf4j() {
+    static void _beforeAll() {
         SLF4JBridgeHandler.removeHandlersForRootLogger();
         SLF4JBridgeHandler.install();
     }

@@ -58,7 +58,7 @@ public class HelloWorldMain {
 
     @PostConstruct
     private void onPostConstruct() {
-        log.debug("constructed; helloWorld: {}", helloWorld);
+        log.debug("constructed; helloWorld: {}", service);
     }
 
     @PreDestroy
@@ -70,5 +70,5 @@ public class HelloWorldMain {
      * An injected instance of {@link HelloWorld} interface.
      */
     @Inject
-    private HelloWorld helloWorld;
+    private HelloWorld service;
 }

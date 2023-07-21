@@ -23,13 +23,11 @@ package com.github.jinahya.hello;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-class HelloWorldDiSpringTest
-        extends HelloWorldDiTest {
+class HelloWorldDiSpringTest extends HelloWorldDiTest {
 
     @BeforeEach
-    void inject() {
-        var context = new AnnotationConfigApplicationContext(
-                HelloWorldDiSpringConfiguration.class);
+    void _beforeEach() {
+        var context = new AnnotationConfigApplicationContext(HelloWorldDiSpringConfiguration.class);
         var factory = context.getAutowireCapableBeanFactory();
         factory.autowireBean(this);
     }

@@ -53,26 +53,14 @@
       <artifactId>jakarta.inject-api</artifactId>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>javax.enterprise</groupId>
-      <artifactId>cdi-api</artifactId>
-      <version>2.0.SP1</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.inject</groupId>
-      <artifactId>javax.inject</artifactId>
-      <version>1</version>
-      <scope>provided</scope>
-    </dependency>
   </dependencies>
 
   <build>
     <plugins>
-      <!--      <plugin>-->
-      <!--        <groupId>org.codehaus.mojo</groupId>-->
-      <!--        <artifactId>animal-sniffer-maven-plugin</artifactId>-->
-      <!--      </plugin>-->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+      </plugin>
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
@@ -132,11 +120,6 @@
         <test>HelloWorldCdiSeOpenWebBeansTest</test>
       </properties>
       <dependencies>
-        <dependency>
-          <groupId>javax.annotation</groupId>
-          <artifactId>javax.annotation-api</artifactId>
-          <scope>test</scope>
-        </dependency>
         <dependency>
           <groupId>org.apache.openwebbeans</groupId>
           <artifactId>openwebbeans-se</artifactId>
@@ -261,6 +244,24 @@
                 </goals>
               </execution>
             </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+              <annotationProcessorPaths>
+                <path>
+                  <groupId>com.google.dagger</groupId>
+                  <artifactId>dagger-compiler</artifactId>
+                  <version>${version.com.google.dagger}</version>
+                </path>
+                <path>
+                  <groupId>org.projectlombok</groupId>
+                  <artifactId>lombok</artifactId>
+                  <version>${version.org.projectlombok}</version>
+                </path>
+              </annotationProcessorPaths>
+            </configuration>
           </plugin>
           <plugin>
             <groupId>org.codehaus.mojo</groupId>

@@ -22,34 +22,33 @@ package com.github.jinahya.hello;
 
 import dagger.Module;
 import dagger.Provides;
+import jakarta.inject.Named;
 
-import javax.inject.Named;
-
-import static com.github.jinahya.hello.HelloWorldDiTest.DEMO;
-import static com.github.jinahya.hello.HelloWorldDiTest.IMPL;
+import static com.github.jinahya.hello.HelloWorldDiTest._NAMED_DEMO;
+import static com.github.jinahya.hello.HelloWorldDiTest._NAMED_IMPL;
 
 @Module
 class HelloWorldDiDaggerModule {
 
-    @Named(DEMO)
+    @Named(_NAMED_DEMO)
     @Provides
     static HelloWorld provideNamedDemo() {
         return new HelloWorldDemo();
     }
 
-    @Named(IMPL)
+    @Named(_NAMED_IMPL)
     @Provides
     static HelloWorld provideNamedImpl() {
         return new HelloWorldImpl();
     }
 
-    @QualifiedDemo
+    @_QualifiedDemo
     @Provides
     static HelloWorld provideQualifiedDemo() {
         return new HelloWorldDemo();
     }
 
-    @QualifiedImpl
+    @_QualifiedImpl
     @Provides
     static HelloWorld provideQualifiedImpl() {
         return new HelloWorldImpl();

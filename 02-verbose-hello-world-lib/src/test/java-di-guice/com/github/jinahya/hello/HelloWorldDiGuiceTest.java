@@ -30,11 +30,10 @@ import static com.google.inject.Guice.createInjector;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see <a href="https://github.com/google/guice">Guice</a>
  */
-class HelloWorldDiGuiceTest
-        extends HelloWorldDiTest {
+class HelloWorldDiGuiceTest extends HelloWorldDiTest {
 
     @BeforeEach
-    void inject() {
+    void _beforeEach() {
         var injector = createInjector(new HelloWorldDiGuiceModule());
         injector.injectMembers(this);
     }

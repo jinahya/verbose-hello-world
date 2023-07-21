@@ -23,8 +23,10 @@ package com.github.jinahya.hello;
 import org.glassfish.hk2.api.AnnotationLiteral;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 
-import static com.github.jinahya.hello.HelloWorldDiTest.DEMO;
-import static com.github.jinahya.hello.HelloWorldDiTest.IMPL;
+import java.io.Serial;
+
+import static com.github.jinahya.hello.HelloWorldDiTest._NAMED_DEMO;
+import static com.github.jinahya.hello.HelloWorldDiTest._NAMED_IMPL;
 
 /**
  * A binder for injecting {@link HelloWorld} instances.
@@ -35,26 +37,28 @@ class HelloWorldDiHk2Binder
         extends AbstractBinder {
 
     private static class QualifiedDemo_
-            extends AnnotationLiteral<QualifiedDemo>
-            implements QualifiedDemo {
+            extends AnnotationLiteral<_QualifiedDemo>
+            implements _QualifiedDemo {
 
+        @Serial
         private static final long serialVersionUID = 8947668889394516822L;
     }
 
     private static class QualifiedImpl_
-            extends AnnotationLiteral<QualifiedImpl>
-            implements QualifiedImpl {
+            extends AnnotationLiteral<_QualifiedImpl>
+            implements _QualifiedImpl {
 
+        @Serial
         private static final long serialVersionUID = 9084623087464727990L;
     }
 
     @Override
     protected void configure() {
         bind(HelloWorldDemo.class)
-                .named(DEMO)
+                .named(_NAMED_DEMO)
                 .to(HelloWorld.class);
         bind(HelloWorldImpl.class)
-                .named(IMPL)
+                .named(_NAMED_IMPL)
                 .to(HelloWorld.class);
         bind(HelloWorldImpl.class)
                 .qualifiedBy(new QualifiedDemo_())

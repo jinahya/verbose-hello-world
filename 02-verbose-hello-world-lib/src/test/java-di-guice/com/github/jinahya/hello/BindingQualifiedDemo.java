@@ -38,7 +38,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @BindingAnnotation
-@QualifiedDemo
+@_QualifiedDemo
 @Retention(RUNTIME)
 @Target({FIELD, METHOD, PARAMETER, TYPE, ANNOTATION_TYPE})
 @interface BindingQualifiedDemo {

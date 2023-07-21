@@ -1,6 +1,6 @@
 #!/bin/zsh
 declare -A profilesAndTests=(
-  ["cdi-se-openwebbeans"]="HelloWorldCdiSeOpenWebBeansTest"
+#  ["cdi-se-openwebbeans"]="HelloWorldCdiSeOpenWebBeansTest"
   ["cdi-se-weld"]="HelloWorldCdiSeWeldTest"
   ["di-dagger"]="HelloWorldDiDaggerTest"
   ["di-guide"]="HelloWorldDiGuiceTest"
@@ -10,5 +10,5 @@ declare -A profilesAndTests=(
 )
 
 for key in "${(kv)profilesAndTests[@]}"; do
-  ./mvnw -q -P"$key" -Dtest="$value" clean test
+  ../mvnw -q -P"$key" -Dtest="$value" clean test
 done

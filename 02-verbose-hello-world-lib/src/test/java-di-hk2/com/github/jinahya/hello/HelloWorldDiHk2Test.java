@@ -29,8 +29,7 @@ import static org.glassfish.hk2.utilities.ServiceLocatorUtilities.bind;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-class HelloWorldDiHk2Test
-        extends HelloWorldDiTest {
+class HelloWorldDiHk2Test extends HelloWorldDiTest {
 
     @BeforeEach
     void inject() {

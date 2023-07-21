@@ -20,16 +20,13 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import dagger.MembersInjector;
 import org.junit.jupiter.api.BeforeEach;
 
-class HelloWorldDiDaggerTest
-        extends HelloWorldDiTest {
+class HelloWorldDiDaggerTest extends HelloWorldDiTest {
 
     @BeforeEach
-    void inject() {
-        MembersInjector<HelloWorldDiDaggerTest> injector
-                = DaggerHelloWorldDiDaggerComponent.create();
+    void _beforeEach() {
+        var injector = DaggerHelloWorldDiDaggerComponent.create();
         injector.injectMembers(this);
     }
 }

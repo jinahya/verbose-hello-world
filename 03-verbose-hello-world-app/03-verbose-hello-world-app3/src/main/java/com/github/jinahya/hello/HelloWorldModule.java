@@ -36,7 +36,6 @@ class HelloWorldModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(HelloWorld.class)
-                .toInstance(INSTANCE);
+        bind(HelloWorld.class).toInstance(INSTANCE);
     }
 }

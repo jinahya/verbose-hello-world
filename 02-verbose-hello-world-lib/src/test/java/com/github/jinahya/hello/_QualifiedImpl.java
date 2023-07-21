@@ -37,10 +37,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-//@javax.inject.Qualifier // Guice
 @Qualifier
 @Retention(RUNTIME)
 @Target({FIELD, METHOD, PARAMETER, TYPE, ANNOTATION_TYPE})
-@interface QualifiedImpl {
+@interface _QualifiedImpl {
 
 }
