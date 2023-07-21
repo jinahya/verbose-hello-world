@@ -42,11 +42,7 @@ class HelloWorldProvider {
      */
     @Produces
     public HelloWorld produce() {
-        var loader = ServiceLoader.load(HelloWorld.class);
-        var iterator = loader.iterator();
-        var bean = iterator.next(); // NoSuchElementException
-        log.debug("producing {}...", bean);
-        return bean;
+        return ServiceLoader.load(HelloWorld.class).iterator().next();
     }
 
     /**
@@ -56,6 +52,6 @@ class HelloWorldProvider {
      * @see #produce()
      */
     void dispose(@Disposes HelloWorld bean) {
-        log.debug("disposing {}...", bean);
+        // empty
     }
 }

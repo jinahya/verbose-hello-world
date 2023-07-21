@@ -61,12 +61,12 @@ public class HelloWorldMain {
 
     @PostConstruct
     private void onPostConstruct() {
-        log.debug("constructed; helloWorld: {}", service);
+//        log.debug("constructed; service: {}", service);
     }
 
     @PreDestroy
     private void onPreDestroy() {
-        log.debug("being destroyed...");
+//        log.debug("being destroyed...");
     }
 
     /**
