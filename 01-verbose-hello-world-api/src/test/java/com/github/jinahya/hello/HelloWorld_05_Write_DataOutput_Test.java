@@ -74,6 +74,8 @@ class HelloWorld_05_Write_DataOutput_Test extends _HelloWorldTest {
         // ------------------------------------------------------------------------------------ THEN
         verify(service, times(1)).set(arrayCaptor().capture());
         var array = arrayCaptor().getValue();
+        // TODO: Assert, array is not null
+        // TODO: Assert, array.length is equal to BYTES
         // TODO: Verify, data.write(array) invoked, once.
         // TODO: Verify, no more interactions with data.
         assertSame(data, result);
