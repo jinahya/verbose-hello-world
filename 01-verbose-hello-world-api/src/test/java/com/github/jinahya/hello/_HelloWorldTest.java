@@ -147,7 +147,6 @@ abstract class _HelloWorldTest {
         if (!mockingDetails(requireNonNull(channel, "channel is null")).isMock()) {
             throw new IllegalArgumentException("not a mock: " + channel);
         }
-        requireNonNull(adder, "adder is null");
         willAnswer(i -> {
             var src = i.getArgument(0, ByteBuffer.class);
             var position = i.getArgument(1, Long.class);
@@ -155,7 +154,9 @@ abstract class _HelloWorldTest {
             var handler = i.getArgument(3, CompletionHandler.class);
             var written = current().nextInt(1, src.remaining() + 1);
             src.position(src.position() + written);
-            adder.add(written);
+            if (adder != null) {
+                adder.add(written);
+            }
             handler.completed(written, attachment);
             return null;
         }).given(channel).write(

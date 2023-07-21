@@ -29,19 +29,21 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.IOException;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.CompletionHandler;
+import java.nio.channels.FileChannel;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.LongAdder;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.lang.Long.MAX_VALUE;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.channels.AsynchronousFileChannel.open;
 import static java.nio.file.Files.createTempFile;
+import static java.nio.file.Files.getLastModifiedTime;
 import static java.nio.file.Files.size;
+import static java.nio.file.StandardOpenOption.WRITE;
 import static java.util.Arrays.asList;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -95,10 +97,11 @@ class HelloWorld_34_AppendCompletable_Path_Test extends _HelloWorldTest {
 
     @Test
     void __() throws IOException {
+        // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
         var path = mock(Path.class);
         var channel = mock(AsynchronousFileChannel.class);
-        _stub_ToComplete(channel, new LongAdder());
+        _stub_ToComplete(channel, null);
         var size = current().nextLong(MAX_VALUE - BYTES);
         given(channel.size()).willReturn(size);
         try (var mockedStatic = mockStatic(AsynchronousFileChannel.class)) {
@@ -110,8 +113,9 @@ class HelloWorld_34_AppendCompletable_Path_Test extends _HelloWorldTest {
             mockedStatic.verify(() -> open(same(path), optionsCaptor.capture()), times(1));
             var options = new ArrayList<>(asList(optionsCaptor.getValue()));
             assertTrue(options.remove(StandardOpenOption.CREATE));
-            assertTrue(options.remove(StandardOpenOption.WRITE));
+            assertTrue(options.remove(WRITE));
             assertTrue(options.isEmpty());
+            verify(channel, times(1)).size();
             verify(service, times(1)).writeCompletable(channel, size);
             verify(channel, times(1)).force(false);
             verify(channel, times(1)).close();
@@ -119,17 +123,25 @@ class HelloWorld_34_AppendCompletable_Path_Test extends _HelloWorldTest {
         }
     }
 
+    @畵蛇添足
     @Test
     void __(@TempDir Path tempDir) throws IOException {
         // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
         var path = createTempFile(tempDir, null, null);
         if (current().nextBoolean()) {
-            // TODO: (Optional) Write some bytes to the path
+            log.debug("lastModifiedTime: {}", getLastModifiedTime(path));
+            try (var channel = FileChannel.open(path, WRITE)) {
+                for (var src = allocate(current().nextInt(1024)); src.hasRemaining(); ) {
+                    channel.write(src);
+                }
+                channel.force(true);
+                log.debug("lastModifiedTime: {}", getLastModifiedTime(path));
+            }
         }
         var size = size(path);
         // ------------------------------------------------------------------------------------ WHEN
-        var result = service.appendCompletable(path).join();
+        service.appendCompletable(path).join();
         // ------------------------------------------------------------------------------------ THEN
         assertEquals(size + BYTES, size(path));
     }
