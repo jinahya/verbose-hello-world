@@ -120,7 +120,7 @@ public interface HelloWorld {
      * @param array the array on which bytes are set.
      * @return given {@code array}.
      * @throws NullPointerException           if {@code array} is {@code null}.
-     * @throws ArrayIndexOutOfBoundsException if {@code array.length} is less than {@value #BYTES}.
+     * @throws ArrayIndexOutOfBoundsException if {@code array.length} is less than {@link #BYTES}.
      * @implSpec The default implementation invokes {@link #set(byte[], int) set(array, index)}
      * method with {@code array} and {@code 0}, and returns the {@code array}.
      * @see #set(byte[], int)
@@ -138,6 +138,7 @@ public interface HelloWorld {
      * @return given {@code stream}.
      * @throws NullPointerException if {@code stream} is {@code null}.
      * @throws IOException          if an I/O error occurs.
+     * @apiNote This method does not {@link OutputStream#flush() flush} the {@code stream}.
      * @implSpec The default implementation invokes {@link #set(byte[]) set(array)} method with an
      * array of {@value #BYTES} bytes, writes the array to {@code stream} by invoking
      * {@link OutputStream#write(byte[])} method on {@code stream} with the array, and returns the
@@ -146,7 +147,9 @@ public interface HelloWorld {
      * @see OutputStream#write(byte[])
      */
     default <T extends OutputStream> T write(T stream) throws IOException {
-        Objects.requireNonNull(stream, "stream is null");
+        if (stream == null) {
+            throw new NullPointerException("stream is null");
+        }
         // TODO: Create an array of 12 bytes
         // TODO: Invoke set(byte[]) method with the array
         // TODO: Write the array to the stream
@@ -169,7 +172,9 @@ public interface HelloWorld {
      * @see #write(OutputStream)
      */
     default <T extends File> T append(T file) throws IOException {
-        Objects.requireNonNull(file, "file is null");
+        if (file == null)  {
+            throw new NullPointerException("file is null");
+        }
         // TODO: Create a new FileOutputStream with file in appending mode.
         // TODO: Invoke write(stream) method with it.
         // TODO: Flush the stream.
@@ -191,7 +196,9 @@ public interface HelloWorld {
      * @see #write(OutputStream)
      */
     default <T extends Socket> T send(T socket) throws IOException {
-        Objects.requireNonNull(socket, "socket is null");
+        if (socket == null) {
+            throw new NullPointerException("socket is null");
+        }
         // TODO: Invoke write(stream) with socket.outputStream.
         return socket;
     }
