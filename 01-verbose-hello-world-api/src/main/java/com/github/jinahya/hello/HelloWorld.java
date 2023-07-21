@@ -563,7 +563,7 @@ public interface HelloWorld {
                 position,                                 // <position>
                 new LongAccumulator(Long::sum, position), // <attachment> <1>
                 new CompletionHandler<>() {               // <handler>
-                    @Override
+                    @Override // @formatter:off
                     public void completed(Integer result, LongAccumulator attachment_) {
                         if (!buffer.hasRemaining()) {
                             handler.completed(channel, attachment);
@@ -577,67 +577,12 @@ public interface HelloWorld {
                                 this               // <handler>
                         );
                     }
-
                     @Override
                     public void failed(Throwable exc, LongAccumulator attachment_) {
                         handler.failed(exc, attachment);
-                    }
+                    } // @formatter:on
                 }
         );
-    }
-
-    @SuppressWarnings({
-            "java:S4274" // assert
-    })
-    private <T extends AsynchronousFileChannel> CompletableFuture<T> writeCompletable1(
-            T channel, long position) {
-        var future = new CompletableFuture<T>();
-        writeAsync(
-                channel,                    // <channel>
-                position,                   // <position>
-                new CompletionHandler<>() { // <handler>
-                    @Override
-                    public void completed(T result, Object attachment) {
-                        future.complete(result);
-                    }
-
-                    @Override
-                    public void failed(Throwable exc, Object attachment) {
-                        future.completeExceptionally(exc);
-                    }
-                },
-                null                        // <attachment>
-        );
-        return future;
-    }
-
-    @SuppressWarnings({
-            "java:S4274" // assert
-    })
-    private <T extends AsynchronousFileChannel> CompletableFuture<T> writeCompletable2(
-            T channel, long position) {
-        var future = new CompletableFuture<T>();
-        writeAsync(
-                channel,                    // <channel>
-                position,                   // <position>
-                new CompletionHandler<>() { // <handler>
-                    @Override
-                    public void completed(T result, T attachment) {
-                        assert result == channel;
-                        assert attachment == channel;
-                        future.complete(attachment);
-                    }
-
-                    @Override
-                    public void failed(Throwable exc, T attachment) {
-                        assert exc != null;
-                        assert attachment == channel;
-                        future.completeExceptionally(exc);
-                    }
-                },
-                channel                     // <attachment>
-        );
-        return future;
     }
 
     /**
@@ -646,8 +591,8 @@ public interface HelloWorld {
      * position.
      *
      * @param channel  the channel to which bytes are written.
-     * @param position the starting position to which the bytes are transferred; must not be
-     *                 negative.
+     * @param position the starting position to which the bytes are transferred; must be
+     *                 non-negative.
      * @param <T>      channel type parameter
      * @return a completable future of {@code channel}.
      * @throws NullPointerException     when {@code channel} is {@code null}.
@@ -664,15 +609,14 @@ public interface HelloWorld {
                 channel,                    // <channel>
                 position,                   // <position>
                 new CompletionHandler<>() { // <handler>
-                    @Override
+                    @Override // @formatter:off
                     public void completed(T result, Object attachment) {
                         future.complete(result);
                     }
-
                     @Override
                     public void failed(Throwable exc, Object attachment) {
                         future.completeExceptionally(exc);
-                    }
+                    } // @formatter:on
                 },
                 null                        // <attachment>
         );
@@ -695,10 +639,11 @@ public interface HelloWorld {
         Objects.requireNonNull(path, "path is null");
         var channel = AsynchronousFileChannel.open(
                 path, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
-        return writeCompletable(channel, channel.size())
+        var position = channel.size();
+        return writeCompletable(channel, position)
                 .thenApply(c -> {
                     try {
-                        channel.force(false);
+                        channel.force(true);
                         channel.close();
                     } catch (IOException ioe) {
                         throw new UncheckedIOException("unable to force/close " + channel, ioe);

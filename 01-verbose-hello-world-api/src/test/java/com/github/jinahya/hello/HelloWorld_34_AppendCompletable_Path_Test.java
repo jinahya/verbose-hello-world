@@ -117,12 +117,18 @@ class HelloWorld_34_AppendCompletable_Path_Test extends _HelloWorldTest {
             assertTrue(options.isEmpty());
             verify(channel, times(1)).size();
             verify(service, times(1)).writeCompletable(channel, size);
-            verify(channel, times(1)).force(false);
+            verify(channel, times(1)).force(true);
             verify(channel, times(1)).close();
             assertSame(path, result);
         }
     }
 
+    /**
+     * Tests {@link HelloWorld#appendCompletable(Path)} method using a real file.
+     *
+     * @param tempDir a temporary directory to use.
+     * @throws IOException if an I/O error occurs.
+     */
     @畵蛇添足
     @Test
     void __(@TempDir Path tempDir) throws IOException {
