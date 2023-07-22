@@ -54,7 +54,6 @@
     <maven.compiler.testSource>${maven.compiler.source}</maven.compiler.testSource>
     <maven.compiler.testTarget>${maven.compiler.testSource}</maven.compiler.testTarget>
     <maven.compiler.testRelase>${maven.compiler.testTarget}</maven.compiler.testRelase>
-    <!--    <version.asciidoctorj>2.5.8</version.asciidoctorj>-->
     <version.asciidoctorj>3.0.0-alpha.1</version.asciidoctorj>
     <version.asciidoctorj-pdf>2.3.9</version.asciidoctorj-pdf>
     <version.com.google.dagger>2.47</version.com.google.dagger>
@@ -64,10 +63,8 @@
     <version.org.apache.openwebbeans>2.0.27</version.org.apache.openwebbeans>
     <version.org.glassfish.hk2>3.0.4</version.org.glassfish.hk2>
     <version.org.hibernate.validator>8.0.1.Final</version.org.hibernate.validator>
-    <!--    <version.org.jboss.weld>5.1.1.Final</version.org.jboss.weld> &lt;!&ndash; weld-junit5 &ndash;&gt;-->
     <version.org.jboss.weld>5.1.1.SP1</version.org.jboss.weld> <!-- weld-junit5 -->
     <version.org.jboss.weld.se>${version.org.jboss.weld}</version.org.jboss.weld.se> <!-- weld-se-core -->
-    <!--    <version.org.junit.jupiter>5.9.3</version.org.junit.jupiter>-->
     <version.org.junit.jupiter>5.10.0-RC2</version.org.junit.jupiter>
     <version.org.mockito>5.4.0</version.org.mockito>
     <version.org.mockito.mockito-inline>5.2.0</version.org.mockito.mockito-inline> <!-- https://search.maven.org/artifact/org.mockito/mockito-inline -->
@@ -90,13 +87,6 @@
         <artifactId>dagger-compiler</artifactId>
         <version>${version.com.google.dagger}</version>
       </dependency>
-      <!--      <dependency>-->
-      <!--        <groupId>com.google.inject</groupId>-->
-      <!--        <artifactId>guice-bom</artifactId>-->
-      <!--        <version>7.0.0</version>-->
-      <!--        <type>pom</type>-->
-      <!--        <scope>import</scope>-->
-      <!--      </dependency>-->
       <dependency>
         <groupId>com.google.inject</groupId>
         <artifactId>guice</artifactId>
@@ -110,7 +100,6 @@
       <dependency>
         <groupId>jakarta.inject</groupId>
         <artifactId>jakarta.inject-api</artifactId>
-        <!--        <version>2.0.1</version>-->
         <version>2.0.1.MR</version>
       </dependency>
       <dependency>
@@ -382,6 +371,7 @@
               <link>https://static.javadoc.io/org.mockito/junit-jupiter/${version.org.mockito}</link>
               <link>https://junit.org/junit5/docs/current/api/</link>
             </links>
+            <show>package</show>
             <tags>
               <tag>
                 <name>apiNote</name>
