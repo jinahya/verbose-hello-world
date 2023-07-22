@@ -41,8 +41,8 @@ public class HelloWorldMain {
      */
     public static void main(String... args) throws IOException {
         // TODO: Load a service of HelloWorld.class
-        // TODO: Print 'hello, world' to System.out using the service
-        // TODO: Print system-specific line separator to System.out
+        // TODO: Print the 'hello, world' to System.out using the service
+        // TODO: Print a system-specific line separator to System.out
     }
 
     /**
