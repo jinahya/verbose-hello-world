@@ -23,7 +23,7 @@
   </modules>
 
   <properties>
-    <genereateExecutables>true</genereateExecutables>
+    <generateExecutables>true</generateExecutables>
     <mainClass>com.github.jinahya.hello.HelloWorldMain</mainClass>
   </properties>
 
@@ -68,7 +68,7 @@
       <id>archive</id>
       <activation>
         <property>
-          <name>genereateExecutables</name>
+          <name>generateExecutables</name>
           <value>true</value>
         </property>
       </activation>
