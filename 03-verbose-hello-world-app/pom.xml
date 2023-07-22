@@ -65,7 +65,7 @@
 
   <profiles>
     <profile>
-      <id>archive</id>
+      <id>generate-executables</id>
       <activation>
         <property>
           <name>generateExecutables</name>
@@ -79,7 +79,7 @@
             <artifactId>maven-antrun-plugin</artifactId>
             <executions>
               <execution>
-                <id>antrun-archive</id>
+                <id>antrun-run</id>
                 <goals>
                   <goal>run</goal>
                 </goals>

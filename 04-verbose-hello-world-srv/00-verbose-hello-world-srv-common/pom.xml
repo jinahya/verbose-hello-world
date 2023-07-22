@@ -16,7 +16,7 @@
   <description>Verbose Hello World Srv Common</description>
 
   <properties>
-    <generateArchives>false</generateArchives>
+    <generateExecutables>false</generateExecutables>
   </properties>
 
   <dependencies>

@@ -29,7 +29,7 @@
   </modules>
 
   <properties>
-    <generateArchives>true</generateArchives>
+    <generateExecutables>true</generateExecutables>
     <mainClass>com.github.jinahya.hello.HelloWorldMain</mainClass>
   </properties>
 
@@ -76,10 +76,10 @@
 
   <profiles>
     <profile>
-      <id>archive</id>
+      <id>generate-executables</id>
       <activation>
         <property>
-          <name>generateArchives</name>
+          <name>generateExecutables</name>
           <value>true</value>
         </property>
       </activation>
