@@ -37,11 +37,12 @@ public class HelloWorldMain {
      * @param args an array of command line arguments
      * @throws IOException if an I/O error occurs.
      * @see java.util.ServiceLoader#load(Class)
+     * @see System#lineSeparator()
      */
     public static void main(String... args) throws IOException {
         // TODO: Load a service of HelloWorld.class
         // TODO: Print 'hello, world' to System.out using the service
-        // TODO: Put system-specific line separator to System.out
+        // TODO: Print system-specific line separator to System.out
     }
 
     /**

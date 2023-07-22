@@ -269,7 +269,7 @@ abstract class _HelloWorldTest {
     /**
      * Stubs {@link #serviceInstance() serviceInstance}'s
      * {@link HelloWorld#write(OutputStream) write(stream)} method to write
-     * {@value HelloWorld#BYTES} bytes to the {@code stream} and returns the {@code stream}.
+     * {@value HelloWorld#BYTES} bytes to the {@code stream}, and return the {@code stream}.
      */
     void _stub_WriteStream_Writes12BytesAndReturnTheStream() throws IOException {
         willAnswer(i -> {
@@ -284,8 +284,9 @@ abstract class _HelloWorldTest {
      * method to just return the {@code array}.
      */
     void _stub_SetArray_ToReturnTheArray() {
-        when(serviceInstance.set(any()))            // <1>
-                .thenAnswer(i -> i.getArgument(0)); // <2>
+        willAnswer(i -> i.getArgument(0))
+                .given(serviceInstance)
+                .set(any());
     }
 
     /**

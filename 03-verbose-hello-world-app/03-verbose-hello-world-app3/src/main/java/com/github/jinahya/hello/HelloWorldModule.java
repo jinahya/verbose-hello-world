@@ -31,11 +31,9 @@ import java.util.ServiceLoader;
  */
 class HelloWorldModule extends AbstractModule {
 
-    private static final HelloWorld INSTANCE
-            = ServiceLoader.load(HelloWorld.class).iterator().next();
-
     @Override
     protected void configure() {
-        bind(HelloWorld.class).toInstance(INSTANCE);
+        bind(HelloWorld.class)
+                .toProvider(() -> ServiceLoader.load(HelloWorld.class).iterator().next());
     }
 }
