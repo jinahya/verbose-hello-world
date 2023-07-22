@@ -21,6 +21,7 @@ package com.github.jinahya.hello;
  */
 
 import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * A program whose {@link #main(String[])} method prints {@code hello, world} to
@@ -36,11 +37,14 @@ class HelloWorldMain {
      *
      * @param args an array of command line arguments
      * @throws IOException if an I/O error occurs.
+     * @see HelloWorldImpl
+     * @see HelloWorld#write(OutputStream)
+     * @see System#lineSeparator()
      */
     public static void main(String... args) throws IOException {
         // TODO: Create a instance of HelloWorldImpl
-        // TODO: Print 'hello, world' to System.out using the instance
-        // TODO: Put System.lineSeparator() to System.out
+        // TODO: Print the 'hello, world' to System.out using the instance
+        // TODO: Print the System.lineSeparator() to System.out
     }
 
     /**
