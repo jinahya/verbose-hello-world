@@ -44,7 +44,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.ArgumentMatchers.same;
-import static org.mockito.Mockito.doAnswer;
+import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 
@@ -60,14 +60,13 @@ class HelloWorld_09_Append_Path_Test extends _HelloWorldTest {
 
     @BeforeEach
     void _beforeEach() throws IOException {
-        // stubs serviceInstance() as its write(channel) method to write 12 bytes to the channel
-        doAnswer(i -> {
+        willAnswer(i -> {
             var channel = i.getArgument(0, WritableByteChannel.class);
-            for (var buffer = allocate(BYTES); buffer.hasRemaining(); ) {
-                var written = channel.write(buffer);
+            for (var src = allocate(BYTES); src.hasRemaining(); ) {
+                var written = channel.write(src);
             }
             return channel;
-        }).when(serviceInstance()).write(notNull(WritableByteChannel.class));
+        }).given(serviceInstance()).write(notNull(WritableByteChannel.class));
     }
 
     @DisplayName("(path) -> write(FileChannel.open(path, CREATE, WRITE, APPEND))")
@@ -76,16 +75,16 @@ class HelloWorld_09_Append_Path_Test extends _HelloWorldTest {
         // ----------------------------------------------------------------------------------- GIVEN
         var service = serviceInstance();
         var path = mock(Path.class);
-        var channel = _stub_ToWriteSome(mock(FileChannel.class));
+        var channel = _stub_ToWriteSome(mock(FileChannel.class), null);
         try (var mockedStatic = mockStatic(FileChannel.class)) {
             mockedStatic.when(() -> open(same(path), any(OpenOption[].class))).thenReturn(channel);
             // -------------------------------------------------------------------------------- WHEN
             var result = service.append(path);
             // -------------------------------------------------------------------------------- THEN
-            // TODO: Verify, FileChannel.open(path, options) invoked, once
-            // TODO: Assert, options contains WRITE, CREATE, and APPEND, only
+            // TODO: Verify, FileChannel.open(path, options) invoked, once.
+            // TODO: Assert, options contains only WRITE, CREATE, and APPEND.
             // TODO: Verify, write(channel) invoked, once.
-            // TODO: Verify, channel.force(false) invoked, once.
+            // TODO: Verify, channel.force(true) invoked, once.
             // TODO: Verify, channel.close() invoked, once.
             assertSame(path, result);
         }
