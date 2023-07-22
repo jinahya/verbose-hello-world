@@ -27,12 +27,15 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.TimeUnit;
 
-// https://datatracker.ietf.org/doc/html/rfc862
+// https://www.rfc-editor.org/rfc/rfc862
 @Slf4j
 public class Rfc862TcpServer1 {
 
-    static final int PORT = 51007; // 7 + 51000
+    static final InetAddress HOST = InetAddress.getLoopbackAddress();
+
+    static final int PORT = 7 + 51000;
 
     public static void readWriteAndClose(Socket client) throws IOException {
         try (client) {
@@ -52,13 +55,22 @@ public class Rfc862TcpServer1 {
     }
 
     public static void main(String... args) throws IOException {
-        var host = InetAddress.getLoopbackAddress();
-        var endpoint = new InetSocketAddress(host, PORT);
         try (var server = new ServerSocket()) {
-            server.bind(endpoint);
+            server.bind(new InetSocketAddress(InetAddress.getLoopbackAddress(), PORT));
             log.info("[S] server bound to {}", server.getLocalSocketAddress());
-            while (!server.isClosed()) {
-                readWriteAndClose(server.accept());
+            server.setSoTimeout((int) TimeUnit.SECONDS.toMillis(8L));
+            try (var client = server.accept()) {
+                log.debug("[S] accepted from {}", client.getRemoteSocketAddress());
+                var bytes = 0L;
+                for (; true; bytes++) {
+                    var b = client.getInputStream().read();
+                    if (b == -1) {
+                        break;
+                    }
+                    client.getOutputStream().write(b);
+                    client.getOutputStream().flush();
+                }
+                log.debug("[S] {} byte(s) read/written", bytes);
             }
         }
     }

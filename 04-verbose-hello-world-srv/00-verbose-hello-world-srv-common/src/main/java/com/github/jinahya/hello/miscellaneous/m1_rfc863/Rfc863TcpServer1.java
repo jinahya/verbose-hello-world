@@ -27,12 +27,15 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.TimeUnit;
 
 // https://datatracker.ietf.org/doc/html/rfc863
 @Slf4j
 public class Rfc863TcpServer1 {
 
-    static final int PORT = 51009; // 9 + 51000
+    static final InetAddress HOST = InetAddress.getLoopbackAddress();
+
+    static final int PORT = 9 + 51000;
 
     public static void readAndClose(Socket client) throws IOException {
         try (client) {
@@ -49,14 +52,22 @@ public class Rfc863TcpServer1 {
     }
 
     public static void main(String... args) throws IOException {
-        var host = InetAddress.getLoopbackAddress();
-        var endpoint = new InetSocketAddress(host, PORT);
         try (var server = new ServerSocket()) {
+            var endpoint = new InetSocketAddress(InetAddress.getLoopbackAddress(), PORT);
             server.bind(endpoint);
             log.info("[S] server bound to {}", server.getLocalSocketAddress());
-            while (!server.isClosed()) {
-                var client = server.accept();
-                readAndClose(client);
+            server.setSoTimeout((int) TimeUnit.SECONDS.toMillis(8L));
+            try (var client = server.accept()) {
+                log.debug("[S] accepted from {}, through {}", client.getRemoteSocketAddress(),
+                          client.getLocalSocketAddress());
+                var count = 0L;
+                for (; true; count++) {
+                    var b = client.getInputStream().read();
+                    if (b == -1) {
+                        break;
+                    }
+                }
+                log.debug("[S] byte(s) received (and discarded): {}", count);
             }
         }
     }

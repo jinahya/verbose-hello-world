@@ -28,9 +28,14 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class Rfc862TcpClient1 {
+
+    private static final InetAddress HOST = Rfc862TcpServer1.HOST;
+
+    private static final int PORT = Rfc862TcpServer1.PORT;
 
     private static final boolean BIND = false;
 
@@ -57,9 +62,26 @@ public class Rfc862TcpClient1 {
     }
 
     public static void main(String... args) throws IOException {
-        var host = InetAddress.getLoopbackAddress();
-        var endpoint = new InetSocketAddress(host, Rfc862TcpServer1.PORT);
-        connectWriteAndRead(endpoint);
+        try (var client = new Socket()) {
+            var bind = true;
+            if (bind) {
+                client.bind(new InetSocketAddress(HOST, 0));
+                log.debug("[C] client bound to {}", client.getLocalSocketAddress());
+            }
+            var endpoint = new InetSocketAddress(HOST, PORT);
+            client.connect(endpoint, (int) TimeUnit.SECONDS.toMillis(8L));
+            log.debug("[C] connected to {}", client.getRemoteSocketAddress());
+            var count = ThreadLocalRandom.current().nextInt(1, 9);
+            for (int i = 0; i < count; i++) {
+                var b = ThreadLocalRandom.current().nextInt(256);
+                client.getOutputStream().write(b);
+                client.getOutputStream().flush();
+                var read = client.getInputStream().read();
+                assert read != -1;
+                assert read == b;
+            }
+            log.debug("[C] {} byte(s) written/read", count);
+        }
     }
 
     private Rfc862TcpClient1() {

@@ -32,6 +32,10 @@ import java.util.concurrent.ThreadLocalRandom;
 @Slf4j
 public class Rfc863TcpClient1 {
 
+    private static final InetAddress HOST = Rfc863TcpServer1.HOST;
+
+    private static final int PORT = Rfc863TcpServer1.PORT;
+
     private static final boolean BIND = false;
 
     public static void connectAndWrite(SocketAddress endpoint) throws IOException {
@@ -57,9 +61,24 @@ public class Rfc863TcpClient1 {
     }
 
     public static void main(String... args) throws IOException {
-        var host = InetAddress.getLoopbackAddress();
-        var endpoint = new InetSocketAddress(host, Rfc863TcpServer1.PORT);
-        connectAndWrite(endpoint);
+        try (var client = new Socket()) {
+            var bind = true;
+            if (bind) {
+                client.bind(new InetSocketAddress(HOST, 0));
+                log.debug("[C] bound to {}", client.getLocalSocketAddress());
+            }
+            var endpoint = new InetSocketAddress(HOST, PORT);
+            client.connect(endpoint);
+            log.debug("[C] connected to {}, through {}", client.getRemoteSocketAddress(),
+                      client.getLocalSocketAddress());
+            var count = ThreadLocalRandom.current().nextInt(1, 9);
+            for (int i = 0; i < count; i++) {
+                var b = ThreadLocalRandom.current().nextInt();
+                client.getOutputStream().write(b);
+            }
+            client.getOutputStream().flush();
+            log.debug("[C] {} byte(s) sent", count);
+        }
     }
 
     private Rfc863TcpClient1() {

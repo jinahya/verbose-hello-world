@@ -27,34 +27,35 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.util.concurrent.TimeUnit;
 
-// https://datatracker.ietf.org/doc/html/rfc863
+// https://www.rfc-editor.org/rfc/rfc862
 @Slf4j
 public class Rfc862UdpServer1 {
+
+    static final InetAddress HOST = InetAddress.getLoopbackAddress();
 
     static final int PORT = Rfc862TcpServer1.PORT;
 
     static final int MAX_PACKET_LENGTH = 8;
 
     public static void send(DatagramPacket packet, DatagramSocket server) throws IOException {
-        log.debug("[S] {} byte(s) received from {}", packet.getLength(),
-                  packet.getSocketAddress());
+        log.debug("[S] {} byte(s) received from {}", packet.getLength(), packet.getSocketAddress());
         server.send(packet);
         log.debug("[S] sent back to {}", packet.getSocketAddress());
     }
 
     public static void main(String... args) throws IOException {
-        var host = InetAddress.getLoopbackAddress();
-        var endpoint = new InetSocketAddress(host, PORT);
         try (var server = new DatagramSocket(null)) {
-            server.bind(endpoint);
+            server.bind(new InetSocketAddress(HOST, PORT));
             log.info("[S] server bound to {}", server.getLocalSocketAddress());
-            while (!server.isClosed()) {
-                var buffer = new byte[MAX_PACKET_LENGTH];
-                var packet = new DatagramPacket(buffer, buffer.length);
-                server.receive(packet);
-                send(packet, server);
-            }
+            server.setSoTimeout((int) TimeUnit.SECONDS.toMillis(8L));
+            var buf = new byte[MAX_PACKET_LENGTH];
+            var p = new DatagramPacket(buf, buf.length);
+            server.receive(p);
+            log.debug("[S] {} byte(s) received from {}", p.getLength(), p.getSocketAddress());
+            server.send(p);
+            log.debug("[S] sent back to {}", p.getSocketAddress());
         }
     }
 

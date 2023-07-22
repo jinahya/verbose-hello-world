@@ -20,8 +20,6 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import jakarta.validation.constraints.NotNull;
-
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.SocketAddress;
@@ -40,12 +38,12 @@ public interface HelloWorldServer extends Closeable {
      *
      * @param endpoint the local socket address to bind.
      * @param dir      the directory to which the file is created; may be {@code null} in which case
-     *                 the file is not written.
+     *                 the file will not be written.
      * @throws IOException if an I/O error occurs.
      * @see #open(SocketAddress)
      * @see HelloWorldServerUtils#readPortNumber(Path)
      */
-    void open(@NotNull SocketAddress endpoint, Path dir) throws IOException;
+    void open(SocketAddress endpoint, Path dir) throws IOException;
 
     /**
      * Opens this server binding to specified socket address.
@@ -54,7 +52,7 @@ public interface HelloWorldServer extends Closeable {
      * @throws IOException if an I/O error occurs.
      * @see #open(SocketAddress, Path)
      */
-    default void open(@NotNull SocketAddress endpoint) throws IOException {
+    default void open(SocketAddress endpoint) throws IOException {
         open(endpoint, null);
     }
 
@@ -63,7 +61,6 @@ public interface HelloWorldServer extends Closeable {
      *
      * @return an instance of {@link HelloWorld}.
      */
-    @NotNull
     default HelloWorld service() {
         return HelloWorldServerHelper.service();
     }

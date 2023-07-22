@@ -27,10 +27,13 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.util.concurrent.TimeUnit;
 
 // https://datatracker.ietf.org/doc/html/rfc863
 @Slf4j
 public class Rfc863UdpServer1 {
+
+    static final InetAddress HOST = InetAddress.getLoopbackAddress();
 
     static final int PORT = Rfc863TcpServer1.PORT;
 
@@ -42,17 +45,18 @@ public class Rfc863UdpServer1 {
     }
 
     public static void main(String... args) throws IOException {
-        var host = InetAddress.getLoopbackAddress();
-        var endpoint = new InetSocketAddress(host, PORT);
         try (var server = new DatagramSocket(null)) {
-            server.bind(endpoint);
-            log.info("[S] server bound to {}", server.getLocalSocketAddress());
-            while (!server.isClosed()) {
-                var buffer = new byte[MAX_PACKET_LENGTH];
-                var packet = new DatagramPacket(buffer, buffer.length);
-                server.receive(packet);
-                log(packet);
+            {
+                var endpoint = new InetSocketAddress(HOST, PORT);
+                server.bind(endpoint);
+                log.info("[S] server bound to {}", server.getLocalSocketAddress());
             }
+            server.setSoTimeout((int) TimeUnit.SECONDS.toMillis(8L));
+            var buf = new byte[MAX_PACKET_LENGTH];
+            var packet = new DatagramPacket(buf, buf.length);
+            server.receive(packet);
+            log.debug("[S] {} byte(s) received from {}", packet.getLength(),
+                      packet.getSocketAddress());
         }
     }
 
