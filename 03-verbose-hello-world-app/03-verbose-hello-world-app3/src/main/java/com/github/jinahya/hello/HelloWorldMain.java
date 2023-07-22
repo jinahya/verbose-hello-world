@@ -35,7 +35,7 @@ public class HelloWorldMain {
 
     /**
      * The main method of this program which prints {@code hello, world} to {@link System#out}
-     * followed by a system-specific line separator.
+     * followed by a system-dependent line separator.
      *
      * @param args an array of command line arguments
      * @throws IOException if an I/O error occurs.
@@ -44,7 +44,8 @@ public class HelloWorldMain {
         var injector = Guice.createInjector(new HelloWorldModule());
         // TODO: Create a new instance of this class
         // TODO: Inject values to the instance using the injector
-        // TODO: Print 'hello, world' to System.out using instance.helloWorld
+        // TODO: Print the 'hello, world' to System.out using instance.helloWorld
+        // TODO: Print a system-dependent line separator the the System.out
     }
 
     /**

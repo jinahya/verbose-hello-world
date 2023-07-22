@@ -33,7 +33,7 @@ class HelloWorldMain {
 
     /**
      * The main method of this program which prints {@code hello, world} to {@link System#out}
-     * followed by a platform-specific line separator.
+     * followed by a system-dependent line separator.
      *
      * @param args an array of command line arguments
      * @throws IOException if an I/O error occurs.
