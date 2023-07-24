@@ -47,10 +47,9 @@ class Rfc863Tcp2Server {
                 log.debug("[S] bound to {}", server.getLocalAddress());
                 server.configureBlocking(false);
                 server.register(selector, SelectionKey.OP_ACCEPT);
-//                while (!selector.keys().isEmpty()) {
-                while (true) {
+                while (!selector.keys().isEmpty()) {
                     if (selector.select(TimeUnit.SECONDS.toMillis(8L)) == 0) {
-                        break;
+                        continue;
                     }
                     for (var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
                         var key = i.next();
@@ -60,7 +59,7 @@ class Rfc863Tcp2Server {
                             log.debug("[S] accepted from {}, through {}", client.getRemoteAddress(),
                                       client.getLocalAddress());
                             client.configureBlocking(false);
-                            client.register(selector, SelectionKey.OP_READ, ByteBuffer.allocate(1));
+                            client.register(selector, SelectionKey.OP_READ, ByteBuffer.allocate(6));
                             key.cancel();
                             continue;
                         }
@@ -70,8 +69,8 @@ class Rfc863Tcp2Server {
                             var read = channel.read(buffer);
                             log.debug("[S] read: {}", read);
                             if (read == -1) {
+                                channel.shutdownInput();
                                 key.cancel();
-                                break;
                             }
                         }
                     }

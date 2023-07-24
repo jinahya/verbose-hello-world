@@ -52,8 +52,8 @@ public class Rfc863Udp1Server {
                 log.info("[S] server bound to {}", server.getLocalSocketAddress());
             }
             server.setSoTimeout((int) TimeUnit.SECONDS.toMillis(8L));
-            var buf = new byte[MAX_PACKET_LENGTH];
-            var packet = new DatagramPacket(buf, buf.length);
+            var buffer = new byte[MAX_PACKET_LENGTH];
+            var packet = new DatagramPacket(buffer, buffer.length);
             server.receive(packet);
             log.debug("[S] {} byte(s) received from {}", packet.getLength(),
                       packet.getSocketAddress());

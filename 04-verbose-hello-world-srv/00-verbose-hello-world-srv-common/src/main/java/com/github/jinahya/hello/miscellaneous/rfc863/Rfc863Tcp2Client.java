@@ -39,7 +39,6 @@ class Rfc863Tcp2Client {
     private static final int PORT = Rfc863Tcp2Server.PORT;
 
     public static void main(String... args) throws IOException, InterruptedException {
-        var capacity = 8;
         try (var selector = Selector.open()) {
             try (var client = SocketChannel.open()) {
                 var bind = true;
@@ -51,24 +50,23 @@ class Rfc863Tcp2Client {
                 if (client.connect(new InetSocketAddress(HOST, PORT))) {
                     log.debug("[C] connected (immediately) to {}, through {}",
                               client.getRemoteAddress(), client.getLocalAddress());
-                    client.register(selector, SelectionKey.OP_WRITE, ByteBuffer.allocate(capacity));
+                    client.register(selector, SelectionKey.OP_WRITE, ByteBuffer.allocate(8));
                 } else {
                     client.register(selector, SelectionKey.OP_CONNECT);
                 }
-//                while (!selector.keys().isEmpty()) {
-                while (true) {
+                while (!selector.keys().isEmpty()) {
                     if (selector.select(TimeUnit.SECONDS.toMillis(8L)) == 0) {
-//                        continue;
-                        break;
+                        continue;
                     }
                     for (var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
                         var key = i.next();
                         if (key.isConnectable()) {
                             var channel = (SocketChannel) key.channel();
+                            channel.finishConnect();
                             log.debug("[C] connected to {}, through {}", channel.getRemoteAddress(),
                                       channel.getLocalAddress());
                             key.interestOps(SelectionKey.OP_WRITE);
-                            key.attach(ByteBuffer.allocate(capacity));
+                            key.attach(ByteBuffer.allocate(8));
                             continue;
                         }
                         if (key.isWritable()) {
@@ -77,8 +75,8 @@ class Rfc863Tcp2Client {
                             var written = channel.write(buffer);
                             log.debug("[C] written: {}", written);
                             if (!buffer.hasRemaining()) {
+                                channel.shutdownOutput();
                                 key.cancel();
-                                break;
                             }
                         }
                     }

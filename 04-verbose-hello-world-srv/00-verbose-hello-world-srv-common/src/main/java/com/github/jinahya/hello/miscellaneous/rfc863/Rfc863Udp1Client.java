@@ -83,9 +83,9 @@ public class Rfc863Udp1Client {
                 client.connect(endpoint);
                 log.debug("[C] connected to {}", client.getRemoteSocketAddress());
             }
-            var buf = new byte[ThreadLocalRandom.current().nextInt(MAX_PACKET_LENGTH) + 1];
-            ThreadLocalRandom.current().nextBytes(buf);
-            var packet = new DatagramPacket(buf, buf.length, endpoint);
+            var buffer = new byte[ThreadLocalRandom.current().nextInt(MAX_PACKET_LENGTH) + 1];
+            ThreadLocalRandom.current().nextBytes(buffer);
+            var packet = new DatagramPacket(buffer, buffer.length, endpoint);
             client.send(packet);
             log.debug("[C] {} byte(s) sent to {}, through {}", packet.getLength(),
                       packet.getSocketAddress(), client.getLocalSocketAddress());
