@@ -20,7 +20,7 @@ package com.github.jinahya.hello.miscellaneous.m3_rfc863;
  * #L%
  */
 
-import com.github.jinahya.hello.miscellaneous.m1_rfc863.Rfc863UdpServer1;
+import com.github.jinahya.hello.miscellaneous.rfc863.Rfc863Udp1Server;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -51,7 +51,7 @@ class Rfc863UdpServer3 {
                 var packet = new DatagramPacket(buffer, buffer.length);
                 server.receive(packet);
                 executor.submit(() -> {
-                    Rfc863UdpServer1.log(packet);
+                    Rfc863Udp1Server.log(packet);
                 });
             }
             executor.shutdown();

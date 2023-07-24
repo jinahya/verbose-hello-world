@@ -20,7 +20,7 @@ package com.github.jinahya.hello.miscellaneous.m3_rfc863;
  * #L%
  */
 
-import com.github.jinahya.hello.miscellaneous.m1_rfc863.Rfc863UdpClient1;
+import com.github.jinahya.hello.miscellaneous.rfc863.Rfc863Udp1Client;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -38,7 +38,7 @@ class Rfc863UdpClient3 {
         var executor = Executors.newCachedThreadPool();
         for (int i = 0; i < 4; i++) {
             executor.submit(() -> {
-                Rfc863UdpClient1.send(endpoint);
+                Rfc863Udp1Client.send(endpoint);
                 return null;
             });
         }

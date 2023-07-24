@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.miscellaneous.m1_rfc863;
+package com.github.jinahya.hello.miscellaneous.rfc863;
 
 /*-
  * #%L
@@ -31,11 +31,11 @@ import java.util.concurrent.TimeUnit;
 
 // https://datatracker.ietf.org/doc/html/rfc863
 @Slf4j
-public class Rfc863UdpServer1 {
+public class Rfc863Udp1Server {
 
     static final InetAddress HOST = InetAddress.getLoopbackAddress();
 
-    static final int PORT = Rfc863TcpServer1.PORT;
+    static final int PORT = Rfc863Tcp1Server.PORT;
 
     static final int MAX_PACKET_LENGTH = 8;
 
@@ -60,7 +60,7 @@ public class Rfc863UdpServer1 {
         }
     }
 
-    private Rfc863UdpServer1() {
+    private Rfc863Udp1Server() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

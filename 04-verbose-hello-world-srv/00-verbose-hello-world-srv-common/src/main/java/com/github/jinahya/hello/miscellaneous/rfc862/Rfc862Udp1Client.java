@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.miscellaneous.m1_rfc862;
+package com.github.jinahya.hello.miscellaneous.rfc862;
 
 /*-
  * #%L
@@ -32,13 +32,13 @@ import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
-public class Rfc862UdpClient1 {
+public class Rfc862Udp1Client {
 
-    private static final InetAddress HOST = Rfc862UdpServer1.HOST;
+    private static final InetAddress HOST = Rfc862Udp1Server.HOST;
 
-    private static final int PORT = Rfc862UdpServer1.PORT;
+    private static final int PORT = Rfc862Udp1Server.PORT;
 
-    private static final int MAX_PACKET_LENGTH = Rfc862UdpServer1.MAX_PACKET_LENGTH;
+    private static final int MAX_PACKET_LENGTH = Rfc862Udp1Server.MAX_PACKET_LENGTH;
 
     private static final boolean BIND = true;
 
@@ -64,7 +64,7 @@ public class Rfc862UdpClient1 {
                 }
             }
             var length = ThreadLocalRandom.current()
-                    .nextInt(1, Rfc862UdpServer1.MAX_PACKET_LENGTH + 1);
+                    .nextInt(1, Rfc862Udp1Server.MAX_PACKET_LENGTH + 1);
             var sbuffer = new byte[length];
             {
                 ThreadLocalRandom.current().nextBytes(sbuffer);
@@ -125,7 +125,7 @@ public class Rfc862UdpClient1 {
         }
     }
 
-    private Rfc862UdpClient1() {
+    private Rfc862Udp1Client() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

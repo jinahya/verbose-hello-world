@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.miscellaneous.m1_rfc862;
+package com.github.jinahya.hello.miscellaneous.rfc863;
 
 /*-
  * #%L
@@ -28,18 +28,17 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
-public class Rfc862TcpClient1 {
+public class Rfc863Tcp1Client {
 
-    private static final InetAddress HOST = Rfc862TcpServer1.HOST;
+    private static final InetAddress HOST = Rfc863Tcp1Server.HOST;
 
-    private static final int PORT = Rfc862TcpServer1.PORT;
+    private static final int PORT = Rfc863Tcp1Server.PORT;
 
     private static final boolean BIND = false;
 
-    public static void connectWriteAndRead(SocketAddress endpoint) throws IOException {
+    public static void connectAndWrite(SocketAddress endpoint) throws IOException {
         try (var client = new Socket()) {
             if (BIND) {
                 client.bind(new InetSocketAddress(InetAddress.getLocalHost(), 0));
@@ -49,15 +48,15 @@ public class Rfc862TcpClient1 {
             log.debug("[C] connected to {}, through {}", client.getRemoteSocketAddress(),
                       client.getLocalSocketAddress());
             var bytes = ThreadLocalRandom.current().nextInt(1, 9);
-            for (int j = 0; j < bytes; j++) {
-                var written = ThreadLocalRandom.current().nextInt(256);
+            for (int i = 0; i < bytes; i++) {
+                var written = ThreadLocalRandom.current().nextInt();
                 client.getOutputStream().write(written);
-                client.getOutputStream().flush();
-                var read = client.getInputStream().read();
-                assert read != -1;
-                assert read == written;
             }
-            log.debug("[C] {} byte(s) written/read", bytes);
+            client.getOutputStream().flush();
+            if (ThreadLocalRandom.current().nextBoolean()) {
+                client.shutdownOutput();
+            }
+            log.debug("[C] {} byte(s) written", bytes);
         }
     }
 
@@ -66,25 +65,23 @@ public class Rfc862TcpClient1 {
             var bind = true;
             if (bind) {
                 client.bind(new InetSocketAddress(HOST, 0));
-                log.debug("[C] client bound to {}", client.getLocalSocketAddress());
+                log.debug("[C] bound to {}", client.getLocalSocketAddress());
             }
             var endpoint = new InetSocketAddress(HOST, PORT);
-            client.connect(endpoint, (int) TimeUnit.SECONDS.toMillis(8L));
-            log.debug("[C] connected to {}", client.getRemoteSocketAddress());
+            client.connect(endpoint);
+            log.debug("[C] connected to {}, through {}", client.getRemoteSocketAddress(),
+                      client.getLocalSocketAddress());
             var count = ThreadLocalRandom.current().nextInt(1, 9);
             for (int i = 0; i < count; i++) {
                 var b = ThreadLocalRandom.current().nextInt(256);
                 client.getOutputStream().write(b);
-                client.getOutputStream().flush();
-                var read = client.getInputStream().read();
-                assert read != -1;
-                assert read == b;
             }
-            log.debug("[C] {} byte(s) written/read", count);
+            client.getOutputStream().flush();
+            log.debug("[C] {} byte(s) sent", count);
         }
     }
 
-    private Rfc862TcpClient1() {
+    private Rfc863Tcp1Client() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

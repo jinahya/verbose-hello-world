@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.miscellaneous.m1_rfc862;
+package com.github.jinahya.hello.miscellaneous.rfc862;
 
 /*-
  * #%L
@@ -31,11 +31,11 @@ import java.util.concurrent.TimeUnit;
 
 // https://www.rfc-editor.org/rfc/rfc862
 @Slf4j
-public class Rfc862UdpServer1 {
+public class Rfc862Udp1Server {
 
     static final InetAddress HOST = InetAddress.getLoopbackAddress();
 
-    static final int PORT = Rfc862TcpServer1.PORT;
+    static final int PORT = Rfc862Tcp1Server.PORT;
 
     static final int MAX_PACKET_LENGTH = 8;
 
@@ -59,7 +59,7 @@ public class Rfc862UdpServer1 {
         }
     }
 
-    private Rfc862UdpServer1() {
+    private Rfc862Udp1Server() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

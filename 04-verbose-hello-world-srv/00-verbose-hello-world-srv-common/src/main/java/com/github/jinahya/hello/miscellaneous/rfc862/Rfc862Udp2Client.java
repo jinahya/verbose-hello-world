@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.miscellaneous.m2_rfc863;
+package com.github.jinahya.hello.miscellaneous.rfc862;
 
 /*-
  * #%L
@@ -20,7 +20,6 @@ package com.github.jinahya.hello.miscellaneous.m2_rfc863;
  * #L%
  */
 
-import com.github.jinahya.hello.miscellaneous.m1_rfc863.Rfc863UdpClient1;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -30,15 +29,15 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-class Rfc863UdpClient2 {
+class Rfc862Udp2Client {
 
     public static void main(String... args) throws IOException, InterruptedException {
         var host = InetAddress.getLoopbackAddress();
-        var endpoint = new InetSocketAddress(host, Rfc863UdpServer2.PORT);
+        var endpoint = new InetSocketAddress(host, Rfc862Udp2Server.PORT);
         var executor = Executors.newCachedThreadPool();
         for (int i = 0; i < 4; i++) {
             executor.submit(() -> {
-                Rfc863UdpClient1.send(endpoint);
+                Rfc862Udp1Client.sendAndReceive(endpoint);
                 return null;
             });
         }
@@ -52,7 +51,7 @@ class Rfc863UdpClient2 {
         }
     }
 
-    private Rfc863UdpClient2() {
+    private Rfc862Udp2Client() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

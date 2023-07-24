@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.miscellaneous.m3_rfc862;
+package com.github.jinahya.hello.miscellaneous.rfc862;
 
 /*-
  * #%L
@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
 
 // https://datatracker.ietf.org/doc/html/rfc862
 @Slf4j
-class Rfc862TcpServer3 {
+class Rfc862Tcp3Server {
 
     static final int PORT = 53007; // 7 + 53000
 
@@ -83,7 +83,7 @@ class Rfc862TcpServer3 {
         }
     }
 
-    private Rfc862TcpServer3() {
+    private Rfc862Tcp3Server() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

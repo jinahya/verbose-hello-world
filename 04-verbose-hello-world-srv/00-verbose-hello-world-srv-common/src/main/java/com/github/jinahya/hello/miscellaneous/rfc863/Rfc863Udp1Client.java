@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.miscellaneous.m1_rfc863;
+package com.github.jinahya.hello.miscellaneous.rfc863;
 
 /*-
  * #%L
@@ -31,13 +31,13 @@ import java.net.SocketAddress;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
-public class Rfc863UdpClient1 {
+public class Rfc863Udp1Client {
 
-    private static final InetAddress HOST = Rfc863UdpServer1.HOST;
+    private static final InetAddress HOST = Rfc863Udp1Server.HOST;
 
-    private static final int PORT = Rfc863UdpServer1.PORT;
+    private static final int PORT = Rfc863Udp1Server.PORT;
 
-    private static final int MAX_PACKET_LENGTH = Rfc863UdpServer1.MAX_PACKET_LENGTH;
+    private static final int MAX_PACKET_LENGTH = Rfc863Udp1Server.MAX_PACKET_LENGTH;
 
     private static final boolean BIND = false;
 
@@ -96,7 +96,7 @@ public class Rfc863UdpClient1 {
         }
     }
 
-    private Rfc863UdpClient1() {
+    private Rfc863Udp1Client() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

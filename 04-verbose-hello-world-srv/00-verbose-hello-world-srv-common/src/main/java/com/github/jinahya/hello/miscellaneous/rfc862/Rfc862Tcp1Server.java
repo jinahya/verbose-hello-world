@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.miscellaneous.m1_rfc862;
+package com.github.jinahya.hello.miscellaneous.rfc862;
 
 /*-
  * #%L
@@ -26,38 +26,20 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.concurrent.TimeUnit;
 
 // https://www.rfc-editor.org/rfc/rfc862
 @Slf4j
-public class Rfc862TcpServer1 {
+public class Rfc862Tcp1Server {
 
     static final InetAddress HOST = InetAddress.getLoopbackAddress();
 
     static final int PORT = 7 + 51000;
 
-    public static void readWriteAndClose(Socket client) throws IOException {
-        try (client) {
-            log.debug("[S] accepted from {}, through {}", client.getRemoteSocketAddress(),
-                      client.getLocalSocketAddress());
-            var bytes = 0L;
-            for (; true; bytes++) {
-                var b = client.getInputStream().read();
-                if (b == -1) {
-                    break;
-                }
-                client.getOutputStream().write(b);
-                client.getOutputStream().flush();
-            }
-            log.debug("[S] {} byte(s) read/written", bytes);
-        }
-    }
-
     public static void main(String... args) throws IOException {
         try (var server = new ServerSocket()) {
-            server.bind(new InetSocketAddress(InetAddress.getLoopbackAddress(), PORT));
-            log.info("[S] server bound to {}", server.getLocalSocketAddress());
+            server.bind(new InetSocketAddress(HOST, PORT));
+            log.info("[S] bound to {}", server.getLocalSocketAddress());
             server.setSoTimeout((int) TimeUnit.SECONDS.toMillis(8L));
             try (var client = server.accept()) {
                 log.debug("[S] accepted from {}", client.getRemoteSocketAddress());
@@ -75,7 +57,7 @@ public class Rfc862TcpServer1 {
         }
     }
 
-    private Rfc862TcpServer1() {
+    private Rfc862Tcp1Server() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

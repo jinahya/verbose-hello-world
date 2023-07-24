@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.miscellaneous.m3_rfc862;
+package com.github.jinahya.hello.miscellaneous.rfc862;
 
 /*-
  * #%L
@@ -35,7 +35,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-public class Rfc862TcpClient3 {
+public class Rfc862Tcp3Client {
 
     public static void connectWriteAndRead(SocketAddress endpoint) throws IOException {
         try (var client = SocketChannel.open()) {
@@ -68,7 +68,7 @@ public class Rfc862TcpClient3 {
     public static void main(String... args) throws IOException, InterruptedException,
                                                    ExecutionException {
         var host = InetAddress.getLoopbackAddress();
-        var endpoint = new InetSocketAddress(host, Rfc862TcpServer3.PORT);
+        var endpoint = new InetSocketAddress(host, Rfc862Tcp3Server.PORT);
         var executor = Executors.newCachedThreadPool();
         for (int i = 0; i < 1; i++) {
             executor.submit(() -> {
@@ -84,7 +84,7 @@ public class Rfc862TcpClient3 {
         }
     }
 
-    private Rfc862TcpClient3() {
+    private Rfc862Tcp3Client() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

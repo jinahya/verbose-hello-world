@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.miscellaneous.m1_rfc863;
+package com.github.jinahya.hello.miscellaneous.rfc863;
 
 /*-
  * #%L
@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
 
 // https://datatracker.ietf.org/doc/html/rfc863
 @Slf4j
-public class Rfc863TcpServer1 {
+public class Rfc863Tcp1Server {
 
     static final InetAddress HOST = InetAddress.getLoopbackAddress();
 
@@ -53,9 +53,8 @@ public class Rfc863TcpServer1 {
 
     public static void main(String... args) throws IOException {
         try (var server = new ServerSocket()) {
-            var endpoint = new InetSocketAddress(InetAddress.getLoopbackAddress(), PORT);
-            server.bind(endpoint);
-            log.info("[S] server bound to {}", server.getLocalSocketAddress());
+            server.bind(new InetSocketAddress(HOST, PORT));
+            log.info("[S] bound to {}", server.getLocalSocketAddress());
             server.setSoTimeout((int) TimeUnit.SECONDS.toMillis(8L));
             try (var client = server.accept()) {
                 log.debug("[S] accepted from {}, through {}", client.getRemoteSocketAddress(),
@@ -72,7 +71,7 @@ public class Rfc863TcpServer1 {
         }
     }
 
-    private Rfc863TcpServer1() {
+    private Rfc863Tcp1Server() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

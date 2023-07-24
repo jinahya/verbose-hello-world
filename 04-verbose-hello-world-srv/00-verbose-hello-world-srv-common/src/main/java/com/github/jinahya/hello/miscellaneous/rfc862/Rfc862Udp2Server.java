@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.miscellaneous.m2_rfc863;
+package com.github.jinahya.hello.miscellaneous.rfc862;
 
 /*-
  * #%L
@@ -20,7 +20,6 @@ package com.github.jinahya.hello.miscellaneous.m2_rfc863;
  * #L%
  */
 
-import com.github.jinahya.hello.miscellaneous.m1_rfc863.Rfc863UdpServer1;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -33,9 +32,9 @@ import java.util.concurrent.TimeUnit;
 
 // https://datatracker.ietf.org/doc/html/rfc863
 @Slf4j
-class Rfc863UdpServer2 {
+class Rfc862Udp2Server {
 
-    static final int PORT = Rfc863TcpServer2.PORT;
+    static final int PORT = Rfc862Tcp2Server.PORT;
 
     static final int MAX_PACKET_LENGTH = 8;
 
@@ -51,12 +50,13 @@ class Rfc863UdpServer2 {
                 var packet = new DatagramPacket(buffer, buffer.length);
                 server.receive(packet);
                 executor.submit(() -> {
-                    Rfc863UdpServer1.log(packet);
+                    Rfc862Udp1Server.send(packet, server);
+                    return null;
                 });
-            }
+            } // end-of-while
             executor.shutdown();
             {
-                var timeout = 8L;
+                var timeout = 4L;
                 var unit = TimeUnit.SECONDS;
                 if (!executor.awaitTermination(timeout, unit)) {
                     log.error("executor not terminated in {} {}", timeout, unit);
@@ -65,7 +65,7 @@ class Rfc863UdpServer2 {
         }
     }
 
-    private Rfc863UdpServer2() {
+    private Rfc862Udp2Server() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

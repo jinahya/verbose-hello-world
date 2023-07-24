@@ -20,7 +20,7 @@ package com.github.jinahya.hello.miscellaneous.m3_rfc863;
  * #L%
  */
 
-import com.github.jinahya.hello.miscellaneous.m1_rfc863.Rfc863TcpServer1;
+import com.github.jinahya.hello.miscellaneous.rfc863.Rfc863Tcp1Server;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -46,7 +46,7 @@ class Rfc863TcpServer3 {
             while (!server.isClosed()) {
                 var client = server.accept();
                 executor.submit(() -> {
-                    Rfc863TcpServer1.readAndClose(client);
+                    Rfc863Tcp1Server.readAndClose(client);
                     return null;
                 });
             }

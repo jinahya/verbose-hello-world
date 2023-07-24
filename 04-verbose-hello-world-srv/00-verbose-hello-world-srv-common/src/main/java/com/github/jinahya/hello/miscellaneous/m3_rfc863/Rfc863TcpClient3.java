@@ -20,7 +20,7 @@ package com.github.jinahya.hello.miscellaneous.m3_rfc863;
  * #L%
  */
 
-import com.github.jinahya.hello.miscellaneous.m1_rfc863.Rfc863TcpClient1;
+import com.github.jinahya.hello.miscellaneous.rfc863.Rfc863Tcp1Client;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -37,7 +37,7 @@ class Rfc863TcpClient3 {
         var endpoint = new InetSocketAddress(host, Rfc863TcpServer3.PORT);
         var executor = Executors.newCachedThreadPool();
         for (int i = 0; i < 4; i++) {
-            Rfc863TcpClient1.connectAndWrite(endpoint);
+            Rfc863Tcp1Client.connectAndWrite(endpoint);
         }
         executor.shutdown();
         {
