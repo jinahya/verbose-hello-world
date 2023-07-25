@@ -29,7 +29,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -38,6 +37,8 @@ class Rfc862Tcp2Client {
     private static final InetAddress HOST = Rfc862Tcp2Server.HOST;
 
     private static final int PORT = Rfc862Tcp2Server.PORT;
+
+    private static final int CAPACITY = Rfc862Tcp2Server.CAPACITY + 2;
 
     public static void main(String... args) throws IOException, InterruptedException {
         try (var selector = Selector.open()) {
@@ -48,8 +49,15 @@ class Rfc862Tcp2Client {
                     log.debug("[C] bound to {}", client.getLocalAddress());
                 }
                 client.configureBlocking(false);
-                client.register(selector, SelectionKey.OP_CONNECT,
-                                ByteBuffer.allocate(10).position(10));
+                var connected = client.connect(new InetSocketAddress(HOST, PORT));
+                if (connected) {
+                    log.debug("connected (immediately) to {}, through {}",
+                              client.getRemoteAddress(), client.getLocalAddress());
+                    client.register(selector, SelectionKey.OP_WRITE, ByteBuffer.allocate(CAPACITY));
+                } else {
+                    client.register(selector, SelectionKey.OP_CONNECT,
+                                    ByteBuffer.allocate(CAPACITY));
+                }
                 while (!selector.keys().isEmpty()) {
                     if (selector.select(TimeUnit.SECONDS.toMillis(8L)) == 0) {
                         break;
@@ -58,46 +66,45 @@ class Rfc862Tcp2Client {
                         var key = i.next();
                         if (key.isConnectable()) {
                             var channel = (SocketChannel) key.channel();
+                            channel.finishConnect();
                             log.debug("[C] connected to {}, through {}", channel.getRemoteAddress(),
                                       channel.getLocalAddress());
-                            key.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+                            key.interestOps(SelectionKey.OP_WRITE);
                             continue;
                         }
                         if (key.isReadable()) {
                             var channel = (SocketChannel) key.channel();
                             var buffer = (ByteBuffer) key.attachment();
                             var position = buffer.position();
+                            buffer.flip(); // limit -> position, position -> zero
                             var read = channel.read(buffer);
                             log.debug("[C] read: {}", read);
-                            buffer.position(position);
+                            buffer.limit(buffer.capacity()).position(position);
+                            if (read == -1) {
+                                channel.shutdownInput();
+                                key.interestOpsAnd(~SelectionKey.OP_READ);
+                                assert !buffer.hasRemaining();
+                                key.cancel();
+                                continue;
+                            }
                         }
                         if (key.isWritable()) {
                             var channel = (SocketChannel) key.channel();
                             var buffer = (ByteBuffer) key.attachment();
-                            buffer.flip(); // limit -> position; position -> zero
+                            assert buffer.hasRemaining();
                             var written = channel.write(buffer);
                             log.debug("[C] written: {}", written);
-                            buffer.compact();
+                            if (!buffer.hasRemaining()) {
+                                channel.shutdownOutput();
+                                key.interestOpsAnd(~SelectionKey.OP_WRITE);
+                            }
+                            if (written > 0) {
+                                key.interestOpsOr(SelectionKey.OP_READ);
+                            }
                         }
                     }
                 }
-            }
-        }
-        var host = InetAddress.getLoopbackAddress();
-        var endpoint = new InetSocketAddress(host, Rfc862Tcp2Server.PORT);
-        var executor = Executors.newCachedThreadPool();
-        for (int i = 0; i < 4; i++) {
-            executor.submit(() -> {
-                Rfc862Tcp1Client.connectWriteAndRead(endpoint);
-                return null;
-            });
-        }
-        executor.shutdown();
-        {
-            var timeout = 8L;
-            var unit = TimeUnit.SECONDS;
-            if (!executor.awaitTermination(timeout, unit)) {
-                log.error("executor not terminated in {} {}", timeout, unit);
+                assert selector.keys().isEmpty();
             }
         }
     }

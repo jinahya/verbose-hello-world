@@ -23,6 +23,7 @@ package com.github.jinahya.hello.miscellaneous.rfc863;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -40,33 +41,34 @@ class Rfc863Tcp4Client {
 
     private static final int PORT = Rfc863Tcp4Server.PORT;
 
-    private static CompletionHandler<Integer, Void> writer(CountDownLatch latch,
-                                                           AsynchronousSocketChannel client,
-                                                           ByteBuffer src) {
-        return new CompletionHandler<>() {
-            @Override
-            public void completed(Integer result, Void attachment) {
+    private static CompletionHandler<Integer, Void> writer(
+            CountDownLatch latch, AsynchronousSocketChannel client, ByteBuffer src) {
+        return new CompletionHandler<>() { // @formatter:off
+            @Override public void completed(Integer result, Void attachment) {
                 log.debug("[C] written: {}", result);
                 if (!src.hasRemaining()) {
                     latch.countDown();
                     return;
                 }
-                client.write(src, 8L, TimeUnit.SECONDS, null, this);
+                client.write(
+                        src,              // <src>
+                        8L,               // <timeout>
+                        TimeUnit.SECONDS, // <unit>
+                        null,             // <attachment>
+                        this              // <handler>
+                );
             }
-
-            @Override
-            public void failed(Throwable exc, Void attachment) {
+            @Override public void failed(Throwable exc, Void attachment) {
                 log.error("[C] failed to write", exc);
                 latch.countDown();
-            }
+            } // @formatter:on
         };
     }
 
     private static CompletionHandler<Void, Void> connector(
             CountDownLatch latch, AsynchronousSocketChannel client) {
-        return new CompletionHandler<>() {
-            @Override
-            public void completed(Void result, Void attachment) {
+        return new CompletionHandler<>() { // @formatter:off
+            @Override public void completed(Void result, Void attachment) {
                 try {
                     log.debug("[C] connected to {}, through {}", client.getRemoteAddress(),
                               client.getLocalAddress());
@@ -74,14 +76,18 @@ class Rfc863Tcp4Client {
                     log.error("failed to get addresses from {}", client, ioe);
                 }
                 var src = ByteBuffer.allocate(8);
-                client.write(src, 8L, TimeUnit.SECONDS, null, writer(latch, client, src));
+                client.write(
+                        src,                       // <src>
+                        8L,                        // <timeout>
+                        TimeUnit.SECONDS,          // <unit>
+                        null,                      // attachment>
+                        writer(latch, client, src) // <handler>
+                );
             }
-
-            @Override
-            public void failed(Throwable exc, Void attachment) {
+            @Override public void failed(Throwable exc, Void attachment) {
                 log.error("[C] failed to connect", exc);
                 latch.countDown();
-            }
+            } // @formatter:off
         };
     }
 
@@ -95,9 +101,9 @@ class Rfc863Tcp4Client {
             }
             var latch = new CountDownLatch(1);
             client.connect(
-                    new InetSocketAddress(HOST, PORT),
-                    null,
-                    connector(latch, client)
+                    new InetSocketAddress(HOST, PORT), // <remote>
+                    null,                              // <attachment>
+                    connector(latch, client)           // <handler>
             );
             var broken = latch.await(8L, TimeUnit.SECONDS);
             log.debug("[C] closing...");

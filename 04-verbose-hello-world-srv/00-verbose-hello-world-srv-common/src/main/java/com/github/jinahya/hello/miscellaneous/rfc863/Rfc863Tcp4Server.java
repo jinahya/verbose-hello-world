@@ -23,6 +23,7 @@ package com.github.jinahya.hello.miscellaneous.rfc863;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -34,7 +35,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-// https://datatracker.ietf.org/doc/html/rfc863
 @Slf4j
 class Rfc863Tcp4Server {
 
@@ -42,45 +42,66 @@ class Rfc863Tcp4Server {
 
     static final int PORT = Rfc863Tcp3Server.PORT;
 
-    private static CompletionHandler<Integer, ByteBuffer> writer(
-            AsynchronousSocketChannel client, CountDownLatch latch) {
-        return new CompletionHandler<>() {
-            @Override
-            public void completed(Integer written, ByteBuffer src) {
-                log.debug("[S] written: {}", written);
-                if (!src.hasRemaining()) {
+    private static CompletionHandler<Integer, Void> reader(
+            CountDownLatch latch, AsynchronousSocketChannel client, ByteBuffer dst) {
+        return new CompletionHandler<>() { // @formatter:off
+            @Override public void completed(Integer result, Void attachment) {
+                log.debug("[S] read: {}", result);
+                if (result == -1) {
+                    log.debug("[S] closing client...");
+                    try {
+                        client.close();
+                    } catch (IOException ioe) {
+                        throw new UncheckedIOException("failed to close " + client, ioe);
+                    }
                     latch.countDown();
                     return;
                 }
-                client.write(src, 8L, TimeUnit.SECONDS, src, this);
+                client.read(
+                        dst.clear(),      // <dst>
+                        8L,               // <timeout>
+                        TimeUnit.SECONDS, // <unit>
+                        attachment,       // <attachment>
+                        this              // <handler>
+                );
             }
-
-            @Override
-            public void failed(Throwable exc, ByteBuffer src) {
-                log.error("failed to write", exc);
+            @Override public void failed(Throwable exc, Void attachment) {
+                log.error("failed to read", exc);
+                log.debug("[S] closing client...");
+                try {
+                    client.close();
+                } catch (IOException ioe) {
+                    throw new UncheckedIOException("failed to close " + client, ioe);
+                }
                 latch.countDown();
-            }
+            } // @formatter:on
         };
     }
 
-    private static CompletionHandler<AsynchronousSocketChannel, ByteBuffer> accepter(
+    private static CompletionHandler<AsynchronousSocketChannel, Void> accepter(
             CountDownLatch latch) {
-        return new CompletionHandler<>() {
-            @Override
-            public void completed(AsynchronousSocketChannel client, ByteBuffer src) {
+        return new CompletionHandler<>() { // @formatter:off
+            @Override public void completed(AsynchronousSocketChannel client, Void src) {
                 try {
-                    log.error("[S] accepted from {}, through {}", client.getRemoteAddress(),
+                    log.debug("[S] accepted from {}, through {}", client.getRemoteAddress(),
                               client.getLocalAddress());
                 } catch (final IOException ioe) {
-                    log.error("failed to get addresses from {}", client, ioe);
+                    latch.countDown();
+                    throw new UncheckedIOException("failed to get addresses from " + client, ioe);
                 }
-                client.write(src, 8L, TimeUnit.SECONDS, src, writer(client, latch));
+                var dst = ByteBuffer.allocate(6);
+                client.read(
+                        dst,                       // <dst>
+                        8L,                        // <timeout>
+                        TimeUnit.SECONDS,          // <unit>
+                        null,                      // <attachment>
+                        reader(latch, client, dst) // <handler>
+                );
             }
-
-            @Override
-            public void failed(Throwable exc, ByteBuffer src) {
+            @Override public void failed(Throwable exc, Void src) {
                 log.error("[S] failed to accept", exc);
-            }
+                latch.countDown();
+            } // @formatter:off
         };
     }
 
@@ -91,8 +112,8 @@ class Rfc863Tcp4Server {
             log.debug("[S] bound to {}", server.getLocalAddress());
             var latch = new CountDownLatch(1);
             server.accept(
-                    ByteBuffer.allocate(6), // <attachment>
-                    accepter(latch)         // <handler>
+                    null,           // <attachment>
+                    accepter(latch) // <handler>
             );
             var broken = latch.await(8, TimeUnit.SECONDS);
             log.debug("[S] closing server...");

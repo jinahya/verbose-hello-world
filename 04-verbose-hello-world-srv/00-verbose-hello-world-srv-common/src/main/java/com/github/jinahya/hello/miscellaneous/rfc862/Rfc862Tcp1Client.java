@@ -66,13 +66,13 @@ public class Rfc862Tcp1Client {
             var bind = true;
             if (bind) {
                 client.bind(new InetSocketAddress(HOST, 0));
-                log.debug("[C] client bound to {}", client.getLocalSocketAddress());
+                log.debug("[C] bound to {}", client.getLocalSocketAddress());
             }
-            var endpoint = new InetSocketAddress(HOST, PORT);
-            client.connect(endpoint, (int) TimeUnit.SECONDS.toMillis(8L));
-            log.debug("[C] connected to {}", client.getRemoteSocketAddress());
-            var count = ThreadLocalRandom.current().nextInt(1, 9);
-            for (int i = 0; i < count; i++) {
+            client.connect(new InetSocketAddress(HOST, PORT), (int) TimeUnit.SECONDS.toMillis(8L));
+            log.debug("[C] connected to {}, through {}", client.getRemoteSocketAddress(),
+                      client.getLocalSocketAddress());
+            var bytes = ThreadLocalRandom.current().nextInt(1, 9);
+            for (int i = 0; i < bytes; i++) {
                 var b = ThreadLocalRandom.current().nextInt(256);
                 client.getOutputStream().write(b);
                 client.getOutputStream().flush();
@@ -80,7 +80,8 @@ public class Rfc862Tcp1Client {
                 assert read != -1;
                 assert read == b;
             }
-            log.debug("[C] {} byte(s) written/read", count);
+            log.debug("[C] {} byte(s) written/read", bytes);
+            log.debug("[S] closing...");
         }
     }
 

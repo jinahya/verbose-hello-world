@@ -23,44 +23,52 @@ package com.github.jinahya.hello.miscellaneous.rfc863;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.util.concurrent.Executors;
+import java.nio.ByteBuffer;
+import java.nio.channels.DatagramChannel;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
 import java.util.concurrent.TimeUnit;
 
 // https://datatracker.ietf.org/doc/html/rfc863
 @Slf4j
 class Rfc863Udp2Server {
 
-    static final int PORT = Rfc863Tcp2Server.PORT;
+    static final InetAddress HOST = Rfc863Udp1Server.HOST;
 
-    static final int MAX_PACKET_LENGTH = 8;
+    static final int PORT = Rfc863Udp1Server.PORT;
 
-    public static void main(String... args) throws IOException, InterruptedException {
-        var host = InetAddress.getLoopbackAddress();
-        var endpoint = new InetSocketAddress(host, PORT);
-        try (var server = new DatagramSocket(null)) {
-            server.bind(endpoint);
-            log.info("[S] server bound to {}", server.getLocalSocketAddress());
-            var executor = Executors.newCachedThreadPool();
-            while (!server.isClosed()) {
-                var buffer = new byte[MAX_PACKET_LENGTH];
-                var packet = new DatagramPacket(buffer, buffer.length);
-                server.receive(packet);
-                executor.submit(() -> {
-                    Rfc863Udp1Server.log(packet);
-                });
-            }
-            executor.shutdown();
-            {
-                var timeout = 8L;
-                var unit = TimeUnit.SECONDS;
-                if (!executor.awaitTermination(timeout, unit)) {
-                    log.error("executor not terminated in {} {}", timeout, unit);
+    static final int MAX_PACKET_LENGTH = Rfc863Udp1Server.MAX_PACKET_LENGTH;
+
+    public static void main(String... args) throws IOException {
+        try (var selector = Selector.open()) {
+            try (var server = DatagramChannel.open()) {
+                server.bind(new InetSocketAddress(HOST, PORT));
+                log.debug("[S] bound to {}", server.getLocalAddress());
+                server.configureBlocking(false);
+                server.register(selector, SelectionKey.OP_READ,
+                                ByteBuffer.allocate(MAX_PACKET_LENGTH));
+                while (!selector.keys().isEmpty()) {
+                    if (selector.select(TimeUnit.SECONDS.toMillis(8L)) == 0) {
+                        break;
+                    }
+                    for (var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
+                        var key = i.next();
+                        if (key.isReadable()) {
+                            var channel = (DatagramChannel) key.channel();
+                            var buffer = (ByteBuffer) key.attachment();
+                            var source = channel.receive(buffer);
+                            log.debug("[S] {} byte(s) received from {}", buffer.position(), source);
+                            log.debug("[S] closing client...");
+                            channel.close();
+                            key.cancel();
+                        }
+                    }
                 }
+                log.debug("[S] closing server...");
             }
+            log.debug("[S] closing selector...");
         }
     }
 

@@ -29,7 +29,6 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 
-// https://datatracker.ietf.org/doc/html/rfc863
 @Slf4j
 public class Rfc863Udp1Server {
 
@@ -47,9 +46,8 @@ public class Rfc863Udp1Server {
     public static void main(String... args) throws IOException {
         try (var server = new DatagramSocket(null)) {
             {
-                var endpoint = new InetSocketAddress(HOST, PORT);
-                server.bind(endpoint);
-                log.info("[S] server bound to {}", server.getLocalSocketAddress());
+                server.bind(new InetSocketAddress(HOST, PORT));
+                log.info("[S] bound to {}", server.getLocalSocketAddress());
             }
             server.setSoTimeout((int) TimeUnit.SECONDS.toMillis(8L));
             var buffer = new byte[MAX_PACKET_LENGTH];

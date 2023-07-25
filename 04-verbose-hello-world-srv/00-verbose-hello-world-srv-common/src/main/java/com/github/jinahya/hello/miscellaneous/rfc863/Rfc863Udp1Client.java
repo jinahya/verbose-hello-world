@@ -39,10 +39,6 @@ public class Rfc863Udp1Client {
 
     private static final int MAX_PACKET_LENGTH = Rfc863Udp1Server.MAX_PACKET_LENGTH;
 
-    private static final boolean BIND = false;
-
-    private static final boolean CONNECT = false;
-
     public static void send(SocketAddress endpoint) throws IOException {
         try (var client = new DatagramSocket(null)) {
             var bind = true;

@@ -26,11 +26,10 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
-import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.WritableByteChannel;
+import java.nio.channels.SocketChannel;
 import java.util.concurrent.TimeUnit;
 
 // https://datatracker.ietf.org/doc/html/rfc862
@@ -41,58 +40,64 @@ class Rfc862Tcp2Server {
 
     static final int PORT = 7 + 52000;
 
+    static final int CAPACITY = 8;
+
     public static void main(String... args) throws IOException, InterruptedException {
-        try (var sel = Selector.open()) {
+        try (var selector = Selector.open()) {
             try (var server = ServerSocketChannel.open()) {
                 server.bind(new InetSocketAddress(HOST, PORT));
                 log.info("[S] server bound to {}", server.getLocalAddress());
                 server.socket().setSoTimeout((int) TimeUnit.SECONDS.toMillis(8L));
                 server.configureBlocking(false);
-                server.register(sel, SelectionKey.OP_ACCEPT);
-                while (!sel.keys().isEmpty()) {
-                    if (sel.select(TimeUnit.SECONDS.toMillis(8L)) == 0) {
+                server.register(selector, SelectionKey.OP_ACCEPT);
+                while (!selector.keys().isEmpty()) {
+                    if (selector.select(TimeUnit.SECONDS.toMillis(8L)) == 0) {
                         break;
-//                        continue;
                     }
-                    for (var i = sel.selectedKeys().iterator(); i.hasNext(); i.remove()) {
+                    for (var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
                         var key = i.next();
                         if (key.isAcceptable()) {
                             var client = ((ServerSocketChannel) key.channel()).accept();
                             log.debug("[S] accepted from {}, through {}", client.getRemoteAddress(),
                                       client.getLocalAddress());
                             client.configureBlocking(false);
-                            client.register(
-                                    sel,
-                                    SelectionKey.OP_READ | SelectionKey.OP_WRITE,
-                                    ByteBuffer.allocate(1)
-                            );
+                            client.register(selector, SelectionKey.OP_READ,
+                                            ByteBuffer.allocate(CAPACITY));
                             key.cancel();
                             continue;
                         }
                         if (key.isReadable()) {
-                            var channel = (ReadableByteChannel) key.channel();
+                            var channel = (SocketChannel) key.channel();
                             var buffer = (ByteBuffer) key.attachment();
                             var read = channel.read(buffer);
-                            if (read == -1) {
-                                key.interestOps(key.interestOps() ^ SelectionKey.OP_READ);
-                            }
                             log.debug("[S] read: {}", read);
+                            if (read == -1) {
+                                channel.shutdownInput();
+                                key.interestOpsAnd(~SelectionKey.OP_READ);
+                            }
+                            if (read > 0) {
+                                key.interestOpsOr(SelectionKey.OP_WRITE);
+                            }
                         }
                         if (key.isWritable()) {
-                            var channel = (WritableByteChannel) key.channel();
+                            var channel = (SocketChannel) key.channel();
                             var buffer = (ByteBuffer) key.attachment();
                             buffer.flip(); // limit -> position; position -> zero
+                            assert buffer.hasRemaining();
                             var written = channel.write(buffer);
-                            log.debug("written: {}", written);
+                            log.debug("[S] written: {}", written);
                             buffer.compact();
-                            if (buffer.position() == 0
-                                && (key.interestOps() & SelectionKey.OP_READ)
-                                   != SelectionKey.OP_READ) {
-                                key.cancel();
+                            if (buffer.position() == 0) {
+                                key.interestOpsAnd(~SelectionKey.OP_WRITE);
+                                if ((key.interestOps() & SelectionKey.OP_READ) == 0) {
+                                    channel.shutdownOutput();
+                                    key.cancel();
+                                }
                             }
                         }
                     }
                 }
+                assert selector.keys().isEmpty();
             }
         }
     }

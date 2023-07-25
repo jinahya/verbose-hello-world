@@ -42,18 +42,22 @@ public class Rfc862Tcp1Server {
             log.info("[S] bound to {}", server.getLocalSocketAddress());
             server.setSoTimeout((int) TimeUnit.SECONDS.toMillis(8L));
             try (var client = server.accept()) {
-                log.debug("[S] accepted from {}", client.getRemoteSocketAddress());
+                log.debug("[S] accepted from {}, through {}", client.getRemoteSocketAddress(),
+                          client.getLocalSocketAddress());
                 var bytes = 0L;
                 for (; true; bytes++) {
                     var b = client.getInputStream().read();
                     if (b == -1) {
+                        client.shutdownInput();
                         break;
                     }
                     client.getOutputStream().write(b);
                     client.getOutputStream().flush();
                 }
                 log.debug("[S] {} byte(s) read/written", bytes);
+                log.debug("[S] closing client...");
             }
+            log.debug("[S] closing server...");
         }
     }
 
