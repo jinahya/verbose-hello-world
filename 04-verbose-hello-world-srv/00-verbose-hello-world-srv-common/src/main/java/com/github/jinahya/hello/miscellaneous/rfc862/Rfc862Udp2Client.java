@@ -25,28 +25,64 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.util.concurrent.Executors;
+import java.nio.ByteBuffer;
+import java.nio.channels.DatagramChannel;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
 class Rfc862Udp2Client {
 
+    private static final InetAddress HOST = Rfc862Udp2Server.HOST;
+
+    private static final int PORT = Rfc862Udp2Server.PORT;
+
+    private static final int PACKET_LENGTH = Rfc862Udp2Server.MAX_PACKET_LENGTH + 2;
+
     public static void main(String... args) throws IOException, InterruptedException {
-        var host = InetAddress.getLoopbackAddress();
-        var endpoint = new InetSocketAddress(host, Rfc862Udp2Server.PORT);
-        var executor = Executors.newCachedThreadPool();
-        for (int i = 0; i < 4; i++) {
-            executor.submit(() -> {
-                Rfc862Udp1Client.sendAndReceive(endpoint);
-                return null;
-            });
-        }
-        executor.shutdown();
-        {
-            var timeout = 4L;
-            var unit = TimeUnit.SECONDS;
-            if (!executor.awaitTermination(timeout, unit)) {
-                log.error("executor not terminated in {} {}", timeout, unit);
+        try (var selector = Selector.open()) {
+            try (var client = DatagramChannel.open()) {
+                var bind = true;
+                if (bind) {
+                    client.bind(new InetSocketAddress(HOST, 0));
+                    log.debug("[C] bound to {}", client.getLocalAddress());
+                }
+                var connect = true;
+                if (connect) {
+                    client.connect(new InetSocketAddress(HOST, PORT));
+                    log.debug("[C] connected to {}, through {}", client.getRemoteAddress(),
+                              client.getLocalAddress());
+                }
+                client.configureBlocking(false);
+                client.register(selector, SelectionKey.OP_WRITE,
+                                ByteBuffer.allocate(PACKET_LENGTH));
+                while (!selector.keys().isEmpty()) {
+                    if (selector.select(TimeUnit.SECONDS.toMillis(8L)) == 0) {
+                        break;
+                    }
+                    for (var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
+                        var key = i.next();
+                        if (key.isWritable()) {
+                            var channel = (DatagramChannel) key.channel();
+                            var buffer = (ByteBuffer) key.attachment();
+                            var sent = channel.send(buffer, new InetSocketAddress(HOST, PORT));
+                            log.debug("[S] {} byte(s) sent to {}, through {}", sent,
+                                      channel.getRemoteAddress(), channel.getLocalAddress());
+                            buffer.clear();
+                            key.interestOps(SelectionKey.OP_READ);
+                        }
+                        if (key.isReadable()) {
+                            var channel = (DatagramChannel) key.channel();
+                            var buffer = (ByteBuffer) key.attachment();
+                            var address = channel.receive(buffer);
+                            log.debug("[C] {} byte(s) received from {}", buffer.position(),
+                                      address);
+                            key.cancel();
+                        }
+                    }
+                }
+                assert selector.keys().isEmpty();
             }
         }
     }

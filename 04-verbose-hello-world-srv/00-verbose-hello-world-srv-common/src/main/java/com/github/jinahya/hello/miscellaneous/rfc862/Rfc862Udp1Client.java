@@ -38,30 +38,21 @@ public class Rfc862Udp1Client {
 
     private static final int PORT = Rfc862Udp1Server.PORT;
 
-    private static final int MAX_PACKET_LENGTH = Rfc862Udp1Server.MAX_PACKET_LENGTH;
-
-    private static final boolean BIND = true;
-
-    private static final boolean CONNECT = true;
+    private static final int PACKET_LENGTH = Rfc862Udp1Server.MAX_PACKET_LENGTH + 2;
 
     public static void sendAndReceive(SocketAddress endpoint) throws IOException {
         try (var client = new DatagramSocket(null)) {
-            if (BIND) {
+            var bind = true;
+            if (bind) {
                 var host = ((InetSocketAddress) endpoint).getAddress();
                 client.bind(new InetSocketAddress(host, 0));
                 log.debug("[C] client bound to {}", client.getLocalSocketAddress());
             }
-            if (CONNECT) {
+            var connect = true;
+            if (connect) {
                 client.connect(endpoint);
-                log.debug("[C] client connected");
+                log.debug("[C] connected to {}", client.getRemoteSocketAddress());
                 var host = ((InetSocketAddress) endpoint).getAddress();
-                var other = new InetSocketAddress(host, 1234);
-                try {
-                    client.send(new DatagramPacket(new byte[0], 0, other));
-                    assert false;
-                } catch (IllegalArgumentException iae) {
-                    log.debug("[C] unable to send to other than connected: {}", iae.getMessage());
-                }
             }
             var length = ThreadLocalRandom.current()
                     .nextInt(1, Rfc862Udp1Server.MAX_PACKET_LENGTH + 1);
@@ -82,7 +73,7 @@ public class Rfc862Udp1Client {
                 assert packet.getLength() == rbuffer.length;
             }
             assert Arrays.equals(sbuffer, rbuffer);
-            if (CONNECT) {
+            if (connect) {
                 client.disconnect();
                 log.debug("[C] client disconnected");
             }
@@ -91,36 +82,29 @@ public class Rfc862Udp1Client {
 
     public static void main(String... args) throws IOException {
         try (var client = new DatagramSocket(null)) {
-            var bind = false;
+            var bind = true;
             if (bind) {
                 client.bind(new InetSocketAddress(HOST, 0));
-                log.debug("[C] client bound to {}", client.getLocalSocketAddress());
+                log.debug("[C] bound to {}", client.getLocalSocketAddress());
             }
             var endpoint = new InetSocketAddress(HOST, PORT);
             var connect = true;
             if (connect) {
                 client.connect(endpoint);
-                log.debug("[C] client connected to {}, through {}", client.getRemoteSocketAddress(),
+                log.debug("[C] connected to {}, through {}", client.getRemoteSocketAddress(),
                           client.getLocalSocketAddress());
             }
-            var buf = new byte[ThreadLocalRandom.current().nextInt(MAX_PACKET_LENGTH) + 1];
-            {
-                ThreadLocalRandom.current().nextBytes(buf);
-                var packet = new DatagramPacket(buf, buf.length, endpoint);
-                client.send(packet);
-                log.debug("[C] {} byte(s) sent to {}, through {}", packet.getLength(),
-                          packet.getSocketAddress(), client.getLocalSocketAddress());
-            }
-            {
-                Arrays.fill(buf, (byte) 0);
-                var packet = new DatagramPacket(buf, buf.length);
-                client.receive(packet);
-                log.debug("[C] {} byte(s) received from {}, through {}", packet.getLength(),
-                          packet.getSocketAddress(), client.getLocalSocketAddress());
-            }
+            var buffer = new byte[PACKET_LENGTH];
+            var packet = new DatagramPacket(buffer, buffer.length, endpoint);
+            client.send(packet);
+            log.debug("[C] {} byte(s) sent to {}, through {}", packet.getLength(),
+                      packet.getSocketAddress(), client.getLocalSocketAddress());
+            client.receive(packet);
+            log.debug("[C] {} byte(s) received from {}, through {}", packet.getLength(),
+                      packet.getSocketAddress(), client.getLocalSocketAddress());
             if (connect) {
                 client.disconnect();
-                log.debug("[C] client disconnected");
+                log.debug("[C] disconnected");
             }
         }
     }

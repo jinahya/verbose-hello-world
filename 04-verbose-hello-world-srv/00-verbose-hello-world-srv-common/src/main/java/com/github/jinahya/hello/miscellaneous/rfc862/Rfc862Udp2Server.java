@@ -23,44 +23,68 @@ package com.github.jinahya.hello.miscellaneous.rfc862;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.util.concurrent.Executors;
+import java.net.SocketAddress;
+import java.nio.ByteBuffer;
+import java.nio.channels.DatagramChannel;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
 import java.util.concurrent.TimeUnit;
 
-// https://datatracker.ietf.org/doc/html/rfc863
 @Slf4j
 class Rfc862Udp2Server {
 
-    static final int PORT = Rfc862Tcp2Server.PORT;
+    static final InetAddress HOST = Rfc862Udp1Server.HOST;
 
-    static final int MAX_PACKET_LENGTH = 8;
+    static final int PORT = Rfc862Udp1Server.PORT;
+
+    static final int MAX_PACKET_LENGTH = Rfc862Udp1Server.MAX_PACKET_LENGTH;
+
+    private static class Attachment {
+
+        ByteBuffer buffer;
+
+        SocketAddress address;
+    }
 
     public static void main(String... args) throws IOException, InterruptedException {
-        var host = InetAddress.getLoopbackAddress();
-        var endpoint = new InetSocketAddress(host, PORT);
-        try (var server = new DatagramSocket(null)) {
-            server.bind(endpoint);
-            log.info("[S] server bound to {}", server.getLocalSocketAddress());
-            var executor = Executors.newCachedThreadPool();
-            while (!server.isClosed()) {
-                var buffer = new byte[MAX_PACKET_LENGTH];
-                var packet = new DatagramPacket(buffer, buffer.length);
-                server.receive(packet);
-                executor.submit(() -> {
-                    Rfc862Udp1Server.send(packet, server);
-                    return null;
-                });
-            } // end-of-while
-            executor.shutdown();
-            {
-                var timeout = 4L;
-                var unit = TimeUnit.SECONDS;
-                if (!executor.awaitTermination(timeout, unit)) {
-                    log.error("executor not terminated in {} {}", timeout, unit);
+        try (var selector = Selector.open()) {
+            try (var server = DatagramChannel.open()) {
+                server.bind(new InetSocketAddress(HOST, PORT));
+                log.debug("[S] bound to {}", server.getLocalAddress());
+                server.configureBlocking(false);
+                var attachment = new Attachment();
+                attachment.buffer = ByteBuffer.allocate(MAX_PACKET_LENGTH);
+                server.register(selector, SelectionKey.OP_READ, attachment);
+                while (!selector.keys().isEmpty()) {
+                    if (selector.select(TimeUnit.SECONDS.toMillis(8L)) == 0) {
+                        break;
+                    }
+                    for (var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
+                        var key = i.next();
+                        if (key.isReadable()) {
+                            var channel = (DatagramChannel) key.channel();
+                            var buffer = ((Attachment) key.attachment()).buffer;
+                            var address = channel.receive(buffer);
+                            log.debug("[S] {} byte(s) received from {}", buffer.position(),
+                                      address);
+                            ((Attachment) key.attachment()).address = address;
+                            buffer.flip();
+                            key.interestOps(SelectionKey.OP_WRITE);
+                        }
+                        if (key.isWritable()) {
+                            var channel = (DatagramChannel) key.channel();
+                            var buffer = ((Attachment) key.attachment()).buffer;
+                            var address = ((Attachment) key.attachment()).address;
+                            channel.send(buffer, address);
+                            log.debug("[S] {} byte(s) sent back to {}", buffer.position(),
+                                      address);
+                            key.cancel();
+                        }
+                    }
                 }
+                assert selector.keys().isEmpty();
             }
         }
     }

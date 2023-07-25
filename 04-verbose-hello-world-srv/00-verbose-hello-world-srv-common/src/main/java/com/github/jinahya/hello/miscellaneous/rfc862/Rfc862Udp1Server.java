@@ -50,12 +50,13 @@ public class Rfc862Udp1Server {
             server.bind(new InetSocketAddress(HOST, PORT));
             log.info("[S] server bound to {}", server.getLocalSocketAddress());
             server.setSoTimeout((int) TimeUnit.SECONDS.toMillis(8L));
-            var buf = new byte[MAX_PACKET_LENGTH];
-            var p = new DatagramPacket(buf, buf.length);
-            server.receive(p);
-            log.debug("[S] {} byte(s) received from {}", p.getLength(), p.getSocketAddress());
-            server.send(p);
-            log.debug("[S] sent back to {}", p.getSocketAddress());
+            var buffer = new byte[MAX_PACKET_LENGTH];
+            var packet = new DatagramPacket(buffer, buffer.length);
+            server.receive(packet);
+            log.debug("[S] {} byte(s) received from {}", packet.getLength(),
+                      packet.getSocketAddress());
+            server.send(packet);
+            log.debug("[S] sent back to {}", packet.getSocketAddress());
         }
     }
 
