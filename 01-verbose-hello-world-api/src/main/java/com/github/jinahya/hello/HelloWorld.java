@@ -172,7 +172,7 @@ public interface HelloWorld {
      * @see #write(OutputStream)
      */
     default <T extends File> T append(T file) throws IOException {
-        if (file == null)  {
+        if (file == null) {
             throw new NullPointerException("file is null");
         }
         // TODO: Create a new FileOutputStream with file in appending mode.
@@ -566,7 +566,7 @@ public interface HelloWorld {
             throw new IllegalArgumentException("position(" + position + ") < 0L");
         }
         Objects.requireNonNull(handler, "handler is null");
-        final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
+        var buffer = put(ByteBuffer.allocate(BYTES)).flip();
         channel.write(
                 buffer,                                   // <src>
                 position,                                 // <position>

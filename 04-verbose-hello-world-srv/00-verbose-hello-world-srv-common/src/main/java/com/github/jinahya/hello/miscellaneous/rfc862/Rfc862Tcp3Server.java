@@ -26,60 +26,50 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
-import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
-import java.util.concurrent.Executors;
+import java.nio.channels.AsynchronousServerSocketChannel;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 // https://datatracker.ietf.org/doc/html/rfc862
+// https://stackoverflow.com/q/23301598/330457
 @Slf4j
 class Rfc862Tcp3Server {
 
-    static final int PORT = 53007; // 7 + 53000
+    static final InetAddress HOST = Rfc862Tcp2Server.HOST;
 
-    public static void readWriteAndClose(SocketChannel client) throws IOException {
-        try (client) {
-            long bytes = 0L;
-            var buffer = ByteBuffer.allocate(2);
-            while (true) {
-                var read = client.read(buffer);
-                if (read == -1) {
-                    break;
+    static final int PORT = Rfc862Tcp2Server.PORT;
+
+    static final int CAPACITY = Rfc862Tcp2Server.CAPACITY;
+
+    public static void main(String... args)
+            throws IOException, ExecutionException, InterruptedException, TimeoutException {
+        try (var server = AsynchronousServerSocketChannel.open()) {
+            server.bind(new InetSocketAddress(HOST, PORT));
+            log.debug("[S] bound to {}", server.getLocalAddress());
+            try (var client = server.accept().get(8L, TimeUnit.SECONDS)) {
+                log.debug("[S] accepted from {}, through {}", client.getRemoteAddress(),
+                          client.getLocalAddress());
+                var buffer = ByteBuffer.allocate(CAPACITY);
+                while (true) {
+                    var read = client.read(buffer).get(8L, TimeUnit.SECONDS);
+                    log.debug("[S] read: {}", read);
+                    if (read == -1) {
+                        client.shutdownInput();
+                        break;
+                    }
+                    buffer.flip(); // limit -> position; position -> zero
+                    var written = client.write(buffer).get();
+                    log.debug("[S] written: {}", written);
+                    buffer.compact();
                 }
-                bytes += read;
-                buffer.flip(); // limit -> position, position -> zero
-                client.write(buffer);
-                buffer.compact(); // move remaining bytes to the front
-            } // end-of-while
-            for (buffer.flip(); buffer.hasRemaining(); ) {
-                client.write(buffer);
+                for (buffer.flip(); buffer.hasRemaining(); ) {
+                    var written = client.write(buffer).get();
+                    log.debug("[S] written: {}", written);
+                }
+                log.debug("[S] closing client...");
             }
-            log.debug("[S] {} bytes read/written to {}", bytes, client.getRemoteAddress());
-        }
-    }
-
-    public static void main(String... args) throws IOException, InterruptedException {
-        var host = InetAddress.getLoopbackAddress();
-        var endpoint = new InetSocketAddress(host, PORT);
-        try (var server = ServerSocketChannel.open()) {
-            server.bind(endpoint);
-            log.info("[S] server bound to {}", server.getLocalAddress());
-            var executor = Executors.newCachedThreadPool();
-            while (server.isOpen()) {
-                var client = server.accept();
-                executor.submit(() -> {
-                    log.debug("[S] connected from {}, through {}", client.getRemoteAddress(),
-                              client.getLocalAddress());
-                    readWriteAndClose(client);
-                    return null;
-                });
-            }
-            executor.shutdown();
-            var timeout = 4L;
-            var unit = TimeUnit.SECONDS;
-            if (!executor.awaitTermination(timeout, unit)) {
-                log.error("executor not terminated in {} {}", timeout, unit);
-            }
+            log.debug("[S] closing server...");
         }
     }
 

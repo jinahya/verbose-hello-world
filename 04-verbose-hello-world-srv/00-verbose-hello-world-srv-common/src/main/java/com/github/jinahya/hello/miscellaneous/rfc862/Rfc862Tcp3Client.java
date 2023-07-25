@@ -22,65 +22,52 @@ package com.github.jinahya.hello.miscellaneous.rfc862;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.EOFException;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.SocketAddress;
 import java.nio.ByteBuffer;
-import java.nio.channels.SocketChannel;
+import java.nio.channels.AsynchronousSocketChannel;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class Rfc862Tcp3Client {
 
-    public static void connectWriteAndRead(SocketAddress endpoint) throws IOException {
-        try (var client = SocketChannel.open()) {
-            client.connect(endpoint);
-            log.debug("[C] connected to {}", client.getRemoteAddress());
-            var buffer = ByteBuffer.allocate(1);
-            var bytes = ThreadLocalRandom.current().nextInt(1, 9);
-            for (int i = 0; i < bytes; i++) {
-                var written = (byte) ThreadLocalRandom.current().nextInt(256);
-                buffer.put(written);
-                buffer.flip(); // limit -> position, position -> zero
-                while (buffer.hasRemaining()) {
-                    client.write(buffer);
-                }
-                buffer.clear(); // position -> zero, limit -> capacity
-                while (buffer.hasRemaining()) {
-                    if (client.read(buffer) == -1) {
-                        throw new EOFException("unexpected eof");
-                    }
-                }
-                buffer.flip(); // limit -> position, position -> zero
-                var read = buffer.get();
-                assert read == written;
-                buffer.clear(); // position -> zero, limit -> capacity
-            } // end-of-for
-            log.debug("[C] {} bytes written/read to/from {}", bytes, client.getRemoteAddress());
-        }
-    }
+    private static final InetAddress HOST = Rfc862Tcp3Server.HOST;
 
-    public static void main(String... args) throws IOException, InterruptedException,
-                                                   ExecutionException {
-        var host = InetAddress.getLoopbackAddress();
-        var endpoint = new InetSocketAddress(host, Rfc862Tcp3Server.PORT);
-        var executor = Executors.newCachedThreadPool();
-        for (int i = 0; i < 1; i++) {
-            executor.submit(() -> {
-                connectWriteAndRead(endpoint);
-                return null;
-            }).get();
-        }
-        executor.shutdown();
-        var timeout = 8L;
-        var unit = TimeUnit.SECONDS;
-        if (!executor.awaitTermination(timeout, unit)) {
-            log.error("executor not terminated in {} {}", timeout, unit);
+    private static final int PORT = Rfc862Tcp3Server.PORT;
+
+    private static final int CAPACITY = Rfc862Tcp3Server.CAPACITY + 2;
+
+    public static void main(String... args)
+            throws IOException, ExecutionException, InterruptedException {
+        try (var client = AsynchronousSocketChannel.open()) {
+            var bind = true;
+            if (bind) {
+                client.bind(new InetSocketAddress(HOST, 0));
+                log.debug("[C] bound to {}", client.getLocalAddress());
+            }
+            client.connect(new InetSocketAddress(HOST, PORT)).get();
+            log.debug("[C] connected to {}, through {}", client.getRemoteAddress(),
+                      client.getLocalAddress());
+            var buffer = ByteBuffer.allocate(CAPACITY);
+            while (buffer.hasRemaining()) {
+                var written = client.write(buffer).get();
+                log.debug("[C] written: {}", written);
+                var position = buffer.position();
+                buffer.flip();
+                var read = client.read(buffer).get();
+                log.debug("[C] read: {}", read);
+                buffer.limit(buffer.capacity()).position(position);
+            }
+            client.shutdownOutput();
+            for (buffer.flip(); ; ) {
+                var read = client.read(buffer).get();
+                log.debug("[C] read: {}", read);
+                if (read == -1) {
+                    break;
+                }
+            }
+            log.debug("[C] closing client...");
         }
     }
 

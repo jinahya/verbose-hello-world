@@ -35,11 +35,11 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 class Rfc862Tcp2Server {
 
-    static final InetAddress HOST = InetAddress.getLoopbackAddress();
+    static final InetAddress HOST = Rfc862Tcp1Server.HOST;
 
-    static final int PORT = 7 + 52000;
+    static final int PORT = Rfc862Tcp1Server.PORT;
 
-    static final int CAPACITY = 8;
+    static final int CAPACITY = 1024;
 
     public static void main(String... args) throws IOException, InterruptedException {
         try (var selector = Selector.open()) {
