@@ -85,15 +85,15 @@ class NetworkInterfacesPrinter {
                 }
                 continue;
             }
-            if (value instanceof byte[] bytes) {
+            if (value instanceof byte[] b) {
                 if (name.toLowerCase().endsWith("address")) {
                     try {
-                        value = InetAddress.getByAddress(bytes);
+                        value = InetAddress.getByAddress(b);
                     } catch (UnknownHostException uhe) {
-                        value = HexFormat.of().formatHex(bytes);
+                        value = HexFormat.of().formatHex(b);
                     }
                 } else {
-                    value = HexFormat.of().formatHex(bytes);
+                    value = HexFormat.of().formatHex(b);
                 }
             }
             if (false) {
