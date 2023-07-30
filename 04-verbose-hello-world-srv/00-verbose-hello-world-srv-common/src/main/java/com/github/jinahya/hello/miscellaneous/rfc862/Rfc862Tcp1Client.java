@@ -26,50 +26,25 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.SocketAddress;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-public class Rfc862Tcp1Client {
+class Rfc862Tcp1Client {
 
     private static final InetAddress HOST = Rfc862Tcp1Server.HOST;
 
     private static final int PORT = Rfc862Tcp1Server.PORT;
-
-    private static final boolean BIND = false;
-
-    public static void connectWriteAndRead(SocketAddress endpoint) throws IOException {
-        try (var client = new Socket()) {
-            if (BIND) {
-                client.bind(new InetSocketAddress(InetAddress.getLocalHost(), 0));
-                log.debug("[C] client bound to {}", client.getLocalSocketAddress());
-            }
-            client.connect(endpoint);
-            log.debug("[C] connected to {}, through {}", client.getRemoteSocketAddress(),
-                      client.getLocalSocketAddress());
-            var bytes = ThreadLocalRandom.current().nextInt(1, 9);
-            for (int j = 0; j < bytes; j++) {
-                var written = ThreadLocalRandom.current().nextInt(256);
-                client.getOutputStream().write(written);
-                client.getOutputStream().flush();
-                var read = client.getInputStream().read();
-                assert read != -1;
-                assert read == written;
-            }
-            log.debug("[C] {} byte(s) written/read", bytes);
-        }
-    }
 
     public static void main(String... args) throws IOException {
         try (var client = new Socket()) {
             var bind = true;
             if (bind) {
                 client.bind(new InetSocketAddress(HOST, 0));
-                log.debug("[C] bound to {}", client.getLocalSocketAddress());
+                log.debug("[C] client bound to {}", client.getLocalSocketAddress());
             }
             client.connect(new InetSocketAddress(HOST, PORT), (int) TimeUnit.SECONDS.toMillis(8L));
-            log.debug("[C] connected to {}, through {}", client.getRemoteSocketAddress(),
+            log.debug("[C] - connected to {}, through {}", client.getRemoteSocketAddress(),
                       client.getLocalSocketAddress());
             var bytes = ThreadLocalRandom.current().nextInt(1, 9);
             for (int i = 0; i < bytes; i++) {
@@ -80,8 +55,8 @@ public class Rfc862Tcp1Client {
                 assert read != -1;
                 assert read == b;
             }
-            log.debug("[C] {} byte(s) written/read", bytes);
-            log.debug("[S] closing...");
+            log.debug("[C] - {} byte(s) written/read", bytes);
+            log.debug("[S] closing client...");
         }
     }
 

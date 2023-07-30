@@ -20,20 +20,21 @@ package com.github.jinahya.hello.miscellaneous.rfc863;
  * #L%
  */
 
+import com.github.jinahya.hello.HelloWorldServerUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
+import java.security.MessageDigest;
+import java.util.HexFormat;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 @Slf4j
 class Rfc863Tcp4Server {
@@ -42,81 +43,98 @@ class Rfc863Tcp4Server {
 
     static final int PORT = Rfc863Tcp3Server.PORT;
 
-    private static CompletionHandler<Integer, Void> reader(
-            CountDownLatch latch, AsynchronousSocketChannel client, ByteBuffer dst) {
-        return new CompletionHandler<>() { // @formatter:off
-            @Override public void completed(Integer result, Void attachment) {
-                log.debug("[S] read: {}", result);
-                if (result == -1) {
-                    log.debug("[S] closing client...");
-                    try {
-                        client.close();
-                    } catch (IOException ioe) {
-                        throw new UncheckedIOException("failed to close " + client, ioe);
-                    }
-                    latch.countDown();
-                    return;
-                }
-                client.read(
-                        dst.clear(),      // <dst>
-                        8L,               // <timeout>
-                        TimeUnit.SECONDS, // <unit>
-                        attachment,       // <attachment>
-                        this              // <handler>
-                );
-            }
-            @Override public void failed(Throwable exc, Void attachment) {
-                log.error("failed to read", exc);
-                log.debug("[S] closing client...");
+    static final int CAPACITY = 2048;
+
+    static final String ALGORITHM = Rfc863Tcp3Server.ALGORITHM;
+
+    static class Attachment {
+
+        CountDownLatch latch;
+
+        AsynchronousSocketChannel client;
+
+        ByteBuffer buffer;
+
+        int bytes;
+
+        MessageDigest digest;
+    }
+
+    // @formatter:off
+    private static CompletionHandler<Integer, Attachment> R_HANDLER = new CompletionHandler<>() {
+        @Override public void completed(Integer result, Attachment attachment) {
+            log.trace("[S] - read: {}", result);
+            if (result == -1) {
                 try {
-                    client.close();
+                    attachment.client.close();
                 } catch (IOException ioe) {
-                    throw new UncheckedIOException("failed to close " + client, ioe);
+                    log.error("failed to close client", ioe);
                 }
-                latch.countDown();
-            } // @formatter:on
-        };
-    }
-
-    private static CompletionHandler<AsynchronousSocketChannel, Void> accepter(
-            CountDownLatch latch) {
-        return new CompletionHandler<>() { // @formatter:off
-            @Override public void completed(AsynchronousSocketChannel client, Void src) {
-                try {
-                    log.debug("[S] accepted from {}, through {}", client.getRemoteAddress(),
-                              client.getLocalAddress());
-                } catch (final IOException ioe) {
-                    latch.countDown();
-                    throw new UncheckedIOException("failed to get addresses from " + client, ioe);
-                }
-                var dst = ByteBuffer.allocate(6);
-                client.read(
-                        dst,                       // <dst>
-                        8L,                        // <timeout>
-                        TimeUnit.SECONDS,          // <unit>
-                        null,                      // <attachment>
-                        reader(latch, client, dst) // <handler>
-                );
+                log.debug("[S] byte(s) received (and discarded): {}", attachment.bytes);
+                log.debug("[S] digest: {}", HexFormat.of().formatHex(attachment.digest.digest()));
+                attachment.latch.countDown();
+                return;
             }
-            @Override public void failed(Throwable exc, Void src) {
-                log.error("[S] failed to accept", exc);
-                latch.countDown();
-            } // @formatter:off
-        };
-    }
+            attachment.bytes += result;
+            HelloWorldServerUtils.updatePreceding(attachment.digest, attachment.buffer, result);
+            if (!attachment.buffer.hasRemaining()) {
+                attachment.buffer.clear(); // position -> zero; limit -> capacity
+            }
+            attachment.client.read(
+                    attachment.buffer,    // <dst>
+                    8L, TimeUnit.SECONDS, // <timeout, unit>
+                    attachment,           // <attachment>
+                    this                  // <handler>
+            );
+        }
+        @Override public void failed(Throwable exc, Attachment attachment) {
+            log.error("failed to read", exc);
+        }
+    };
+    // @formatter:on
 
-    public static void main(String... args)
-            throws IOException, ExecutionException, InterruptedException, TimeoutException {
+    // @formatter:off
+    private static CompletionHandler<AsynchronousSocketChannel, Attachment> A_HANDLER = new CompletionHandler<>() {
+        @Override public void completed(AsynchronousSocketChannel result, Attachment attachment) {
+            try {
+                log.debug("[S] accepted from {}, through {}", result.getRemoteAddress(),
+                          result.getLocalAddress());
+            } catch (final IOException ioe) {
+                log.error("failed to get addresses from " + result, ioe);
+            }
+            attachment.client = result;
+            attachment.latch.countDown();
+            attachment.client.read(
+                    attachment.buffer,    // <dst>
+                    8L, TimeUnit.SECONDS, // <timeout, unit>
+                    attachment,           // <attachment>
+                    R_HANDLER             // <handler>
+            );
+        }
+        @Override public void failed(Throwable exc, Attachment attachment) {
+            log.error("[S] failed to accept", exc);
+        }
+    };
+    // @formatter:on
+
+    public static void main(String... args) throws Exception {
         try (var server = AsynchronousServerSocketChannel.open()) {
+            server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
+            server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
             server.bind(new InetSocketAddress(HOST, PORT));
             log.debug("[S] bound to {}", server.getLocalAddress());
-            var latch = new CountDownLatch(1);
+            var attachment = new Attachment();
+            attachment.client = null;
+            attachment.latch = new CountDownLatch(2);
+            attachment.buffer = ByteBuffer.allocate(CAPACITY);
+            attachment.bytes = 0;
+            attachment.digest = MessageDigest.getInstance(ALGORITHM);
             server.accept(
-                    null,           // <attachment>
-                    accepter(latch) // <handler>
+                    attachment, // <attachment>
+                    A_HANDLER   // <handler>
             );
-            var broken = latch.await(8, TimeUnit.SECONDS);
-            log.debug("[S] closing server...");
+            var broken = attachment.latch.await(8, TimeUnit.SECONDS);
+            assert broken;
         }
     }
 

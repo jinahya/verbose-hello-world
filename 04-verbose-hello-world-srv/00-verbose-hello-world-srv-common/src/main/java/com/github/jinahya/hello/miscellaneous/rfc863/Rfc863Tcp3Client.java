@@ -20,16 +20,18 @@ package com.github.jinahya.hello.miscellaneous.rfc863;
  * #L%
  */
 
+import com.github.jinahya.hello.HelloWorldServerUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
-import java.util.concurrent.ExecutionException;
+import java.security.MessageDigest;
+import java.util.HexFormat;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 @Slf4j
 class Rfc863Tcp3Client {
@@ -38,9 +40,13 @@ class Rfc863Tcp3Client {
 
     private static final int PORT = Rfc863Tcp3Server.PORT;
 
-    public static void main(String... args)
-            throws IOException, InterruptedException, ExecutionException, TimeoutException {
+    private static final int CAPACITY = Rfc863Tcp3Server.CAPACITY << 1;
+
+    private static final String ALGORITHM = Rfc863Tcp3Server.ALGORITHM;
+
+    public static void main(String... args) throws Exception {
         try (var client = AsynchronousSocketChannel.open()) {
+            client.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
             var bind = true;
             if (bind) {
                 client.bind(new InetSocketAddress(HOST, 0));
@@ -49,13 +55,23 @@ class Rfc863Tcp3Client {
             client.connect(new InetSocketAddress(HOST, PORT)).get(8L, TimeUnit.SECONDS);
             log.debug("[C] connected to {}, through {}", client.getRemoteAddress(),
                       client.getLocalAddress());
-            var buffer = ByteBuffer.allocate(8);
-            while (buffer.hasRemaining()) {
+            var digest = MessageDigest.getInstance(ALGORITHM);
+            var bytes = ThreadLocalRandom.current().nextInt(1048576);
+            log.debug("[C] byte(s) to send: {}", bytes);
+            var buffer = ByteBuffer.allocate(CAPACITY);
+            buffer.position(buffer.limit());
+            while (bytes > 0) {
+                if (!buffer.hasRemaining()) {
+                    buffer.clear().limit(Math.min(buffer.capacity(), bytes));
+                    ThreadLocalRandom.current().nextBytes(buffer.array());
+                }
                 var written = client.write(buffer).get(8L, TimeUnit.SECONDS);
-                log.debug("[C] written: {}", written);
+                log.trace("[C] - written: {}", written);
+                bytes -= written;
+                HelloWorldServerUtils.updatePreceding(digest, buffer, written);
             }
+            log.debug("[S] digest: {}", HexFormat.of().formatHex(digest.digest()));
             client.shutdownOutput();
-            log.debug("[C] closing...");
         }
     }
 

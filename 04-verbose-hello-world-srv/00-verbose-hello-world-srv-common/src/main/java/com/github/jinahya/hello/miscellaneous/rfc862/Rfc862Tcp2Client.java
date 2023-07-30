@@ -58,7 +58,7 @@ class Rfc862Tcp2Client {
                     client.register(selector, SelectionKey.OP_CONNECT,
                                     ByteBuffer.allocate(CAPACITY));
                 }
-                while (!selector.keys().isEmpty()) {
+                while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
                     if (selector.select(TimeUnit.SECONDS.toMillis(8L)) == 0) {
                         break;
                     }
@@ -104,7 +104,6 @@ class Rfc862Tcp2Client {
                         }
                     }
                 }
-                assert selector.keys().isEmpty();
             }
         }
     }

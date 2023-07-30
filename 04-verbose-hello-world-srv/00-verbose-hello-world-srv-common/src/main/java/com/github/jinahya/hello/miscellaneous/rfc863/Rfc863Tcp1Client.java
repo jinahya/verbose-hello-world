@@ -22,12 +22,13 @@ package com.github.jinahya.hello.miscellaneous.rfc863;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.SocketAddress;
+import java.security.MessageDigest;
+import java.util.HexFormat;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class Rfc863Tcp1Client {
@@ -36,48 +37,35 @@ public class Rfc863Tcp1Client {
 
     private static final int PORT = Rfc863Tcp1Server.PORT;
 
-    private static final boolean BIND = false;
+    static final int LENGTH = Rfc863Tcp1Server.LENGTH << 1;
 
-    public static void connectAndWrite(SocketAddress endpoint) throws IOException {
-        try (var client = new Socket()) {
-            if (BIND) {
-                client.bind(new InetSocketAddress(InetAddress.getLocalHost(), 0));
-                log.debug("[C] client bound to {}", client.getLocalSocketAddress());
-            }
-            client.connect(endpoint);
-            log.debug("[C] connected to {}, through {}", client.getRemoteSocketAddress(),
-                      client.getLocalSocketAddress());
-            var bytes = ThreadLocalRandom.current().nextInt(1, 9);
-            for (int i = 0; i < bytes; i++) {
-                var written = ThreadLocalRandom.current().nextInt();
-                client.getOutputStream().write(written);
-            }
-            client.getOutputStream().flush();
-            if (ThreadLocalRandom.current().nextBoolean()) {
-                client.shutdownOutput();
-            }
-            log.debug("[C] {} byte(s) written", bytes);
-        }
-    }
+    private static final String ALGORITHM = Rfc863Tcp1Server.ALGORITHM;
 
-    public static void main(String... args) throws IOException {
+    public static void main(String... args) throws Exception {
         try (var client = new Socket()) {
+            client.setReuseAddress(true);
             var bind = true;
             if (bind) {
                 client.bind(new InetSocketAddress(HOST, 0));
                 log.debug("[C] bound to {}", client.getLocalSocketAddress());
             }
-            var endpoint = new InetSocketAddress(HOST, PORT);
-            client.connect(endpoint);
+            client.connect(new InetSocketAddress(HOST, PORT), (int) TimeUnit.SECONDS.toMillis(8L));
             log.debug("[C] connected to {}, through {}", client.getRemoteSocketAddress(),
                       client.getLocalSocketAddress());
-            var count = ThreadLocalRandom.current().nextInt(1, 9);
-            for (int i = 0; i < count; i++) {
-                var b = ThreadLocalRandom.current().nextInt(256);
-                client.getOutputStream().write(b);
+            var bytes = ThreadLocalRandom.current().nextInt(1048576);
+            log.debug("[C] sending {} byte(s)...", bytes);
+            var digest = MessageDigest.getInstance(ALGORITHM);
+            for (var buffer = new byte[LENGTH]; bytes > 0; ) {
+                ThreadLocalRandom.current().nextBytes(buffer);
+                var length = Math.min(buffer.length, bytes);
+                client.getOutputStream().write(buffer, 0, length);
+                log.trace("[C] - written: {}", length);
+                bytes -= length;
+                digest.update(buffer, 0, length);
             }
             client.getOutputStream().flush();
-            log.debug("[C] {} byte(s) sent", count);
+            client.shutdownOutput();
+            log.debug("[S] digest: {}", HexFormat.of().formatHex(digest.digest()));
         }
     }
 

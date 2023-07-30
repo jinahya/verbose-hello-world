@@ -49,7 +49,7 @@ class Rfc863Udp2Server {
                 server.configureBlocking(false);
                 server.register(selector, SelectionKey.OP_READ,
                                 ByteBuffer.allocate(MAX_PACKET_LENGTH));
-                while (!selector.keys().isEmpty()) {
+                while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
                     if (selector.select(TimeUnit.SECONDS.toMillis(8L)) == 0) {
                         break;
                     }

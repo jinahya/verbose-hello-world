@@ -57,7 +57,7 @@ class Rfc862Udp2Server {
                 var attachment = new Attachment();
                 attachment.buffer = ByteBuffer.allocate(MAX_PACKET_LENGTH);
                 server.register(selector, SelectionKey.OP_READ, attachment);
-                while (!selector.keys().isEmpty()) {
+                while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
                     if (selector.select(TimeUnit.SECONDS.toMillis(8L)) == 0) {
                         break;
                     }
@@ -69,22 +69,20 @@ class Rfc862Udp2Server {
                             var address = channel.receive(buffer);
                             log.debug("[S] {} byte(s) received from {}", buffer.position(),
                                       address);
-                            ((Attachment) key.attachment()).address = address;
                             buffer.flip();
+                            ((Attachment) key.attachment()).address = address;
                             key.interestOps(SelectionKey.OP_WRITE);
                         }
                         if (key.isWritable()) {
                             var channel = (DatagramChannel) key.channel();
                             var buffer = ((Attachment) key.attachment()).buffer;
                             var address = ((Attachment) key.attachment()).address;
-                            channel.send(buffer, address);
-                            log.debug("[S] {} byte(s) sent back to {}", buffer.position(),
-                                      address);
+                            var sent = channel.send(buffer, address);
+                            log.debug("[S] {} byte(s) sent back to {}", sent, address);
                             key.cancel();
                         }
                     }
                 }
-                assert selector.keys().isEmpty();
             }
         }
     }

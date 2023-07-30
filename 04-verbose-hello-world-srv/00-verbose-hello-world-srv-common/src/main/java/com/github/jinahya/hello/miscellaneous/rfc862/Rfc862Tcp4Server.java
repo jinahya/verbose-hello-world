@@ -23,16 +23,16 @@ package com.github.jinahya.hello.miscellaneous.rfc862;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 // https://datatracker.ietf.org/doc/html/rfc862
 // https://stackoverflow.com/q/23301598/330457
@@ -43,83 +43,117 @@ class Rfc862Tcp4Server {
 
     static final int PORT = Rfc862Tcp3Server.PORT;
 
-    static final int CAPACITY = Rfc862Tcp3Server.CAPACITY;
+    static final int CAPACITY = 1024;
 
-    private static CompletionHandler<Integer, Void> writer(CountDownLatch latch,
-                                                           AsynchronousSocketChannel channel,
-                                                           ByteBuffer buffer,
-                                                           boolean recall) {
-        return new CompletionHandler<>() { // @formatter:off
-            @Override public void completed(Integer result, Void attachment) {
-                log.debug("[S] written: {}", result);
-                if (recall) {
-                    buffer.compact();
-                    channel.read(buffer, 8L, TimeUnit.SECONDS, null,
-                                 reader(latch, channel, buffer));
-                }
-            }
-            @Override public void failed(Throwable exc, Void attachment) {
-                log.error("failed to write", exc);
-                latch.countDown();
-            } // @formatter:on
-        };
+    private static final String ALGORITHM = "MD5";
+
+    static class Attachment {
+
+        volatile AsynchronousSocketChannel client;
+
+        volatile CountDownLatch latch;
+
+        volatile ByteBuffer buffer;
     }
 
-    private static CompletionHandler<Integer, Void> reader(CountDownLatch latch,
-                                                           AsynchronousSocketChannel channel,
-                                                           ByteBuffer buffer) {
-        return new CompletionHandler<>() { // @formatter:off
-            @Override public void completed(Integer result, Void attachment) {
-                log.debug("[S] read: {}", result);
-                if (result == -1) {
-                    for (buffer.flip(); buffer.hasRemaining(); ) {
-                        channel.write(buffer, 8L, TimeUnit.SECONDS, null,
-                                      writer(latch, channel, buffer, false));
+    private static final CompletionHandler<Integer, Attachment> W_HANDLER =
+            new CompletionHandler<>() { // @formatter:on
+                @Override
+                public void completed(Integer result, Attachment attachment) {
+                    log.debug("[S] - written: {}", result);
+                    if (attachment.latch.getCount() == 1) { // all read
+                        if (attachment.buffer.hasRemaining()) {
+                            attachment.client.write(
+                                    attachment.buffer,    // <dst>
+                                    8L, TimeUnit.SECONDS, // <timeout, unit>
+                                    attachment,           // <attachment>
+                                    this                  // <handler>
+                            );
+                            return;
+                        }
+                        attachment.latch.countDown();
+                        return;
                     }
-                    latch.countDown();
-                    return;
+                    attachment.buffer.compact();
+                    attachment.client.read(
+                            attachment.buffer,    // <dst>
+                            8L, TimeUnit.SECONDS, // <timeout, unit>
+                            attachment,           // <attachment>
+                            R_HANDLER             // <handler>
+                    );
                 }
-                buffer.flip(); // limit -> position; position -> zero
-                channel.write(buffer, 8L, TimeUnit.SECONDS, null,
-                              writer(latch, channel, buffer, true));
-            }
-            @Override public void failed(Throwable exc, Void attachment) {
-                log.error("failed to read", exc);
-                latch.countDown();
-            } // @formatter:on
-        };
-    }
 
-    private static CompletionHandler<AsynchronousSocketChannel, Void> acceptor(
-            CountDownLatch latch) {
-        return new CompletionHandler<>() { // @formatter:off
-            @Override public void completed(AsynchronousSocketChannel result, Void attachment) {
-                try {
-                    log.debug("[S] accepted from {}, through {}", result.getRemoteAddress(),
-                              result.getLocalAddress());
-                } catch (IOException ioe) {
-                    log.error("failed to get addresses from " + result, ioe);
-                    failed(ioe, attachment);
-                    return;
+                @Override
+                public void failed(Throwable exc, Attachment attachment) {
+                    log.error("failed to write", exc);
+                } // @formatter:on
+            };
+
+    private static final CompletionHandler<Integer, Attachment> R_HANDLER =
+            new CompletionHandler<>() { // @formatter:on
+                @Override
+                public void completed(Integer result, Attachment attachment) {
+                    log.debug("[S] -    read: {}", result);
+                    if (result == -1) {
+                        attachment.latch.countDown();
+                    }
+                    attachment.buffer.flip(); // limit -> position; position -> zero
+                    attachment.client.write(
+                            attachment.buffer,    // <src>
+                            8L, TimeUnit.SECONDS, // <timeout, unit>
+                            attachment,           // <attachment>
+                            W_HANDLER             // <handler>
+                    );
                 }
-                var buffer = ByteBuffer.allocate(CAPACITY);
-                result.read(buffer, 8L, TimeUnit.SECONDS, null, reader(latch, result, buffer));
-            }
-            @Override public void failed(Throwable exc, Void attachment) {
-                log.error("failed to accept", exc);
-                latch.countDown();
-            } // @formatter:on
-        };
-    }
 
-    public static void main(String... args)
-            throws IOException, ExecutionException, InterruptedException, TimeoutException {
+                @Override
+                public void failed(Throwable exc, Attachment attachment) {
+                    log.error("failed to read", exc);
+                } // @formatter:on
+            };
+
+    private static final CompletionHandler<AsynchronousSocketChannel, Attachment> A_HANDLER =
+            new CompletionHandler<>() { // @formatter:on
+                @Override
+                public void completed(AsynchronousSocketChannel result, Attachment attachment) {
+                    try {
+                        log.debug("[S] - accepted from {}, through {}",
+                                  result.getRemoteAddress(), result.getLocalAddress());
+                    } catch (IOException ioe) {
+                        throw new UncheckedIOException("failed to get addresses from client", ioe);
+                    }
+                    attachment.latch.countDown();
+                    attachment.client = result;
+                    attachment.client.read(
+                            attachment.buffer,    // <dst>
+                            8L, TimeUnit.SECONDS, // <timeout, unit>
+                            attachment,           // <attachment>
+                            R_HANDLER             // <handler>
+                    );
+                }
+
+                @Override
+                public void failed(Throwable exc, Attachment attachment) {
+                    log.error("failed to accept", exc);
+                } // @formatter:on
+            };
+
+    public static void main(String... args) throws Exception {
         try (var server = AsynchronousServerSocketChannel.open()) {
+            server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
+            server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
             server.bind(new InetSocketAddress(HOST, PORT));
-            log.debug("[S] bound to {}", server.getLocalAddress());
-            var latch = new CountDownLatch(1);
-            server.accept(null, acceptor(latch));
-            var broken = latch.await(8L, TimeUnit.SECONDS);
+            log.debug("[S] server bound to {}", server.getLocalAddress());
+            var attachment = new Attachment();
+            attachment.latch = new CountDownLatch(3);
+            attachment.buffer = ByteBuffer.allocate(CAPACITY);
+//            attachment.digest = MessageDigest.getInstance(ALGORITHM);
+            server.accept(
+                    attachment, // <attachment>
+                    A_HANDLER    // <handler>
+            );
+            var broken = attachment.latch.await(8L, TimeUnit.SECONDS);
+            assert broken;
             log.debug("[S] closing server...");
         }
     }

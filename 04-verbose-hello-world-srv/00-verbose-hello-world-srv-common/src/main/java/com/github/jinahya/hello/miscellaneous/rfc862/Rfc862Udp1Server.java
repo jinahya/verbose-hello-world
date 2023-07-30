@@ -39,16 +39,10 @@ public class Rfc862Udp1Server {
 
     static final int MAX_PACKET_LENGTH = 8;
 
-    public static void send(DatagramPacket packet, DatagramSocket server) throws IOException {
-        log.debug("[S] {} byte(s) received from {}", packet.getLength(), packet.getSocketAddress());
-        server.send(packet);
-        log.debug("[S] sent back to {}", packet.getSocketAddress());
-    }
-
     public static void main(String... args) throws IOException {
         try (var server = new DatagramSocket(null)) {
             server.bind(new InetSocketAddress(HOST, PORT));
-            log.info("[S] server bound to {}", server.getLocalSocketAddress());
+            log.debug("[S] server bound to {}", server.getLocalSocketAddress());
             server.setSoTimeout((int) TimeUnit.SECONDS.toMillis(8L));
             var buffer = new byte[MAX_PACKET_LENGTH];
             var packet = new DatagramPacket(buffer, buffer.length);
@@ -57,6 +51,7 @@ public class Rfc862Udp1Server {
                       packet.getSocketAddress());
             server.send(packet);
             log.debug("[S] sent back to {}", packet.getSocketAddress());
+            log.debug("[S] closing server...");
         }
     }
 

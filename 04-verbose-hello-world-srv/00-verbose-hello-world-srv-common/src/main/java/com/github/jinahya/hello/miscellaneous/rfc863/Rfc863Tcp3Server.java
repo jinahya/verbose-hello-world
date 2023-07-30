@@ -20,18 +20,18 @@ package com.github.jinahya.hello.miscellaneous.rfc863;
  * #L%
  */
 
+import com.github.jinahya.hello.HelloWorldServerUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousServerSocketChannel;
-import java.util.concurrent.ExecutionException;
+import java.security.MessageDigest;
+import java.util.HexFormat;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
-// https://datatracker.ietf.org/doc/html/rfc863
 @Slf4j
 class Rfc863Tcp3Server {
 
@@ -39,26 +39,37 @@ class Rfc863Tcp3Server {
 
     static final int PORT = Rfc863Tcp2Server.PORT;
 
-    public static void main(String... args)
-            throws IOException, InterruptedException, ExecutionException, TimeoutException {
+    static final int CAPACITY = 4096;
+
+    static final String ALGORITHM = "SHA-1";
+
+    public static void main(String... args) throws Exception {
         try (var server = AsynchronousServerSocketChannel.open()) {
+            server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
+            server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
             server.bind(new InetSocketAddress(HOST, PORT));
             log.debug("[S] bound to {}", server.getLocalAddress());
             try (var client = server.accept().get(8L, TimeUnit.SECONDS)) {
                 log.debug("[S] accepted from {}, through {}", client.getRemoteAddress(),
                           client.getLocalAddress());
-                var buffer = ByteBuffer.allocate(6);
+                var digest = MessageDigest.getInstance(ALGORITHM);
+                int bytes = 0;
+                var buffer = ByteBuffer.allocate(CAPACITY);
                 while (true) {
-                    var read = client.read(buffer.clear()).get();
-                    log.debug("[S] read: {}", read);
+                    if (!buffer.hasRemaining()) {
+                        buffer.clear();
+                    }
+                    var read = client.read(buffer).get();
+                    log.trace("[S] - read: {}", read);
                     if (read == -1) {
-                        client.shutdownInput();
                         break;
                     }
+                    bytes += read;
+                    HelloWorldServerUtils.updatePreceding(digest, buffer, read);
                 }
-                log.debug("[S] closing client...");
+                log.debug("[S] byte(s) received (and discarded): {}", bytes);
+                log.debug("[S] digest: {}", HexFormat.of().formatHex(digest.digest()));
             }
-            log.debug("[S] closing server...");
         }
     }
 

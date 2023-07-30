@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -39,17 +40,19 @@ class Rfc862Tcp2Server {
 
     static final int PORT = Rfc862Tcp1Server.PORT;
 
-    static final int CAPACITY = 1024;
+    static final int CAPACITY = 6;
 
     public static void main(String... args) throws IOException, InterruptedException {
         try (var selector = Selector.open()) {
             try (var server = ServerSocketChannel.open()) {
+                server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
+                server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
                 server.bind(new InetSocketAddress(HOST, PORT));
-                log.info("[S] server bound to {}", server.getLocalAddress());
+                log.debug("[S] server bound to {}", server.getLocalAddress());
                 server.socket().setSoTimeout((int) TimeUnit.SECONDS.toMillis(8L));
                 server.configureBlocking(false);
                 server.register(selector, SelectionKey.OP_ACCEPT);
-                while (!selector.keys().isEmpty()) {
+                while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
                     if (selector.select(TimeUnit.SECONDS.toMillis(8L)) == 0) {
                         break;
                     }
@@ -96,7 +99,6 @@ class Rfc862Tcp2Server {
                         }
                     }
                 }
-                assert selector.keys().isEmpty();
             }
         }
     }

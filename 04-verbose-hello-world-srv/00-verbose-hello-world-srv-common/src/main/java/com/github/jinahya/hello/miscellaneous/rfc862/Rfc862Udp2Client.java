@@ -46,18 +46,18 @@ class Rfc862Udp2Client {
                 var bind = true;
                 if (bind) {
                     client.bind(new InetSocketAddress(HOST, 0));
-                    log.debug("[C] bound to {}", client.getLocalAddress());
+                    log.debug("[C] client bound to {}", client.getLocalAddress());
                 }
                 var connect = true;
                 if (connect) {
                     client.connect(new InetSocketAddress(HOST, PORT));
-                    log.debug("[C] connected to {}, through {}", client.getRemoteAddress(),
+                    log.debug("[C] client connected to {}, through {}", client.getRemoteAddress(),
                               client.getLocalAddress());
                 }
                 client.configureBlocking(false);
                 client.register(selector, SelectionKey.OP_WRITE,
                                 ByteBuffer.allocate(PACKET_LENGTH));
-                while (!selector.keys().isEmpty()) {
+                while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
                     if (selector.select(TimeUnit.SECONDS.toMillis(8L)) == 0) {
                         break;
                     }
@@ -82,7 +82,6 @@ class Rfc862Udp2Client {
                         }
                     }
                 }
-                assert selector.keys().isEmpty();
             }
         }
     }

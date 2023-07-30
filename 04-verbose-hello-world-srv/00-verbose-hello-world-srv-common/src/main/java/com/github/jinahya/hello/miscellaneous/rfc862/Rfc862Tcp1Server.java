@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 
 // https://www.rfc-editor.org/rfc/rfc862
 @Slf4j
-public class Rfc862Tcp1Server {
+class Rfc862Tcp1Server {
 
     static final InetAddress HOST = InetAddress.getLoopbackAddress();
 
@@ -38,11 +38,12 @@ public class Rfc862Tcp1Server {
 
     public static void main(String... args) throws IOException {
         try (var server = new ServerSocket()) {
+            server.setReuseAddress(true);
             server.bind(new InetSocketAddress(HOST, PORT));
-            log.info("[S] bound to {}", server.getLocalSocketAddress());
+            log.debug("[S] server bound to {}", server.getLocalSocketAddress());
             server.setSoTimeout((int) TimeUnit.SECONDS.toMillis(8L));
             try (var client = server.accept()) {
-                log.debug("[S] accepted from {}, through {}", client.getRemoteSocketAddress(),
+                log.debug("[S] - accepted from {}, through {}", client.getRemoteSocketAddress(),
                           client.getLocalSocketAddress());
                 var bytes = 0L;
                 for (; true; bytes++) {
@@ -54,7 +55,7 @@ public class Rfc862Tcp1Server {
                     client.getOutputStream().write(b);
                     client.getOutputStream().flush();
                 }
-                log.debug("[S] {} byte(s) read/written", bytes);
+                log.debug("[S] - {} byte(s) read/written", bytes);
                 log.debug("[S] closing client...");
             }
             log.debug("[S] closing server...");

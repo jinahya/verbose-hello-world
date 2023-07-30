@@ -62,7 +62,7 @@ class Rfc863Udp2Client {
                         ByteBuffer.allocate(
                                 ThreadLocalRandom.current().nextInt(MAX_PACKET_LENGTH) + 1)
                 );
-                while (!selector.keys().isEmpty()) {
+                while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
                     if (selector.select(TimeUnit.SECONDS.toMillis(8L)) == 0) {
                         break;
                     }

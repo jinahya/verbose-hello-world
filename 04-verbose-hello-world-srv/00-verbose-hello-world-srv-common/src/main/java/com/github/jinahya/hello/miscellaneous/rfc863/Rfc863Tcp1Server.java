@@ -22,11 +22,11 @@ package com.github.jinahya.hello.miscellaneous.rfc863;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
-import java.net.Socket;
+import java.security.MessageDigest;
+import java.util.HexFormat;
 import java.util.concurrent.TimeUnit;
 
 // https://datatracker.ietf.org/doc/html/rfc863
@@ -37,36 +37,32 @@ public class Rfc863Tcp1Server {
 
     static final int PORT = 9 + 51000;
 
-    public static void readAndClose(Socket client) throws IOException {
-        try (client) {
-            log.debug("[S] accepted from {}", client.getRemoteSocketAddress());
-            var bytes = 0L;
-            for (; true; bytes++) {
-                var read = client.getInputStream().read();
-                if (read == -1) {
-                    break;
-                }
-            }
-            log.debug("[S] byte(s) read: {}", bytes);
-        }
-    }
+    static final int LENGTH = 1024;
 
-    public static void main(String... args) throws IOException {
+    static final String ALGORITHM = "SHA-1";
+
+    public static void main(String... args) throws Exception {
         try (var server = new ServerSocket()) {
+            server.setReuseAddress(true);
             server.bind(new InetSocketAddress(HOST, PORT));
-            log.info("[S] bound to {}", server.getLocalSocketAddress());
+            log.debug("[S] bound to {}", server.getLocalSocketAddress());
             server.setSoTimeout((int) TimeUnit.SECONDS.toMillis(8L));
             try (var client = server.accept()) {
-                log.debug("[S] accepted from {}, through {}", client.getRemoteSocketAddress(),
-                          client.getLocalSocketAddress());
-                var count = 0L;
-                for (; true; count++) {
-                    var b = client.getInputStream().read();
-                    if (b == -1) {
+                log.debug("[S] accepted from {}, through {}",
+                          client.getRemoteSocketAddress(), client.getLocalSocketAddress());
+                var digest = MessageDigest.getInstance(ALGORITHM);
+                var bytes = 0L;
+                for (var buffer = new byte[LENGTH]; true; ) {
+                    var read = client.getInputStream().read(buffer);
+                    log.trace("[C] - read: {}", read);
+                    if (read == -1) {
                         break;
                     }
+                    bytes += read;
+                    digest.update(buffer, 0, read);
                 }
-                log.debug("[S] byte(s) received (and discarded): {}", count);
+                log.debug("[S] {} byte(s) received (and discarded)", bytes);
+                log.debug("[S] digest: {}", HexFormat.of().formatHex(digest.digest()));
             }
         }
     }

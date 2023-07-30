@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.util.concurrent.ExecutionException;
@@ -45,6 +46,8 @@ class Rfc862Tcp3Server {
     public static void main(String... args)
             throws IOException, ExecutionException, InterruptedException, TimeoutException {
         try (var server = AsynchronousServerSocketChannel.open()) {
+            server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
+            server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
             server.bind(new InetSocketAddress(HOST, PORT));
             log.debug("[S] bound to {}", server.getLocalAddress());
             try (var client = server.accept().get(8L, TimeUnit.SECONDS)) {
