@@ -29,12 +29,12 @@ import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * A utility class for {@link MessageDigest}.
+ * A utility class for {@link java.security} package.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-public class HelloWorldMessageDigestUtils {
+public class HelloWorldSecurityUtils {
 
     /**
      * Updates specified message digest with specified number of bytes of specified byte buffer
@@ -42,8 +42,8 @@ public class HelloWorldMessageDigestUtils {
      *
      * @param digest the message digest to be updated.
      * @param buffer the byte buffer.
-     * @param bytes  the number of preceding bytes before {@code buffer}'s current
-     *               {@link ByteBuffer#position() position} to be updated to the {@code digest}.
+     * @param bytes  the number of bytes, precede {@code buffer}'s current
+     *               {@link ByteBuffer#position() position}, to be updated to the {@code digest}.
      */
     public static void updatePreceding(MessageDigest digest, ByteBuffer buffer, final int bytes) {
         Objects.requireNonNull(digest, "digest is null");
@@ -54,25 +54,25 @@ public class HelloWorldMessageDigestUtils {
         if (bytes > buffer.position()) {
             throw new BufferUnderflowException();
         }
-        if (ThreadLocalRandom.current().nextBoolean() && buffer.hasArray()) {
-            digest.update(
-                    buffer.array(),
-                    buffer.arrayOffset() + buffer.position() - bytes,
-                    bytes
-            );
-            return;
-        }
         if (ThreadLocalRandom.current().nextBoolean()) {
-            var position = buffer.position();
-            var limit = buffer.limit();
-            digest.update(buffer.position(position - bytes).limit(position));
-            buffer.limit(limit).position(position);
+            if (buffer.hasArray()) {
+                digest.update(
+                        buffer.array(),
+                        buffer.arrayOffset() + buffer.position() - bytes,
+                        bytes
+                );
+            } else {
+                var position = buffer.position();
+                var limit = buffer.limit();
+                digest.update(buffer.position(position - bytes).limit(position));
+                buffer.limit(limit).position(position);
+            }
             return;
         }
         digest.update(buffer.slice(buffer.position() - bytes, bytes));
     }
 
-    private HelloWorldMessageDigestUtils() {
+    private HelloWorldSecurityUtils() {
         throw new AssertionError("instantiation is not allowed");
     }
 }
