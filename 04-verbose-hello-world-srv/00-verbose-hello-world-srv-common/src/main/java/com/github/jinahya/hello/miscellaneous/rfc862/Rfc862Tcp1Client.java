@@ -23,40 +23,51 @@ package com.github.jinahya.hello.miscellaneous.rfc862;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.HexFormat;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
 class Rfc862Tcp1Client {
 
-    private static final InetAddress HOST = Rfc862Tcp1Server.HOST;
-
-    private static final int PORT = Rfc862Tcp1Server.PORT;
-
     public static void main(String... args) throws IOException {
         try (var client = new Socket()) {
-            var bind = true;
-            if (bind) {
-                client.bind(new InetSocketAddress(HOST, 0));
-                log.debug("[C] client bound to {}", client.getLocalSocketAddress());
+            if (ThreadLocalRandom.current().nextBoolean()) {
+                client.bind(new InetSocketAddress(_Rfc862Constants.ADDR, 0));
+                log.debug("[C] bound to {}", client.getLocalSocketAddress());
             }
-            client.connect(new InetSocketAddress(HOST, PORT), (int) TimeUnit.SECONDS.toMillis(8L));
-            log.debug("[C] - connected to {}, through {}", client.getRemoteSocketAddress(),
+            client.connect(_Rfc862Constants.ENDPOINT, (int) TimeUnit.SECONDS.toMillis(8L));
+            log.debug("[C] connected to {}, through {}", client.getRemoteSocketAddress(),
                       client.getLocalSocketAddress());
-            var bytes = ThreadLocalRandom.current().nextInt(1, 9);
-            for (int i = 0; i < bytes; i++) {
-                var b = ThreadLocalRandom.current().nextInt(256);
-                client.getOutputStream().write(b);
+            client.setSoTimeout((int) TimeUnit.SECONDS.toMillis(8L));
+            var digest = _Rfc862Utils.newMessageDigest();
+            var bytes = ThreadLocalRandom.current().nextInt(1048576);
+            log.debug("[C] sending {} byte(s)", bytes);
+            var buffer = _Rfc862Utils.newByteArray();
+            for (int read; bytes > 0; ) {
+                ThreadLocalRandom.current().nextBytes(buffer);
+                var length = Math.min(buffer.length, bytes);
+                client.getOutputStream().write(buffer, 0, length);
+                log.trace("[C] - written: {}", buffer.length);
+                bytes -= length;
                 client.getOutputStream().flush();
-                var read = client.getInputStream().read();
+                read = client.getInputStream().read(buffer);
+                log.trace("[C] - read: {}", read);
                 assert read != -1;
-                assert read == b;
+                digest.update(buffer, 0, read);
             }
-            log.debug("[C] - {} byte(s) written/read", bytes);
-            log.debug("[S] closing client...");
+            client.shutdownOutput();
+            for (int read; ; ) {
+                read = client.getInputStream().read(buffer);
+                log.trace("[C] - read: {}", read);
+                if (read == -1) {
+                    break;
+                }
+                digest.update(buffer, 0, read);
+            }
+            log.debug("[C] digest: {}", HexFormat.of().formatHex(digest.digest()));
         }
     }
 

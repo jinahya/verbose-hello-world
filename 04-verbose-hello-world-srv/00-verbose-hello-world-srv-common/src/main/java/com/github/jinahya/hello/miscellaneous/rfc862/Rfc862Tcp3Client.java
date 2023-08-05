@@ -23,7 +23,6 @@ package com.github.jinahya.hello.miscellaneous.rfc862;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
@@ -32,10 +31,6 @@ import java.util.concurrent.ExecutionException;
 @Slf4j
 public class Rfc862Tcp3Client {
 
-    private static final InetAddress HOST = Rfc862Tcp3Server.HOST;
-
-    private static final int PORT = Rfc862Tcp3Server.PORT;
-
     private static final int CAPACITY = Rfc862Tcp3Server.CAPACITY + 2;
 
     public static void main(String... args)
@@ -43,10 +38,10 @@ public class Rfc862Tcp3Client {
         try (var client = AsynchronousSocketChannel.open()) {
             var bind = true;
             if (bind) {
-                client.bind(new InetSocketAddress(HOST, 0));
+                client.bind(new InetSocketAddress(_Rfc862Constants.ADDR, 0));
                 log.debug("[C] bound to {}", client.getLocalAddress());
             }
-            client.connect(new InetSocketAddress(HOST, PORT)).get();
+            client.connect(_Rfc862Constants.ENDPOINT).get();
             log.debug("[C] connected to {}, through {}", client.getRemoteAddress(),
                       client.getLocalAddress());
             var buffer = ByteBuffer.allocate(CAPACITY);

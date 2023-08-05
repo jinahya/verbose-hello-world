@@ -22,10 +22,7 @@ package com.github.jinahya.hello.miscellaneous.rfc863;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.ServerSocket;
-import java.security.MessageDigest;
 import java.util.HexFormat;
 import java.util.concurrent.TimeUnit;
 
@@ -33,26 +30,18 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class Rfc863Tcp1Server {
 
-    static final InetAddress HOST = InetAddress.getLoopbackAddress();
-
-    static final int PORT = 9 + 51000;
-
-    static final int LENGTH = 1024;
-
-    static final String ALGORITHM = "SHA-1";
-
     public static void main(String... args) throws Exception {
         try (var server = new ServerSocket()) {
             server.setReuseAddress(true);
-            server.bind(new InetSocketAddress(HOST, PORT));
+            server.bind(_Rfc863Constants.ENDPOINT);
             log.debug("[S] bound to {}", server.getLocalSocketAddress());
             server.setSoTimeout((int) TimeUnit.SECONDS.toMillis(8L));
             try (var client = server.accept()) {
                 log.debug("[S] accepted from {}, through {}",
                           client.getRemoteSocketAddress(), client.getLocalSocketAddress());
-                var digest = MessageDigest.getInstance(ALGORITHM);
+                var digest = _Rfc863Utils.newMessageDigest();
                 var bytes = 0L;
-                for (var buffer = new byte[LENGTH]; true; ) {
+                for (var buffer = _Rfc863Utils.newByteArray(); true; ) {
                     var read = client.getInputStream().read(buffer);
                     log.trace("[C] - read: {}", read);
                     if (read == -1) {
@@ -61,7 +50,7 @@ public class Rfc863Tcp1Server {
                     bytes += read;
                     digest.update(buffer, 0, read);
                 }
-                log.debug("[S] {} byte(s) received (and discarded)", bytes);
+                log.debug("[S] byte(s) received (and discarded): {}", bytes);
                 log.debug("[S] digest: {}", HexFormat.of().formatHex(digest.digest()));
             }
         }

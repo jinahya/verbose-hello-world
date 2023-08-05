@@ -20,46 +20,34 @@ package com.github.jinahya.hello.miscellaneous.rfc863;
  * #L%
  */
 
-import com.github.jinahya.hello.HelloWorldServerUtils;
+import com.github.jinahya.hello.util.HelloWorldSecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.StandardSocketOptions;
-import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
-import java.security.MessageDigest;
 import java.util.HexFormat;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
+import static com.github.jinahya.hello.miscellaneous.rfc863._Rfc863Constants.ADDR;
+
 @Slf4j
 class Rfc863Tcp3Client {
 
-    private static final InetAddress HOST = Rfc863Tcp3Server.HOST;
-
-    private static final int PORT = Rfc863Tcp3Server.PORT;
-
-    private static final int CAPACITY = Rfc863Tcp3Server.CAPACITY << 1;
-
-    private static final String ALGORITHM = Rfc863Tcp3Server.ALGORITHM;
-
     public static void main(String... args) throws Exception {
         try (var client = AsynchronousSocketChannel.open()) {
-            client.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
-            var bind = true;
-            if (bind) {
-                client.bind(new InetSocketAddress(HOST, 0));
+            if (ThreadLocalRandom.current().nextBoolean()) {
+                client.bind(new InetSocketAddress(ADDR, 0));
                 log.debug("[C] bound to {}", client.getLocalAddress());
             }
-            client.connect(new InetSocketAddress(HOST, PORT)).get(8L, TimeUnit.SECONDS);
+            client.connect(_Rfc863Constants.ENDPOINT).get(8L, TimeUnit.SECONDS);
             log.debug("[C] connected to {}, through {}", client.getRemoteAddress(),
                       client.getLocalAddress());
-            var digest = MessageDigest.getInstance(ALGORITHM);
             var bytes = ThreadLocalRandom.current().nextInt(1048576);
             log.debug("[C] byte(s) to send: {}", bytes);
-            var buffer = ByteBuffer.allocate(CAPACITY);
+            var buffer = _Rfc863Utils.newByteBuffer();
             buffer.position(buffer.limit());
+            var digest = _Rfc863Utils.newMessageDigest();
             while (bytes > 0) {
                 if (!buffer.hasRemaining()) {
                     buffer.clear().limit(Math.min(buffer.capacity(), bytes));
@@ -68,7 +56,7 @@ class Rfc863Tcp3Client {
                 var written = client.write(buffer).get(8L, TimeUnit.SECONDS);
                 log.trace("[C] - written: {}", written);
                 bytes -= written;
-                HelloWorldServerUtils.updatePreceding(digest, buffer, written);
+                HelloWorldSecurityUtils.updatePreceding(digest, buffer, written);
             }
             log.debug("[S] digest: {}", HexFormat.of().formatHex(digest.digest()));
             client.shutdownOutput();

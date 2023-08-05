@@ -31,20 +31,16 @@ import java.util.concurrent.Executors;
 import java.util.stream.Stream;
 
 @Slf4j
-class Rfc863TcpTest {
+class Rfc863UdpTest {
 
     private static final List<Class<?>> SERVER_CLASSES = List.of(
-            Rfc863Tcp1Server.class,
-            Rfc863Tcp2Server.class,
-            Rfc863Tcp3Server.class,
-            Rfc863Tcp4Server.class
+            Rfc863Udp1Server.class,
+            Rfc863Udp2Server.class
     );
 
     private static final List<Class<?>> CLIENT_CLASSES = List.of(
-            Rfc863Tcp1Client.class,
-            Rfc863Tcp2Client.class,
-            Rfc863Tcp3Client.class,
-            Rfc863Tcp4Client.class
+            Rfc863Udp1Client.class,
+            Rfc863Udp2Client.class
     );
 
     private static Stream<Arguments> getClassesArgumentsList() {

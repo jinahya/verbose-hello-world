@@ -20,16 +20,13 @@ package com.github.jinahya.hello.miscellaneous.rfc863;
  * #L%
  */
 
-import com.github.jinahya.hello.HelloWorldServerUtils;
+import com.github.jinahya.hello.util.HelloWorldSecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
-import java.security.MessageDigest;
 import java.util.HexFormat;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadLocalRandom;
@@ -37,14 +34,6 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 class Rfc863Tcp4Client {
-
-    private static final InetAddress HOST = Rfc863Tcp4Server.HOST;
-
-    private static final int PORT = Rfc863Tcp4Server.PORT;
-
-    private static final int CAPACITY = Rfc863Tcp4Server.CAPACITY << 1;
-
-    static final String ALGORITHM = Rfc863Tcp4Server.ALGORITHM;
 
     private static final class Attachment extends Rfc863Tcp4Server.Attachment {
 
@@ -54,7 +43,7 @@ class Rfc863Tcp4Client {
     private static CompletionHandler<Integer, Attachment> W_HANDLER = new CompletionHandler<>() {
         @Override public void completed(Integer result, Attachment attachment) {
             log.trace("[C] - written: {}", result);
-            HelloWorldServerUtils.updatePreceding(attachment.digest, attachment.buffer, result);
+            HelloWorldSecurityUtils.updatePreceding(attachment.digest, attachment.buffer, result);
             if ((attachment.bytes -= result) == 0) {
                 log.debug("[C] digest: {}", HexFormat.of().formatHex(attachment.digest.digest()));
                 try {
@@ -109,24 +98,21 @@ class Rfc863Tcp4Client {
 
     public static void main(String... args) throws Exception {
         try (var client = AsynchronousSocketChannel.open()) {
-            var bind = true;
-            if (bind) {
-                client.bind(new InetSocketAddress(HOST, 0));
+            if (ThreadLocalRandom.current().nextBoolean()) {
+                client.bind(new InetSocketAddress(_Rfc863Constants.ADDR, 0));
                 log.debug("[C] bound to {}", client.getLocalAddress());
             }
             var attachment = new Attachment();
             attachment.client = client;
             attachment.latch = new CountDownLatch(2);
-            attachment.buffer = ByteBuffer.allocate(CAPACITY);
             ThreadLocalRandom.current().nextBytes(attachment.buffer.array());
             attachment.bytes = ThreadLocalRandom.current().nextInt(1048576);
             log.debug("[C] byte(s) to send: {}", attachment.bytes);
             attachment.buffer.limit(Math.min(attachment.buffer.limit(), attachment.bytes));
-            attachment.digest = MessageDigest.getInstance(ALGORITHM);
             attachment.client.connect(
-                    new InetSocketAddress(HOST, PORT), // <remote>
-                    attachment,                        // <attachment>
-                    C_HANDLER                          // <handler>
+                    _Rfc863Constants.ENDPOINT, // <remote>
+                    attachment,                // <attachment>
+                    C_HANDLER                  // <handler>
             );
             var broken = attachment.latch.await(8L, TimeUnit.SECONDS);
             assert broken;

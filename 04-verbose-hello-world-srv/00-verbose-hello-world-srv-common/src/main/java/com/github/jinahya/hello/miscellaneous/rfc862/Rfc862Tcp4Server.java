@@ -24,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
@@ -38,10 +37,6 @@ import java.util.concurrent.TimeUnit;
 // https://stackoverflow.com/q/23301598/330457
 @Slf4j
 class Rfc862Tcp4Server {
-
-    static final InetAddress HOST = Rfc862Tcp3Server.HOST;
-
-    static final int PORT = Rfc862Tcp3Server.PORT;
 
     static final int CAPACITY = 1024;
 
@@ -142,7 +137,7 @@ class Rfc862Tcp4Server {
         try (var server = AsynchronousServerSocketChannel.open()) {
             server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
             server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
-            server.bind(new InetSocketAddress(HOST, PORT));
+            server.bind(_Rfc862Constants.ENDPOINT);
             log.debug("[S] server bound to {}", server.getLocalAddress());
             var attachment = new Attachment();
             attachment.latch = new CountDownLatch(3);

@@ -20,41 +20,29 @@ package com.github.jinahya.hello.miscellaneous.rfc863;
  * #L%
  */
 
-import com.github.jinahya.hello.HelloWorldServerUtils;
+import com.github.jinahya.hello.util.HelloWorldSecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.StandardSocketOptions;
-import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousServerSocketChannel;
-import java.security.MessageDigest;
 import java.util.HexFormat;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
 class Rfc863Tcp3Server {
 
-    static final InetAddress HOST = Rfc863Tcp2Server.HOST;
-
-    static final int PORT = Rfc863Tcp2Server.PORT;
-
-    static final int CAPACITY = 4096;
-
-    static final String ALGORITHM = "SHA-1";
-
     public static void main(String... args) throws Exception {
         try (var server = AsynchronousServerSocketChannel.open()) {
             server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
             server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
-            server.bind(new InetSocketAddress(HOST, PORT));
+            server.bind(_Rfc863Constants.ENDPOINT);
             log.debug("[S] bound to {}", server.getLocalAddress());
             try (var client = server.accept().get(8L, TimeUnit.SECONDS)) {
                 log.debug("[S] accepted from {}, through {}", client.getRemoteAddress(),
                           client.getLocalAddress());
-                var digest = MessageDigest.getInstance(ALGORITHM);
-                int bytes = 0;
-                var buffer = ByteBuffer.allocate(CAPACITY);
+                var buffer = _Rfc863Utils.newByteBuffer();
+                var bytes = 0;
+                var digest = _Rfc863Utils.newMessageDigest();
                 while (true) {
                     if (!buffer.hasRemaining()) {
                         buffer.clear();
@@ -65,7 +53,7 @@ class Rfc863Tcp3Server {
                         break;
                     }
                     bytes += read;
-                    HelloWorldServerUtils.updatePreceding(digest, buffer, read);
+                    HelloWorldSecurityUtils.updatePreceding(digest, buffer, read);
                 }
                 log.debug("[S] byte(s) received (and discarded): {}", bytes);
                 log.debug("[S] digest: {}", HexFormat.of().formatHex(digest.digest()));

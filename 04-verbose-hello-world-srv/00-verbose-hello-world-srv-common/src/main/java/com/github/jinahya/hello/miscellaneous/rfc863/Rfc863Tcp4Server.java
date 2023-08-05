@@ -20,18 +20,14 @@ package com.github.jinahya.hello.miscellaneous.rfc863;
  * #L%
  */
 
-import com.github.jinahya.hello.HelloWorldServerUtils;
+import com.github.jinahya.hello.util.HelloWorldSecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.StandardSocketOptions;
-import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
-import java.security.MessageDigest;
 import java.util.HexFormat;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -39,25 +35,11 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 class Rfc863Tcp4Server {
 
-    static final InetAddress HOST = Rfc863Tcp3Server.HOST;
-
-    static final int PORT = Rfc863Tcp3Server.PORT;
-
-    static final int CAPACITY = 2048;
-
-    static final String ALGORITHM = Rfc863Tcp3Server.ALGORITHM;
-
-    static class Attachment {
+    static class Attachment extends Rfc863Tcp2Server.Attachment {
 
         CountDownLatch latch;
 
         AsynchronousSocketChannel client;
-
-        ByteBuffer buffer;
-
-        int bytes;
-
-        MessageDigest digest;
     }
 
     // @formatter:off
@@ -76,7 +58,7 @@ class Rfc863Tcp4Server {
                 return;
             }
             attachment.bytes += result;
-            HelloWorldServerUtils.updatePreceding(attachment.digest, attachment.buffer, result);
+            HelloWorldSecurityUtils.updatePreceding(attachment.digest, attachment.buffer, result);
             if (!attachment.buffer.hasRemaining()) {
                 attachment.buffer.clear(); // position -> zero; limit -> capacity
             }
@@ -94,7 +76,8 @@ class Rfc863Tcp4Server {
     // @formatter:on
 
     // @formatter:off
-    private static CompletionHandler<AsynchronousSocketChannel, Attachment> A_HANDLER = new CompletionHandler<>() {
+    private static
+    CompletionHandler<AsynchronousSocketChannel, Attachment> A_HANDLER = new CompletionHandler<>() {
         @Override public void completed(AsynchronousSocketChannel result, Attachment attachment) {
             try {
                 log.debug("[S] accepted from {}, through {}", result.getRemoteAddress(),
@@ -121,14 +104,12 @@ class Rfc863Tcp4Server {
         try (var server = AsynchronousServerSocketChannel.open()) {
             server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
             server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
-            server.bind(new InetSocketAddress(HOST, PORT));
+            server.bind(_Rfc863Constants.ENDPOINT);
             log.debug("[S] bound to {}", server.getLocalAddress());
             var attachment = new Attachment();
             attachment.client = null;
             attachment.latch = new CountDownLatch(2);
-            attachment.buffer = ByteBuffer.allocate(CAPACITY);
             attachment.bytes = 0;
-            attachment.digest = MessageDigest.getInstance(ALGORITHM);
             server.accept(
                     attachment, // <attachment>
                     A_HANDLER   // <handler>

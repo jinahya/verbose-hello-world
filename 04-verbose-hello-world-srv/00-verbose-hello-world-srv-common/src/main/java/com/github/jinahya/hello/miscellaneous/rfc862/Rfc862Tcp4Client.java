@@ -24,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
@@ -36,10 +35,6 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 class Rfc862Tcp4Client {
-
-    private static final InetAddress HOST = Rfc862Tcp4Server.HOST;
-
-    private static final int PORT = Rfc862Tcp4Server.PORT;
 
     private static final int CAPACITY = Rfc862Tcp4Server.CAPACITY << 1;
 
@@ -151,16 +146,16 @@ class Rfc862Tcp4Client {
         try (var client = AsynchronousSocketChannel.open()) {
             var bind = true;
             if (bind) {
-                client.bind(new InetSocketAddress(HOST, 0));
+                client.bind(new InetSocketAddress(_Rfc862Constants.ADDR, 0));
                 log.debug("[C] client bound to {}", client.getLocalAddress());
             }
             var attachment = new Attachment();
             attachment.client = client;
             attachment.latch = new CountDownLatch(3);
             client.connect(
-                    new InetSocketAddress(HOST, PORT), // <remote>
-                    attachment,                        // <attachment>
-                    C_HANDLER                          // <handler>
+                    _Rfc862Constants.ENDPOINT, // <remote>
+                    attachment,                // <attachment>
+                    C_HANDLER                  // <handler>
             );
             var broken = attachment.latch.await(8L, TimeUnit.SECONDS);
             assert broken;

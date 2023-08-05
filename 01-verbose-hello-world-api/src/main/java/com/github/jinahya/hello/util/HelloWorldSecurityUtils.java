@@ -51,6 +51,9 @@ public class HelloWorldSecurityUtils {
         if (bytes < 0) {
             throw new IllegalArgumentException("bytes(" + bytes + ") is negative");
         }
+        if (bytes == 0) {
+            return;
+        }
         if (bytes > buffer.position()) {
             throw new BufferUnderflowException();
         }

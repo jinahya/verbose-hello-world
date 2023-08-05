@@ -25,15 +25,10 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
 @Slf4j
 public class Rfc862Udp1Client {
-
-    private static final InetAddress HOST = Rfc862Udp1Server.HOST;
-
-    private static final int PORT = Rfc862Udp1Server.PORT;
 
     private static final int PACKET_LENGTH = Rfc862Udp1Server.MAX_PACKET_LENGTH + 2;
 
@@ -41,18 +36,17 @@ public class Rfc862Udp1Client {
         try (var client = new DatagramSocket(null)) {
             var bind = true;
             if (bind) {
-                client.bind(new InetSocketAddress(HOST, 0));
+                client.bind(new InetSocketAddress(_Rfc862Constants.ADDR, 0));
                 log.debug("[C] client bound to {}", client.getLocalSocketAddress());
             }
-            var endpoint = new InetSocketAddress(HOST, PORT);
             var connect = true;
             if (connect) {
-                client.connect(endpoint);
+                client.connect(_Rfc862Constants.ENDPOINT);
                 log.debug("[C] client connected to {}, through {}", client.getRemoteSocketAddress(),
                           client.getLocalSocketAddress());
             }
             var buffer = new byte[PACKET_LENGTH];
-            var packet = new DatagramPacket(buffer, buffer.length, endpoint);
+            var packet = new DatagramPacket(buffer, buffer.length, _Rfc862Constants.ENDPOINT);
             client.send(packet);
             log.debug("[C] {} byte(s) sent to {}, through {}", packet.getLength(),
                       packet.getSocketAddress(), client.getLocalSocketAddress());

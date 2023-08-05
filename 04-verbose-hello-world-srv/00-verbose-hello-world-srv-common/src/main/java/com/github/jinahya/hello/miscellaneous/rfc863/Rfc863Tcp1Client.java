@@ -22,40 +22,30 @@ package com.github.jinahya.hello.miscellaneous.rfc863;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.security.MessageDigest;
 import java.util.HexFormat;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
+import static com.github.jinahya.hello.miscellaneous.rfc863._Rfc863Constants.ADDR;
+
 @Slf4j
 public class Rfc863Tcp1Client {
 
-    private static final InetAddress HOST = Rfc863Tcp1Server.HOST;
-
-    private static final int PORT = Rfc863Tcp1Server.PORT;
-
-    static final int LENGTH = Rfc863Tcp1Server.LENGTH << 1;
-
-    private static final String ALGORITHM = Rfc863Tcp1Server.ALGORITHM;
-
     public static void main(String... args) throws Exception {
         try (var client = new Socket()) {
-            client.setReuseAddress(true);
-            var bind = true;
-            if (bind) {
-                client.bind(new InetSocketAddress(HOST, 0));
+            if (ThreadLocalRandom.current().nextBoolean()) {
+                client.bind(new InetSocketAddress(ADDR, 0));
                 log.debug("[C] bound to {}", client.getLocalSocketAddress());
             }
-            client.connect(new InetSocketAddress(HOST, PORT), (int) TimeUnit.SECONDS.toMillis(8L));
+            client.connect(_Rfc863Constants.ENDPOINT, (int) TimeUnit.SECONDS.toMillis(8L));
             log.debug("[C] connected to {}, through {}", client.getRemoteSocketAddress(),
                       client.getLocalSocketAddress());
             var bytes = ThreadLocalRandom.current().nextInt(1048576);
             log.debug("[C] sending {} byte(s)...", bytes);
-            var digest = MessageDigest.getInstance(ALGORITHM);
-            for (var buffer = new byte[LENGTH]; bytes > 0; ) {
+            var digest = _Rfc863Utils.newMessageDigest();
+            for (var buffer = _Rfc863Utils.newByteArray(); bytes > 0; ) {
                 ThreadLocalRandom.current().nextBytes(buffer);
                 var length = Math.min(buffer.length, bytes);
                 client.getOutputStream().write(buffer, 0, length);

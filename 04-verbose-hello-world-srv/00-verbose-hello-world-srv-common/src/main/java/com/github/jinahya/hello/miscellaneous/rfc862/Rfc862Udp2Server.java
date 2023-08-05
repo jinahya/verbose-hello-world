@@ -23,7 +23,6 @@ package com.github.jinahya.hello.miscellaneous.rfc862;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
@@ -34,10 +33,6 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 class Rfc862Udp2Server {
-
-    static final InetAddress HOST = Rfc862Udp1Server.HOST;
-
-    static final int PORT = Rfc862Udp1Server.PORT;
 
     static final int MAX_PACKET_LENGTH = Rfc862Udp1Server.MAX_PACKET_LENGTH;
 
@@ -51,7 +46,7 @@ class Rfc862Udp2Server {
     public static void main(String... args) throws IOException, InterruptedException {
         try (var selector = Selector.open()) {
             try (var server = DatagramChannel.open()) {
-                server.bind(new InetSocketAddress(HOST, PORT));
+                server.bind(_Rfc862Constants.ENDPOINT);
                 log.debug("[S] bound to {}", server.getLocalAddress());
                 server.configureBlocking(false);
                 var attachment = new Attachment();

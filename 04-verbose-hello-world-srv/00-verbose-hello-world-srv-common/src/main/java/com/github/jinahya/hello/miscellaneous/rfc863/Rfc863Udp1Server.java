@@ -25,36 +25,27 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
+import java.util.HexFormat;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class Rfc863Udp1Server {
 
-    static final InetAddress HOST = InetAddress.getLoopbackAddress();
-
-    static final int PORT = Rfc863Tcp1Server.PORT;
-
-    static final int MAX_PACKET_LENGTH = 8;
-
-    public static void log(DatagramPacket packet) {
-        log.debug("[S] {} byte(s) received from {}", packet.getLength(),
-                  packet.getSocketAddress());
-    }
+    static final int LENGTH = 1024;
 
     public static void main(String... args) throws IOException {
         try (var server = new DatagramSocket(null)) {
-            {
-                server.bind(new InetSocketAddress(HOST, PORT));
-                log.info("[S] bound to {}", server.getLocalSocketAddress());
-            }
+            server.bind(_Rfc863Constants.ENDPOINT);
+            log.debug("[S] bound to {}", server.getLocalSocketAddress());
             server.setSoTimeout((int) TimeUnit.SECONDS.toMillis(8L));
-            var buffer = new byte[MAX_PACKET_LENGTH];
+            var buffer = new byte[LENGTH];
             var packet = new DatagramPacket(buffer, buffer.length);
             server.receive(packet);
             log.debug("[S] {} byte(s) received from {}", packet.getLength(),
                       packet.getSocketAddress());
+            var digest = _Rfc863Utils.newMessageDigest();
+            digest.update(buffer, 0, packet.getLength());
+            log.debug("[S] digest: {}", HexFormat.of().formatHex(digest.digest()));
         }
     }
 

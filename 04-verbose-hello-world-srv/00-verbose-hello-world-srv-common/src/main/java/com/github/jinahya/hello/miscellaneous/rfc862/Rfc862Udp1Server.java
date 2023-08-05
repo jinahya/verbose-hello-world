@@ -35,13 +35,11 @@ public class Rfc862Udp1Server {
 
     static final InetAddress HOST = InetAddress.getLoopbackAddress();
 
-    static final int PORT = Rfc862Tcp1Server.PORT;
-
     static final int MAX_PACKET_LENGTH = 8;
 
     public static void main(String... args) throws IOException {
         try (var server = new DatagramSocket(null)) {
-            server.bind(new InetSocketAddress(HOST, PORT));
+            server.bind(_Rfc862Constants.ENDPOINT);
             log.debug("[S] server bound to {}", server.getLocalSocketAddress());
             server.setSoTimeout((int) TimeUnit.SECONDS.toMillis(8L));
             var buffer = new byte[MAX_PACKET_LENGTH];

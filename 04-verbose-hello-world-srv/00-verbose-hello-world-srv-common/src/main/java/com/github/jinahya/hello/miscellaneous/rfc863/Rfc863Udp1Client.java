@@ -25,66 +25,36 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.SocketAddress;
+import java.util.HexFormat;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
 public class Rfc863Udp1Client {
 
-    private static final InetAddress HOST = Rfc863Udp1Server.HOST;
-
-    private static final int PORT = Rfc863Udp1Server.PORT;
-
-    private static final int MAX_PACKET_LENGTH = Rfc863Udp1Server.MAX_PACKET_LENGTH;
-
-    public static void send(SocketAddress endpoint) throws IOException {
-        try (var client = new DatagramSocket(null)) {
-            var bind = true;
-            if (bind) {
-                client.bind(new InetSocketAddress(HOST, 0));
-                log.debug("[C] client bound to {}", client.getLocalSocketAddress());
-            }
-            var connect = true;
-            if (connect) {
-                client.connect(endpoint);
-                log.debug("[C] client connected to {}", client.getRemoteSocketAddress());
-            }
-            var buf = new byte[
-                    ThreadLocalRandom.current().nextInt(1, MAX_PACKET_LENGTH + 1)
-                    ];
-            ThreadLocalRandom.current().nextBytes(buf);
-            var packet = new DatagramPacket(buf, buf.length, endpoint);
-            client.send(packet);
-            log.debug("[C] {} byte(s) sent to {}, through {}", packet.getLength(),
-                      packet.getSocketAddress(), client.getLocalSocketAddress());
-            if (connect) {
-                client.disconnect();
-                log.debug("[C] client disconnected");
-            }
-        }
-    }
+    private static final int LENGTH = ThreadLocalRandom.current().nextInt(Rfc863Udp1Server.LENGTH);
 
     public static void main(String... args) throws IOException {
         try (var client = new DatagramSocket(null)) {
-            var bind = true;
-            if (bind) {
-                client.bind(new InetSocketAddress(HOST, 0));
+            if (ThreadLocalRandom.current().nextBoolean()) {
+                client.bind(new InetSocketAddress(_Rfc863Constants.ADDR, 0));
                 log.debug("[C] bound to {}", client.getLocalSocketAddress());
             }
-            var endpoint = new InetSocketAddress(HOST, PORT);
-            var connect = true;
+            var connect = ThreadLocalRandom.current().nextBoolean();
             if (connect) {
-                client.connect(endpoint);
-                log.debug("[C] connected to {}", client.getRemoteSocketAddress());
+                client.connect(_Rfc863Constants.ENDPOINT);
+                log.debug("[C] connected to {}, through {}", client.getRemoteSocketAddress(),
+                          client.getLocalAddress());
             }
-            var buffer = new byte[ThreadLocalRandom.current().nextInt(MAX_PACKET_LENGTH) + 1];
+            var buffer = new byte[LENGTH];
             ThreadLocalRandom.current().nextBytes(buffer);
-            var packet = new DatagramPacket(buffer, buffer.length, endpoint);
+            var packet = new DatagramPacket(buffer, buffer.length, _Rfc863Constants.ENDPOINT);
             client.send(packet);
             log.debug("[C] {} byte(s) sent to {}, through {}", packet.getLength(),
                       packet.getSocketAddress(), client.getLocalSocketAddress());
+            var digest = _Rfc863Utils.newMessageDigest();
+            digest.update(buffer, 0, packet.getLength());
+            log.debug("[C] digest: {}", HexFormat.of().formatHex(digest.digest()));
             if (connect) {
                 client.disconnect();
                 log.debug("[C] disconnected");

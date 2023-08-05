@@ -23,52 +23,46 @@ package com.github.jinahya.hello.miscellaneous.rfc863;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
+import java.util.HexFormat;
 import java.util.concurrent.TimeUnit;
 
 // https://datatracker.ietf.org/doc/html/rfc863
 @Slf4j
 class Rfc863Udp2Server {
 
-    static final InetAddress HOST = Rfc863Udp1Server.HOST;
-
-    static final int PORT = Rfc863Udp1Server.PORT;
-
-    static final int MAX_PACKET_LENGTH = Rfc863Udp1Server.MAX_PACKET_LENGTH;
+    static final int CAPACITY = 1024;
 
     public static void main(String... args) throws IOException {
-        try (var selector = Selector.open()) {
-            try (var server = DatagramChannel.open()) {
-                server.bind(new InetSocketAddress(HOST, PORT));
-                log.debug("[S] bound to {}", server.getLocalAddress());
-                server.configureBlocking(false);
-                server.register(selector, SelectionKey.OP_READ,
-                                ByteBuffer.allocate(MAX_PACKET_LENGTH));
-                while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
-                    if (selector.select(TimeUnit.SECONDS.toMillis(8L)) == 0) {
-                        break;
-                    }
-                    for (var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
-                        var key = i.next();
-                        if (key.isReadable()) {
-                            var channel = (DatagramChannel) key.channel();
-                            var buffer = (ByteBuffer) key.attachment();
-                            var source = channel.receive(buffer);
-                            log.debug("[S] {} byte(s) received from {}", buffer.position(), source);
-                            log.debug("[S] closing client...");
-                            channel.close();
-                            key.cancel();
-                        }
+        try (var selector = Selector.open();
+             var server = DatagramChannel.open()) {
+            server.bind(_Rfc863Constants.ENDPOINT);
+            log.debug("[S] bound to {}", server.getLocalAddress());
+            server.configureBlocking(false);
+            server.register(selector, SelectionKey.OP_READ, ByteBuffer.allocate(CAPACITY));
+            while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
+                if (selector.select(TimeUnit.SECONDS.toMillis(8L)) == 0) {
+                    break;
+                }
+                for (var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
+                    var key = i.next();
+                    if (key.isReadable()) {
+                        var channel = (DatagramChannel) key.channel();
+                        var buffer = (ByteBuffer) key.attachment();
+                        var source = channel.receive(buffer);
+                        log.debug("[S] {} byte(s) received from {}", buffer.position(), source);
+                        channel.close();
+                        key.cancel();
+                        var digest = _Rfc863Utils.newMessageDigest();
+                        buffer.flip();
+                        digest.update(buffer);
+                        log.debug("[S] digest: {}", HexFormat.of().formatHex(digest.digest()));
                     }
                 }
-                log.debug("[S] closing server...");
             }
-            log.debug("[S] closing selector...");
         }
     }
 

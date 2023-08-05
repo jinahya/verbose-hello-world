@@ -23,7 +23,6 @@ package com.github.jinahya.hello.miscellaneous.rfc862;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
@@ -37,18 +36,14 @@ import java.util.concurrent.TimeoutException;
 @Slf4j
 class Rfc862Tcp3Server {
 
-    static final InetAddress HOST = Rfc862Tcp2Server.HOST;
-
-    static final int PORT = Rfc862Tcp2Server.PORT;
-
-    static final int CAPACITY = Rfc862Tcp2Server.CAPACITY;
+    static final int CAPACITY = 1024;
 
     public static void main(String... args)
             throws IOException, ExecutionException, InterruptedException, TimeoutException {
         try (var server = AsynchronousServerSocketChannel.open()) {
             server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
             server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
-            server.bind(new InetSocketAddress(HOST, PORT));
+            server.bind(_Rfc862Constants.ENDPOINT);
             log.debug("[S] bound to {}", server.getLocalAddress());
             try (var client = server.accept().get(8L, TimeUnit.SECONDS)) {
                 log.debug("[S] accepted from {}, through {}", client.getRemoteAddress(),
@@ -56,7 +51,7 @@ class Rfc862Tcp3Server {
                 var buffer = ByteBuffer.allocate(CAPACITY);
                 while (true) {
                     var read = client.read(buffer).get(8L, TimeUnit.SECONDS);
-                    log.debug("[S] read: {}", read);
+                    log.trace("[S] - read: {}", read);
                     if (read == -1) {
                         client.shutdownInput();
                         break;
@@ -68,7 +63,7 @@ class Rfc862Tcp3Server {
                 }
                 for (buffer.flip(); buffer.hasRemaining(); ) {
                     var written = client.write(buffer).get();
-                    log.debug("[S] written: {}", written);
+                    log.trace("[S] - written: {}", written);
                 }
                 log.debug("[S] closing client...");
             }

@@ -23,7 +23,6 @@ package com.github.jinahya.hello.miscellaneous.rfc862;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
@@ -34,10 +33,6 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 class Rfc862Udp2Client {
 
-    private static final InetAddress HOST = Rfc862Udp2Server.HOST;
-
-    private static final int PORT = Rfc862Udp2Server.PORT;
-
     private static final int PACKET_LENGTH = Rfc862Udp2Server.MAX_PACKET_LENGTH + 2;
 
     public static void main(String... args) throws IOException, InterruptedException {
@@ -45,12 +40,12 @@ class Rfc862Udp2Client {
             try (var client = DatagramChannel.open()) {
                 var bind = true;
                 if (bind) {
-                    client.bind(new InetSocketAddress(HOST, 0));
+                    client.bind(new InetSocketAddress(_Rfc862Constants.ADDR, 0));
                     log.debug("[C] client bound to {}", client.getLocalAddress());
                 }
                 var connect = true;
                 if (connect) {
-                    client.connect(new InetSocketAddress(HOST, PORT));
+                    client.connect(_Rfc862Constants.ENDPOINT);
                     log.debug("[C] client connected to {}, through {}", client.getRemoteAddress(),
                               client.getLocalAddress());
                 }
@@ -66,7 +61,7 @@ class Rfc862Udp2Client {
                         if (key.isWritable()) {
                             var channel = (DatagramChannel) key.channel();
                             var buffer = (ByteBuffer) key.attachment();
-                            var sent = channel.send(buffer, new InetSocketAddress(HOST, PORT));
+                            var sent = channel.send(buffer, _Rfc862Constants.ENDPOINT);
                             log.debug("[S] {} byte(s) sent to {}, through {}", sent,
                                       channel.getRemoteAddress(), channel.getLocalAddress());
                             buffer.clear();
