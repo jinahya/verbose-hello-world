@@ -20,61 +20,74 @@ package com.github.jinahya.hello.miscellaneous.rfc862;
  * #L%
  */
 
+import com.github.jinahya.hello.util.HelloWorldSecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.net.SocketAddress;
+import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
+import java.security.MessageDigest;
+import java.util.Base64;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
 class Rfc862Udp2Server {
 
-    static final int MAX_PACKET_LENGTH = Rfc862Udp1Server.MAX_PACKET_LENGTH;
+    static final int MAX_PACKET_LENGTH = 1024;
 
-    private static class Attachment {
+    static class Attachment {
 
-        ByteBuffer buffer;
+        final ByteBuffer buffer = ByteBuffer.allocate(MAX_PACKET_LENGTH);
 
         SocketAddress address;
+
+        final MessageDigest digest = _Rfc862Utils.newMessageDigest();
     }
 
-    public static void main(String... args) throws IOException, InterruptedException {
-        try (var selector = Selector.open()) {
-            try (var server = DatagramChannel.open()) {
-                server.bind(_Rfc862Constants.ENDPOINT);
-                log.debug("[S] bound to {}", server.getLocalAddress());
-                server.configureBlocking(false);
-                var attachment = new Attachment();
-                attachment.buffer = ByteBuffer.allocate(MAX_PACKET_LENGTH);
-                server.register(selector, SelectionKey.OP_READ, attachment);
-                while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
-                    if (selector.select(TimeUnit.SECONDS.toMillis(8L)) == 0) {
-                        break;
+    public static void main(String... args) throws Exception {
+        try (var selector = Selector.open();
+             var server = DatagramChannel.open()) {
+            server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
+            server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
+            server.bind(_Rfc862Constants.ENDPOINT);
+            log.debug("[S] bound to {}", server.getLocalAddress());
+            server.configureBlocking(false);
+            server.register(selector, SelectionKey.OP_READ, new Attachment());
+            while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
+                if (selector.select(TimeUnit.SECONDS.toMillis(8L)) == 0) {
+                    break;
+                }
+                for (var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
+                    var key = i.next();
+                    if (key.isReadable()) {
+                        var channel = (DatagramChannel) key.channel();
+                        var attachment = new Attachment();
+                        key.attach(attachment);
+                        attachment.address = channel.receive(attachment.buffer);
+                        log.debug("[S] {} byte(s) received from {}", attachment.buffer.position(),
+                                  attachment.address);
+                        key.interestOps(SelectionKey.OP_WRITE);
+                        HelloWorldSecurityUtils.updatePreceding(
+                                attachment.digest, attachment.buffer, attachment.buffer.position()
+                        );
+                        log.debug("[S] digest: {}",
+                                  Base64.getEncoder().encodeToString(attachment.digest.digest())
+                        );
                     }
-                    for (var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
-                        var key = i.next();
-                        if (key.isReadable()) {
-                            var channel = (DatagramChannel) key.channel();
-                            var buffer = ((Attachment) key.attachment()).buffer;
-                            var address = channel.receive(buffer);
-                            log.debug("[S] {} byte(s) received from {}", buffer.position(),
-                                      address);
-                            buffer.flip();
-                            ((Attachment) key.attachment()).address = address;
-                            key.interestOps(SelectionKey.OP_WRITE);
-                        }
-                        if (key.isWritable()) {
-                            var channel = (DatagramChannel) key.channel();
-                            var buffer = ((Attachment) key.attachment()).buffer;
-                            var address = ((Attachment) key.attachment()).address;
-                            var sent = channel.send(buffer, address);
-                            log.debug("[S] {} byte(s) sent back to {}", sent, address);
-                            key.cancel();
-                        }
+                    if (key.isWritable()) {
+                        var channel = (DatagramChannel) key.channel();
+                        var attachment = (Attachment) key.attachment();
+                        assert attachment != null;
+                        assert attachment.buffer != null;
+                        assert attachment.address != null;
+                        attachment.buffer.flip();
+                        var sent = channel.send(attachment.buffer, attachment.address);
+                        assert !attachment.buffer.hasRemaining();
+                        log.debug("[S] {} byte(s) sent back to {}", sent, attachment.address);
+                        key.cancel();
                     }
                 }
             }

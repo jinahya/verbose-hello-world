@@ -22,33 +22,33 @@ package com.github.jinahya.hello.miscellaneous.rfc862;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
+import java.util.Base64;
 import java.util.concurrent.TimeUnit;
 
 // https://www.rfc-editor.org/rfc/rfc862
 @Slf4j
 public class Rfc862Udp1Server {
 
-    static final InetAddress HOST = InetAddress.getLoopbackAddress();
+    static final int MAX_PACKET_LENGTH = 1024;
 
-    static final int MAX_PACKET_LENGTH = 8;
-
-    public static void main(String... args) throws IOException {
+    public static void main(String... args) throws Exception {
         try (var server = new DatagramSocket(null)) {
+            server.setReuseAddress(true);
             server.bind(_Rfc862Constants.ENDPOINT);
-            log.debug("[S] server bound to {}", server.getLocalSocketAddress());
+            log.debug("[S] bound to {}", server.getLocalSocketAddress());
             server.setSoTimeout((int) TimeUnit.SECONDS.toMillis(8L));
+            var digest = _Rfc862Utils.newMessageDigest();
             var buffer = new byte[MAX_PACKET_LENGTH];
             var packet = new DatagramPacket(buffer, buffer.length);
             server.receive(packet);
             log.debug("[S] {} byte(s) received from {}", packet.getLength(),
                       packet.getSocketAddress());
+            digest.update(buffer, 0, packet.getLength());
             server.send(packet);
-            log.debug("[S] sent back to {}", packet.getSocketAddress());
-            log.debug("[S] closing server...");
+            log.debug("[S] echoed back to {}", packet.getSocketAddress());
+            log.debug("[S] digest: {}", Base64.getEncoder().encodeToString(digest.digest()));
         }
     }
 

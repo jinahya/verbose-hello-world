@@ -26,26 +26,30 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
+import java.util.Base64;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
 public class Rfc862Udp1Client {
 
-    private static final int PACKET_LENGTH = Rfc862Udp1Server.MAX_PACKET_LENGTH + 2;
+    private static final int PACKET_LENGTH = ThreadLocalRandom.current()
+            .nextInt(Rfc862Udp1Server.MAX_PACKET_LENGTH);
 
     public static void main(String... args) throws IOException {
         try (var client = new DatagramSocket(null)) {
-            var bind = true;
-            if (bind) {
+            if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc862Constants.ADDR, 0));
-                log.debug("[C] client bound to {}", client.getLocalSocketAddress());
+                log.debug("[C] bound to {}", client.getLocalSocketAddress());
             }
-            var connect = true;
+            var connect = ThreadLocalRandom.current().nextBoolean();
             if (connect) {
                 client.connect(_Rfc862Constants.ENDPOINT);
-                log.debug("[C] client connected to {}, through {}", client.getRemoteSocketAddress(),
+                log.debug("[C] connected to {}, through {}", client.getRemoteSocketAddress(),
                           client.getLocalSocketAddress());
             }
+            var digest = _Rfc862Utils.newMessageDigest();
             var buffer = new byte[PACKET_LENGTH];
+            ThreadLocalRandom.current().nextBytes(buffer);
             var packet = new DatagramPacket(buffer, buffer.length, _Rfc862Constants.ENDPOINT);
             client.send(packet);
             log.debug("[C] {} byte(s) sent to {}, through {}", packet.getLength(),
@@ -53,11 +57,11 @@ public class Rfc862Udp1Client {
             client.receive(packet);
             log.debug("[C] {} byte(s) received from {}, through {}", packet.getLength(),
                       packet.getSocketAddress(), client.getLocalSocketAddress());
+            digest.update(buffer, 0, packet.getLength());
             if (connect) {
                 client.disconnect();
-                log.debug("[C] client disconnected");
             }
-            log.debug("[C] closing client...");
+            log.debug("[S] digest: {}", Base64.getEncoder().encodeToString(digest.digest()));
         }
     }
 

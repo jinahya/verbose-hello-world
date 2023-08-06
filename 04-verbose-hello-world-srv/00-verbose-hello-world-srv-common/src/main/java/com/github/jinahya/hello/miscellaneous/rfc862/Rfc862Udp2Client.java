@@ -20,61 +20,78 @@ package com.github.jinahya.hello.miscellaneous.rfc862;
  * #L%
  */
 
+import com.github.jinahya.hello.util.HelloWorldSecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
+import java.util.Base64;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
 class Rfc862Udp2Client {
 
-    private static final int PACKET_LENGTH = Rfc862Udp2Server.MAX_PACKET_LENGTH + 2;
+    private static final int PACKET_LENGTH =
+            ThreadLocalRandom.current().nextInt(Rfc862Udp2Server.MAX_PACKET_LENGTH);
 
-    public static void main(String... args) throws IOException, InterruptedException {
-        try (var selector = Selector.open()) {
-            try (var client = DatagramChannel.open()) {
-                var bind = true;
-                if (bind) {
-                    client.bind(new InetSocketAddress(_Rfc862Constants.ADDR, 0));
-                    log.debug("[C] client bound to {}", client.getLocalAddress());
+    private static class Attachment extends Rfc862Udp2Server.Attachment {
+
+        Attachment() {
+            super();
+            ThreadLocalRandom.current().nextBytes(buffer.array());
+            buffer.limit(ThreadLocalRandom.current().nextInt(buffer.limit()));
+            address = _Rfc862Constants.ENDPOINT;
+        }
+    }
+
+    public static void main(String... args) throws Exception {
+        try (var selector = Selector.open();
+             var client = DatagramChannel.open()) {
+            if (ThreadLocalRandom.current().nextBoolean()) {
+                client.bind(new InetSocketAddress(_Rfc862Constants.ADDR, 0));
+                log.debug("[C] bound to {}", client.getLocalAddress());
+            }
+            var connect = ThreadLocalRandom.current().nextBoolean();
+            if (connect) {
+                client.connect(_Rfc862Constants.ENDPOINT);
+                log.debug("[C] connected to {}, through {}", client.getRemoteAddress(),
+                          client.getLocalAddress());
+            }
+            client.configureBlocking(false);
+            client.register(selector, SelectionKey.OP_WRITE, new Attachment());
+            while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
+                if (selector.select(TimeUnit.SECONDS.toMillis(8L)) == 0) {
+                    break;
                 }
-                var connect = true;
-                if (connect) {
-                    client.connect(_Rfc862Constants.ENDPOINT);
-                    log.debug("[C] client connected to {}, through {}", client.getRemoteAddress(),
-                              client.getLocalAddress());
-                }
-                client.configureBlocking(false);
-                client.register(selector, SelectionKey.OP_WRITE,
-                                ByteBuffer.allocate(PACKET_LENGTH));
-                while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
-                    if (selector.select(TimeUnit.SECONDS.toMillis(8L)) == 0) {
-                        break;
+                for (var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
+                    var key = i.next();
+                    if (key.isWritable()) {
+                        var channel = (DatagramChannel) key.channel();
+                        var attachment = (Attachment) key.attachment();
+                        var sent = channel.send(attachment.buffer, attachment.address);
+                        log.debug("[S] {} byte(s) sent to {}, through {}", sent, attachment.address,
+                                  channel.getLocalAddress());
+                        assert !attachment.buffer.hasRemaining();
+                        key.interestOps(SelectionKey.OP_READ);
                     }
-                    for (var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
-                        var key = i.next();
-                        if (key.isWritable()) {
-                            var channel = (DatagramChannel) key.channel();
-                            var buffer = (ByteBuffer) key.attachment();
-                            var sent = channel.send(buffer, _Rfc862Constants.ENDPOINT);
-                            log.debug("[S] {} byte(s) sent to {}, through {}", sent,
-                                      channel.getRemoteAddress(), channel.getLocalAddress());
-                            buffer.clear();
-                            key.interestOps(SelectionKey.OP_READ);
-                        }
-                        if (key.isReadable()) {
-                            var channel = (DatagramChannel) key.channel();
-                            var buffer = (ByteBuffer) key.attachment();
-                            var address = channel.receive(buffer);
-                            log.debug("[C] {} byte(s) received from {}", buffer.position(),
-                                      address);
-                            key.cancel();
-                        }
+                    if (key.isReadable()) {
+                        var channel = (DatagramChannel) key.channel();
+                        var attachment = (Attachment) key.attachment();
+                        attachment.buffer.flip();
+                        attachment.address = channel.receive(attachment.buffer);
+                        log.debug("[C] {} byte(s) received from {}", attachment.buffer.position(),
+                                  attachment.address);
+                        assert !attachment.buffer.hasRemaining();
+                        key.cancel();
+                        HelloWorldSecurityUtils.updatePreceding(
+                                attachment.digest, attachment.buffer, attachment.buffer.position()
+                        );
+                        log.debug("[S] digest: {}",
+                                  Base64.getEncoder().encodeToString(attachment.digest.digest())
+                        );
                     }
                 }
             }
