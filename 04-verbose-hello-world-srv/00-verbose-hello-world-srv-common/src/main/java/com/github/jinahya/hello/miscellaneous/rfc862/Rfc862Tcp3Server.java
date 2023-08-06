@@ -20,26 +20,18 @@ package com.github.jinahya.hello.miscellaneous.rfc862;
  * #L%
  */
 
+import com.github.jinahya.hello.util.HelloWorldSecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.net.StandardSocketOptions;
-import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousServerSocketChannel;
-import java.util.concurrent.ExecutionException;
+import java.util.Base64;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
-// https://datatracker.ietf.org/doc/html/rfc862
-// https://stackoverflow.com/q/23301598/330457
 @Slf4j
 class Rfc862Tcp3Server {
 
-    static final int CAPACITY = 1024;
-
-    public static void main(String... args)
-            throws IOException, ExecutionException, InterruptedException, TimeoutException {
+    public static void main(String... args) throws Exception {
         try (var server = AsynchronousServerSocketChannel.open()) {
             server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
             server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
@@ -48,7 +40,9 @@ class Rfc862Tcp3Server {
             try (var client = server.accept().get(8L, TimeUnit.SECONDS)) {
                 log.debug("[S] accepted from {}, through {}", client.getRemoteAddress(),
                           client.getLocalAddress());
-                var buffer = ByteBuffer.allocate(CAPACITY);
+                var digest = _Rfc862Utils.newMessageDigest();
+                var bytes = 0;
+                var buffer = _Rfc862Utils.newByteBuffer();
                 while (true) {
                     var read = client.read(buffer).get(8L, TimeUnit.SECONDS);
                     log.trace("[S] - read: {}", read);
@@ -56,18 +50,21 @@ class Rfc862Tcp3Server {
                         client.shutdownInput();
                         break;
                     }
+                    bytes += read;
+                    HelloWorldSecurityUtils.updatePreceding(digest, buffer, read);
                     buffer.flip(); // limit -> position; position -> zero
-                    var written = client.write(buffer).get();
-                    log.debug("[S] written: {}", written);
+                    var written = client.write(buffer).get(8L, TimeUnit.SECONDS);
+                    log.trace("[S] - written: {}", written);
                     buffer.compact();
                 }
                 for (buffer.flip(); buffer.hasRemaining(); ) {
-                    var written = client.write(buffer).get();
+                    var written = client.write(buffer).get(8L, TimeUnit.SECONDS);
                     log.trace("[S] - written: {}", written);
                 }
-                log.debug("[S] closing client...");
+                client.shutdownOutput();
+                log.debug("[S] byte(s) received and echoed back: {}", bytes);
+                log.debug("[S] digest: {}", Base64.getEncoder().encodeToString(digest.digest()));
             }
-            log.debug("[S] closing server...");
         }
     }
 

@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.miscellaneous.rfc862;
+package com.github.jinahya.hello.miscellaneous.rfc863;
 
 /*-
  * #%L
@@ -22,49 +22,42 @@ package com.github.jinahya.hello.miscellaneous.rfc862;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.net.ServerSocket;
-import java.util.Base64;
+import java.util.HexFormat;
 import java.util.concurrent.TimeUnit;
 
-// https://www.rfc-editor.org/rfc/rfc862
+// https://datatracker.ietf.org/doc/html/rfc863
 @Slf4j
-class Rfc862Tcp1Server {
+public class Rfc863Tcp0Server {
 
-    public static void main(String... args) throws IOException {
+    public static void main(String... args) throws Exception {
         try (var server = new ServerSocket()) {
             server.setReuseAddress(true);
-            server.bind(_Rfc862Constants.ENDPOINT);
+            server.bind(_Rfc863Constants.ENDPOINT);
             log.debug("[S] bound to {}", server.getLocalSocketAddress());
             server.setSoTimeout((int) TimeUnit.SECONDS.toMillis(8L));
             try (var client = server.accept()) {
-                log.debug("[S] accepted from {}, through {}", client.getRemoteSocketAddress(),
-                          client.getLocalSocketAddress());
-                client.setSoTimeout((int) TimeUnit.SECONDS.toMillis(8L));
-                var digest = _Rfc862Utils.newMessageDigest();
+                log.debug("[S] accepted from {}, through {}",
+                          client.getRemoteSocketAddress(), client.getLocalSocketAddress());
+                var digest = _Rfc863Utils.newMessageDigest();
                 var bytes = 0L;
-                var buffer = _Rfc862Utils.newByteArray();
                 while (true) {
-                    var read = client.getInputStream().read(buffer);
-                    log.trace("[S] - read: {}", read);
+                    var read = client.getInputStream().read();
+                    log.trace("[C] - read: {}", read);
                     if (read == -1) {
                         client.shutdownInput();
                         break;
                     }
-                    assert read > 0;
-                    bytes += read;
-                    digest.update(buffer, 0, read);
-                    client.getOutputStream().write(buffer, 0, read);
-                    client.getOutputStream().flush();
+                    bytes++;
+                    digest.update((byte) read);
                 }
-                client.shutdownOutput();
-                log.debug("[S] byte(s) received and echoed: {}", bytes);
-                log.debug("[S] digest: {}", Base64.getEncoder().encodeToString(digest.digest()));
+                log.debug("[S] byte(s) received (and discarded): {}", bytes);
+                log.debug("[S] digest: {}", HexFormat.of().formatHex(digest.digest()));
             }
         }
     }
 
-    private Rfc862Tcp1Server() {
+    private Rfc863Tcp0Server() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

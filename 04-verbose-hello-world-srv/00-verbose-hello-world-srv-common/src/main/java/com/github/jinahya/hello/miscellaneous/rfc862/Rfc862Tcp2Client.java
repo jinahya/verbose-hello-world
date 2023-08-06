@@ -23,12 +23,12 @@ package com.github.jinahya.hello.miscellaneous.rfc862;
 import com.github.jinahya.hello.util.HelloWorldSecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.StandardSocketOptions;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
-import java.util.HexFormat;
+import java.util.Base64;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
@@ -50,9 +50,11 @@ class Rfc862Tcp2Client {
         }
     }
 
-    public static void main(String... args) throws IOException, InterruptedException {
+    public static void main(String... args) throws Exception {
         try (var selector = Selector.open();
              var client = SocketChannel.open()) {
+            client.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
+            client.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc862Constants.ADDR, 0));
                 log.debug("[C] bound to {}", client.getLocalAddress());
@@ -62,7 +64,7 @@ class Rfc862Tcp2Client {
                 log.debug("connected (immediately) to {}, through {}",
                           client.getRemoteAddress(), client.getLocalAddress());
                 var attachment = new Attachment();
-                log.debug("[C] sending {} bytes: ", attachment.bytes);
+                log.debug("[C] sending {} bytes", attachment.bytes);
                 client.register(selector,
                                 attachment.buffer.hasRemaining() ? SelectionKey.OP_WRITE : 0,
                                 attachment);
@@ -82,7 +84,7 @@ class Rfc862Tcp2Client {
                         log.debug("[C] connected to {}, through {}", channel.getRemoteAddress(),
                                   channel.getLocalAddress());
                         var attachment = new Attachment();
-                        log.debug("[C] sending {} bytes: ", attachment.bytes);
+                        log.debug("[C] sending {} bytes", attachment.bytes);
                         key.attach(attachment);
                         if (attachment.buffer.hasRemaining()) {
                             key.interestOps(SelectionKey.OP_WRITE);
@@ -120,10 +122,10 @@ class Rfc862Tcp2Client {
                             key.interestOpsAnd(~SelectionKey.OP_READ);
                             key.cancel();
                             log.debug("[C] digest: {}",
-                                      HexFormat.of().formatHex(attachment.digest.digest()));
+                                      Base64.getEncoder()
+                                              .encodeToString(attachment.digest.digest()));
                             continue;
                         }
-                        assert read > 0;
                         HelloWorldSecurityUtils.updatePreceding(
                                 attachment.digest, attachment.buffer, read
                         );

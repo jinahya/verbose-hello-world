@@ -34,6 +34,7 @@ import java.util.stream.Stream;
 class Rfc863TcpTest {
 
     private static final List<Class<?>> SERVER_CLASSES = List.of(
+            Rfc863Tcp0Server.class,
             Rfc863Tcp1Server.class,
             Rfc863Tcp2Server.class,
             Rfc863Tcp3Server.class,
@@ -41,6 +42,7 @@ class Rfc863TcpTest {
     );
 
     private static final List<Class<?>> CLIENT_CLASSES = List.of(
+            Rfc863Tcp0Client.class,
             Rfc863Tcp1Client.class,
             Rfc863Tcp2Client.class,
             Rfc863Tcp3Client.class,
@@ -58,8 +60,11 @@ class Rfc863TcpTest {
     @MethodSource({"getClassesArgumentsList"})
     @ParameterizedTest
     void __(Class<?> serverClass, Class<?> clientClass) throws Exception {
+        log.debug("server: {}", serverClass.getSimpleName());
+        log.debug("client: {}", clientClass.getSimpleName());
+        serverClass.getClassLoader().setDefaultAssertionStatus(true);
+        clientClass.getClassLoader().setDefaultAssertionStatus(true);
         var executor = Executors.newFixedThreadPool(2);
-        log.debug("serverClass: {}", serverClass);
         var server = executor.submit(() -> {
             try {
                 serverClass.getMethod("main", String[].class)
@@ -69,7 +74,6 @@ class Rfc863TcpTest {
             }
         });
         Thread.sleep(100L);
-        log.debug("clientClass: {}", clientClass);
         var client = executor.submit(() -> {
             try {
                 clientClass.getMethod("main", String[].class)
@@ -80,5 +84,6 @@ class Rfc863TcpTest {
         });
         client.get();
         server.get();
+        executor.shutdown();
     }
 }

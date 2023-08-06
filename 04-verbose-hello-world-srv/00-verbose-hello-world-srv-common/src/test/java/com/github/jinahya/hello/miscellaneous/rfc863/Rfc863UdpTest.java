@@ -54,8 +54,11 @@ class Rfc863UdpTest {
     @MethodSource({"getClassesArgumentsList"})
     @ParameterizedTest
     void __(Class<?> serverClass, Class<?> clientClass) throws Exception {
+        log.debug("server: {}", serverClass.getSimpleName());
+        log.debug("client: {}", clientClass.getSimpleName());
+        serverClass.getClassLoader().setDefaultAssertionStatus(true);
+        clientClass.getClassLoader().setDefaultAssertionStatus(true);
         var executor = Executors.newFixedThreadPool(2);
-        log.debug("serverClass: {}", serverClass);
         var server = executor.submit(() -> {
             try {
                 serverClass.getMethod("main", String[].class)
@@ -65,7 +68,6 @@ class Rfc863UdpTest {
             }
         });
         Thread.sleep(100L);
-        log.debug("clientClass: {}", clientClass);
         var client = executor.submit(() -> {
             try {
                 clientClass.getMethod("main", String[].class)

@@ -20,118 +20,130 @@ package com.github.jinahya.hello.miscellaneous.rfc862;
  * #L%
  */
 
+import com.github.jinahya.hello.util.HelloWorldSecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.net.InetSocketAddress;
 import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
+import java.security.MessageDigest;
+import java.util.Base64;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-// https://datatracker.ietf.org/doc/html/rfc862
-// https://stackoverflow.com/q/23301598/330457
 @Slf4j
 class Rfc862Tcp4Server {
 
-    static final int CAPACITY = 1024;
-
-    private static final String ALGORITHM = "MD5";
-
     static class Attachment {
 
-        volatile AsynchronousSocketChannel client;
+        AsynchronousSocketChannel client;
 
-        volatile CountDownLatch latch;
+        final CountDownLatch latch = new CountDownLatch(3);
 
-        volatile ByteBuffer buffer;
+        final ByteBuffer buffer = _Rfc862Utils.newByteBuffer();
+
+        int bytes; // number of bytes to receive or send
+
+        final MessageDigest digest = _Rfc862Utils.newMessageDigest();
     }
 
-    private static final CompletionHandler<Integer, Attachment> W_HANDLER =
-            new CompletionHandler<>() { // @formatter:on
-                @Override
-                public void completed(Integer result, Attachment attachment) {
-                    log.debug("[S] - written: {}", result);
-                    if (attachment.latch.getCount() == 1) { // all read
-                        if (attachment.buffer.hasRemaining()) {
-                            attachment.client.write(
-                                    attachment.buffer,    // <dst>
-                                    8L, TimeUnit.SECONDS, // <timeout, unit>
-                                    attachment,           // <attachment>
-                                    this                  // <handler>
-                            );
-                            return;
-                        }
-                        attachment.latch.countDown();
-                        return;
-                    }
-                    attachment.buffer.compact();
-                    attachment.client.read(
-                            attachment.buffer,    // <dst>
-                            8L, TimeUnit.SECONDS, // <timeout, unit>
-                            attachment,           // <attachment>
-                            R_HANDLER             // <handler>
-                    );
-                }
-
-                @Override
-                public void failed(Throwable exc, Attachment attachment) {
-                    log.error("failed to write", exc);
-                } // @formatter:on
-            };
-
-    private static final CompletionHandler<Integer, Attachment> R_HANDLER =
-            new CompletionHandler<>() { // @formatter:on
-                @Override
-                public void completed(Integer result, Attachment attachment) {
-                    log.debug("[S] -    read: {}", result);
-                    if (result == -1) {
-                        attachment.latch.countDown();
-                    }
-                    attachment.buffer.flip(); // limit -> position; position -> zero
+    // @formatter:off
+    private static final
+    CompletionHandler<Integer, Attachment> W_HANDLER = new CompletionHandler<>() {
+        @Override public void completed(Integer result, Attachment attachment) {
+            log.trace("[S] - written: {}", result);
+            if (attachment.latch.getCount() == 1) {
+                if (attachment.buffer.hasRemaining()) {
                     attachment.client.write(
                             attachment.buffer,    // <src>
                             8L, TimeUnit.SECONDS, // <timeout, unit>
                             attachment,           // <attachment>
-                            W_HANDLER             // <handler>
+                            this                  // <handler>
                     );
+                    return;
                 }
-
-                @Override
-                public void failed(Throwable exc, Attachment attachment) {
-                    log.error("failed to read", exc);
-                } // @formatter:on
-            };
-
-    private static final CompletionHandler<AsynchronousSocketChannel, Attachment> A_HANDLER =
-            new CompletionHandler<>() { // @formatter:on
-                @Override
-                public void completed(AsynchronousSocketChannel result, Attachment attachment) {
-                    try {
-                        log.debug("[S] - accepted from {}, through {}",
-                                  result.getRemoteAddress(), result.getLocalAddress());
-                    } catch (IOException ioe) {
-                        throw new UncheckedIOException("failed to get addresses from client", ioe);
-                    }
-                    attachment.latch.countDown();
-                    attachment.client = result;
-                    attachment.client.read(
-                            attachment.buffer,    // <dst>
-                            8L, TimeUnit.SECONDS, // <timeout, unit>
-                            attachment,           // <attachment>
-                            R_HANDLER             // <handler>
-                    );
+                try {
+                    attachment.client.shutdownOutput();
+                } catch (IOException ioe) {
+                    throw new UncheckedIOException("failed to shutdown output", ioe);
                 }
+                attachment.latch.countDown();
+                return;
+            }
+            attachment.buffer.compact();
+            attachment.client.read(
+                    attachment.buffer,    // <dst>
+                    8L, TimeUnit.SECONDS, // <timeout, unit>
+                    attachment,           // <attachment>
+                    R_HANDLER             // <handler>
+            );
+        }
+        @Override public void failed(Throwable exc, Attachment attachment) {
+            log.error("failed to write", exc);
+        }
+    };
+    // @formatter:on
 
-                @Override
-                public void failed(Throwable exc, Attachment attachment) {
-                    log.error("failed to accept", exc);
-                } // @formatter:on
-            };
+    // @formatter:off
+    private static final
+    CompletionHandler<Integer, Attachment> R_HANDLER = new CompletionHandler<>() {
+        @Override public void completed(Integer result, Attachment attachment) {
+            log.trace("[S] - read: {}", result);
+            if (result == -1) {
+                try {
+                    attachment.client.shutdownInput();
+                } catch (IOException ioe) {
+                    throw new UncheckedIOException("failed to shutdown input", ioe);
+                }
+                attachment.latch.countDown();
+            } else {
+                attachment.bytes += result;
+                HelloWorldSecurityUtils.updatePreceding(
+                        attachment.digest, attachment.buffer, result
+                );
+            }
+            attachment.buffer.flip(); // limit -> position; position -> zero
+            attachment.client.write(
+                    attachment.buffer,    // <src>
+                    8L, TimeUnit.SECONDS, // <timeout, unit>
+                    attachment,           // <attachment>
+                    W_HANDLER             // <handler>
+            );
+        }
+        @Override public void failed(Throwable exc, Attachment attachment) {
+            log.error("failed to read", exc);
+        }
+    };
+    // @formatter:on
+
+    // @formatter:off
+    private static final
+    CompletionHandler<AsynchronousSocketChannel, Attachment> A_HANDLER = new CompletionHandler<>() {
+        @Override public void completed(AsynchronousSocketChannel result, Attachment attachment) {
+            try {
+                log.debug("[S] accepted from {}, through {}", result.getRemoteAddress(),
+                          result.getLocalAddress());
+            } catch (IOException ioe) {
+                throw new UncheckedIOException("failed to get addresses from client", ioe);
+            }
+            attachment.latch.countDown();
+            attachment.client = result;
+            attachment.client.read(
+                    attachment.buffer,    // <dst>
+                    8L, TimeUnit.SECONDS, // <timeout, unit>
+                    attachment,           // <attachment>
+                    R_HANDLER             // <handler>
+            );
+        }
+        @Override public void failed(Throwable exc, Attachment attachment) {
+            log.error("failed to accept", exc);
+        }
+    };
+    // @formatter:on
 
     public static void main(String... args) throws Exception {
         try (var server = AsynchronousServerSocketChannel.open()) {
@@ -140,16 +152,16 @@ class Rfc862Tcp4Server {
             server.bind(_Rfc862Constants.ENDPOINT);
             log.debug("[S] server bound to {}", server.getLocalAddress());
             var attachment = new Attachment();
-            attachment.latch = new CountDownLatch(3);
-            attachment.buffer = ByteBuffer.allocate(CAPACITY);
-//            attachment.digest = MessageDigest.getInstance(ALGORITHM);
             server.accept(
                     attachment, // <attachment>
-                    A_HANDLER    // <handler>
+                    A_HANDLER   // <handler>
             );
             var broken = attachment.latch.await(8L, TimeUnit.SECONDS);
-            assert broken;
-            log.debug("[S] closing server...");
+            assert broken : "the latch hasn't broken!";
+            log.debug("[S] byte(s) received and echoed back: {}", attachment.bytes);
+            log.debug("[S] digest: {}",
+                      Base64.getEncoder().encodeToString(attachment.digest.digest())
+            );
         }
     }
 

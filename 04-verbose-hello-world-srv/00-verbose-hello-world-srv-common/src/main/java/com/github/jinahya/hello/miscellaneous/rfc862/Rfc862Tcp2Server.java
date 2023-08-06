@@ -31,7 +31,7 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.security.MessageDigest;
-import java.util.HexFormat;
+import java.util.Base64;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -80,28 +80,18 @@ class Rfc862Tcp2Server {
                         if (read == -1) {
                             channel.shutdownInput();
                             key.interestOpsAnd(~SelectionKey.OP_READ);
-                            if (attachment.buffer.position() == 0) {
-                                log.debug("[S] byte(s) received and echoed back: {}",
-                                          attachment.bytes);
-                                log.debug("[S] digest: {}",
-                                          HexFormat.of().formatHex(attachment.digest.digest()));
-                                key.cancel();
-                                continue;
-                            }
-                        } else {
+                        }
+                        if (read > 0) {
                             attachment.bytes += read;
                             HelloWorldSecurityUtils.updatePreceding(
                                     attachment.digest, attachment.buffer, read
                             );
                         }
-                        if (attachment.buffer.position() > 0) {
-                            key.interestOpsOr(SelectionKey.OP_WRITE);
-                        }
+                        key.interestOpsOr(SelectionKey.OP_WRITE);
                     }
                     if (key.isWritable()) {
                         var channel = (SocketChannel) key.channel();
                         var attachment = (Attachment) key.attachment();
-                        assert attachment.buffer.position() > 0;
                         attachment.buffer.flip(); // limit -> position; position -> zero
                         var written = channel.write(attachment.buffer);
                         log.trace("[S] - written: {}", written);
@@ -113,8 +103,8 @@ class Rfc862Tcp2Server {
                                 key.cancel();
                                 log.debug("[S] byte(s) received and echoed back: {}",
                                           attachment.bytes);
-                                log.debug("[S] digest: {}",
-                                          HexFormat.of().formatHex(attachment.digest.digest()));
+                                log.debug("[S] digest: {}", Base64.getEncoder()
+                                        .encodeToString(attachment.digest.digest()));
                             }
                         }
                     }

@@ -30,7 +30,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-class Rfc862Tcp1Client {
+class Rfc862Tcp0Client {
 
     public static void main(String... args) throws IOException {
         try (var client = new Socket()) {
@@ -44,37 +44,30 @@ class Rfc862Tcp1Client {
                       client.getLocalSocketAddress());
             client.setSoTimeout((int) TimeUnit.SECONDS.toMillis(8L));
             var digest = _Rfc862Utils.newMessageDigest();
-            var bytes = ThreadLocalRandom.current().nextInt(1048576);
+            var bytes = ThreadLocalRandom.current().nextInt(1024);
             log.debug("[C] sending {} byte(s)", bytes);
-            var buffer = _Rfc862Utils.newByteArray();
-            for (int read; bytes > 0; ) {
-                ThreadLocalRandom.current().nextBytes(buffer);
-                var length = Math.min(buffer.length, bytes);
-                client.getOutputStream().write(buffer, 0, length);
-                log.trace("[C] - written: {}", buffer.length);
+            for (int b; bytes > 0; ) {
+                b = ThreadLocalRandom.current().nextInt(256);
+                client.getOutputStream().write(b);
                 client.getOutputStream().flush();
-                bytes -= length;
-                read = client.getInputStream().read(buffer);
-                log.trace("[C] - read: {}", read);
-                assert read != -1;
-                assert read > 0;
-                digest.update(buffer, 0, read);
+                bytes--;
+                b = client.getInputStream().read();
+                digest.update((byte) b);
             }
             client.shutdownOutput();
-            for (int read; ; ) {
-                read = client.getInputStream().read(buffer);
-                log.trace("[C] - read: {}", read);
-                if (read == -1) {
+            for (int b; ; ) {
+                b = client.getInputStream().read();
+                if (b == -1) {
                     client.shutdownInput();
                     break;
                 }
-                digest.update(buffer, 0, read);
+                digest.update((byte) b);
             }
             log.debug("[C] digest: {}", Base64.getEncoder().encodeToString(digest.digest()));
         }
     }
 
-    private Rfc862Tcp1Client() {
+    private Rfc862Tcp0Client() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

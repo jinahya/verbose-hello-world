@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
 
 // https://www.rfc-editor.org/rfc/rfc862
 @Slf4j
-class Rfc862Tcp1Server {
+class Rfc862Tcp0Server {
 
     public static void main(String... args) throws IOException {
         try (var server = new ServerSocket()) {
@@ -43,18 +43,16 @@ class Rfc862Tcp1Server {
                 client.setSoTimeout((int) TimeUnit.SECONDS.toMillis(8L));
                 var digest = _Rfc862Utils.newMessageDigest();
                 var bytes = 0L;
-                var buffer = _Rfc862Utils.newByteArray();
-                while (true) {
-                    var read = client.getInputStream().read(buffer);
-                    log.trace("[S] - read: {}", read);
-                    if (read == -1) {
+                for (int b; true; ) {
+                    b = client.getInputStream().read();
+                    log.trace("[S] - read: {}", b);
+                    if (b == -1) {
                         client.shutdownInput();
                         break;
                     }
-                    assert read > 0;
-                    bytes += read;
-                    digest.update(buffer, 0, read);
-                    client.getOutputStream().write(buffer, 0, read);
+                    bytes++;
+                    digest.update((byte) b);
+                    client.getOutputStream().write(b);
                     client.getOutputStream().flush();
                 }
                 client.shutdownOutput();
@@ -64,7 +62,7 @@ class Rfc862Tcp1Server {
         }
     }
 
-    private Rfc862Tcp1Server() {
+    private Rfc862Tcp0Server() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

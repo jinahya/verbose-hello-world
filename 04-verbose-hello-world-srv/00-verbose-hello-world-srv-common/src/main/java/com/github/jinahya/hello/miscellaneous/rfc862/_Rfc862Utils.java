@@ -35,7 +35,7 @@ final class _Rfc862Utils {
         return ByteBuffer.wrap(newByteArray());
     }
 
-    private static final String ALGORITHM = "SHA-1";
+    private static final String ALGORITHM = "SHA-256";
 
     static MessageDigest newMessageDigest() {
         try {
