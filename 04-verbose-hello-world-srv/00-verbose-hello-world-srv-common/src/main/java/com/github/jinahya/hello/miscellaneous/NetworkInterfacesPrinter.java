@@ -34,7 +34,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 /**
- * A class for testing {@link NetworkInterface}.
+ * A class for listing properties of {@link NetworkInterface}.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see <a href="https://www.baeldung.com/java-network-interfaces">Working with
