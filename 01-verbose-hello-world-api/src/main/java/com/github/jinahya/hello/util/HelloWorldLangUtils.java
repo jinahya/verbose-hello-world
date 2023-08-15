@@ -23,21 +23,15 @@ package com.github.jinahya.hello.util;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
-import java.io.Closeable;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.InterruptedIOException;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
-import java.io.UncheckedIOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.nio.charset.Charset;
 import java.util.Objects;
 import java.util.concurrent.Callable;
-import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  * Utilities for {@link java.lang} package.
@@ -74,150 +68,47 @@ public final class HelloWorldLangUtils {
 
     /**
      * Starts a new {@link Thread#isDaemon() daemon} thread which continuously reads lines from
-     * {@link System#in}, and calls specified callable when it reads one equals to specified
-     * string.
+     * {@link System#in} while specified predicate tests, calls specified callable when it reads a
+     * line equals (ignoring the case) to specified string, otherwise, accepts lines to specified
+     * consumer.
      *
-     * @param callable the object to {@link Callable#call() call}.
-     * @param string   the string to match.
-     * @param consumer a consumer be accepted with read lines other than {@code string}; may be
-     *                 {@code null}.
+     * @param predicate the predicate to be tested while reading lines.
+     * @param string    the string to match.
+     * @param callable  the callable to be called when reads {@code string}.
+     * @param consumer  the consumer be accepted with read lines other than {@code string}
      */
-    public static void callWhenRead(Callable<Void> callable, String string,
-                                    Consumer<? super String> consumer) {
-        Objects.requireNonNull(callable, "callable is null");
+    public static void callWhenRead(final Predicate<Void> predicate, String string,
+                                    Callable<Void> callable, Consumer<? super String> consumer) {
+        Objects.requireNonNull(predicate, "predicate is null");
         Objects.requireNonNull(string, "string is null");
+        Objects.requireNonNull(callable, "callable is null");
+        Objects.requireNonNull(consumer, "consumer is null");
         var thread = new Thread(() -> {
             var r = new BufferedReader(new InputStreamReader(System.in));
             try {
-                for (String line; (line = r.readLine()) != null; ) {
-                    if (line.strip().equalsIgnoreCase(string)) {
+                for (String l; ((l = r.readLine()) != null) && predicate.test(null); ) {
+                    if (l.strip().equalsIgnoreCase(string)) {
+                        try {
+                            callable.call();
+                        } catch (InterruptedException ie) {
+                            log.info("interrupted while calling {}", callable, ie);
+                            Thread.currentThread().interrupt();
+                        } catch (Exception e) {
+                            log.error("failed to call {}", callable, e);
+                        }
                         break;
                     }
-                    if (consumer != null) {
-                        consumer.accept(line);
-                    }
+                    consumer.accept(l);
                 }
             } catch (IOException ioe) {
                 log.error("failed to read line", ioe);
-            }
-            try {
-                callable.call();
-            } catch (Exception e) {
-                log.error("failed to call {}", callable, e);
             }
         });
         thread.setDaemon(true);
         thread.start();
     }
 
-    /**
-     * Starts a new {@link Thread#isDaemon() daemon} thread which continuously reads lines from
-     * {@link System#in}, and runs specified runnable when it reads one equals to specified string.
-     *
-     * @param runnable the object to {@link Runnable#run() run}.
-     * @param string   the string to match.
-     * @param consumer a consumer be accepted with read lines other than {@code string}; may be
-     *                 {@code null}.
-     */
-    public static void runWhenRead(Runnable runnable, String string,
-                                   Consumer<? super String> consumer) {
-        Objects.requireNonNull(runnable, "runnable is null");
-        callWhenRead(
-                () -> {
-                    runnable.run();
-                    return null;
-                },
-                string,
-                consumer
-        );
-    }
-
-    /**
-     * Starts a new {@link Thread#isDaemon() daemon} thread which continuously reads lines from
-     * {@link System#in}, and closes specified closeable when it reads one equals to specified
-     * string.
-     *
-     * @param closeable the object to {@link Closeable#close() close}.
-     * @param string    the string to match.
-     * @param consumer  a consumer be accepted with read lines other than {@code string}; may be
-     *                  {@code null}.
-     */
-    public static void closeWhenRead(Closeable closeable, String string,
-                                     Consumer<? super String> consumer) {
-        Objects.requireNonNull(closeable, "closeable is null");
-        callWhenRead(
-                () -> {
-                    closeable.close();
-                    return null;
-                },
-                string,
-                consumer
-        );
-    }
-
-    public static Thread readQuitAndClose(String quit, Closeable closeable,
-                                          Consumer<? super String> consumer) {
-        Objects.requireNonNull(quit, "quit is null");
-        Objects.requireNonNull(closeable, "closeable is null");
-        Objects.requireNonNull(consumer, "consumer is null");
-        PipedInputStream pis = new PipedInputStream();
-        PipedOutputStream pos;
-        try {
-            pos = new PipedOutputStream(pis);
-        } catch (IOException ioe) {
-            throw new RuntimeException("failed to create pos with " + pis, ioe);
-        }
-        InputStream systemIn = System.in;
-        var piper = new Thread(() -> {
-            while (true) {
-                try {
-                    pos.write(systemIn.read());
-                    pos.flush();
-                } catch (IOException ioe) {
-                    log.error("failed to read from " + systemIn, ioe);
-                    break;
-                }
-            }
-        });
-        piper.setDaemon(true);
-        piper.start();
-        var latch = new CountDownLatch(1);
-        var closer = new Thread(() -> {
-            System.setIn(pis);
-            try {
-                latch.countDown();
-                try (var reader = new BufferedReader(new InputStreamReader(pis))) {
-                    for (String line; (line = reader.readLine()) != null; ) {
-                        if (line.strip().equalsIgnoreCase(quit)) {
-                            break;
-                        }
-                        consumer.accept(line);
-                    }
-                } catch (InterruptedIOException iioe) {
-                    Thread.currentThread().interrupt();
-                } catch (IOException ioe) {
-                    throw new UncheckedIOException(ioe);
-                }
-            } finally {
-                System.setIn(systemIn);
-                try {
-                    closeable.close();
-                } catch (IOException ioe) {
-                    log.error("failed to close " + closeable, ioe);
-                }
-            }
-        });
-        closer.start();
-        try {
-            latch.await();
-        } catch (InterruptedException ie) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException("interrupted while awaiting latch", ie);
-        }
-        return closer;
-    }
-
-    public static byte[] trim(String string, Charset charset, int length) {
+    public static byte[] trim(final String string, final Charset charset, final int length) {
         Objects.requireNonNull(string, "string is null");
         Objects.requireNonNull(charset, "charset is null");
         if (length < 0) {

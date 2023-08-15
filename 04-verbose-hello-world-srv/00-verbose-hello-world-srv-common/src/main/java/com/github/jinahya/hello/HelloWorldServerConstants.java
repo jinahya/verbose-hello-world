@@ -32,6 +32,8 @@ public class HelloWorldServerConstants {
 
     public static final String QUIT = "quit!";
 
+    public static final String KEEP = "keep!";
+
     private HelloWorldServerConstants() {
         throw new AssertionError("instantiation is not allowed");
     }

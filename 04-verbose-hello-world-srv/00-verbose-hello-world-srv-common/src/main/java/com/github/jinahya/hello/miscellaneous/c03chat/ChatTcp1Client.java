@@ -1,11 +1,10 @@
 package com.github.jinahya.hello.miscellaneous.c03chat;
 
 import com.github.jinahya.hello.HelloWorldServerConstants;
+import com.github.jinahya.hello.util.HelloWorldLangUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -57,46 +56,38 @@ class ChatTcp1Client {
         @Override
         public void run() {
             BlockingQueue<String> queue = new ArrayBlockingQueue<>(1);
-            var thread = new Thread(() -> {
-                var reader = new BufferedReader(new InputStreamReader(System.in));
-                for (String line; !Thread.currentThread().isInterrupted(); ) {
-                    try {
-                        line = reader.readLine();
-                    } catch (IOException ioe) {
-                        Thread.currentThread().interrupt();
-                        continue;
-                    }
-                    if (line == null) {
-                        line = HelloWorldServerConstants.QUIT;
-                    }
-                    try {
-                        if (!queue.offer(line, 8L, TimeUnit.SECONDS)) {
-                            log.error("[C] failed to offer to the queue");
+            HelloWorldLangUtils.callWhenRead(
+                    v -> !client.isClosed(),        // <predicate>
+                    HelloWorldServerConstants.QUIT, // <string>
+                    () -> {                         // <callable>
+                        client.close();
+                        return null;
+                    },
+                    l -> {                          // <consumer>
+                        try {
+                            if (!queue.offer(l, 1L, TimeUnit.SECONDS)) {
+                                log.error("[C] failed to offer");
+                            }
+                        } catch (InterruptedException ie) {
+                            // empty
                         }
-                    } catch (InterruptedException ie) {
-                        Thread.currentThread().interrupt();
                     }
-                }
-            });
-            thread.setDaemon(true);
-            thread.start();
-            for (String line; !Thread.currentThread().isInterrupted(); ) {
+            );
+            while (!client.isClosed() && !Thread.currentThread().isInterrupted()) {
+                String message;
                 try {
-                    if ((line = queue.poll(1L, TimeUnit.SECONDS)) == null) {
-                        if (client.isClosed()) {
-                            Thread.currentThread().interrupt();
-                        }
+                    if ((message = queue.poll(1L, TimeUnit.SECONDS)) == null) {
                         continue;
                     }
                 } catch (InterruptedException ie) {
                     Thread.currentThread().interrupt();
                     continue;
                 }
-                if (line.strip().equalsIgnoreCase(HelloWorldServerConstants.QUIT)) {
+                if (message.strip().equalsIgnoreCase(HelloWorldServerConstants.QUIT)) {
                     Thread.currentThread().interrupt();
                     continue;
                 }
-                var array = _ChatMessage.newArray(line);
+                var array = _ChatMessage.newArray(_ChatUtils.prependUsername(message));
                 try {
                     client.getOutputStream().write(array);
                     client.getOutputStream().flush();
@@ -107,7 +98,6 @@ class ChatTcp1Client {
                     Thread.currentThread().interrupt();
                 }
             }
-            thread.interrupt();
             try {
                 client.close();
             } catch (IOException ioe) {

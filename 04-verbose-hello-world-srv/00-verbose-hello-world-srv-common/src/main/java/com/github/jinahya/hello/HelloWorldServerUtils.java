@@ -514,6 +514,16 @@ public class HelloWorldServerUtils {
         return await(latch, 1L, TimeUnit.MINUTES);
     }
 
+    public static boolean isQuit(String string) {
+        Objects.requireNonNull(string, "string is null");
+        return string.strip().equalsIgnoreCase(HelloWorldServerConstants.QUIT);
+    }
+
+    public static boolean isKeep(String string) {
+        Objects.requireNonNull(string, "string is null");
+        return string.strip().equalsIgnoreCase(HelloWorldServerConstants.KEEP);
+    }
+
     /**
      * Creates a new instance which is impossible.
      */

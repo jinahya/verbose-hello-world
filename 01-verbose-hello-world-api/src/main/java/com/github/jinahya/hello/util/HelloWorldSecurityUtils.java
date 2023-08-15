@@ -41,7 +41,7 @@ public class HelloWorldSecurityUtils {
      * preceding its current {@link ByteBuffer#position() position}.
      *
      * @param digest the message digest to be updated.
-     * @param buffer the byte buffer.
+     * @param buffer the byte buffer whose content to be updated to the {@code digest}.
      * @param bytes  the number of bytes, precede {@code buffer}'s current
      *               {@link ByteBuffer#position() position}, to be updated to the {@code digest}.
      */
@@ -58,21 +58,20 @@ public class HelloWorldSecurityUtils {
             throw new BufferUnderflowException();
         }
         if (ThreadLocalRandom.current().nextBoolean()) {
-            if (buffer.hasArray()) {
-                digest.update(
-                        buffer.array(),
-                        buffer.arrayOffset() + buffer.position() - bytes,
-                        bytes
-                );
-            } else {
-                var position = buffer.position();
-                var limit = buffer.limit();
-                digest.update(buffer.position(position - bytes).limit(position));
-                buffer.limit(limit).position(position);
-            }
-            return;
+            digest.update(buffer.slice(buffer.position() - bytes, bytes));
         }
-        digest.update(buffer.slice(buffer.position() - bytes, bytes));
+        if (buffer.hasArray()) {
+            digest.update(
+                    buffer.array(),
+                    buffer.arrayOffset() + buffer.position() - bytes,
+                    bytes
+            );
+        } else {
+            var position = buffer.position();
+            var limit = buffer.limit();
+            digest.update(buffer.position(position - bytes).limit(position));
+            buffer.limit(limit).position(position);
+        }
     }
 
     private HelloWorldSecurityUtils() {

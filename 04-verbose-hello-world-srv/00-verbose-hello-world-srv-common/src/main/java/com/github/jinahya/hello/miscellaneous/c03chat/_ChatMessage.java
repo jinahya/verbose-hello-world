@@ -13,7 +13,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.Temporal;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.Optional;
 
 @Slf4j
 public class _ChatMessage {
@@ -34,50 +33,10 @@ public class _ChatMessage {
 
     private static final Charset MESSAGE_CHARSET = StandardCharsets.UTF_8;
 
-    private static void requireValid(byte[] array, int arrayOffset) {
-        Objects.requireNonNull(array, "array is null");
-        if (arrayOffset < 0) {
-            throw new IllegalArgumentException("arrayOffset(" + arrayOffset + ") is negative");
-        }
-        if (arrayOffset + BYTES > array.length) {
-            throw new ArrayIndexOutOfBoundsException(
-                    "arrayOffset(" + arrayOffset + ") + " + BYTES + " > array.length("
-                    + array.length + ")");
-        }
-    }
-
-    private static void requireValid(byte[] array) {
-        requireValid(array, 0);
-    }
-
-    private static void requireValid(ByteBuffer buffer) {
-        Objects.requireNonNull(buffer, "buffer is null");
-        if (buffer.hasArray()) {
-            requireValid(buffer.array(), buffer.arrayOffset());
-            return;
-        }
-        if (buffer.capacity() != BYTES) {
-            throw new IllegalArgumentException(
-                    "buffer.capacity(" + buffer.capacity() + ") != " + BYTES);
-        }
-    }
-
     static int getInt(byte[] array, int offset, int length) {
-        Objects.requireNonNull(array, "array is null");
-        if (offset < 0) {
-            throw new IllegalArgumentException("offset(" + offset + ") is negative");
-        }
-        if (length <= 0) {
-            throw new IllegalArgumentException("length(" + length + ") is not positive");
-        }
         if (length > Integer.BYTES) {
             throw new IllegalArgumentException(
                     "length(" + length + ") is greater than " + Integer.BYTES);
-        }
-        if (offset + length > array.length) {
-            throw new ArrayIndexOutOfBoundsException(
-                    "offset(" + offset + ") + length(" + length + ") > array.length(" + array.length
-                    + ")");
         }
         var result = array[offset++] & 0xFF;
         for (int i = 1; i < length; i++) {
@@ -87,192 +46,104 @@ public class _ChatMessage {
         return result;
     }
 
-    static int getInt(ByteBuffer buffer, int offset, int length) {
-        Objects.requireNonNull(buffer, "buffer is null");
-        if (offset < 0) {
-            throw new IllegalArgumentException("offset(" + offset + ") is negative");
-        }
-        if (length <= 0) {
-            throw new IllegalArgumentException("length(" + length + ") is not positive");
-        }
+    static int getInt(ByteBuffer buffer, int index, int length) {
         if (length > Integer.BYTES) {
             throw new IllegalArgumentException(
                     "length(" + length + ") is greater than " + Integer.BYTES);
         }
-        if (offset + length > buffer.capacity()) {
-            throw new ArrayIndexOutOfBoundsException(
-                    "offset(" + offset + ") + length(" + length + ") > buffer.length("
-                    + buffer.capacity() + ")");
-        }
         if (buffer.hasArray()) {
-            return getInt(buffer.array(), buffer.arrayOffset() + offset, length);
+            return getInt(buffer.array(), buffer.arrayOffset() + index, length);
         }
-        var result = buffer.get(offset++) & 0xFF;
+        var result = buffer.get(index++) & 0xFF;
         for (int i = 0; i < length; i++) {
             result <<= Byte.SIZE;
-            result |= (buffer.get(offset++) & 0xFF);
+            result |= (buffer.get(index++) & 0xFF);
         }
         return result;
     }
 
     static void setInt(byte[] array, int offset, int length, int value) {
-        Objects.requireNonNull(array, "array is null");
-        if (offset < 0) {
-            throw new IllegalArgumentException("offset(" + offset + ") is negative");
-        }
-        if (length <= 0) {
-            throw new IllegalArgumentException("length(" + length + ") is not positive");
-        }
         if (length > Integer.BYTES) {
             throw new IllegalArgumentException(
                     "length(" + length + ") is greater than " + Integer.BYTES);
         }
-        if (offset + length > array.length) {
-            throw new ArrayIndexOutOfBoundsException(
-                    "offset(" + offset + ") + length(" + length + ") > array.length(" + array.length
-                    + ")");
-        }
-        var index = offset + length - 1;
-        array[index--] = (byte) (value & 0xFF);
-        while (index >= offset) {
+        var i = offset + length - 1;
+        array[i--] = (byte) (value & 0xFF);
+        while (i >= offset) {
             value >>= Byte.SIZE;
-            array[index--] = (byte) (value & 0xFF);
+            array[i--] = (byte) (value & 0xFF);
         }
     }
 
-    static void setInt(ByteBuffer buffer, int offset, int length, int value) {
-        Objects.requireNonNull(buffer, "buffer is null");
-        if (offset < 0) {
-            throw new IllegalArgumentException("offset(" + offset + ") is negative");
-        }
-        if (length <= 0) {
-            throw new IllegalArgumentException("length(" + length + ") is not positive");
-        }
+    static void setInt(ByteBuffer buffer, int index, int length, int value) {
         if (length > Integer.BYTES) {
             throw new IllegalArgumentException(
                     "length(" + length + ") is greater than " + Integer.BYTES);
         }
-        if (offset + length > buffer.capacity()) {
-            throw new ArrayIndexOutOfBoundsException(
-                    "offset(" + offset + ") + length(" + length + ") > buffer.length("
-                    + buffer.capacity() + ")");
-        }
         if (buffer.hasArray()) {
-            setInt(buffer.array(), buffer.arrayOffset() + offset, length, value);
+            setInt(buffer.array(), buffer.arrayOffset() + index, length, value);
             return;
         }
-        var index = offset + length - 1;
-        buffer.put(index--, (byte) (value & 0xFF));
-        while (index >= offset) {
+        var i = index + length - 1;
+        buffer.put(i--, (byte) (value & 0xFF));
+        while (i >= index) {
             value >>= Byte.SIZE;
-            buffer.put(index--, (byte) (value & 0xFF));
+            buffer.put(i--, (byte) (value & 0xFF));
         }
     }
 
     static long getLong(byte[] array, int offset, int length) {
-        Objects.requireNonNull(array, "array is null");
-        if (offset < 0) {
-            throw new IllegalArgumentException("offset(" + offset + ") is negative");
-        }
-        if (length <= 0) {
-            throw new IllegalArgumentException("length(" + length + ") is not positive");
-        }
         if (length > Long.BYTES) {
             throw new IllegalArgumentException(
                     "length(" + length + ") is greater than " + Long.BYTES);
         }
-        if (offset + length > array.length) {
-            throw new ArrayIndexOutOfBoundsException(
-                    "offset(" + offset + ") + length(" + length + ") > array.length(" + array.length
-                    + ")");
-        }
-        var result = array[offset++] & 0xFFL;
+        var value = array[offset++] & 0xFFL;
         for (int i = 1; i < length; i++) {
-            result <<= Byte.SIZE;
-            result |= (array[offset++] & 0xFF);
+            value <<= Byte.SIZE;
+            value |= (array[offset++] & 0xFF);
         }
-        return result;
+        return value;
     }
 
-    static long getLong(ByteBuffer buffer, int offset, int length) {
-        Objects.requireNonNull(buffer, "buffer is null");
-        if (offset < 0) {
-            throw new IllegalArgumentException("offset(" + offset + ") is negative");
-        }
-        if (length <= 0) {
-            throw new IllegalArgumentException("length(" + length + ") is not positive");
-        }
-        if (length > Long.BYTES) {
-            throw new IllegalArgumentException(
-                    "length(" + length + ") is greater than " + Long.BYTES);
-        }
-        if (offset + length > buffer.capacity()) {
-            throw new ArrayIndexOutOfBoundsException(
-                    "offset(" + offset + ") + length(" + length + ") > buffer.length("
-                    + buffer.capacity() + ")");
-        }
+    static long getLong(ByteBuffer buffer, int index, int length) {
         if (buffer.hasArray()) {
-            return getLong(buffer.array(), buffer.arrayOffset() + offset, length);
+            return getLong(buffer.array(), buffer.arrayOffset() + index, length);
         }
-        var result = buffer.get(offset++) & 0xFFL;
+        var result = buffer.get(index++) & 0xFFL;
         for (int i = 0; i < length; i++) {
             result <<= Byte.SIZE;
-            result |= (buffer.get(offset++) & 0xFFL);
+            result |= (buffer.get(index++) & 0xFFL);
         }
         return result;
     }
 
     static void setLong(byte[] array, int offset, int length, long value) {
-        Objects.requireNonNull(array, "array is null");
-        if (offset < 0) {
-            throw new IllegalArgumentException("offset(" + offset + ") is negative");
-        }
-        if (length <= 0) {
-            throw new IllegalArgumentException("length(" + length + ") is not positive");
-        }
         if (length > Long.BYTES) {
             throw new IllegalArgumentException(
                     "length(" + length + ") is greater than " + Integer.BYTES);
         }
-        if (offset + length > array.length) {
-            throw new ArrayIndexOutOfBoundsException(
-                    "offset(" + offset + ") + length(" + length + ") > array.length(" + array.length
-                    + ")");
-        }
-        var index = offset + length - 1;
-        array[index--] = (byte) (value & 0xFF);
-        while (index >= offset) {
+        var i = offset + length - 1;
+        array[i--] = (byte) (value & 0xFF);
+        while (i >= offset) {
             value >>= Byte.SIZE;
-            array[index--] = (byte) (value & 0xFF);
+            array[i--] = (byte) (value & 0xFF);
         }
     }
 
-    static void setLong(ByteBuffer buffer, int offset, int length, long value) {
-        Objects.requireNonNull(buffer, "buffer is null");
-        if (offset < 0) {
-            throw new IllegalArgumentException("offset(" + offset + ") is negative");
-        }
-        if (length <= 0) {
-            throw new IllegalArgumentException("length(" + length + ") is not positive");
-        }
-        if (length > Integer.BYTES) {
+    static void setLong(ByteBuffer buffer, int index, int length, long value) {
+        if (length > Long.BYTES) {
             throw new IllegalArgumentException(
-                    "length(" + length + ") is greater than " + Integer.BYTES);
-        }
-        if (offset + length > buffer.capacity()) {
-            throw new ArrayIndexOutOfBoundsException(
-                    "offset(" + offset + ") + length(" + length + ") > buffer.length("
-                    + buffer.capacity() + ")");
+                    "length(" + length + ") is greater than " + Long.BYTES);
         }
         if (buffer.hasArray()) {
-            setLong(buffer.array(), buffer.arrayOffset() + offset, length, value);
+            setLong(buffer.array(), buffer.arrayOffset() + index, length, value);
             return;
         }
-        var index = offset + length - 1;
-        buffer.put(index--, (byte) (value & 0xFF));
-        while (index >= offset) {
+        var i = index + length - 1;
+        buffer.put(i--, (byte) (value & 0xFF));
+        while (i >= index) {
             value >>= Byte.SIZE;
-            buffer.put(index--, (byte) (value & 0xFF));
+            buffer.put(i--, (byte) (value & 0xFF));
         }
     }
 
@@ -324,7 +195,6 @@ public class _ChatMessage {
     }
 
     private static int getMessageLength(byte[] array, int arrayOffset) {
-        requireValid(array, arrayOffset);
         return getInt(array, arrayOffset + MESSAGE_LENGTH_OFFSET, MESSAGE_LENGTH_LENGTH);
     }
 
@@ -341,7 +211,6 @@ public class _ChatMessage {
     }
 
     private static void setMessageLength(byte[] array, int arrayOffset, int value) {
-        requireValid(array, arrayOffset);
         setInt(array, arrayOffset + MESSAGE_LENGTH_OFFSET, MESSAGE_LENGTH_LENGTH, value);
     }
 
@@ -358,12 +227,11 @@ public class _ChatMessage {
     }
 
     private static String getMessage(byte[] array, int arrayOffset) {
-        requireValid(array, arrayOffset);
         return new String(
-                array,                         // <bytes>
+                array,                              // <bytes>
                 arrayOffset + MESSAGE_BYTES_OFFSET, // <offset>
-                getMessageLength(array),       // <length>
-                MESSAGE_CHARSET                // <charset>
+                getMessageLength(array),            // <length>
+                MESSAGE_CHARSET                     // <charset>
         );
     }
 
@@ -386,8 +254,8 @@ public class _ChatMessage {
     }
 
     private static void setMessage(byte[] array, int arrayOffset, String message) {
-        message = '[' + Optional.ofNullable(System.getProperty("user.name")).orElse("unknown")
-                  + "] " + message;
+//        message = '[' + Optional.ofNullable(System.getProperty("user.name")).orElse("unknown")
+//                  + "] " + message;
         byte[] bytes = HelloWorldLangUtils.trim(message, MESSAGE_CHARSET, MESSAGE_BYTES_LENGTH);
         setMessageLength(array, bytes.length);
         System.arraycopy(bytes, 0, array, arrayOffset + MESSAGE_BYTES_OFFSET, bytes.length);
@@ -430,7 +298,6 @@ public class _ChatMessage {
     }
 
     public static String toString(ByteBuffer buffer) {
-        requireValid(buffer);
         if (buffer.hasArray()) {
             return toString(buffer.array(), buffer.arrayOffset());
         }
@@ -452,11 +319,11 @@ public class _ChatMessage {
         return ByteBuffer.wrap(newArray(timestamp, message));
     }
 
-    public static byte[] newArray(String message) {
+    static byte[] newArray(String message) {
         return newArray(System.currentTimeMillis(), message);
     }
 
-    public static ByteBuffer newBuffer(String message) {
+    static ByteBuffer newBuffer(String message) {
         return newBuffer(System.currentTimeMillis(), message);
     }
 
@@ -469,7 +336,6 @@ public class _ChatMessage {
     }
 
     private static byte[] copy(byte[] array, int arrayOffset) {
-        requireValid(array, arrayOffset);
         return Arrays.copyOf(array, array.length);
     }
 
@@ -478,13 +344,28 @@ public class _ChatMessage {
     }
 
     public static ByteBuffer copy(ByteBuffer buffer) {
-        requireValid(buffer);
         if (buffer.hasArray()) {
             return ByteBuffer.wrap(copy(buffer.array(), buffer.arrayOffset()));
         }
         var copy = newBuffer();
         buffer.get(0, copy.array());
         return copy;
+    }
+
+    private static void printToSystemOut(byte[] array, int arrayOffset) {
+        System.out.printf("%1$s%n", toString(array, arrayOffset));
+    }
+
+    static void printToSystemOut(byte[] array) {
+        printToSystemOut(array, 0);
+    }
+
+    static void printToSystemOut(ByteBuffer buffer) {
+        if (buffer.hasArray()) {
+            printToSystemOut(buffer.array(), buffer.arrayOffset());
+            return;
+        }
+        System.out.printf("%1$s%n", toString(buffer));
     }
 
     private _ChatMessage() {

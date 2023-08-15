@@ -35,15 +35,15 @@ class ChatTcp2Client {
             }
             clientKey.attach(new Attachment());
             HelloWorldLangUtils.callWhenRead(
+                    v -> !Thread.currentThread().isInterrupted(),
+                    HelloWorldServerConstants.QUIT,
                     () -> {
-                        log.debug("closing channel");
                         clientKey.channel().close();
-//                        clientKey.cancel();
+                        assert !clientKey.isValid();
                         return null;
                     },
-                    HelloWorldServerConstants.QUIT,
-                    l -> {
-                        var buffer = _ChatMessage.newBuffer(l);
+                    m -> {
+                        var buffer = _ChatMessage.newBuffer(_ChatUtils.prependUsername(m));
                         ((Attachment) clientKey.attachment()).buffers.add(buffer);
                         clientKey.interestOpsOr(SelectionKey.OP_WRITE);
                         selector.wakeup();

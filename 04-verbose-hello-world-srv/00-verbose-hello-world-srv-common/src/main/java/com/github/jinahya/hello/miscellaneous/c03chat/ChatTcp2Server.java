@@ -65,13 +65,17 @@ class ChatTcp2Server {
             log.debug("[S] bound to {}", server.getLocalAddress());
             server.configureBlocking(false);
             var serverKey = server.register(selector, SelectionKey.OP_ACCEPT);
-            HelloWorldLangUtils.runWhenRead(
+            HelloWorldLangUtils.callWhenRead(
+                    v -> !Thread.currentThread().isInterrupted(),
+                    HelloWorldServerConstants.QUIT,
                     () -> {
                         serverKey.cancel();
+                        assert !serverKey.isValid();
                         selector.wakeup();
+                        return null;
                     },
-                    HelloWorldServerConstants.QUIT,
-                    null
+                    l -> {
+                    }
             );
             while (serverKey.isValid()) {
                 if (selector.select(TimeUnit.SECONDS.toMillis(8L)) == 0) {

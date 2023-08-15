@@ -1,5 +1,6 @@
 package com.github.jinahya.hello.miscellaneous.c03chat;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
@@ -7,6 +8,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
 
@@ -14,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@Slf4j
 class _ChatMessageTest {
 
     private static Stream<String> getMessageStream() {
@@ -131,7 +134,7 @@ class _ChatMessageTest {
     @MethodSource({"getMessageStream"})
     @ParameterizedTest
     void setMessage__Array(String message) {
-        var array = new byte[_ChatMessage.BYTES];
+        var array = _ChatMessage.newArray();
         _ChatMessage.setMessage(array, message);
         assertTrue(message.startsWith(_ChatMessage.getMessage(array)));
     }
@@ -139,22 +142,23 @@ class _ChatMessageTest {
     @DisplayName("setMessage(buffer, message)")
     @MethodSource({"getMessageStream"})
     @ParameterizedTest
-    void setMessage__Buffer(String message) {
-        var buffer = ByteBuffer.allocate(_ChatMessage.BYTES);
-        _ChatMessage.setMessage(buffer, message);
-        assertTrue(message.startsWith(_ChatMessage.getMessage(buffer)));
+    void setMessage__Buffer(String expected) {
+        var buffer = _ChatMessage.newBuffer();
+        _ChatMessage.setMessage(buffer, expected);
+        var actual = _ChatMessage.getMessage(buffer);
+        assertTrue(expected.startsWith(actual));
     }
 
     @Test
     void toString__Array() {
-        var array = new byte[_ChatMessage.BYTES];
+        var array = _ChatMessage.newArray();
         var string = _ChatMessage.toString(array);
         assertFalse(string.isBlank());
     }
 
     @Test
     void toString__Buffer() {
-        var buffer = ByteBuffer.allocate(_ChatMessage.BYTES);
+        var buffer = _ChatMessage.newBuffer();
         var string = _ChatMessage.toString(buffer);
         assertFalse(string.isBlank());
     }
