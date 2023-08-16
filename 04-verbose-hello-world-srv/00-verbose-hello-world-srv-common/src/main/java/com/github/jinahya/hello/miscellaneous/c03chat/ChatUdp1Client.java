@@ -56,7 +56,6 @@ public class ChatUdp1Client {
 
         @Override
         public void run() {
-            log.debug("receiver started");
             var array = _ChatMessage.newArray();
             var packet = new DatagramPacket(array, array.length);
             while (!Thread.currentThread().isInterrupted()) {
@@ -74,7 +73,7 @@ public class ChatUdp1Client {
                 }
                 _ChatMessage.printToSystemOut(array);
             }
-            log.debug("receiver is finishing");
+            socket.close();
         }
     }
 
@@ -90,7 +89,6 @@ public class ChatUdp1Client {
 
         @Override
         public void run() {
-            log.debug("sender starts");
             while (!Thread.currentThread().isInterrupted()) {
                 byte[] array;
                 try {
@@ -106,7 +104,6 @@ public class ChatUdp1Client {
                 var packet = new DatagramPacket(array, array.length, address);
                 try {
                     socket.send(packet);
-                    log.debug("sent: {}", _ChatMessage.getMessage(array));
                 } catch (IOException ioe) {
                     if (!socket.isClosed()) {
                         log.error("[C] failed to send", ioe);
@@ -114,7 +111,6 @@ public class ChatUdp1Client {
                     Thread.currentThread().interrupt();
                 }
             }
-            log.debug("sender is finishing");
         }
     }
 
@@ -126,10 +122,10 @@ public class ChatUdp1Client {
             addr = InetAddress.getLoopbackAddress();
         }
         var address = new InetSocketAddress(addr, _ChatConstants.PORT);
+        log.debug("[C] address: {}", address);
         var executor = Executors.newCachedThreadPool();
         var futures = new ArrayList<Future<?>>();
         try (var client = new DatagramSocket(null)) {
-            log.debug("[C] address: {}", address);
             var connect = ThreadLocalRandom.current().nextBoolean();
             if (connect) {
                 try {

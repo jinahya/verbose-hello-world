@@ -41,15 +41,10 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 
-// https://www.rfc-editor.org/rfc/rfc862
 @Slf4j
 public class ChatUdp2Server {
 
-    private static final Map<SocketAddress, Instant> ADDRESSES = new HashMap<>();
-
-    private static final Queue<ByteBuffer> MESSAGES = new LinkedList<>();
-
-    static final Duration THAN = Duration.ofSeconds(8L);
+    static final Duration DURATION = Duration.ofSeconds(8L);
 
     public static void main(String... args) throws Exception {
         try (var selector = Selector.open();
@@ -75,48 +70,42 @@ public class ChatUdp2Server {
                         // does nothing
                     }
             );
+            var addresses = new HashMap<SocketAddress, Instant>();
+            var buffers = new LinkedList<ByteBuffer>();
             while (serverKey.isValid()) {
                 if (selector.select(TimeUnit.SECONDS.toMillis(8L)) == 0) {
                     continue;
                 }
-                var receiving = _ChatMessage.newBuffer();
                 for (var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
                     var selectedKey = i.next();
                     if (selectedKey.isReadable()) {
                         var channel = (DatagramChannel) selectedKey.channel();
-                        var address = channel.receive(receiving.clear()); // IOException
-                        if (receiving.hasRemaining()) {
-                            log.error("[S] received an incomplete message of {} byte(s)",
-                                      receiving.position());
-                        } else {
-                            ADDRESSES.put(address, Instant.now());
-                            if (!HelloWorldServerUtils.isKeep(_ChatMessage.getMessage(receiving))) {
-                                if (MESSAGES.offer(_ChatMessage.copy(receiving))) {
-                                    log.error("[S] failed to offer");
-                                }
-                                selectedKey.interestOpsOr(SelectionKey.OP_WRITE);
-                            }
+                        var buffer = _ChatMessage.newBuffer();
+                        var address = channel.receive(buffer.clear()); // IOException
+                        assert !buffer.hasRemaining() : "not all bytes received";
+                        addresses.put(address, Instant.now());
+                        if (!HelloWorldServerUtils.isKeep(_ChatMessage.getMessage(buffer))) {
+                            var offered = buffers.offer(buffer.clear());
+                            assert offered : "failed to offer";
+                            selectedKey.interestOpsOr(SelectionKey.OP_WRITE);
                         }
                     }
                     if (selectedKey.isWritable()) {
-                        assert !MESSAGES.isEmpty();
-                        var sending = MESSAGES.poll();
-                        assert sending != null;
-                        var older = Instant.now().minus(THAN);
-                        for (var j = ADDRESSES.entrySet().iterator(); j.hasNext(); ) {
+                        assert !buffers.isEmpty();
+                        var buffer = buffers.removeFirst();
+                        var threshold = Instant.now().minus(DURATION);
+                        for (var j = addresses.entrySet().iterator(); j.hasNext(); ) {
                             var entry = j.next();
-                            var timestamp = entry.getValue();
-                            if (timestamp.isBefore(older)) {
+                            var address = entry.getKey();
+                            var instant = entry.getValue();
+                            if (instant.isBefore(threshold)) {
                                 j.remove();
                                 continue;
                             }
-                            var address = entry.getKey();
-                            var bytes = server.send(sending.clear(), address); // IOException
-                            if (bytes != sending.capacity()) {
-                                log.error("[S] not all bytes sent!");
-                            }
+                            server.send(buffer.clear(), address); // IOException
+                            assert !buffer.hasRemaining() : "not all bytes sent";
                         }
-                        if (MESSAGES.isEmpty()) {
+                        if (buffers.isEmpty()) {
                             selectedKey.interestOpsAnd(~SelectionKey.OP_WRITE);
                         }
                     }
