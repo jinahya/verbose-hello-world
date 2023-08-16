@@ -336,7 +336,7 @@ public class _ChatMessage {
     }
 
     private static byte[] copy(byte[] array, int arrayOffset) {
-        return Arrays.copyOf(array, array.length);
+        return Arrays.copyOfRange(array, arrayOffset, array.length);
     }
 
     public static byte[] copy(byte[] array) {
