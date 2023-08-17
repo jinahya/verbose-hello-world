@@ -14,6 +14,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.Temporal;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.function.LongFunction;
 
 @Slf4j
 public class _ChatMessage {
@@ -169,6 +170,16 @@ public class _ChatMessage {
             return getTimestamp(buffer.array(), buffer.arrayOffset());
         }
         return getLong(buffer, TIMESTAMP_OFFSET, TIMESTAMP_LENGTH);
+    }
+
+    static <R> R getTimestamp(byte[] array, LongFunction<R> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return mapper.apply(getTimestamp(array));
+    }
+
+    static <R> R getTimestamp(ByteBuffer buffer, LongFunction<R> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return mapper.apply(getTimestamp(buffer));
     }
 
     private static void setTimestamp(byte[] array, int offset, long timestamp) {
