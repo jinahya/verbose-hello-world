@@ -74,7 +74,7 @@ class ChatTcp2Client {
                             break;
                         }
                         if (!attachment.buffer.hasRemaining()) {
-                            System.out.printf("%1$s%n", _ChatMessage.toString(attachment.buffer));
+                            _ChatMessage.printToSystemOut(attachment.buffer);
                             attachment.buffer.clear();
                         }
                     }

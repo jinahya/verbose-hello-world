@@ -37,7 +37,7 @@ class ChatTcp1Client {
                     Thread.currentThread().interrupt();
                     continue;
                 }
-                System.out.printf("%1$s%n", _ChatMessage.toString(array));
+                _ChatMessage.printToSystemOut(array);
             }
             try {
                 client.close();

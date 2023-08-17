@@ -30,15 +30,15 @@ public class _ChatMessage {
 
     private static final int MESSAGE_BYTES_LENGTH = 255;
 
-    public static final int BYTES = MESSAGE_BYTES_OFFSET + MESSAGE_BYTES_LENGTH;
+    static final int BYTES = MESSAGE_BYTES_OFFSET + MESSAGE_BYTES_LENGTH;
 
     private static final Charset MESSAGE_CHARSET = StandardCharsets.UTF_8;
 
-    public static byte[] newEmptyArray() {
+    static byte[] newEmptyArray() {
         return new byte[BYTES];
     }
 
-    public static ByteBuffer newEmptyBuffer() {
+    static ByteBuffer newEmptyBuffer() {
         return ByteBuffer.wrap(newEmptyArray());
     }
 
@@ -160,11 +160,11 @@ public class _ChatMessage {
         return getLong(array, offset + TIMESTAMP_OFFSET, TIMESTAMP_LENGTH);
     }
 
-    public static long getTimestamp(byte[] array) {
+    static long getTimestamp(byte[] array) {
         return getTimestamp(array, 0);
     }
 
-    public static long getTimestamp(ByteBuffer buffer) {
+    static long getTimestamp(ByteBuffer buffer) {
         if (buffer.hasArray()) {
             return getTimestamp(buffer.array(), buffer.arrayOffset());
         }
@@ -175,7 +175,7 @@ public class _ChatMessage {
         setLong(array, offset + TIMESTAMP_OFFSET, TIMESTAMP_LENGTH, timestamp);
     }
 
-    public static void setTimestamp(byte[] array, long timestamp) {
+    static void setTimestamp(byte[] array, long timestamp) {
         Objects.requireNonNull(array, "array is null");
         if (timestamp < 0) {
             throw new IllegalArgumentException("timestamp(" + timestamp + ") is negative");
@@ -183,7 +183,7 @@ public class _ChatMessage {
         setTimestamp(array, 0, timestamp);
     }
 
-    public static void setTimestamp(ByteBuffer buffer, long timestamp) {
+    static void setTimestamp(ByteBuffer buffer, long timestamp) {
         Objects.requireNonNull(buffer, "buffer is null");
         if (timestamp < 0) {
             throw new IllegalArgumentException("timestamp(" + timestamp + ") is negative");
@@ -195,11 +195,11 @@ public class _ChatMessage {
         setLong(buffer, TIMESTAMP_OFFSET, TIMESTAMP_LENGTH, timestamp);
     }
 
-    public static void setTimestampWithCurrentTimeMillis(byte[] array) {
+    static void setTimestampWithCurrentTimeMillis(byte[] array) {
         setTimestamp(array, System.currentTimeMillis());
     }
 
-    public static void setTimestampWithCurrentTimeMillis(ByteBuffer buffer) {
+    static void setTimestampWithCurrentTimeMillis(ByteBuffer buffer) {
         setTimestamp(buffer, System.currentTimeMillis());
     }
 
@@ -244,12 +244,12 @@ public class _ChatMessage {
         );
     }
 
-    public static String getMessage(byte[] array) {
+    static String getMessage(byte[] array) {
         Objects.requireNonNull(array, "array is null");
         return getMessage(array, 0);
     }
 
-    public static String getMessage(ByteBuffer buffer) {
+    static String getMessage(ByteBuffer buffer) {
         Objects.requireNonNull(buffer, "buffer is null");
         if (buffer.hasArray()) {
             return getMessage(buffer.array(), buffer.arrayOffset());
@@ -272,11 +272,11 @@ public class _ChatMessage {
                     (byte) 0);
     }
 
-    public static void setMessage(byte[] array, String message) {
+    static void setMessage(byte[] array, String message) {
         setMessage(array, 0, message);
     }
 
-    public static void setMessage(ByteBuffer buffer, String message) {
+    static void setMessage(ByteBuffer buffer, String message) {
         Objects.requireNonNull(buffer, "buffer is null");
         if (buffer.hasArray()) {
             setMessage(buffer.array(), buffer.arrayOffset(), message);
@@ -302,11 +302,11 @@ public class _ChatMessage {
         return toString(temporal, getMessage(array, arrayOffset));
     }
 
-    public static String toString(byte[] array) {
+    static String toString(byte[] array) {
         return toString(array, 0);
     }
 
-    public static String toString(ByteBuffer buffer) {
+    static String toString(ByteBuffer buffer) {
         if (buffer.hasArray()) {
             return toString(buffer.array(), buffer.arrayOffset());
         }
@@ -317,14 +317,14 @@ public class _ChatMessage {
         return toString(temporal, getMessage(buffer));
     }
 
-    public static byte[] arrayOf(long timestamp, String message) {
+    static byte[] arrayOf(long timestamp, String message) {
         var array = newEmptyArray();
         setTimestamp(array, timestamp);
         setMessage(array, message);
         return array;
     }
 
-    public static ByteBuffer bufferOf(long timestamp, String message) {
+    static ByteBuffer bufferOf(long timestamp, String message) {
         return ByteBuffer.wrap(arrayOf(timestamp, message));
     }
 
@@ -340,11 +340,11 @@ public class _ChatMessage {
         return Arrays.copyOfRange(array, arrayOffset, array.length);
     }
 
-    public static byte[] copy(byte[] array) {
+    static byte[] copy(byte[] array) {
         return copy(array, 0);
     }
 
-    public static ByteBuffer copy(ByteBuffer buffer) {
+    static ByteBuffer copy(ByteBuffer buffer) {
         if (buffer.hasArray()) {
             return ByteBuffer.wrap(copy(buffer.array(), buffer.arrayOffset()));
         }
