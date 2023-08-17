@@ -112,7 +112,6 @@ class ChatTcp1Server {
             ));
             log.debug("[S] bound on {}", server.getLocalSocketAddress());
             HelloWorldLangUtils.callWhenRead(
-                    v -> !Thread.currentThread().isInterrupted(), // <predicate>
                     HelloWorldServerConstants.QUIT,               // <string>
                     () -> {                                       // <callable>
                         server.close();

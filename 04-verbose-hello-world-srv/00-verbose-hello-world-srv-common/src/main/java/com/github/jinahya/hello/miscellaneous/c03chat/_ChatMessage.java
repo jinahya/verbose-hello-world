@@ -3,6 +3,7 @@ package com.github.jinahya.hello.miscellaneous.c03chat;
 import com.github.jinahya.hello.util.HelloWorldLangUtils;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.PrintStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -32,6 +33,14 @@ public class _ChatMessage {
     public static final int BYTES = MESSAGE_BYTES_OFFSET + MESSAGE_BYTES_LENGTH;
 
     private static final Charset MESSAGE_CHARSET = StandardCharsets.UTF_8;
+
+    public static byte[] newEmptyArray() {
+        return new byte[BYTES];
+    }
+
+    public static ByteBuffer newEmptyBuffer() {
+        return ByteBuffer.wrap(newEmptyArray());
+    }
 
     static int getInt(byte[] array, int offset, int length) {
         if (length > Integer.BYTES) {
@@ -308,31 +317,23 @@ public class _ChatMessage {
         return toString(temporal, getMessage(buffer));
     }
 
-    public static byte[] newArray(long timestamp, String message) {
-        var array = new byte[BYTES];
+    public static byte[] arrayOf(long timestamp, String message) {
+        var array = newEmptyArray();
         setTimestamp(array, timestamp);
         setMessage(array, message);
         return array;
     }
 
-    public static ByteBuffer newBuffer(long timestamp, String message) {
-        return ByteBuffer.wrap(newArray(timestamp, message));
+    public static ByteBuffer bufferOf(long timestamp, String message) {
+        return ByteBuffer.wrap(arrayOf(timestamp, message));
     }
 
-    static byte[] newArray(String message) {
-        return newArray(System.currentTimeMillis(), message);
+    static byte[] arrayOf(String message) {
+        return arrayOf(System.currentTimeMillis(), message);
     }
 
-    static ByteBuffer newBuffer(String message) {
-        return newBuffer(System.currentTimeMillis(), message);
-    }
-
-    public static byte[] newArray() {
-        return newArray("");
-    }
-
-    public static ByteBuffer newBuffer() {
-        return newBuffer("");
+    static ByteBuffer bufferOf(String message) {
+        return bufferOf(System.currentTimeMillis(), message);
     }
 
     private static byte[] copy(byte[] array, int arrayOffset) {
@@ -347,25 +348,35 @@ public class _ChatMessage {
         if (buffer.hasArray()) {
             return ByteBuffer.wrap(copy(buffer.array(), buffer.arrayOffset()));
         }
-        var copy = newBuffer();
+        var copy = newEmptyBuffer();
         buffer.get(0, copy.array());
         return copy;
     }
 
-    private static void printToSystemOut(byte[] array, int arrayOffset) {
-        System.out.printf("%1$s%n", toString(array, arrayOffset));
+    private static String PRINT_FORMAT = "%1$s%n";
+
+    private static void printTo(byte[] array, int arrayOffset, PrintStream printer) {
+        printer.printf(PRINT_FORMAT, toString(array, arrayOffset));
+    }
+
+    static void printTo(byte[] array, PrintStream printer) {
+        printTo(array, 0, printer);
+    }
+
+    static void printTo(ByteBuffer buffer, PrintStream printer) {
+        if (buffer.hasArray()) {
+            printTo(buffer.array(), buffer.arrayOffset(), printer);
+            return;
+        }
+        printer.printf(PRINT_FORMAT, toString(buffer));
     }
 
     static void printToSystemOut(byte[] array) {
-        printToSystemOut(array, 0);
+        printTo(array, System.out);
     }
 
     static void printToSystemOut(ByteBuffer buffer) {
-        if (buffer.hasArray()) {
-            printToSystemOut(buffer.array(), buffer.arrayOffset());
-            return;
-        }
-        System.out.printf("%1$s%n", toString(buffer));
+        printTo(buffer, System.out);
     }
 
     private _ChatMessage() {

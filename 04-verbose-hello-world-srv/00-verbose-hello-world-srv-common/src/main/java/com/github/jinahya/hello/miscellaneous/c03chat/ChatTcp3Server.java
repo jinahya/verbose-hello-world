@@ -178,7 +178,6 @@ class ChatTcp3Server {
             log.debug("[S] server bound to {}", server.getLocalAddress());
             var latch = new CountDownLatch(1);
             HelloWorldLangUtils.callWhenRead(
-                    v -> !Thread.currentThread().isInterrupted(),
                     HelloWorldServerConstants.QUIT,
                     () -> {
                         latch.countDown();

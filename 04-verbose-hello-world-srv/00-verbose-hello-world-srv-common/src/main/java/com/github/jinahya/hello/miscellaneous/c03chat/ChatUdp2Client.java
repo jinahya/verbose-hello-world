@@ -24,7 +24,6 @@ import com.github.jinahya.hello.HelloWorldServerConstants;
 import com.github.jinahya.hello.util.HelloWorldLangUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.StandardSocketOptions;
@@ -32,15 +31,21 @@ import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class ChatUdp2Client {
+
+    private static final Duration KEEP_DURATION = ChatUdp1Server.KEEP_DURATION.dividedBy(2L);
+
+    static {
+        assert KEEP_DURATION.toSeconds() > 0;
+    }
 
     public static void main(String... args) throws Exception {
         InetAddress addr;
@@ -53,32 +58,24 @@ public class ChatUdp2Client {
         log.debug("address: {}", address);
         var executor = Executors.newScheduledThreadPool(3);
         var futures = new ArrayList<Future<?>>();
-        try (var selector = Selector.open(); var client = DatagramChannel.open()) {
+        try (var selector = Selector.open();
+             var client = DatagramChannel.open()) {
             log.debug("[S]: SO_RCVBUF: {}", client.getOption(StandardSocketOptions.SO_RCVBUF));
             log.debug("[S]: SO_SNFBUD: {}", client.getOption(StandardSocketOptions.SO_SNDBUF));
-            var connect = ThreadLocalRandom.current().nextBoolean();
-            if (connect) {
-                try {
-                    client.connect(address);
-                } catch (IOException ioe) {
-                    connect = false;
-                }
-            }
-            var messages = new LinkedList<ByteBuffer>();
+            var queue = new LinkedList<ByteBuffer>();
             client.configureBlocking(false);
             var clientKey = client.register(selector, SelectionKey.OP_READ);
             futures.add(executor.scheduleAtFixedRate(
                     () -> {
-                        messages.addLast(_ChatMessage.newBuffer(HelloWorldServerConstants.KEEP));
+                        queue.addLast(_ChatMessage.bufferOf(HelloWorldServerConstants.KEEP));
                         clientKey.interestOpsOr(SelectionKey.OP_WRITE);
                         selector.wakeup();
                     },
-                    1L,
-                    ChatUdp2Server.DURATION.toSeconds() >> 1,
+                    KEEP_DURATION.toSeconds(),
+                    KEEP_DURATION.toSeconds(),
                     TimeUnit.SECONDS
             ));
             HelloWorldLangUtils.callWhenRead(
-                    v -> !Thread.currentThread().isInterrupted(),
                     HelloWorldServerConstants.QUIT,
                     () -> {
                         clientKey.cancel();
@@ -87,7 +84,7 @@ public class ChatUdp2Client {
                         return null;
                     },
                     l -> {
-                        messages.addLast(_ChatMessage.newBuffer(_ChatUtils.prependUsername(l)));
+                        queue.addLast(_ChatMessage.bufferOf(_ChatUtils.prependUsername(l)));
                         clientKey.interestOpsOr(SelectionKey.OP_WRITE);
                         selector.wakeup();
                     }
@@ -100,29 +97,30 @@ public class ChatUdp2Client {
                     var selectedKey = i.next();
                     if (selectedKey.isReadable()) {
                         var channel = (DatagramChannel) selectedKey.channel();
-                        var buffer = _ChatMessage.newBuffer();
+                        var buffer = _ChatMessage.newEmptyBuffer();
                         channel.receive(buffer); // IOException
-                        log.debug("buffer: {}", buffer);
                         assert !buffer.hasRemaining() : "not all bytes received";
                         _ChatMessage.printToSystemOut(buffer);
                     }
                     if (selectedKey.isWritable()) {
-                        assert !messages.isEmpty();
+                        assert !queue.isEmpty();
                         var channel = (DatagramChannel) selectedKey.channel();
-                        var buffer = messages.removeFirst();
+                        var buffer = queue.removeFirst();
                         channel.send(buffer, address);
                         assert !buffer.hasRemaining() : "not all bytes sent";
-                        if (messages.isEmpty()) {
+                        if (queue.isEmpty()) {
                             selectedKey.interestOpsAnd(~SelectionKey.OP_WRITE);
                         }
                     }
                 }
-            } // end-of-while
-        } // end-of-try-with-resources
-        futures.forEach(f -> f.cancel(true));
-        for (executor.shutdown(); !executor.awaitTermination(8L, TimeUnit.SECONDS); ) {
+            }
         }
-    } // end-of-main
+        futures.forEach(f -> f.cancel(true));
+        executor.shutdown();
+        if (!executor.awaitTermination(8L, TimeUnit.SECONDS)) {
+            log.error("[C] executor has not been terminated");
+        }
+    }
 
     private ChatUdp2Client() {
         throw new AssertionError("instantiation is not allowed");

@@ -37,14 +37,12 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
-import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class ChatUdp2Server {
 
-    static final Duration DURATION = Duration.ofSeconds(8L);
+    static final Duration KEEP_DURATION = ChatUdp1Server.KEEP_DURATION;
 
     public static void main(String... args) throws Exception {
         try (var selector = Selector.open();
@@ -58,7 +56,6 @@ public class ChatUdp2Server {
             server.configureBlocking(false);
             var serverKey = server.register(selector, SelectionKey.OP_READ);
             HelloWorldLangUtils.callWhenRead(
-                    v -> !Thread.currentThread().isInterrupted(),
                     HelloWorldServerConstants.QUIT,
                     () -> {
                         serverKey.cancel();
@@ -80,7 +77,7 @@ public class ChatUdp2Server {
                     var selectedKey = i.next();
                     if (selectedKey.isReadable()) {
                         var channel = (DatagramChannel) selectedKey.channel();
-                        var buffer = _ChatMessage.newBuffer();
+                        var buffer = _ChatMessage.newEmptyBuffer();
                         var address = channel.receive(buffer.clear()); // IOException
                         assert !buffer.hasRemaining() : "not all bytes received";
                         addresses.put(address, Instant.now());
@@ -93,7 +90,7 @@ public class ChatUdp2Server {
                     if (selectedKey.isWritable()) {
                         assert !buffers.isEmpty();
                         var buffer = buffers.removeFirst();
-                        var threshold = Instant.now().minus(DURATION);
+                        var threshold = Instant.now().minus(KEEP_DURATION);
                         for (var j = addresses.entrySet().iterator(); j.hasNext(); ) {
                             var entry = j.next();
                             var address = entry.getKey();

@@ -29,25 +29,33 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.PortUnreachableException;
 import java.net.SocketAddress;
-import java.net.SocketException;
+import java.net.StandardSocketOptions;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class ChatUdp1Client {
 
-    private static final Duration THAN = ChatUdp1Server.THAN.minusSeconds(1L);
+    private static final Duration KEEP_DURATION = ChatUdp1Server.KEEP_DURATION.dividedBy(2L);
 
+    static {
+        assert KEEP_DURATION.toSeconds() > 0;
+    }
+
+    /**
+     * A runnable which continuously receives messages through a specified socket, and prints
+     * received message to the {@link System#out}.
+     *
+     * @param socket the socket from which messages are received.
+     */
     private record Receiver(DatagramSocket socket) implements Runnable {
 
         private Receiver {
@@ -56,35 +64,37 @@ public class ChatUdp1Client {
 
         @Override
         public void run() {
-            var array = _ChatMessage.newArray();
+            var array = _ChatMessage.newEmptyArray();
             var packet = new DatagramPacket(array, array.length);
             while (!Thread.currentThread().isInterrupted()) {
                 try {
                     socket.receive(packet);
-                } catch (PortUnreachableException pue) { // connect
-                    Thread.currentThread().interrupt();
-                    continue;
+                    _ChatMessage.printToSystemOut(array);
                 } catch (IOException ioe) {
                     if (!socket.isClosed()) {
                         log.error("[C] failed to receive", ioe);
                     }
-                    Thread.currentThread().interrupt();
-                    continue;
                 }
-                _ChatMessage.printToSystemOut(array);
             }
-            socket.close();
         }
     }
 
-    private record Sender(BlockingQueue<? extends byte[]> queue, DatagramSocket socket,
-                          SocketAddress address)
+    /**
+     * A runnable which continuously polls messages from specified queue, and sends them to
+     * specified endpoint through specified socket.
+     *
+     * @param queue   the queue from which message are polled.
+     * @param address the endpoint to send messages.
+     * @param socket  the socket through which messages are sent.
+     */
+    private record Sender(BlockingQueue<? extends byte[]> queue, SocketAddress address,
+                          DatagramSocket socket)
             implements Runnable {
 
         private Sender {
             Objects.requireNonNull(queue, "queue is null");
-            Objects.requireNonNull(socket, "socket is null");
             Objects.requireNonNull(address, "address is null");
+            Objects.requireNonNull(socket, "socket is null");
         }
 
         @Override
@@ -94,8 +104,6 @@ public class ChatUdp1Client {
                 try {
                     if ((array = queue.poll(1L, TimeUnit.SECONDS)) == null) {
                         continue;
-                    } else {
-                        log.debug("polled: {}", _ChatMessage.getMessage(array));
                     }
                 } catch (InterruptedException ie) {
                     Thread.currentThread().interrupt();
@@ -108,7 +116,6 @@ public class ChatUdp1Client {
                     if (!socket.isClosed()) {
                         log.error("[C] failed to send", ioe);
                     }
-                    Thread.currentThread().interrupt();
                 }
             }
         }
@@ -123,71 +130,45 @@ public class ChatUdp1Client {
         }
         var address = new InetSocketAddress(addr, _ChatConstants.PORT);
         log.debug("[C] address: {}", address);
-        var executor = Executors.newCachedThreadPool();
+        var queue = new LinkedBlockingQueue<byte[]>();
+        var executor = Executors.newScheduledThreadPool(3); // receive, send, and keep
         var futures = new ArrayList<Future<?>>();
+        executor.scheduleAtFixedRate(
+                () -> {
+                    var array = _ChatMessage.arrayOf(HelloWorldServerConstants.KEEP);
+                    if (!queue.offer(array)) {
+                        log.error("[C] failed to offer keep");
+                    }
+                },
+                KEEP_DURATION.toSeconds(),
+                KEEP_DURATION.toSeconds(),
+                TimeUnit.SECONDS
+        );
         try (var client = new DatagramSocket(null)) {
-            var connect = ThreadLocalRandom.current().nextBoolean();
-            if (connect) {
-                try {
-                    client.connect(address);
-                    log.debug("[C] connected to {}, through {}", client.getRemoteSocketAddress(),
-                              client.getLocalSocketAddress());
-                } catch (SocketException se) {
-                    log.error("[C] unable to connect to {}", address);
-                    connect = false;
-                }
-            }
+            log.debug("[S]: SO_RCVBUF: {}", client.getOption(StandardSocketOptions.SO_RCVBUF));
+            log.debug("[S]: SO_SNFBUD: {}", client.getOption(StandardSocketOptions.SO_SNDBUF));
             futures.add(executor.submit(new Receiver(client)));
-            var queue = new ArrayBlockingQueue<byte[]>(1);
-            futures.add(executor.submit(() -> {
-                while (!Thread.currentThread().isInterrupted()) {
-                    var array = _ChatMessage.newArray(HelloWorldServerConstants.KEEP);
-                    try {
-                        if (!queue.offer(array, 1L, TimeUnit.SECONDS)) {
-                            log.error("[C] failed to offer keep");
-                        } else {
-                            log.debug("keep offered");
-                        }
-                    } catch (InterruptedException ie) {
-                        Thread.currentThread().interrupt();
-                    }
-                    try {
-                        Thread.sleep(THAN.toMillis());
-                    } catch (InterruptedException ie) {
-                        Thread.currentThread().interrupt();
-                    }
-                }
-            }));
-            futures.add(executor.submit(new Sender(queue, client, address)));
+            futures.add(executor.submit(new Sender(queue, address, client)));
             var latch = new CountDownLatch(1);
             HelloWorldLangUtils.callWhenRead(
-                    v -> !Thread.currentThread().isInterrupted(),
                     HelloWorldServerConstants.QUIT,
                     () -> {
                         latch.countDown();
                         return null;
                     },
                     l -> {
-                        var array = _ChatMessage.newArray();
-                        _ChatMessage.setTimestampWithCurrentTimeMillis(array);
-                        _ChatMessage.setMessage(array, _ChatUtils.prependUsername(l));
-                        try {
-                            if (!queue.offer(array, 1L, TimeUnit.SECONDS)) {
-                                log.error("failed to offer");
-                            }
-                        } catch (InterruptedException ie) {
-                            Thread.currentThread().interrupt();
+                        if (!queue.offer(_ChatMessage.arrayOf(_ChatUtils.prependUsername(l)))) {
+                            log.error("[C] failed to offer message");
                         }
                     }
             );
             latch.await(); // InterruptedException
-            if (connect) {
-                client.disconnect(); // UncheckedIOException
-            }
         }
         futures.forEach(f -> f.cancel(true));
         executor.shutdown();
-        var terminated = executor.awaitTermination(8L, TimeUnit.SECONDS);
+        if (!executor.awaitTermination(8L, TimeUnit.SECONDS)) {
+            log.error("[C] executor has not been terminated");
+        }
     }
 
     private ChatUdp1Client() {

@@ -31,6 +31,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.net.StandardSocketOptions;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -50,7 +51,7 @@ public class ChatUdp1Server {
 
     private static final Map<SocketAddress, Instant> ADDRESSES = new ConcurrentHashMap<>();
 
-    static final Duration THAN = Duration.ofSeconds(8L);
+    static final Duration KEEP_DURATION = Duration.ofSeconds(8L);
 
     private record Sender(BlockingQueue<? extends byte[]> queue, DatagramSocket socket)
             implements Runnable {
@@ -62,7 +63,6 @@ public class ChatUdp1Server {
 
         @Override
         public void run() {
-            log.debug("sender started");
             while (!Thread.currentThread().isInterrupted()) {
                 byte[] array;
                 try {
@@ -73,24 +73,24 @@ public class ChatUdp1Server {
                     Thread.currentThread().interrupt();
                     continue;
                 }
-                log.debug("sending...");
-                var older = Instant.now().minus(THAN);
+                var packet = new DatagramPacket(array, array.length);
+                var threshold = Instant.now().minus(KEEP_DURATION);
                 for (var i = ADDRESSES.entrySet().iterator(); i.hasNext(); ) {
                     var entry = i.next();
                     var timestamp = entry.getValue();
-                    if (timestamp.isBefore(older)) {
+                    if (timestamp.isBefore(threshold)) {
                         i.remove();
                         continue;
                     }
                     var address = entry.getKey();
+                    packet.setSocketAddress(address);
                     try {
-                        socket.send(new DatagramPacket(array, array.length, address));
+                        socket.send(packet);
                     } catch (IOException ioe) {
                         log.error("[S] failed to send to {}", address, ioe);
                     }
                 }
             }
-            log.debug("sender finished");
         }
     }
 
@@ -104,11 +104,9 @@ public class ChatUdp1Server {
 
         @Override
         public void run() {
-            log.debug("receiver started");
             while (!Thread.currentThread().isInterrupted()) {
-                byte[] array = _ChatMessage.newArray();
+                byte[] array = _ChatMessage.newEmptyArray();
                 var packet = new DatagramPacket(array, array.length);
-                log.debug("receiving");
                 try {
                     socket.receive(packet);
                 } catch (IOException ioe) {
@@ -118,22 +116,15 @@ public class ChatUdp1Server {
                     Thread.currentThread().interrupt();
                     continue;
                 }
-                log.debug("received");
                 var address = packet.getSocketAddress();
+                ADDRESSES.put(address, Instant.now());
                 if (HelloWorldServerUtils.isKeep(_ChatMessage.getMessage(array))) {
-                    log.debug("keep received");
-                    ADDRESSES.put(address, Instant.now());
                     continue;
                 }
-                try {
-                    if (!queue.offer(array, 1L, TimeUnit.SECONDS)) {
-                        log.error("[C] failed to offer");
-                    }
-                } catch (InterruptedException ie) {
-                    Thread.currentThread().interrupt();
+                if (!queue.offer(array)) {
+                    log.error("[C] failed to offer");
                 }
             }
-            log.debug("receiver finished");
         }
     }
 
@@ -141,6 +132,8 @@ public class ChatUdp1Server {
         var executor = Executors.newCachedThreadPool();
         var futures = new ArrayList<Future<?>>();
         try (var server = new DatagramSocket(null)) {
+            log.debug("[S]: SO_RCVBUF: {}", server.getOption(StandardSocketOptions.SO_RCVBUF));
+            log.debug("[S]: SO_SNFBUD: {}", server.getOption(StandardSocketOptions.SO_SNDBUF));
             server.bind(new InetSocketAddress(
                     InetAddress.getByName("0.0.0.0"), _ChatConstants.PORT
             ));
@@ -150,7 +143,6 @@ public class ChatUdp1Server {
             futures.add(executor.submit(new Sender(queue, server)));
             var latch = new CountDownLatch(1);
             HelloWorldLangUtils.callWhenRead(
-                    v -> !server.isClosed() && !Thread.currentThread().isInterrupted(),
                     HelloWorldServerConstants.QUIT,
                     () -> {
                         latch.countDown();

@@ -57,7 +57,6 @@ class ChatTcp1Client {
         public void run() {
             BlockingQueue<String> queue = new ArrayBlockingQueue<>(1);
             HelloWorldLangUtils.callWhenRead(
-                    v -> !client.isClosed(),        // <predicate>
                     HelloWorldServerConstants.QUIT, // <string>
                     () -> {                         // <callable>
                         client.close();
@@ -87,7 +86,7 @@ class ChatTcp1Client {
                     Thread.currentThread().interrupt();
                     continue;
                 }
-                var array = _ChatMessage.newArray(_ChatUtils.prependUsername(message));
+                var array = _ChatMessage.arrayOf(_ChatUtils.prependUsername(message));
                 try {
                     client.getOutputStream().write(array);
                     client.getOutputStream().flush();

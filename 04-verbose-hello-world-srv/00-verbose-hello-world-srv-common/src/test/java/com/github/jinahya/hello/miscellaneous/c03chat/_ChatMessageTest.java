@@ -8,7 +8,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
 
@@ -19,8 +18,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Slf4j
 class _ChatMessageTest {
 
+    // https://tatoeba.org/ko/
     private static Stream<String> getMessageStream() {
         return Stream.of(
+                "أمك مريضة",
                 "У нього було сиве волосся.",
                 "Trovu, kiu vizitas vian profilon.",
                 "There is no public toilet.",
@@ -134,7 +135,7 @@ class _ChatMessageTest {
     @MethodSource({"getMessageStream"})
     @ParameterizedTest
     void setMessage__Array(String message) {
-        var array = _ChatMessage.newArray();
+        var array = _ChatMessage.newEmptyArray();
         _ChatMessage.setMessage(array, message);
         assertTrue(message.startsWith(_ChatMessage.getMessage(array)));
     }
@@ -143,7 +144,7 @@ class _ChatMessageTest {
     @MethodSource({"getMessageStream"})
     @ParameterizedTest
     void setMessage__Buffer(String expected) {
-        var buffer = _ChatMessage.newBuffer();
+        var buffer = _ChatMessage.newEmptyBuffer();
         _ChatMessage.setMessage(buffer, expected);
         var actual = _ChatMessage.getMessage(buffer);
         assertTrue(expected.startsWith(actual));
@@ -151,14 +152,14 @@ class _ChatMessageTest {
 
     @Test
     void toString__Array() {
-        var array = _ChatMessage.newArray();
+        var array = _ChatMessage.newEmptyArray();
         var string = _ChatMessage.toString(array);
         assertFalse(string.isBlank());
     }
 
     @Test
     void toString__Buffer() {
-        var buffer = _ChatMessage.newBuffer();
+        var buffer = _ChatMessage.newEmptyBuffer();
         var string = _ChatMessage.toString(buffer);
         assertFalse(string.isBlank());
     }

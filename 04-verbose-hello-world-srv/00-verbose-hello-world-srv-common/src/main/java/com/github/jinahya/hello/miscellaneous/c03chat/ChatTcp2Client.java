@@ -35,7 +35,6 @@ class ChatTcp2Client {
             }
             clientKey.attach(new Attachment());
             HelloWorldLangUtils.callWhenRead(
-                    v -> !Thread.currentThread().isInterrupted(),
                     HelloWorldServerConstants.QUIT,
                     () -> {
                         clientKey.channel().close();
@@ -43,7 +42,7 @@ class ChatTcp2Client {
                         return null;
                     },
                     m -> {
-                        var buffer = _ChatMessage.newBuffer(_ChatUtils.prependUsername(m));
+                        var buffer = _ChatMessage.bufferOf(_ChatUtils.prependUsername(m));
                         ((Attachment) clientKey.attachment()).buffers.add(buffer);
                         clientKey.interestOpsOr(SelectionKey.OP_WRITE);
                         selector.wakeup();

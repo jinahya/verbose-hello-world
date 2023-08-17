@@ -49,7 +49,7 @@ class ChatTcp2Server {
             buffer.clear();
         }
 
-        final ByteBuffer buffer = _ChatMessage.newBuffer();
+        final ByteBuffer buffer = _ChatMessage.newEmptyBuffer();
 
         final List<ByteBuffer> buffers = new ArrayList<>();
     }
@@ -66,7 +66,6 @@ class ChatTcp2Server {
             server.configureBlocking(false);
             var serverKey = server.register(selector, SelectionKey.OP_ACCEPT);
             HelloWorldLangUtils.callWhenRead(
-                    v -> !Thread.currentThread().isInterrupted(),
                     HelloWorldServerConstants.QUIT,
                     () -> {
                         serverKey.cancel();

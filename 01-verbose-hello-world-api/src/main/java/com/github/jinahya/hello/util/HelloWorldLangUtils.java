@@ -31,7 +31,6 @@ import java.nio.charset.Charset;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 /**
  * Utilities for {@link java.lang} package.
@@ -68,30 +67,27 @@ public final class HelloWorldLangUtils {
 
     /**
      * Starts a new {@link Thread#isDaemon() daemon} thread which continuously reads lines from
-     * {@link System#in} while specified predicate tests, calls specified callable when it reads a
-     * line equals (ignoring the case) to specified string, otherwise, accepts lines to specified
-     * consumer.
+     * {@link System#in}, calls specified callable when it reads a line equals (ignoring the case)
+     * to specified string, otherwise, accepts lines to specified consumer.
      *
-     * @param predicate the predicate to be tested while reading lines.
-     * @param string    the string to match.
-     * @param callable  the callable to be called when reads {@code string}.
-     * @param consumer  the consumer be accepted with read lines other than {@code string}
+     * @param string   the string to match.
+     * @param callable the callable to be called when reads {@code string}.
+     * @param consumer the consumer be accepted with read lines other than {@code string}
      */
-    public static void callWhenRead(final Predicate<Void> predicate, String string,
-                                    Callable<Void> callable, Consumer<? super String> consumer) {
-        Objects.requireNonNull(predicate, "predicate is null");
+    public static void callWhenRead(String string, Callable<Void> callable,
+                                    Consumer<? super String> consumer) {
         Objects.requireNonNull(string, "string is null");
         Objects.requireNonNull(callable, "callable is null");
         Objects.requireNonNull(consumer, "consumer is null");
         var thread = new Thread(() -> {
             var r = new BufferedReader(new InputStreamReader(System.in));
             try {
-                for (String l; ((l = r.readLine()) != null) && predicate.test(null); ) {
+                String l;
+                while (((l = r.readLine()) != null) && !Thread.currentThread().isInterrupted()) {
                     if (l.strip().equalsIgnoreCase(string)) {
                         try {
                             callable.call();
                         } catch (InterruptedException ie) {
-                            log.info("interrupted while calling {}", callable, ie);
                             Thread.currentThread().interrupt();
                         } catch (Exception e) {
                             log.error("failed to call {}", callable, e);
