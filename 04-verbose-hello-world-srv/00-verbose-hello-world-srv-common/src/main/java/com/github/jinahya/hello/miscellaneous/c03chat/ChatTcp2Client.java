@@ -42,7 +42,7 @@ class ChatTcp2Client {
                         return null;
                     },
                     m -> {
-                        var buffer = _ChatMessage.bufferOf(_ChatUtils.prependUsername(m));
+                        var buffer = _ChatMessage.OfBuffer.of(_ChatUtils.prependUsername(m));
                         ((Attachment) clientKey.attachment()).buffers.add(buffer);
                         clientKey.interestOpsOr(SelectionKey.OP_WRITE);
                         selector.wakeup();
@@ -74,7 +74,7 @@ class ChatTcp2Client {
                             break;
                         }
                         if (!attachment.buffer.hasRemaining()) {
-                            _ChatMessage.printToSystemOut(attachment.buffer);
+                            _ChatMessage.OfBuffer.printToSystemOut(attachment.buffer);
                             attachment.buffer.clear();
                         }
                     }

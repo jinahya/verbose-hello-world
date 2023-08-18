@@ -21,6 +21,7 @@ package com.github.jinahya.hello.miscellaneous.c03chat;
  */
 
 import com.github.jinahya.hello.HelloWorldServerConstants;
+import com.github.jinahya.hello.miscellaneous.c03chat._ChatMessage.OfArray;
 import com.github.jinahya.hello.util.HelloWorldLangUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,7 +43,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-public class ChatUdp1Client {
+class ChatUdp1Client {
 
     private static final Duration KEEP_DURATION = ChatUdp1Server.KEEP_DURATION.dividedBy(2L);
 
@@ -69,7 +70,7 @@ public class ChatUdp1Client {
             while (!Thread.currentThread().isInterrupted()) {
                 try {
                     socket.receive(packet);
-                    _ChatMessage.printToSystemOut(array);
+                    OfArray.printToSystemOut(array);
                 } catch (IOException ioe) {
                     if (!socket.isClosed()) {
                         log.error("[C] failed to receive", ioe);
@@ -135,7 +136,7 @@ public class ChatUdp1Client {
         var futures = new ArrayList<Future<?>>();
         executor.scheduleAtFixedRate(
                 () -> {
-                    var array = _ChatMessage.arrayOf(HelloWorldServerConstants.KEEP);
+                    var array = OfArray.of(HelloWorldServerConstants.KEEP);
                     if (!queue.offer(array)) {
                         log.error("[C] failed to offer keep");
                     }
@@ -157,7 +158,7 @@ public class ChatUdp1Client {
                         return null;
                     },
                     l -> {
-                        if (!queue.offer(_ChatMessage.arrayOf(_ChatUtils.prependUsername(l)))) {
+                        if (!queue.offer(OfArray.of(_ChatUtils.prependUsername(l)))) {
                             log.error("[C] failed to offer message");
                         }
                     }

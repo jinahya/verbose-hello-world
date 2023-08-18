@@ -33,7 +33,6 @@ import java.security.MessageDigest;
 import java.util.HexFormat;
 import java.util.concurrent.TimeUnit;
 
-// https://datatracker.ietf.org/doc/html/rfc863
 @Slf4j
 class Rfc863Tcp2Server {
 

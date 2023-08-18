@@ -21,6 +21,7 @@ package com.github.jinahya.hello.miscellaneous.c03chat;
  */
 
 import com.github.jinahya.hello.HelloWorldServerConstants;
+import com.github.jinahya.hello.miscellaneous.c03chat._ChatMessage.OfBuffer;
 import com.github.jinahya.hello.util.HelloWorldLangUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -39,7 +40,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-public class ChatUdp2Client {
+class ChatUdp2Client {
 
     private static final Duration KEEP_DURATION = ChatUdp1Server.KEEP_DURATION.dividedBy(2L);
 
@@ -66,25 +67,25 @@ public class ChatUdp2Client {
             client.configureBlocking(false);
             var clientKey = client.register(selector, SelectionKey.OP_READ);
             futures.add(executor.scheduleAtFixedRate(
-                    () -> {
-                        queue.addLast(_ChatMessage.bufferOf(HelloWorldServerConstants.KEEP));
+                    () -> {                    // command
+                        queue.addLast(OfBuffer.of(HelloWorldServerConstants.KEEP));
                         clientKey.interestOpsOr(SelectionKey.OP_WRITE);
                         selector.wakeup();
                     },
-                    KEEP_DURATION.toSeconds(),
-                    KEEP_DURATION.toSeconds(),
-                    TimeUnit.SECONDS
+                    KEEP_DURATION.toSeconds(), // <initialDelay>
+                    KEEP_DURATION.toSeconds(), // <period>
+                    TimeUnit.SECONDS           // <unit>
             ));
             HelloWorldLangUtils.callWhenRead(
-                    HelloWorldServerConstants.QUIT,
-                    () -> {
+                    HelloWorldServerConstants.QUIT, // <string>
+                    () -> {                         // <callable>
                         clientKey.cancel();
                         assert !clientKey.isValid();
                         selector.wakeup();
                         return null;
                     },
-                    l -> {
-                        queue.addLast(_ChatMessage.bufferOf(_ChatUtils.prependUsername(l)));
+                    l -> {                          // <consumer>
+                        queue.addLast(OfBuffer.of(_ChatUtils.prependUsername(l)));
                         clientKey.interestOpsOr(SelectionKey.OP_WRITE);
                         selector.wakeup();
                     }
@@ -100,7 +101,7 @@ public class ChatUdp2Client {
                         var buffer = _ChatMessage.newEmptyBuffer();
                         channel.receive(buffer); // IOException
                         assert !buffer.hasRemaining() : "not all bytes received";
-                        _ChatMessage.printToSystemOut(buffer);
+                        OfBuffer.printToSystemOut(buffer);
                     }
                     if (selectedKey.isWritable()) {
                         assert !queue.isEmpty();

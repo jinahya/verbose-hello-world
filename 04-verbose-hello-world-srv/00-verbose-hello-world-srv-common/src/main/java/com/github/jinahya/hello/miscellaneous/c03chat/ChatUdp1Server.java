@@ -47,7 +47,7 @@ import java.util.concurrent.TimeUnit;
 
 // https://www.rfc-editor.org/rfc/rfc862
 @Slf4j
-public class ChatUdp1Server {
+class ChatUdp1Server {
 
     private static final Map<SocketAddress, Instant> ADDRESSES = new ConcurrentHashMap<>();
 
@@ -118,7 +118,7 @@ public class ChatUdp1Server {
                 }
                 var address = packet.getSocketAddress();
                 ADDRESSES.put(address, Instant.now());
-                if (HelloWorldServerUtils.isKeep(_ChatMessage.getMessage(array))) {
+                if (HelloWorldServerUtils.isKeep(_ChatMessage.OfArray.getMessage(array))) {
                     continue;
                 }
                 if (!queue.offer(array)) {

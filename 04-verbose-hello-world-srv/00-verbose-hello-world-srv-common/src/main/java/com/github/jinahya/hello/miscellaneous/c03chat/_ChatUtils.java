@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Objects;
 
 @Slf4j
-public class _ChatUtils {
+class _ChatUtils {
 
     static String prependUsername(String message) {
         Objects.requireNonNull(message, "message is null");

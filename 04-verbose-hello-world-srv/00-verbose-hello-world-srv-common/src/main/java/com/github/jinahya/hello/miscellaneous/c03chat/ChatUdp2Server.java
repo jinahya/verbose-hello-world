@@ -40,7 +40,7 @@ import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-public class ChatUdp2Server {
+class ChatUdp2Server {
 
     static final Duration KEEP_DURATION = ChatUdp1Server.KEEP_DURATION;
 
@@ -49,21 +49,21 @@ public class ChatUdp2Server {
              var server = DatagramChannel.open()) {
             log.debug("[S]: SO_RCVBUF: {}", server.getOption(StandardSocketOptions.SO_RCVBUF));
             log.debug("[S]: SO_SNFBUD: {}", server.getOption(StandardSocketOptions.SO_SNDBUF));
-            server.bind(
-                    new InetSocketAddress(InetAddress.getByName("0.0.0.0"), _ChatConstants.PORT)
-            );
+            server.bind(new InetSocketAddress(
+                    InetAddress.getByName("0.0.0.0"), _ChatConstants.PORT
+            ));
             log.debug("[S] bound to {}", server.getLocalAddress());
             server.configureBlocking(false);
             var serverKey = server.register(selector, SelectionKey.OP_READ);
             HelloWorldLangUtils.callWhenRead(
-                    HelloWorldServerConstants.QUIT,
-                    () -> {
+                    HelloWorldServerConstants.QUIT, // <string>
+                    () -> {                         // <callable>
                         serverKey.cancel();
                         assert !serverKey.isValid();
                         selector.wakeup();
                         return null;
                     },
-                    l -> {
+                    l -> {                          // <consumer>
                         // does nothing
                     }
             );
@@ -81,7 +81,8 @@ public class ChatUdp2Server {
                         var address = channel.receive(buffer.clear()); // IOException
                         assert !buffer.hasRemaining() : "not all bytes received";
                         addresses.put(address, Instant.now());
-                        if (!HelloWorldServerUtils.isKeep(_ChatMessage.getMessage(buffer))) {
+                        if (!HelloWorldServerUtils.isKeep(
+                                _ChatMessage.OfBuffer.getMessage(buffer))) {
                             var offered = buffers.offer(buffer.clear());
                             assert offered : "failed to offer";
                             selectedKey.interestOpsOr(SelectionKey.OP_WRITE);

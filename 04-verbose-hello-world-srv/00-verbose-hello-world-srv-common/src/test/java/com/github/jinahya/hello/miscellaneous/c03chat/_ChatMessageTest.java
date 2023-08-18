@@ -1,19 +1,24 @@
 package com.github.jinahya.hello.miscellaneous.c03chat;
 
+import com.github.jinahya.hello.miscellaneous.c03chat._ChatMessage.OfArray;
+import com.github.jinahya.hello.miscellaneous.c03chat._ChatMessage.OfBuffer;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.nio.ByteBuffer;
-import java.util.concurrent.ThreadLocalRandom;
+import java.time.Instant;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Answers.CALLS_REAL_METHODS;
+import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.withSettings;
 
 @Slf4j
 class _ChatMessageTest {
@@ -43,124 +48,142 @@ class _ChatMessageTest {
         );
     }
 
-    @RepeatedTest(1)
-    void int__Array() {
-        var array = new byte[Integer.BYTES];
-        var length = ThreadLocalRandom.current().nextInt(array.length) + 1;
-        var offset = Integer.BYTES - length;
-        var expected = ThreadLocalRandom.current().nextInt() >>> (offset * Byte.SIZE);
-        _ChatMessage.setInt(array, offset, length, expected);
-        var actual = _ChatMessage.getInt(array, offset, length);
-        assertEquals(expected, actual);
+    @Nested
+    class OfArrayTest {
+
+        private static Stream<String> getMessageStream_() {
+            return getMessageStream();
+        }
+
+        @MethodSource({"getMessageStream_"})
+        @ParameterizedTest
+        void of__(String message) {
+            var array = OfArray.of(message);
+            assertNotNull(array);
+            assertTrue(message.startsWith(OfArray.getMessage(array)));
+        }
+
+        @MethodSource({"getMessageStream_"})
+        @ParameterizedTest
+        void copyOf__(String message) {
+            var original = OfArray.of(message);
+            var copy = OfArray.copyOf(original);
+            assertNotNull(copy);
+            assertEquals(OfArray.getTimestamp(original), OfArray.getTimestamp(copy));
+            assertEquals(OfArray.getMessage(original), OfArray.getMessage(copy));
+        }
+
+        @Test
+        void getTimestamp__() {
+            var array = OfArray.empty();
+            try (var mock = mockStatic(OfArray.class,
+                                       withSettings().defaultAnswer(CALLS_REAL_METHODS))) {
+                var value = System.currentTimeMillis();
+                mock.when(() -> OfArray.getTimestamp(array)).thenReturn(value);
+                mock.clearInvocations();
+                var actual = OfArray.getTimestampAsInstant(array);
+                assertNotNull(actual);
+                assertEquals(value, actual.toEpochMilli());
+                mock.verify(() -> OfArray.getTimestamp(array), times(1));
+            }
+        }
+
+        @Test
+        void setTimestamp__() {
+            var array = OfArray.empty();
+            try (var mock = mockStatic(OfArray.class,
+                                       withSettings().defaultAnswer(CALLS_REAL_METHODS))) {
+                var instant = Instant.now();
+                OfArray.setTimestamp(array, instant);
+                mock.verify(() -> OfArray.setTimestamp(array, instant.toEpochMilli()), times(1));
+            }
+        }
+
+        @Test
+        void getMessage__() {
+            var array = OfArray.empty();
+            var message = OfArray.getMessage(array);
+            assertNotNull(message);
+            assertTrue(message.isBlank());
+        }
+
+        @MethodSource({"getMessageStream_"})
+        @ParameterizedTest
+        void setMessage__(String message) {
+            var array = OfArray.empty();
+            OfArray.setMessage(array, message);
+            assertTrue(message.startsWith(OfArray.getMessage(array)));
+        }
     }
 
-    @RepeatedTest(1)
-    void int__Buffer() {
-        var array = ByteBuffer.allocate(Integer.BYTES);
-        var length = ThreadLocalRandom.current().nextInt(array.capacity()) + 1;
-        var offset = Integer.BYTES - length;
-        var expected = ThreadLocalRandom.current().nextInt() >>> (offset * Byte.SIZE);
-        _ChatMessage.setInt(array, offset, length, expected);
-        var actual = _ChatMessage.getInt(array, offset, length);
-        assertEquals(expected, actual);
-    }
+    @Nested
+    class OfBufferTest {
 
-    @RepeatedTest(1)
-    void long__Array() {
-        var array = new byte[Long.BYTES];
-        var length = ThreadLocalRandom.current().nextInt(array.length) + 1;
-        var offset = Long.BYTES - length;
-        var expected = ThreadLocalRandom.current().nextLong() >>> (offset * Byte.SIZE);
-        _ChatMessage.setLong(array, offset, length, expected);
-        var actual = _ChatMessage.getLong(array, offset, length);
-        assertEquals(expected, actual);
-    }
+        private static Stream<String> getMessageStream_() {
+            return getMessageStream();
+        }
 
-    @RepeatedTest(1)
-    void long__Buffer() {
-        var array = ByteBuffer.allocate(Long.BYTES);
-        var length = ThreadLocalRandom.current().nextInt(array.capacity()) + 1;
-        var offset = Long.BYTES - length;
-        var expected = ThreadLocalRandom.current().nextLong() >>> (offset * Byte.SIZE);
-        _ChatMessage.setLong(array, offset, length, expected);
-        var actual = _ChatMessage.getLong(array, offset, length);
-        assertEquals(expected, actual);
-    }
+        @MethodSource({"getMessageStream_"})
+        @ParameterizedTest
+        void of__(String message) {
+            var buffer = OfBuffer.of(message);
+            assertNotNull(buffer);
+            assertTrue(message.startsWith(OfBuffer.getMessage(buffer)));
+        }
 
-    @Test
-    void getTimestamp__Array() {
-        var array = new byte[_ChatMessage.BYTES];
-        var actual = _ChatMessage.getTimestamp(array);
-        assertEquals(0, actual);
-    }
+        @MethodSource({"getMessageStream_"})
+        @ParameterizedTest
+        void copyOf__(String message) {
+            var original = OfBuffer.of(message);
+            var copy = OfBuffer.copyOf(original);
+            assertNotNull(copy);
+            assertEquals(OfBuffer.getTimestamp(original), OfBuffer.getTimestamp(copy));
+            assertEquals(OfBuffer.getMessage(original), OfBuffer.getMessage(copy));
+        }
 
-    @Test
-    void getTimestamp__Buffer() {
-        var array = ByteBuffer.allocate(_ChatMessage.BYTES);
-        var actual = _ChatMessage.getTimestamp(array);
-        assertEquals(0, actual);
-    }
+        @Test
+        void getTimestamp__() {
+            var buffer = OfBuffer.empty();
+            try (var mock = mockStatic(OfBuffer.class,
+                                       withSettings().defaultAnswer(CALLS_REAL_METHODS))) {
+                var value = System.currentTimeMillis();
+                mock.when(() -> OfBuffer.getTimestamp(same(buffer))).thenReturn(value);
+                mock.clearInvocations();
+                var actual = OfBuffer.getTimestampAsInstant(buffer);
+                assertNotNull(actual);
+                assertEquals(Instant.ofEpochMilli(value), actual);
+                mock.verify(() -> OfBuffer.getTimestamp(buffer), times(1));
+            }
+        }
 
-    @Test
-    void setTimestamp__Array() {
-        var array = new byte[_ChatMessage.BYTES];
-        var timestamp = System.currentTimeMillis();
-        _ChatMessage.setTimestamp(array, timestamp);
-        assertEquals(timestamp, _ChatMessage.getTimestamp(array));
-    }
+        @Test
+        void setTimestamp__() {
+            var buffer = OfBuffer.empty();
+            try (var mock = mockStatic(OfBuffer.class,
+                                       withSettings().defaultAnswer(CALLS_REAL_METHODS))) {
+                var instant = Instant.now();
+                OfBuffer.setTimestamp(buffer, instant);
+                mock.verify(
+                        () -> OfBuffer.setTimestamp(buffer, instant.toEpochMilli()),
+                        times(1)
+                );
+            }
+        }
 
-    @Test
-    void setTimestamp__Buffer() {
-        var buffer = ByteBuffer.allocate(_ChatMessage.BYTES);
-        var timestamp = System.currentTimeMillis();
-        _ChatMessage.setTimestamp(buffer, timestamp);
-        assertEquals(timestamp, _ChatMessage.getTimestamp(buffer));
-    }
+        @Test
+        void getMessage__() {
+            var buffer = OfBuffer.empty();
+            var message = OfBuffer.getMessage(buffer);
+            assertNotNull(message);
+            assertTrue(message.isBlank());
+        }
 
-    @Test
-    void getMessage_Blank_Array() {
-        var array = new byte[_ChatMessage.BYTES];
-        var message = _ChatMessage.getMessage(array);
-        assertTrue(message.isBlank());
-    }
-
-    @Test
-    void getMessage_Blank_Buffer() {
-        var array = ByteBuffer.allocate(_ChatMessage.BYTES);
-        var message = _ChatMessage.getMessage(array);
-        assertTrue(message.isBlank());
-    }
-
-    @DisplayName("setMessage(array, message)")
-    @MethodSource({"getMessageStream"})
-    @ParameterizedTest
-    void setMessage__Array(String message) {
-        var array = _ChatMessage.newEmptyArray();
-        _ChatMessage.setMessage(array, message);
-        assertTrue(message.startsWith(_ChatMessage.getMessage(array)));
-    }
-
-    @DisplayName("setMessage(buffer, message)")
-    @MethodSource({"getMessageStream"})
-    @ParameterizedTest
-    void setMessage__Buffer(String expected) {
-        var buffer = _ChatMessage.newEmptyBuffer();
-        _ChatMessage.setMessage(buffer, expected);
-        var actual = _ChatMessage.getMessage(buffer);
-        assertTrue(expected.startsWith(actual));
-    }
-
-    @Test
-    void toString__Array() {
-        var array = _ChatMessage.newEmptyArray();
-        var string = _ChatMessage.toString(array);
-        assertFalse(string.isBlank());
-    }
-
-    @Test
-    void toString__Buffer() {
-        var buffer = _ChatMessage.newEmptyBuffer();
-        var string = _ChatMessage.toString(buffer);
-        assertFalse(string.isBlank());
+        @MethodSource({"getMessageStream_"})
+        @ParameterizedTest
+        void setMessage__(String message) {
+            var buffer = OfBuffer.empty();
+            OfBuffer.setMessage(buffer, message);
+            assertTrue(message.startsWith(OfBuffer.getMessage(buffer)));
+        }
     }
 }

@@ -56,7 +56,6 @@ class Rfc863TcpTest {
                                                 Named.of(cc.getSimpleName(), cc))));
     }
 
-    //    @Disabled
     @MethodSource({"getClassesArgumentsList"})
     @ParameterizedTest
     void __(Class<?> serverClass, Class<?> clientClass) throws Exception {

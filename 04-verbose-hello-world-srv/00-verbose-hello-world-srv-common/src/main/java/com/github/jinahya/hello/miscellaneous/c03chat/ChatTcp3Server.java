@@ -21,9 +21,11 @@ package com.github.jinahya.hello.miscellaneous.c03chat;
  */
 
 import com.github.jinahya.hello.HelloWorldServerConstants;
+import com.github.jinahya.hello.miscellaneous.c03chat._ChatMessage.OfBuffer;
 import com.github.jinahya.hello.util.HelloWorldLangUtils;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.InetAddress;
@@ -34,40 +36,38 @@ import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.channels.WritePendingException;
-import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Flow;
+import java.util.concurrent.SubmissionPublisher;
 
 @Slf4j
 class ChatTcp3Server {
 
-    private static final List<Flow.Subscriber<? super ByteBuffer>> SUBSCRIBERS =
-            new CopyOnWriteArrayList<>();
-
-    // @formatter:off
-    private static final Flow.Publisher<ByteBuffer> PUBLISHER = subscriber -> {
-        Objects.requireNonNull(subscriber, "subscriber is null");
-        subscriber.onSubscribe(new Flow.Subscription() {
-            @Override public void request(long n) { SUBSCRIBERS.add(subscriber); }
-            @Override public void cancel() { SUBSCRIBERS.remove(subscriber); }
-        });
-    };
     // @formatter:on
+    private static class Attachment implements Closeable, Flow.Subscriber<ByteBuffer> {
 
-    // @formatter:off
-    static class Attachment implements Flow.Subscriber<ByteBuffer> {
-        Attachment(final AsynchronousServerSocketChannel server) {
+        private Attachment(AsynchronousServerSocketChannel server,
+                           SubmissionPublisher<ByteBuffer> publisher) {
+            super();
             this.server = Objects.requireNonNull(server, "server is null");
+            this.publisher = Objects.requireNonNull(publisher, "publisher is null");
         }
-        @Override public void onSubscribe(Flow.Subscription subscription) {
-            log.debug("onSubscribe({})", subscription);
+
+        @Override
+        public void close() throws IOException {
+            subscription.cancel();
+            client.close();
+        }
+
+        @Override
+        public void onSubscribe(Flow.Subscription subscription) {
             this.subscription = subscription;
             this.subscription.request(Long.MAX_VALUE);
         }
-        @Override public void onNext(ByteBuffer item) {
-            log.debug("onNext({})", item);
+
+        @Override
+        public void onNext(ByteBuffer item) {
             wrapped.buffers.add(item);
             try {
                 client.write(wrapped.buffers.get(0), this, W_HANDLER);
@@ -75,15 +75,35 @@ class ChatTcp3Server {
                 // empty
             }
         }
-        @Override public void onError(Throwable throwable) {
-            log.error("[S] onError({})", throwable, throwable);
+
+        @Override
+        public void onError(Throwable throwable) {
+            log.error("[S] error", throwable);
+            try {
+                close();
+            } catch (IOException ioe) {
+                log.error("[S] failed to close", ioe);
+            }
         }
-        @Override public void onComplete() {
-            log.debug("[S] onComplete()");
+
+        @Override
+        public void onComplete() {
+            log.debug("onComplete()");
+            try {
+                close();
+            } catch (IOException ioe) {
+                log.error("[S] failed to close", ioe);
+            }
         }
-        private AsynchronousServerSocketChannel server;
+
+        private final AsynchronousServerSocketChannel server;
+
+        private final SubmissionPublisher<ByteBuffer> publisher;
+
         private Flow.Subscription subscription;
+
         private AsynchronousSocketChannel client;
+
         final ChatTcp2Server.Attachment wrapped = new ChatTcp2Server.Attachment();
     }
     // @formatter:on
@@ -105,12 +125,13 @@ class ChatTcp3Server {
             }
         }
         @Override public void failed(Throwable exc, Attachment attachment) {
-            log.error("[S] failed to write", exc);
-            attachment.subscription.cancel();
+            if (!attachment.client.isOpen()) {
+                log.error("[S] failed to write", exc);
+            }
             try {
-                attachment.client.close();
+                attachment.close();
             } catch (IOException ioe) {
-                log.error("[S] failed to close {}", attachment.client, ioe);
+                log.error("[S] failed to close {}", attachment, ioe);
             }
         }
     };
@@ -121,27 +142,27 @@ class ChatTcp3Server {
     CompletionHandler<Integer, Attachment> R_HANDLER = new CompletionHandler<>() {
         @Override public void completed(Integer result, Attachment attachment) {
             if (result == -1) {
-                attachment.subscription.cancel();
                 try {
-                    attachment.client.close();
+                    attachment.close();
                 } catch (IOException ioe) {
-                    throw new UncheckedIOException("[S] failed to close" + attachment.client, ioe);
+                    throw new UncheckedIOException("[S] failed to close" + attachment, ioe);
                 }
                 return;
             }
             if (!attachment.wrapped.buffer.hasRemaining()) {
-                SUBSCRIBERS.forEach(s -> s.onNext(_ChatMessage.copy(attachment.wrapped.buffer)));
+                attachment.publisher.submit(OfBuffer.copyOf(attachment.wrapped.buffer));
                 attachment.wrapped.buffer.clear();
             }
             attachment.client.read(attachment.wrapped.buffer, attachment, this);
         }
         @Override public void failed(Throwable exc, Attachment attachment) {
-            log.error("[S] failed to read", exc);
-            attachment.subscription.cancel();
+            if (!attachment.client.isOpen()) {
+                log.error("[S] failed to read", exc);
+            }
             try {
-                attachment.client.close();
+                attachment.close();
             } catch (IOException ioe) {
-                log.error("[S] failed to close {}", attachment.client, ioe);
+                log.error("[S] failed to close {}", attachment, ioe);
             }
         }
     };
@@ -157,19 +178,28 @@ class ChatTcp3Server {
             } catch (IOException ioe) {
                 throw new UncheckedIOException("failed to get addresses from client", ioe);
             }
-            PUBLISHER.subscribe(attachment);
+            attachment.publisher.subscribe(attachment);
             attachment.client = result;
             attachment.client.read(attachment.wrapped.buffer, attachment, R_HANDLER);
-            attachment.server.accept(new Attachment(attachment.server), this);
+            attachment.server.accept(new Attachment(attachment.server, attachment.publisher), this);
         }
         @Override public void failed(Throwable exc, Attachment attachment) {
-            // empty
+            if (!attachment.server.isOpen()) {
+                log.error("[S] failed to accept", exc);
+            }
+            attachment.publisher.close();
+            try {
+                attachment.server.close();
+            } catch (IOException ioe) {
+                log.error("[S] failed to close {}", attachment.server, ioe);
+            }
         }
     };
     // @formatter:on
 
     public static void main(String... args) throws Exception {
-        try (var server = AsynchronousServerSocketChannel.open()) {
+        try (var server = AsynchronousServerSocketChannel.open();
+             var publisher = new SubmissionPublisher<ByteBuffer>()) {
             server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
             server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
             server.bind(new InetSocketAddress(
@@ -186,20 +216,11 @@ class ChatTcp3Server {
                     l -> {
                     }
             );
-            var attachment = new Attachment(server);
+            var attachment = new Attachment(server, publisher);
             server.accept(attachment, A_HANDLER);
             latch.await();
         }
-        SUBSCRIBERS.forEach(s -> {
-            var subscription = ((Attachment) s).subscription;
-            subscription.cancel();
-            var client = ((Attachment) s).client;
-            try {
-                client.close();
-            } catch (IOException ioe) {
-                log.error("[S] failed to close {}", client, ioe);
-            }
-        });
+        log.debug("publisher closed");
     }
 
     private ChatTcp3Server() {
