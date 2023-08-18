@@ -59,6 +59,7 @@ public class HelloWorldSecurityUtils {
         }
         if (ThreadLocalRandom.current().nextBoolean()) {
             digest.update(buffer.slice(buffer.position() - bytes, bytes));
+            return;
         }
         if (buffer.hasArray()) {
             digest.update(
