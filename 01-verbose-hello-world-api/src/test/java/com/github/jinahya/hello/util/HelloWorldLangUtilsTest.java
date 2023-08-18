@@ -15,10 +15,13 @@ class HelloWorldLangUtilsTest {
 
     @DisplayName("trim(string, charset, length)")
     @Nested
-    class TrimTest {
+    class TrimByCodepointsTest {
 
         // https://tatoeba.org/ko/
         @ValueSource(strings = {
+                "",
+                " ",
+                "   ",
                 "У нього було сиве волосся.",
                 "Trovu, kiu vizitas vian profilon.",
                 "There is no public toilet.",
@@ -31,10 +34,14 @@ class HelloWorldLangUtilsTest {
         @ParameterizedTest
         void __(String string) {
             var charset = StandardCharsets.UTF_8;
-            for (int length = 255; length >= 0; length--) {
-                var bytes = HelloWorldLangUtils.trim(string, charset, length);
-                var trimmed = new String(bytes, charset);
-                assertTrue(string.startsWith(trimmed));
+            var previous = string;
+            for (int bytes = previous.getBytes(charset).length + 1; bytes > 0; bytes--) {
+                var trimmed = HelloWorldLangUtils.trimByCodepoints(string, charset, bytes);
+//                log.debug("bytes: {}, {}, trimmed: '{}'", bytes, trimmed.getBytes(charset).length,
+//                          trimmed);
+                assertTrue(trimmed.getBytes(charset).length <= bytes);
+                assertTrue(previous.startsWith(trimmed));
+                previous = trimmed;
             }
         }
     }

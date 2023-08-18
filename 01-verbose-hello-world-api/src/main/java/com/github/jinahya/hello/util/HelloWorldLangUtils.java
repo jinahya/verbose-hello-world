@@ -28,6 +28,7 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
@@ -104,18 +105,51 @@ public final class HelloWorldLangUtils {
         thread.start();
     }
 
-    public static byte[] trim(final String string, final Charset charset, final int length) {
+    private static int[] trimByCodepoints(int[] codePoints, int from, int to, Charset charset,
+                                          final int bytes) {
+//        log.debug("l: {}, from: {}, to: {}, bytes: {}", codePoints.length, from, to, bytes);
+//        assert codePoints != null : "codePoints is null";
+//        assert codePoints.length > 0 : "codePoints is empty";
+//        assert from >= 0 : "from(" + from + ") is negative";
+//        assert to <= codePoints.length :
+//                "to(" + to + ") > codePoints.length(" + codePoints.length + ")";
+//        assert from <= to : "from(" + from + ") > to(" + to + ")";
+//        assert charset != null : "charset is null";
+//        assert bytes > 0 : "bytes(" + bytes;
+        if (from == to) {
+            return Arrays.copyOfRange(codePoints, 0, to);
+        }
+        var length = new String(codePoints, 0, to).getBytes(charset).length;
+//        log.debug("l: {}, from: {}, to: {}, bytes: {}, length: {}", codePoints.length, from, to,
+//                  bytes, length);
+        if (length == bytes) {
+            return Arrays.copyOfRange(codePoints, 0, to);
+        }
+        if (length > bytes) {
+            to = from + ((to - from) >> 1);
+            if (to == from) {
+                return Arrays.copyOfRange(codePoints, 0, from);
+            }
+            return trimByCodepoints(codePoints, from, to, charset, bytes);
+        }
+        assert length < bytes;
+        from = to;
+        to = from + ((codePoints.length - to) >> 1);
+        if (to == from) {
+            return Arrays.copyOfRange(codePoints, 0, from);
+        }
+        return trimByCodepoints(codePoints, from, to, charset, bytes);
+    }
+
+    public static String trimByCodepoints(String string, Charset charset, final int bytes) {
         Objects.requireNonNull(string, "string is null");
         Objects.requireNonNull(charset, "charset is null");
-        if (length < 0) {
-            throw new IllegalArgumentException("length(" + length + ") is not positive");
-        }
-        var bytes = string.getBytes(charset);
-        if (bytes.length <= length) {
-            return bytes;
+        if (bytes <= 0) {
+            throw new IllegalArgumentException("bytes(" + bytes + ") is not positive");
         }
         var codePoints = string.codePoints().toArray();
-        return trim(new String(codePoints, 0, codePoints.length - 1), charset, length);
+        var c = trimByCodepoints(codePoints, 0, codePoints.length, charset, bytes);
+        return new String(c, 0, c.length);
     }
 
     private HelloWorldLangUtils() {
