@@ -208,16 +208,15 @@ class ChatTcp3Server {
             log.debug("[S] server bound to {}", server.getLocalAddress());
             var latch = new CountDownLatch(1);
             HelloWorldLangUtils.callWhenRead(
-                    HelloWorldServerConstants.QUIT,
-                    () -> {
+                    HelloWorldServerConstants.QUIT, // <string>
+                    () -> {                         // <callable>
                         latch.countDown();
                         return null;
                     },
-                    l -> {
+                    l -> {                          // <consumer>
                     }
             );
-            var attachment = new Attachment(server, publisher);
-            server.accept(attachment, A_HANDLER);
+            server.accept(new Attachment(server, publisher), A_HANDLER);
             latch.await();
         }
         log.debug("publisher closed");
