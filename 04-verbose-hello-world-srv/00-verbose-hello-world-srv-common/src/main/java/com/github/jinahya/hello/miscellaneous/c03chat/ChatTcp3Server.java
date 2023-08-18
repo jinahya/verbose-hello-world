@@ -20,7 +20,7 @@ package com.github.jinahya.hello.miscellaneous.c03chat;
  * #L%
  */
 
-import com.github.jinahya.hello.HelloWorldServerConstants;
+import com.github.jinahya.hello.HelloWorldServerUtils;
 import com.github.jinahya.hello.miscellaneous.c03chat._ChatMessage.OfBuffer;
 import com.github.jinahya.hello.util.HelloWorldLangUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -207,13 +207,13 @@ class ChatTcp3Server {
             ));
             log.debug("[S] server bound to {}", server.getLocalAddress());
             var latch = new CountDownLatch(1);
-            HelloWorldLangUtils.callWhenRead(
-                    HelloWorldServerConstants.QUIT, // <string>
-                    () -> {                         // <callable>
+            HelloWorldLangUtils.readLinesAndCallWhenTests(
+                    HelloWorldServerUtils::isQuit, // <predicate>
+                    () -> {                        // <callable>
                         latch.countDown();
                         return null;
                     },
-                    l -> {                          // <consumer>
+                    l -> {                         // <consumer>
                     }
             );
             server.accept(new Attachment(server, publisher), A_HANDLER);

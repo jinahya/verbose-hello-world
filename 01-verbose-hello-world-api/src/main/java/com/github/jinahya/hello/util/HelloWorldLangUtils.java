@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  * Utilities for {@link java.lang} package.
@@ -68,74 +69,75 @@ public final class HelloWorldLangUtils {
 
     /**
      * Starts a new {@link Thread#isDaemon() daemon} thread which continuously reads lines from
-     * {@link System#in}, calls specified callable when it reads a line equals (ignoring the case)
-     * to specified string, otherwise, accepts lines to specified consumer.
+     * {@link System#in}, calls specified callable when it tests with specified predicate,
+     * otherwise, accepts lines to specified consumer.
      *
-     * @param string   the string to match.
-     * @param callable the callable to be called when reads {@code string}.
-     * @param consumer the consumer be accepted with read lines other than {@code string}
+     * @param predicate the predicate to test.
+     * @param callable  the callable to be called when a line passes {@code predicate}.
+     * @param consumer  the consumer be accepted with lines not pass.
      */
-    public static void callWhenRead(String string, Callable<Void> callable,
-                                    Consumer<? super String> consumer) {
-        Objects.requireNonNull(string, "string is null");
+    public static void readLinesAndCallWhenTests(Predicate<? super String> predicate,
+                                                 Callable<Void> callable,
+                                                 Consumer<? super String> consumer) {
+        Objects.requireNonNull(predicate, "predicate is null");
         Objects.requireNonNull(callable, "callable is null");
         Objects.requireNonNull(consumer, "consumer is null");
         var thread = new Thread(() -> {
-            var r = new BufferedReader(new InputStreamReader(System.in));
+            var reader = new BufferedReader(new InputStreamReader(System.in));
             try {
-                String l;
-                while (((l = r.readLine()) != null) && !Thread.currentThread().isInterrupted()) {
-                    if (l.strip().equalsIgnoreCase(string)) {
-                        try {
-                            callable.call();
-                        } catch (InterruptedException ie) {
-                            Thread.currentThread().interrupt();
-                        } catch (Exception e) {
-                            log.error("failed to call {}", callable, e);
-                        }
+                for (String line; (line = reader.readLine()) != null; ) {
+                    if (predicate.test(line.strip())) {
                         break;
                     }
-                    consumer.accept(l);
                 }
             } catch (IOException ioe) {
                 log.error("failed to read line", ioe);
+            }
+            try {
+                callable.call();
+            } catch (InterruptedException ie) {
+                Thread.currentThread().interrupt();
+            } catch (Exception e) {
+                log.error("failed to call {}", callable, e);
             }
         });
         thread.setDaemon(true);
         thread.start();
     }
 
+    /**
+     * Starts a new {@link Thread#isDaemon() daemon} thread which continuously reads lines from
+     * {@link System#in}, calls specified callable when it reads a line equals (ignoring the case)
+     * to specified string, otherwise, accepts lines to specified consumer.
+     *
+     * @param string   the string to match.
+     * @param callable the callable to be called when reads {@code string}.
+     * @param consumer the consumer be accepted with read lines other than {@code string}
+     * @deprecated Use {@link #readLinesAndCallWhenTests(Predicate, Callable, Consumer)}
+     */
+    @Deprecated(forRemoval = true)
+    public static void readLinesAndCallWhenEquals(String string, Callable<Void> callable,
+                                                  Consumer<? super String> consumer) {
+        Objects.requireNonNull(string, "string is null");
+        readLinesAndCallWhenTests(l -> l.equalsIgnoreCase(string), callable, consumer);
+    }
+
     private static int[] trimByCodepoints(int[] codePoints, int from, int to, Charset charset,
                                           final int bytes) {
-//        log.debug("l: {}, from: {}, to: {}, bytes: {}", codePoints.length, from, to, bytes);
-//        assert codePoints != null : "codePoints is null";
-//        assert codePoints.length > 0 : "codePoints is empty";
-//        assert from >= 0 : "from(" + from + ") is negative";
-//        assert to <= codePoints.length :
-//                "to(" + to + ") > codePoints.length(" + codePoints.length + ")";
-//        assert from <= to : "from(" + from + ") > to(" + to + ")";
-//        assert charset != null : "charset is null";
-//        assert bytes > 0 : "bytes(" + bytes;
         if (from == to) {
             return Arrays.copyOfRange(codePoints, 0, to);
         }
         var length = new String(codePoints, 0, to).getBytes(charset).length;
-//        log.debug("l: {}, from: {}, to: {}, bytes: {}, length: {}", codePoints.length, from, to,
-//                  bytes, length);
         if (length == bytes) {
             return Arrays.copyOfRange(codePoints, 0, to);
         }
         if (length > bytes) {
-            to = from + ((to - from) >> 1);
-            if (to == from) {
+            if ((to = from + ((to - from) >> 1)) == from) {
                 return Arrays.copyOfRange(codePoints, 0, from);
             }
             return trimByCodepoints(codePoints, from, to, charset, bytes);
         }
-        assert length < bytes;
-        from = to;
-        to = from + ((codePoints.length - to) >> 1);
-        if (to == from) {
+        if ((to = (from = to) + ((codePoints.length - to) >> 1)) == from) {
             return Arrays.copyOfRange(codePoints, 0, from);
         }
         return trimByCodepoints(codePoints, from, to, charset, bytes);

@@ -39,14 +39,6 @@ class _ChatMessage {
     private static final DateTimeFormatter TIMESTAMP_FORMATTER =
             DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss");
 
-    static byte[] newEmptyArray() {
-        return new byte[BYTES];
-    }
-
-    static ByteBuffer newEmptyBuffer() {
-        return ByteBuffer.wrap(newEmptyArray());
-    }
-
     static int getInt(byte[] array, int offset, int length) {
         if (length > Integer.BYTES) {
             throw new IllegalArgumentException(

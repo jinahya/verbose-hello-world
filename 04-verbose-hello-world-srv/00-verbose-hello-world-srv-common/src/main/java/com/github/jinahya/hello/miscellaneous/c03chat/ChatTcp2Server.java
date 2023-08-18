@@ -1,6 +1,6 @@
 package com.github.jinahya.hello.miscellaneous.c03chat;
 
-import com.github.jinahya.hello.HelloWorldServerConstants;
+import com.github.jinahya.hello.HelloWorldServerUtils;
 import com.github.jinahya.hello.util.HelloWorldLangUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -13,8 +13,8 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -49,9 +49,9 @@ class ChatTcp2Server {
             buffer.clear();
         }
 
-        final ByteBuffer buffer = _ChatMessage.newEmptyBuffer();
+        final ByteBuffer buffer = _ChatMessage.OfBuffer.empty();
 
-        final List<ByteBuffer> buffers = new ArrayList<>();
+        final List<ByteBuffer> buffers = new LinkedList<>();
     }
 
     public static void main(String... args) throws Exception {
@@ -65,8 +65,8 @@ class ChatTcp2Server {
             log.debug("[S] bound to {}", server.getLocalAddress());
             server.configureBlocking(false);
             var serverKey = server.register(selector, SelectionKey.OP_ACCEPT);
-            HelloWorldLangUtils.callWhenRead(
-                    HelloWorldServerConstants.QUIT,
+            HelloWorldLangUtils.readLinesAndCallWhenTests(
+                    HelloWorldServerUtils::isQuit,
                     () -> {
                         serverKey.cancel();
                         assert !serverKey.isValid();

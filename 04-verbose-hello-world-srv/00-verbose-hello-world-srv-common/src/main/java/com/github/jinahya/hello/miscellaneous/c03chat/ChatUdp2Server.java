@@ -42,7 +42,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 class ChatUdp2Server {
 
-    static final Duration KEEP_DURATION = ChatUdp1Server.KEEP_DURATION;
+    static final Duration DURATION_TO_KEEP_ADDRESSES = ChatUdp1Server.DURATION_TO_KEEP_ADDRESSES;
 
     public static void main(String... args) throws Exception {
         try (var selector = Selector.open();
@@ -55,15 +55,15 @@ class ChatUdp2Server {
             log.debug("[S] bound to {}", server.getLocalAddress());
             server.configureBlocking(false);
             var serverKey = server.register(selector, SelectionKey.OP_READ);
-            HelloWorldLangUtils.callWhenRead(
-                    HelloWorldServerConstants.QUIT, // <string>
-                    () -> {                         // <callable>
+            HelloWorldLangUtils.readLinesAndCallWhenTests(
+                    HelloWorldServerUtils::isQuit, // <predicate>
+                    () -> {                        // <callable>
                         serverKey.cancel();
                         assert !serverKey.isValid();
                         selector.wakeup();
                         return null;
                     },
-                    l -> {                          // <consumer>
+                    l -> {                         // <consumer>
                         // does nothing
                     }
             );
@@ -77,7 +77,7 @@ class ChatUdp2Server {
                     var selectedKey = i.next();
                     if (selectedKey.isReadable()) {
                         var channel = (DatagramChannel) selectedKey.channel();
-                        var buffer = _ChatMessage.newEmptyBuffer();
+                        var buffer = _ChatMessage.OfBuffer.empty();
                         var address = channel.receive(buffer.clear()); // IOException
                         assert !buffer.hasRemaining() : "not all bytes received";
                         addresses.put(address, Instant.now());
@@ -91,16 +91,14 @@ class ChatUdp2Server {
                     if (selectedKey.isWritable()) {
                         assert !buffers.isEmpty();
                         var buffer = buffers.removeFirst();
-                        var threshold = Instant.now().minus(KEEP_DURATION);
+                        var instantToKeep = Instant.now().minus(DURATION_TO_KEEP_ADDRESSES);
                         for (var j = addresses.entrySet().iterator(); j.hasNext(); ) {
                             var entry = j.next();
-                            var address = entry.getKey();
-                            var instant = entry.getValue();
-                            if (instant.isBefore(threshold)) {
+                            if (entry.getValue().isBefore(instantToKeep)) {
                                 j.remove();
                                 continue;
                             }
-                            server.send(buffer.clear(), address); // IOException
+                            server.send(buffer.clear(), entry.getKey()); // IOException
                             assert !buffer.hasRemaining() : "not all bytes sent";
                         }
                         if (buffers.isEmpty()) {

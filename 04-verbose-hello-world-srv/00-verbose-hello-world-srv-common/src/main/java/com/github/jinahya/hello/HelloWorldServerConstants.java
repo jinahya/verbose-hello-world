@@ -34,6 +34,8 @@ public class HelloWorldServerConstants {
 
     public static final String KEEP = "keep!";
 
+    public static final String SOLI = "soli!";
+
     private HelloWorldServerConstants() {
         throw new AssertionError("instantiation is not allowed");
     }

@@ -1,6 +1,6 @@
 package com.github.jinahya.hello.miscellaneous.c03chat;
 
-import com.github.jinahya.hello.HelloWorldServerConstants;
+import com.github.jinahya.hello.HelloWorldServerUtils;
 import com.github.jinahya.hello.util.HelloWorldLangUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -111,13 +111,13 @@ class ChatTcp1Server {
                     InetAddress.getByName("0.0.0.0"), _ChatConstants.PORT
             ));
             log.debug("[S] bound on {}", server.getLocalSocketAddress());
-            HelloWorldLangUtils.callWhenRead(
-                    HelloWorldServerConstants.QUIT,               // <string>
-                    () -> {                                       // <callable>
+            HelloWorldLangUtils.readLinesAndCallWhenTests(
+                    HelloWorldServerUtils::isQuit, // <predicate>
+                    () -> {                        // <callable>
                         server.close();
                         return null;
                     },
-                    l -> {                                        // <consumer>
+                    l -> {                        // <consumer>
                         // does nothing
                     }
             );

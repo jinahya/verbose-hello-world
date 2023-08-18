@@ -524,6 +524,11 @@ public class HelloWorldServerUtils {
         return string.strip().equalsIgnoreCase(HelloWorldServerConstants.KEEP);
     }
 
+    public static boolean isSoli(String string) {
+        Objects.requireNonNull(string, "string is null");
+        return string.strip().equalsIgnoreCase(HelloWorldServerConstants.SOLI);
+    }
+
     /**
      * Creates a new instance which is impossible.
      */

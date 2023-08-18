@@ -1,6 +1,7 @@
 package com.github.jinahya.hello.miscellaneous.c03chat;
 
 import com.github.jinahya.hello.HelloWorldServerConstants;
+import com.github.jinahya.hello.HelloWorldServerUtils;
 import com.github.jinahya.hello.util.HelloWorldLangUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -56,13 +57,13 @@ class ChatTcp1Client {
         @Override
         public void run() {
             BlockingQueue<String> queue = new ArrayBlockingQueue<>(1);
-            HelloWorldLangUtils.callWhenRead(
-                    HelloWorldServerConstants.QUIT, // <string>
-                    () -> {                         // <callable>
+            HelloWorldLangUtils.readLinesAndCallWhenTests(
+                    HelloWorldServerUtils::isQuit, // <predicate>
+                    () -> {                        // <callable>
                         client.close();
                         return null;
                     },
-                    l -> {                          // <consumer>
+                    l -> {                         // <consumer>
                         try {
                             if (!queue.offer(l, 1L, TimeUnit.SECONDS)) {
                                 log.error("[C] failed to offer");

@@ -20,7 +20,6 @@ package com.github.jinahya.hello.miscellaneous.c03chat;
  * #L%
  */
 
-import com.github.jinahya.hello.HelloWorldServerConstants;
 import com.github.jinahya.hello.HelloWorldServerUtils;
 import com.github.jinahya.hello.util.HelloWorldLangUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -49,16 +48,16 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 class ChatUdp1Server {
 
-    private static final Map<SocketAddress, Instant> ADDRESSES = new ConcurrentHashMap<>();
+    static final Duration DURATION_TO_KEEP_ADDRESSES = Duration.ofSeconds(8L);
 
-    static final Duration KEEP_DURATION = Duration.ofSeconds(8L);
-
-    private record Sender(BlockingQueue<? extends byte[]> queue, DatagramSocket socket)
+    private record Sender(DatagramSocket socket, BlockingQueue<? extends byte[]> messages,
+                          Map<SocketAddress, Instant> addresses)
             implements Runnable {
 
         private Sender {
-            Objects.requireNonNull(queue, "queue is null");
             Objects.requireNonNull(socket, "socket is null");
+            Objects.requireNonNull(messages, "messages is null");
+            Objects.requireNonNull(addresses, "addresses is null");
         }
 
         @Override
@@ -66,7 +65,7 @@ class ChatUdp1Server {
             while (!Thread.currentThread().isInterrupted()) {
                 byte[] array;
                 try {
-                    if ((array = queue.poll(8L, TimeUnit.SECONDS)) == null) {
+                    if ((array = messages.poll(8L, TimeUnit.SECONDS)) == null) {
                         continue;
                     }
                 } catch (InterruptedException ie) {
@@ -74,39 +73,43 @@ class ChatUdp1Server {
                     continue;
                 }
                 var packet = new DatagramPacket(array, array.length);
-                var threshold = Instant.now().minus(KEEP_DURATION);
-                for (var i = ADDRESSES.entrySet().iterator(); i.hasNext(); ) {
+                var instantToKeep = Instant.now().minus(DURATION_TO_KEEP_ADDRESSES);
+                for (var i = addresses.entrySet().iterator(); i.hasNext(); ) {
                     var entry = i.next();
-                    var timestamp = entry.getValue();
-                    if (timestamp.isBefore(threshold)) {
+                    if (entry.getValue().isBefore(instantToKeep)) {
                         i.remove();
                         continue;
                     }
-                    var address = entry.getKey();
-                    packet.setSocketAddress(address);
+                    packet.setSocketAddress(entry.getKey());
                     try {
                         socket.send(packet);
                     } catch (IOException ioe) {
-                        log.error("[S] failed to send to {}", address, ioe);
+                        if (!socket.isClosed()) {
+                            log.error("[S] failed to send to {}", packet.getSocketAddress(), ioe);
+                        }
+                        Thread.currentThread().interrupt();
+                        break;
                     }
                 }
             }
         }
     }
 
-    private record Receiver(DatagramSocket socket, BlockingQueue<? super byte[]> queue)
+    private record Receiver(DatagramSocket socket, BlockingQueue<? super byte[]> messages,
+                            Map<SocketAddress, Instant> addresses)
             implements Runnable {
 
         private Receiver {
             Objects.requireNonNull(socket, "socket is null");
-            Objects.requireNonNull(queue, "queue is null");
+            Objects.requireNonNull(messages, "messages is null");
+            Objects.requireNonNull(addresses, "addresses is null");
         }
 
         @Override
         public void run() {
+            var array = _ChatMessage.OfArray.empty();
+            var packet = new DatagramPacket(array, array.length);
             while (!Thread.currentThread().isInterrupted()) {
-                byte[] array = _ChatMessage.newEmptyArray();
-                var packet = new DatagramPacket(array, array.length);
                 try {
                     socket.receive(packet);
                 } catch (IOException ioe) {
@@ -117,11 +120,11 @@ class ChatUdp1Server {
                     continue;
                 }
                 var address = packet.getSocketAddress();
-                ADDRESSES.put(address, Instant.now());
+                addresses.put(address, Instant.now());
                 if (HelloWorldServerUtils.isKeep(_ChatMessage.OfArray.getMessage(array))) {
                     continue;
                 }
-                if (!queue.offer(array)) {
+                if (!messages.offer(_ChatMessage.OfArray.copyOf(array))) {
                     log.error("[C] failed to offer");
                 }
             }
@@ -129,8 +132,8 @@ class ChatUdp1Server {
     }
 
     public static void main(String... args) throws Exception {
-        var executor = Executors.newCachedThreadPool();
-        var futures = new ArrayList<Future<?>>();
+        var executor = Executors.newScheduledThreadPool(3);
+        var futures = new ArrayList<Future<?>>(2);
         try (var server = new DatagramSocket(null)) {
             log.debug("[S]: SO_RCVBUF: {}", server.getOption(StandardSocketOptions.SO_RCVBUF));
             log.debug("[S]: SO_SNFBUD: {}", server.getOption(StandardSocketOptions.SO_SNDBUF));
@@ -138,17 +141,18 @@ class ChatUdp1Server {
                     InetAddress.getByName("0.0.0.0"), _ChatConstants.PORT
             ));
             log.debug("[S] bound to {}", server.getLocalSocketAddress());
-            var queue = new ArrayBlockingQueue<byte[]>(1024);
-            futures.add(executor.submit(new Receiver(server, queue)));
-            futures.add(executor.submit(new Sender(queue, server)));
+            var messages = new ArrayBlockingQueue<byte[]>(1024);
+            var addresses = new ConcurrentHashMap<SocketAddress, Instant>();
+            futures.add(executor.submit(new Receiver(server, messages, addresses)));
+            futures.add(executor.submit(new Sender(server, messages, addresses)));
             var latch = new CountDownLatch(1);
-            HelloWorldLangUtils.callWhenRead(
-                    HelloWorldServerConstants.QUIT,
-                    () -> {
+            HelloWorldLangUtils.readLinesAndCallWhenTests(
+                    HelloWorldServerUtils::isQuit, // <predicate>
+                    () -> {                        // <callable>
                         latch.countDown();
                         return null;
                     },
-                    l -> {
+                    l -> {                         // <consumer>
                     }
             );
             latch.await(); // InterruptedException

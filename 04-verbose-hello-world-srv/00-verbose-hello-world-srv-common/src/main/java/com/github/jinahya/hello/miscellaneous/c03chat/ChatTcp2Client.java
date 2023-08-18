@@ -1,6 +1,6 @@
 package com.github.jinahya.hello.miscellaneous.c03chat;
 
-import com.github.jinahya.hello.HelloWorldServerConstants;
+import com.github.jinahya.hello.HelloWorldServerUtils;
 import com.github.jinahya.hello.miscellaneous.c03chat.ChatTcp2Server.Attachment;
 import com.github.jinahya.hello.util.HelloWorldLangUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -34,14 +34,14 @@ class ChatTcp2Client {
                 clientKey = client.register(selector, SelectionKey.OP_CONNECT);
             }
             clientKey.attach(new Attachment());
-            HelloWorldLangUtils.callWhenRead(
-                    HelloWorldServerConstants.QUIT,
-                    () -> {
+            HelloWorldLangUtils.readLinesAndCallWhenTests(
+                    HelloWorldServerUtils::isQuit, // <predicate>
+                    () -> {                        // <callable>
                         clientKey.channel().close();
                         assert !clientKey.isValid();
                         return null;
                     },
-                    m -> {
+                    m -> {                         // <consumer>
                         var buffer = _ChatMessage.OfBuffer.of(_ChatUtils.prependUsername(m));
                         ((Attachment) clientKey.attachment()).buffers.add(buffer);
                         clientKey.interestOpsOr(SelectionKey.OP_WRITE);

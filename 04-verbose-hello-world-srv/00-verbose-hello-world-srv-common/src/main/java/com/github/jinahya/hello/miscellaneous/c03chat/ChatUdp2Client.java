@@ -21,6 +21,7 @@ package com.github.jinahya.hello.miscellaneous.c03chat;
  */
 
 import com.github.jinahya.hello.HelloWorldServerConstants;
+import com.github.jinahya.hello.HelloWorldServerUtils;
 import com.github.jinahya.hello.miscellaneous.c03chat._ChatMessage.OfBuffer;
 import com.github.jinahya.hello.util.HelloWorldLangUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -42,10 +43,11 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 class ChatUdp2Client {
 
-    private static final Duration KEEP_DURATION = ChatUdp1Server.KEEP_DURATION.dividedBy(2L);
+    private static final Duration PERIOD_TO_SEND_KEEP =
+            ChatUdp1Server.DURATION_TO_KEEP_ADDRESSES.dividedBy(2L);
 
     static {
-        assert KEEP_DURATION.toSeconds() > 0;
+        assert PERIOD_TO_SEND_KEEP.toSeconds() > 0;
     }
 
     public static void main(String... args) throws Exception {
@@ -72,19 +74,19 @@ class ChatUdp2Client {
                         clientKey.interestOpsOr(SelectionKey.OP_WRITE);
                         selector.wakeup();
                     },
-                    KEEP_DURATION.toSeconds(), // <initialDelay>
-                    KEEP_DURATION.toSeconds(), // <period>
+                    PERIOD_TO_SEND_KEEP.toSeconds(), // <initialDelay>
+                    PERIOD_TO_SEND_KEEP.toSeconds(), // <period>
                     TimeUnit.SECONDS           // <unit>
             ));
-            HelloWorldLangUtils.callWhenRead(
-                    HelloWorldServerConstants.QUIT, // <string>
-                    () -> {                         // <callable>
+            HelloWorldLangUtils.readLinesAndCallWhenTests(
+                    HelloWorldServerUtils::isQuit, // <predicate>
+                    () -> {                        // <callable>
                         clientKey.cancel();
                         assert !clientKey.isValid();
                         selector.wakeup();
                         return null;
                     },
-                    l -> {                          // <consumer>
+                    l -> {                         // <consumer>
                         queue.addLast(OfBuffer.of(_ChatUtils.prependUsername(l)));
                         clientKey.interestOpsOr(SelectionKey.OP_WRITE);
                         selector.wakeup();
@@ -98,7 +100,7 @@ class ChatUdp2Client {
                     var selectedKey = i.next();
                     if (selectedKey.isReadable()) {
                         var channel = (DatagramChannel) selectedKey.channel();
-                        var buffer = _ChatMessage.newEmptyBuffer();
+                        var buffer = _ChatMessage.OfBuffer.empty();
                         channel.receive(buffer); // IOException
                         assert !buffer.hasRemaining() : "not all bytes received";
                         OfBuffer.printToSystemOut(buffer);

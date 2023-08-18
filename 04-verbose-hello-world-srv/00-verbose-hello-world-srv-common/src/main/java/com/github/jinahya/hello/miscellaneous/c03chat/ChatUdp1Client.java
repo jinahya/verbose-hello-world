@@ -21,6 +21,7 @@ package com.github.jinahya.hello.miscellaneous.c03chat;
  */
 
 import com.github.jinahya.hello.HelloWorldServerConstants;
+import com.github.jinahya.hello.HelloWorldServerUtils;
 import com.github.jinahya.hello.miscellaneous.c03chat._ChatMessage.OfArray;
 import com.github.jinahya.hello.util.HelloWorldLangUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -45,10 +46,11 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 class ChatUdp1Client {
 
-    private static final Duration KEEP_DURATION = ChatUdp1Server.KEEP_DURATION.dividedBy(2L);
+    private static final Duration PERIOD_TO_SEND_KEEP =
+            ChatUdp1Server.DURATION_TO_KEEP_ADDRESSES.dividedBy(2L);
 
     static {
-        assert KEEP_DURATION.toSeconds() > 0;
+        assert PERIOD_TO_SEND_KEEP.toSeconds() > 0;
     }
 
     /**
@@ -65,7 +67,7 @@ class ChatUdp1Client {
 
         @Override
         public void run() {
-            var array = _ChatMessage.newEmptyArray();
+            var array = _ChatMessage.OfArray.empty();
             var packet = new DatagramPacket(array, array.length);
             while (!Thread.currentThread().isInterrupted()) {
                 try {
@@ -141,8 +143,8 @@ class ChatUdp1Client {
                         log.error("[C] failed to offer keep");
                     }
                 },
-                KEEP_DURATION.toSeconds(),
-                KEEP_DURATION.toSeconds(),
+                PERIOD_TO_SEND_KEEP.toSeconds(),
+                PERIOD_TO_SEND_KEEP.toSeconds(),
                 TimeUnit.SECONDS
         );
         try (var client = new DatagramSocket(null)) {
@@ -151,13 +153,13 @@ class ChatUdp1Client {
             futures.add(executor.submit(new Receiver(client)));
             futures.add(executor.submit(new Sender(queue, address, client)));
             var latch = new CountDownLatch(1);
-            HelloWorldLangUtils.callWhenRead(
-                    HelloWorldServerConstants.QUIT,
-                    () -> {
+            HelloWorldLangUtils.readLinesAndCallWhenTests(
+                    HelloWorldServerUtils::isQuit, // <predicate>
+                    () -> {                        // <callable>
                         latch.countDown();
                         return null;
                     },
-                    l -> {
+                    l -> {                         // <consumer>
                         if (!queue.offer(OfArray.of(_ChatUtils.prependUsername(l)))) {
                             log.error("[C] failed to offer message");
                         }
