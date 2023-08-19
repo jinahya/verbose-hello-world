@@ -20,12 +20,11 @@ package com.github.jinahya.hello.miscellaneous.c01rfc863;
  * #L%
  */
 
+import com.github.jinahya.hello.util.HelloWorldNetUtils;
 import com.github.jinahya.hello.util.HelloWorldSecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.net.StandardSocketOptions;
 import java.nio.channels.AsynchronousServerSocketChannel;
-import java.util.HexFormat;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -33,30 +32,28 @@ class Rfc863Tcp3Server {
 
     public static void main(String... args) throws Exception {
         try (var server = AsynchronousServerSocketChannel.open()) {
-            server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
-            server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
-            server.bind(_Rfc863Constants.ENDPOINT);
-            log.debug("[S] bound to {}", server.getLocalAddress());
-            try (var client = server.accept().get(8L, TimeUnit.SECONDS)) {
-                log.debug("[S] accepted from {}, through {}", client.getRemoteAddress(),
+            HelloWorldNetUtils.printSocketOptions(server);
+            server.bind(_Rfc863Constants.ADDRESS);
+            log.debug("bound to {}", server.getLocalAddress());
+            try (var client = server.accept().get(16L, TimeUnit.SECONDS)) {
+                log.debug("accepted from {}, through {}", client.getRemoteAddress(),
                           client.getLocalAddress());
-                var buffer = _Rfc863Utils.newByteBuffer();
+                var buffer = _Rfc863Utils.newBuffer();
                 var bytes = 0;
-                var digest = _Rfc863Utils.newMessageDigest();
+                var digest = _Rfc863Utils.newDigest();
                 while (true) {
                     if (!buffer.hasRemaining()) {
                         buffer.clear();
                     }
-                    var read = client.read(buffer).get();
-                    log.trace("[S] - read: {}", read);
-                    if (read == -1) {
+                    var r = client.read(buffer).get();
+                    if (r == -1) {
                         break;
                     }
-                    bytes += read;
-                    HelloWorldSecurityUtils.updatePreceding(digest, buffer, read);
+                    bytes += r;
+                    HelloWorldSecurityUtils.updatePreceding(digest, buffer, r);
                 }
-                log.debug("[S] byte(s) received (and discarded): {}", bytes);
-                log.debug("[S] digest: {}", HexFormat.of().formatHex(digest.digest()));
+                _Rfc863Utils.logServerBytes(bytes);
+                _Rfc863Utils.logDigest(digest);
             }
         }
     }

@@ -22,44 +22,36 @@ package com.github.jinahya.hello.miscellaneous.c02rfc862;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.net.ServerSocket;
-import java.util.Base64;
 import java.util.concurrent.TimeUnit;
 
 // https://www.rfc-editor.org/rfc/rfc862
 @Slf4j
 class Rfc862Tcp1Server {
 
-    public static void main(String... args) throws IOException {
+    public static void main(String... args) throws Exception {
         try (var server = new ServerSocket()) {
-            server.setReuseAddress(true);
-            server.bind(_Rfc862Constants.ENDPOINT);
-            log.debug("[S] bound to {}", server.getLocalSocketAddress());
-            server.setSoTimeout((int) TimeUnit.SECONDS.toMillis(8L));
+            server.bind(_Rfc862Constants.ADDRESS);
+            log.debug("bound to {}", server.getLocalSocketAddress());
+            server.setSoTimeout((int) TimeUnit.SECONDS.toMillis(16L));
             try (var client = server.accept()) {
-                log.debug("[S] accepted from {}, through {}", client.getRemoteSocketAddress(),
+                log.debug("accepted from {}, through {}", client.getRemoteSocketAddress(),
                           client.getLocalSocketAddress());
-                client.setSoTimeout((int) TimeUnit.SECONDS.toMillis(8L));
-                var digest = _Rfc862Utils.newMessageDigest();
+                client.setSoTimeout((int) TimeUnit.SECONDS.toMillis(16L));
+                var digest = _Rfc862Utils.newDigest();
                 var bytes = 0L;
-                var buffer = _Rfc862Utils.newByteArray();
-                while (true) {
-                    var read = client.getInputStream().read(buffer);
-                    log.trace("[S] - read: {}", read);
-                    if (read == -1) {
-                        client.shutdownInput();
-                        break;
-                    }
-                    assert read > 0;
-                    bytes += read;
-                    digest.update(buffer, 0, read);
-                    client.getOutputStream().write(buffer, 0, read);
+                var array = _Rfc862Utils.newArray();
+                log.debug("array.length: {}", array.length);
+                for (int r; (r = client.getInputStream().read(array)) != -1; ) {
+                    assert r > 0;
+                    bytes += r;
+                    client.getOutputStream().write(array, 0, r);
                     client.getOutputStream().flush();
+                    digest.update(array, 0, r);
                 }
                 client.shutdownOutput();
-                log.debug("[S] byte(s) received and echoed: {}", bytes);
-                log.debug("[S] digest: {}", Base64.getEncoder().encodeToString(digest.digest()));
+                _Rfc862Utils.logServerBytesSent(bytes);
+                _Rfc862Utils.logDigest(digest);
             }
         }
     }

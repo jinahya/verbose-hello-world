@@ -24,38 +24,35 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.util.HexFormat;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 
 import static com.github.jinahya.hello.miscellaneous.c01rfc863._Rfc863Constants.ADDR;
 
 @Slf4j
-public class Rfc863Tcp1Client {
+class Rfc863Tcp1Client {
 
     public static void main(String... args) throws Exception {
         try (var client = new Socket()) {
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(ADDR, 0));
-                log.debug("[C] bound to {}", client.getLocalSocketAddress());
+                log.debug("bound to {}", client.getLocalSocketAddress());
             }
-            client.connect(_Rfc863Constants.ENDPOINT, (int) TimeUnit.SECONDS.toMillis(8L));
-            log.debug("[C] connected to {}, through {}", client.getRemoteSocketAddress(),
+            client.connect(_Rfc863Constants.ADDRESS);
+            log.debug("connected to {}, through {}", client.getRemoteSocketAddress(),
                       client.getLocalSocketAddress());
+            var digest = _Rfc863Utils.newDigest();
             var bytes = ThreadLocalRandom.current().nextInt(1048576);
-            log.debug("[C] sending {} byte(s)...", bytes);
-            var digest = _Rfc863Utils.newMessageDigest();
-            for (var buffer = _Rfc863Utils.newByteArray(); bytes > 0; ) {
-                ThreadLocalRandom.current().nextBytes(buffer);
-                var length = Math.min(buffer.length, bytes);
-                client.getOutputStream().write(buffer, 0, length);
-                log.trace("[C] - written: {}", length);
-                bytes -= length;
-                digest.update(buffer, 0, length);
+            _Rfc863Utils.logClientBytes(bytes);
+            var array = _Rfc863Utils.newArray();
+            while (bytes > 0) {
+                ThreadLocalRandom.current().nextBytes(array);
+                var l = Math.min(array.length, bytes);
+                client.getOutputStream().write(array, 0, l);
+                bytes -= l;
+                digest.update(array, 0, l);
             }
             client.getOutputStream().flush();
-            client.shutdownOutput();
-            log.debug("[S] digest: {}", HexFormat.of().formatHex(digest.digest()));
+            _Rfc863Utils.logDigest(digest);
         }
     }
 

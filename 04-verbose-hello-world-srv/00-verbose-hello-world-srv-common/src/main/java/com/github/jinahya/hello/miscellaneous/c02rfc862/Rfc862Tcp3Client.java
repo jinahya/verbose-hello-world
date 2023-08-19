@@ -20,13 +20,13 @@ package com.github.jinahya.hello.miscellaneous.c02rfc862;
  * #L%
  */
 
+import com.github.jinahya.hello.util.HelloWorldNioUtils;
 import com.github.jinahya.hello.util.HelloWorldSecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.EOFException;
 import java.net.InetSocketAddress;
-import java.net.StandardSocketOptions;
 import java.nio.channels.AsynchronousSocketChannel;
-import java.util.Base64;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
@@ -35,54 +35,41 @@ public class Rfc862Tcp3Client {
 
     public static void main(String... args) throws Exception {
         try (var client = AsynchronousSocketChannel.open()) {
-            client.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
-            client.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc862Constants.ADDR, 0));
-                log.debug("[C] bound to {}", client.getLocalAddress());
+                log.debug("bound to {}", client.getLocalAddress());
             }
-            client.connect(_Rfc862Constants.ENDPOINT).get(8L, TimeUnit.SECONDS);
-            log.debug("[C] connected to {}, through {}", client.getRemoteAddress(),
+            client.connect(_Rfc862Constants.ADDRESS).get(8L, TimeUnit.SECONDS);
+            log.debug("connected to {}, through {}", client.getRemoteAddress(),
                       client.getLocalAddress());
-            var digest = _Rfc862Utils.newMessageDigest();
+            var digest = _Rfc862Utils.newDigest();
             var bytes = ThreadLocalRandom.current().nextInt(1048576);
-            log.debug("[C] sending {} byte(s)", bytes);
-            var buffer = _Rfc862Utils.newByteBuffer();
+            _Rfc862Utils.logClientBytesSending(bytes);
+            var buffer = _Rfc862Utils.newBuffer();
+            log.debug("buffer.capacity: {}", buffer.capacity());
             buffer.position(buffer.limit());
             while (bytes > 0) {
                 if (!buffer.hasRemaining()) {
                     buffer.clear(); // position -> zero, limit -> capacity
                     ThreadLocalRandom.current().nextBytes(buffer.array());
-                    buffer.limit(Math.min(buffer.limit(), bytes));
+                    buffer.limit(Math.min(buffer.remaining(), bytes));
                 }
-                var written = client.write(buffer).get(8L, TimeUnit.SECONDS);
-                log.trace("[C] - written: {}", written);
-                bytes -= written;
-                var limit = buffer.limit();
-                var position = buffer.position();
-                buffer.flip(); // limit -> position, position -> zero
-                var read = client.read(buffer).get();
-                log.trace("[C] - read: {}", read);
-                assert read != -1 : "unexpected eof with remaining bytes to send";
-                HelloWorldSecurityUtils.updatePreceding(digest, buffer, read);
-                buffer.limit(limit).position(position);
+                var w = client.write(buffer).get();
+                HelloWorldSecurityUtils.updatePreceding(digest, buffer, w);
+                bytes -= w;
+                var r = HelloWorldNioUtils.flipApplyAndRestore(buffer, client::read).get();
+                if (r == -1) {
+                    throw new EOFException("unexpected eof");
+                }
             }
             assert bytes == 0;
+            _Rfc862Utils.logDigest(digest);
             client.shutdownOutput();
-            buffer.clear(); // position -> zero, limit -> capacity
-            for (int read; true; ) {
-                read = client.read(buffer).get(8L, TimeUnit.SECONDS);
-                log.trace("[C] - read: {}", read);
-                if (read == -1) {
-                    client.shutdownInput();
-                    break;
-                }
-                HelloWorldSecurityUtils.updatePreceding(digest, buffer, read);
+            for (buffer.clear(); client.read(buffer).get() != -1; ) {
                 if (!buffer.hasRemaining()) {
                     buffer.clear();
                 }
             }
-            log.debug("[C] digest: {}", Base64.getEncoder().encodeToString(digest.digest()));
         }
     }
 

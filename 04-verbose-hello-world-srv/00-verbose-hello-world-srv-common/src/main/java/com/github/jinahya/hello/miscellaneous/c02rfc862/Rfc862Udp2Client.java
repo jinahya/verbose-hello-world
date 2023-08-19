@@ -24,27 +24,21 @@ import com.github.jinahya.hello.util.HelloWorldSecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
+import java.net.SocketException;
+import java.net.StandardSocketOptions;
+import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
-import java.util.Base64;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
 class Rfc862Udp2Client {
 
-    private static final int PACKET_LENGTH =
-            ThreadLocalRandom.current().nextInt(Rfc862Udp2Server.MAX_PACKET_LENGTH);
+    private static class Attachment
+            extends Rfc862Udp2Server.Attachment {
 
-    private static class Attachment extends Rfc862Udp2Server.Attachment {
-
-        Attachment() {
-            super();
-            ThreadLocalRandom.current().nextBytes(buffer.array());
-            buffer.limit(ThreadLocalRandom.current().nextInt(buffer.limit()));
-            address = _Rfc862Constants.ENDPOINT;
-        }
     }
 
     public static void main(String... args) throws Exception {
@@ -52,16 +46,21 @@ class Rfc862Udp2Client {
              var client = DatagramChannel.open()) {
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc862Constants.ADDR, 0));
-                log.debug("[C] bound to {}", client.getLocalAddress());
+                log.debug("(optionally) bound to {}", client.getLocalAddress());
             }
             var connect = ThreadLocalRandom.current().nextBoolean();
             if (connect) {
-                client.connect(_Rfc862Constants.ENDPOINT);
-                log.debug("[C] connected to {}, through {}", client.getRemoteAddress(),
-                          client.getLocalAddress());
+                try {
+                    client.connect(_Rfc862Constants.ADDRESS);
+                    log.debug("(optionally) connected to {}, through {}", client.getRemoteAddress(),
+                              client.getLocalAddress());
+                } catch (SocketException se) {
+                    log.warn("failed to connect", se);
+                    connect = false;
+                }
             }
             client.configureBlocking(false);
-            client.register(selector, SelectionKey.OP_WRITE, new Attachment());
+            client.register(selector, SelectionKey.OP_WRITE);
             while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
                 if (selector.select(TimeUnit.SECONDS.toMillis(8L)) == 0) {
                     break;
@@ -70,28 +69,33 @@ class Rfc862Udp2Client {
                     var key = i.next();
                     if (key.isWritable()) {
                         var channel = (DatagramChannel) key.channel();
-                        var attachment = (Attachment) key.attachment();
-                        var sent = channel.send(attachment.buffer, attachment.address);
-                        log.debug("[S] {} byte(s) sent to {}, through {}", sent, attachment.address,
-                                  channel.getLocalAddress());
+                        var attachment = new Attachment();
+                        key.attach(attachment);
+                        attachment.buffer = ByteBuffer.allocate(ThreadLocalRandom.current().nextInt(
+                                channel.getOption(StandardSocketOptions.SO_SNDBUF)
+                        ));
+                        ThreadLocalRandom.current().nextBytes(attachment.buffer.array());
+                        var w = channel.send(attachment.buffer, _Rfc862Constants.ADDRESS);
+                        log.debug("{} byte(s) sent to {}", w, _Rfc862Constants.ADDRESS);
+                        assert w == attachment.buffer.position();
                         assert !attachment.buffer.hasRemaining();
-                        key.interestOps(SelectionKey.OP_READ);
+                        HelloWorldSecurityUtils.updatePreceding(
+                                attachment.digest, attachment.buffer
+                        );
+                        _Rfc862Utils.logDigest(attachment.digest);
+                        key.interestOpsAnd(~SelectionKey.OP_WRITE);
+                        key.interestOpsOr(SelectionKey.OP_READ);
                     }
                     if (key.isReadable()) {
                         var channel = (DatagramChannel) key.channel();
                         var attachment = (Attachment) key.attachment();
                         attachment.buffer.flip();
                         attachment.address = channel.receive(attachment.buffer);
-                        log.debug("[C] {} byte(s) received from {}", attachment.buffer.position(),
+                        log.debug("{} byte(s) received from {}", attachment.buffer.position(),
                                   attachment.address);
                         assert !attachment.buffer.hasRemaining();
+                        key.interestOpsAnd(~SelectionKey.OP_READ);
                         key.cancel();
-                        HelloWorldSecurityUtils.updatePreceding(
-                                attachment.digest, attachment.buffer, attachment.buffer.position()
-                        );
-                        log.debug("[S] digest: {}",
-                                  Base64.getEncoder().encodeToString(attachment.digest.digest())
-                        );
                     }
                 }
             }

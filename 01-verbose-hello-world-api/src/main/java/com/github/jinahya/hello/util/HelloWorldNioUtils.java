@@ -20,8 +20,12 @@ package com.github.jinahya.hello.util;
  * #L%
  */
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
+import java.nio.channels.ReadableByteChannel;
 import java.util.Objects;
+import java.util.function.Function;
 
 /**
  * Utilities for {@link java.nio} package.
@@ -48,6 +52,36 @@ public final class HelloWorldNioUtils {
             byteBuffer.limit(byteBuffer.position() + maxRemaining);
         }
         return byteBuffer;
+    }
+
+    public static <B extends ByteBuffer, R> R flipApplyAndRestore(
+            B buffer, Function<? super B, ? extends R> function) {
+        Objects.requireNonNull(buffer, "buffer is null");
+        Objects.requireNonNull(function, "function is null");
+        var l = buffer.limit();
+        var p = buffer.position();
+        buffer.flip(); // limit -> position, position -> zero
+        try {
+            return function.apply(buffer);
+        } finally {
+            buffer.limit(l).position(p);
+        }
+    }
+
+    public static <B extends ByteBuffer> int flipReadAndRestore(B buffer,
+                                                                ReadableByteChannel channel) {
+        Objects.requireNonNull(buffer, "buffer is null");
+        Objects.requireNonNull(channel, "channel is null");
+        return flipApplyAndRestore(
+                buffer,
+                b -> {
+                    try {
+                        return channel.read(b);
+                    } catch (IOException ioe) {
+                        throw new UncheckedIOException(ioe);
+                    }
+                }
+        );
     }
 
     private HelloWorldNioUtils() {

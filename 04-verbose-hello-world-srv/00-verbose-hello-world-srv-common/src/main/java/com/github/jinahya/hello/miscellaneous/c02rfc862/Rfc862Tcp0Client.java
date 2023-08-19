@@ -22,48 +22,38 @@ package com.github.jinahya.hello.miscellaneous.c02rfc862;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
+import java.io.EOFException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.util.Base64;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
 class Rfc862Tcp0Client {
 
-    public static void main(String... args) throws IOException {
+    public static void main(String... args) throws Exception {
         try (var client = new Socket()) {
-            client.setReuseAddress(true);
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc862Constants.ADDR, 0));
-                log.debug("[C] bound to {}", client.getLocalSocketAddress());
+                log.debug("bound to {}", client.getLocalSocketAddress());
             }
-            client.connect(_Rfc862Constants.ENDPOINT, (int) TimeUnit.SECONDS.toMillis(8L));
-            log.debug("[C] connected to {}, through {}", client.getRemoteSocketAddress(),
+            client.connect(_Rfc862Constants.ADDRESS);
+            log.debug("connected to {}, through {}", client.getRemoteSocketAddress(),
                       client.getLocalSocketAddress());
-            client.setSoTimeout((int) TimeUnit.SECONDS.toMillis(8L));
-            var digest = _Rfc862Utils.newMessageDigest();
+            client.setSoTimeout((int) TimeUnit.SECONDS.toMillis(16L));
+            var digest = _Rfc862Utils.newDigest();
             var bytes = ThreadLocalRandom.current().nextInt(1024);
-            log.debug("[C] sending {} byte(s)", bytes);
-            for (int b; bytes > 0; ) {
-                b = ThreadLocalRandom.current().nextInt(256);
+            _Rfc862Utils.logClientBytesSending(bytes);
+            for (int b; bytes > 0; bytes--) {
+                b = ThreadLocalRandom.current().nextInt() & 0xFF;
                 client.getOutputStream().write(b);
                 client.getOutputStream().flush();
-                bytes--;
-                b = client.getInputStream().read();
                 digest.update((byte) b);
-            }
-            client.shutdownOutput();
-            for (int b; ; ) {
-                b = client.getInputStream().read();
-                if (b == -1) {
-                    client.shutdownInput();
-                    break;
+                if ((client.getInputStream().read()) == -1) {
+                    throw new EOFException("unexpected eof");
                 }
-                digest.update((byte) b);
             }
-            log.debug("[C] digest: {}", Base64.getEncoder().encodeToString(digest.digest()));
+            _Rfc862Utils.logDigest(digest);
         }
     }
 

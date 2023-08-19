@@ -20,7 +20,6 @@ package com.github.jinahya.hello.miscellaneous.c03chat;
  * #L%
  */
 
-import com.github.jinahya.hello.HelloWorldServerConstants;
 import com.github.jinahya.hello.HelloWorldServerUtils;
 import com.github.jinahya.hello.util.HelloWorldLangUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +43,8 @@ class ChatUdp2Server {
 
     static final Duration DURATION_TO_KEEP_ADDRESSES = ChatUdp1Server.DURATION_TO_KEEP_ADDRESSES;
 
-    public static void main(String... args) throws Exception {
+    public static void main(String... args)
+            throws Exception {
         try (var selector = Selector.open();
              var server = DatagramChannel.open()) {
             log.debug("[S]: SO_RCVBUF: {}", server.getOption(StandardSocketOptions.SO_RCVBUF));

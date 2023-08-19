@@ -20,29 +20,69 @@ package com.github.jinahya.hello.miscellaneous.c01rfc863;
  * #L%
  */
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.HexFormat;
+import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
+@Slf4j
 final class _Rfc863Utils {
 
-    static byte[] newByteArray() {
-        return new byte[ThreadLocalRandom.current().nextInt(1024) + 1014];
+    /**
+     * Returns a new array of bytes whose length is between {@code 1} and {@code 1024}, both
+     * inclusive.
+     *
+     * @return a new array of bytes.
+     */
+    static byte[] newArray() {
+        return new byte[ThreadLocalRandom.current().nextInt(1024) + 1];
     }
 
-    static ByteBuffer newByteBuffer() {
-        return ByteBuffer.wrap(newByteArray());
+    /**
+     * Returns a new byte buffer wrapping a result of {@link #newArray()}.
+     *
+     * @return a new byte buffer.
+     */
+    static ByteBuffer newBuffer() {
+        return ByteBuffer.wrap(newArray());
     }
 
-    private static final String ALGORITHM = "SHA-1";
-
-    static MessageDigest newMessageDigest() {
+    static MessageDigest newDigest() {
         try {
-            return MessageDigest.getInstance(ALGORITHM);
+            return MessageDigest.getInstance(_Rfc863Constants.ALGORITHM);
         } catch (NoSuchAlgorithmException nsae) {
-            throw new RuntimeException("failed to create a message digest for " + ALGORITHM, nsae);
+            throw new RuntimeException(
+                    "failed to create a message digest with " + _Rfc863Constants.ALGORITHM,
+                    nsae
+            );
         }
+    }
+
+    private static String getDigest(MessageDigest digest) {
+        return HexFormat.of().formatHex(digest.digest());
+    }
+
+    static void logClientBytes(long bytes) {
+        if (bytes < 0) {
+            throw new IllegalArgumentException("bytes(" + bytes + ") is negative");
+        }
+        log.debug("sending {} bytes...", bytes);
+    }
+
+    static void logServerBytes(long bytes) {
+        if (bytes < 0) {
+            throw new IllegalArgumentException("bytes(" + bytes + ") is negative");
+        }
+        log.debug("{} bytes received (and discarded)", bytes);
+    }
+
+    static void logDigest(MessageDigest digest) {
+        Objects.requireNonNull(digest, "digest is null");
+        log.debug("digest: {}", getDigest(digest));
     }
 
     private _Rfc863Utils() {

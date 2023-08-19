@@ -27,30 +27,23 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
-import java.util.HexFormat;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 class Rfc863Tcp4Client {
 
-    private static final class Attachment extends Rfc863Tcp4Server.Attachment {
+    private static final class Attachment
+            extends Rfc863Tcp4Server.Attachment {
 
     }
 
     // @formatter:off
-    private static CompletionHandler<Integer, Attachment> W_HANDLER = new CompletionHandler<>() {
+    private static final
+    CompletionHandler<Integer, Attachment> W_HANDLER = new CompletionHandler<>() {
         @Override public void completed(Integer result, Attachment attachment) {
-            log.trace("[C] - written: {}", result);
             HelloWorldSecurityUtils.updatePreceding(attachment.digest, attachment.buffer, result);
             if ((attachment.bytes -= result) == 0) {
-                log.debug("[C] digest: {}", HexFormat.of().formatHex(attachment.digest.digest()));
-                try {
-                    attachment.client.shutdownOutput();
-                } catch (IOException ioe) {
-                    log.error("[C] failed to shutdown output", ioe);
-                }
+                _Rfc863Utils.logDigest(attachment.digest);
                 attachment.latch.countDown();
                 return;
             }
@@ -62,36 +55,45 @@ class Rfc863Tcp4Client {
             }
             attachment.client.write(
                     attachment.buffer,    // <src>
-                    8L, TimeUnit.SECONDS, // <timeout, unit>
                     attachment,           // <attachment>
                     this                  // <handler>
             );
         }
         @Override public void failed(Throwable exc, Attachment attachment) {
-            log.error("[C] failed to write", exc);
+            log.error("failed to write", exc);
+            while (attachment.latch.getCount() > 0) {
+                attachment.latch.countDown();
+            }
         }
     };
     // @formatter:on
 
     // @formatter:off
-    private static CompletionHandler<Void, Attachment> C_HANDLER = new CompletionHandler<>() {
+    private static final
+    CompletionHandler<Void, Attachment> C_HANDLER = new CompletionHandler<>() {
         @Override public void completed(Void result, Attachment attachment) {
             try {
-                log.debug("[C] connected to {}, through {}", attachment.client.getRemoteAddress(),
+                log.debug("connected to {}, through {}", attachment.client.getRemoteAddress(),
                           attachment.client.getLocalAddress());
             } catch (IOException ioe) {
                 log.error("failed to get addresses from {}", attachment.client, ioe);
             }
             attachment.latch.countDown();
+            attachment.bytes = ThreadLocalRandom.current().nextInt(1048576);
+            _Rfc863Utils.logClientBytes(attachment.bytes);
+            ThreadLocalRandom.current().nextBytes(attachment.buffer.array());
+            attachment.buffer.limit(Math.min(attachment.buffer.limit(), attachment.bytes));
             attachment.client.write(
                     attachment.buffer,    // <src>
-                    8L, TimeUnit.SECONDS, // <timeout, unit>
                     attachment,           // attachment>
                     W_HANDLER             // <handler>
             );
         }
         @Override public void failed(Throwable exc, Attachment attachment) {
-            log.error("[C] failed to connect", exc);
+            log.error("failed to connect", exc);
+            while (attachment.latch.getCount() > 0) {
+                attachment.latch.countDown();
+            }
         }
     };
     // @formatter:on
@@ -100,22 +102,16 @@ class Rfc863Tcp4Client {
         try (var client = AsynchronousSocketChannel.open()) {
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc863Constants.ADDR, 0));
-                log.debug("[C] bound to {}", client.getLocalAddress());
+                log.debug("bound to {}", client.getLocalAddress());
             }
             var attachment = new Attachment();
             attachment.client = client;
-            attachment.latch = new CountDownLatch(2);
-            ThreadLocalRandom.current().nextBytes(attachment.buffer.array());
-            attachment.bytes = ThreadLocalRandom.current().nextInt(1048576);
-            log.debug("[C] byte(s) to send: {}", attachment.bytes);
-            attachment.buffer.limit(Math.min(attachment.buffer.limit(), attachment.bytes));
             attachment.client.connect(
-                    _Rfc863Constants.ENDPOINT, // <remote>
+                    _Rfc863Constants.ADDRESS, // <remote>
                     attachment,                // <attachment>
                     C_HANDLER                  // <handler>
             );
-            var broken = attachment.latch.await(8L, TimeUnit.SECONDS);
-            assert broken;
+            attachment.latch.await();
         }
     }
 

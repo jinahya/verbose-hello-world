@@ -36,6 +36,8 @@ public class HelloWorldServerConstants {
 
     public static final String SOLI = "soli!";
 
+    public static final int UDP_HEADER_SIZE = 4 + 4 + 4 + 2 + 2 + 2 + 2;
+
     private HelloWorldServerConstants() {
         throw new AssertionError("instantiation is not allowed");
     }

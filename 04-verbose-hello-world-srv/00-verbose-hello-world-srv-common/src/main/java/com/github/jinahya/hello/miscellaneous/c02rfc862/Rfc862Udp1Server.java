@@ -24,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.util.Base64;
 import java.util.concurrent.TimeUnit;
 
 // https://www.rfc-editor.org/rfc/rfc862
@@ -35,20 +34,18 @@ public class Rfc862Udp1Server {
 
     public static void main(String... args) throws Exception {
         try (var server = new DatagramSocket(null)) {
-            server.setReuseAddress(true);
-            server.bind(_Rfc862Constants.ENDPOINT);
-            log.debug("[S] bound to {}", server.getLocalSocketAddress());
-            server.setSoTimeout((int) TimeUnit.SECONDS.toMillis(8L));
-            var digest = _Rfc862Utils.newMessageDigest();
-            var buffer = new byte[MAX_PACKET_LENGTH];
-            var packet = new DatagramPacket(buffer, buffer.length);
+            server.bind(_Rfc862Constants.ADDRESS);
+            log.debug("bound to {}", server.getLocalSocketAddress());
+            server.setSoTimeout((int) TimeUnit.SECONDS.toMillis(16L));
+            var array = new byte[server.getReceiveBufferSize()];
+            var packet = new DatagramPacket(array, array.length);
             server.receive(packet);
-            log.debug("[S] {} byte(s) received from {}", packet.getLength(),
-                      packet.getSocketAddress());
-            digest.update(buffer, 0, packet.getLength());
+            log.debug("received from {}", packet.getSocketAddress());
+            var digest = _Rfc862Utils.newDigest();
+            digest.update(array, 0, packet.getLength());
+            _Rfc862Utils.logDigest(digest);
             server.send(packet);
-            log.debug("[S] echoed back to {}", packet.getSocketAddress());
-            log.debug("[S] digest: {}", Base64.getEncoder().encodeToString(digest.digest()));
+            _Rfc862Utils.logServerBytesSent(packet.getLength());
         }
     }
 

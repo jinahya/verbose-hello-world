@@ -101,7 +101,8 @@ class ChatTcp1Server {
         }
     }
 
-    public static void main(String... args) throws Exception {
+    public static void main(String... args)
+            throws Exception {
         var executor = Executors.newCachedThreadPool();
         var clients = new CopyOnWriteArrayList<Socket>();
         var queue = new ArrayBlockingQueue<byte[]>(1024);

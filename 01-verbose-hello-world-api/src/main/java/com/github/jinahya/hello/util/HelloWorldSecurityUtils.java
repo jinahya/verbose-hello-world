@@ -75,6 +75,17 @@ public class HelloWorldSecurityUtils {
         }
     }
 
+    /**
+     * Updates specified message digest with preceding bytes of specified buffer's current
+     * position.
+     *
+     * @param digest the message digest to be updated.
+     * @param buffer the byte buffer whose content to be updated to the {@code digest}.
+     */
+    public static void updatePreceding(MessageDigest digest, ByteBuffer buffer) {
+        updatePreceding(digest, buffer, buffer.position());
+    }
+
     private HelloWorldSecurityUtils() {
         throw new AssertionError("instantiation is not allowed");
     }

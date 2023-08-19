@@ -29,7 +29,7 @@ final class _Rfc862Constants {
 
     private static final int PORT = 7 + 50000;
 
-    static final InetSocketAddress ENDPOINT = new InetSocketAddress(ADDR, PORT);
+    static final InetSocketAddress ADDRESS = new InetSocketAddress(ADDR, PORT);
 
     private _Rfc862Constants() {
         throw new AssertionError("instantiation is not allowed");

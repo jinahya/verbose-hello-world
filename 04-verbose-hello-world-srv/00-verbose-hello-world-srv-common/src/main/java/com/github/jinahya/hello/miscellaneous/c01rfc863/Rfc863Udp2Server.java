@@ -20,14 +20,14 @@ package com.github.jinahya.hello.miscellaneous.c01rfc863;
  * #L%
  */
 
+import com.github.jinahya.hello.util.HelloWorldSecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
+import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
-import java.util.HexFormat;
 import java.util.concurrent.TimeUnit;
 
 // https://datatracker.ietf.org/doc/html/rfc863
@@ -36,33 +36,30 @@ class Rfc863Udp2Server {
 
     static final int CAPACITY = 1024;
 
-    public static void main(String... args) throws IOException {
+    public static void main(String... args) throws Exception {
         try (var selector = Selector.open();
              var server = DatagramChannel.open()) {
-            server.bind(_Rfc863Constants.ENDPOINT);
-            log.debug("[S] bound to {}", server.getLocalAddress());
+            server.bind(_Rfc863Constants.ADDRESS);
+            log.debug("bound to {}", server.getLocalAddress());
             server.configureBlocking(false);
-            server.register(selector, SelectionKey.OP_READ, ByteBuffer.allocate(CAPACITY));
-            while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
-                if (selector.select(TimeUnit.SECONDS.toMillis(8L)) == 0) {
-                    break;
-                }
-                for (var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
-                    var key = i.next();
-                    if (key.isReadable()) {
-                        var channel = (DatagramChannel) key.channel();
-                        var buffer = (ByteBuffer) key.attachment();
-                        var source = channel.receive(buffer);
-                        log.debug("[S] {} byte(s) received from {}", buffer.position(), source);
-                        channel.close();
-                        key.cancel();
-                        var digest = _Rfc863Utils.newMessageDigest();
-                        buffer.flip();
-                        digest.update(buffer);
-                        log.debug("[S] digest: {}", HexFormat.of().formatHex(digest.digest()));
-                    }
-                }
+            var serverKey = server.register(selector, SelectionKey.OP_READ);
+            if (selector.select(TimeUnit.SECONDS.toMillis(16L)) == 0) {
+                return;
             }
+            var selectedKey = selector.selectedKeys().iterator().next();
+            assert selectedKey == serverKey;
+            assert selectedKey.isReadable();
+            var channel = (DatagramChannel) selectedKey.channel();
+            assert channel == server;
+            var buffer = ByteBuffer.allocate(channel.getOption(StandardSocketOptions.SO_RCVBUF));
+            var source = channel.receive(buffer);
+            assert source != null;
+            _Rfc863Utils.logServerBytes(buffer.position());
+            channel.close();
+            assert !selectedKey.isValid();
+            var digest = _Rfc863Utils.newDigest();
+            HelloWorldSecurityUtils.updatePreceding(digest, buffer);
+            _Rfc863Utils.logDigest(digest);
         }
     }
 

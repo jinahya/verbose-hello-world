@@ -45,7 +45,9 @@ import java.util.concurrent.SubmissionPublisher;
 class ChatTcp3Server {
 
     // @formatter:on
-    private static class Attachment implements Closeable, Flow.Subscriber<ByteBuffer> {
+    private static class Attachment
+            implements Closeable,
+                       Flow.Subscriber<ByteBuffer> {
 
         private Attachment(AsynchronousServerSocketChannel server,
                            SubmissionPublisher<ByteBuffer> publisher) {
@@ -55,7 +57,8 @@ class ChatTcp3Server {
         }
 
         @Override
-        public void close() throws IOException {
+        public void close()
+                throws IOException {
             subscription.cancel();
             client.close();
         }
@@ -197,7 +200,8 @@ class ChatTcp3Server {
     };
     // @formatter:on
 
-    public static void main(String... args) throws Exception {
+    public static void main(String... args)
+            throws Exception {
         try (var server = AsynchronousServerSocketChannel.open();
              var publisher = new SubmissionPublisher<ByteBuffer>()) {
             server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);

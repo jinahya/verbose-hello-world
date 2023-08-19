@@ -24,16 +24,12 @@ import com.github.jinahya.hello.util.HelloWorldSecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.security.MessageDigest;
-import java.util.Base64;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 class Rfc862Tcp4Server {
@@ -44,46 +40,42 @@ class Rfc862Tcp4Server {
 
         final CountDownLatch latch = new CountDownLatch(3);
 
-        final ByteBuffer buffer = _Rfc862Utils.newByteBuffer();
+        final ByteBuffer buffer = _Rfc862Utils.newBuffer();
 
         int bytes; // number of bytes to receive or send
 
-        final MessageDigest digest = _Rfc862Utils.newMessageDigest();
+        final MessageDigest digest = _Rfc862Utils.newDigest();
     }
 
     // @formatter:off
     private static final
     CompletionHandler<Integer, Attachment> W_HANDLER = new CompletionHandler<>() {
         @Override public void completed(Integer result, Attachment attachment) {
-            log.trace("[S] - written: {}", result);
-            if (attachment.latch.getCount() == 1) {
+            HelloWorldSecurityUtils.updatePreceding(attachment.digest, attachment.buffer, result);
+            if (attachment.latch.getCount() == 1) { // all received
                 if (attachment.buffer.hasRemaining()) {
                     attachment.client.write(
                             attachment.buffer,    // <src>
-                            8L, TimeUnit.SECONDS, // <timeout, unit>
                             attachment,           // <attachment>
                             this                  // <handler>
                     );
                     return;
                 }
-                try {
-                    attachment.client.shutdownOutput();
-                } catch (IOException ioe) {
-                    throw new UncheckedIOException("failed to shutdown output", ioe);
-                }
-                attachment.latch.countDown();
+                attachment.latch.countDown(); // all sent
                 return;
             }
             attachment.buffer.compact();
             attachment.client.read(
                     attachment.buffer,    // <dst>
-                    8L, TimeUnit.SECONDS, // <timeout, unit>
                     attachment,           // <attachment>
                     R_HANDLER             // <handler>
             );
         }
         @Override public void failed(Throwable exc, Attachment attachment) {
             log.error("failed to write", exc);
+            while(attachment.latch.getCount() > 0L) {
+                attachment.latch.countDown();
+            }
         }
     };
     // @formatter:on
@@ -92,30 +84,23 @@ class Rfc862Tcp4Server {
     private static final
     CompletionHandler<Integer, Attachment> R_HANDLER = new CompletionHandler<>() {
         @Override public void completed(Integer result, Attachment attachment) {
-            log.trace("[S] - read: {}", result);
             if (result == -1) {
-                try {
-                    attachment.client.shutdownInput();
-                } catch (IOException ioe) {
-                    throw new UncheckedIOException("failed to shutdown input", ioe);
-                }
-                attachment.latch.countDown();
+                attachment.latch.countDown(); // all received
             } else {
                 attachment.bytes += result;
-                HelloWorldSecurityUtils.updatePreceding(
-                        attachment.digest, attachment.buffer, result
-                );
             }
             attachment.buffer.flip(); // limit -> position; position -> zero
             attachment.client.write(
-                    attachment.buffer,    // <src>
-                    8L, TimeUnit.SECONDS, // <timeout, unit>
-                    attachment,           // <attachment>
-                    W_HANDLER             // <handler>
+                    attachment.buffer, // <src>
+                    attachment,        // <attachment>
+                    W_HANDLER          // <handler>
             );
         }
         @Override public void failed(Throwable exc, Attachment attachment) {
             log.error("failed to read", exc);
+            while(attachment.latch.getCount() > 0L) {
+                attachment.latch.countDown();
+            }
         }
     };
     // @formatter:on
@@ -125,43 +110,41 @@ class Rfc862Tcp4Server {
     CompletionHandler<AsynchronousSocketChannel, Attachment> A_HANDLER = new CompletionHandler<>() {
         @Override public void completed(AsynchronousSocketChannel result, Attachment attachment) {
             try {
-                log.debug("[S] accepted from {}, through {}", result.getRemoteAddress(),
+                log.debug("accepted from {}, through {}", result.getRemoteAddress(),
                           result.getLocalAddress());
             } catch (IOException ioe) {
-                throw new UncheckedIOException("failed to get addresses from client", ioe);
+                failed(ioe, attachment);
+                return;
             }
-            attachment.latch.countDown();
+            attachment.latch.countDown(); // connected
             attachment.client = result;
             attachment.client.read(
                     attachment.buffer,    // <dst>
-                    8L, TimeUnit.SECONDS, // <timeout, unit>
                     attachment,           // <attachment>
                     R_HANDLER             // <handler>
             );
         }
         @Override public void failed(Throwable exc, Attachment attachment) {
             log.error("failed to accept", exc);
+            while(attachment.latch.getCount() > 0L) {
+                attachment.latch.countDown();
+            }
         }
     };
     // @formatter:on
 
     public static void main(String... args) throws Exception {
         try (var server = AsynchronousServerSocketChannel.open()) {
-            server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
-            server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
-            server.bind(_Rfc862Constants.ENDPOINT);
-            log.debug("[S] server bound to {}", server.getLocalAddress());
+            server.bind(_Rfc862Constants.ADDRESS);
+            log.debug("server bound to {}", server.getLocalAddress());
             var attachment = new Attachment();
             server.accept(
                     attachment, // <attachment>
                     A_HANDLER   // <handler>
             );
-            var broken = attachment.latch.await(8L, TimeUnit.SECONDS);
-            assert broken : "the latch hasn't broken!";
-            log.debug("[S] byte(s) received and echoed back: {}", attachment.bytes);
-            log.debug("[S] digest: {}",
-                      Base64.getEncoder().encodeToString(attachment.digest.digest())
-            );
+            attachment.latch.await();
+            _Rfc862Utils.logServerBytesSent(attachment.bytes);
+            _Rfc862Utils.logDigest(attachment.digest);
         }
     }
 

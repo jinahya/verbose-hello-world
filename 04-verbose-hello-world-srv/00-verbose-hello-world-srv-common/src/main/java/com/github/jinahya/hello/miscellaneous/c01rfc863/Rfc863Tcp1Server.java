@@ -23,35 +23,27 @@ package com.github.jinahya.hello.miscellaneous.c01rfc863;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.ServerSocket;
-import java.util.HexFormat;
 import java.util.concurrent.TimeUnit;
 
-// https://datatracker.ietf.org/doc/html/rfc863
 @Slf4j
-public class Rfc863Tcp1Server {
+class Rfc863Tcp1Server {
 
     public static void main(String... args) throws Exception {
         try (var server = new ServerSocket()) {
-            server.setReuseAddress(true);
-            server.bind(_Rfc863Constants.ENDPOINT);
-            log.debug("[S] bound to {}", server.getLocalSocketAddress());
-            server.setSoTimeout((int) TimeUnit.SECONDS.toMillis(8L));
+            server.bind(_Rfc863Constants.ADDRESS);
+            log.debug("bound to {}", server.getLocalSocketAddress());
+            server.setSoTimeout((int) TimeUnit.SECONDS.toMillis(16L));
             try (var client = server.accept()) {
-                log.debug("[S] accepted from {}, through {}",
+                log.debug("accepted from {}, through {}",
                           client.getRemoteSocketAddress(), client.getLocalSocketAddress());
-                var digest = _Rfc863Utils.newMessageDigest();
                 var bytes = 0L;
-                for (var buffer = _Rfc863Utils.newByteArray(); true; ) {
-                    var read = client.getInputStream().read(buffer);
-                    log.trace("[C] - read: {}", read);
-                    if (read == -1) {
-                        break;
-                    }
-                    bytes += read;
-                    digest.update(buffer, 0, read);
+                var digest = _Rfc863Utils.newDigest();
+                var array = _Rfc863Utils.newArray();
+                for (int r; (r = client.getInputStream().read(array)) != -1; bytes += r) {
+                    digest.update(array, 0, r);
                 }
-                log.debug("[S] byte(s) received (and discarded): {}", bytes);
-                log.debug("[S] digest: {}", HexFormat.of().formatHex(digest.digest()));
+                _Rfc863Utils.logServerBytes(bytes);
+                _Rfc863Utils.logDigest(digest);
             }
         }
     }

@@ -24,36 +24,34 @@ import com.github.jinahya.hello.util.HelloWorldSecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.net.StandardSocketOptions;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
-import java.util.HexFormat;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 class Rfc863Tcp4Server {
 
-    static class Attachment extends Rfc863Tcp2Server.Attachment {
+    static class Attachment
+            extends Rfc863Tcp2Server.Attachment {
 
-        CountDownLatch latch;
+        final CountDownLatch latch = new CountDownLatch(2);
 
         AsynchronousSocketChannel client;
     }
 
     // @formatter:off
-    private static CompletionHandler<Integer, Attachment> R_HANDLER = new CompletionHandler<>() {
+    private static final
+    CompletionHandler<Integer, Attachment> R_HANDLER = new CompletionHandler<>() {
         @Override public void completed(Integer result, Attachment attachment) {
-            log.trace("[S] - read: {}", result);
             if (result == -1) {
+                _Rfc863Utils.logServerBytes(attachment.bytes);
+                _Rfc863Utils.logDigest(attachment.digest);
                 try {
                     attachment.client.close();
                 } catch (IOException ioe) {
                     log.error("failed to close client", ioe);
                 }
-                log.debug("[S] byte(s) received (and discarded): {}", attachment.bytes);
-                log.debug("[S] digest: {}", HexFormat.of().formatHex(attachment.digest.digest()));
                 attachment.latch.countDown();
                 return;
             }
@@ -64,23 +62,25 @@ class Rfc863Tcp4Server {
             }
             attachment.client.read(
                     attachment.buffer,    // <dst>
-                    8L, TimeUnit.SECONDS, // <timeout, unit>
                     attachment,           // <attachment>
                     this                  // <handler>
             );
         }
         @Override public void failed(Throwable exc, Attachment attachment) {
             log.error("failed to read", exc);
+            while (attachment.latch.getCount() > 0) {
+                attachment.latch.countDown();
+            }
         }
     };
     // @formatter:on
 
     // @formatter:off
-    private static
+    private static final
     CompletionHandler<AsynchronousSocketChannel, Attachment> A_HANDLER = new CompletionHandler<>() {
         @Override public void completed(AsynchronousSocketChannel result, Attachment attachment) {
             try {
-                log.debug("[S] accepted from {}, through {}", result.getRemoteAddress(),
+                log.debug("accepted from {}, through {}", result.getRemoteAddress(),
                           result.getLocalAddress());
             } catch (final IOException ioe) {
                 log.error("failed to get addresses from " + result, ioe);
@@ -89,33 +89,29 @@ class Rfc863Tcp4Server {
             attachment.latch.countDown();
             attachment.client.read(
                     attachment.buffer,    // <dst>
-                    8L, TimeUnit.SECONDS, // <timeout, unit>
                     attachment,           // <attachment>
                     R_HANDLER             // <handler>
             );
         }
         @Override public void failed(Throwable exc, Attachment attachment) {
-            log.error("[S] failed to accept", exc);
+            log.error("failed to accept", exc);
+            while (attachment.latch.getCount() > 0) {
+                attachment.latch.countDown();
+            }
         }
     };
     // @formatter:on
 
     public static void main(String... args) throws Exception {
         try (var server = AsynchronousServerSocketChannel.open()) {
-            server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
-            server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
-            server.bind(_Rfc863Constants.ENDPOINT);
-            log.debug("[S] bound to {}", server.getLocalAddress());
+            server.bind(_Rfc863Constants.ADDRESS);
+            log.debug("bound to {}", server.getLocalAddress());
             var attachment = new Attachment();
-            attachment.client = null;
-            attachment.latch = new CountDownLatch(2);
-            attachment.bytes = 0;
             server.accept(
                     attachment, // <attachment>
                     A_HANDLER   // <handler>
             );
-            var broken = attachment.latch.await(8, TimeUnit.SECONDS);
-            assert broken;
+            attachment.latch.await(); // InterruptedException
         }
     }
 

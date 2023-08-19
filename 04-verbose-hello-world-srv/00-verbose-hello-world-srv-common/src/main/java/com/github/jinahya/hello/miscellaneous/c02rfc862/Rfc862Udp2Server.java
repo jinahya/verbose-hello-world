@@ -30,32 +30,27 @@ import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.security.MessageDigest;
-import java.util.Base64;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
 class Rfc862Udp2Server {
 
-    static final int MAX_PACKET_LENGTH = 1024;
-
     static class Attachment {
 
-        final ByteBuffer buffer = ByteBuffer.allocate(MAX_PACKET_LENGTH);
+        ByteBuffer buffer;
 
         SocketAddress address;
 
-        final MessageDigest digest = _Rfc862Utils.newMessageDigest();
+        final MessageDigest digest = _Rfc862Utils.newDigest();
     }
 
     public static void main(String... args) throws Exception {
         try (var selector = Selector.open();
              var server = DatagramChannel.open()) {
-            server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
-            server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
-            server.bind(_Rfc862Constants.ENDPOINT);
-            log.debug("[S] bound to {}", server.getLocalAddress());
+            server.bind(_Rfc862Constants.ADDRESS);
+            log.debug("bound to {}", server.getLocalAddress());
             server.configureBlocking(false);
-            server.register(selector, SelectionKey.OP_READ, new Attachment());
+            server.register(selector, SelectionKey.OP_READ);
             while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
                 if (selector.select(TimeUnit.SECONDS.toMillis(8L)) == 0) {
                     break;
@@ -65,28 +60,26 @@ class Rfc862Udp2Server {
                     if (key.isReadable()) {
                         var channel = (DatagramChannel) key.channel();
                         var attachment = new Attachment();
+                        attachment.buffer = ByteBuffer.allocate(
+                                channel.getOption(StandardSocketOptions.SO_RCVBUF)
+                        );
                         key.attach(attachment);
                         attachment.address = channel.receive(attachment.buffer);
-                        log.debug("[S] {} byte(s) received from {}", attachment.buffer.position(),
+                        log.debug("{} byte(s) received from {}", attachment.buffer.position(),
                                   attachment.address);
-                        key.interestOps(SelectionKey.OP_WRITE);
-                        HelloWorldSecurityUtils.updatePreceding(
-                                attachment.digest, attachment.buffer, attachment.buffer.position()
-                        );
-                        log.debug("[S] digest: {}",
-                                  Base64.getEncoder().encodeToString(attachment.digest.digest())
-                        );
+                        key.interestOpsAnd(~SelectionKey.OP_READ);
+                        key.interestOpsOr(SelectionKey.OP_WRITE);
                     }
                     if (key.isWritable()) {
                         var channel = (DatagramChannel) key.channel();
                         var attachment = (Attachment) key.attachment();
-                        assert attachment != null;
-                        assert attachment.buffer != null;
-                        assert attachment.address != null;
                         attachment.buffer.flip();
-                        var sent = channel.send(attachment.buffer, attachment.address);
-                        assert !attachment.buffer.hasRemaining();
-                        log.debug("[S] {} byte(s) sent back to {}", sent, attachment.address);
+                        var w = channel.send(attachment.buffer, attachment.address);
+                        log.debug("{} byte(s) sent to {}", w, attachment.address);
+                        HelloWorldSecurityUtils.updatePreceding(
+                                attachment.digest, attachment.buffer
+                        );
+                        _Rfc862Utils.logDigest(attachment.digest);
                         key.cancel();
                     }
                 }

@@ -34,7 +34,8 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-abstract class AbstractHelloWorldServer implements HelloWorldServer {
+abstract class AbstractHelloWorldServer
+        implements HelloWorldServer {
 
     /**
      * Creates a new instance.
@@ -52,7 +53,8 @@ abstract class AbstractHelloWorldServer implements HelloWorldServer {
      *                 the file is not written.
      * @throws IOException if an I/O error occurs.
      */
-    protected abstract void openInternal(SocketAddress endpoint, Path dir) throws IOException;
+    protected abstract void openInternal(SocketAddress endpoint, Path dir)
+            throws IOException;
 
     /**
      * {@inheritDoc}
@@ -63,7 +65,8 @@ abstract class AbstractHelloWorldServer implements HelloWorldServer {
      * @implSpec Invokes {@link #openInternal(SocketAddress, Path)} method.
      */
     @Override
-    public void open(SocketAddress endpoint, Path dir) throws IOException {
+    public void open(SocketAddress endpoint, Path dir)
+            throws IOException {
         try {
             lock.lock();
             close();
@@ -78,7 +81,8 @@ abstract class AbstractHelloWorldServer implements HelloWorldServer {
      *
      * @throws IOException if an I/O error occurs.
      */
-    protected abstract void closeInternal() throws IOException;
+    protected abstract void closeInternal()
+            throws IOException;
 
     /**
      * {@inheritDoc}
@@ -87,7 +91,8 @@ abstract class AbstractHelloWorldServer implements HelloWorldServer {
      * @implSpec Invokes {@link #closeInternal()} method.
      */
     @Override
-    public void close() throws IOException {
+    public void close()
+            throws IOException {
         try {
             lock.lock();
             closeInternal();

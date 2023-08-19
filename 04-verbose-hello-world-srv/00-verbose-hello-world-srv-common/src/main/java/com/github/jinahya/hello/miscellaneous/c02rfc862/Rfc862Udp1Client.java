@@ -22,12 +22,12 @@ package com.github.jinahya.hello.miscellaneous.c02rfc862;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
-import java.util.Base64;
+import java.net.SocketException;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class Rfc862Udp1Client {
@@ -35,33 +35,38 @@ public class Rfc862Udp1Client {
     private static final int PACKET_LENGTH = ThreadLocalRandom.current()
             .nextInt(Rfc862Udp1Server.MAX_PACKET_LENGTH);
 
-    public static void main(String... args) throws IOException {
+    public static void main(String... args) throws Exception {
         try (var client = new DatagramSocket(null)) {
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc862Constants.ADDR, 0));
-                log.debug("[C] bound to {}", client.getLocalSocketAddress());
+                log.debug("bound to {}", client.getLocalSocketAddress());
             }
             var connect = ThreadLocalRandom.current().nextBoolean();
             if (connect) {
-                client.connect(_Rfc862Constants.ENDPOINT);
-                log.debug("[C] connected to {}, through {}", client.getRemoteSocketAddress(),
-                          client.getLocalSocketAddress());
+                try {
+                    client.connect(_Rfc862Constants.ADDRESS);
+                    log.debug("connected to {}, through {}", client.getRemoteSocketAddress(),
+                              client.getLocalSocketAddress());
+                } catch (SocketException se) {
+                    log.warn("failed to connect", se);
+                    connect = false;
+                }
             }
-            var digest = _Rfc862Utils.newMessageDigest();
-            var buffer = new byte[PACKET_LENGTH];
-            ThreadLocalRandom.current().nextBytes(buffer);
-            var packet = new DatagramPacket(buffer, buffer.length, _Rfc862Constants.ENDPOINT);
-            client.send(packet);
-            log.debug("[C] {} byte(s) sent to {}, through {}", packet.getLength(),
-                      packet.getSocketAddress(), client.getLocalSocketAddress());
+            client.setSoTimeout((int) TimeUnit.SECONDS.toMillis(16L));
+            var array = new byte[ThreadLocalRandom.current().nextInt(client.getSendBufferSize())];
+            ThreadLocalRandom.current().nextBytes(array);
+            var packet = new DatagramPacket(array, array.length, _Rfc862Constants.ADDRESS);
+            _Rfc862Utils.logClientBytesSending(packet.getLength());
+            client.send(packet); // IOException
+            var digest = _Rfc862Utils.newDigest();
+            digest.update(array, 0, packet.getLength());
+            _Rfc862Utils.logDigest(digest);
             client.receive(packet);
-            log.debug("[C] {} byte(s) received from {}, through {}", packet.getLength(),
-                      packet.getSocketAddress(), client.getLocalSocketAddress());
-            digest.update(buffer, 0, packet.getLength());
+            log.debug("received from {}", packet.getSocketAddress());
+            digest.update(array, 0, packet.getLength());
             if (connect) {
-                client.disconnect();
+                client.disconnect(); // UncheckedIOException
             }
-            log.debug("[S] digest: {}", Base64.getEncoder().encodeToString(digest.digest()));
         }
     }
 

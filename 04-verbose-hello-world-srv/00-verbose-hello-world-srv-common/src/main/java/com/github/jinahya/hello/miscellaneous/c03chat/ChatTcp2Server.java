@@ -54,7 +54,8 @@ class ChatTcp2Server {
         final List<ByteBuffer> buffers = new LinkedList<>();
     }
 
-    public static void main(String... args) throws Exception {
+    public static void main(String... args)
+            throws Exception {
         try (var selector = Selector.open();
              var server = ServerSocketChannel.open()) {
             server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);

@@ -20,41 +20,39 @@ package com.github.jinahya.hello.miscellaneous.c01rfc863;
  * #L%
  */
 
+import com.github.jinahya.hello.util.HelloWorldNetUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.util.HexFormat;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 
 import static com.github.jinahya.hello.miscellaneous.c01rfc863._Rfc863Constants.ADDR;
 
 @Slf4j
-public class Rfc863Tcp0Client {
+class Rfc863Tcp0Client {
 
     public static void main(String... args) throws Exception {
         try (var client = new Socket()) {
-            client.setReuseAddress(true);
+            HelloWorldNetUtils.printSocketOptions(client);
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(ADDR, 0));
-                log.debug("[C] bound to {}", client.getLocalSocketAddress());
+                log.debug("bound to {}", client.getLocalSocketAddress());
             }
-            client.connect(_Rfc863Constants.ENDPOINT, (int) TimeUnit.SECONDS.toMillis(8L));
-            log.debug("[C] connected to {}, through {}", client.getRemoteSocketAddress(),
+            client.connect(_Rfc863Constants.ADDRESS);
+            log.debug("connected to {}, through {}", client.getRemoteSocketAddress(),
                       client.getLocalSocketAddress());
+            var digest = _Rfc863Utils.newDigest();
             var bytes = ThreadLocalRandom.current().nextInt(1024);
-            log.debug("[C] sending {} byte(s)...", bytes);
-            var digest = _Rfc863Utils.newMessageDigest();
-            while (bytes > 0) {
+            _Rfc863Utils.logClientBytes(bytes);
+            _Rfc863Utils.logClientBytes(bytes);
+            while (bytes-- > 0) {
                 var b = ThreadLocalRandom.current().nextInt(255);
                 client.getOutputStream().write(b);
-                bytes--;
                 digest.update((byte) b);
             }
             client.getOutputStream().flush();
-            client.shutdownOutput();
-            log.debug("[S] digest: {}", HexFormat.of().formatHex(digest.digest()));
+            _Rfc863Utils.logDigest(digest);
         }
     }
 

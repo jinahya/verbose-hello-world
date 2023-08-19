@@ -131,7 +131,8 @@ class ChatUdp1Server {
         }
     }
 
-    public static void main(String... args) throws Exception {
+    public static void main(String... args)
+            throws Exception {
         var executor = Executors.newScheduledThreadPool(3);
         var futures = new ArrayList<Future<?>>(2);
         try (var server = new DatagramSocket(null)) {

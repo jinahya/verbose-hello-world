@@ -20,44 +20,50 @@ package com.github.jinahya.hello.miscellaneous.c01rfc863;
  * #L%
  */
 
+import com.github.jinahya.hello.util.HelloWorldNetUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
-import java.util.HexFormat;
+import java.net.SocketException;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
 public class Rfc863Udp1Client {
 
-    private static final int LENGTH = ThreadLocalRandom.current().nextInt(Rfc863Udp1Server.LENGTH);
+//    private static final int LENGTH = ThreadLocalRandom.current().nextInt(Rfc863Udp1Server.LENGTH);
 
-    public static void main(String... args) throws IOException {
+    public static void main(String... args) throws Exception {
         try (var client = new DatagramSocket(null)) {
+            HelloWorldNetUtils.printSocketOptions(client);
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc863Constants.ADDR, 0));
-                log.debug("[C] bound to {}", client.getLocalSocketAddress());
+                log.debug("bound to {}", client.getLocalSocketAddress());
             }
             var connect = ThreadLocalRandom.current().nextBoolean();
             if (connect) {
-                client.connect(_Rfc863Constants.ENDPOINT);
-                log.debug("[C] connected to {}, through {}", client.getRemoteSocketAddress(),
-                          client.getLocalAddress());
+                try {
+                    client.connect(_Rfc863Constants.ADDRESS);
+                    log.debug("connected to {}, through {}", client.getRemoteSocketAddress(),
+                              client.getLocalAddress());
+                } catch (SocketException se) {
+                    log.warn("failed to connect to {}", _Rfc863Constants.ADDRESS, se);
+                    connect = false;
+                }
             }
-            var buffer = new byte[LENGTH];
-            ThreadLocalRandom.current().nextBytes(buffer);
-            var packet = new DatagramPacket(buffer, buffer.length, _Rfc863Constants.ENDPOINT);
+            var array = new byte[
+                    ThreadLocalRandom.current().nextInt(client.getSendBufferSize() + 1)
+                    ];
+            ThreadLocalRandom.current().nextBytes(array);
+            _Rfc863Utils.logClientBytes(args.length);
+            var packet = new DatagramPacket(array, array.length, _Rfc863Constants.ADDRESS);
             client.send(packet);
-            log.debug("[C] {} byte(s) sent to {}, through {}", packet.getLength(),
-                      packet.getSocketAddress(), client.getLocalSocketAddress());
-            var digest = _Rfc863Utils.newMessageDigest();
-            digest.update(buffer, 0, packet.getLength());
-            log.debug("[C] digest: {}", HexFormat.of().formatHex(digest.digest()));
+            var digest = _Rfc863Utils.newDigest();
+            digest.update(array, 0, packet.getLength());
+            _Rfc863Utils.logDigest(digest);
             if (connect) {
-                client.disconnect();
-                log.debug("[C] disconnected");
+                client.disconnect(); // UncheckedIOException
             }
         }
     }

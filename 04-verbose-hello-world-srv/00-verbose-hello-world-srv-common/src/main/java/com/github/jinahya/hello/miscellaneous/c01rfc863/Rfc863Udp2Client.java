@@ -23,60 +23,62 @@ package com.github.jinahya.hello.miscellaneous.c01rfc863;
 import com.github.jinahya.hello.util.HelloWorldSecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.SocketException;
+import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
-import java.util.HexFormat;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
 class Rfc863Udp2Client {
 
-    private static final int CAPACITY =
-            ThreadLocalRandom.current().nextInt(Rfc863Udp2Server.CAPACITY);
-
-    public static void main(String... args) throws IOException {
+    public static void main(String... args) throws Exception {
         try (var selector = Selector.open();
              var client = DatagramChannel.open()) {
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc863Constants.ADDR, 0));
-                log.debug("[C] client bound to {}", client.getLocalAddress());
+                log.debug("client bound to {}", client.getLocalAddress());
             }
             var connect = ThreadLocalRandom.current().nextBoolean();
             if (connect) {
-                client.connect(_Rfc863Constants.ENDPOINT);
-                log.debug("[C] connected to {}, through {}", client.getRemoteAddress(),
-                          client.getLocalAddress());
+                try {
+                    client.connect(_Rfc863Constants.ADDRESS);
+                    log.debug("connected to {}, through {}", client.getRemoteAddress(),
+                              client.getLocalAddress());
+                } catch (SocketException se) {
+                    log.warn("failed to connect to {}", _Rfc863Constants.ADDRESS, se);
+                    connect = false;
+                }
             }
             client.configureBlocking(false);
-            client.register(selector, SelectionKey.OP_WRITE, ByteBuffer.allocate(CAPACITY));
-            var digest = _Rfc863Utils.newMessageDigest();
-            while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
-                if (selector.select(TimeUnit.SECONDS.toMillis(8L)) == 0) {
-                    break;
-                }
-                for (var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
-                    var key = i.next();
-                    if (key.isWritable()) {
-                        var channel = (DatagramChannel) key.channel();
-                        var buffer = (ByteBuffer) key.attachment();
-                        var sent = channel.send(buffer, _Rfc863Constants.ENDPOINT);
-                        log.debug("[C] byte(s) sent: {}", sent);
-                        HelloWorldSecurityUtils.updatePreceding(digest, buffer, sent);
-                        if (!buffer.hasRemaining()) {
-                            key.cancel();
-                        }
-                    }
-                }
+            var clientKey = client.register(selector, SelectionKey.OP_WRITE);
+            if (selector.select(TimeUnit.SECONDS.toMillis(8L)) == 0) {
+                return;
             }
-            log.debug("[C] digest: {}", HexFormat.of().formatHex(digest.digest()));
+            var selectedKey = selector.selectedKeys().iterator().next();
+            assert selectedKey == clientKey;
+            assert selectedKey.isWritable();
+            var channel = (DatagramChannel) selectedKey.channel();
+            assert channel == client;
+            var capacity = ThreadLocalRandom.current().nextInt(
+                    channel.getOption(StandardSocketOptions.SO_SNDBUF) + 1
+            );
+            var buffer = ByteBuffer.allocate(capacity);
+            ThreadLocalRandom.current().nextBytes(buffer.array());
+            _Rfc863Utils.logClientBytes(buffer.remaining());
+            var digest = _Rfc863Utils.newDigest();
+            var w = channel.send(buffer, _Rfc863Constants.ADDRESS);
+            assert w == buffer.position();
+            assert !buffer.hasRemaining();
+            HelloWorldSecurityUtils.updatePreceding(digest, buffer);
+            _Rfc863Utils.logDigest(digest);
+            selectedKey.cancel();
             if (connect) {
-                client.disconnect();
-                log.debug("[C] disconnected");
+                client.disconnect(); // UncheckedIOException
             }
         }
     }

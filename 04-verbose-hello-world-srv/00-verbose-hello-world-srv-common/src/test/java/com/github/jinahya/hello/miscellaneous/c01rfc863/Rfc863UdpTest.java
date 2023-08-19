@@ -53,7 +53,8 @@ class Rfc863UdpTest {
     //    @Disabled
     @MethodSource({"getClassesArgumentsList"})
     @ParameterizedTest
-    void __(Class<?> serverClass, Class<?> clientClass) throws Exception {
+    void __(Class<?> serverClass, Class<?> clientClass)
+            throws Exception {
         log.debug("server: {}", serverClass.getSimpleName());
         log.debug("client: {}", clientClass.getSimpleName());
         serverClass.getClassLoader().setDefaultAssertionStatus(true);

@@ -20,39 +20,32 @@ package com.github.jinahya.hello.miscellaneous.c01rfc863;
  * #L%
  */
 
+import com.github.jinahya.hello.util.HelloWorldNetUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.ServerSocket;
-import java.util.HexFormat;
 import java.util.concurrent.TimeUnit;
 
-// https://datatracker.ietf.org/doc/html/rfc863
 @Slf4j
-public class Rfc863Tcp0Server {
+class Rfc863Tcp0Server {
 
-    public static void main(String... args) throws Exception {
+    public static void main(String... args)
+            throws Exception {
         try (var server = new ServerSocket()) {
-            server.setReuseAddress(true);
-            server.bind(_Rfc863Constants.ENDPOINT);
-            log.debug("[S] bound to {}", server.getLocalSocketAddress());
-            server.setSoTimeout((int) TimeUnit.SECONDS.toMillis(8L));
+            HelloWorldNetUtils.printSocketOptions(server);
+            server.bind(_Rfc863Constants.ADDRESS);
+            log.debug("bound to {}", server.getLocalSocketAddress());
+            server.setSoTimeout((int) TimeUnit.SECONDS.toMillis(16L));
             try (var client = server.accept()) {
-                log.debug("[S] accepted from {}, through {}",
+                log.debug("accepted from {}, through {}",
                           client.getRemoteSocketAddress(), client.getLocalSocketAddress());
-                var digest = _Rfc863Utils.newMessageDigest();
                 var bytes = 0L;
-                while (true) {
-                    var read = client.getInputStream().read();
-                    log.trace("[C] - read: {}", read);
-                    if (read == -1) {
-                        client.shutdownInput();
-                        break;
-                    }
-                    bytes++;
-                    digest.update((byte) read);
+                var digest = _Rfc863Utils.newDigest();
+                for (int b; (b = client.getInputStream().read()) != -1; bytes++) {
+                    digest.update((byte) b);
                 }
-                log.debug("[S] byte(s) received (and discarded): {}", bytes);
-                log.debug("[S] digest: {}", HexFormat.of().formatHex(digest.digest()));
+                _Rfc863Utils.logServerBytes(bytes);
+                _Rfc863Utils.logDigest(digest);
             }
         }
     }

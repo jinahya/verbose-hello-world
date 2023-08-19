@@ -131,7 +131,8 @@ public class HelloWorldServerUtils {
      * @return a socket address to bind.
      * @throws UnknownHostException if {@code args[1]} is not known as an address.
      */
-    public static SocketAddress parseEndpoint(String... args) throws UnknownHostException {
+    public static SocketAddress parseEndpoint(String... args)
+            throws UnknownHostException {
         Objects.requireNonNull(args, "args is null");
         return parseEndpoint(args, (p, h) -> new InetSocketAddress(h, p));
     }
@@ -167,7 +168,8 @@ public class HelloWorldServerUtils {
      */
     // https://stackoverflow.com/q/49520625/330457
     // https://stackoverflow.com/q/6008177/330457
-    static void readQuitFromStandardInput() throws IOException {
+    static void readQuitFromStandardInput()
+            throws IOException {
         var reader = new BufferedReader(new InputStreamReader(System.in));
         for (String line; (line = reader.readLine()) != null; ) {
             if (line.strip().equalsIgnoreCase("quit")) {
@@ -306,7 +308,8 @@ public class HelloWorldServerUtils {
         }
     }
 
-    static void monitorCompletedTasks(CompletionService<?> service) throws InterruptedException {
+    static void monitorCompletedTasks(CompletionService<?> service)
+            throws InterruptedException {
         Objects.requireNonNull(service, "service is null");
         while (!Thread.currentThread().isInterrupted()) {
             var future = service.poll(1L, TimeUnit.SECONDS);
@@ -360,7 +363,8 @@ public class HelloWorldServerUtils {
      * @see #readPortNumber(Path)
      * @see #readPortNumber(Path, IntConsumer)
      */
-    static void writePortNumber(Path dir, int port) throws IOException {
+    static void writePortNumber(Path dir, int port)
+            throws IOException {
         if (!Files.isDirectory(Objects.requireNonNull(dir, "dir is null"))) {
             throw new IllegalArgumentException("not a directory: " + dir);
         }
@@ -389,7 +393,8 @@ public class HelloWorldServerUtils {
      * @throws InterruptedException if interrupted while polling.
      * @see #writePortNumber(Path, int)
      */
-    static int readPortNumber(Path dir) throws IOException, InterruptedException {
+    static int readPortNumber(Path dir)
+            throws IOException, InterruptedException {
         if (!Files.isDirectory(Objects.requireNonNull(dir, "dir is null"))) {
             throw new IllegalArgumentException("not a directory: " + dir);
         }
@@ -510,7 +515,8 @@ public class HelloWorldServerUtils {
      * @throws InterruptedException if the current thread is interrupted while waiting
      * @see #await(CountDownLatch, long, TimeUnit)
      */
-    public static boolean await(CountDownLatch latch) throws InterruptedException {
+    public static boolean await(CountDownLatch latch)
+            throws InterruptedException {
         return await(latch, 1L, TimeUnit.MINUTES);
     }
 

@@ -23,9 +23,7 @@ package com.github.jinahya.hello.miscellaneous.c02rfc862;
 import com.github.jinahya.hello.util.HelloWorldSecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.net.StandardSocketOptions;
 import java.nio.channels.AsynchronousServerSocketChannel;
-import java.util.Base64;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -33,37 +31,35 @@ class Rfc862Tcp3Server {
 
     public static void main(String... args) throws Exception {
         try (var server = AsynchronousServerSocketChannel.open()) {
-            server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
-            server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
-            server.bind(_Rfc862Constants.ENDPOINT);
-            log.debug("[S] bound to {}", server.getLocalAddress());
+            server.bind(_Rfc862Constants.ADDRESS);
+            log.debug("bound to {}", server.getLocalAddress());
             try (var client = server.accept().get(8L, TimeUnit.SECONDS)) {
-                log.debug("[S] accepted from {}, through {}", client.getRemoteAddress(),
+                log.debug("accepted from {}, through {}", client.getRemoteAddress(),
                           client.getLocalAddress());
-                var digest = _Rfc862Utils.newMessageDigest();
+                var digest = _Rfc862Utils.newDigest();
                 var bytes = 0;
-                var buffer = _Rfc862Utils.newByteBuffer();
+                var buffer = _Rfc862Utils.newBuffer();
+                log.debug("buffer.capacity: {}", buffer.capacity());
                 while (true) {
-                    var read = client.read(buffer).get(8L, TimeUnit.SECONDS);
-                    log.trace("[S] - read: {}", read);
-                    if (read == -1) {
+                    var r = client.read(buffer).get(8L, TimeUnit.SECONDS);
+                    if (r == -1) {
                         client.shutdownInput();
                         break;
                     }
-                    bytes += read;
-                    HelloWorldSecurityUtils.updatePreceding(digest, buffer, read);
+                    bytes += r;
+                    HelloWorldSecurityUtils.updatePreceding(digest, buffer, r);
                     buffer.flip(); // limit -> position; position -> zero
-                    var written = client.write(buffer).get(8L, TimeUnit.SECONDS);
-                    log.trace("[S] - written: {}", written);
+                    var w = client.write(buffer).get(8L, TimeUnit.SECONDS);
+                    assert w >= 0;
                     buffer.compact();
                 }
                 for (buffer.flip(); buffer.hasRemaining(); ) {
-                    var written = client.write(buffer).get(8L, TimeUnit.SECONDS);
-                    log.trace("[S] - written: {}", written);
+                    var w = client.write(buffer).get(8L, TimeUnit.SECONDS);
+                    assert w >= 0;
                 }
                 client.shutdownOutput();
-                log.debug("[S] byte(s) received and echoed back: {}", bytes);
-                log.debug("[S] digest: {}", Base64.getEncoder().encodeToString(digest.digest()));
+                _Rfc862Utils.logServerBytesSent(bytes);
+                _Rfc862Utils.logDigest(digest);
             }
         }
     }

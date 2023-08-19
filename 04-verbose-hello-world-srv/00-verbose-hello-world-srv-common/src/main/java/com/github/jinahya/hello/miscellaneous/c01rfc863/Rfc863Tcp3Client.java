@@ -20,12 +20,12 @@ package com.github.jinahya.hello.miscellaneous.c01rfc863;
  * #L%
  */
 
+import com.github.jinahya.hello.util.HelloWorldNetUtils;
 import com.github.jinahya.hello.util.HelloWorldSecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
 import java.nio.channels.AsynchronousSocketChannel;
-import java.util.HexFormat;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
@@ -36,30 +36,29 @@ class Rfc863Tcp3Client {
 
     public static void main(String... args) throws Exception {
         try (var client = AsynchronousSocketChannel.open()) {
+            HelloWorldNetUtils.printSocketOptions(client);
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(ADDR, 0));
-                log.debug("[C] bound to {}", client.getLocalAddress());
+                log.debug("bound to {}", client.getLocalAddress());
             }
-            client.connect(_Rfc863Constants.ENDPOINT).get(8L, TimeUnit.SECONDS);
-            log.debug("[C] connected to {}, through {}", client.getRemoteAddress(),
+            client.connect(_Rfc863Constants.ADDRESS).get(1L, TimeUnit.SECONDS);
+            log.debug("connected to {}, through {}", client.getRemoteAddress(),
                       client.getLocalAddress());
             var bytes = ThreadLocalRandom.current().nextInt(1048576);
-            log.debug("[C] byte(s) to send: {}", bytes);
-            var buffer = _Rfc863Utils.newByteBuffer();
+            _Rfc863Utils.logClientBytes(bytes);
+            var buffer = _Rfc863Utils.newBuffer();
             buffer.position(buffer.limit());
-            var digest = _Rfc863Utils.newMessageDigest();
+            var digest = _Rfc863Utils.newDigest();
             while (bytes > 0) {
                 if (!buffer.hasRemaining()) {
                     buffer.clear().limit(Math.min(buffer.capacity(), bytes));
                     ThreadLocalRandom.current().nextBytes(buffer.array());
                 }
-                var written = client.write(buffer).get(8L, TimeUnit.SECONDS);
-                log.trace("[C] - written: {}", written);
-                bytes -= written;
-                HelloWorldSecurityUtils.updatePreceding(digest, buffer, written);
+                var w = client.write(buffer).get();
+                bytes -= w;
+                HelloWorldSecurityUtils.updatePreceding(digest, buffer, w);
             }
-            log.debug("[S] digest: {}", HexFormat.of().formatHex(digest.digest()));
-            client.shutdownOutput();
+            _Rfc863Utils.logDigest(digest);
         }
     }
 

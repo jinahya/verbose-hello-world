@@ -29,7 +29,9 @@ final class _Rfc863Constants {
 
     private static final int PORT = 9 + 50000;
 
-    static final InetSocketAddress ENDPOINT = new InetSocketAddress(ADDR, PORT);
+    static final InetSocketAddress ADDRESS = new InetSocketAddress(ADDR, PORT);
+
+    static final String ALGORITHM = "SHA-1";
 
     private _Rfc863Constants() {
         throw new AssertionError("instantiation is not allowed");

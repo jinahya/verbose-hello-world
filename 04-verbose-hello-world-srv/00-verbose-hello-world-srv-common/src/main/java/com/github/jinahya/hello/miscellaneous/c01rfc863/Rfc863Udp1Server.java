@@ -20,32 +20,29 @@ package com.github.jinahya.hello.miscellaneous.c01rfc863;
  * #L%
  */
 
+import com.github.jinahya.hello.util.HelloWorldNetUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.util.HexFormat;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class Rfc863Udp1Server {
 
-    static final int LENGTH = 1024;
-
-    public static void main(String... args) throws IOException {
+    public static void main(String... args) throws Exception {
         try (var server = new DatagramSocket(null)) {
-            server.bind(_Rfc863Constants.ENDPOINT);
-            log.debug("[S] bound to {}", server.getLocalSocketAddress());
-            server.setSoTimeout((int) TimeUnit.SECONDS.toMillis(8L));
-            var buffer = new byte[LENGTH];
-            var packet = new DatagramPacket(buffer, buffer.length);
+            HelloWorldNetUtils.printSocketOptions(server);
+            server.bind(_Rfc863Constants.ADDRESS);
+            log.debug("bound to {}", server.getLocalSocketAddress());
+            server.setSoTimeout((int) TimeUnit.SECONDS.toMillis(16L));
+            var array = new byte[server.getReceiveBufferSize() + 1];
+            var packet = new DatagramPacket(array, array.length);
             server.receive(packet);
-            log.debug("[S] {} byte(s) received from {}", packet.getLength(),
-                      packet.getSocketAddress());
-            var digest = _Rfc863Utils.newMessageDigest();
-            digest.update(buffer, 0, packet.getLength());
-            log.debug("[S] digest: {}", HexFormat.of().formatHex(digest.digest()));
+            _Rfc863Utils.logServerBytes(packet.getLength());
+            var digest = _Rfc863Utils.newDigest();
+            digest.update(array, 0, packet.getLength());
+            _Rfc863Utils.logDigest(digest);
         }
     }
 

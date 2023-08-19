@@ -22,55 +22,48 @@ package com.github.jinahya.hello.miscellaneous.c02rfc862;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
+import java.io.EOFException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.util.Base64;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
 class Rfc862Tcp1Client {
 
-    public static void main(String... args) throws IOException {
+    public static void main(String... args) throws Exception {
         try (var client = new Socket()) {
-            client.setReuseAddress(true);
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc862Constants.ADDR, 0));
-                log.debug("[C] bound to {}", client.getLocalSocketAddress());
+                log.debug("bound to {}", client.getLocalSocketAddress());
             }
-            client.connect(_Rfc862Constants.ENDPOINT, (int) TimeUnit.SECONDS.toMillis(8L));
-            log.debug("[C] connected to {}, through {}", client.getRemoteSocketAddress(),
+            client.connect(_Rfc862Constants.ADDRESS, (int) TimeUnit.SECONDS.toMillis(8L));
+            log.debug("connected to {}, through {}", client.getRemoteSocketAddress(),
                       client.getLocalSocketAddress());
             client.setSoTimeout((int) TimeUnit.SECONDS.toMillis(8L));
-            var digest = _Rfc862Utils.newMessageDigest();
+            var digest = _Rfc862Utils.newDigest();
             var bytes = ThreadLocalRandom.current().nextInt(1048576);
-            log.debug("[C] sending {} byte(s)", bytes);
-            var buffer = _Rfc862Utils.newByteArray();
-            for (int read; bytes > 0; ) {
-                ThreadLocalRandom.current().nextBytes(buffer);
-                var length = Math.min(buffer.length, bytes);
-                client.getOutputStream().write(buffer, 0, length);
-                log.trace("[C] - written: {}", buffer.length);
+            _Rfc862Utils.logClientBytesSending(bytes);
+            var array = _Rfc862Utils.newArray();
+            log.debug("array.length: {}", array.length);
+            for (int r; bytes > 0; ) {
+                ThreadLocalRandom.current().nextBytes(array);
+                var l = Math.min(array.length, bytes);
+                client.getOutputStream().write(array, 0, l);
                 client.getOutputStream().flush();
-                bytes -= length;
-                read = client.getInputStream().read(buffer);
-                log.trace("[C] - read: {}", read);
-                assert read != -1;
-                assert read > 0;
-                digest.update(buffer, 0, read);
-            }
-            client.shutdownOutput();
-            for (int read; ; ) {
-                read = client.getInputStream().read(buffer);
-                log.trace("[C] - read: {}", read);
-                if (read == -1) {
-                    client.shutdownInput();
-                    break;
+                bytes -= l;
+                digest.update(array, 0, l);
+                r = client.getInputStream().read(array);
+                if (r == -1) {
+                    throw new EOFException("unexpected eof");
                 }
-                digest.update(buffer, 0, read);
+                assert r > 0;
             }
-            log.debug("[C] digest: {}", Base64.getEncoder().encodeToString(digest.digest()));
+            _Rfc862Utils.logDigest(digest);
+            client.shutdownOutput();
+            for (int r; (r = client.getInputStream().read(array)) != -1; ) {
+                assert r > 0;
+            }
         }
     }
 

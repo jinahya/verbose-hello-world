@@ -20,54 +20,44 @@ package com.github.jinahya.hello.miscellaneous.c02rfc862;
  * #L%
  */
 
+import com.github.jinahya.hello.util.HelloWorldNioUtils;
 import com.github.jinahya.hello.util.HelloWorldSecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.EOFException;
 import java.net.InetSocketAddress;
-import java.net.StandardSocketOptions;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
-import java.util.Base64;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
 class Rfc862Tcp2Client {
 
-    private static class Attachment extends Rfc862Tcp2Server.Attachment {
+    private static class Attachment
+            extends Rfc862Tcp2Server.Attachment {
 
-        Attachment() {
-            super();
-            bytes = ThreadLocalRandom.current().nextInt(1048576);
-            clearBuffer();
-        }
-
-        void clearBuffer() {
-            buffer.clear();
-            ThreadLocalRandom.current().nextBytes(buffer.array());
-            buffer.limit(Math.min(buffer.limit(), bytes));
-        }
     }
 
     public static void main(String... args) throws Exception {
         try (var selector = Selector.open();
              var client = SocketChannel.open()) {
-            client.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
-            client.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc862Constants.ADDR, 0));
-                log.debug("[C] bound to {}", client.getLocalAddress());
+                log.debug("bound to {}", client.getLocalAddress());
             }
             client.configureBlocking(false);
-            if (client.connect(_Rfc862Constants.ENDPOINT)) {
+            if (client.connect(_Rfc862Constants.ADDRESS)) {
                 log.debug("connected (immediately) to {}, through {}",
                           client.getRemoteAddress(), client.getLocalAddress());
                 var attachment = new Attachment();
-                log.debug("[C] sending {} bytes", attachment.bytes);
-                client.register(selector,
-                                attachment.buffer.hasRemaining() ? SelectionKey.OP_WRITE : 0,
-                                attachment);
+                log.debug("buffer.capacity: {}", attachment.buffer.capacity());
+                attachment.bytes = ThreadLocalRandom.current().nextInt(1048576);
+                _Rfc862Utils.logClientBytesSending(attachment.bytes);
+                attachment.buffer.position(attachment.buffer.limit());
+                var ops = attachment.buffer.hasRemaining() ? SelectionKey.OP_WRITE : 0;
+                client.register(selector, ops, attachment);
             } else {
                 client.register(selector, SelectionKey.OP_CONNECT);
             }
@@ -81,13 +71,19 @@ class Rfc862Tcp2Client {
                         var channel = (SocketChannel) key.channel();
                         var connected = channel.finishConnect();
                         assert connected;
-                        log.debug("[C] connected to {}, through {}", channel.getRemoteAddress(),
+                        log.debug("connected to {}, through {}", channel.getRemoteAddress(),
                                   channel.getLocalAddress());
+                        key.interestOpsAnd(~SelectionKey.OP_CONNECT);
                         var attachment = new Attachment();
-                        log.debug("[C] sending {} bytes", attachment.bytes);
+                        log.debug("buffer.capacity: {}", attachment.buffer.capacity());
+                        attachment.bytes = ThreadLocalRandom.current().nextInt(1048576);
+                        _Rfc862Utils.logClientBytesSending(attachment.bytes);
+                        attachment.buffer.position(attachment.buffer.limit());
                         key.attach(attachment);
-                        if (attachment.buffer.hasRemaining()) {
-                            key.interestOps(SelectionKey.OP_WRITE);
+                        if (attachment.bytes == 0) {
+                            key.cancel();
+                        } else {
+                            key.interestOpsOr(SelectionKey.OP_WRITE);
                         }
                         continue;
                     }
@@ -96,42 +92,38 @@ class Rfc862Tcp2Client {
                         var attachment = (Attachment) key.attachment();
                         assert attachment.bytes > 0;
                         if (!attachment.buffer.hasRemaining()) {
-                            attachment.clearBuffer();
+                            ThreadLocalRandom.current().nextBytes(attachment.buffer.array());
+                            attachment.buffer.clear().limit(Math.min(
+                                    attachment.buffer.remaining(),
+                                    attachment.bytes
+                            ));
                         }
-                        var written = channel.write(attachment.buffer);
-                        log.trace("[C] - written: {}", written);
-                        if ((attachment.bytes -= written) == 0) {
+                        var w = channel.write(attachment.buffer);
+                        assert w >= 0;
+                        HelloWorldSecurityUtils.updatePreceding(
+                                attachment.digest,
+                                attachment.buffer,
+                                w
+                        );
+                        if ((attachment.bytes -= w) == 0) {
                             channel.shutdownOutput();
                             key.interestOpsAnd(~SelectionKey.OP_WRITE);
+                            _Rfc862Utils.logDigest(attachment.digest);
                         }
-                        if (written > 0) {
+                        if (w > 0) {
                             key.interestOpsOr(SelectionKey.OP_READ);
                         }
                     }
                     if (key.isReadable()) {
                         var channel = (SocketChannel) key.channel();
                         var attachment = (Attachment) key.attachment();
-                        var limit = attachment.buffer.limit();
-                        var position = attachment.buffer.position();
-                        attachment.buffer.flip(); // limit -> position, position -> zero
-                        var read = channel.read(attachment.buffer);
-                        log.trace("[C] - read: {}", read);
-                        if (read == -1) {
-                            assert attachment.bytes == 0;
-                            channel.shutdownInput();
+                        var r = HelloWorldNioUtils.flipReadAndRestore(attachment.buffer, channel);
+                        if (r == -1) {
+                            if (attachment.bytes > 0) {
+                                throw new EOFException("unexpected eof");
+                            }
                             key.interestOpsAnd(~SelectionKey.OP_READ);
                             key.cancel();
-                            log.debug("[C] digest: {}",
-                                      Base64.getEncoder()
-                                              .encodeToString(attachment.digest.digest()));
-                            continue;
-                        }
-                        HelloWorldSecurityUtils.updatePreceding(
-                                attachment.digest, attachment.buffer, read
-                        );
-                        attachment.buffer.limit(limit).position(position);
-                        if (attachment.bytes > 0) {
-                            key.interestOpsOr(SelectionKey.OP_WRITE);
                         }
                     }
                 }

@@ -52,7 +52,8 @@ class HelloWorldClientUtils {
         }
     }
 
-    static void readFully1(InputStream input, byte[] b, int off, int len) throws IOException {
+    static void readFully1(InputStream input, byte[] b, int off, int len)
+            throws IOException {
         validateArgumentsForReadFully(input, b, off, len);
         while (len > 0) {
             var bytes = input.read(b, off, len);
@@ -64,27 +65,32 @@ class HelloWorldClientUtils {
         }
     }
 
-    static void readFully1(InputStream input, byte[] b) throws IOException {
+    static void readFully1(InputStream input, byte[] b)
+            throws IOException {
         readFully1(input, Objects.requireNonNull(b, "b is null"));
     }
 
-    static void readFully2(InputStream input, byte[] b, int off, int len) throws IOException {
+    static void readFully2(InputStream input, byte[] b, int off, int len)
+            throws IOException {
         validateArgumentsForReadFully(input, b, off, len);
         new DataInputStream((input)).readFully(b, off, len);
     }
 
-    static void readFully2(InputStream input, byte[] b) throws IOException {
+    static void readFully2(InputStream input, byte[] b)
+            throws IOException {
         readFully2(input, Objects.requireNonNull(b, "b is null"));
     }
 
-    static void readFully3(InputStream input, byte[] b, int off, int len) throws IOException {
+    static void readFully3(InputStream input, byte[] b, int off, int len)
+            throws IOException {
         validateArgumentsForReadFully(input, b, off, len);
         if (input.readNBytes(b, off, len) < len) {
             throw new EOFException("premature eof");
         }
     }
 
-    static void readFully3(InputStream input, byte[] b) throws IOException {
+    static void readFully3(InputStream input, byte[] b)
+            throws IOException {
         readFully3(input, Objects.requireNonNull(b, "b is null"));
     }
 
