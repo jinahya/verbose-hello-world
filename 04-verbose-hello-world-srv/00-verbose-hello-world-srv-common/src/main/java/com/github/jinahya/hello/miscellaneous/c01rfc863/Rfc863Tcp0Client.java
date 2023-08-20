@@ -46,8 +46,8 @@ class Rfc863Tcp0Client {
             var bytes = ThreadLocalRandom.current().nextInt(1024);
             _Rfc863Utils.logClientBytes(bytes);
             _Rfc863Utils.logClientBytes(bytes);
-            while (bytes-- > 0) {
-                var b = ThreadLocalRandom.current().nextInt(255);
+            for (int b; bytes-- > 0; ) {
+                b = ThreadLocalRandom.current().nextInt(255);
                 client.getOutputStream().write(b);
                 digest.update((byte) b);
             }

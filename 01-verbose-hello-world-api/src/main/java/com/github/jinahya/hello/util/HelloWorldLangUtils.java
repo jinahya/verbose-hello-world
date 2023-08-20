@@ -105,6 +105,20 @@ public final class HelloWorldLangUtils {
         thread.start();
     }
 
+    public static void readLinesAndRunWhenTests(Predicate<? super String> predicate,
+                                                Runnable runnable,
+                                                Consumer<? super String> consumer) {
+        Objects.requireNonNull(runnable, "runnable is null");
+        readLinesAndCallWhenTests(
+                predicate,
+                () -> {
+                    runnable.run();
+                    return null;
+                },
+                consumer
+        );
+    }
+
     /**
      * Starts a new {@link Thread#isDaemon() daemon} thread which continuously reads lines from
      * {@link System#in}, calls specified callable when it reads a line equals (ignoring the case)

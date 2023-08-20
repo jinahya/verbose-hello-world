@@ -20,12 +20,12 @@ package com.github.jinahya.hello.miscellaneous.c02rfc862;
  * #L%
  */
 
-import com.github.jinahya.hello.util.HelloWorldNioUtils;
 import com.github.jinahya.hello.util.HelloWorldSecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.EOFException;
 import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
@@ -38,6 +38,15 @@ class Rfc862Tcp2Client {
     private static class Attachment
             extends Rfc862Tcp2Server.Attachment {
 
+        Attachment() {
+            super();
+            bytes = ThreadLocalRandom.current().nextInt(1048576);
+            buffer.position(buffer.limit());
+            _Rfc862Utils.logClientBytesSending(bytes);
+            log.debug("buffer.capacity: {}", buffer.capacity());
+        }
+
+        private final ByteBuffer slice = buffer.slice();
     }
 
     public static void main(String... args) throws Exception {
@@ -52,14 +61,12 @@ class Rfc862Tcp2Client {
                 log.debug("connected (immediately) to {}, through {}",
                           client.getRemoteAddress(), client.getLocalAddress());
                 var attachment = new Attachment();
-                log.debug("buffer.capacity: {}", attachment.buffer.capacity());
-                attachment.bytes = ThreadLocalRandom.current().nextInt(1048576);
-                _Rfc862Utils.logClientBytesSending(attachment.bytes);
-                attachment.buffer.position(attachment.buffer.limit());
-                var ops = attachment.buffer.hasRemaining() ? SelectionKey.OP_WRITE : 0;
-                client.register(selector, ops, attachment);
+                var clientKey = client.register(selector, SelectionKey.OP_READ, attachment);
+                if (attachment.bytes > 0) {
+                    clientKey.interestOpsOr(SelectionKey.OP_WRITE);
+                }
             } else {
-                client.register(selector, SelectionKey.OP_CONNECT);
+                client.register(selector, SelectionKey.OP_READ | SelectionKey.OP_CONNECT);
             }
             while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
                 if (selector.select(TimeUnit.SECONDS.toMillis(8L)) == 0) {
@@ -68,6 +75,7 @@ class Rfc862Tcp2Client {
                 for (var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
                     var key = i.next();
                     if (key.isConnectable()) {
+                        assert key.attachment() == null;
                         var channel = (SocketChannel) key.channel();
                         var connected = channel.finishConnect();
                         assert connected;
@@ -75,10 +83,6 @@ class Rfc862Tcp2Client {
                                   channel.getLocalAddress());
                         key.interestOpsAnd(~SelectionKey.OP_CONNECT);
                         var attachment = new Attachment();
-                        log.debug("buffer.capacity: {}", attachment.buffer.capacity());
-                        attachment.bytes = ThreadLocalRandom.current().nextInt(1048576);
-                        _Rfc862Utils.logClientBytesSending(attachment.bytes);
-                        attachment.buffer.position(attachment.buffer.limit());
                         key.attach(attachment);
                         if (attachment.bytes == 0) {
                             key.cancel();
@@ -106,18 +110,17 @@ class Rfc862Tcp2Client {
                                 w
                         );
                         if ((attachment.bytes -= w) == 0) {
-                            channel.shutdownOutput();
+                            channel.shutdownOutput(); // IOException
                             key.interestOpsAnd(~SelectionKey.OP_WRITE);
                             _Rfc862Utils.logDigest(attachment.digest);
-                        }
-                        if (w > 0) {
-                            key.interestOpsOr(SelectionKey.OP_READ);
                         }
                     }
                     if (key.isReadable()) {
                         var channel = (SocketChannel) key.channel();
                         var attachment = (Attachment) key.attachment();
-                        var r = HelloWorldNioUtils.flipReadAndRestore(attachment.buffer, channel);
+                        var r = channel.read(
+                                attachment.slice.position(0).limit(attachment.buffer.position())
+                        );
                         if (r == -1) {
                             if (attachment.bytes > 0) {
                                 throw new EOFException("unexpected eof");

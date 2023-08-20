@@ -28,7 +28,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.List;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -59,8 +58,7 @@ class Rfc862TcpTest {
 
     @MethodSource({"getClassesArgumentsList"})
     @ParameterizedTest
-    void __(Class<?> serverClass, Class<?> clientClass)
-            throws Exception {
+    void __(Class<?> serverClass, Class<?> clientClass) throws Exception {
         log.debug("server: {}", serverClass.getSimpleName());
         log.debug("client: {}", clientClass.getSimpleName());
         serverClass.getClassLoader().setDefaultAssertionStatus(true);
@@ -83,8 +81,8 @@ class Rfc862TcpTest {
                 throw new RuntimeException(e);
             }
         });
-        client.get(8L, TimeUnit.SECONDS);
-        server.get(8L, TimeUnit.SECONDS);
+        client.get();
+        server.get();
         executor.shutdown();
     }
 }

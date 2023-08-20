@@ -28,7 +28,7 @@ import java.net.DatagramSocket;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-public class Rfc863Udp1Server {
+class Rfc863Udp1Server {
 
     public static void main(String... args) throws Exception {
         try (var server = new DatagramSocket(null)) {

@@ -37,10 +37,9 @@ class Rfc862Tcp1Client {
                 client.bind(new InetSocketAddress(_Rfc862Constants.ADDR, 0));
                 log.debug("bound to {}", client.getLocalSocketAddress());
             }
-            client.connect(_Rfc862Constants.ADDRESS, (int) TimeUnit.SECONDS.toMillis(8L));
+            client.connect(_Rfc862Constants.ADDRESS);
             log.debug("connected to {}, through {}", client.getRemoteSocketAddress(),
                       client.getLocalSocketAddress());
-            client.setSoTimeout((int) TimeUnit.SECONDS.toMillis(8L));
             var digest = _Rfc862Utils.newDigest();
             var bytes = ThreadLocalRandom.current().nextInt(1048576);
             _Rfc862Utils.logClientBytesSending(bytes);

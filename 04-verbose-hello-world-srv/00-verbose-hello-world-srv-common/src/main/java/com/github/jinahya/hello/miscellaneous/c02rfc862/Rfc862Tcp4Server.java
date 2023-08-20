@@ -42,7 +42,7 @@ class Rfc862Tcp4Server {
 
         final ByteBuffer buffer = _Rfc862Utils.newBuffer();
 
-        int bytes; // number of bytes to receive or send
+        int bytes;
 
         final MessageDigest digest = _Rfc862Utils.newDigest();
     }
@@ -52,23 +52,27 @@ class Rfc862Tcp4Server {
     CompletionHandler<Integer, Attachment> W_HANDLER = new CompletionHandler<>() {
         @Override public void completed(Integer result, Attachment attachment) {
             HelloWorldSecurityUtils.updatePreceding(attachment.digest, attachment.buffer, result);
-            if (attachment.latch.getCount() == 1) { // all received
+            if (attachment.latch.getCount() == 1) { // all already received
                 if (attachment.buffer.hasRemaining()) {
                     attachment.client.write(
-                            attachment.buffer,    // <src>
-                            attachment,           // <attachment>
-                            this                  // <handler>
+                            attachment.buffer, // <src>
+                            attachment,        // <attachment>
+                            this               // <handler>
                     );
                     return;
                 }
-                attachment.latch.countDown(); // all sent
+                attachment.latch.countDown(); // -1 for all sent
+                try {
+                    attachment.client.shutdownOutput();
+                } catch (IOException ioe) {
+                    failed(ioe, attachment);
+                }
                 return;
             }
-            attachment.buffer.compact();
             attachment.client.read(
-                    attachment.buffer,    // <dst>
-                    attachment,           // <attachment>
-                    R_HANDLER             // <handler>
+                    attachment.buffer.compact(), // <dst>
+                    attachment,                  // <attachment>
+                    R_HANDLER                    // <handler>
             );
         }
         @Override public void failed(Throwable exc, Attachment attachment) {
@@ -85,15 +89,23 @@ class Rfc862Tcp4Server {
     CompletionHandler<Integer, Attachment> R_HANDLER = new CompletionHandler<>() {
         @Override public void completed(Integer result, Attachment attachment) {
             if (result == -1) {
-                attachment.latch.countDown(); // all received
+                attachment.latch.countDown(); // -1 for all received
+                if (attachment.buffer.position() == 0) { // no more bytes to write
+                    attachment.latch.countDown(); // -1 for all written
+                    try {
+                        attachment.client.close();
+                    } catch (IOException ioe) {
+                        failed(ioe, attachment);
+                    }
+                    return;
+                }
             } else {
                 attachment.bytes += result;
             }
-            attachment.buffer.flip(); // limit -> position; position -> zero
             attachment.client.write(
-                    attachment.buffer, // <src>
-                    attachment,        // <attachment>
-                    W_HANDLER          // <handler>
+                    attachment.buffer.flip(), // <src>
+                    attachment,               // <attachment>
+                    W_HANDLER                 // <handler>
             );
         }
         @Override public void failed(Throwable exc, Attachment attachment) {
@@ -116,7 +128,7 @@ class Rfc862Tcp4Server {
                 failed(ioe, attachment);
                 return;
             }
-            attachment.latch.countDown(); // connected
+            attachment.latch.countDown(); // -1 for being accepted
             attachment.client = result;
             attachment.client.read(
                     attachment.buffer,    // <dst>
@@ -136,7 +148,7 @@ class Rfc862Tcp4Server {
     public static void main(String... args) throws Exception {
         try (var server = AsynchronousServerSocketChannel.open()) {
             server.bind(_Rfc862Constants.ADDRESS);
-            log.debug("server bound to {}", server.getLocalAddress());
+            log.debug("bound to {}", server.getLocalAddress());
             var attachment = new Attachment();
             server.accept(
                     attachment, // <attachment>

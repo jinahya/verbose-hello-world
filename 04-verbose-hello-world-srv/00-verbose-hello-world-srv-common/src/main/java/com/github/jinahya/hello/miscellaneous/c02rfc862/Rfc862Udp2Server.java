@@ -76,7 +76,7 @@ class Rfc862Udp2Server {
                         attachment.buffer.flip();
                         var w = channel.send(attachment.buffer, attachment.address);
                         log.debug("{} byte(s) sent to {}", w, attachment.address);
-                        HelloWorldSecurityUtils.updatePreceding(
+                        HelloWorldSecurityUtils.updateAllPreceding(
                                 attachment.digest, attachment.buffer
                         );
                         _Rfc862Utils.logDigest(attachment.digest);

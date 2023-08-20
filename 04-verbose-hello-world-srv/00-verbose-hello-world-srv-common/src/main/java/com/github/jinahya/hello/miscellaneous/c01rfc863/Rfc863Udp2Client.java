@@ -74,7 +74,7 @@ class Rfc863Udp2Client {
             var w = channel.send(buffer, _Rfc863Constants.ADDRESS);
             assert w == buffer.position();
             assert !buffer.hasRemaining();
-            HelloWorldSecurityUtils.updatePreceding(digest, buffer);
+            HelloWorldSecurityUtils.updateAllPreceding(digest, buffer);
             _Rfc863Utils.logDigest(digest);
             selectedKey.cancel();
             if (connect) {

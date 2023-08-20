@@ -58,7 +58,7 @@ class Rfc863Udp2Server {
             channel.close();
             assert !selectedKey.isValid();
             var digest = _Rfc863Utils.newDigest();
-            HelloWorldSecurityUtils.updatePreceding(digest, buffer);
+            HelloWorldSecurityUtils.updateAllPreceding(digest, buffer);
             _Rfc863Utils.logDigest(digest);
         }
     }

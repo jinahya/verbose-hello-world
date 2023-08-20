@@ -20,10 +20,10 @@ package com.github.jinahya.hello.miscellaneous.c01rfc863;
  * #L%
  */
 
-import com.github.jinahya.hello.util.HelloWorldSecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
@@ -32,12 +32,11 @@ import java.util.concurrent.CountDownLatch;
 @Slf4j
 class Rfc863Tcp4Server {
 
-    static class Attachment
-            extends Rfc863Tcp2Server.Attachment {
-
-        final CountDownLatch latch = new CountDownLatch(2);
+    static class Attachment extends Rfc863Tcp2Server.Attachment {
 
         AsynchronousSocketChannel client;
+
+        final CountDownLatch latch = new CountDownLatch(2);
     }
 
     // @formatter:off
@@ -45,20 +44,24 @@ class Rfc863Tcp4Server {
     CompletionHandler<Integer, Attachment> R_HANDLER = new CompletionHandler<>() {
         @Override public void completed(Integer result, Attachment attachment) {
             if (result == -1) {
-                _Rfc863Utils.logServerBytes(attachment.bytes);
-                _Rfc863Utils.logDigest(attachment.digest);
                 try {
                     attachment.client.close();
                 } catch (IOException ioe) {
-                    log.error("failed to close client", ioe);
+                    log.error("failed to close {}", attachment.client, ioe);
                 }
-                attachment.latch.countDown();
+                _Rfc863Utils.logServerBytes(attachment.bytes);
+                _Rfc863Utils.logDigest(attachment.digest);
+                attachment.latch.countDown(); // -1 for all received
                 return;
             }
             attachment.bytes += result;
-            HelloWorldSecurityUtils.updatePreceding(attachment.digest, attachment.buffer, result);
+            attachment.digest.update(
+                    attachment.slice
+                            .position(attachment.buffer.position() - result)
+                            .limit(attachment.buffer.position())
+            );
             if (!attachment.buffer.hasRemaining()) {
-                attachment.buffer.clear(); // position -> zero; limit -> capacity
+                attachment.buffer.clear();
             }
             attachment.client.read(
                     attachment.buffer,    // <dst>
@@ -68,9 +71,7 @@ class Rfc863Tcp4Server {
         }
         @Override public void failed(Throwable exc, Attachment attachment) {
             log.error("failed to read", exc);
-            while (attachment.latch.getCount() > 0) {
-                attachment.latch.countDown();
-            }
+            attachment.latch.countDown();
         }
     };
     // @formatter:on
@@ -79,23 +80,26 @@ class Rfc863Tcp4Server {
     private static final
     CompletionHandler<AsynchronousSocketChannel, Attachment> A_HANDLER = new CompletionHandler<>() {
         @Override public void completed(AsynchronousSocketChannel result, Attachment attachment) {
+            attachment.client = result;
+            attachment.latch.countDown(); // -1 for being accepted
             try {
                 log.debug("accepted from {}, through {}", result.getRemoteAddress(),
                           result.getLocalAddress());
             } catch (final IOException ioe) {
-                log.error("failed to get addresses from " + result, ioe);
+                log.error("failed to get addresses from {}", attachment.client, ioe);
             }
-            attachment.client = result;
-            attachment.latch.countDown();
+            if (!attachment.buffer.hasRemaining()) {
+                attachment.buffer.clear();
+            }
             attachment.client.read(
-                    attachment.buffer,    // <dst>
-                    attachment,           // <attachment>
-                    R_HANDLER             // <handler>
+                    attachment.buffer, // <dst>
+                    attachment,        // <attachment>
+                    R_HANDLER          // <handler>
             );
         }
         @Override public void failed(Throwable exc, Attachment attachment) {
             log.error("failed to accept", exc);
-            while (attachment.latch.getCount() > 0) {
+            while (attachment.latch.getCount() > 0L) {
                 attachment.latch.countDown();
             }
         }

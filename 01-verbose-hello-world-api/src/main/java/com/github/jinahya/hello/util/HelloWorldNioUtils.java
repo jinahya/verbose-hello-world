@@ -20,11 +20,9 @@ package com.github.jinahya.hello.util;
  * #L%
  */
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.ReadableByteChannel;
+import java.nio.Buffer;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -34,27 +32,7 @@ import java.util.function.Function;
  */
 public final class HelloWorldNioUtils {
 
-    /**
-     * Adjust specified byte buffer's {@link ByteBuffer#limit() limit} if its
-     * {@link ByteBuffer#remaining()} is greater than specified value.
-     *
-     * @param byteBuffer   the byte buffer whose {@link ByteBuffer#limit() limit} is adjusted.
-     * @param maxRemaining the maximum {@link ByteBuffer#remaining() remaining} value that the
-     *                     {@code buffer} should have.
-     * @return given {@code buffer}.
-     */
-    public static ByteBuffer adjustLimit(ByteBuffer byteBuffer, int maxRemaining) {
-        Objects.requireNonNull(byteBuffer, "byteBuffer is null");
-        if (maxRemaining < 0) {
-            throw new IllegalArgumentException("maxRemaining(" + maxRemaining + ") is negative");
-        }
-        if (byteBuffer.remaining() > maxRemaining) {
-            byteBuffer.limit(byteBuffer.position() + maxRemaining);
-        }
-        return byteBuffer;
-    }
-
-    public static <B extends ByteBuffer, R> R flipApplyAndRestore(
+    public static <B extends Buffer, R> R flipApplyAndRestore(
             B buffer, Function<? super B, ? extends R> function) {
         Objects.requireNonNull(buffer, "buffer is null");
         Objects.requireNonNull(function, "function is null");
@@ -68,18 +46,15 @@ public final class HelloWorldNioUtils {
         }
     }
 
-    public static <B extends ByteBuffer> int flipReadAndRestore(B buffer,
-                                                                ReadableByteChannel channel) {
+    public static <B extends Buffer> void flipAcceptAndRestore(B buffer,
+                                                               Consumer<? super B> consumer) {
         Objects.requireNonNull(buffer, "buffer is null");
-        Objects.requireNonNull(channel, "channel is null");
-        return flipApplyAndRestore(
+        Objects.requireNonNull(consumer, "consumer is null");
+        flipApplyAndRestore(
                 buffer,
                 b -> {
-                    try {
-                        return channel.read(b);
-                    } catch (IOException ioe) {
-                        throw new UncheckedIOException(ioe);
-                    }
+                    consumer.accept(b);
+                    return null;
                 }
         );
     }

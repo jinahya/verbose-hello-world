@@ -21,7 +21,6 @@ package com.github.jinahya.hello.miscellaneous.c01rfc863;
  */
 
 import com.github.jinahya.hello.util.HelloWorldNetUtils;
-import com.github.jinahya.hello.util.HelloWorldSecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
@@ -36,8 +35,14 @@ import static com.github.jinahya.hello.miscellaneous.c01rfc863._Rfc863Constants.
 @Slf4j
 class Rfc863Tcp2Client {
 
-    private static class Attachment extends Rfc863Tcp2Server.Attachment {
+    private static class Rfc863Tcp2ClientAttachment extends Rfc863Tcp2Server.Attachment {
 
+        Rfc863Tcp2ClientAttachment() {
+            super();
+            bytes = ThreadLocalRandom.current().nextInt(1048576);
+            _Rfc863Utils.logClientBytes(bytes);
+            buffer.position(buffer.limit());
+        }
     }
 
     public static void main(String... args) throws Exception {
@@ -46,16 +51,16 @@ class Rfc863Tcp2Client {
             HelloWorldNetUtils.printSocketOptions(client);
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(ADDR, 0));
-                log.debug("bound to {}", client.getLocalAddress());
+                log.info("(optionally) bound to {}", client.getLocalAddress());
             }
             client.configureBlocking(false);
             if (client.connect(_Rfc863Constants.ADDRESS)) {
-                log.debug("connected (immediately) to {}, through {}",
-                          client.getRemoteAddress(), client.getLocalAddress());
+                log.info("connected (immediately); remote: {}, local: {}",
+                         client.getRemoteAddress(), client.getLocalAddress());
                 client.register(
                         selector,
                         SelectionKey.OP_WRITE,
-                        _Rfc863Utils.newBuffer()
+                        new Rfc863Tcp2ClientAttachment()
                 );
             } else {
                 client.register(selector, SelectionKey.OP_CONNECT);
@@ -70,38 +75,40 @@ class Rfc863Tcp2Client {
                         var channel = (SocketChannel) key.channel();
                         var connected = channel.finishConnect();
                         assert connected;
-                        log.debug("connected to {}, through {}", channel.getRemoteAddress(),
-                                  channel.getLocalAddress());
-                        var attachment = new Attachment();
-                        attachment.bytes = ThreadLocalRandom.current().nextInt(1048576);
-                        _Rfc863Utils.logClientBytes(attachment.bytes);
-                        attachment.buffer.position(attachment.buffer.limit());
+                        log.info("connected; remote: {}, local: {}", channel.getRemoteAddress(),
+                                 channel.getLocalAddress());
+                        key.interestOpsAnd(~SelectionKey.OP_CONNECT);
+                        var attachment = new Rfc863Tcp2ClientAttachment();
                         key.attach(attachment);
                         if (attachment.bytes > 0) {
                             key.interestOps(SelectionKey.OP_WRITE);
+                        } else {
+                            key.cancel();
+                            assert !key.isValid();
                         }
                         continue;
                     }
                     if (key.isWritable()) {
                         var channel = (SocketChannel) key.channel();
-                        var attachment = (Attachment) key.attachment();
+                        var attachment = (Rfc863Tcp2ClientAttachment) key.attachment();
                         assert attachment.bytes > 0;
                         if (!attachment.buffer.hasRemaining()) {
-                            attachment.buffer.clear();
                             ThreadLocalRandom.current().nextBytes(attachment.buffer.array());
-                            attachment.buffer.limit(
-                                    Math.min(attachment.buffer.limit(), attachment.bytes)
-                            );
+                            attachment.buffer.clear().limit(Math.min(
+                                    attachment.buffer.remaining(), attachment.bytes
+                            ));
                         }
                         var w = channel.write(attachment.buffer);
-                        HelloWorldSecurityUtils.updatePreceding(
-                                attachment.digest,
-                                attachment.buffer,
-                                w
+                        assert w >= 0;
+                        attachment.digest.update(
+                                attachment.slice
+                                        .position(attachment.buffer.position() - w)
+                                        .limit(attachment.buffer.position())
                         );
                         if ((attachment.bytes -= w) == 0) {
-                            _Rfc863Utils.logDigest(attachment.digest);
                             key.cancel();
+                            assert !key.isValid();
+                            _Rfc863Utils.logDigest(attachment.digest);
                         }
                     }
                 }

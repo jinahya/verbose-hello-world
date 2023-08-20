@@ -21,7 +21,6 @@ package com.github.jinahya.hello.miscellaneous.c01rfc863;
  */
 
 import com.github.jinahya.hello.util.HelloWorldNetUtils;
-import com.github.jinahya.hello.util.HelloWorldSecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.ByteBuffer;
@@ -37,9 +36,11 @@ class Rfc863Tcp2Server {
 
     static class Attachment {
 
+        int bytes;
+
         final ByteBuffer buffer = _Rfc863Utils.newBuffer();
 
-        int bytes;
+        final ByteBuffer slice = buffer.slice();
 
         final MessageDigest digest = _Rfc863Utils.newDigest();
     }
@@ -49,7 +50,7 @@ class Rfc863Tcp2Server {
              var server = ServerSocketChannel.open()) {
             HelloWorldNetUtils.printSocketOptions(server);
             server.bind(_Rfc863Constants.ADDRESS, 1);
-            log.debug("bound to {}", server.getLocalAddress());
+            log.info("bound to {}", server.getLocalAddress());
             server.configureBlocking(false);
             server.register(selector, SelectionKey.OP_ACCEPT);
             while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
@@ -61,8 +62,9 @@ class Rfc863Tcp2Server {
                     if (key.isAcceptable()) {
                         var channel = (ServerSocketChannel) key.channel();
                         var client = channel.accept();
-                        log.debug("accepted from {}, through {}", client.getRemoteAddress(),
-                                  client.getLocalAddress());
+                        log.info("accepted from {}, through {}", client.getRemoteAddress(),
+                                 client.getLocalAddress());
+                        key.interestOpsAnd(~SelectionKey.OP_ACCEPT);
                         client.configureBlocking(false);
                         client.register(selector, SelectionKey.OP_READ, new Attachment());
                         key.cancel();
@@ -77,18 +79,19 @@ class Rfc863Tcp2Server {
                         }
                         var r = channel.read(attachment.buffer);
                         if (r == -1) {
+                            key.interestOpsAnd(~SelectionKey.OP_READ);
+                            channel.close(); // IOException
+                            assert !key.isValid();
                             _Rfc863Utils.logServerBytes(attachment.bytes);
                             _Rfc863Utils.logDigest(attachment.digest);
-                            channel.close();
-                            assert !key.isValid();
-                            continue;
+                        } else {
+                            attachment.bytes += r;
+                            attachment.digest.update(
+                                    attachment.slice
+                                            .position(attachment.buffer.position() - r)
+                                            .limit(attachment.buffer.position())
+                            );
                         }
-                        attachment.bytes += r;
-                        HelloWorldSecurityUtils.updatePreceding(
-                                attachment.digest,
-                                attachment.buffer,
-                                r
-                        );
                     }
                 }
             }

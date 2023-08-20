@@ -21,7 +21,6 @@ package com.github.jinahya.hello.miscellaneous.c01rfc863;
  */
 
 import com.github.jinahya.hello.util.HelloWorldNetUtils;
-import com.github.jinahya.hello.util.HelloWorldSecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.channels.AsynchronousServerSocketChannel;
@@ -39,18 +38,20 @@ class Rfc863Tcp3Server {
                 log.debug("accepted from {}, through {}", client.getRemoteAddress(),
                           client.getLocalAddress());
                 var buffer = _Rfc863Utils.newBuffer();
+                var slice = buffer.slice();
                 var bytes = 0;
                 var digest = _Rfc863Utils.newDigest();
-                while (true) {
+                for (int r; ; ) {
                     if (!buffer.hasRemaining()) {
                         buffer.clear();
                     }
-                    var r = client.read(buffer).get();
-                    if (r == -1) {
+                    if ((r = client.read(buffer).get()) == -1) {
                         break;
                     }
                     bytes += r;
-                    HelloWorldSecurityUtils.updatePreceding(digest, buffer, r);
+                    digest.update(
+                            slice.position(buffer.position() - r).limit(buffer.position())
+                    );
                 }
                 _Rfc863Utils.logServerBytes(bytes);
                 _Rfc863Utils.logDigest(digest);

@@ -31,7 +31,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-public class Rfc862Tcp3Client {
+class Rfc862Tcp3Client {
 
     public static void main(String... args) throws Exception {
         try (var client = AsynchronousSocketChannel.open()) {
@@ -50,11 +50,11 @@ public class Rfc862Tcp3Client {
             buffer.position(buffer.limit());
             while (bytes > 0) {
                 if (!buffer.hasRemaining()) {
-                    buffer.clear(); // position -> zero, limit -> capacity
                     ThreadLocalRandom.current().nextBytes(buffer.array());
-                    buffer.limit(Math.min(buffer.remaining(), bytes));
+                    buffer.clear().limit(Math.min(buffer.remaining(), bytes));
                 }
                 var w = client.write(buffer).get();
+                assert w >= 0;
                 HelloWorldSecurityUtils.updatePreceding(digest, buffer, w);
                 bytes -= w;
                 var r = HelloWorldNioUtils.flipApplyAndRestore(buffer, client::read).get();

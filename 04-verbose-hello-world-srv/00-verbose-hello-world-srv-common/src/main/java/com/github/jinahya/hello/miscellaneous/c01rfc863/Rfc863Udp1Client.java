@@ -30,9 +30,7 @@ import java.net.SocketException;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
-public class Rfc863Udp1Client {
-
-//    private static final int LENGTH = ThreadLocalRandom.current().nextInt(Rfc863Udp1Server.LENGTH);
+class Rfc863Udp1Client {
 
     public static void main(String... args) throws Exception {
         try (var client = new DatagramSocket(null)) {

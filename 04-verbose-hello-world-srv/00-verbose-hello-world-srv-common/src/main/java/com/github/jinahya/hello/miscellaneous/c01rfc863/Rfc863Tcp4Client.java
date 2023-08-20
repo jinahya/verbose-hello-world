@@ -20,7 +20,6 @@ package com.github.jinahya.hello.miscellaneous.c01rfc863;
  * #L%
  */
 
-import com.github.jinahya.hello.util.HelloWorldSecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -35,35 +34,42 @@ class Rfc863Tcp4Client {
     private static final class Attachment
             extends Rfc863Tcp4Server.Attachment {
 
+        Attachment() {
+            super();
+            bytes = ThreadLocalRandom.current().nextInt(1048576);
+            buffer.position(buffer.limit());
+        }
     }
 
     // @formatter:off
     private static final
     CompletionHandler<Integer, Attachment> W_HANDLER = new CompletionHandler<>() {
         @Override public void completed(Integer result, Attachment attachment) {
-            HelloWorldSecurityUtils.updatePreceding(attachment.digest, attachment.buffer, result);
+            attachment.digest.update(
+                    attachment.slice
+                            .position(attachment.buffer.position() - result)
+                            .limit(attachment.buffer.position())
+            );
             if ((attachment.bytes -= result) == 0) {
                 _Rfc863Utils.logDigest(attachment.digest);
-                attachment.latch.countDown();
+                attachment.latch.countDown(); // -1 for all sent
                 return;
             }
             if (!attachment.buffer.hasRemaining()) {
-                attachment.buffer.clear().limit(
-                        Math.min(attachment.buffer.limit(), attachment.bytes)
-                );
                 ThreadLocalRandom.current().nextBytes(attachment.buffer.array());
+                attachment.buffer.clear().limit(
+                        Math.min(attachment.buffer.remaining(), attachment.bytes)
+                );
             }
             attachment.client.write(
-                    attachment.buffer,    // <src>
-                    attachment,           // <attachment>
-                    this                  // <handler>
+                    attachment.buffer, // <src>
+                    attachment,        // <attachment>
+                    this               // <handler>
             );
         }
         @Override public void failed(Throwable exc, Attachment attachment) {
             log.error("failed to write", exc);
-            while (attachment.latch.getCount() > 0) {
-                attachment.latch.countDown();
-            }
+            attachment.latch.countDown();
         }
     };
     // @formatter:on
@@ -78,15 +84,18 @@ class Rfc863Tcp4Client {
             } catch (IOException ioe) {
                 log.error("failed to get addresses from {}", attachment.client, ioe);
             }
-            attachment.latch.countDown();
-            attachment.bytes = ThreadLocalRandom.current().nextInt(1048576);
+            attachment.latch.countDown(); // -1 for connected
             _Rfc863Utils.logClientBytes(attachment.bytes);
-            ThreadLocalRandom.current().nextBytes(attachment.buffer.array());
-            attachment.buffer.limit(Math.min(attachment.buffer.limit(), attachment.bytes));
+            if (!attachment.buffer.hasRemaining()) {
+                ThreadLocalRandom.current().nextBytes(attachment.buffer.array());
+                attachment.buffer.clear().limit(Math.min(
+                        attachment.buffer.remaining(), attachment.bytes
+                ));
+            }
             attachment.client.write(
-                    attachment.buffer,    // <src>
-                    attachment,           // attachment>
-                    W_HANDLER             // <handler>
+                    attachment.buffer, // <src>
+                    attachment,        // attachment>
+                    W_HANDLER          // <handler>
             );
         }
         @Override public void failed(Throwable exc, Attachment attachment) {
@@ -108,8 +117,8 @@ class Rfc863Tcp4Client {
             attachment.client = client;
             attachment.client.connect(
                     _Rfc863Constants.ADDRESS, // <remote>
-                    attachment,                // <attachment>
-                    C_HANDLER                  // <handler>
+                    attachment,               // <attachment>
+                    C_HANDLER                 // <handler>
             );
             attachment.latch.await();
         }

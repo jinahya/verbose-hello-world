@@ -35,11 +35,11 @@ class Rfc863Tcp1Client {
         try (var client = new Socket()) {
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(ADDR, 0));
-                log.debug("bound to {}", client.getLocalSocketAddress());
+                log.info("(optionally) bound to {}", client.getLocalSocketAddress());
             }
             client.connect(_Rfc863Constants.ADDRESS);
-            log.debug("connected to {}, through {}", client.getRemoteSocketAddress(),
-                      client.getLocalSocketAddress());
+            log.info("connected to {}, through {}", client.getRemoteSocketAddress(),
+                     client.getLocalSocketAddress());
             var digest = _Rfc863Utils.newDigest();
             var bytes = ThreadLocalRandom.current().nextInt(1048576);
             _Rfc863Utils.logClientBytes(bytes);

@@ -42,47 +42,47 @@ public class HelloWorldSecurityUtils {
      *
      * @param digest the message digest to be updated.
      * @param buffer the byte buffer whose content to be updated to the {@code digest}.
-     * @param bytes  the number of bytes, precede {@code buffer}'s current
-     *               {@link ByteBuffer#position() position}, to be updated to the {@code digest}.
+     * @param count  the number of bytes, preceding {@code buffer}'s current position, to be updated
+     *               to the {@code digest}.
      */
-    public static void updatePreceding(MessageDigest digest, ByteBuffer buffer, final int bytes) {
+    public static void updatePreceding(MessageDigest digest, ByteBuffer buffer, final int count) {
         Objects.requireNonNull(digest, "digest is null");
         Objects.requireNonNull(buffer, "buffer is null");
-        if (bytes < 0) {
-            throw new IllegalArgumentException("bytes(" + bytes + ") is negative");
+        if (count < 0) {
+            throw new IllegalArgumentException("bytes(" + count + ") is negative");
         }
-        if (bytes == 0) {
+        if (count == 0) {
             return;
         }
-        if (bytes > buffer.position()) {
+        if (count > buffer.position()) {
             throw new BufferUnderflowException();
         }
         if (ThreadLocalRandom.current().nextBoolean()) {
-            digest.update(buffer.slice(buffer.position() - bytes, bytes));
+            digest.update(buffer.slice(buffer.position() - count, count));
             return;
         }
         if (buffer.hasArray()) {
             digest.update(
                     buffer.array(),
-                    buffer.arrayOffset() + buffer.position() - bytes,
-                    bytes
+                    buffer.arrayOffset() + buffer.position() - count,
+                    count
             );
         } else {
-            var position = buffer.position();
-            var limit = buffer.limit();
-            digest.update(buffer.position(position - bytes).limit(position));
-            buffer.limit(limit).position(position);
+            HelloWorldNioUtils.flipAcceptAndRestore(buffer, b -> digest.update(b));
         }
     }
 
     /**
-     * Updates specified message digest with preceding bytes of specified buffer's current
+     * Updates specified message digest with all preceding bytes of specified byte buffer's current
      * position.
      *
      * @param digest the message digest to be updated.
      * @param buffer the byte buffer whose content to be updated to the {@code digest}.
+     * @apiNote This method invokes
+     * {@link #updatePreceding(MessageDigest, ByteBuffer, int) updatePreceding(digest, buffer,
+     * bytes)} method with {@code digest}, {@code buffer}, and {@code buffer.position()}.
      */
-    public static void updatePreceding(MessageDigest digest, ByteBuffer buffer) {
+    public static void updateAllPreceding(MessageDigest digest, ByteBuffer buffer) {
         updatePreceding(digest, buffer, buffer.position());
     }
 

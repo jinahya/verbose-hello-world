@@ -26,11 +26,8 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.concurrent.TimeUnit;
 
-// https://www.rfc-editor.org/rfc/rfc862
 @Slf4j
-public class Rfc862Udp1Server {
-
-    static final int MAX_PACKET_LENGTH = 1024;
+class Rfc862Udp1Server {
 
     public static void main(String... args) throws Exception {
         try (var server = new DatagramSocket(null)) {

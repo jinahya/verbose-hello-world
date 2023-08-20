@@ -21,7 +21,6 @@ package com.github.jinahya.hello.miscellaneous.c01rfc863;
  */
 
 import com.github.jinahya.hello.util.HelloWorldNetUtils;
-import com.github.jinahya.hello.util.HelloWorldSecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
@@ -47,16 +46,20 @@ class Rfc863Tcp3Client {
             var bytes = ThreadLocalRandom.current().nextInt(1048576);
             _Rfc863Utils.logClientBytes(bytes);
             var buffer = _Rfc863Utils.newBuffer();
+            var slice = buffer.slice();
             buffer.position(buffer.limit());
             var digest = _Rfc863Utils.newDigest();
-            while (bytes > 0) {
+            for (int w; bytes > 0; ) {
                 if (!buffer.hasRemaining()) {
-                    buffer.clear().limit(Math.min(buffer.capacity(), bytes));
                     ThreadLocalRandom.current().nextBytes(buffer.array());
+                    buffer.clear().limit(Math.min(buffer.remaining(), bytes));
                 }
-                var w = client.write(buffer).get();
+                w = client.write(buffer).get();
+                assert w >= 0;
                 bytes -= w;
-                HelloWorldSecurityUtils.updatePreceding(digest, buffer, w);
+                digest.update(
+                        slice.position(buffer.position() - w).limit(buffer.position())
+                );
             }
             _Rfc863Utils.logDigest(digest);
         }

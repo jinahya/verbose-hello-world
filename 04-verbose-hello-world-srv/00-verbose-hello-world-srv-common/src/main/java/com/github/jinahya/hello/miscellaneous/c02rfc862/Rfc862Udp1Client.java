@@ -30,23 +30,20 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-public class Rfc862Udp1Client {
-
-    private static final int PACKET_LENGTH = ThreadLocalRandom.current()
-            .nextInt(Rfc862Udp1Server.MAX_PACKET_LENGTH);
+class Rfc862Udp1Client {
 
     public static void main(String... args) throws Exception {
         try (var client = new DatagramSocket(null)) {
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc862Constants.ADDR, 0));
-                log.debug("bound to {}", client.getLocalSocketAddress());
+                log.debug("(optionally) bound to {}", client.getLocalSocketAddress());
             }
             var connect = ThreadLocalRandom.current().nextBoolean();
             if (connect) {
                 try {
                     client.connect(_Rfc862Constants.ADDRESS);
-                    log.debug("connected to {}, through {}", client.getRemoteSocketAddress(),
-                              client.getLocalSocketAddress());
+                    log.debug("(optionally) connected to {}, through {}",
+                              client.getRemoteSocketAddress(), client.getLocalSocketAddress());
                 } catch (SocketException se) {
                     log.warn("failed to connect", se);
                     connect = false;

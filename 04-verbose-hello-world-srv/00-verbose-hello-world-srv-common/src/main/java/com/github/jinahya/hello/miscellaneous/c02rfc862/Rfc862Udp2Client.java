@@ -79,7 +79,7 @@ class Rfc862Udp2Client {
                         log.debug("{} byte(s) sent to {}", w, _Rfc862Constants.ADDRESS);
                         assert w == attachment.buffer.position();
                         assert !attachment.buffer.hasRemaining();
-                        HelloWorldSecurityUtils.updatePreceding(
+                        HelloWorldSecurityUtils.updateAllPreceding(
                                 attachment.digest, attachment.buffer
                         );
                         _Rfc862Utils.logDigest(attachment.digest);
