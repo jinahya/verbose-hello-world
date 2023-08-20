@@ -23,7 +23,6 @@ package com.github.jinahya.hello.miscellaneous.c02rfc862;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.ServerSocket;
-import java.util.concurrent.TimeUnit;
 
 // https://www.rfc-editor.org/rfc/rfc862
 @Slf4j
@@ -32,12 +31,12 @@ class Rfc862Tcp0Server {
     public static void main(String... args) throws Exception {
         try (var server = new ServerSocket()) {
             server.bind(_Rfc862Constants.ADDRESS);
-            log.debug("bound to {}", server.getLocalSocketAddress());
-            server.setSoTimeout((int) TimeUnit.SECONDS.toMillis(16L));
+            log.info("bound to {}", server.getLocalSocketAddress());
+            server.setSoTimeout(_Rfc862Utils.soTimeoutInMillisAsInt());
             try (var client = server.accept()) {
-                log.debug("accepted from {}, through {}", client.getRemoteSocketAddress(),
-                          client.getLocalSocketAddress());
-                client.setSoTimeout((int) TimeUnit.SECONDS.toMillis(16L));
+                log.info("accepted from {}, through {}", client.getRemoteSocketAddress(),
+                         client.getLocalSocketAddress());
+                client.setSoTimeout(_Rfc862Utils.soTimeoutInMillisAsInt());
                 var digest = _Rfc862Utils.newDigest();
                 var bytes = 0L;
                 for (int b; (b = client.getInputStream().read()) != -1; bytes++) {

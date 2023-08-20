@@ -50,7 +50,7 @@ class Rfc862Tcp2Server {
             server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
             server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
             server.bind(_Rfc862Constants.ADDRESS);
-            log.debug("bound to {}", server.getLocalAddress());
+            log.info("bound to {}", server.getLocalAddress());
             server.socket().setSoTimeout((int) TimeUnit.SECONDS.toMillis(8L));
             server.configureBlocking(false);
             server.register(selector, SelectionKey.OP_ACCEPT);
@@ -62,10 +62,10 @@ class Rfc862Tcp2Server {
                     var key = i.next();
                     if (key.isAcceptable()) {
                         var client = ((ServerSocketChannel) key.channel()).accept();
-                        log.debug("accepted from {}, through {}", client.getRemoteAddress(),
-                                  client.getLocalAddress());
+                        log.info("accepted from {}, through {}", client.getRemoteAddress(),
+                                 client.getLocalAddress());
                         var attachment = new Attachment();
-                        log.debug("buffer.capacity: {}", attachment.buffer.capacity());
+                        log.info("buffer.capacity: {}", attachment.buffer.capacity());
                         client.configureBlocking(false);
                         client.register(selector, SelectionKey.OP_READ, attachment);
                         key.cancel();

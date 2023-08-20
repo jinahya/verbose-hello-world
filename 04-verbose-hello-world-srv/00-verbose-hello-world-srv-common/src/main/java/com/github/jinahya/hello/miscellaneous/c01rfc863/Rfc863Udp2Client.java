@@ -20,7 +20,6 @@ package com.github.jinahya.hello.miscellaneous.c01rfc863;
  * #L%
  */
 
-import com.github.jinahya.hello.util.HelloWorldSecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
@@ -41,16 +40,16 @@ class Rfc863Udp2Client {
              var client = DatagramChannel.open()) {
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc863Constants.ADDR, 0));
-                log.info("client bound to {}", client.getLocalAddress());
+                log.info("(optionally) bound to {}", client.getLocalAddress());
             }
             var connect = ThreadLocalRandom.current().nextBoolean();
             if (connect) {
                 try {
                     client.connect(_Rfc863Constants.ADDRESS);
-                    log.info("connected to {}, through {}", client.getRemoteAddress(),
+                    log.info("(optionally) connected to {}, through {}", client.getRemoteAddress(),
                              client.getLocalAddress());
                 } catch (SocketException se) {
-                    log.warn("failed to connect to {}", _Rfc863Constants.ADDRESS, se);
+                    log.warn("failed to connect", se);
                     connect = false;
                 }
             }
@@ -59,10 +58,10 @@ class Rfc863Udp2Client {
             if (selector.select(TimeUnit.SECONDS.toMillis(8L)) == 0) {
                 return;
             }
-            var selectedKey = selector.selectedKeys().iterator().next();
-            assert selectedKey == clientKey;
-            assert selectedKey.isWritable();
-            var channel = (DatagramChannel) selectedKey.channel();
+            var key = selector.selectedKeys().iterator().next();
+            assert key == clientKey;
+            assert key.isWritable();
+            var channel = (DatagramChannel) key.channel();
             assert channel == client;
             var capacity = ThreadLocalRandom.current().nextInt(
                     channel.getOption(StandardSocketOptions.SO_SNDBUF) + 1
@@ -70,13 +69,14 @@ class Rfc863Udp2Client {
             var buffer = ByteBuffer.allocate(capacity);
             ThreadLocalRandom.current().nextBytes(buffer.array());
             _Rfc863Utils.logClientBytes(buffer.remaining());
-            var digest = _Rfc863Utils.newDigest();
             var w = channel.send(buffer, _Rfc863Constants.ADDRESS);
             assert w == buffer.position();
             assert !buffer.hasRemaining();
-            HelloWorldSecurityUtils.updateAllPreceding(digest, buffer);
+            var digest = _Rfc863Utils.newDigest();
+            digest.update(buffer.flip());
             _Rfc863Utils.logDigest(digest);
-            selectedKey.cancel();
+            key.cancel();
+            assert !key.isValid();
             if (connect) {
                 client.disconnect(); // UncheckedIOException
             }

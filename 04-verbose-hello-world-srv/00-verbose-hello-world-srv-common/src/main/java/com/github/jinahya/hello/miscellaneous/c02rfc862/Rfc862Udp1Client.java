@@ -36,14 +36,14 @@ class Rfc862Udp1Client {
         try (var client = new DatagramSocket(null)) {
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc862Constants.ADDR, 0));
-                log.debug("(optionally) bound to {}", client.getLocalSocketAddress());
+                log.info("(optionally) bound to {}", client.getLocalSocketAddress());
             }
             var connect = ThreadLocalRandom.current().nextBoolean();
             if (connect) {
                 try {
                     client.connect(_Rfc862Constants.ADDRESS);
-                    log.debug("(optionally) connected to {}, through {}",
-                              client.getRemoteSocketAddress(), client.getLocalSocketAddress());
+                    log.info("(optionally) connected to {}, through {}",
+                             client.getRemoteSocketAddress(), client.getLocalSocketAddress());
                 } catch (SocketException se) {
                     log.warn("failed to connect", se);
                     connect = false;
@@ -59,8 +59,6 @@ class Rfc862Udp1Client {
             digest.update(array, 0, packet.getLength());
             _Rfc862Utils.logDigest(digest);
             client.receive(packet);
-            log.debug("received from {}", packet.getSocketAddress());
-            digest.update(array, 0, packet.getLength());
             if (connect) {
                 client.disconnect(); // UncheckedIOException
             }

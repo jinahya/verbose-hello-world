@@ -26,7 +26,6 @@ import java.io.EOFException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 class Rfc862Tcp0Client {
@@ -35,12 +34,12 @@ class Rfc862Tcp0Client {
         try (var client = new Socket()) {
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc862Constants.ADDR, 0));
-                log.debug("bound to {}", client.getLocalSocketAddress());
+                log.info("bound to {}", client.getLocalSocketAddress());
             }
             client.connect(_Rfc862Constants.ADDRESS);
-            log.debug("connected to {}, through {}", client.getRemoteSocketAddress(),
-                      client.getLocalSocketAddress());
-            client.setSoTimeout((int) TimeUnit.SECONDS.toMillis(16L));
+            log.info("connected to {}, through {}", client.getRemoteSocketAddress(),
+                     client.getLocalSocketAddress());
+            client.setSoTimeout(_Rfc862Utils.soTimeoutInMillisAsInt());
             var digest = _Rfc862Utils.newDigest();
             var bytes = ThreadLocalRandom.current().nextInt(1024);
             _Rfc862Utils.logClientBytesSending(bytes);

@@ -22,6 +22,7 @@ package com.github.jinahya.hello.miscellaneous.c02rfc862;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.time.Duration;
 
 final class _Rfc862Constants {
 
@@ -30,6 +31,8 @@ final class _Rfc862Constants {
     private static final int PORT = 7 + 50000;
 
     static final InetSocketAddress ADDRESS = new InetSocketAddress(ADDR, PORT);
+
+    static final Duration SO_TIMEOUT = Duration.ofSeconds(16L);
 
     private _Rfc862Constants() {
         throw new AssertionError("instantiation is not allowed");

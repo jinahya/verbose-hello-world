@@ -122,7 +122,7 @@ class Rfc862Tcp4Server {
     CompletionHandler<AsynchronousSocketChannel, Attachment> A_HANDLER = new CompletionHandler<>() {
         @Override public void completed(AsynchronousSocketChannel result, Attachment attachment) {
             try {
-                log.debug("accepted from {}, through {}", result.getRemoteAddress(),
+                log.info("accepted from {}, through {}", result.getRemoteAddress(),
                           result.getLocalAddress());
             } catch (IOException ioe) {
                 failed(ioe, attachment);
@@ -148,7 +148,7 @@ class Rfc862Tcp4Server {
     public static void main(String... args) throws Exception {
         try (var server = AsynchronousServerSocketChannel.open()) {
             server.bind(_Rfc862Constants.ADDRESS);
-            log.debug("bound to {}", server.getLocalAddress());
+            log.info("bound to {}", server.getLocalAddress());
             var attachment = new Attachment();
             server.accept(
                     attachment, // <attachment>

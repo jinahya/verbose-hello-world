@@ -34,16 +34,17 @@ class Rfc862Tcp1Client {
         try (var client = new Socket()) {
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc862Constants.ADDR, 0));
-                log.debug("bound to {}", client.getLocalSocketAddress());
+                log.info("(optionally) bound to {}", client.getLocalSocketAddress());
             }
             client.connect(_Rfc862Constants.ADDRESS);
-            log.debug("connected to {}, through {}", client.getRemoteSocketAddress(),
-                      client.getLocalSocketAddress());
+            log.info("connected to {}, through {}", client.getRemoteSocketAddress(),
+                     client.getLocalSocketAddress());
+            client.setSoTimeout(_Rfc862Utils.soTimeoutInMillisAsInt());
             var digest = _Rfc862Utils.newDigest();
             var bytes = ThreadLocalRandom.current().nextInt(1048576);
             _Rfc862Utils.logClientBytesSending(bytes);
             var array = _Rfc862Utils.newArray();
-            log.debug("array.length: {}", array.length);
+            log.info("array.length: {}", array.length);
             for (int r; bytes > 0; ) {
                 ThreadLocalRandom.current().nextBytes(array);
                 var l = Math.min(array.length, bytes);
@@ -51,8 +52,7 @@ class Rfc862Tcp1Client {
                 client.getOutputStream().flush();
                 bytes -= l;
                 digest.update(array, 0, l);
-                r = client.getInputStream().read(array);
-                if (r == -1) {
+                if ((r = client.getInputStream().read(array)) == -1) {
                     throw new EOFException("unexpected eof");
                 }
                 assert r > 0;

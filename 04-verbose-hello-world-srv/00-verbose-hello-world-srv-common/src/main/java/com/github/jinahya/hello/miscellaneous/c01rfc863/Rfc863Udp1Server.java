@@ -38,7 +38,7 @@ class Rfc863Udp1Server {
             server.setSoTimeout((int) TimeUnit.SECONDS.toMillis(16L));
             var array = new byte[server.getReceiveBufferSize() + 1];
             var packet = new DatagramPacket(array, array.length);
-            server.receive(packet);
+            server.receive(packet); // IOException
             _Rfc863Utils.logServerBytes(packet.getLength());
             var digest = _Rfc863Utils.newDigest();
             digest.update(array, 0, packet.getLength());

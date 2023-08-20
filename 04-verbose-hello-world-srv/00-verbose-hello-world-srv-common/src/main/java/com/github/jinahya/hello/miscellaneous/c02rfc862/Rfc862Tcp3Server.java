@@ -32,14 +32,14 @@ class Rfc862Tcp3Server {
     public static void main(String... args) throws Exception {
         try (var server = AsynchronousServerSocketChannel.open()) {
             server.bind(_Rfc862Constants.ADDRESS);
-            log.debug("bound to {}", server.getLocalAddress());
+            log.info("bound to {}", server.getLocalAddress());
             try (var client = server.accept().get(8L, TimeUnit.SECONDS)) {
-                log.debug("accepted from {}, through {}", client.getRemoteAddress(),
-                          client.getLocalAddress());
+                log.info("accepted from {}, through {}", client.getRemoteAddress(),
+                         client.getLocalAddress());
                 var digest = _Rfc862Utils.newDigest();
                 var bytes = 0;
                 var buffer = _Rfc862Utils.newBuffer();
-                log.debug("buffer.capacity: {}", buffer.capacity());
+                log.info("buffer.capacity: {}", buffer.capacity());
                 while (true) {
                     var r = client.read(buffer).get(8L, TimeUnit.SECONDS);
                     if (r == -1) {

@@ -136,7 +136,7 @@ class Rfc862Tcp4Client {
     CompletionHandler<Void, Attachment> C_HANDLER = new CompletionHandler<>() {
         @Override public void completed(Void result, Attachment attachment) {
             try {
-                log.debug("connected to {}, through {}", attachment.client.getRemoteAddress(),
+                log.info("connected to {}, through {}", attachment.client.getRemoteAddress(),
                           attachment.client.getRemoteAddress());
             } catch (IOException ioe) {
                 failed(ioe, attachment);
@@ -174,7 +174,7 @@ class Rfc862Tcp4Client {
         try (var client = AsynchronousSocketChannel.open()) {
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc862Constants.ADDR, 0));
-                log.debug("bound to {}", client.getLocalAddress());
+                log.info("bound to {}", client.getLocalAddress());
             }
             var attachment = new Attachment();
             attachment.buffer.position(attachment.buffer.limit());

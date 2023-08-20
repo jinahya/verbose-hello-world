@@ -32,6 +32,14 @@ import java.util.concurrent.ThreadLocalRandom;
 @Slf4j
 final class _Rfc862Utils {
 
+    static long soTimeInMillis() {
+        return _Rfc862Constants.SO_TIMEOUT.toMillis();
+    }
+
+    static int soTimeoutInMillisAsInt() {
+        return Math.toIntExact(soTimeInMillis());
+    }
+
     static byte[] newArray() {
         return new byte[ThreadLocalRandom.current().nextInt(1024) + 1024];
     }
@@ -63,17 +71,17 @@ final class _Rfc862Utils {
 
     static void logClientBytesSending(long bytes) {
         requireValidBytes(bytes);
-        log.debug("sending (and getting echoed-back) {} bytes...", bytes);
+        log.info("sending (and getting echoed-back) {} bytes...", bytes);
     }
 
     static void logServerBytesSent(long bytes) {
         requireValidBytes(bytes);
-        log.debug("{} bytes received and echoed-back", bytes);
+        log.info("{} bytes received and echoed-back", bytes);
     }
 
     static void logDigest(MessageDigest digest) {
         Objects.requireNonNull(digest, "digest is null");
-        log.debug("digest: {}", getDigest(digest));
+        log.info("digest: {}", getDigest(digest));
     }
 
     private _Rfc862Utils() {

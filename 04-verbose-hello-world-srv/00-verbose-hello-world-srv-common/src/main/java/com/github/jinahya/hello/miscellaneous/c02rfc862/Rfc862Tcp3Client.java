@@ -37,16 +37,16 @@ class Rfc862Tcp3Client {
         try (var client = AsynchronousSocketChannel.open()) {
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc862Constants.ADDR, 0));
-                log.debug("bound to {}", client.getLocalAddress());
+                log.info("bound to {}", client.getLocalAddress());
             }
             client.connect(_Rfc862Constants.ADDRESS).get(8L, TimeUnit.SECONDS);
-            log.debug("connected to {}, through {}", client.getRemoteAddress(),
-                      client.getLocalAddress());
+            log.info("connected to {}, through {}", client.getRemoteAddress(),
+                     client.getLocalAddress());
             var digest = _Rfc862Utils.newDigest();
             var bytes = ThreadLocalRandom.current().nextInt(1048576);
             _Rfc862Utils.logClientBytesSending(bytes);
             var buffer = _Rfc862Utils.newBuffer();
-            log.debug("buffer.capacity: {}", buffer.capacity());
+            log.info("buffer.capacity: {}", buffer.capacity());
             buffer.position(buffer.limit());
             while (bytes > 0) {
                 if (!buffer.hasRemaining()) {

@@ -48,7 +48,7 @@ class Rfc862Udp2Server {
         try (var selector = Selector.open();
              var server = DatagramChannel.open()) {
             server.bind(_Rfc862Constants.ADDRESS);
-            log.debug("bound to {}", server.getLocalAddress());
+            log.info("bound to {}", server.getLocalAddress());
             server.configureBlocking(false);
             server.register(selector, SelectionKey.OP_READ);
             while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
@@ -65,8 +65,8 @@ class Rfc862Udp2Server {
                         );
                         key.attach(attachment);
                         attachment.address = channel.receive(attachment.buffer);
-                        log.debug("{} byte(s) received from {}", attachment.buffer.position(),
-                                  attachment.address);
+                        log.info("{} byte(s) received from {}", attachment.buffer.position(),
+                                 attachment.address);
                         key.interestOpsAnd(~SelectionKey.OP_READ);
                         key.interestOpsOr(SelectionKey.OP_WRITE);
                     }
@@ -75,7 +75,7 @@ class Rfc862Udp2Server {
                         var attachment = (Attachment) key.attachment();
                         attachment.buffer.flip();
                         var w = channel.send(attachment.buffer, attachment.address);
-                        log.debug("{} byte(s) sent to {}", w, attachment.address);
+                        log.info("{} byte(s) sent to {}", w, attachment.address);
                         HelloWorldSecurityUtils.updateAllPreceding(
                                 attachment.digest, attachment.buffer
                         );

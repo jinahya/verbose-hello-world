@@ -32,16 +32,16 @@ class Rfc862Tcp1Server {
     public static void main(String... args) throws Exception {
         try (var server = new ServerSocket()) {
             server.bind(_Rfc862Constants.ADDRESS);
-            log.debug("bound to {}", server.getLocalSocketAddress());
-            server.setSoTimeout((int) TimeUnit.SECONDS.toMillis(16L));
+            log.info("bound to {}", server.getLocalSocketAddress());
+            server.setSoTimeout(_Rfc862Utils.soTimeoutInMillisAsInt());
             try (var client = server.accept()) {
-                log.debug("accepted from {}, through {}", client.getRemoteSocketAddress(),
-                          client.getLocalSocketAddress());
-                client.setSoTimeout((int) TimeUnit.SECONDS.toMillis(16L));
+                log.info("accepted from {}, through {}", client.getRemoteSocketAddress(),
+                         client.getLocalSocketAddress());
+                client.setSoTimeout(_Rfc862Utils.soTimeoutInMillisAsInt());
                 var digest = _Rfc862Utils.newDigest();
                 var bytes = 0L;
                 var array = _Rfc862Utils.newArray();
-                log.debug("array.length: {}", array.length);
+                log.info("array.length: {}", array.length);
                 for (int r; (r = client.getInputStream().read(array)) != -1; ) {
                     assert r > 0;
                     bytes += r;
@@ -49,7 +49,7 @@ class Rfc862Tcp1Server {
                     client.getOutputStream().flush();
                     digest.update(array, 0, r);
                 }
-                client.shutdownOutput();
+//                client.shutdownOutput();
                 _Rfc862Utils.logServerBytesSent(bytes);
                 _Rfc862Utils.logDigest(digest);
             }

@@ -43,7 +43,7 @@ class Rfc862Tcp2Client {
             bytes = ThreadLocalRandom.current().nextInt(1048576);
             buffer.position(buffer.limit());
             _Rfc862Utils.logClientBytesSending(bytes);
-            log.debug("buffer.capacity: {}", buffer.capacity());
+            log.info("buffer.capacity: {}", buffer.capacity());
         }
 
         private final ByteBuffer slice = buffer.slice();
@@ -54,12 +54,12 @@ class Rfc862Tcp2Client {
              var client = SocketChannel.open()) {
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc862Constants.ADDR, 0));
-                log.debug("bound to {}", client.getLocalAddress());
+                log.info("bound to {}", client.getLocalAddress());
             }
             client.configureBlocking(false);
             if (client.connect(_Rfc862Constants.ADDRESS)) {
-                log.debug("connected (immediately) to {}, through {}",
-                          client.getRemoteAddress(), client.getLocalAddress());
+                log.info("connected (immediately) to {}, through {}",
+                         client.getRemoteAddress(), client.getLocalAddress());
                 var attachment = new Attachment();
                 var clientKey = client.register(selector, SelectionKey.OP_READ, attachment);
                 if (attachment.bytes > 0) {
@@ -79,8 +79,8 @@ class Rfc862Tcp2Client {
                         var channel = (SocketChannel) key.channel();
                         var connected = channel.finishConnect();
                         assert connected;
-                        log.debug("connected to {}, through {}", channel.getRemoteAddress(),
-                                  channel.getLocalAddress());
+                        log.info("connected to {}, through {}", channel.getRemoteAddress(),
+                                 channel.getLocalAddress());
                         key.interestOpsAnd(~SelectionKey.OP_CONNECT);
                         var attachment = new Attachment();
                         key.attach(attachment);

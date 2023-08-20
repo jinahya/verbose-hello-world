@@ -32,12 +32,12 @@ class Rfc862Udp1Server {
     public static void main(String... args) throws Exception {
         try (var server = new DatagramSocket(null)) {
             server.bind(_Rfc862Constants.ADDRESS);
-            log.debug("bound to {}", server.getLocalSocketAddress());
+            log.info("bound to {}", server.getLocalSocketAddress());
             server.setSoTimeout((int) TimeUnit.SECONDS.toMillis(16L));
             var array = new byte[server.getReceiveBufferSize()];
             var packet = new DatagramPacket(array, array.length);
             server.receive(packet);
-            log.debug("received from {}", packet.getSocketAddress());
+            log.info("received from {}", packet.getSocketAddress());
             var digest = _Rfc862Utils.newDigest();
             digest.update(array, 0, packet.getLength());
             _Rfc862Utils.logDigest(digest);
