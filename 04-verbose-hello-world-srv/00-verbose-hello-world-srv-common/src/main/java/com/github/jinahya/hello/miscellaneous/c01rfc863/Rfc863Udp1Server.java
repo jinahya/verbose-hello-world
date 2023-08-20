@@ -34,7 +34,7 @@ class Rfc863Udp1Server {
         try (var server = new DatagramSocket(null)) {
             HelloWorldNetUtils.printSocketOptions(server);
             server.bind(_Rfc863Constants.ADDRESS);
-            log.debug("bound to {}", server.getLocalSocketAddress());
+            log.info("bound to {}", server.getLocalSocketAddress());
             server.setSoTimeout((int) TimeUnit.SECONDS.toMillis(16L));
             var array = new byte[server.getReceiveBufferSize() + 1];
             var packet = new DatagramPacket(array, array.length);

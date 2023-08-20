@@ -33,10 +33,10 @@ class Rfc863Tcp3Server {
         try (var server = AsynchronousServerSocketChannel.open()) {
             HelloWorldNetUtils.printSocketOptions(server);
             server.bind(_Rfc863Constants.ADDRESS);
-            log.debug("bound to {}", server.getLocalAddress());
+            log.info("bound to {}", server.getLocalAddress());
             try (var client = server.accept().get(16L, TimeUnit.SECONDS)) {
-                log.debug("accepted from {}, through {}", client.getRemoteAddress(),
-                          client.getLocalAddress());
+                log.info("accepted from {}, through {}", client.getRemoteAddress(),
+                         client.getLocalAddress());
                 var buffer = _Rfc863Utils.newBuffer();
                 var slice = buffer.slice();
                 var bytes = 0;

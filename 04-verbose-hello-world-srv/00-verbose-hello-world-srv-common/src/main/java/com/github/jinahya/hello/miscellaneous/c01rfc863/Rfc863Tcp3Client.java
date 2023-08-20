@@ -38,11 +38,11 @@ class Rfc863Tcp3Client {
             HelloWorldNetUtils.printSocketOptions(client);
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(ADDR, 0));
-                log.debug("bound to {}", client.getLocalAddress());
+                log.info("bound to {}", client.getLocalAddress());
             }
             client.connect(_Rfc863Constants.ADDRESS).get(1L, TimeUnit.SECONDS);
-            log.debug("connected to {}, through {}", client.getRemoteAddress(),
-                      client.getLocalAddress());
+            log.info("connected to {}, through {}", client.getRemoteAddress(),
+                     client.getLocalAddress());
             var bytes = ThreadLocalRandom.current().nextInt(1048576);
             _Rfc863Utils.logClientBytes(bytes);
             var buffer = _Rfc863Utils.newBuffer();

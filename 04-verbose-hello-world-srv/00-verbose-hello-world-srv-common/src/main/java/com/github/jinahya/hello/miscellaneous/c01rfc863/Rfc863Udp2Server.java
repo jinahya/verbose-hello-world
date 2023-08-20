@@ -40,7 +40,7 @@ class Rfc863Udp2Server {
         try (var selector = Selector.open();
              var server = DatagramChannel.open()) {
             server.bind(_Rfc863Constants.ADDRESS);
-            log.debug("bound to {}", server.getLocalAddress());
+            log.info("bound to {}", server.getLocalAddress());
             server.configureBlocking(false);
             var serverKey = server.register(selector, SelectionKey.OP_READ);
             if (selector.select(TimeUnit.SECONDS.toMillis(16L)) == 0) {

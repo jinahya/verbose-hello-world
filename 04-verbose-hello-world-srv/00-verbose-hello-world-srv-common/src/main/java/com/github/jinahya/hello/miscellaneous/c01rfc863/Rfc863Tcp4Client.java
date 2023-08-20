@@ -79,7 +79,7 @@ class Rfc863Tcp4Client {
     CompletionHandler<Void, Attachment> C_HANDLER = new CompletionHandler<>() {
         @Override public void completed(Void result, Attachment attachment) {
             try {
-                log.debug("connected to {}, through {}", attachment.client.getRemoteAddress(),
+                log.info("connected to {}, through {}", attachment.client.getRemoteAddress(),
                           attachment.client.getLocalAddress());
             } catch (IOException ioe) {
                 log.error("failed to get addresses from {}", attachment.client, ioe);
@@ -111,7 +111,7 @@ class Rfc863Tcp4Client {
         try (var client = AsynchronousSocketChannel.open()) {
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc863Constants.ADDR, 0));
-                log.debug("bound to {}", client.getLocalAddress());
+                log.info("bound to {}", client.getLocalAddress());
             }
             var attachment = new Attachment();
             attachment.client = client;

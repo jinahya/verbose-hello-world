@@ -70,19 +70,19 @@ final class _Rfc863Utils {
         if (bytes < 0) {
             throw new IllegalArgumentException("bytes(" + bytes + ") is negative");
         }
-        log.debug("sending {} bytes...", bytes);
+        log.info("sending {} bytes...", bytes);
     }
 
     static void logServerBytes(long bytes) {
         if (bytes < 0) {
             throw new IllegalArgumentException("bytes(" + bytes + ") is negative");
         }
-        log.debug("{} bytes received (and discarded)", bytes);
+        log.info("{} bytes received (and discarded)", bytes);
     }
 
     static void logDigest(MessageDigest digest) {
         Objects.requireNonNull(digest, "digest is null");
-        log.debug("digest: {}", getDigest(digest));
+        log.info("digest: {}", getDigest(digest));
     }
 
     private _Rfc863Utils() {

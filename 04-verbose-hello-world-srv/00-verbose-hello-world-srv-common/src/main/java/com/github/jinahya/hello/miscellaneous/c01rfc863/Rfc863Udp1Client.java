@@ -37,14 +37,14 @@ class Rfc863Udp1Client {
             HelloWorldNetUtils.printSocketOptions(client);
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc863Constants.ADDR, 0));
-                log.debug("bound to {}", client.getLocalSocketAddress());
+                log.info("bound to {}", client.getLocalSocketAddress());
             }
             var connect = ThreadLocalRandom.current().nextBoolean();
             if (connect) {
                 try {
                     client.connect(_Rfc863Constants.ADDRESS);
-                    log.debug("connected to {}, through {}", client.getRemoteSocketAddress(),
-                              client.getLocalAddress());
+                    log.info("connected to {}, through {}", client.getRemoteSocketAddress(),
+                             client.getLocalAddress());
                 } catch (SocketException se) {
                     log.warn("failed to connect to {}", _Rfc863Constants.ADDRESS, se);
                     connect = false;

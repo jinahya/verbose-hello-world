@@ -35,9 +35,9 @@ import static com.github.jinahya.hello.miscellaneous.c01rfc863._Rfc863Constants.
 @Slf4j
 class Rfc863Tcp2Client {
 
-    private static class Rfc863Tcp2ClientAttachment extends Rfc863Tcp2Server.Attachment {
+    private static class Attachment extends Rfc863Tcp2Server.Attachment {
 
-        Rfc863Tcp2ClientAttachment() {
+        Attachment() {
             super();
             bytes = ThreadLocalRandom.current().nextInt(1048576);
             _Rfc863Utils.logClientBytes(bytes);
@@ -57,10 +57,7 @@ class Rfc863Tcp2Client {
             if (client.connect(_Rfc863Constants.ADDRESS)) {
                 log.info("connected (immediately); remote: {}, local: {}",
                          client.getRemoteAddress(), client.getLocalAddress());
-                client.register(
-                        selector,
-                        SelectionKey.OP_WRITE,
-                        new Rfc863Tcp2ClientAttachment()
+                client.register(selector, SelectionKey.OP_WRITE, new Attachment()
                 );
             } else {
                 client.register(selector, SelectionKey.OP_CONNECT);
@@ -78,7 +75,7 @@ class Rfc863Tcp2Client {
                         log.info("connected; remote: {}, local: {}", channel.getRemoteAddress(),
                                  channel.getLocalAddress());
                         key.interestOpsAnd(~SelectionKey.OP_CONNECT);
-                        var attachment = new Rfc863Tcp2ClientAttachment();
+                        var attachment = new Attachment();
                         key.attach(attachment);
                         if (attachment.bytes > 0) {
                             key.interestOps(SelectionKey.OP_WRITE);
@@ -90,7 +87,7 @@ class Rfc863Tcp2Client {
                     }
                     if (key.isWritable()) {
                         var channel = (SocketChannel) key.channel();
-                        var attachment = (Rfc863Tcp2ClientAttachment) key.attachment();
+                        var attachment = (Attachment) key.attachment();
                         assert attachment.bytes > 0;
                         if (!attachment.buffer.hasRemaining()) {
                             ThreadLocalRandom.current().nextBytes(attachment.buffer.array());

@@ -41,14 +41,14 @@ class Rfc863Udp2Client {
              var client = DatagramChannel.open()) {
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc863Constants.ADDR, 0));
-                log.debug("client bound to {}", client.getLocalAddress());
+                log.info("client bound to {}", client.getLocalAddress());
             }
             var connect = ThreadLocalRandom.current().nextBoolean();
             if (connect) {
                 try {
                     client.connect(_Rfc863Constants.ADDRESS);
-                    log.debug("connected to {}, through {}", client.getRemoteAddress(),
-                              client.getLocalAddress());
+                    log.info("connected to {}, through {}", client.getRemoteAddress(),
+                             client.getLocalAddress());
                 } catch (SocketException se) {
                     log.warn("failed to connect to {}", _Rfc863Constants.ADDRESS, se);
                     connect = false;

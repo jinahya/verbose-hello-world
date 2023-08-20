@@ -31,11 +31,11 @@ class Rfc863Tcp1Server {
     public static void main(String... args) throws Exception {
         try (var server = new ServerSocket()) {
             server.bind(_Rfc863Constants.ADDRESS);
-            log.debug("bound to {}", server.getLocalSocketAddress());
+            log.info("bound to {}", server.getLocalSocketAddress());
             server.setSoTimeout((int) TimeUnit.SECONDS.toMillis(16L));
             try (var client = server.accept()) {
-                log.debug("accepted from {}, through {}",
-                          client.getRemoteSocketAddress(), client.getLocalSocketAddress());
+                log.info("accepted from {}, through {}",
+                         client.getRemoteSocketAddress(), client.getLocalSocketAddress());
                 var bytes = 0L;
                 var digest = _Rfc863Utils.newDigest();
                 var array = _Rfc863Utils.newArray();

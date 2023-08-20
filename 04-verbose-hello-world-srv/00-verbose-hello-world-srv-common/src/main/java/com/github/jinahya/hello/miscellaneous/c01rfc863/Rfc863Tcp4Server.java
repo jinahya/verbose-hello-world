@@ -23,7 +23,6 @@ package com.github.jinahya.hello.miscellaneous.c01rfc863;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
@@ -83,7 +82,7 @@ class Rfc863Tcp4Server {
             attachment.client = result;
             attachment.latch.countDown(); // -1 for being accepted
             try {
-                log.debug("accepted from {}, through {}", result.getRemoteAddress(),
+                log.info("accepted from {}, through {}", result.getRemoteAddress(),
                           result.getLocalAddress());
             } catch (final IOException ioe) {
                 log.error("failed to get addresses from {}", attachment.client, ioe);
@@ -109,7 +108,7 @@ class Rfc863Tcp4Server {
     public static void main(String... args) throws Exception {
         try (var server = AsynchronousServerSocketChannel.open()) {
             server.bind(_Rfc863Constants.ADDRESS);
-            log.debug("bound to {}", server.getLocalAddress());
+            log.info("bound to {}", server.getLocalAddress());
             var attachment = new Attachment();
             server.accept(
                     attachment, // <attachment>
