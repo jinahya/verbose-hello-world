@@ -37,10 +37,10 @@ class Rfc863Tcp3Server {
             try (var client = server.accept().get(16L, TimeUnit.SECONDS)) {
                 log.info("accepted from {}, through {}", client.getRemoteAddress(),
                          client.getLocalAddress());
+                var digest = _Rfc863Utils.newDigest();
                 var buffer = _Rfc863Utils.newBuffer();
                 var slice = buffer.slice();
                 var bytes = 0;
-                var digest = _Rfc863Utils.newDigest();
                 for (int r; ; ) {
                     if (!buffer.hasRemaining()) {
                         buffer.clear();

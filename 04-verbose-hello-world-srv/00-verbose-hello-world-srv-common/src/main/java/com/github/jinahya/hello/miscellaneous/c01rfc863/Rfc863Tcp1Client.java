@@ -37,7 +37,7 @@ class Rfc863Tcp1Client {
                 client.bind(new InetSocketAddress(ADDR, 0));
                 log.info("(optionally) bound to {}", client.getLocalSocketAddress());
             }
-            client.connect(_Rfc863Constants.ADDRESS);
+            client.connect(_Rfc863Constants.ADDRESS); // IOException
             log.info("connected to {}, through {}", client.getRemoteSocketAddress(),
                      client.getLocalSocketAddress());
             var digest = _Rfc863Utils.newDigest();

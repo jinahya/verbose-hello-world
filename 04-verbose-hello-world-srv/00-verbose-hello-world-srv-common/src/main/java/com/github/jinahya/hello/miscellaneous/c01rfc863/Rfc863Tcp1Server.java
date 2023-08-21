@@ -23,7 +23,6 @@ package com.github.jinahya.hello.miscellaneous.c01rfc863;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.ServerSocket;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 class Rfc863Tcp1Server {
@@ -32,10 +31,10 @@ class Rfc863Tcp1Server {
         try (var server = new ServerSocket()) {
             server.bind(_Rfc863Constants.ADDRESS);
             log.info("bound to {}", server.getLocalSocketAddress());
-            server.setSoTimeout((int) TimeUnit.SECONDS.toMillis(16L));
+            server.setSoTimeout(_Rfc863Utils.soTimeoutInMillisAsInt());
             try (var client = server.accept()) {
-                log.info("accepted from {}, through {}",
-                         client.getRemoteSocketAddress(), client.getLocalSocketAddress());
+                log.info("accepted from {}, through {}", client.getRemoteSocketAddress(),
+                         client.getLocalSocketAddress());
                 var bytes = 0L;
                 var digest = _Rfc863Utils.newDigest();
                 var array = _Rfc863Utils.newArray();

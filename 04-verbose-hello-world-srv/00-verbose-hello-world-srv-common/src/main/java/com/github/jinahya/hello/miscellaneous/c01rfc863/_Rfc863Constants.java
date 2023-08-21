@@ -22,6 +22,7 @@ package com.github.jinahya.hello.miscellaneous.c01rfc863;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.time.Duration;
 
 final class _Rfc863Constants {
 
@@ -32,6 +33,8 @@ final class _Rfc863Constants {
     static final InetSocketAddress ADDRESS = new InetSocketAddress(ADDR, PORT);
 
     static final String ALGORITHM = "SHA-1";
+
+    static final Duration SO_TIMEOUT = Duration.ofSeconds(16);
 
     private _Rfc863Constants() {
         throw new AssertionError("instantiation is not allowed");

@@ -28,7 +28,6 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 
 import static com.github.jinahya.hello.miscellaneous.c01rfc863._Rfc863Constants.ADDR;
 
@@ -57,22 +56,28 @@ class Rfc863Tcp2Client {
             if (client.connect(_Rfc863Constants.ADDRESS)) {
                 log.info("connected (immediately); remote: {}, local: {}",
                          client.getRemoteAddress(), client.getLocalAddress());
-                client.register(selector, SelectionKey.OP_WRITE, new Attachment()
-                );
+                var attachment = new Attachment();
+                var clientKey = client.register(selector, 0, attachment);
+                if (attachment.bytes > 0) {
+                    clientKey.interestOpsOr(SelectionKey.OP_WRITE);
+                } else {
+                    clientKey.cancel();
+                    assert !clientKey.isValid();
+                }
             } else {
                 client.register(selector, SelectionKey.OP_CONNECT);
             }
             while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
-                if (selector.select(TimeUnit.SECONDS.toMillis(8L)) == 0) {
-                    continue;
+                if (selector.select(_Rfc863Utils.soTimeoutInMillis()) == 0) {
+                    break;
                 }
                 for (var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
                     var key = i.next();
                     if (key.isConnectable()) {
                         var channel = (SocketChannel) key.channel();
-                        var connected = channel.finishConnect();
+                        var connected = channel.finishConnect(); // IOException
                         assert connected;
-                        log.info("connected; remote: {}, local: {}", channel.getRemoteAddress(),
+                        log.info("connected to {}, through {}", channel.getRemoteAddress(),
                                  channel.getLocalAddress());
                         key.interestOpsAnd(~SelectionKey.OP_CONNECT);
                         var attachment = new Attachment();

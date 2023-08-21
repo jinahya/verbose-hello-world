@@ -37,14 +37,13 @@ class Rfc863Tcp0Client {
             HelloWorldNetUtils.printSocketOptions(client);
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(ADDR, 0));
-                log.info("bound to {}", client.getLocalSocketAddress());
+                log.info("(optionally) bound to {}", client.getLocalSocketAddress());
             }
             client.connect(_Rfc863Constants.ADDRESS);
             log.info("connected to {}, through {}", client.getRemoteSocketAddress(),
                      client.getLocalSocketAddress());
             var digest = _Rfc863Utils.newDigest();
             var bytes = ThreadLocalRandom.current().nextInt(1024);
-            _Rfc863Utils.logClientBytes(bytes);
             _Rfc863Utils.logClientBytes(bytes);
             for (int b; bytes-- > 0; ) {
                 b = ThreadLocalRandom.current().nextInt(255);
