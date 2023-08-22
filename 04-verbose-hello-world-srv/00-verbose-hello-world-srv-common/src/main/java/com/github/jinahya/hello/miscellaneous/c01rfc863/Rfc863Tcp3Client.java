@@ -40,8 +40,7 @@ class Rfc863Tcp3Client {
                 client.bind(new InetSocketAddress(ADDR, 0));
                 log.info("(optionally) bound to {}", client.getLocalAddress());
             }
-            client.connect(_Rfc863Constants.ADDRESS)
-                    .get(_Rfc863Utils.soTimeoutInMillis(), TimeUnit.MILLISECONDS);
+            client.connect(_Rfc863Constants.ADDRESS).get(16L, TimeUnit.SECONDS);
             log.info("connected to {}, through {}", client.getRemoteAddress(),
                      client.getLocalAddress());
             var bytes = ThreadLocalRandom.current().nextInt(1048576);

@@ -32,14 +32,6 @@ import java.util.concurrent.ThreadLocalRandom;
 @Slf4j
 final class _Rfc863Utils {
 
-    static long soTimeoutInMillis() {
-        return _Rfc863Constants.SO_TIMEOUT.toMillis();
-    }
-
-    static int soTimeoutInMillisAsInt() {
-        return Math.toIntExact(soTimeoutInMillis());
-    }
-
     /**
      * Returns a new array of bytes whose length is between {@code 1} and {@code 1024}, both
      * inclusive.
@@ -53,7 +45,7 @@ final class _Rfc863Utils {
     /**
      * Returns a new byte buffer wrapping a result of {@link #newArray()}.
      *
-     * @return a new byte buffer.
+     * @return a new byte buffer of non-zero capacity
      */
     static ByteBuffer newBuffer() {
         return ByteBuffer.wrap(newArray());

@@ -45,7 +45,7 @@ class Rfc863Tcp3Server {
                     if (!buffer.hasRemaining()) {
                         buffer.clear();
                     }
-                    if ((r = client.read(buffer).get()) == -1) {
+                    if ((r = client.read(buffer).get(16L, TimeUnit.SECONDS)) == -1) {
                         break;
                     }
                     bytes += r;

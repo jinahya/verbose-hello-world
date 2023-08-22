@@ -37,6 +37,7 @@ class Rfc863Tcp4Client {
         Attachment() {
             super();
             bytes = ThreadLocalRandom.current().nextInt(1048576);
+            _Rfc863Utils.logClientBytes(bytes);
             buffer.position(buffer.limit());
         }
     }
@@ -85,7 +86,6 @@ class Rfc863Tcp4Client {
                 log.error("failed to get addresses from {}", attachment.client, ioe);
             }
             attachment.latch.countDown(); // -1 for connected
-            _Rfc863Utils.logClientBytes(attachment.bytes);
             if (!attachment.buffer.hasRemaining()) {
                 ThreadLocalRandom.current().nextBytes(attachment.buffer.array());
                 attachment.buffer.clear().limit(Math.min(

@@ -23,10 +23,14 @@ package com.github.jinahya.hello.miscellaneous.c01rfc863;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.net.StandardSocketOptions;
+import java.nio.channels.AsynchronousChannelGroup;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 class Rfc863Tcp4Server {
@@ -53,6 +57,7 @@ class Rfc863Tcp4Server {
                 attachment.latch.countDown(); // -1 for all received
                 return;
             }
+            assert result > 0;
             attachment.bytes += result;
             attachment.digest.update(
                     attachment.slice
@@ -63,13 +68,18 @@ class Rfc863Tcp4Server {
                 attachment.buffer.clear();
             }
             attachment.client.read(
-                    attachment.buffer,    // <dst>
-                    attachment,           // <attachment>
-                    this                  // <handler>
+                    attachment.buffer, // <dst>
+                    attachment,        // <attachment>
+                    this               // <handler>
             );
         }
         @Override public void failed(Throwable exc, Attachment attachment) {
             log.error("failed to read", exc);
+            try {
+                attachment.client.close();
+            } catch (IOException ioe) {
+                log.error("failed to close {}", attachment.client, ioe);
+            }
             attachment.latch.countDown();
         }
     };
@@ -80,7 +90,6 @@ class Rfc863Tcp4Server {
     CompletionHandler<AsynchronousSocketChannel, Attachment> A_HANDLER = new CompletionHandler<>() {
         @Override public void completed(AsynchronousSocketChannel result, Attachment attachment) {
             attachment.client = result;
-            attachment.latch.countDown(); // -1 for being accepted
             try {
                 log.info("accepted from {}, through {}", result.getRemoteAddress(),
                           result.getLocalAddress());
@@ -91,10 +100,12 @@ class Rfc863Tcp4Server {
                 attachment.buffer.clear();
             }
             attachment.client.read(
-                    attachment.buffer, // <dst>
-                    attachment,        // <attachment>
-                    R_HANDLER          // <handler>
+                    attachment.buffer,     // <dst>
+                    16L, TimeUnit.SECONDS, // <timeout, unit>
+                    attachment,            // <attachment>
+                    R_HANDLER              // <handler>
             );
+            attachment.latch.countDown(); // -1 for being accepted
         }
         @Override public void failed(Throwable exc, Attachment attachment) {
             log.error("failed to accept", exc);
@@ -114,7 +125,9 @@ class Rfc863Tcp4Server {
                     attachment, // <attachment>
                     A_HANDLER   // <handler>
             );
-            attachment.latch.await(); // InterruptedException
+            if (!attachment.latch.await(16L, TimeUnit.SECONDS)) { // InterruptedException
+                log.warn("timeout");
+            }
         }
     }
 

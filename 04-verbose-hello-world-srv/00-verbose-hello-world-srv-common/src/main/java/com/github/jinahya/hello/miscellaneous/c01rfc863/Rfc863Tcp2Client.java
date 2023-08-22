@@ -28,6 +28,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 
 import static com.github.jinahya.hello.miscellaneous.c01rfc863._Rfc863Constants.ADDR;
 
@@ -68,7 +69,7 @@ class Rfc863Tcp2Client {
                 client.register(selector, SelectionKey.OP_CONNECT);
             }
             while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
-                if (selector.select(_Rfc863Utils.soTimeoutInMillis()) == 0) {
+                if (selector.select(TimeUnit.SECONDS.toMillis(16L)) == 0) {
                     break;
                 }
                 for (var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
