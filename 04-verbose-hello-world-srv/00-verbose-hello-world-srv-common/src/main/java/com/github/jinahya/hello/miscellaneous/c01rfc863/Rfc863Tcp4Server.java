@@ -68,9 +68,10 @@ class Rfc863Tcp4Server {
                 attachment.buffer.clear();
             }
             attachment.client.read(
-                    attachment.buffer, // <dst>
-                    attachment,        // <attachment>
-                    this               // <handler>
+                    attachment.buffer,     // <dst>
+                    16L, TimeUnit.SECONDS, // <timeout, unit>
+                    attachment,            // <attachment>
+                    this                   // <handler>
             );
         }
         @Override public void failed(Throwable exc, Attachment attachment) {
