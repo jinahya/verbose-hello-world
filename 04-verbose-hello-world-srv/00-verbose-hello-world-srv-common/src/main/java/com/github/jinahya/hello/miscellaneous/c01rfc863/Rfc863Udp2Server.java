@@ -34,8 +34,6 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 class Rfc863Udp2Server {
 
-    static final int CAPACITY = 1024;
-
     public static void main(String... args) throws Exception {
         try (var selector = Selector.open();
              var server = DatagramChannel.open()) {
@@ -46,20 +44,20 @@ class Rfc863Udp2Server {
             if (selector.select(TimeUnit.SECONDS.toMillis(16L)) == 0) {
                 return;
             }
-            var selectedKey = selector.selectedKeys().iterator().next();
-            assert selectedKey == serverKey;
-            assert selectedKey.isReadable();
-            var channel = (DatagramChannel) selectedKey.channel();
+            var key = selector.selectedKeys().iterator().next();
+            assert key == serverKey;
+            assert key.isReadable();
+            var channel = (DatagramChannel) key.channel();
             assert channel == server;
             var buffer = ByteBuffer.allocate(channel.getOption(StandardSocketOptions.SO_RCVBUF));
             var source = channel.receive(buffer);
             assert source != null;
             _Rfc863Utils.logServerBytes(buffer.position());
-            channel.close();
-            assert !selectedKey.isValid();
             var digest = _Rfc863Utils.newDigest();
             digest.update(buffer.flip());
             _Rfc863Utils.logDigest(digest);
+            key.cancel();
+            assert !key.isValid();
         }
     }
 

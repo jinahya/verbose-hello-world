@@ -35,9 +35,9 @@ class Rfc863Udp1Server {
             HelloWorldNetUtils.printSocketOptions(server);
             server.bind(_Rfc863Constants.ADDRESS);
             log.info("bound to {}", server.getLocalSocketAddress());
-            server.setSoTimeout((int) TimeUnit.SECONDS.toMillis(16L));
             var array = new byte[server.getReceiveBufferSize() + 1];
             var packet = new DatagramPacket(array, array.length);
+            server.setSoTimeout((int) TimeUnit.SECONDS.toMillis(16L));
             server.receive(packet); // IOException
             _Rfc863Utils.logServerBytes(packet.getLength());
             var digest = _Rfc863Utils.newDigest();

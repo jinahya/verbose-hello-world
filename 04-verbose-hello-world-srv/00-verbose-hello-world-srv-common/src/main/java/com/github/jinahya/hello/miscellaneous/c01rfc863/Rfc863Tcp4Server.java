@@ -57,7 +57,7 @@ class Rfc863Tcp4Server {
                 attachment.latch.countDown(); // -1 for all received
                 return;
             }
-            assert result > 0;
+            assert result > 0 : "buffer passed with no remaining?";
             attachment.bytes += result;
             attachment.digest.update(
                     attachment.slice
@@ -81,6 +81,7 @@ class Rfc863Tcp4Server {
             } catch (IOException ioe) {
                 log.error("failed to close {}", attachment.client, ioe);
             }
+            assert attachment.latch.getCount() == 1;
             attachment.latch.countDown();
         }
     };
@@ -126,9 +127,7 @@ class Rfc863Tcp4Server {
                     attachment, // <attachment>
                     A_HANDLER   // <handler>
             );
-            if (!attachment.latch.await(16L, TimeUnit.SECONDS)) { // InterruptedException
-                log.warn("timeout");
-            }
+            attachment.latch.await();
         }
     }
 

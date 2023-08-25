@@ -35,8 +35,8 @@ import static com.github.jinahya.hello.miscellaneous.c01rfc863._Rfc863Constants.
 @Slf4j
 class Rfc863Tcp2Client {
 
+    // @formatter:off
     private static class Attachment extends Rfc863Tcp2Server.Attachment {
-
         Attachment() {
             super();
             bytes = ThreadLocalRandom.current().nextInt(1048576);
@@ -44,6 +44,7 @@ class Rfc863Tcp2Client {
             buffer.position(buffer.limit());
         }
     }
+    // @formatter:on
 
     public static void main(String... args) throws Exception {
         try (var selector = Selector.open();
@@ -109,6 +110,7 @@ class Rfc863Tcp2Client {
                                         .limit(attachment.buffer.position())
                         );
                         if ((attachment.bytes -= w) == 0) {
+                            key.interestOpsAnd(~SelectionKey.OP_WRITE);
                             key.cancel();
                             assert !key.isValid();
                             _Rfc863Utils.logDigest(attachment.digest);

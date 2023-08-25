@@ -53,8 +53,8 @@ class Rfc863Udp1Client {
             var array = new byte[
                     ThreadLocalRandom.current().nextInt(client.getSendBufferSize() + 1)
                     ];
-            _Rfc863Utils.logClientBytes(array.length);
             ThreadLocalRandom.current().nextBytes(array);
+            _Rfc863Utils.logClientBytes(array.length);
             var packet = new DatagramPacket(array, array.length, _Rfc863Constants.ADDRESS);
             client.send(packet); // IOException
             var digest = _Rfc863Utils.newDigest();

@@ -23,7 +23,6 @@ package com.github.jinahya.hello.miscellaneous.c01rfc863;
 import com.github.jinahya.hello.util.HelloWorldNetUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -35,21 +34,18 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 class Rfc863Tcp2Server {
 
+    // @formatter:off
     static class Attachment {
-
         Attachment() {
             super();
             log.info("buffer.capacity: {}", buffer.capacity());
         }
-
         int bytes;
-
         final ByteBuffer buffer = _Rfc863Utils.newBuffer();
-
         final ByteBuffer slice = buffer.slice();
-
         final MessageDigest digest = _Rfc863Utils.newDigest();
     }
+    // @formatter:on
 
     public static void main(String... args) throws Exception {
         try (var selector = Selector.open();
@@ -91,6 +87,7 @@ class Rfc863Tcp2Server {
                             _Rfc863Utils.logServerBytes(attachment.bytes);
                             _Rfc863Utils.logDigest(attachment.digest);
                         } else {
+                            assert r > 0;
                             attachment.bytes += r;
                             attachment.digest.update(
                                     attachment.slice

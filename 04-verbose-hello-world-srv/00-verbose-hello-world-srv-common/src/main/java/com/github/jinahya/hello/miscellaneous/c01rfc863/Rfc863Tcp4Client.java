@@ -46,6 +46,7 @@ class Rfc863Tcp4Client {
     private static final
     CompletionHandler<Integer, Attachment> W_HANDLER = new CompletionHandler<>() {
         @Override public void completed(Integer result, Attachment attachment) {
+            assert result > 0 : "buffer passed with no remaining?";
             attachment.digest.update(
                     attachment.slice
                             .position(attachment.buffer.position() - result)
@@ -70,6 +71,7 @@ class Rfc863Tcp4Client {
         }
         @Override public void failed(Throwable exc, Attachment attachment) {
             log.error("failed to write", exc);
+            assert attachment.latch.getCount() == 1;
             attachment.latch.countDown();
         }
     };
@@ -91,6 +93,11 @@ class Rfc863Tcp4Client {
                 attachment.buffer.clear().limit(Math.min(
                         attachment.buffer.remaining(), attachment.bytes
                 ));
+            }
+            if (!attachment.buffer.hasRemaining()) {
+                assert attachment.bytes == 0;
+                attachment.latch.countDown();
+                return;
             }
             attachment.client.write(
                     attachment.buffer, // <src>

@@ -55,7 +55,7 @@ class Rfc863Udp2Client {
             }
             client.configureBlocking(false);
             var clientKey = client.register(selector, SelectionKey.OP_WRITE);
-            if (selector.select(TimeUnit.SECONDS.toMillis(8L)) == 0) {
+            if (selector.select(TimeUnit.SECONDS.toMillis(16L)) == 0) {
                 return;
             }
             var key = selector.selectedKeys().iterator().next();
@@ -63,10 +63,9 @@ class Rfc863Udp2Client {
             assert key.isWritable();
             var channel = (DatagramChannel) key.channel();
             assert channel == client;
-            var capacity = ThreadLocalRandom.current().nextInt(
+            var buffer = ByteBuffer.allocate(ThreadLocalRandom.current().nextInt(
                     channel.getOption(StandardSocketOptions.SO_SNDBUF) + 1
-            );
-            var buffer = ByteBuffer.allocate(capacity);
+            ));
             ThreadLocalRandom.current().nextBytes(buffer.array());
             _Rfc863Utils.logClientBytes(buffer.remaining());
             var w = channel.send(buffer, _Rfc863Constants.ADDRESS);
