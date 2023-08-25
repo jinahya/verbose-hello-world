@@ -29,30 +29,7 @@ import java.time.Duration;
  */
 public final class HelloWorldSystemUtils {
 
-    private static final ThreadLocal<Long> START_NANOS1 = ThreadLocal.withInitial(System::nanoTime);
 
-    public static void startStopWatch1() {
-        START_NANOS1.set(System.nanoTime());
-    }
-
-    public static Duration stopStopWatch1() {
-        try {
-            return Duration.ofNanos(System.nanoTime() - START_NANOS1.get());
-        } finally {
-            START_NANOS1.remove();
-        }
-    }
-
-//    private static final ScopedValue<Long> START_NANOS2 = ScopedValue.newInstance();
-//
-//    public static ScopedValue.Carrier<Long> startStopWatch2() {
-//        return ScopedValue.where(START_NANOS2, System.nanoTime());
-//    }
-//
-//    public static Duration stopStopWatch2(ScopedValue.Carrier<Long> carrier) {
-//        Objects.requireNonNull(carrier, "carrier is null");
-//        return carrier.call(v -> Duration.ofNanos(System.nanoTime() - v));
-//    }
 
     private HelloWorldSystemUtils() {
         throw new AssertionError("instantiation is not allowed");
