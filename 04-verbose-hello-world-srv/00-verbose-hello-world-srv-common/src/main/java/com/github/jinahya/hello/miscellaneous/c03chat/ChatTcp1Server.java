@@ -11,6 +11,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -20,9 +21,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 class ChatTcp1Server {
 
-    private record Receiver(Collection<? super Socket> clients, Socket client,
-                            BlockingQueue<? super byte[]> queue)
-            implements Runnable {
+    private record Receiver(Socket client, Queue<? super byte[]> queue) implements Runnable {
 
         private Receiver {
             Objects.requireNonNull(client, "client is null");
@@ -36,31 +35,27 @@ class ChatTcp1Server {
                 try {
                     array = client.getInputStream().readNBytes(_ChatMessage.BYTES);
                 } catch (IOException ioe) {
-                    Thread.currentThread().interrupt();
-                    continue;
-                }
-                if (array.length != _ChatMessage.BYTES) {
-                    Thread.currentThread().interrupt();
-                    continue;
-                }
-                try {
-                    if (!queue.offer(array, 8L, TimeUnit.SECONDS)) {
-                        log.error("[S] failed to offer to the queue");
+                    if (!client.isClosed()) {
+                        log.error("failed to read", ioe);
                     }
-                } catch (InterruptedException ie) {
                     Thread.currentThread().interrupt();
+                    continue;
+                }
+                assert array.length == _ChatMessage.BYTES;
+                if (!queue.offer(array)) {
+                    log.error("failed to offer");
                 }
             }
             try {
                 client.close();
             } catch (IOException ioe) {
-                log.error("[S] failed to close {}", client, ioe);
+                log.error("failed to close {}", client, ioe);
             }
-            clients.remove(client);
         }
     }
 
-    private record Sender(BlockingQueue<? extends byte[]> queue, Iterable<? extends Socket> clients)
+    private record Sender(BlockingQueue<? extends byte[]> queue,
+                          Collection<? extends Socket> clients)
             implements Runnable {
 
         private Sender {
@@ -71,6 +66,7 @@ class ChatTcp1Server {
         @Override
         public void run() {
             while (!Thread.currentThread().isInterrupted()) {
+//                log.debug("clients: {}, {}", clients.size(), clients);
                 byte[] array;
                 try {
                     if ((array = queue.poll(8L, TimeUnit.SECONDS)) == null) {
@@ -80,29 +76,28 @@ class ChatTcp1Server {
                     Thread.currentThread().interrupt();
                     continue;
                 }
-                for (var i = clients.iterator(); i.hasNext(); ) {
-                    var client = i.next();
+                assert array.length == _ChatMessage.BYTES;
+                for (var client : clients) {
                     try {
                         client.getOutputStream().write(array);
                         client.getOutputStream().flush();
                     } catch (IOException ioe) {
                         if (!client.isClosed()) {
-                            log.error("[S] failed to send to {}", client, ioe);
+                            log.error("failed to send to {}", client, ioe);
                         }
                         try {
                             client.close();
                         } catch (IOException ioe2) {
-                            log.error("[S] failed to close {}", client, ioe2);
+                            log.error("failed to close {}", client, ioe2);
                         }
-                        i.remove();
+                        clients.remove(client);
                     }
                 }
             }
         }
     }
 
-    public static void main(String... args)
-            throws Exception {
+    public static void main(String... args) throws Exception {
         var executor = Executors.newCachedThreadPool();
         var clients = new CopyOnWriteArrayList<Socket>();
         var queue = new ArrayBlockingQueue<byte[]>(1024);
@@ -111,7 +106,7 @@ class ChatTcp1Server {
             server.bind(new InetSocketAddress(
                     InetAddress.getByName("0.0.0.0"), _ChatConstants.PORT
             ));
-            log.debug("[S] bound on {}", server.getLocalSocketAddress());
+            log.info("bound on {}", server.getLocalSocketAddress());
             HelloWorldLangUtils.readLinesAndCallWhenTests(
                     HelloWorldServerUtils::isQuit, // <predicate>
                     () -> {                        // <callable>
@@ -125,13 +120,13 @@ class ChatTcp1Server {
             while (!server.isClosed()) {
                 try {
                     var client = server.accept();
-                    log.debug("[S] accepted from {} through {}", client.getRemoteSocketAddress(),
-                              client.getLocalSocketAddress());
+                    log.info("accepted from {} through {}", client.getRemoteSocketAddress(),
+                             client.getLocalSocketAddress());
                     clients.add(client);
-                    executor.submit(new Receiver(clients, client, queue));
+                    executor.submit(new Receiver(client, queue));
                 } catch (IOException ioe) {
                     if (!server.isClosed()) {
-                        log.error("[S] failed to accept", ioe);
+                        log.error("failed to accept", ioe);
                     }
                 }
             }
@@ -140,15 +135,15 @@ class ChatTcp1Server {
             try {
                 client.close();
             } catch (IOException ioe) {
-                log.error("[S] failed to close " + client, ioe);
+                log.error("failed to close " + client, ioe);
             }
         }
         if (!writer.cancel(true)) {
-            log.error("[S] writer not canceled");
+            log.error("writer is not canceled");
         }
         executor.shutdown();
         if (!executor.awaitTermination(8L, TimeUnit.SECONDS)) {
-            log.error("[S] executor not terminated");
+            log.error("executor has not been terminated");
         }
     }
 }

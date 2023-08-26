@@ -63,7 +63,7 @@ class ChatTcp2Server {
             server.bind(
                     new InetSocketAddress(InetAddress.getByName("0.0.0.0"), _ChatConstants.PORT)
             );
-            log.debug("[S] bound to {}", server.getLocalAddress());
+            log.debug("bound to {}", server.getLocalAddress());
             server.configureBlocking(false);
             var serverKey = server.register(selector, SelectionKey.OP_ACCEPT);
             HelloWorldLangUtils.readLinesAndCallWhenTests(
@@ -86,7 +86,7 @@ class ChatTcp2Server {
                     if (selectedKey.isAcceptable()) {
                         var channel = (ServerSocketChannel) selectedKey.channel();
                         var client = channel.accept(); // IOException
-                        log.debug("[S] accepted from {} through {}", client.getRemoteAddress(),
+                        log.debug("accepted from {} through {}", client.getRemoteAddress(),
                                   client.getLocalAddress());
                         var attachment = new Attachment();
                         client.configureBlocking(false);
@@ -136,7 +136,7 @@ class ChatTcp2Server {
                         try {
                             channel.close();
                         } catch (IOException ioe) {
-                            log.error("[S] failed to close {}", channel);
+                            log.error("failed to close {}", channel);
                         }
 //                        k.cancel();
                     });

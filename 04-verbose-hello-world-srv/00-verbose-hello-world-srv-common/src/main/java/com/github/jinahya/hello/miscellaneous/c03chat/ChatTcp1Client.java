@@ -18,8 +18,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 class ChatTcp1Client {
 
-    private record Receiver(Socket client)
-            implements Runnable {
+    private record Receiver(Socket client) implements Runnable {
 
         private Receiver {
             Objects.requireNonNull(client, "client is null");
@@ -44,13 +43,12 @@ class ChatTcp1Client {
             try {
                 client.close();
             } catch (IOException ioe) {
-                log.error("[C] failed to close", ioe);
+                log.error("failed to close", ioe);
             }
         }
     }
 
-    private record Sender(Socket client)
-            implements Runnable {
+    private record Sender(Socket client) implements Runnable {
 
         private Sender {
             Objects.requireNonNull(client, "client is null");
@@ -59,43 +57,36 @@ class ChatTcp1Client {
         @Override
         public void run() {
             BlockingQueue<String> queue = new ArrayBlockingQueue<>(1);
+            var current = Thread.currentThread();
             HelloWorldLangUtils.readLinesAndCallWhenTests(
                     HelloWorldServerUtils::isQuit, // <predicate>
                     () -> {                        // <callable>
-                        client.close();
+                        current.interrupt();
                         return null;
                     },
                     l -> {                         // <consumer>
-                        try {
-                            if (!queue.offer(l, 1L, TimeUnit.SECONDS)) {
-                                log.error("[C] failed to offer");
-                            }
-                        } catch (InterruptedException ie) {
-                            // empty
+                        if (!queue.offer(l)) {
+                            log.error("failed to offer");
                         }
                     }
             );
-            while (!client.isClosed() && !Thread.currentThread().isInterrupted()) {
-                String message;
+            while (!Thread.currentThread().isInterrupted()) {
+                String line;
                 try {
-                    if ((message = queue.poll(1L, TimeUnit.SECONDS)) == null) {
+                    if ((line = queue.poll(1L, TimeUnit.SECONDS)) == null) {
                         continue;
                     }
                 } catch (InterruptedException ie) {
                     Thread.currentThread().interrupt();
                     continue;
                 }
-                if (message.strip().equalsIgnoreCase(HelloWorldServerConstants.QUIT)) {
-                    Thread.currentThread().interrupt();
-                    continue;
-                }
-                var array = _ChatMessage.OfArray.of(_ChatUtils.prependUsername(message));
+                var array = _ChatMessage.OfArray.of(_ChatUtils.prependUsername(line));
                 try {
                     client.getOutputStream().write(array);
                     client.getOutputStream().flush();
                 } catch (IOException ioe) {
                     if (!client.isClosed()) {
-                        log.error("[C] failed to send message", ioe);
+                        log.error("failed to send", ioe);
                     }
                     Thread.currentThread().interrupt();
                 }
@@ -103,13 +94,12 @@ class ChatTcp1Client {
             try {
                 client.close();
             } catch (IOException ioe) {
-                log.error("[C] failed to close", ioe);
+                log.error("failed to close", ioe);
             }
         }
     }
 
-    public static void main(String... args)
-            throws Exception {
+    public static void main(String... args) throws Exception {
         InetAddress addr;
         try {
             addr = InetAddress.getByName(args[0]);
@@ -119,8 +109,8 @@ class ChatTcp1Client {
         var executor = Executors.newFixedThreadPool(2);
         try (var client = new Socket()) {
             client.connect(new InetSocketAddress(addr, _ChatConstants.PORT));
-            log.debug("[S] connected to {} through {}", client.getRemoteSocketAddress(),
-                      client.getLocalSocketAddress());
+            log.info("connected to {} through {}", client.getRemoteSocketAddress(),
+                     client.getLocalSocketAddress());
             executor.submit(new Sender(client));
             executor.submit(new Receiver(client));
             for (executor.shutdown(); !executor.awaitTermination(8L, TimeUnit.SECONDS); ) {

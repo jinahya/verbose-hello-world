@@ -76,7 +76,7 @@ class ChatUdp1Client {
                     OfArray.printToSystemOut(array);
                 } catch (IOException ioe) {
                     if (!socket.isClosed()) {
-                        log.error("[C] failed to receive", ioe);
+                        log.error("failed to receive", ioe);
                     }
                 }
             }
@@ -118,7 +118,7 @@ class ChatUdp1Client {
                     socket.send(packet);
                 } catch (IOException ioe) {
                     if (!socket.isClosed()) {
-                        log.error("[C] failed to send", ioe);
+                        log.error("failed to send", ioe);
                     }
                 }
             }
@@ -134,7 +134,7 @@ class ChatUdp1Client {
             addr = InetAddress.getLoopbackAddress();
         }
         var address = new InetSocketAddress(addr, _ChatConstants.PORT);
-        log.debug("[C] address: {}", address);
+        log.debug("address: {}", address);
         var queue = new LinkedBlockingQueue<byte[]>();
         var executor = Executors.newScheduledThreadPool(3); // receive, send, and keep
         var futures = new ArrayList<Future<?>>();
@@ -142,7 +142,7 @@ class ChatUdp1Client {
                 () -> {
                     var array = OfArray.of(HelloWorldServerConstants.KEEP);
                     if (!queue.offer(array)) {
-                        log.error("[C] failed to offer keep");
+                        log.error("failed to offer keep");
                     }
                 },
                 PERIOD_TO_SEND_KEEP.toSeconds(),
@@ -163,7 +163,7 @@ class ChatUdp1Client {
                     },
                     l -> {                         // <consumer>
                         if (!queue.offer(OfArray.of(_ChatUtils.prependUsername(l)))) {
-                            log.error("[C] failed to offer message");
+                            log.error("failed to offer message");
                         }
                     }
             );
@@ -172,7 +172,7 @@ class ChatUdp1Client {
         futures.forEach(f -> f.cancel(true));
         executor.shutdown();
         if (!executor.awaitTermination(8L, TimeUnit.SECONDS)) {
-            log.error("[C] executor has not been terminated");
+            log.error("executor has not been terminated");
         }
     }
 

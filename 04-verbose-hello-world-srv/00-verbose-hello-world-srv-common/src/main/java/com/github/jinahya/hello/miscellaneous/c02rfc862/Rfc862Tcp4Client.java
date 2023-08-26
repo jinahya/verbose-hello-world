@@ -51,13 +51,8 @@ class Rfc862Tcp4Client {
         @Override
         public void completed(Integer result, Attachment attachment) {
             if (result == -1) {
-                assert attachment.bytes == 0;
-                try {
-                    attachment.client.close();
-                } catch (IOException ioe) {
-                    log.error("failed to close {}", attachment.client, ioe);
-                }
-                attachment.group.shutdown();
+                assert attachment.bytes == 0 : "unexpected end-of-stream";
+                attachment.shutdownGroupNow();
                 return;
             }
             if (attachment.bytes == 0) { // all bytes have already been sent
@@ -69,14 +64,12 @@ class Rfc862Tcp4Client {
                 );
                 return;
             }
-            assert attachment.bytes > 0;
             if (!attachment.buffer.hasRemaining()) {
                 ThreadLocalRandom.current().nextBytes(attachment.buffer.array());
                 attachment.buffer.clear().limit(Math.min(
                         attachment.buffer.remaining(), attachment.bytes
                 ));
             }
-            assert attachment.buffer.remaining() <= attachment.bytes;
             attachment.client.write(
                     attachment.buffer, // <dst>
                     attachment,        // <attachment>
@@ -120,7 +113,7 @@ class Rfc862Tcp4Client {
         }
         @Override public void failed(Throwable exc, Attachment attachment) {
             log.error("failed to write", exc);
-            attachment.group.shutdown();
+            attachment.shutdownGroupNow();
         }
     };
     // @formatter:on
@@ -131,7 +124,7 @@ class Rfc862Tcp4Client {
         @Override public void completed(Void result, Attachment attachment) {
             try {
                 log.info("connected to {}, through {}", attachment.client.getRemoteAddress(),
-                          attachment.client.getRemoteAddress());
+                          attachment.client.getLocalAddress());
             } catch (IOException ioe) {
                 log.error("failed to get addresses from {}", attachment.client, ioe);
             }
@@ -141,7 +134,6 @@ class Rfc862Tcp4Client {
                         attachment.buffer.remaining(), attachment.bytes
                 ));
             }
-            assert attachment.buffer.remaining() <= attachment.bytes;
             attachment.client.write(
                     attachment.buffer, // <src>
                     attachment,        // <attachment>
@@ -150,7 +142,7 @@ class Rfc862Tcp4Client {
         }
         @Override public void failed(Throwable exc, Attachment attachment) {
             log.error("failed to connect", exc);
-            attachment.group.shutdown();
+            attachment.shutdownGroupNow();
         }
     };
     // @formatter:on
@@ -160,7 +152,7 @@ class Rfc862Tcp4Client {
         try (var client = AsynchronousSocketChannel.open(group)) {
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc862Constants.ADDR, 0));
-                log.info("bound to {}", client.getLocalAddress());
+                log.info("(optionally) bound to {}", client.getLocalAddress());
             }
             var attachment = new Attachment();
             attachment.group = group;
@@ -170,7 +162,7 @@ class Rfc862Tcp4Client {
                     attachment,               // <attachment>
                     C_HANDLER                 // <handler>
             );
-            if (!group.awaitTermination(16L, TimeUnit.SECONDS)) {
+            if (!group.awaitTermination(8L, TimeUnit.SECONDS)) {
                 log.error("channel group has not been terminated, for a while");
             }
         }

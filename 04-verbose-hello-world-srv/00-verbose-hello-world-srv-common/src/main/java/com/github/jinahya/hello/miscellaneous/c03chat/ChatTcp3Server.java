@@ -81,11 +81,11 @@ class ChatTcp3Server {
 
         @Override
         public void onError(Throwable throwable) {
-            log.error("[S] error", throwable);
+            log.error("error", throwable);
             try {
                 close();
             } catch (IOException ioe) {
-                log.error("[S] failed to close", ioe);
+                log.error("failed to close", ioe);
             }
         }
 
@@ -95,7 +95,7 @@ class ChatTcp3Server {
             try {
                 close();
             } catch (IOException ioe) {
-                log.error("[S] failed to close", ioe);
+                log.error("failed to close", ioe);
             }
         }
 
@@ -129,12 +129,12 @@ class ChatTcp3Server {
         }
         @Override public void failed(Throwable exc, Attachment attachment) {
             if (!attachment.client.isOpen()) {
-                log.error("[S] failed to write", exc);
+                log.error("failed to write", exc);
             }
             try {
                 attachment.close();
             } catch (IOException ioe) {
-                log.error("[S] failed to close {}", attachment, ioe);
+                log.error("failed to close {}", attachment, ioe);
             }
         }
     };
@@ -148,7 +148,7 @@ class ChatTcp3Server {
                 try {
                     attachment.close();
                 } catch (IOException ioe) {
-                    throw new UncheckedIOException("[S] failed to close" + attachment, ioe);
+                    throw new UncheckedIOException("failed to close" + attachment, ioe);
                 }
                 return;
             }
@@ -160,12 +160,12 @@ class ChatTcp3Server {
         }
         @Override public void failed(Throwable exc, Attachment attachment) {
             if (!attachment.client.isOpen()) {
-                log.error("[S] failed to read", exc);
+                log.error("failed to read", exc);
             }
             try {
                 attachment.close();
             } catch (IOException ioe) {
-                log.error("[S] failed to close {}", attachment, ioe);
+                log.error("failed to close {}", attachment, ioe);
             }
         }
     };
@@ -176,7 +176,7 @@ class ChatTcp3Server {
     CompletionHandler<AsynchronousSocketChannel, Attachment> A_HANDLER = new CompletionHandler<>() {
         @Override public void completed(AsynchronousSocketChannel result, Attachment attachment) {
             try {
-                log.debug("[S] accepted from {}, through {}", result.getRemoteAddress(),
+                log.debug("accepted from {}, through {}", result.getRemoteAddress(),
                           result.getLocalAddress());
             } catch (IOException ioe) {
                 throw new UncheckedIOException("failed to get addresses from client", ioe);
@@ -188,13 +188,13 @@ class ChatTcp3Server {
         }
         @Override public void failed(Throwable exc, Attachment attachment) {
             if (!attachment.server.isOpen()) {
-                log.error("[S] failed to accept", exc);
+                log.error("failed to accept", exc);
             }
             attachment.publisher.close();
             try {
                 attachment.server.close();
             } catch (IOException ioe) {
-                log.error("[S] failed to close {}", attachment.server, ioe);
+                log.error("failed to close {}", attachment.server, ioe);
             }
         }
     };
@@ -209,7 +209,7 @@ class ChatTcp3Server {
             server.bind(new InetSocketAddress(
                     InetAddress.getByName("0.0.0.0"), _ChatConstants.PORT
             ));
-            log.debug("[S] server bound to {}", server.getLocalAddress());
+            log.debug("server bound to {}", server.getLocalAddress());
             var latch = new CountDownLatch(1);
             HelloWorldLangUtils.readLinesAndCallWhenTests(
                     HelloWorldServerUtils::isQuit, // <predicate>

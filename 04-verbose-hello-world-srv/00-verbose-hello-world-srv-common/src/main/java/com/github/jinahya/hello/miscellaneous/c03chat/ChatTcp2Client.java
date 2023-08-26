@@ -28,7 +28,7 @@ class ChatTcp2Client {
             SelectionKey clientKey;
             client.configureBlocking(false);
             if (client.connect(new InetSocketAddress(addr, _ChatConstants.PORT))) {
-                log.debug("[C] connected (immediately) to {}, through {}",
+                log.debug("connected (immediately) to {}, through {}",
                           client.getRemoteAddress(), client.getLocalAddress());
                 clientKey = client.register(selector, SelectionKey.OP_READ);
             } else {
@@ -59,7 +59,7 @@ class ChatTcp2Client {
                         var channel = (SocketChannel) selectedKey.channel();
                         var connected = channel.finishConnect(); // IOException
                         assert connected;
-                        log.debug("[C] connected to {}, through {}", channel.getRemoteAddress(),
+                        log.debug("connected to {}, through {}", channel.getRemoteAddress(),
                                   channel.getLocalAddress());
                         selectedKey.interestOpsAnd(~SelectionKey.OP_CONNECT);
                         selectedKey.interestOpsOr(SelectionKey.OP_READ);

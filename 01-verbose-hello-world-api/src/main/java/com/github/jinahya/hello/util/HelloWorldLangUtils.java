@@ -92,6 +92,7 @@ public final class HelloWorldLangUtils {
                     if (predicate.test(line.strip())) {
                         break;
                     }
+                    consumer.accept(line);
                 }
             } catch (IOException ioe) {
                 log.error("failed to read line", ioe);

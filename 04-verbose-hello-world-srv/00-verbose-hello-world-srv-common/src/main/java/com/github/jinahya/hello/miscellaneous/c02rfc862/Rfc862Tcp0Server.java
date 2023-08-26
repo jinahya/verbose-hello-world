@@ -36,6 +36,7 @@ class Rfc862Tcp0Server {
             try (var client = server.accept()) {
                 log.info("accepted from {}, through {}", client.getRemoteSocketAddress(),
                          client.getLocalSocketAddress());
+                log.debug("localPort: {}", client.getLocalPort());
                 client.setSoTimeout(_Rfc862Utils.soTimeoutInMillisAsInt());
                 var digest = _Rfc862Utils.newDigest();
                 var bytes = 0L;

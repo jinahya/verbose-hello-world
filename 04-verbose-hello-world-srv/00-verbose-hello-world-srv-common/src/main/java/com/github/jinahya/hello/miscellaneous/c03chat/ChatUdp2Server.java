@@ -52,7 +52,7 @@ class ChatUdp2Server {
             server.bind(new InetSocketAddress(
                     InetAddress.getByName("0.0.0.0"), _ChatConstants.PORT
             ));
-            log.debug("[S] bound to {}", server.getLocalAddress());
+            log.debug("bound to {}", server.getLocalAddress());
             server.configureBlocking(false);
             var serverKey = server.register(selector, SelectionKey.OP_READ);
             HelloWorldLangUtils.readLinesAndCallWhenTests(

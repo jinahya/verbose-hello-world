@@ -24,11 +24,13 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.net.InetSocketAddress;
 import java.nio.channels.AsynchronousChannelGroup;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -80,7 +82,6 @@ class Rfc862Tcp4Server {
         @Override public void completed(Integer result, Attachment attachment) {
             if (result == -1) {
                 if (attachment.buffer.position() == 0) { // no more bytes to send back, either
-                    log.debug("no more bytes to send back, either");
                     try {
                         attachment.client.close();
                     } catch (IOException ioe) {
@@ -112,7 +113,7 @@ class Rfc862Tcp4Server {
         @Override public void completed(AsynchronousSocketChannel result, Attachment attachment) {
             try {
                 log.info("accepted from {}, through {}", result.getRemoteAddress(),
-                          result.getLocalAddress());
+                         result.getLocalAddress());
             } catch (IOException ioe) {
                 log.error("failed get addresses from {}", result, ioe);
             }
@@ -142,7 +143,7 @@ class Rfc862Tcp4Server {
                     attachment, // <attachment>
                     A_HANDLER   // <handler>
             );
-            if (!group.isTerminated() && !group.awaitTermination(16L, TimeUnit.SECONDS)) {
+            if (!group.awaitTermination(8L, TimeUnit.SECONDS)) {
                 log.error("channel group has not been terminated for a while");
             }
             _Rfc862Utils.logServerBytesSent(attachment.bytes);

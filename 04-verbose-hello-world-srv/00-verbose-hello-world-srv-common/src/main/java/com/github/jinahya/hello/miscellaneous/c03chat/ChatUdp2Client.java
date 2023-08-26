@@ -122,7 +122,7 @@ class ChatUdp2Client {
         futures.forEach(f -> f.cancel(true));
         executor.shutdown();
         if (!executor.awaitTermination(8L, TimeUnit.SECONDS)) {
-            log.error("[C] executor has not been terminated");
+            log.error("executor has not been terminated");
         }
     }
 

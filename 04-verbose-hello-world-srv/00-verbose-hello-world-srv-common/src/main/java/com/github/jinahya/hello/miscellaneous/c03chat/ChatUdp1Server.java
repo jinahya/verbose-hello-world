@@ -85,7 +85,7 @@ class ChatUdp1Server {
                         socket.send(packet);
                     } catch (IOException ioe) {
                         if (!socket.isClosed()) {
-                            log.error("[S] failed to send to {}", packet.getSocketAddress(), ioe);
+                            log.error("failed to send to {}", packet.getSocketAddress(), ioe);
                         }
                         Thread.currentThread().interrupt();
                         break;
@@ -114,7 +114,7 @@ class ChatUdp1Server {
                     socket.receive(packet);
                 } catch (IOException ioe) {
                     if (!socket.isClosed()) {
-                        log.error("[S] failed to receive", ioe);
+                        log.error("failed to receive", ioe);
                     }
                     Thread.currentThread().interrupt();
                     continue;
@@ -125,7 +125,7 @@ class ChatUdp1Server {
                     continue;
                 }
                 if (!messages.offer(_ChatMessage.OfArray.copyOf(array))) {
-                    log.error("[C] failed to offer");
+                    log.error("failed to offer");
                 }
             }
         }
@@ -141,7 +141,7 @@ class ChatUdp1Server {
             server.bind(new InetSocketAddress(
                     InetAddress.getByName("0.0.0.0"), _ChatConstants.PORT
             ));
-            log.debug("[S] bound to {}", server.getLocalSocketAddress());
+            log.debug("bound to {}", server.getLocalSocketAddress());
             var messages = new ArrayBlockingQueue<byte[]>(1024);
             var addresses = new ConcurrentHashMap<SocketAddress, Instant>();
             futures.add(executor.submit(new Receiver(server, messages, addresses)));
@@ -161,7 +161,7 @@ class ChatUdp1Server {
         futures.forEach(f -> f.cancel(true));
         executor.shutdown();
         if (!executor.awaitTermination(8L, TimeUnit.SECONDS)) {
-            log.error("[S] executor has not been terminated");
+            log.error("executor has not been terminated");
         }
     }
 
