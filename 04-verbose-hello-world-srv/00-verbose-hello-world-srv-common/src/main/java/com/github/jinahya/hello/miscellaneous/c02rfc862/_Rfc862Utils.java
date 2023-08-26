@@ -48,6 +48,19 @@ final class _Rfc862Utils {
         return ByteBuffer.wrap(newArray());
     }
 
+    static int randomBytesLessThan(int maxBytes) {
+        if (maxBytes <= 0) {
+            throw new IllegalArgumentException("maxBytes(" + maxBytes + ") is not positive");
+        }
+        return ThreadLocalRandom.current().nextInt(
+                Math.min(65536, maxBytes)
+        );
+    }
+
+    static int randomBytesLessThanOneMillion() {
+        return randomBytesLessThan(1048576);
+    }
+
     private static final String ALGORITHM = "SHA-256";
 
     static MessageDigest newDigest() {
@@ -71,12 +84,12 @@ final class _Rfc862Utils {
 
     static void logClientBytesSending(long bytes) {
         requireValidBytes(bytes);
-        log.info("sending (and getting echoed-back) {} bytes...", bytes);
+        log.info("sending (and getting received-back) {} bytes...", bytes);
     }
 
     static void logServerBytesSent(long bytes) {
         requireValidBytes(bytes);
-        log.info("{} bytes received and echoed-back", bytes);
+        log.info("{} bytes received and sent back", bytes);
     }
 
     static void logDigest(MessageDigest digest) {

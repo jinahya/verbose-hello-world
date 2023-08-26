@@ -20,7 +20,6 @@ package com.github.jinahya.hello.miscellaneous.c02rfc862;
  * #L%
  */
 
-import com.github.jinahya.hello.util.HelloWorldSecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.channels.AsynchronousServerSocketChannel;
@@ -29,37 +28,42 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 class Rfc862Tcp3Server {
 
+    // @formatter:off
+    static class Attachment extends Rfc862Tcp2Server.Attachment {
+    }
+    // @formatter:on
+
     public static void main(String... args) throws Exception {
+        var timeout = 8L;
+        var unit = TimeUnit.SECONDS;
         try (var server = AsynchronousServerSocketChannel.open()) {
             server.bind(_Rfc862Constants.ADDRESS);
             log.info("bound to {}", server.getLocalAddress());
-            try (var client = server.accept().get(8L, TimeUnit.SECONDS)) {
+            try (var client = server.accept().get(timeout, unit)) {
                 log.info("accepted from {}, through {}", client.getRemoteAddress(),
                          client.getLocalAddress());
-                var digest = _Rfc862Utils.newDigest();
-                var bytes = 0;
-                var buffer = _Rfc862Utils.newBuffer();
-                log.info("buffer.capacity: {}", buffer.capacity());
+                var attachment = new Attachment();
                 while (true) {
-                    var r = client.read(buffer).get(8L, TimeUnit.SECONDS);
+                    var r = client.read(attachment.buffer).get(timeout, unit);
                     if (r == -1) {
                         client.shutdownInput();
                         break;
                     }
-                    bytes += r;
-                    HelloWorldSecurityUtils.updatePreceding(digest, buffer, r);
-                    buffer.flip(); // limit -> position; position -> zero
-                    var w = client.write(buffer).get(8L, TimeUnit.SECONDS);
-                    assert w >= 0;
-                    buffer.compact();
+                    attachment.bytes += r;
+                    attachment.digest.update(
+                            attachment.slice
+                                    .position(attachment.buffer.position() - r)
+                                    .limit(attachment.buffer.position())
+                    );
+                    attachment.buffer.flip(); // limit -> position; position -> zero
+                    var w = client.write(attachment.buffer).get(timeout, unit);
+                    attachment.buffer.compact();
                 }
-                for (buffer.flip(); buffer.hasRemaining(); ) {
-                    var w = client.write(buffer).get(8L, TimeUnit.SECONDS);
-                    assert w >= 0;
+                for (attachment.buffer.flip(); attachment.buffer.hasRemaining(); ) {
+                    var w = client.write(attachment.buffer).get(timeout, unit);
                 }
-                client.shutdownOutput();
-                _Rfc862Utils.logServerBytesSent(bytes);
-                _Rfc862Utils.logDigest(digest);
+                _Rfc862Utils.logServerBytesSent(attachment.bytes);
+                _Rfc862Utils.logDigest(attachment.digest);
             }
         }
     }

@@ -31,9 +31,8 @@ import java.util.concurrent.ThreadLocalRandom;
 @Slf4j
 class Rfc863Tcp4Client {
 
-    private static final class Attachment
-            extends Rfc863Tcp4Server.Attachment {
-
+    // @formatter:off
+    private static final class Attachment extends Rfc863Tcp4Server.Attachment {
         Attachment() {
             super();
             bytes = ThreadLocalRandom.current().nextInt(1048576);
@@ -41,6 +40,7 @@ class Rfc863Tcp4Client {
             buffer.position(buffer.limit());
         }
     }
+    // @formatter:on
 
     // @formatter:off
     private static final
@@ -96,7 +96,7 @@ class Rfc863Tcp4Client {
             }
             if (!attachment.buffer.hasRemaining()) {
                 assert attachment.bytes == 0;
-                attachment.latch.countDown();
+                attachment.latch.countDown(); // -1 for all sent
                 return;
             }
             attachment.client.write(

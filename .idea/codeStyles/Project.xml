@@ -53,7 +53,7 @@
       <option name="ENUM_CONSTANTS_WRAP" value="2" />
       <option name="BUILDER_METHODS" value="bulid" />
       <option name="KEEP_BUILDER_METHODS_INDENTS" value="true" />
-      <option name="SOFT_MARGINS" value="80,100" />
+      <option name="SOFT_MARGINS" value="100" />
     </codeStyleSettings>
     <codeStyleSettings language="XML">
       <indentOptions>

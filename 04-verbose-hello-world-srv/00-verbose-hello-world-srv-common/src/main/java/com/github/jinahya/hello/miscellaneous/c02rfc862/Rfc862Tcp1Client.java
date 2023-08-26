@@ -41,7 +41,7 @@ class Rfc862Tcp1Client {
                      client.getLocalSocketAddress());
             client.setSoTimeout(_Rfc862Utils.soTimeoutInMillisAsInt());
             var digest = _Rfc862Utils.newDigest();
-            var bytes = ThreadLocalRandom.current().nextInt(1048576);
+            var bytes = _Rfc862Utils.randomBytesLessThanOneMillion();
             _Rfc862Utils.logClientBytesSending(bytes);
             var array = _Rfc862Utils.newArray();
             log.info("array.length: {}", array.length);

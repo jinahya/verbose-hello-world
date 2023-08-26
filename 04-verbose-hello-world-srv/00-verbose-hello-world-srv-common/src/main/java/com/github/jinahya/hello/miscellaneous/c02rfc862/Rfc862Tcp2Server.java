@@ -20,10 +20,8 @@ package com.github.jinahya.hello.miscellaneous.c02rfc862;
  * #L%
  */
 
-import com.github.jinahya.hello.util.HelloWorldSecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -35,70 +33,88 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 class Rfc862Tcp2Server {
 
+    // @formatter:off
     static class Attachment {
-
+        Attachment() {
+            super();
+            log.debug("buffer.capacity: {}", buffer.capacity());
+        }
         final ByteBuffer buffer = _Rfc862Utils.newBuffer();
-
+        final ByteBuffer slice = buffer.slice();
         int bytes = 0;
-
         final MessageDigest digest = _Rfc862Utils.newDigest();
     }
+    // @formatter:on
 
     public static void main(String... args) throws Exception {
         try (var selector = Selector.open();
              var server = ServerSocketChannel.open()) {
-            server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
-            server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
             server.bind(_Rfc862Constants.ADDRESS);
             log.info("bound to {}", server.getLocalAddress());
-            server.socket().setSoTimeout((int) TimeUnit.SECONDS.toMillis(8L));
             server.configureBlocking(false);
-            server.register(selector, SelectionKey.OP_ACCEPT);
+            var serverKey = server.register(selector, SelectionKey.OP_ACCEPT);
             while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
-                if (selector.select(TimeUnit.SECONDS.toMillis(8L)) == 0) {
+                if (selector.select(TimeUnit.SECONDS.toMillis(16L)) == 0) {
                     break;
                 }
                 for (var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
                     var key = i.next();
                     if (key.isAcceptable()) {
-                        var client = ((ServerSocketChannel) key.channel()).accept();
+                        assert key == serverKey;
+                        var channel = ((ServerSocketChannel) key.channel());
+                        assert channel == server;
+                        var client = channel.accept();
                         log.info("accepted from {}, through {}", client.getRemoteAddress(),
                                  client.getLocalAddress());
+                        key.interestOpsAnd(~SelectionKey.OP_ACCEPT);
                         var attachment = new Attachment();
                         log.info("buffer.capacity: {}", attachment.buffer.capacity());
                         client.configureBlocking(false);
                         client.register(selector, SelectionKey.OP_READ, attachment);
                         key.cancel();
+                        assert !key.isValid();
                         continue;
                     }
                     if (key.isReadable()) {
                         var channel = (SocketChannel) key.channel();
                         var attachment = (Attachment) key.attachment();
+                        assert attachment != null;
                         var r = channel.read(attachment.buffer);
                         if (r == -1) {
                             channel.shutdownInput();
                             key.interestOpsAnd(~SelectionKey.OP_READ);
-                        }
-                        if (r > 0) {
+                        } else {
                             attachment.bytes += r;
-                            HelloWorldSecurityUtils.updatePreceding(
-                                    attachment.digest, attachment.buffer, r
-                            );
                         }
-                        key.interestOpsOr(SelectionKey.OP_WRITE);
+                        if (attachment.buffer.position() > 0) {
+                            key.interestOpsOr(SelectionKey.OP_WRITE);
+                        } else {
+                            channel.close();
+                            assert !key.isValid();
+                            _Rfc862Utils.logServerBytesSent(attachment.bytes);
+                            _Rfc862Utils.logDigest(attachment.digest);
+                            continue;
+                        }
                     }
                     if (key.isWritable()) {
                         var channel = (SocketChannel) key.channel();
                         var attachment = (Attachment) key.attachment();
-                        attachment.buffer.flip(); // limit -> position; position -> zero
-                        var written = channel.write(attachment.buffer);
-                        log.trace("- written: {}", written);
-                        attachment.buffer.compact(); // limit -> position, position -> zero
-                        if (attachment.buffer.position() == 0) {
+                        assert attachment != null;
+                        assert attachment.buffer.position() > 0;
+                        attachment.buffer.flip();
+                        assert attachment.buffer.hasRemaining();
+                        var w = channel.write(attachment.buffer);
+                        assert w > 0;
+                        attachment.digest.update(
+                                attachment.slice
+                                        .position(attachment.buffer.position() - w)
+                                        .limit(attachment.buffer.position())
+                        );
+                        if (attachment.buffer.compact().position() == 0) {
                             key.interestOpsAnd(~SelectionKey.OP_WRITE);
                             if ((key.interestOps() & SelectionKey.OP_READ) == 0) {
-                                channel.shutdownOutput();
-                                key.cancel();
+                                channel.close();
+                                assert !key.isValid();
                                 _Rfc862Utils.logServerBytesSent(attachment.bytes);
                                 _Rfc862Utils.logDigest(attachment.digest);
                             }

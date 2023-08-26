@@ -20,7 +20,6 @@ package com.github.jinahya.hello.miscellaneous.c02rfc862;
  * #L%
  */
 
-import com.github.jinahya.hello.util.HelloWorldSecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.EOFException;
@@ -35,89 +34,98 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 class Rfc862Tcp2Client {
 
-    private static class Attachment
-            extends Rfc862Tcp2Server.Attachment {
-
+    // @formatter:off
+    private static class Attachment extends Rfc862Tcp2Server.Attachment {
         Attachment() {
             super();
-            bytes = ThreadLocalRandom.current().nextInt(1048576);
+            bytes = _Rfc862Utils.randomBytesLessThanOneMillion();
             buffer.position(buffer.limit());
             _Rfc862Utils.logClientBytesSending(bytes);
             log.info("buffer.capacity: {}", buffer.capacity());
         }
-
         private final ByteBuffer slice = buffer.slice();
     }
+    // @formatter:on
 
     public static void main(String... args) throws Exception {
         try (var selector = Selector.open();
              var client = SocketChannel.open()) {
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc862Constants.ADDR, 0));
-                log.info("bound to {}", client.getLocalAddress());
+                log.info("(optionally) bound to {}", client.getLocalAddress());
             }
             client.configureBlocking(false);
             if (client.connect(_Rfc862Constants.ADDRESS)) {
-                log.info("connected (immediately) to {}, through {}",
-                         client.getRemoteAddress(), client.getLocalAddress());
+                log.info("connected, immediately, to {}, through {}", client.getRemoteAddress(),
+                         client.getLocalAddress());
                 var attachment = new Attachment();
-                var clientKey = client.register(selector, SelectionKey.OP_READ, attachment);
-                if (attachment.bytes > 0) {
-                    clientKey.interestOpsOr(SelectionKey.OP_WRITE);
+                var clientKey = client.register(
+                        selector,
+                        SelectionKey.OP_WRITE | SelectionKey.OP_READ,
+                        attachment
+                );
+                if (attachment.bytes == 0) {
+                    log.warn("bytes == 0; canceling...");
+                    clientKey.cancel();
+                    assert !clientKey.isValid();
                 }
             } else {
-                client.register(selector, SelectionKey.OP_READ | SelectionKey.OP_CONNECT);
+                client.register(selector, SelectionKey.OP_CONNECT);
             }
             while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
-                if (selector.select(TimeUnit.SECONDS.toMillis(8L)) == 0) {
+                if (selector.select(TimeUnit.SECONDS.toMillis(16L)) == 0) {
                     break;
                 }
                 for (var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
                     var key = i.next();
                     if (key.isConnectable()) {
-                        assert key.attachment() == null;
                         var channel = (SocketChannel) key.channel();
+                        assert channel == client;
                         var connected = channel.finishConnect();
                         assert connected;
                         log.info("connected to {}, through {}", channel.getRemoteAddress(),
                                  channel.getLocalAddress());
                         key.interestOpsAnd(~SelectionKey.OP_CONNECT);
+                        assert key.attachment() == null;
                         var attachment = new Attachment();
                         key.attach(attachment);
+                        key.interestOpsOr(SelectionKey.OP_WRITE | SelectionKey.OP_READ);
                         if (attachment.bytes == 0) {
+                            log.warn("zero bytes to send; canceling...");
                             key.cancel();
-                        } else {
-                            key.interestOpsOr(SelectionKey.OP_WRITE);
                         }
                         continue;
                     }
                     if (key.isWritable()) {
                         var channel = (SocketChannel) key.channel();
+                        assert channel == client;
                         var attachment = (Attachment) key.attachment();
+                        assert attachment != null;
                         assert attachment.bytes > 0;
                         if (!attachment.buffer.hasRemaining()) {
                             ThreadLocalRandom.current().nextBytes(attachment.buffer.array());
                             attachment.buffer.clear().limit(Math.min(
-                                    attachment.buffer.remaining(),
-                                    attachment.bytes
+                                    attachment.buffer.remaining(), attachment.bytes
                             ));
                         }
                         var w = channel.write(attachment.buffer);
                         assert w >= 0;
-                        HelloWorldSecurityUtils.updatePreceding(
-                                attachment.digest,
-                                attachment.buffer,
-                                w
+                        attachment.digest.update(
+                                attachment.slice
+                                        .position(attachment.buffer.position() - w)
+                                        .limit(attachment.buffer.limit())
                         );
                         if ((attachment.bytes -= w) == 0) {
-                            channel.shutdownOutput(); // IOException
+                            channel.shutdownOutput();
                             key.interestOpsAnd(~SelectionKey.OP_WRITE);
                             _Rfc862Utils.logDigest(attachment.digest);
                         }
                     }
                     if (key.isReadable()) {
                         var channel = (SocketChannel) key.channel();
+                        assert channel == client;
                         var attachment = (Attachment) key.attachment();
+                        assert attachment != null;
                         var r = channel.read(
                                 attachment.slice.position(0).limit(attachment.buffer.position())
                         );
@@ -127,6 +135,7 @@ class Rfc862Tcp2Client {
                             }
                             key.interestOpsAnd(~SelectionKey.OP_READ);
                             key.cancel();
+                            assert !key.isValid();
                         }
                     }
                 }

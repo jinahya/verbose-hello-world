@@ -20,8 +20,6 @@ package com.github.jinahya.hello.miscellaneous.c02rfc862;
  * #L%
  */
 
-import com.github.jinahya.hello.util.HelloWorldNioUtils;
-import com.github.jinahya.hello.util.HelloWorldSecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.EOFException;
@@ -33,41 +31,54 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 class Rfc862Tcp3Client {
 
+    // @formatter:off
+    static class Attachment extends Rfc862Tcp3Server.Attachment {
+        Attachment() {
+            super();
+            buffer.position(buffer.limit());
+            bytes = _Rfc862Utils.randomBytesLessThanOneMillion();
+            _Rfc862Utils.logClientBytesSending(bytes);
+        }
+    }
+    // @formatter:on
+
     public static void main(String... args) throws Exception {
         try (var client = AsynchronousSocketChannel.open()) {
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc862Constants.ADDR, 0));
-                log.info("bound to {}", client.getLocalAddress());
+                log.info("(optionally) bound to {}", client.getLocalAddress());
             }
-            client.connect(_Rfc862Constants.ADDRESS).get(8L, TimeUnit.SECONDS);
+            client.connect(_Rfc862Constants.ADDRESS).get(16L, TimeUnit.SECONDS);
             log.info("connected to {}, through {}", client.getRemoteAddress(),
                      client.getLocalAddress());
-            var digest = _Rfc862Utils.newDigest();
-            var bytes = ThreadLocalRandom.current().nextInt(1048576);
-            _Rfc862Utils.logClientBytesSending(bytes);
-            var buffer = _Rfc862Utils.newBuffer();
-            log.info("buffer.capacity: {}", buffer.capacity());
-            buffer.position(buffer.limit());
-            while (bytes > 0) {
-                if (!buffer.hasRemaining()) {
-                    ThreadLocalRandom.current().nextBytes(buffer.array());
-                    buffer.clear().limit(Math.min(buffer.remaining(), bytes));
+            var attachment = new Attachment();
+            while (attachment.bytes > 0) {
+                if (!attachment.buffer.hasRemaining()) {
+                    ThreadLocalRandom.current().nextBytes(attachment.buffer.array());
+                    attachment.buffer.clear().limit(
+                            Math.min(attachment.buffer.remaining(), attachment.bytes)
+                    );
                 }
-                var w = client.write(buffer).get();
-                assert w >= 0;
-                HelloWorldSecurityUtils.updatePreceding(digest, buffer, w);
-                bytes -= w;
-                var r = HelloWorldNioUtils.flipApplyAndRestore(buffer, client::read).get();
+                var w = client.write(attachment.buffer).get();
+                attachment.bytes -= w;
+                attachment.digest.update(
+                        attachment.slice
+                                .position(attachment.buffer.position() - w)
+                                .limit(attachment.buffer.position())
+                );
+                var r = client.read(
+                        attachment.slice.position(0).limit(attachment.buffer.position())
+                ).get();
                 if (r == -1) {
                     throw new EOFException("unexpected eof");
                 }
             }
-            assert bytes == 0;
-            _Rfc862Utils.logDigest(digest);
+            assert attachment.bytes == 0;
             client.shutdownOutput();
-            for (buffer.clear(); client.read(buffer).get() != -1; ) {
-                if (!buffer.hasRemaining()) {
-                    buffer.clear();
+            _Rfc862Utils.logDigest(attachment.digest);
+            for (attachment.slice.clear(); client.read(attachment.slice).get() != -1; ) {
+                if (!attachment.slice.hasRemaining()) {
+                    attachment.slice.clear();
                 }
             }
         }

@@ -35,12 +35,12 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 class Rfc863Tcp4Server {
 
+    // @formatter:off
     static class Attachment extends Rfc863Tcp2Server.Attachment {
-
         AsynchronousSocketChannel client;
-
         final CountDownLatch latch = new CountDownLatch(2);
     }
+    // @formatter:off
 
     // @formatter:off
     private static final

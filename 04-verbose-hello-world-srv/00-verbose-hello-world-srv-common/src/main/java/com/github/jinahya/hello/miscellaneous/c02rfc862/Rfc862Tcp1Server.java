@@ -49,7 +49,7 @@ class Rfc862Tcp1Server {
                     client.getOutputStream().flush();
                     digest.update(array, 0, r);
                 }
-//                client.shutdownOutput();
+                client.shutdownOutput();
                 _Rfc862Utils.logServerBytesSent(bytes);
                 _Rfc862Utils.logDigest(digest);
             }
