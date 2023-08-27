@@ -1,7 +1,6 @@
 package com.github.jinahya.hello.miscellaneous.c03chat;
 
 import com.github.jinahya.hello.HelloWorldServerUtils;
-import com.github.jinahya.hello.miscellaneous.c03chat.ChatTcp2Server.Attachment;
 import com.github.jinahya.hello.util.HelloWorldLangUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -15,8 +14,12 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 class ChatTcp2Client {
 
-    public static void main(String... args)
-            throws Exception {
+    // @formatter:off
+    private static class Attachment extends ChatTcp2Server.Attachment {
+    }
+    // @formatter:on
+
+    public static void main(String... args) throws Exception {
         InetAddress addr;
         try {
             addr = InetAddress.getByName(args[0]);
@@ -28,23 +31,27 @@ class ChatTcp2Client {
             SelectionKey clientKey;
             client.configureBlocking(false);
             if (client.connect(new InetSocketAddress(addr, _ChatConstants.PORT))) {
-                log.debug("connected (immediately) to {}, through {}",
-                          client.getRemoteAddress(), client.getLocalAddress());
-                clientKey = client.register(selector, SelectionKey.OP_READ);
+                log.debug("(immediately) connected to {}, through {}", client.getRemoteAddress(),
+                          client.getLocalAddress());
+                clientKey = client.register(selector, SelectionKey.OP_READ, new Attachment());
             } else {
                 clientKey = client.register(selector, SelectionKey.OP_CONNECT);
             }
-            clientKey.attach(new Attachment());
             HelloWorldLangUtils.readLinesAndCallWhenTests(
                     HelloWorldServerUtils::isQuit, // <predicate>
                     () -> {                        // <callable>
-                        clientKey.channel().close();
+                        clientKey.cancel();
                         assert !clientKey.isValid();
+                        selector.wakeup();
                         return null;
                     },
-                    m -> {                         // <consumer>
-                        var buffer = _ChatMessage.OfBuffer.of(_ChatUtils.prependUsername(m));
-                        ((Attachment) clientKey.attachment()).buffers.add(buffer);
+                    l -> {                         // <consumer>
+                        var attachment = ((Attachment) clientKey.attachment());
+                        if (attachment == null) { // not connected yet.
+                            return;
+                        }
+                        var buffer = _ChatMessage.OfBuffer.of(_ChatUtils.prependUsername(l));
+                        attachment.buffers.add(buffer);
                         clientKey.interestOpsOr(SelectionKey.OP_WRITE);
                         selector.wakeup();
                     }
@@ -54,43 +61,46 @@ class ChatTcp2Client {
                     continue;
                 }
                 for (var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
-                    var selectedKey = i.next();
-                    if (selectedKey.isConnectable()) {
-                        var channel = (SocketChannel) selectedKey.channel();
-                        var connected = channel.finishConnect(); // IOException
+                    var key = i.next();
+                    if (key.isConnectable()) {
+                        var channel = (SocketChannel) key.channel();
+                        var connected = channel.finishConnect();
                         assert connected;
                         log.debug("connected to {}, through {}", channel.getRemoteAddress(),
                                   channel.getLocalAddress());
-                        selectedKey.interestOpsAnd(~SelectionKey.OP_CONNECT);
-                        selectedKey.interestOpsOr(SelectionKey.OP_READ);
+                        key.interestOpsAnd(~SelectionKey.OP_CONNECT);
+                        key.attach(new Attachment());
+                        key.interestOpsOr(SelectionKey.OP_READ);
                         continue;
                     }
-                    if (selectedKey.isReadable()) {
-                        var channel = (SocketChannel) selectedKey.channel();
-                        var attachment = (Attachment) selectedKey.attachment();
-                        var r = channel.read(attachment.buffer); // IOException
+                    if (key.isReadable()) {
+                        var channel = (SocketChannel) key.channel();
+                        assert channel == client;
+                        var attachment = (Attachment) key.attachment();
+                        var r = channel.read(attachment.buffer);
                         if (r == -1) {
                             channel.close();
                             assert !clientKey.isValid();
-                            break;
+                            continue;
                         }
                         if (!attachment.buffer.hasRemaining()) {
                             _ChatMessage.OfBuffer.printToSystemOut(attachment.buffer);
                             attachment.buffer.clear();
                         }
                     }
-                    if (selectedKey.isWritable()) {
-                        var channel = (SocketChannel) selectedKey.channel();
-                        var attachment = (Attachment) selectedKey.attachment();
+                    if (key.isWritable()) {
+                        var channel = (SocketChannel) key.channel();
+                        assert channel == client;
+                        var attachment = (Attachment) key.attachment();
                         assert !attachment.buffers.isEmpty();
                         var buffer = attachment.buffers.get(0);
                         assert buffer.hasRemaining();
                         var w = channel.write(buffer);
+                        assert w > 0;
                         if (!buffer.hasRemaining()) {
                             attachment.buffers.remove(0);
                             if (attachment.buffers.isEmpty()) {
-                                selectedKey.interestOpsAnd(~SelectionKey.OP_WRITE);
-                                assert (selectedKey.interestOps() & SelectionKey.OP_WRITE) == 0;
+                                key.interestOpsAnd(~SelectionKey.OP_WRITE);
                             }
                         }
                     }

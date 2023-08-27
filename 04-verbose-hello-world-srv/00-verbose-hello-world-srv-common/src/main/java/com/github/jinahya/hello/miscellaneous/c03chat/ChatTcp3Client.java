@@ -24,42 +24,29 @@ import com.github.jinahya.hello.HelloWorldServerUtils;
 import com.github.jinahya.hello.util.HelloWorldLangUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.Closeable;
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousChannelGroup;
-import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.channels.WritePendingException;
 import java.util.Objects;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Flow;
 import java.util.concurrent.SubmissionPublisher;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-class ChatTcp3Server {
+class ChatTcp3Client {
 
     // @formatter:off
-    static class Attachment extends ChatTcp2Server.Attachment
-            implements Flow.Subscriber<ByteBuffer>, Closeable {
-        Attachment(AsynchronousSocketChannel client, SubmissionPublisher<ByteBuffer> publisher) {
-            super();
-            this.client = Objects.requireNonNull(client, "client is null");
-            this.publisher = Objects.requireNonNull(publisher, "publisher is null");
+    private static class Attachment extends ChatTcp3Server.Attachment {
+        public Attachment(AsynchronousSocketChannel client, SubmissionPublisher<ByteBuffer> publisher) {
+            super(client, publisher);
         }
-        @Override
-        public void onSubscribe(Flow.Subscription subscription) {
-            Objects.requireNonNull(subscription, "subscription is null");
-            this.subscription = subscription;
-            this.subscription.request(Long.MAX_VALUE);
-        }
-        @Override
-        public void onNext(ByteBuffer item) {
+        @Override public void onNext(ByteBuffer item) {
+            Objects.requireNonNull(item, "item is null");
             Objects.requireNonNull(item, "item is null");
             buffers.add(item);
             try {
@@ -68,41 +55,7 @@ class ChatTcp3Server {
                 // empty
             }
         }
-        @Override
-        public void onError(Throwable throwable) {
-            Objects.requireNonNull(throwable, "throwable is null");
-            log.error("error", throwable);
-            try {
-                close();
-            } catch (IOException ioe) {
-                log.error("failed to close", ioe);
-            }
-        }
-        @Override
-        public void onComplete() {
-            log.debug("onComplete()");
-            try {
-                close();
-            } catch (IOException ioe) {
-                log.error("failed to close", ioe);
-            }
-        }
-        @Override
-        public void close() throws IOException {
-            subscription.cancel();
-            client.close();
-        }
-        void closeUnchecked() {
-            try {
-                close();
-            } catch (IOException ioe) {
-                throw new UncheckedIOException("failed to close", ioe);
-            }
-        }
-        final AsynchronousSocketChannel client;
-        final SubmissionPublisher<ByteBuffer> publisher;
-        private Flow.Subscription subscription;
-    }
+    };
     // @formatter:on
 
     // @formatter:off
@@ -138,7 +91,7 @@ class ChatTcp3Server {
                 return;
             }
             if (!attachment.buffer.hasRemaining()) {
-                attachment.publisher.submit(_ChatMessage.OfBuffer.copyOf(attachment.buffer));
+                _ChatMessage.OfBuffer.printToSystemOut(attachment.buffer);
                 attachment.buffer.clear();
             }
             attachment.client.read(attachment.buffer, attachment, this);
@@ -151,39 +104,51 @@ class ChatTcp3Server {
     // @formatter:on
 
     public static void main(String... args) throws Exception {
+        InetAddress addr;
+        try {
+            addr = InetAddress.getByName(args[0]);
+        } catch (ArrayIndexOutOfBoundsException aioobe) {
+            addr = InetAddress.getLoopbackAddress();
+        }
         var group = AsynchronousChannelGroup.withThreadPool(Executors.newCachedThreadPool());
-        try (var server = AsynchronousServerSocketChannel.open();
+        try (var client = AsynchronousSocketChannel.open();
              var publisher = new SubmissionPublisher<ByteBuffer>()) {
-            server.bind(new InetSocketAddress(InetAddress.getByName("::"), _ChatConstants.PORT));
-            log.debug("server bound to {}", server.getLocalAddress());
-            HelloWorldLangUtils.readLinesAndCallWhenTests(
-                    HelloWorldServerUtils::isQuit, // <predicate>
-                    () -> {                        // <callable>
-                        group.shutdownNow();
-                        return null;
-                    },
-                    l -> {                         // <consumer>
-                    }
-            );
-            server.<Attachment>accept(
-                    null,
-                    new CompletionHandler<>() { // @formatter:off
-                        @Override public void completed(AsynchronousSocketChannel result,
-                                                        Attachment attachment) {
+            client.connect(
+                    new InetSocketAddress(addr, _ChatConstants.PORT),
+                    new Attachment(client, publisher),
+                    new CompletionHandler<>() { // @formatter:on
+                        @Override
+                        public void completed(Void result, Attachment attachment) {
                             try {
-                                log.debug("accepted from {}, through {}", result.getRemoteAddress(),
-                                          result.getLocalAddress());
+                                log.debug("connected to {}, through {}",
+                                          attachment.client.getRemoteAddress(),
+                                          attachment.client.getLocalAddress());
                             } catch (IOException ioe) {
-                                log.error("failed to get addresses from {}", result, ioe);
+                                log.error("failed to get addresses from {}", attachment.client,
+                                          ioe);
                             }
-                            attachment = new Attachment(result, publisher);
+                            HelloWorldLangUtils.readLinesAndCallWhenTests(
+                                    HelloWorldServerUtils::isQuit, // <predicate>
+                                    () -> {                        // <callable>
+                                        group.shutdownNow();
+                                        return null;
+                                    },
+                                    l -> {                         // <consumer>
+                                        var message = _ChatUtils.prependUsername(l);
+                                        var buffer = _ChatMessage.OfBuffer.of(message);
+                                        attachment.publisher.submit(buffer);
+                                    }
+                            );
                             attachment.publisher.subscribe(attachment);
                             attachment.client.read(attachment.buffer, attachment, R_HANDLER);
-                            server.accept(attachment, this);
                         }
-                        @Override public void failed(Throwable exc, Attachment attachment) {
+
+                        @Override
+                        public void failed(Throwable exc, Attachment attachment) {
                             log.error("failed to accept", exc);
-                            try { group.shutdownNow(); } catch (IOException ioe) {
+                            try {
+                                group.shutdownNow();
+                            } catch (IOException ioe) {
                                 log.error("failed shutdown " + group, ioe);
                             }
                         } // @formatter:off
@@ -194,7 +159,7 @@ class ChatTcp3Server {
         }
     }
 
-    private ChatTcp3Server() {
+    private ChatTcp3Client() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

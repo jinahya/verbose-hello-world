@@ -9,13 +9,14 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -38,10 +39,11 @@ class ChatTcp1Server {
                     if (!client.isClosed()) {
                         log.error("failed to read", ioe);
                     }
-                    Thread.currentThread().interrupt();
-                    continue;
+                    break;
                 }
-                assert array.length == _ChatMessage.BYTES;
+                if (array.length == 0) {
+                    break;
+                }
                 if (!queue.offer(array)) {
                     log.error("failed to offer");
                 }
@@ -54,8 +56,7 @@ class ChatTcp1Server {
         }
     }
 
-    private record Sender(BlockingQueue<? extends byte[]> queue,
-                          Collection<? extends Socket> clients)
+    private record Sender(BlockingQueue<? extends byte[]> queue, Iterable<? extends Socket> clients)
             implements Runnable {
 
         private Sender {
@@ -66,31 +67,31 @@ class ChatTcp1Server {
         @Override
         public void run() {
             while (!Thread.currentThread().isInterrupted()) {
-//                log.debug("clients: {}, {}", clients.size(), clients);
                 byte[] array;
                 try {
                     if ((array = queue.poll(8L, TimeUnit.SECONDS)) == null) {
                         continue;
                     }
                 } catch (InterruptedException ie) {
-                    Thread.currentThread().interrupt();
-                    continue;
+                    break;
                 }
-                assert array.length == _ChatMessage.BYTES;
-                for (var client : clients) {
-                    try {
-                        client.getOutputStream().write(array);
-                        client.getOutputStream().flush();
-                    } catch (IOException ioe) {
-                        if (!client.isClosed()) {
-                            log.error("failed to send to {}", client, ioe);
-                        }
+                synchronized (clients) {
+                    for (var i = clients.iterator(); i.hasNext(); ) {
+                        var client = i.next();
                         try {
-                            client.close();
-                        } catch (IOException ioe2) {
-                            log.error("failed to close {}", client, ioe2);
+                            client.getOutputStream().write(array);
+                            client.getOutputStream().flush();
+                        } catch (IOException ioe) {
+                            if (!client.isClosed()) {
+                                log.error("failed to send to {}", client, ioe);
+                            }
+                            try {
+                                client.close();
+                            } catch (IOException ioe2) {
+                                log.error("failed to close {}", client, ioe2);
+                            }
+                            i.remove();
                         }
-                        clients.remove(client);
                     }
                 }
             }
@@ -99,13 +100,12 @@ class ChatTcp1Server {
 
     public static void main(String... args) throws Exception {
         var executor = Executors.newCachedThreadPool();
-        var clients = new CopyOnWriteArrayList<Socket>();
+        var futures = new ArrayList<Future<?>>();
+        var clients = Collections.synchronizedList(new ArrayList<Socket>());
         var queue = new ArrayBlockingQueue<byte[]>(1024);
-        var writer = executor.submit(new Sender(queue, clients));
-        try (var server = new ServerSocket()) {
-            server.bind(new InetSocketAddress(
-                    InetAddress.getByName("0.0.0.0"), _ChatConstants.PORT
-            ));
+        futures.add(executor.submit(new Sender(queue, clients)));
+        try (var server = new ServerSocket() /* IOException */) {
+            server.bind(new InetSocketAddress(InetAddress.getByName("::"), _ChatConstants.PORT));
             log.info("bound on {}", server.getLocalSocketAddress());
             HelloWorldLangUtils.readLinesAndCallWhenTests(
                     HelloWorldServerUtils::isQuit, // <predicate>
@@ -119,27 +119,26 @@ class ChatTcp1Server {
             );
             while (!server.isClosed()) {
                 try {
-                    var client = server.accept();
+                    var client = server.accept(); // IOException
                     log.info("accepted from {} through {}", client.getRemoteSocketAddress(),
                              client.getLocalSocketAddress());
                     clients.add(client);
-                    executor.submit(new Receiver(client, queue));
+                    futures.add(executor.submit(new Receiver(client, queue)));
                 } catch (IOException ioe) {
                     if (!server.isClosed()) {
                         log.error("failed to accept", ioe);
                     }
+                    break;
                 }
             }
         }
+        futures.forEach(f -> f.cancel(true));
         for (var client : clients) {
             try {
-                client.close();
+                client.close(); // IOException
             } catch (IOException ioe) {
                 log.error("failed to close " + client, ioe);
             }
-        }
-        if (!writer.cancel(true)) {
-            log.error("writer is not canceled");
         }
         executor.shutdown();
         if (!executor.awaitTermination(8L, TimeUnit.SECONDS)) {

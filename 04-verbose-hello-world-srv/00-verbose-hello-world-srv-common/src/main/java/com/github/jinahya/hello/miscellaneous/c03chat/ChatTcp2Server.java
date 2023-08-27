@@ -7,74 +7,42 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
 class ChatTcp2Server {
 
+    // @formatter:off
     static class Attachment {
-
-        private void copyToMultiple(byte[] array) {
-            if (Objects.requireNonNull(array, "array is null").length != _ChatMessage.BYTES) {
-                throw new IllegalArgumentException(
-                        "array.length(" + array.length + ") != " + _ChatMessage.BYTES);
-            }
-            buffers.add(ByteBuffer.wrap(Arrays.copyOf(array, array.length)));
-        }
-
-        private void copyToMultiple(ByteBuffer buffer) {
-            if (!Objects.requireNonNull(buffer, "buffer is null").hasArray()) {
-                throw new IllegalArgumentException("buffer does not have a backing array");
-            }
-            copyToMultiple(buffer.array());
-        }
-
-        void copyToMultiple(Attachment attachment) {
-            copyToMultiple(Objects.requireNonNull(attachment, "attachment is null").buffer);
-        }
-
-        void copyBufferToMultipleAndClearBuffer() {
-            copyToMultiple(buffer);
-            Arrays.fill(buffer.array(), (byte) 0);
-            buffer.clear();
-        }
-
         final ByteBuffer buffer = _ChatMessage.OfBuffer.empty();
-
         final List<ByteBuffer> buffers = new LinkedList<>();
     }
+    // @formatter:on
 
-    public static void main(String... args)
-            throws Exception {
+    public static void main(String... args) throws Exception {
         try (var selector = Selector.open();
              var server = ServerSocketChannel.open()) {
-            server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
-            server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
-            server.bind(
-                    new InetSocketAddress(InetAddress.getByName("0.0.0.0"), _ChatConstants.PORT)
-            );
+            server.bind(new InetSocketAddress(InetAddress.getByName("::"), _ChatConstants.PORT));
             log.debug("bound to {}", server.getLocalAddress());
             server.configureBlocking(false);
             var serverKey = server.register(selector, SelectionKey.OP_ACCEPT);
             HelloWorldLangUtils.readLinesAndCallWhenTests(
-                    HelloWorldServerUtils::isQuit,
-                    () -> {
+                    HelloWorldServerUtils::isQuit, // <predicate>
+                    () -> {                        // <callable>
                         serverKey.cancel();
                         assert !serverKey.isValid();
                         selector.wakeup();
                         return null;
                     },
-                    l -> {
+                    l -> {                         // <consumer>
+                        // does nothing
                     }
             );
             while (serverKey.isValid()) {
@@ -82,9 +50,10 @@ class ChatTcp2Server {
                     continue;
                 }
                 for (var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
-                    var selectedKey = i.next();
-                    if (selectedKey.isAcceptable()) {
-                        var channel = (ServerSocketChannel) selectedKey.channel();
+                    var key = i.next();
+                    if (key.isAcceptable()) {
+                        var channel = (ServerSocketChannel) key.channel();
+                        assert channel == server;
                         var client = channel.accept(); // IOException
                         log.debug("accepted from {} through {}", client.getRemoteAddress(),
                                   client.getLocalAddress());
@@ -93,36 +62,41 @@ class ChatTcp2Server {
                         client.register(selector, SelectionKey.OP_READ, attachment);
                         continue;
                     }
-                    if (selectedKey.isReadable()) {
-                        var channel = (SocketChannel) selectedKey.channel();
-                        var attachment = (Attachment) selectedKey.attachment();
-                        var read = channel.read(attachment.buffer);
-                        if (read == -1) {
+                    if (key.isReadable()) {
+                        var channel = (SocketChannel) key.channel();
+                        var attachment = (Attachment) key.attachment();
+                        var r = channel.read(attachment.buffer);
+                        if (r == -1) {
                             channel.close();
-                            assert !selectedKey.isValid();
+                            assert !key.isValid();
                             continue;
-                        } else if (!attachment.buffer.hasRemaining()) {
+                        }
+                        assert r > 0;
+                        if (!attachment.buffer.hasRemaining()) {
                             selector.keys().stream()
                                     .filter(k -> k.channel() instanceof SocketChannel)
                                     .filter(SelectionKey::isValid)
                                     .forEach(k -> {
-                                        ((Attachment) k.attachment()).copyToMultiple(attachment);
+                                        ((Attachment) k.attachment()).buffers.add(
+                                                ByteBuffer.wrap(attachment.buffer.array())
+                                        );
                                         k.interestOpsOr(SelectionKey.OP_WRITE);
                                     });
                             attachment.buffer.clear();
                         }
                     }
-                    if (selectedKey.isWritable() && selectedKey.isValid()) {
-                        var channel = (SocketChannel) selectedKey.channel();
-                        var attachment = (Attachment) selectedKey.attachment();
+                    if (key.isWritable()) {
+                        var channel = (SocketChannel) key.channel();
+                        var attachment = (Attachment) key.attachment();
                         assert !attachment.buffers.isEmpty();
                         var buffer = attachment.buffers.get(0);
                         assert buffer.hasRemaining();
-                        channel.write(buffer);
+                        var w = channel.write(buffer);
+                        assert w > 0;
                         if (!buffer.hasRemaining()) {
                             attachment.buffers.remove(buffer);
                             if (attachment.buffers.isEmpty()) {
-                                selectedKey.interestOpsAnd(~SelectionKey.OP_WRITE);
+                                key.interestOpsAnd(~SelectionKey.OP_WRITE);
                             }
                         }
                     }
@@ -135,10 +109,10 @@ class ChatTcp2Server {
                         var channel = k.channel();
                         try {
                             channel.close();
+                            assert !k.isValid();
                         } catch (IOException ioe) {
-                            log.error("failed to close {}", channel);
+                            log.error("failed to close {}", channel, ioe);
                         }
-//                        k.cancel();
                     });
         }
     }

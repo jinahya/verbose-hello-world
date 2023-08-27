@@ -43,3 +43,6 @@ $ sh ./docker.maven.sh 3-jdk-11-openj9 clean install
 ```
 
 See [dockerhub/maven](https://hub.docker.com/_/maven) for available tags.
+
+## Links
+* [Networking IPv6 User Guide](https://docs.oracle.com/javase/8/docs/technotes/guides/net/ipv6_guide/)
