@@ -72,8 +72,8 @@ public final class HelloWorldLangUtils {
 
     /**
      * Starts a new {@link Thread#isDaemon() daemon} thread which continuously reads lines from
-     * {@link System#in}, calls specified callable when it tests with specified predicate,
-     * otherwise, accepts lines to specified consumer.
+     * {@link System#in}, calls specified callable when a line tests with specified predicate,
+     * otherwise, accepts each line to specified consumer.
      *
      * @param predicate the predicate to test.
      * @param callable  the callable to be called when a line passes {@code predicate}.

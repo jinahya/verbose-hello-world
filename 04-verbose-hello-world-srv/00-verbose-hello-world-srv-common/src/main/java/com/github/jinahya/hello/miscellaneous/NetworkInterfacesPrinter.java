@@ -43,8 +43,7 @@ import java.util.stream.Stream;
 @Slf4j
 class NetworkInterfacesPrinter {
 
-    private static <T> void print(Object indent, Class<T> clazz, T object)
-            throws Exception {
+    private static <T> void print(Object indent, Class<T> clazz, T object) throws Exception {
         Objects.requireNonNull(indent, "indent is null");
         Objects.requireNonNull(clazz, "clazz is null");
         Objects.requireNonNull(object, "object is null");
@@ -116,15 +115,13 @@ class NetworkInterfacesPrinter {
         print(indent, clazz, clazz.cast(object));
     }
 
-    private static <T> void print(Object indent, T object)
-            throws Exception {
+    private static <T> void print(Object indent, T object) throws Exception {
         Objects.requireNonNull(indent, "indent is null");
         Objects.requireNonNull(object, "object is null");
         printHelper(indent, object.getClass(), object);
     }
 
-    public static void main(String... args)
-            throws Exception {
+    public static void main(String... args) throws Exception {
         int index = 0;
         for (var e = NetworkInterface.getNetworkInterfaces(); e.hasMoreElements(); ) {
             var n = e.nextElement();

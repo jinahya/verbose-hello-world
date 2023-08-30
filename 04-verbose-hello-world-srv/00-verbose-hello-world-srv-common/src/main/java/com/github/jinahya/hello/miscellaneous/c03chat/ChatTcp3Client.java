@@ -40,12 +40,18 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 class ChatTcp3Client {
 
-    // @formatter:off
+    // @formatter:on
     private static class Attachment extends ChatTcp3Server.Attachment {
-        public Attachment(AsynchronousSocketChannel client, SubmissionPublisher<ByteBuffer> publisher) {
+
+        public Attachment(AsynchronousSocketChannel client,
+                          SubmissionPublisher<ByteBuffer> publisher,
+                          AsynchronousChannelGroup group) {
             super(client, publisher);
+            this.group = Objects.requireNonNull(group, "group is null");
         }
-        @Override public void onNext(ByteBuffer item) {
+
+        @Override
+        public void onNext(ByteBuffer item) {
             Objects.requireNonNull(item, "item is null");
             Objects.requireNonNull(item, "item is null");
             buffers.add(item);
@@ -55,13 +61,33 @@ class ChatTcp3Client {
                 // empty
             }
         }
-    };
+
+        @Override
+        public void close() throws IOException {
+            super.close();
+            log.debug("shutting down group...");
+            group.shutdownNow();
+        }
+
+        @Override
+        void read() {
+            super.read();
+        }
+
+        @Override
+        void write() {
+            super.write();
+        }
+
+        private final AsynchronousChannelGroup group;
+    }
     // @formatter:on
 
     // @formatter:off
     private static final
     CompletionHandler<Integer, Attachment> W_HANDLER = new CompletionHandler<>() {
         @Override public void completed(Integer result, Attachment attachment) {
+            log.debug("writing completed; result: {}, attachment: {}", result, attachment);
             assert !attachment.buffers.isEmpty();
             var buffer = attachment.buffers.get(0);
             if (!buffer.hasRemaining()) {
@@ -86,6 +112,7 @@ class ChatTcp3Client {
     private static final
     CompletionHandler<Integer, Attachment> R_HANDLER = new CompletionHandler<>() {
         @Override public void completed(Integer result, Attachment attachment) {
+            log.debug("reading completed; result: {}, attachment: {}", result, attachment);
             if (result == -1) {
                 attachment.closeUnchecked();
                 return;
@@ -111,18 +138,18 @@ class ChatTcp3Client {
             addr = InetAddress.getLoopbackAddress();
         }
         var group = AsynchronousChannelGroup.withThreadPool(Executors.newCachedThreadPool());
-        try (var client = AsynchronousSocketChannel.open();
+        try (var client = AsynchronousSocketChannel.open(group);
              var publisher = new SubmissionPublisher<ByteBuffer>()) {
             client.connect(
                     new InetSocketAddress(addr, _ChatConstants.PORT),
-                    new Attachment(client, publisher),
+                    new Attachment(client, publisher, group),
                     new CompletionHandler<>() { // @formatter:on
                         @Override
                         public void completed(Void result, Attachment attachment) {
                             try {
-                                log.debug("connected to {}, through {}",
-                                          attachment.client.getRemoteAddress(),
-                                          attachment.client.getLocalAddress());
+                                log.info("connected to {}, through {}",
+                                         attachment.client.getRemoteAddress(),
+                                         attachment.client.getLocalAddress());
                             } catch (IOException ioe) {
                                 log.error("failed to get addresses from {}", attachment.client,
                                           ioe);
