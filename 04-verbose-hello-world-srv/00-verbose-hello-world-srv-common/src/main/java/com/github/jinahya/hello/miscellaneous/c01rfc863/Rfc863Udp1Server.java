@@ -33,12 +33,12 @@ class Rfc863Udp1Server {
     public static void main(String... args) throws Exception {
         try (var server = new DatagramSocket(null)) {
             HelloWorldNetUtils.printSocketOptions(server);
-            server.bind(_Rfc863Constants.ADDRESS);
+            server.bind(_Rfc863Constants.ADDR);
             log.info("bound to {}", server.getLocalSocketAddress());
-            var array = new byte[server.getReceiveBufferSize() + 1];
+            var array = new byte[server.getReceiveBufferSize()];
             var packet = new DatagramPacket(array, array.length);
-            server.setSoTimeout((int) TimeUnit.SECONDS.toMillis(16L));
-            server.receive(packet); // IOException
+            server.setSoTimeout((int) _Rfc863Constants.ACCEPT_TIMEOUT_IN_MILLIS);
+            server.receive(packet);
             _Rfc863Utils.logServerBytes(packet.getLength());
             var digest = _Rfc863Utils.newDigest();
             digest.update(array, 0, packet.getLength());

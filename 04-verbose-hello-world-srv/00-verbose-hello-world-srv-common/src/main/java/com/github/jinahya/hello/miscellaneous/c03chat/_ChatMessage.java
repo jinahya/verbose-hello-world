@@ -277,8 +277,16 @@ class _ChatMessage {
             return buffer;
         }
 
+        /**
+         * Returns a new byte buffer {@link ByteBuffer#wrap(byte[]) wraps} a result of
+         * {@link OfArray#empty()}.
+         *
+         * @return a new byte buffer {@link ByteBuffer#wrap(byte[]) wraps} a result of
+         * {@link OfArray#empty()}.
+         * @see OfArray#empty()
+         */
         static ByteBuffer empty() {
-            return requireValid(ByteBuffer.wrap(OfArray.empty()));
+            return ByteBuffer.wrap(OfArray.empty());
         }
 
         static ByteBuffer of(long timestamp, String message) {

@@ -35,13 +35,13 @@ class Rfc862Udp1Client {
     public static void main(String... args) throws Exception {
         try (var client = new DatagramSocket(null)) {
             if (ThreadLocalRandom.current().nextBoolean()) {
-                client.bind(new InetSocketAddress(_Rfc862Constants.ADDR, 0));
+                client.bind(new InetSocketAddress(_Rfc862Constants.HOST, 0));
                 log.info("(optionally) bound to {}", client.getLocalSocketAddress());
             }
             var connect = ThreadLocalRandom.current().nextBoolean();
             if (connect) {
                 try {
-                    client.connect(_Rfc862Constants.ADDRESS);
+                    client.connect(_Rfc862Constants.ADDR);
                     log.info("(optionally) connected to {}, through {}",
                              client.getRemoteSocketAddress(), client.getLocalSocketAddress());
                 } catch (SocketException se) {
@@ -52,7 +52,7 @@ class Rfc862Udp1Client {
             client.setSoTimeout((int) TimeUnit.SECONDS.toMillis(16L));
             var array = new byte[ThreadLocalRandom.current().nextInt(client.getSendBufferSize())];
             ThreadLocalRandom.current().nextBytes(array);
-            var packet = new DatagramPacket(array, array.length, _Rfc862Constants.ADDRESS);
+            var packet = new DatagramPacket(array, array.length, _Rfc862Constants.ADDR);
             _Rfc862Utils.logClientBytesSending(packet.getLength());
             client.send(packet); // IOException
             var digest = _Rfc862Utils.newDigest();

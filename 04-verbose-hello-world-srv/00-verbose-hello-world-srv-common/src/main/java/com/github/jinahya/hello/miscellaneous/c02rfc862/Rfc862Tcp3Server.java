@@ -37,7 +37,7 @@ class Rfc862Tcp3Server {
         var timeout = 8L;
         var unit = TimeUnit.SECONDS;
         try (var server = AsynchronousServerSocketChannel.open()) {
-            server.bind(_Rfc862Constants.ADDRESS);
+            server.bind(_Rfc862Constants.ADDR);
             log.info("bound to {}", server.getLocalAddress());
             try (var client = server.accept().get(timeout, unit)) {
                 log.info("accepted from {}, through {}", client.getRemoteAddress(),

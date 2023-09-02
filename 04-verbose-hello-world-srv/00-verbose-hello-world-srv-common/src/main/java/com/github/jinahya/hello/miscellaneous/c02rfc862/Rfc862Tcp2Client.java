@@ -51,11 +51,11 @@ class Rfc862Tcp2Client {
         try (var selector = Selector.open();
              var client = SocketChannel.open()) {
             if (ThreadLocalRandom.current().nextBoolean()) {
-                client.bind(new InetSocketAddress(_Rfc862Constants.ADDR, 0));
+                client.bind(new InetSocketAddress(_Rfc862Constants.HOST, 0));
                 log.info("(optionally) bound to {}", client.getLocalAddress());
             }
             client.configureBlocking(false);
-            if (client.connect(_Rfc862Constants.ADDRESS)) {
+            if (client.connect(_Rfc862Constants.ADDR)) {
                 log.info("connected, immediately, to {}, through {}", client.getRemoteAddress(),
                          client.getLocalAddress());
                 var attachment = new Attachment();

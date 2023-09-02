@@ -26,30 +26,29 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static com.github.jinahya.hello.miscellaneous.c01rfc863._Rfc863Constants.ADDR;
-
 @Slf4j
 class Rfc863Tcp1Client {
 
     public static void main(String... args) throws Exception {
         try (var client = new Socket()) {
             if (ThreadLocalRandom.current().nextBoolean()) {
-                client.bind(new InetSocketAddress(ADDR, 0));
+                client.bind(new InetSocketAddress(_Rfc863Constants.HOST, 0));
                 log.info("(optionally) bound to {}", client.getLocalSocketAddress());
             }
-            client.connect(_Rfc863Constants.ADDRESS); // IOException
+            client.connect(_Rfc863Constants.ADDR, (int) _Rfc863Constants.CONNECT_TIMEOUT_IN_MILLIS);
             log.info("connected to {}, through {}", client.getRemoteSocketAddress(),
                      client.getLocalSocketAddress());
             var digest = _Rfc863Utils.newDigest();
-            var bytes = ThreadLocalRandom.current().nextInt(1048576);
+            var bytes = _Rfc863Utils.newBytes();
             _Rfc863Utils.logClientBytes(bytes);
             var array = _Rfc863Utils.newArray();
+            log.debug("array.length: {}", array.length);
             while (bytes > 0) {
                 ThreadLocalRandom.current().nextBytes(array);
                 var l = Math.min(array.length, bytes);
                 client.getOutputStream().write(array, 0, l);
-                bytes -= l;
                 digest.update(array, 0, l);
+                bytes -= l;
             }
             client.getOutputStream().flush();
             _Rfc863Utils.logDigest(digest);

@@ -26,42 +26,50 @@ import lombok.extern.slf4j.Slf4j;
 import java.net.InetSocketAddress;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 
-import static com.github.jinahya.hello.miscellaneous.c01rfc863._Rfc863Constants.ADDR;
+import static com.github.jinahya.hello.miscellaneous.c01rfc863._Rfc863Constants.HOST;
 
 @Slf4j
 class Rfc863Tcp3Client {
+
+    // @formatter:off
+    static class Attachment extends Rfc863Tcp2Client.Attachment {
+    }
+    // @formatter:on
 
     public static void main(String... args) throws Exception {
         try (var client = AsynchronousSocketChannel.open()) {
             HelloWorldNetUtils.printSocketOptions(client);
             if (ThreadLocalRandom.current().nextBoolean()) {
-                client.bind(new InetSocketAddress(ADDR, 0));
+                client.bind(new InetSocketAddress(HOST, 0));
                 log.info("(optionally) bound to {}", client.getLocalAddress());
             }
-            client.connect(_Rfc863Constants.ADDRESS).get(16L, TimeUnit.SECONDS);
+            client.connect(_Rfc863Constants.ADDR)
+                    .get(_Rfc863Constants.CONNECT_TIMEOUT_DURATION,
+                         _Rfc863Constants.CONNECT_TIMEOUT_UNIT);
             log.info("connected to {}, through {}", client.getRemoteAddress(),
                      client.getLocalAddress());
-            var bytes = ThreadLocalRandom.current().nextInt(1048576);
-            _Rfc863Utils.logClientBytes(bytes);
-            var digest = _Rfc863Utils.newDigest();
-            var buffer = _Rfc863Utils.newBuffer();
-            var slice = buffer.slice();
-            buffer.position(buffer.limit());
-            for (int w; bytes > 0; ) {
-                if (!buffer.hasRemaining()) {
-                    ThreadLocalRandom.current().nextBytes(buffer.array());
-                    buffer.clear().limit(Math.min(buffer.remaining(), bytes));
+            var attachment = new Attachment();
+            for (int w; attachment.bytes > 0; ) {
+                if (!attachment.buffer.hasRemaining()) {
+                    ThreadLocalRandom.current().nextBytes(attachment.buffer.array());
+                    attachment.buffer
+                            .clear()
+                            .limit(Math.min(attachment.buffer.remaining(), attachment.bytes));
                 }
-                w = client.write(buffer).get();
+                assert attachment.buffer.hasRemaining();
+                w = client.write(attachment.buffer).get();
                 assert w >= 0;
-                bytes -= w;
-                digest.update(
-                        slice.position(buffer.position() - w).limit(buffer.position())
-                );
+                if (w > 0) {
+                    attachment.bytes -= w;
+                    attachment.digest.update(
+                            attachment.slice
+                                    .position(attachment.buffer.position() - w)
+                                    .limit(attachment.buffer.position())
+                    );
+                }
             }
-            _Rfc863Utils.logDigest(digest);
+            _Rfc863Utils.logDigest(attachment.digest);
         }
     }
 

@@ -20,7 +20,7 @@ package com.github.jinahya.hello.miscellaneous.c01rfc863;
  * #L%
  */
 
-import com.github.jinahya.hello.util.HelloWorldSecurityUtils;
+import com.github.jinahya.hello.util.HelloWorldNetUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.StandardSocketOptions;
@@ -37,11 +37,12 @@ class Rfc863Udp2Server {
     public static void main(String... args) throws Exception {
         try (var selector = Selector.open();
              var server = DatagramChannel.open()) {
-            server.bind(_Rfc863Constants.ADDRESS);
+            HelloWorldNetUtils.printSocketOptions(server);
+            server.bind(_Rfc863Constants.ADDR);
             log.info("bound to {}", server.getLocalAddress());
             server.configureBlocking(false);
             var serverKey = server.register(selector, SelectionKey.OP_READ);
-            if (selector.select(TimeUnit.SECONDS.toMillis(16L)) == 0) {
+            if (selector.select(_Rfc863Constants.ACCEPT_TIMEOUT_IN_MILLIS) == 0) {
                 return;
             }
             var key = selector.selectedKeys().iterator().next();

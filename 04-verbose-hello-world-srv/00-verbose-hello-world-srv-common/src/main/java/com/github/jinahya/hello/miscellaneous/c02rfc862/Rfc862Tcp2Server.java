@@ -49,7 +49,7 @@ class Rfc862Tcp2Server {
     public static void main(String... args) throws Exception {
         try (var selector = Selector.open();
              var server = ServerSocketChannel.open()) {
-            server.bind(_Rfc862Constants.ADDRESS);
+            server.bind(_Rfc862Constants.ADDR);
             log.info("bound to {}", server.getLocalAddress());
             server.configureBlocking(false);
             var serverKey = server.register(selector, SelectionKey.OP_ACCEPT);

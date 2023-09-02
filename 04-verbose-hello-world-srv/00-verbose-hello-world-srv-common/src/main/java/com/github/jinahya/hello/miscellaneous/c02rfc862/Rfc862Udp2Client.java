@@ -45,13 +45,13 @@ class Rfc862Udp2Client {
         try (var selector = Selector.open();
              var client = DatagramChannel.open()) {
             if (ThreadLocalRandom.current().nextBoolean()) {
-                client.bind(new InetSocketAddress(_Rfc862Constants.ADDR, 0));
+                client.bind(new InetSocketAddress(_Rfc862Constants.HOST, 0));
                 log.info("(optionally) bound to {}", client.getLocalAddress());
             }
             var connect = ThreadLocalRandom.current().nextBoolean();
             if (connect) {
                 try {
-                    client.connect(_Rfc862Constants.ADDRESS);
+                    client.connect(_Rfc862Constants.ADDR);
                     log.info("(optionally) connected to {}, through {}", client.getRemoteAddress(),
                              client.getLocalAddress());
                 } catch (SocketException se) {
@@ -75,8 +75,8 @@ class Rfc862Udp2Client {
                                 channel.getOption(StandardSocketOptions.SO_SNDBUF)
                         ));
                         ThreadLocalRandom.current().nextBytes(attachment.buffer.array());
-                        var w = channel.send(attachment.buffer, _Rfc862Constants.ADDRESS);
-                        log.info("{} byte(s) sent to {}", w, _Rfc862Constants.ADDRESS);
+                        var w = channel.send(attachment.buffer, _Rfc862Constants.ADDR);
+                        log.info("{} byte(s) sent to {}", w, _Rfc862Constants.ADDR);
                         assert w == attachment.buffer.position();
                         assert !attachment.buffer.hasRemaining();
                         HelloWorldSecurityUtils.updateAllPreceding(

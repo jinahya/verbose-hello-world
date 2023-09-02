@@ -24,13 +24,11 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.net.InetSocketAddress;
 import java.nio.channels.AsynchronousChannelGroup;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -135,7 +133,7 @@ class Rfc862Tcp4Server {
     public static void main(String... args) throws Exception {
         var group = AsynchronousChannelGroup.withThreadPool(Executors.newCachedThreadPool());
         try (var server = AsynchronousServerSocketChannel.open(group)) {
-            server.bind(_Rfc862Constants.ADDRESS);
+            server.bind(_Rfc862Constants.ADDR);
             log.info("bound to {}", server.getLocalAddress());
             var attachment = new Attachment();
             attachment.group = group;

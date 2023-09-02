@@ -151,14 +151,14 @@ class Rfc862Tcp4Client {
         var group = AsynchronousChannelGroup.withThreadPool(Executors.newCachedThreadPool());
         try (var client = AsynchronousSocketChannel.open(group)) {
             if (ThreadLocalRandom.current().nextBoolean()) {
-                client.bind(new InetSocketAddress(_Rfc862Constants.ADDR, 0));
+                client.bind(new InetSocketAddress(_Rfc862Constants.HOST, 0));
                 log.info("(optionally) bound to {}", client.getLocalAddress());
             }
             var attachment = new Attachment();
             attachment.group = group;
             attachment.client = client;
             client.connect(
-                    _Rfc862Constants.ADDRESS, // <remote>
+                    _Rfc862Constants.ADDR, // <remote>
                     attachment,               // <attachment>
                     C_HANDLER                 // <handler>
             );

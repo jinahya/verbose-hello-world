@@ -23,6 +23,7 @@ package com.github.jinahya.hello.miscellaneous.c01rfc863;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.ByteBuffer;
+import java.nio.channels.SelectionKey;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
@@ -36,34 +37,48 @@ final class _Rfc863Utils {
      * Returns a new array of bytes whose length is between {@code 1} and {@code 1024}, both
      * inclusive.
      *
-     * @return a new array of bytes.
+     * @return a new non-empty array of bytes.
      */
     static byte[] newArray() {
         return new byte[ThreadLocalRandom.current().nextInt(1024) + 1];
     }
 
     /**
-     * Returns a new byte buffer wrapping a result of {@link #newArray()}.
+     * Returns a new byte buffer {@link ByteBuffer#wrap(byte[]) wraps} a result of
+     * {@link #newArray()}.
      *
-     * @return a new byte buffer of non-zero capacity
+     * @return a new byte buffer {@link ByteBuffer#wrap(byte[]) wraps} a result of
+     * {@link #newArray()}.
+     * @see #newArray()
      */
     static ByteBuffer newBuffer() {
         return ByteBuffer.wrap(newArray());
     }
 
-    static MessageDigest newDigest() {
-        try {
-            return MessageDigest.getInstance(_Rfc863Constants.ALGORITHM);
-        } catch (NoSuchAlgorithmException nsae) {
-            throw new RuntimeException(
-                    "failed to create a message digest with " + _Rfc863Constants.ALGORITHM,
-                    nsae
-            );
+    /**
+     * Returns a new {@code int} greater than or equals to {@code 0} and less than specified value.
+     *
+     * @param maxExclusive the maximum value, exclusive.
+     * @return a new {@code int} greater than or equals to {@code 0} and less than
+     * {@code maxExclusive}.
+     */
+    static int newBytes(final int maxExclusive) {
+        if (maxExclusive <= 0) {
+            throw new IllegalArgumentException(
+                    "maxExclusive(" + maxExclusive + ") is not positive");
         }
+        return ThreadLocalRandom.current().nextInt(maxExclusive);
     }
 
-    private static String getDigest(MessageDigest digest) {
-        return HexFormat.of().formatHex(digest.digest());
+    private static final int MAX_BYTES = 1048576;
+
+    /**
+     * Returns a new {@code int} between {@code 0}(inclusive) and {@value #MAX_BYTES}(inclusive).
+     *
+     * @return a new {@code int} between {@code 0}(inclusive) and {@value #MAX_BYTES}(inclusive).
+     */
+    static int newBytes() {
+        return newBytes(MAX_BYTES);
     }
 
     static void logClientBytes(long bytes) {
@@ -80,9 +95,40 @@ final class _Rfc863Utils {
         log.info("{} bytes received (and discarded)", bytes);
     }
 
+    /**
+     * Returns a new message digest of {@link _Rfc863Constants#ALGORITHM}.
+     *
+     * @return a new message digest of {@link _Rfc863Constants#ALGORITHM}.
+     * @see _Rfc863Constants#ALGORITHM
+     */
+    static MessageDigest newDigest() {
+        try {
+            return MessageDigest.getInstance(_Rfc863Constants.ALGORITHM);
+        } catch (NoSuchAlgorithmException nsae) {
+            throw new RuntimeException(
+                    "failed to create a message digest with " + _Rfc863Constants.ALGORITHM,
+                    nsae
+            );
+        }
+    }
+
     static void logDigest(MessageDigest digest) {
         Objects.requireNonNull(digest, "digest is null");
-        log.info("digest: {}", getDigest(digest));
+        log.info("digest: {}", HexFormat.of().formatHex(digest.digest()));
+    }
+
+    static void logSelectionKey(SelectionKey key) {
+        Objects.requireNonNull(key, "key is null");
+        log.debug(
+                """
+                        key: {}
+                        \tconnectable: {}\tacceptable: {}\treadable: {}\twritable; {}""",
+                key,
+                key.isConnectable(),
+                key.isAcceptable(),
+                key.isReadable(),
+                key.isWritable()
+        );
     }
 
     private _Rfc863Utils() {

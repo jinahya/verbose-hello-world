@@ -33,10 +33,10 @@ class Rfc862Tcp0Client {
     public static void main(String... args) throws Exception {
         try (var client = new Socket()) {
             if (ThreadLocalRandom.current().nextBoolean()) {
-                client.bind(new InetSocketAddress(_Rfc862Constants.ADDR, 0));
+                client.bind(new InetSocketAddress(_Rfc862Constants.HOST, 0));
                 log.info("bound to {}", client.getLocalSocketAddress());
             }
-            client.connect(_Rfc862Constants.ADDRESS);
+            client.connect(_Rfc862Constants.ADDR);
             log.info("connected to {}, through {}", client.getRemoteSocketAddress(),
                      client.getLocalSocketAddress());
             client.setSoTimeout(_Rfc862Utils.soTimeoutInMillisAsInt());

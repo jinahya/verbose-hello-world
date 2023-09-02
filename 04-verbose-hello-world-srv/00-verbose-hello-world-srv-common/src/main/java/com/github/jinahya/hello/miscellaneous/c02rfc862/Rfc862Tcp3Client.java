@@ -45,10 +45,10 @@ class Rfc862Tcp3Client {
     public static void main(String... args) throws Exception {
         try (var client = AsynchronousSocketChannel.open()) {
             if (ThreadLocalRandom.current().nextBoolean()) {
-                client.bind(new InetSocketAddress(_Rfc862Constants.ADDR, 0));
+                client.bind(new InetSocketAddress(_Rfc862Constants.HOST, 0));
                 log.info("(optionally) bound to {}", client.getLocalAddress());
             }
-            client.connect(_Rfc862Constants.ADDRESS).get(16L, TimeUnit.SECONDS);
+            client.connect(_Rfc862Constants.ADDR).get(16L, TimeUnit.SECONDS);
             log.info("connected to {}, through {}", client.getRemoteAddress(),
                      client.getLocalAddress());
             var attachment = new Attachment();

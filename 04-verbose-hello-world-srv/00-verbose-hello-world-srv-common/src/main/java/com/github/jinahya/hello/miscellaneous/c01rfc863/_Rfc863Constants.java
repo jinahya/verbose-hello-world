@@ -22,14 +22,51 @@ package com.github.jinahya.hello.miscellaneous.c01rfc863;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.util.concurrent.TimeUnit;
 
 final class _Rfc863Constants {
 
-    static final InetAddress ADDR = InetAddress.getLoopbackAddress();
+    // ------------------------------------------------------------------------------------- ADDRESS
 
-    private static final int PORT = 9 + 50000;
+    private static final int _RFC863_PORT = 9;
 
-    static final InetSocketAddress ADDRESS = new InetSocketAddress(ADDR, PORT);
+    static final InetAddress HOST = InetAddress.getLoopbackAddress();
+
+    private static final int PORT = _RFC863_PORT + 50000;
+
+    static final InetSocketAddress ADDR = new InetSocketAddress(HOST, PORT);
+
+    // ------------------------------------------------------------------------------------- TIMEOUT
+
+    static final TimeUnit ACCEPT_TIMEOUT_UNIT = TimeUnit.SECONDS;
+
+    static final long ACCEPT_TIMEOUT_DURATION = 32L;
+
+    static final long ACCEPT_TIMEOUT_IN_MILLIS =
+            ACCEPT_TIMEOUT_UNIT.toMillis(ACCEPT_TIMEOUT_DURATION);
+
+    static final TimeUnit CONNECT_TIMEOUT_UNIT = TimeUnit.SECONDS;
+
+    static final long CONNECT_TIMEOUT_DURATION = 1L;
+
+    static final long CONNECT_TIMEOUT_IN_MILLIS =
+            CONNECT_TIMEOUT_UNIT.toMillis(CONNECT_TIMEOUT_DURATION);
+
+    static final TimeUnit READ_TIMEOUT_UNIT = TimeUnit.SECONDS;
+
+    static final long READ_TIMEOUT_DURATION = 1L;
+
+    static final long READ_TIMEOUT_IN_MILLIS =
+            READ_TIMEOUT_UNIT.toMillis(READ_TIMEOUT_DURATION);
+
+    static final TimeUnit WRITE_TIMEOUT_UNIT = TimeUnit.SECONDS;
+
+    static final long WRITE_TIMEOUT_DURATION = 8L;
+
+    static final long WRITE_TIMEOUT_IN_MILLIS =
+            WRITE_TIMEOUT_UNIT.toMillis(WRITE_TIMEOUT_DURATION);
+
+    // -------------------------------------------------------------------------------------- DIGEST
 
     static final String ALGORITHM = "SHA-1";
 

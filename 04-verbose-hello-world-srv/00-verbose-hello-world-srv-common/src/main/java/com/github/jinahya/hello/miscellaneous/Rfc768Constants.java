@@ -3,7 +3,8 @@ package com.github.jinahya.hello.miscellaneous;
 /**
  * .
  *
- * @see <a href="https://www.rfc-editor.org/rfc/rfc768">RFC 768 User Datagram Protocol</a>
+ * @see <a href="https://www.rfc-editor.org/rfc/rfc768">RFC 768: User Datagram Protocol</a>
+ * @see <a href="https://datatracker.ietf.org/doc/html/rfc768>RFC 768: User Datagram Protocol</a>
  */
 public final class Rfc768Constants {
 

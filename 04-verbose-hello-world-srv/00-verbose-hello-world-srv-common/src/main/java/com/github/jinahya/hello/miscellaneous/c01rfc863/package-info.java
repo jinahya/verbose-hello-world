@@ -1,8 +1,9 @@
 /**
- * Defines clients and servers implement the <a href="https://www.rfc-editor.org/rfc/rfc863">Discard
- * Protocol (RFC-863)</a>.
+ * Defines clients and servers implement the <a
+ * href="https://datatracker.ietf.org/doc/html/rfc863">RFC 863: Discard Protocol</a>.
  *
- * @see <a href="https://www.rfc-editor.org/rfc/rfc863">Discard Protocol (RFC-863)</a>
+ * @see <a href="https://datatracker.ietf.org/doc/html/rfc863">RFC 863: Discard Protocol
+ * (RFC-863)</a>
  */
 package com.github.jinahya.hello.miscellaneous.c01rfc863;
 

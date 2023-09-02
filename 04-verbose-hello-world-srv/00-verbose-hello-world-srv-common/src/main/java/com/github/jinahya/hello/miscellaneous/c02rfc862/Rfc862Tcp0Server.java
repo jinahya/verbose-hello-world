@@ -30,7 +30,7 @@ class Rfc862Tcp0Server {
 
     public static void main(String... args) throws Exception {
         try (var server = new ServerSocket()) {
-            server.bind(_Rfc862Constants.ADDRESS);
+            server.bind(_Rfc862Constants.ADDR);
             log.info("bound to {}", server.getLocalSocketAddress());
             server.setSoTimeout(_Rfc862Utils.soTimeoutInMillisAsInt());
             try (var client = server.accept()) {

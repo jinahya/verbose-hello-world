@@ -36,13 +36,13 @@ class Rfc863Udp1Client {
         try (var client = new DatagramSocket(null)) {
             HelloWorldNetUtils.printSocketOptions(client);
             if (ThreadLocalRandom.current().nextBoolean()) {
-                client.bind(new InetSocketAddress(_Rfc863Constants.ADDR, 0));
+                client.bind(new InetSocketAddress(_Rfc863Constants.HOST, 0));
                 log.info("(optionally) bound to {}", client.getLocalSocketAddress());
             }
             var connect = ThreadLocalRandom.current().nextBoolean();
             if (connect) {
                 try {
-                    client.connect(_Rfc863Constants.ADDRESS);
+                    client.connect(_Rfc863Constants.ADDR);
                     log.info("(optionally) connected to {}, through {}",
                              client.getRemoteSocketAddress(), client.getLocalSocketAddress());
                 } catch (SocketException se) {
@@ -55,13 +55,13 @@ class Rfc863Udp1Client {
                     ];
             ThreadLocalRandom.current().nextBytes(array);
             _Rfc863Utils.logClientBytes(array.length);
-            var packet = new DatagramPacket(array, array.length, _Rfc863Constants.ADDRESS);
-            client.send(packet); // IOException
+            var packet = new DatagramPacket(array, array.length, _Rfc863Constants.ADDR);
+            client.send(packet);
             var digest = _Rfc863Utils.newDigest();
             digest.update(array, 0, packet.getLength());
             _Rfc863Utils.logDigest(digest);
             if (connect) {
-                client.disconnect(); // UncheckedIOException
+                client.disconnect();
             }
         }
     }

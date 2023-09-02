@@ -3,8 +3,8 @@ package com.github.jinahya.hello.miscellaneous;
 /**
  * .
  *
- * @see <a href="https://www.rfc-editor.org/rfc/rfc793">RFC 793 TRANSMISSION CONTROL PROTOCOL</a>
- * @see <a href="https://www.rfc-editor.org/rfc/rfc9293">RFC 9293 Transmission Control Protocol
+ * @see <a href="https://www.rfc-editor.org/rfc/rfc793">RFC 793: TRANSMISSION CONTROL PROTOCOL</a>
+ * @see <a href="https://www.rfc-editor.org/rfc/rfc9293">RFC 9293: Transmission Control Protocol
  * (TCP)</a>
  */
 public final class Rfc793Constants {

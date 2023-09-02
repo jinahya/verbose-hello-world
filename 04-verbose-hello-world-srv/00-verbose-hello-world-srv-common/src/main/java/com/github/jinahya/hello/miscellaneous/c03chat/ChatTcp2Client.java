@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 class ChatTcp2Client {
 
     // @formatter:off
-    private static class Attachment extends ChatTcp2Server.Attachment {
+    private static class ChatTcp2ClientAttachment extends ChatTcp2Server.ChatTcp2ServerAttachment {
     }
     // @formatter:on
 
@@ -33,7 +33,8 @@ class ChatTcp2Client {
             if (client.connect(new InetSocketAddress(addr, _ChatConstants.PORT))) {
                 log.debug("(immediately) connected to {}, through {}", client.getRemoteAddress(),
                           client.getLocalAddress());
-                clientKey = client.register(selector, SelectionKey.OP_READ, new Attachment());
+                clientKey = client.register(selector, SelectionKey.OP_READ,
+                                            new ChatTcp2ClientAttachment());
             } else {
                 clientKey = client.register(selector, SelectionKey.OP_CONNECT);
             }
@@ -46,7 +47,7 @@ class ChatTcp2Client {
                         return null;
                     },
                     l -> {                         // <consumer>
-                        var attachment = ((Attachment) clientKey.attachment());
+                        var attachment = ((ChatTcp2ClientAttachment) clientKey.attachment());
                         if (attachment == null) { // not connected yet.
                             return;
                         }
@@ -69,14 +70,14 @@ class ChatTcp2Client {
                         log.debug("connected to {}, through {}", channel.getRemoteAddress(),
                                   channel.getLocalAddress());
                         key.interestOpsAnd(~SelectionKey.OP_CONNECT);
-                        key.attach(new Attachment());
+                        key.attach(new ChatTcp2ClientAttachment());
                         key.interestOpsOr(SelectionKey.OP_READ);
                         continue;
                     }
                     if (key.isReadable()) {
                         var channel = (SocketChannel) key.channel();
                         assert channel == client;
-                        var attachment = (Attachment) key.attachment();
+                        var attachment = (ChatTcp2ClientAttachment) key.attachment();
                         var r = channel.read(attachment.buffer);
                         if (r == -1) {
                             channel.close();
@@ -91,7 +92,7 @@ class ChatTcp2Client {
                     if (key.isWritable()) {
                         var channel = (SocketChannel) key.channel();
                         assert channel == client;
-                        var attachment = (Attachment) key.attachment();
+                        var attachment = (ChatTcp2ClientAttachment) key.attachment();
                         assert !attachment.buffers.isEmpty();
                         var buffer = attachment.buffers.get(0);
                         assert buffer.hasRemaining();

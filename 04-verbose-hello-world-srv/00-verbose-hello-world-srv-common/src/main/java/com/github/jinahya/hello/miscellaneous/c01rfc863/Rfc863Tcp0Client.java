@@ -27,7 +27,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static com.github.jinahya.hello.miscellaneous.c01rfc863._Rfc863Constants.ADDR;
+import static com.github.jinahya.hello.miscellaneous.c01rfc863._Rfc863Constants.HOST;
 
 @Slf4j
 class Rfc863Tcp0Client {
@@ -36,14 +36,14 @@ class Rfc863Tcp0Client {
         try (var client = new Socket()) {
             HelloWorldNetUtils.printSocketOptions(client);
             if (ThreadLocalRandom.current().nextBoolean()) {
-                client.bind(new InetSocketAddress(ADDR, 0));
+                client.bind(new InetSocketAddress(HOST, 0));
                 log.info("(optionally) bound to {}", client.getLocalSocketAddress());
             }
-            client.connect(_Rfc863Constants.ADDRESS);
+            client.connect(_Rfc863Constants.ADDR, (int) _Rfc863Constants.CONNECT_TIMEOUT_IN_MILLIS);
             log.info("connected to {}, through {}", client.getRemoteSocketAddress(),
                      client.getLocalSocketAddress());
             var digest = _Rfc863Utils.newDigest();
-            var bytes = ThreadLocalRandom.current().nextInt(1024);
+            var bytes = _Rfc863Utils.newBytes(1024);
             _Rfc863Utils.logClientBytes(bytes);
             for (int b; bytes-- > 0; ) {
                 b = ThreadLocalRandom.current().nextInt(255);

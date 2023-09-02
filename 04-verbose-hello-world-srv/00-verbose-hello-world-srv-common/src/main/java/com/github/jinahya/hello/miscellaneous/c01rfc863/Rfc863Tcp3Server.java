@@ -24,37 +24,46 @@ import com.github.jinahya.hello.util.HelloWorldNetUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.channels.AsynchronousServerSocketChannel;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 class Rfc863Tcp3Server {
 
+    // @formatter:off
+    static class Attachment extends Rfc863Tcp2Server.Attachment {
+    }
+    // @formatter:on
+
     public static void main(String... args) throws Exception {
         try (var server = AsynchronousServerSocketChannel.open()) {
             HelloWorldNetUtils.printSocketOptions(server);
-            server.bind(_Rfc863Constants.ADDRESS);
+            server.bind(_Rfc863Constants.ADDR);
             log.info("bound to {}", server.getLocalAddress());
-            try (var client = server.accept().get(16L, TimeUnit.SECONDS)) {
+            try (var client = server.accept()
+                    .get(_Rfc863Constants.ACCEPT_TIMEOUT_DURATION,
+                         _Rfc863Constants.ACCEPT_TIMEOUT_UNIT)) {
                 log.info("accepted from {}, through {}", client.getRemoteAddress(),
                          client.getLocalAddress());
-                var digest = _Rfc863Utils.newDigest();
-                var buffer = _Rfc863Utils.newBuffer();
-                var slice = buffer.slice();
-                var bytes = 0;
+                var attachment = new Attachment();
                 for (int r; ; ) {
-                    if (!buffer.hasRemaining()) {
-                        buffer.clear();
+                    if (!attachment.buffer.hasRemaining()) {
+                        attachment.buffer.clear();
                     }
-                    if ((r = client.read(buffer).get(16L, TimeUnit.SECONDS)) == -1) {
+                    assert attachment.buffer.hasRemaining();
+                    if ((r = client.read(attachment.buffer)
+                            .get(_Rfc863Constants.READ_TIMEOUT_DURATION,
+                                 _Rfc863Constants.READ_TIMEOUT_UNIT)) == -1) {
                         break;
                     }
-                    bytes += r;
-                    digest.update(
-                            slice.position(buffer.position() - r).limit(buffer.position())
+                    assert r > 0;
+                    attachment.bytes += r;
+                    attachment.digest.update(
+                            attachment.slice
+                                    .position(attachment.buffer.position() - r)
+                                    .limit(attachment.buffer.position())
                     );
                 }
-                _Rfc863Utils.logServerBytes(bytes);
-                _Rfc863Utils.logDigest(digest);
+                _Rfc863Utils.logServerBytes(attachment.bytes);
+                _Rfc863Utils.logDigest(attachment.digest);
             }
         }
     }

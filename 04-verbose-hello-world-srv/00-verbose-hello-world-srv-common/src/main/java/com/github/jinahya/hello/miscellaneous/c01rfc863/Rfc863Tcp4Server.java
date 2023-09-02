@@ -23,20 +23,17 @@ package com.github.jinahya.hello.miscellaneous.c01rfc863;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.net.StandardSocketOptions;
-import java.nio.channels.AsynchronousChannelGroup;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
 class Rfc863Tcp4Server {
 
     // @formatter:off
-    static class Attachment extends Rfc863Tcp2Server.Attachment {
+    static class Attachment extends Rfc863Tcp3Server.Attachment {
         AsynchronousSocketChannel client;
         final CountDownLatch latch = new CountDownLatch(2);
     }
@@ -54,7 +51,7 @@ class Rfc863Tcp4Server {
                 }
                 _Rfc863Utils.logServerBytes(attachment.bytes);
                 _Rfc863Utils.logDigest(attachment.digest);
-                attachment.latch.countDown(); // -1 for all received
+                attachment.latch.countDown(); // -1 for being all received
                 return;
             }
             assert result > 0 : "buffer passed with no remaining?";
@@ -68,10 +65,11 @@ class Rfc863Tcp4Server {
                 attachment.buffer.clear();
             }
             attachment.client.read(
-                    attachment.buffer,     // <dst>
-                    16L, TimeUnit.SECONDS, // <timeout, unit>
-                    attachment,            // <attachment>
-                    this                   // <handler>
+                    attachment.buffer,                      // <dst>
+                    _Rfc863Constants.READ_TIMEOUT_DURATION, // <timeout>
+                    _Rfc863Constants.READ_TIMEOUT_UNIT,     // <unit>
+                    attachment,                             // <attachment>
+                    this                                    // <handler>
             );
         }
         @Override public void failed(Throwable exc, Attachment attachment) {
@@ -98,16 +96,17 @@ class Rfc863Tcp4Server {
             } catch (final IOException ioe) {
                 log.error("failed to get addresses from {}", attachment.client, ioe);
             }
+            attachment.latch.countDown(); // -1 for being accepted
             if (!attachment.buffer.hasRemaining()) {
                 attachment.buffer.clear();
             }
             attachment.client.read(
-                    attachment.buffer,     // <dst>
-                    16L, TimeUnit.SECONDS, // <timeout, unit>
-                    attachment,            // <attachment>
-                    R_HANDLER              // <handler>
+                    attachment.buffer,                      // <dst>
+                    _Rfc863Constants.READ_TIMEOUT_DURATION, // <timeout>
+                    _Rfc863Constants.READ_TIMEOUT_UNIT,     // <unit>
+                    attachment,                             // <attachment>
+                    R_HANDLER                               // <handler>
             );
-            attachment.latch.countDown(); // -1 for being accepted
         }
         @Override public void failed(Throwable exc, Attachment attachment) {
             log.error("failed to accept", exc);
@@ -120,14 +119,18 @@ class Rfc863Tcp4Server {
 
     public static void main(String... args) throws Exception {
         try (var server = AsynchronousServerSocketChannel.open()) {
-            server.bind(_Rfc863Constants.ADDRESS);
+            server.bind(_Rfc863Constants.ADDR);
             log.info("bound to {}", server.getLocalAddress());
             var attachment = new Attachment();
             server.accept(
                     attachment, // <attachment>
                     A_HANDLER   // <handler>
             );
-            attachment.latch.await();
+            var broken = attachment.latch.await(_Rfc863Constants.ACCEPT_TIMEOUT_DURATION,
+                                                _Rfc863Constants.ACCEPT_TIMEOUT_UNIT);
+            if (!broken) {
+                log.error("latch hasn't been broken!");
+            }
         }
     }
 

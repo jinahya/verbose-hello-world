@@ -26,11 +26,13 @@ import java.time.Duration;
 
 final class _Rfc862Constants {
 
-    static final InetAddress ADDR = InetAddress.getLoopbackAddress();
+    private static final int _RFC862_PORT = 7;
 
-    private static final int PORT = 7 + 50000;
+    static final InetAddress HOST = InetAddress.getLoopbackAddress();
 
-    static final InetSocketAddress ADDRESS = new InetSocketAddress(ADDR, PORT);
+    private static final int PORT = _RFC862_PORT + 50000;
+
+    static final InetSocketAddress ADDR = new InetSocketAddress(HOST, PORT);
 
     static final Duration SO_TIMEOUT = Duration.ofSeconds(16L);
 

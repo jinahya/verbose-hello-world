@@ -47,7 +47,7 @@ class Rfc862Udp2Server {
     public static void main(String... args) throws Exception {
         try (var selector = Selector.open();
              var server = DatagramChannel.open()) {
-            server.bind(_Rfc862Constants.ADDRESS);
+            server.bind(_Rfc862Constants.ADDR);
             log.info("bound to {}", server.getLocalAddress());
             server.configureBlocking(false);
             server.register(selector, SelectionKey.OP_READ);

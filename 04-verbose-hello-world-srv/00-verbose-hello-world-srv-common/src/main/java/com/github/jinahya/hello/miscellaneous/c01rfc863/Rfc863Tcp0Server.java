@@ -24,7 +24,6 @@ import com.github.jinahya.hello.util.HelloWorldNetUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.ServerSocket;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 class Rfc863Tcp0Server {
@@ -32,15 +31,15 @@ class Rfc863Tcp0Server {
     public static void main(String... args) throws Exception {
         try (var server = new ServerSocket()) {
             HelloWorldNetUtils.printSocketOptions(server);
-            server.bind(_Rfc863Constants.ADDRESS);
+            server.bind(_Rfc863Constants.ADDR, 1);
             log.info("bound to {}", server.getLocalSocketAddress());
-            server.setSoTimeout((int) TimeUnit.SECONDS.toMillis(16L));
+            server.setSoTimeout((int) _Rfc863Constants.ACCEPT_TIMEOUT_IN_MILLIS);
             try (var client = server.accept()) {
                 log.info("accepted from {}, through {}", client.getRemoteSocketAddress(),
                          client.getLocalSocketAddress());
-                client.setSoTimeout((int) TimeUnit.SECONDS.toMillis(16L));
-                var bytes = 0L;
+                client.setSoTimeout((int) _Rfc863Constants.READ_TIMEOUT_IN_MILLIS);
                 var digest = _Rfc863Utils.newDigest();
+                var bytes = 0L;
                 for (int b; (b = client.getInputStream().read()) != -1; bytes++) {
                     digest.update((byte) b);
                 }

@@ -24,24 +24,35 @@ import com.github.jinahya.hello.util.HelloWorldNetUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 
-import static com.github.jinahya.hello.miscellaneous.c01rfc863._Rfc863Constants.ADDR;
+import static com.github.jinahya.hello.miscellaneous.c01rfc863._Rfc863Constants.HOST;
 
 @Slf4j
 class Rfc863Tcp2Client {
 
     // @formatter:off
-    private static class Attachment extends Rfc863Tcp2Server.Attachment {
+    static class Attachment extends Rfc863Tcp2Server.Attachment {
         Attachment() {
             super();
             bytes = ThreadLocalRandom.current().nextInt(1048576);
             _Rfc863Utils.logClientBytes(bytes);
             buffer.position(buffer.limit());
+        }
+        /**
+         * Clears the {@code buffer}, randomizes {@code buffer}'s
+         * {@link ByteBuffer#array() backing array}, and sets {@code buffer}'s {@code limit} with
+         * smaller of {@code buffer.limit()} and {@code bytes}.
+         */
+        @Override
+        void clearBuffer() {
+            super.clearBuffer();
+            ThreadLocalRandom.current().nextBytes(buffer.array());
+            buffer.clear().limit(Math.min(buffer.limit(), bytes));
         }
     }
     // @formatter:on
@@ -51,15 +62,16 @@ class Rfc863Tcp2Client {
              var client = SocketChannel.open()) {
             HelloWorldNetUtils.printSocketOptions(client);
             if (ThreadLocalRandom.current().nextBoolean()) {
-                client.bind(new InetSocketAddress(ADDR, 0));
+                client.bind(new InetSocketAddress(HOST, 0));
                 log.info("(optionally) bound to {}", client.getLocalAddress());
             }
             client.configureBlocking(false);
-            if (client.connect(_Rfc863Constants.ADDRESS)) {
-                log.info("connected (immediately); remote: {}, local: {}",
+            SelectionKey clientKey;
+            if (client.connect(_Rfc863Constants.ADDR)) {
+                log.info("connected (immediately) to {}, through {}",
                          client.getRemoteAddress(), client.getLocalAddress());
                 var attachment = new Attachment();
-                var clientKey = client.register(selector, 0, attachment);
+                clientKey = client.register(selector, 0, attachment);
                 if (attachment.bytes > 0) {
                     clientKey.interestOpsOr(SelectionKey.OP_WRITE);
                 } else {
@@ -67,17 +79,18 @@ class Rfc863Tcp2Client {
                     assert !clientKey.isValid();
                 }
             } else {
-                client.register(selector, SelectionKey.OP_CONNECT);
+                clientKey = client.register(selector, SelectionKey.OP_CONNECT);
             }
-            while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
-                if (selector.select(TimeUnit.SECONDS.toMillis(16L)) == 0) {
+            while (clientKey.isValid()) {
+                if (selector.select((int) _Rfc863Constants.CONNECT_TIMEOUT_IN_MILLIS) == 0) {
                     break;
                 }
                 for (var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
                     var key = i.next();
                     if (key.isConnectable()) {
                         var channel = (SocketChannel) key.channel();
-                        var connected = channel.finishConnect(); // IOException
+                        assert channel == client;
+                        var connected = channel.finishConnect();
                         assert connected;
                         log.info("connected to {}, through {}", channel.getRemoteAddress(),
                                  channel.getLocalAddress());
@@ -94,6 +107,7 @@ class Rfc863Tcp2Client {
                     }
                     if (key.isWritable()) {
                         var channel = (SocketChannel) key.channel();
+                        assert channel == client;
                         var attachment = (Attachment) key.attachment();
                         assert attachment.bytes > 0;
                         if (!attachment.buffer.hasRemaining()) {
@@ -102,6 +116,7 @@ class Rfc863Tcp2Client {
                                     attachment.buffer.remaining(), attachment.bytes
                             ));
                         }
+                        assert attachment.buffer.hasRemaining();
                         var w = channel.write(attachment.buffer);
                         assert w >= 0;
                         attachment.digest.update(

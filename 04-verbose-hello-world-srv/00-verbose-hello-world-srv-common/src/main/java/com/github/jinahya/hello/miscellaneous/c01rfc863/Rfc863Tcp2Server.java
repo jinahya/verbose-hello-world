@@ -29,16 +29,48 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.security.MessageDigest;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 class Rfc863Tcp2Server {
 
     // @formatter:off
     static class Attachment {
+        /** Creates a new instance. */
         Attachment() {
             super();
-            log.info("buffer.capacity: {}", buffer.capacity());
+            log.debug("buffer.capacity: {}", buffer.capacity());
+        }
+        /**
+         * {@link ByteBuffer#clear() clears} {@code buffer}.
+         * @throws IllegalStateException if the {@code buffer} sill has
+         *                               {@link ByteBuffer#remaining() remaining}.
+         */
+        void clearBuffer() {
+            if (buffer.hasRemaining()) {
+                throw new IllegalArgumentException("buffer still has remaining");
+            }
+            buffer.clear();
+        }
+        /**
+         * Updates specified number of bytes preceding current position of {@code buffer} to
+         * {@code digest}.
+         * @param bytes the number of bytes preceding current position of the {@code buffer} to be
+         *              updated to the {@code digest}.
+         */
+        void updateDigest(int bytes) {
+            if (bytes < 0) {
+                throw new IllegalArgumentException("bytes(" + bytes + ") is negative");
+            }
+            // TODO: adjust the slice's position and limit, and update to the digest
+            // TODO: change the slice's scope to private
+        }
+        /**
+         * Logs out the final result of {@code digest}.
+         * @see _Rfc863Utils#logDigest(MessageDigest)
+         */
+        void logDigest() {
+            // TODO: Implement!
+            // TODO: change the digest's scope as private
         }
         int bytes;
         final ByteBuffer buffer = _Rfc863Utils.newBuffer();
@@ -51,41 +83,44 @@ class Rfc863Tcp2Server {
         try (var selector = Selector.open();
              var server = ServerSocketChannel.open()) {
             HelloWorldNetUtils.printSocketOptions(server);
-            server.bind(_Rfc863Constants.ADDRESS, 1);
+            server.bind(_Rfc863Constants.ADDR, 1);
             log.info("bound to {}", server.getLocalAddress());
             server.configureBlocking(false);
-            server.register(selector, SelectionKey.OP_ACCEPT);
-            while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
-                if (selector.select(TimeUnit.SECONDS.toMillis(16L)) == 0) {
+            var serverKey = server.register(selector, SelectionKey.OP_ACCEPT);
+            while (serverKey.isValid()) {
+                if (selector.select(_Rfc863Constants.ACCEPT_TIMEOUT_IN_MILLIS) == 0) {
                     break;
                 }
                 for (var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
                     var key = i.next();
                     if (key.isAcceptable()) {
                         var channel = (ServerSocketChannel) key.channel();
+                        assert channel == server;
                         var client = channel.accept();
                         log.info("accepted from {}, through {}", client.getRemoteAddress(),
                                  client.getLocalAddress());
                         key.interestOpsAnd(~SelectionKey.OP_ACCEPT);
                         client.configureBlocking(false);
                         client.register(selector, SelectionKey.OP_READ, new Attachment());
-                        key.cancel();
-                        assert !key.isValid();
                         continue;
                     }
                     if (key.isReadable()) {
                         var channel = (SocketChannel) key.channel();
                         var attachment = (Attachment) key.attachment();
+                        assert attachment != null;
                         if (!attachment.buffer.hasRemaining()) {
                             attachment.buffer.clear();
                         }
+                        assert attachment.buffer.hasRemaining();
                         var r = channel.read(attachment.buffer);
                         if (r == -1) {
                             key.interestOpsAnd(~SelectionKey.OP_READ);
-                            channel.close(); // IOException
+                            channel.close();
                             assert !key.isValid();
                             _Rfc863Utils.logServerBytes(attachment.bytes);
                             _Rfc863Utils.logDigest(attachment.digest);
+                            serverKey.cancel();
+                            assert !serverKey.isValid();
                         } else {
                             assert r > 0;
                             attachment.bytes += r;

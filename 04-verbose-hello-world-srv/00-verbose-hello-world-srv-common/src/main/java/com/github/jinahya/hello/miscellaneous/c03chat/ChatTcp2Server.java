@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 class ChatTcp2Server {
 
     // @formatter:off
-    static class Attachment {
+    static class ChatTcp2ServerAttachment {
         final ByteBuffer buffer = _ChatMessage.OfBuffer.empty();
         final List<ByteBuffer> buffers = new LinkedList<>();
     }
@@ -57,14 +57,14 @@ class ChatTcp2Server {
                         var client = channel.accept(); // IOException
                         log.debug("accepted from {} through {}", client.getRemoteAddress(),
                                   client.getLocalAddress());
-                        var attachment = new Attachment();
+                        var attachment = new ChatTcp2ServerAttachment();
                         client.configureBlocking(false);
                         client.register(selector, SelectionKey.OP_READ, attachment);
                         continue;
                     }
                     if (key.isReadable()) {
                         var channel = (SocketChannel) key.channel();
-                        var attachment = (Attachment) key.attachment();
+                        var attachment = (ChatTcp2ServerAttachment) key.attachment();
                         var r = channel.read(attachment.buffer);
                         if (r == -1) {
                             channel.close();
@@ -77,7 +77,7 @@ class ChatTcp2Server {
                                     .filter(k -> k.channel() instanceof SocketChannel)
                                     .filter(SelectionKey::isValid)
                                     .forEach(k -> {
-                                        ((Attachment) k.attachment()).buffers.add(
+                                        ((ChatTcp2ServerAttachment) k.attachment()).buffers.add(
                                                 ByteBuffer.wrap(attachment.buffer.array())
                                         );
                                         k.interestOpsOr(SelectionKey.OP_WRITE);
@@ -87,7 +87,7 @@ class ChatTcp2Server {
                     }
                     if (key.isWritable()) {
                         var channel = (SocketChannel) key.channel();
-                        var attachment = (Attachment) key.attachment();
+                        var attachment = (ChatTcp2ServerAttachment) key.attachment();
                         assert !attachment.buffers.isEmpty();
                         var buffer = attachment.buffers.get(0);
                         assert buffer.hasRemaining();

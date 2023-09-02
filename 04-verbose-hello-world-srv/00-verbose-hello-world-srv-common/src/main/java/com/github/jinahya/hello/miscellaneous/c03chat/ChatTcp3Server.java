@@ -45,9 +45,10 @@ import java.util.concurrent.TimeUnit;
 class ChatTcp3Server {
 
     // @formatter:off
-    static class Attachment extends ChatTcp2Server.Attachment
+    static class ChatTcp3ServerAttachment extends ChatTcp2Server.ChatTcp2ServerAttachment
             implements Flow.Subscriber<ByteBuffer>, Closeable {
-        Attachment(AsynchronousSocketChannel client, SubmissionPublisher<ByteBuffer> publisher) {
+        ChatTcp3ServerAttachment(AsynchronousSocketChannel client,
+                                 SubmissionPublisher<ByteBuffer> publisher) {
             super();
             this.client = Objects.requireNonNull(client, "client is null");
             this.publisher = Objects.requireNonNull(publisher, "publisher is null");
@@ -107,8 +108,8 @@ class ChatTcp3Server {
 
     // @formatter:off
     private static final
-    CompletionHandler<Integer, Attachment> W_HANDLER = new CompletionHandler<>() {
-        @Override public void completed(Integer result, Attachment attachment) {
+    CompletionHandler<Integer, ChatTcp3ServerAttachment> W_HANDLER = new CompletionHandler<>() {
+        @Override public void completed(Integer result, ChatTcp3ServerAttachment attachment) {
             assert !attachment.buffers.isEmpty();
             var buffer = attachment.buffers.get(0);
             if (!buffer.hasRemaining()) {
@@ -122,7 +123,7 @@ class ChatTcp3Server {
                 );
             }
         }
-        @Override public void failed(Throwable exc, Attachment attachment) {
+        @Override public void failed(Throwable exc, ChatTcp3ServerAttachment attachment) {
             log.error("failed to write", exc);
             attachment.closeUnchecked();
         }
@@ -131,8 +132,8 @@ class ChatTcp3Server {
 
     // @formatter:off
     private static final
-    CompletionHandler<Integer, Attachment> R_HANDLER = new CompletionHandler<>() {
-        @Override public void completed(Integer result, Attachment attachment) {
+    CompletionHandler<Integer, ChatTcp3ServerAttachment> R_HANDLER = new CompletionHandler<>() {
+        @Override public void completed(Integer result, ChatTcp3ServerAttachment attachment) {
             if (result == -1) {
                 attachment.closeUnchecked();
                 return;
@@ -143,7 +144,7 @@ class ChatTcp3Server {
             }
             attachment.client.read(attachment.buffer, attachment, this);
         }
-        @Override public void failed(Throwable exc, Attachment attachment) {
+        @Override public void failed(Throwable exc, ChatTcp3ServerAttachment attachment) {
             log.error("failed to read", exc);
             attachment.closeUnchecked();
         }
@@ -165,23 +166,23 @@ class ChatTcp3Server {
                     l -> {                         // <consumer>
                     }
             );
-            server.<Attachment>accept(
+            server.<ChatTcp3ServerAttachment>accept(
                     null,
                     new CompletionHandler<>() { // @formatter:off
                         @Override public void completed(AsynchronousSocketChannel result,
-                                                        Attachment attachment) {
+                                                        ChatTcp3ServerAttachment attachment) {
                             try {
                                 log.debug("accepted from {}, through {}", result.getRemoteAddress(),
                                           result.getLocalAddress());
                             } catch (IOException ioe) {
                                 log.error("failed to get addresses from {}", result, ioe);
                             }
-                            attachment = new Attachment(result, publisher);
+                            attachment = new ChatTcp3ServerAttachment(result, publisher);
                             attachment.publisher.subscribe(attachment);
                             attachment.client.read(attachment.buffer, attachment, R_HANDLER);
                             server.accept(attachment, this);
                         }
-                        @Override public void failed(Throwable exc, Attachment attachment) {
+                        @Override public void failed(Throwable exc, ChatTcp3ServerAttachment attachment) {
                             log.error("failed to accept", exc);
                             try { group.shutdownNow(); } catch (IOException ioe) {
                                 log.error("failed shutdown " + group, ioe);

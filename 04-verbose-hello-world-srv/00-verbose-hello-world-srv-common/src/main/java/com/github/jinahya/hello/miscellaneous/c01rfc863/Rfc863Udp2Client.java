@@ -20,6 +20,8 @@ package com.github.jinahya.hello.miscellaneous.c01rfc863;
  * #L%
  */
 
+import com.github.jinahya.hello.HelloWorld;
+import com.github.jinahya.hello.util.HelloWorldNetUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
@@ -38,14 +40,15 @@ class Rfc863Udp2Client {
     public static void main(String... args) throws Exception {
         try (var selector = Selector.open();
              var client = DatagramChannel.open()) {
+            HelloWorldNetUtils.printSocketOptions(client);
             if (ThreadLocalRandom.current().nextBoolean()) {
-                client.bind(new InetSocketAddress(_Rfc863Constants.ADDR, 0));
+                client.bind(new InetSocketAddress(_Rfc863Constants.HOST, 0));
                 log.info("(optionally) bound to {}", client.getLocalAddress());
             }
             var connect = ThreadLocalRandom.current().nextBoolean();
             if (connect) {
                 try {
-                    client.connect(_Rfc863Constants.ADDRESS);
+                    client.connect(_Rfc863Constants.ADDR);
                     log.info("(optionally) connected to {}, through {}", client.getRemoteAddress(),
                              client.getLocalAddress());
                 } catch (SocketException se) {
@@ -68,7 +71,7 @@ class Rfc863Udp2Client {
             ));
             ThreadLocalRandom.current().nextBytes(buffer.array());
             _Rfc863Utils.logClientBytes(buffer.remaining());
-            var w = channel.send(buffer, _Rfc863Constants.ADDRESS);
+            var w = channel.send(buffer, _Rfc863Constants.ADDR);
             assert w == buffer.position();
             assert !buffer.hasRemaining();
             var digest = _Rfc863Utils.newDigest();

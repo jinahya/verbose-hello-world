@@ -31,7 +31,7 @@ class Rfc862Udp1Server {
 
     public static void main(String... args) throws Exception {
         try (var server = new DatagramSocket(null)) {
-            server.bind(_Rfc862Constants.ADDRESS);
+            server.bind(_Rfc862Constants.ADDR);
             log.info("bound to {}", server.getLocalSocketAddress());
             server.setSoTimeout((int) TimeUnit.SECONDS.toMillis(16L));
             var array = new byte[server.getReceiveBufferSize()];
