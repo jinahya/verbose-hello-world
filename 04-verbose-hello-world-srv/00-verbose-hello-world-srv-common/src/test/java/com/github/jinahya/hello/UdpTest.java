@@ -1,7 +1,7 @@
 package com.github.jinahya.hello;
 
-import com.github.jinahya.hello.miscellaneous.Rfc768Constants;
-import com.github.jinahya.hello.miscellaneous.Rfc791Constants;
+import com.github.jinahya.hello.misc.Rfc768Constants;
+import com.github.jinahya.hello.misc.Rfc791Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
@@ -34,10 +34,12 @@ class UdpTest {
     @Test
     void __DatagramChanel() throws Exception {
         try (DatagramChannel channel = DatagramChannel.open()) {
-            var sendBufferSize = channel.getOption(StandardSocketOptions.SO_SNDBUF);
+            var sendBufferSize = channel.getOption(
+                    StandardSocketOptions.SO_SNDBUF);
             log.debug("sendBufferSize: {}", sendBufferSize);
             assertTrue(sendBufferSize >= MAX_LENGTH);
-            var receiveBufferSize = channel.getOption(StandardSocketOptions.SO_RCVBUF);
+            var receiveBufferSize = channel.getOption(
+                    StandardSocketOptions.SO_RCVBUF);
             log.debug("receiveBufferSize: {}", receiveBufferSize);
             assertTrue(receiveBufferSize >= MAX_LENGTH);
         }

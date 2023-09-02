@@ -28,7 +28,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
+import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -47,13 +49,11 @@ import java.util.concurrent.atomic.LongAdder;
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.ThreadLocalRandom.current;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.longThat;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.BDDMockito.willAnswer;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockingDetails;
 import static org.mockito.Mockito.when;
@@ -69,9 +69,11 @@ import static org.mockito.Mockito.when;
 @Slf4j
 public abstract class _HelloWorldTest {
 
-    protected static <T extends WritableByteChannel> T _stub_ToWriteSome(T channel, LongAdder adder)
+    protected static <T extends WritableByteChannel> T _stub_ToWriteSome(
+            T channel, LongAdder adder)
             throws IOException {
-        if (!mockingDetails(requireNonNull(channel, "channel is null")).isMock()) {
+        if (!mockingDetails(
+                requireNonNull(channel, "channel is null")).isMock()) {
             throw new IllegalArgumentException("not a mock: " + channel);
         }
         willAnswer(i -> {
@@ -99,9 +101,11 @@ public abstract class _HelloWorldTest {
      * @param <T>     channel type parameter
      * @return given {@code channel}.
      */
-    protected static <T extends AsynchronousFileChannel> T _stub_ToWriteSome(T channel,
-                                                                             LongAdder adder) {
-        if (!mockingDetails(requireNonNull(channel, "channel is null")).isMock()) {
+    protected static <T extends AsynchronousFileChannel> T _stub_ToWriteSome(
+            T channel,
+            LongAdder adder) {
+        if (!mockingDetails(
+                requireNonNull(channel, "channel is null")).isMock()) {
             throw new IllegalArgumentException("not a mock: " + channel);
         }
         requireNonNull(adder, "adder is null");
@@ -133,9 +137,11 @@ public abstract class _HelloWorldTest {
      * @param exc     the error for the {@code exc} parameter.
      */
     @SuppressWarnings({"unchecked"})
-    protected static <T extends Throwable> T _stub_ToFail(AsynchronousFileChannel channel,
-                                                          final T exc) {
-        if (!mockingDetails(requireNonNull(channel, "channel is null")).isMock()) {
+    protected static <T extends Throwable> T _stub_ToFail(
+            AsynchronousFileChannel channel,
+            final T exc) {
+        if (!mockingDetails(
+                requireNonNull(channel, "channel is null")).isMock()) {
             throw new IllegalArgumentException("not a mock: " + channel);
         }
         requireNonNull(exc, "exc is null");
@@ -149,15 +155,17 @@ public abstract class _HelloWorldTest {
         }).given(channel).write(
                 argThat(b -> b != null && b.hasRemaining()),
                 longThat(v -> v >= 0L),
-                any(),
+                ArgumentMatchers.any(),
                 notNull()
         );
         return exc;
     }
 
     @SuppressWarnings({"unchecked"})
-    protected static void _stub_ToComplete(AsynchronousFileChannel channel, LongAdder adder) {
-        if (!mockingDetails(requireNonNull(channel, "channel is null")).isMock()) {
+    protected static void _stub_ToComplete(AsynchronousFileChannel channel,
+                                           LongAdder adder) {
+        if (!mockingDetails(
+                requireNonNull(channel, "channel is null")).isMock()) {
             throw new IllegalArgumentException("not a mock: " + channel);
         }
         willAnswer(i -> {
@@ -175,7 +183,7 @@ public abstract class _HelloWorldTest {
         }).given(channel).write(
                 argThat(b -> b != null && b.hasRemaining()),
                 longThat(v -> v >= 0L),
-                any(),
+                ArgumentMatchers.any(),
                 notNull()
         );
     }
@@ -185,8 +193,10 @@ public abstract class _HelloWorldTest {
     }
 
     @SuppressWarnings({"unchecked"})
-    protected static <T extends Throwable> T _stub_ToFail(AsynchronousByteChannel channel, T exc) {
-        if (!mockingDetails(requireNonNull(channel, "channel is null")).isMock()) {
+    protected static <T extends Throwable> T _stub_ToFail(
+            AsynchronousByteChannel channel, T exc) {
+        if (!mockingDetails(
+                requireNonNull(channel, "channel is null")).isMock()) {
             throw new IllegalArgumentException("not a mock: " + channel);
         }
         willAnswer(i -> {
@@ -197,20 +207,24 @@ public abstract class _HelloWorldTest {
             return null;
         }).given(channel).write(
                 argThat(b -> b != null && b.hasRemaining()), // <src>
-                any(),                                       // <attachment>
+                ArgumentMatchers.any(),
+                // <attachment>
                 notNull()                                    // <handler>
         );
         return exc;
     }
 
-    protected static <T extends AsynchronousByteChannel> T _stub_ToComplete(T channel) {
+    protected static <T extends AsynchronousByteChannel> T _stub_ToComplete(
+            T channel) {
         return _stub_ToComplete(channel, new LongAdder());
     }
 
     @SuppressWarnings({"unchecked"})
-    protected static <T extends AsynchronousByteChannel> T _stub_ToComplete(T channel,
-                                                                            LongAdder adder) {
-        if (!mockingDetails(requireNonNull(channel, "channel is null")).isMock()) {
+    protected static <T extends AsynchronousByteChannel> T _stub_ToComplete(
+            T channel,
+            LongAdder adder) {
+        if (!mockingDetails(
+                requireNonNull(channel, "channel is null")).isMock()) {
             throw new IllegalArgumentException("not a mock: " + channel);
         }
         requireNonNull(adder, "adder is null");
@@ -225,14 +239,17 @@ public abstract class _HelloWorldTest {
             return null;
         }).given(channel).write(
                 argThat(b -> b != null && b.hasRemaining()), // <src>
-                any(),                                       // <attachment>
+                ArgumentMatchers.any(),
+                // <attachment>
                 notNull()                                    // <handler>
         );
         return channel;
     }
 
-    protected static void _stub_ToWriteSome(AsynchronousByteChannel channel, LongAdder adder) {
-        if (!mockingDetails(requireNonNull(channel, "channel is null")).isMock()) {
+    protected static void _stub_ToWriteSome(AsynchronousByteChannel channel,
+                                            LongAdder adder) {
+        if (!mockingDetails(
+                requireNonNull(channel, "channel is null")).isMock()) {
             throw new IllegalArgumentException("not a mock: " + channel);
         }
         requireNonNull(adder, "adder is null");
@@ -266,7 +283,8 @@ public abstract class _HelloWorldTest {
             buffer.position(buffer.limit());
             return buffer;
         }).given(serviceInstance).put(
-                argThat(b -> b != null && b.capacity() == BYTES && b.remaining() == BYTES)
+                argThat(b -> b != null && b.capacity() == BYTES
+                             && b.remaining() == BYTES)
         );
     }
 
@@ -275,7 +293,8 @@ public abstract class _HelloWorldTest {
      * {@link HelloWorld#write(OutputStream) write(stream)} method to write
      * {@value HelloWorld#BYTES} bytes to the {@code stream}, and return the {@code stream}.
      */
-    protected void _stub_WriteStream_ToWrite12BytesAndReturnTheStream() throws IOException {
+    protected void _stub_WriteStream_ToWrite12BytesAndReturnTheStream()
+            throws IOException {
         willAnswer(i -> {
             var stream = i.getArgument(0, OutputStream.class);
             stream.write(new byte[BYTES]);
@@ -288,9 +307,9 @@ public abstract class _HelloWorldTest {
      * method to just return the {@code array}.
      */
     protected void _stub_SetArray_ToReturnTheArray() {
-        doAnswer(i -> i.getArgument(0))
+        Mockito.doAnswer(i -> i.getArgument(0))
                 .when(serviceInstance)
-                .set(any(byte[].class));
+                .set(ArgumentMatchers.any(byte[].class));
     }
 
     /**
@@ -300,7 +319,8 @@ public abstract class _HelloWorldTest {
      */
     @BeforeEach
     void _stub_SetArrayWithIndex_ToReturnTheArray() {
-        when(serviceInstance.set(any(byte[].class), anyInt()))  // <1>
+        when(serviceInstance.set(ArgumentMatchers.any(byte[].class),
+                                 anyInt()))  // <1>
                 .thenAnswer(i -> i.getArgument(0)); // <2>
     }
 
@@ -309,9 +329,9 @@ public abstract class _HelloWorldTest {
      * {@link HelloWorld#print(char[]) print(chars)} method to just return the {@code chars}.
      */
     protected void _stub_PrintChars_ToReturnTheChars() {
-        doAnswer(i -> i.getArgument(0))
+        Mockito.doAnswer(i -> i.getArgument(0))
                 .when(serviceInstance)
-                .print(any(char[].class));
+                .print(ArgumentMatchers.any(char[].class));
     }
 
     /**
@@ -320,9 +340,9 @@ public abstract class _HelloWorldTest {
      * {@code chars} argument.
      */
     protected void _stub_PrintCharsWithOffset_ToReturnTheChars() {
-        doAnswer(i -> i.getArgument(0))            // <1>
+        Mockito.doAnswer(i -> i.getArgument(0))            // <1>
                 .when(serviceInstance)             // <2>
-                .print(any(char[].class), anyInt()); // <1>
+                .print(ArgumentMatchers.any(char[].class), anyInt()); // <1>
     }
 
     @Spy

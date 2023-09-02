@@ -20,6 +20,7 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import com.github.jinahya.hello.util.HelloWorldServerUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -39,9 +40,11 @@ import java.util.concurrent.Executors;
 class HelloWorldServerUdp2 extends AbstractHelloWorldServer {
 
     @Override
-    protected void openInternal(SocketAddress endpoint, Path dir) throws IOException {
+    protected void openInternal(SocketAddress endpoint, Path dir)
+            throws IOException {
         socket = new DatagramSocket(null);
-        if (endpoint instanceof InetSocketAddress && ((InetSocketAddress) endpoint).getPort() > 0) {
+        if (endpoint instanceof InetSocketAddress
+            && ((InetSocketAddress) endpoint).getPort() > 0) {
             socket.setReuseAddress(true);
         }
         try {
@@ -65,7 +68,8 @@ class HelloWorldServerUdp2 extends AbstractHelloWorldServer {
                         log.debug("[S] received from {}", address);
                         var array = new byte[HelloWorld.BYTES];
                         service().set(array);
-                        var sending = new DatagramPacket(array, array.length, address);
+                        var sending = new DatagramPacket(array, array.length,
+                                                         address);
                         try {
                             socket.send(sending);
                             log.debug("[S] sent to {}", address);

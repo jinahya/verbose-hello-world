@@ -78,13 +78,14 @@ class HelloWorld_33_Write_WritableByteChannel_Test extends _HelloWorldTest {
         var service = serviceInstance();
         var channel = mock(WritableByteChannel.class);               // <1>
         var writtenSoFar = new LongAdder();                          // <2>
-        when(channel.write(argThat(b -> b != null && b.hasRemaining()))).thenAnswer(i -> { // <3>
-            var src = i.getArgument(0, ByteBuffer.class);
-            var written = current().nextInt(1, src.remaining() + 1);
-            src.position(src.position() + written);
-            writtenSoFar.add(written);
-            return written;
-        });
+        when(channel.write(argThat(b -> b != null && b.hasRemaining())))
+                .thenAnswer(i -> { // <3>
+                    var src = i.getArgument(0, ByteBuffer.class);
+                    var written = current().nextInt(1, src.remaining() + 1);
+                    src.position(src.position() + written);
+                    writtenSoFar.add(written);
+                    return written;
+                });
         // ------------------------------------------------------------------------------------ WHEN
         var result = service.write(channel);
         // ------------------------------------------------------------------------------------ THEN
@@ -97,7 +98,8 @@ class HelloWorld_33_Write_WritableByteChannel_Test extends _HelloWorldTest {
         assertEquals(channel, result);
     }
 
-    @org.junit.jupiter.api.Disabled("not implemented yet") // TODO: remove when implemented
+    @org.junit.jupiter.api.Disabled("not implemented yet")
+    // TODO: remove when implemented
     @Test
     void _ReadByteArrayInputStream_WriteByteArrayOutputStream() throws IOException {
         var service = serviceInstance();
@@ -112,7 +114,8 @@ class HelloWorld_33_Write_WritableByteChannel_Test extends _HelloWorldTest {
         }
     }
 
-    @org.junit.jupiter.api.Disabled("not implemented yet") // TODO: remove when implemented
+    @org.junit.jupiter.api.Disabled("not implemented yet")
+    // TODO: remove when implemented
     @Test
     void _ReadPipeSource_WritePipeSink() throws IOException, InterruptedException {
         var service = serviceInstance();

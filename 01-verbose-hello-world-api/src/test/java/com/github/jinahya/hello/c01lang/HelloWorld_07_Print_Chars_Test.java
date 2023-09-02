@@ -28,7 +28,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -63,7 +62,6 @@ class HelloWorld_07_Print_Chars_Test extends _HelloWorldTest {
         var result = service.print(chars);
         // ------------------------------------------------------------------------------------ THEN
         verify(service, times(1)).print(chars, 0);
-        assertNotNull(result);
         assertSame(chars, result);
     }
 }

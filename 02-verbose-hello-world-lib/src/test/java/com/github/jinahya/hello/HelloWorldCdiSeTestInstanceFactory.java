@@ -36,8 +36,9 @@ import org.junit.jupiter.api.extension.TestInstantiationException;
 class HelloWorldCdiSeTestInstanceFactory implements TestInstanceFactory {
 
     @Override
-    public Object createTestInstance(TestInstanceFactoryContext testInstanceFactoryContext,
-                                     ExtensionContext extensionContext)
+    public Object createTestInstance(
+            TestInstanceFactoryContext testInstanceFactoryContext,
+            ExtensionContext extensionContext)
             throws TestInstantiationException {
         var testClass = testInstanceFactoryContext.getTestClass();
         var seContainerInitializer = SeContainerInitializer.newInstance()

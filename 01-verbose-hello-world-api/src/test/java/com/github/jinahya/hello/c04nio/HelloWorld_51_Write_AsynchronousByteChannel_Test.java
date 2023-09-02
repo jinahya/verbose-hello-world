@@ -73,17 +73,18 @@ class HelloWorld_51_Write_AsynchronousByteChannel_Test extends _HelloWorldTest {
         var channel = mock(AsynchronousByteChannel.class);
         var writtenSoFar = new LongAdder();
         _stub_ToWriteSome(channel, writtenSoFar);
-        when(channel.write(argThat(s -> s != null && s.hasRemaining()))).thenAnswer(w -> {
-            var future = mock(Future.class);
-            when(future.get()).thenAnswer(g -> {
-                var src = w.getArgument(0, ByteBuffer.class);
-                var written = current().nextInt(1, src.remaining() + 1);
-                src.position(src.position() + written);
-                writtenSoFar.add(written);
-                return written;
-            });
-            return future;
-        });
+        when(channel.write(argThat(s -> s != null && s.hasRemaining())))
+                .thenAnswer(w -> {
+                    var future = mock(Future.class);
+                    when(future.get()).thenAnswer(g -> {
+                        var src = w.getArgument(0, ByteBuffer.class);
+                        var written = current().nextInt(1, src.remaining() + 1);
+                        src.position(src.position() + written);
+                        writtenSoFar.add(written);
+                        return written;
+                    });
+                    return future;
+                });
         // ------------------------------------------------------------------------------------ WHEN
         var result = service.write(channel);
         // ------------------------------------------------------------------------------------ THEN

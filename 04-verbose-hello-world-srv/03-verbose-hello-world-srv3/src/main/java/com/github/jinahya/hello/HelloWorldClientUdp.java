@@ -20,6 +20,7 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import com.github.jinahya.hello.util.HelloWorldServerUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.SocketAddress;
@@ -33,9 +34,11 @@ import java.util.function.Consumer;
 @Slf4j
 public class HelloWorldClientUdp {
 
-    static void runClients(int count, SocketAddress endpoint, Consumer<? super String> consumer) {
+    static void runClients(int count, SocketAddress endpoint,
+                           Consumer<? super String> consumer) {
         if (count <= 0) {
-            throw new IllegalArgumentException("count(" + count + ") is not positive");
+            throw new IllegalArgumentException(
+                    "count(" + count + ") is not positive");
         }
         Objects.requireNonNull(endpoint, "endpoint is null");
         Objects.requireNonNull(consumer, "consumer is null");
@@ -50,7 +53,8 @@ public class HelloWorldClientUdp {
                     log.debug("[C] received from {}", address);
                     var array = buffer.array();
                     var length = buffer.position();
-                    var string = new String(array, 0, length, StandardCharsets.US_ASCII);
+                    var string = new String(array, 0, length,
+                                            StandardCharsets.US_ASCII);
                     consumer.accept(string);
                 }
                 return null;

@@ -20,6 +20,7 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import com.github.jinahya.hello.util.HelloWorldServerUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -47,10 +48,12 @@ class HelloWorldClientUdp2 {
      * @throws InterruptedException if the current thread interrupted while waiting all clients to
      *                              finish.
      */
-    static void runClients(int count, SocketAddress endpoint, Consumer<? super String> consumer)
+    static void runClients(int count, SocketAddress endpoint,
+                           Consumer<? super String> consumer)
             throws InterruptedException {
         if (count <= 0) {
-            throw new IllegalArgumentException("count(" + count + ") is not positive");
+            throw new IllegalArgumentException(
+                    "count(" + count + ") is not positive");
         }
         Objects.requireNonNull(endpoint, "endpoint is null");
         Objects.requireNonNull(consumer, "consumer is null");
@@ -63,15 +66,19 @@ class HelloWorldClientUdp2 {
                     log.debug("[C] sent to {}", endpoint);
                     var array = new byte[HelloWorld.BYTES];
                     var received = new DatagramPacket(array, array.length);
-                    client.setSoTimeout((int) TimeUnit.SECONDS.toMillis(1L)); // SocketException
+                    client.setSoTimeout((int) TimeUnit.SECONDS.toMillis(
+                            1L)); // SocketException
                     client.receive(received); // IOException
-                    log.debug("[C] received from {}", received.getSocketAddress());
+                    log.debug("[C] received from {}",
+                              received.getSocketAddress());
                     var length = received.getLength();
                     assert length == array.length;
-                    var string = new String(array, 0, length, StandardCharsets.US_ASCII);
+                    var string = new String(array, 0, length,
+                                            StandardCharsets.US_ASCII);
                     consumer.accept(string);
                 } catch (IOException ioe) {
-                    log.error("failed to send/receive to/from {}", endpoint, ioe);
+                    log.error("failed to send/receive to/from {}", endpoint,
+                              ioe);
                 } finally {
                     latch.countDown();
                 }

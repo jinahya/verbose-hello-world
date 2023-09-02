@@ -20,6 +20,7 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import com.github.jinahya.hello.util.HelloWorldServerUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -43,8 +44,7 @@ import static java.nio.channels.SelectionKey.OP_WRITE;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorldServerUdp
-        extends AbstractHelloWorldServer {
+class HelloWorldServerUdp extends AbstractHelloWorldServer {
 
     private void handle(Set<SelectionKey> keys) throws IOException {
         for (var key : keys) {
@@ -90,7 +90,8 @@ class HelloWorldServerUdp
         }
         log.info("server bound to {}", server.getLocalAddress());
         if (dir != null) {
-            HelloWorldServerUtils.writePortNumber(dir, server.socket().getLocalPort());
+            HelloWorldServerUtils.writePortNumber(dir, server.socket()
+                    .getLocalPort());
         }
         thread = new Thread(() -> {
             try (var selector = Selector.open()) {

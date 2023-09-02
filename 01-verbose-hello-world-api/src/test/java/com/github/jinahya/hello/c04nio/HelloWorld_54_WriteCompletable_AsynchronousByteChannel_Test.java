@@ -49,8 +49,7 @@ import static org.mockito.Mockito.mock;
  */
 @DisplayName("writeCompletable(channel)")
 @Slf4j
-class HelloWorld_54_WriteCompletable_AsynchronousByteChannel_Test
-        extends _HelloWorldTest {
+class HelloWorld_54_WriteCompletable_AsynchronousByteChannel_Test extends _HelloWorldTest {
 
     @BeforeEach
     @SuppressWarnings({
@@ -67,7 +66,8 @@ class HelloWorld_54_WriteCompletable_AsynchronousByteChannel_Test
                     attachment,
                     new CompletionHandler<>() {
                         @Override
-                        public void completed(Integer result, Object attachment) {
+                        public void completed(Integer result,
+                                              Object attachment) {
                             if (!src.hasRemaining()) {
                                 handler.completed(channel, attachment);
                             }

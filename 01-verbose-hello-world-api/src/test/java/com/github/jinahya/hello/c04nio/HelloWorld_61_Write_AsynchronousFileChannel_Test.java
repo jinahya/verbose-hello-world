@@ -69,7 +69,8 @@ class HelloWorld_61_Write_AsynchronousFileChannel_Test extends _HelloWorldTest {
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
      */
-    @DisplayName("(channel, position) -> put(buffer[12]) -> channel.write(buffer)+")
+    @DisplayName(
+            "(channel, position) -> put(buffer[12]) -> channel.write(buffer)+")
     @Test
     void _PutBufferWriteBufferToChannel_() throws InterruptedException, ExecutionException {
         // ----------------------------------------------------------------------------------- GIVEN

@@ -57,7 +57,10 @@ class HelloWorld_31_Put_ByteBuffer_Arguments_Test extends _HelloWorldTest {
         var service = serviceInstance();
         var buffer = (ByteBuffer) null;
         // ------------------------------------------------------------------------------- WHEN/THEN
-        assertThrows(NullPointerException.class, () -> service.put(buffer));
+        assertThrows(
+                NullPointerException.class,
+                () -> service.put(buffer)
+        );
     }
 
     /**
@@ -73,6 +76,9 @@ class HelloWorld_31_Put_ByteBuffer_Arguments_Test extends _HelloWorldTest {
         var buffer = mock(ByteBuffer.class);
         when(buffer.remaining()).thenReturn(current().nextInt(BYTES));
         // ------------------------------------------------------------------------------- WHEN/THEN
-        assertThrows(BufferOverflowException.class, () -> service.put(buffer));
+        assertThrows(
+                BufferOverflowException.class,
+                () -> service.put(buffer)
+        );
     }
 }

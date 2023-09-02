@@ -73,7 +73,8 @@ class HelloWorld_41_Append_Path_Test extends _HelloWorldTest {
         }).given(serviceInstance()).write(notNull(WritableByteChannel.class));
     }
 
-    @DisplayName("(path) -> write(FileChannel.open(path, CREATE, WRITE, APPEND))")
+    @DisplayName(
+            "(path) -> write(FileChannel.open(path, CREATE, WRITE, APPEND))")
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- GIVEN
@@ -81,7 +82,9 @@ class HelloWorld_41_Append_Path_Test extends _HelloWorldTest {
         var path = mock(Path.class);
         var channel = _stub_ToWriteSome(mock(FileChannel.class), null);
         try (var mockedStatic = mockStatic(FileChannel.class)) {
-            mockedStatic.when(() -> open(same(path), any(OpenOption[].class))).thenReturn(channel);
+            mockedStatic
+                    .when(() -> open(same(path), any(OpenOption[].class)))
+                    .thenReturn(channel);
             // -------------------------------------------------------------------------------- WHEN
             var result = service.append(path);
             // -------------------------------------------------------------------------------- THEN
@@ -101,7 +104,8 @@ class HelloWorld_41_Append_Path_Test extends _HelloWorldTest {
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
-    @org.junit.jupiter.api.Disabled("not implemented yet") // TODO: Remove when implemented
+    @org.junit.jupiter.api.Disabled("not implemented yet")
+    // TODO: Remove when implemented
     @DisplayName("(path) -> 12 bytes are appended")
     @Test
     @畵蛇添足

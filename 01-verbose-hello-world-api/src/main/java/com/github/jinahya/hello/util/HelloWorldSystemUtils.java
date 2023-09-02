@@ -20,16 +20,12 @@ package com.github.jinahya.hello.util;
  * #L%
  */
 
-import java.time.Duration;
-
 /**
  * System utilities.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 public final class HelloWorldSystemUtils {
-
-
 
     private HelloWorldSystemUtils() {
         throw new AssertionError("instantiation is not allowed");

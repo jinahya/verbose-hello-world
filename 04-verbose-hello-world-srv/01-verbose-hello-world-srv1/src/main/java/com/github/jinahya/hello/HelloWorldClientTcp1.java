@@ -41,18 +41,23 @@ class HelloWorldClientTcp1 {
      * @param consumer the consumer accepts the string.
      * @throws IOException if an I/O error occurs.
      */
-    static void connect(SocketAddress endpoint, Consumer<? super String> consumer)
+    static void connect(SocketAddress endpoint,
+                        Consumer<? super String> consumer)
             throws IOException {
         Objects.requireNonNull(endpoint, "endpoint is null");
         Objects.requireNonNull(consumer, "consumer is null");
         try (var client = new Socket()) {                                           // <1>
-            client.connect(endpoint);                                               // <2>
+            client.connect(
+                    endpoint);                                               // <2>
             log.debug("[C] connected to {}", client.getRemoteSocketAddress());
             var array = new byte[HelloWorld.BYTES];                                 // <3>
-            var bytes = client.getInputStream().readNBytes(array, 0, array.length); // <4>
+            var bytes = client.getInputStream()
+                    .readNBytes(array, 0, array.length); // <4>
             assert bytes == HelloWorld.BYTES;
-            var string = new String(array, 0, bytes, StandardCharsets.US_ASCII);    // <5>
-            consumer.accept(string);                                                // <6>
+            var string = new String(array, 0, bytes,
+                                    StandardCharsets.US_ASCII);    // <5>
+            consumer.accept(
+                    string);                                                // <6>
         }
     }
 
@@ -66,10 +71,12 @@ class HelloWorldClientTcp1 {
      * @param consumer the consumer accepts the string.
      * @throws IOException if an I/O error occurs.
      */
-    static void connect(int count, SocketAddress endpoint, Consumer<? super String> consumer)
+    static void connect(int count, SocketAddress endpoint,
+                        Consumer<? super String> consumer)
             throws IOException {
         if (count <= 0) {
-            throw new IllegalArgumentException("count(" + count + ") is not positive");
+            throw new IllegalArgumentException(
+                    "count(" + count + ") is not positive");
         }
         Objects.requireNonNull(endpoint, "endpoint is null");
         Objects.requireNonNull(consumer, "consumer is null");

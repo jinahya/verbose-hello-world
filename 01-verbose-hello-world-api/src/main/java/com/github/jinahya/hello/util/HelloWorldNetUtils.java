@@ -61,9 +61,11 @@ public final class HelloWorldNetUtils {
         }
     }
 
-    public static void printSocketOptions(Object socket) throws ReflectiveOperationException {
+    public static void printSocketOptions(Object socket)
+            throws ReflectiveOperationException {
         Objects.requireNonNull(socket, "socket is null");
-        var method = socket.getClass().getMethod("getOption", SocketOption.class);
+        var method = socket.getClass()
+                .getMethod("getOption", SocketOption.class);
         acceptEachStandardSocketOption(so -> {
             var name = so.name();
             var type = so.type();
@@ -72,7 +74,8 @@ public final class HelloWorldNetUtils {
                 value = method.invoke(socket, so);
             } catch (ReflectiveOperationException roe) {
                 value = "[ERROR] " +
-                        Optional.ofNullable(roe.getCause()).map(Throwable::getMessage).orElse(null);
+                        Optional.ofNullable(roe.getCause())
+                                .map(Throwable::getMessage).orElse(null);
             }
             System.out.printf("%1$s%n", so);
             System.out.printf("\ttype:\t%1$s%n", type);

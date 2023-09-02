@@ -52,7 +52,10 @@ class HelloWorld_07_Print_Chars_Arguments_Test extends _HelloWorldTest {
         var service = serviceInstance();
         var chars = (char[]) null;
         // ------------------------------------------------------------------------------- WHEN/THEN
-        assertThrows(NullPointerException.class, () -> service.print(chars));
+        assertThrows(
+                NullPointerException.class,
+                () -> service.print(chars)
+        );
     }
 
     /**
@@ -67,6 +70,9 @@ class HelloWorld_07_Print_Chars_Arguments_Test extends _HelloWorldTest {
         var service = serviceInstance();
         var chars = new char[current().nextInt(BYTES)];
         // ------------------------------------------------------------------------------- WHEN/THEN
-        assertThrows(ArrayIndexOutOfBoundsException.class, () -> service.print(chars));
+        assertThrows(
+                ArrayIndexOutOfBoundsException.class,
+                () -> service.print(chars)
+        );
     }
 }

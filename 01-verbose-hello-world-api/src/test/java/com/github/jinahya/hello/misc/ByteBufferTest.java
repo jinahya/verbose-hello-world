@@ -39,7 +39,8 @@ class ByteBufferTest {
 
     private static void debugArray(final String name, final byte[] array) {
         Objects.requireNonNull(array, "array is null");
-        log.debug("{}: ({})({}){}", name, String.format("%1$016x", Arrays.hashCode(array)),
+        log.debug("{}: ({})({}){}", name,
+                  String.format("%1$016x", Arrays.hashCode(array)),
                   array.length, array);
     }
 

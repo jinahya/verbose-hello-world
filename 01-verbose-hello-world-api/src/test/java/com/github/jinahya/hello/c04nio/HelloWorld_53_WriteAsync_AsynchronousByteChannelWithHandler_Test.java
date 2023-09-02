@@ -50,8 +50,7 @@ import static org.mockito.Mockito.verify;
  */
 @DisplayName("write(channel, handler, attachment)")
 @Slf4j
-class HelloWorld_53_WriteAsync_AsynchronousByteChannelWithHandler_Test
-        extends _HelloWorldTest {
+class HelloWorld_53_WriteAsync_AsynchronousByteChannelWithHandler_Test extends _HelloWorldTest {
 
     @BeforeEach
     void _beforeEach() {
@@ -100,7 +99,8 @@ class HelloWorld_53_WriteAsync_AsynchronousByteChannelWithHandler_Test
      * writeAsync(channel, handler, attachment)} method invokes
      * {@link CompletionHandler#failed(Throwable, Object) handler.failed(exc, attachment)}.
      */
-    @DisplayName("(channel, handler, attachment) -> handler.failed(exc, attachment)")
+    @DisplayName(
+            "(channel, handler, attachment) -> handler.failed(exc, attachment)")
     @Test
     @SuppressWarnings({"unchecked"})
     void _Failed_() {

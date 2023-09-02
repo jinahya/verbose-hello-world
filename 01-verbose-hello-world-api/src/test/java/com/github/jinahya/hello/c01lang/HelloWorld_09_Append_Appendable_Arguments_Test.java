@@ -50,6 +50,9 @@ class HelloWorld_09_Append_Appendable_Arguments_Test extends _HelloWorldTest {
         var service = serviceInstance();
         var appendable = (Appendable) null;
         // ------------------------------------------------------------------------------- WHEN/THEN
-        assertThrows(NullPointerException.class, () -> service.append(appendable));
+        assertThrows(
+                NullPointerException.class,
+                () -> service.append(appendable)
+        );
     }
 }

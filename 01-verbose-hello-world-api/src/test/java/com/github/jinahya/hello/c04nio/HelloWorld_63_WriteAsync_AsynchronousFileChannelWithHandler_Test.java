@@ -91,7 +91,8 @@ class HelloWorld_63_WriteAsync_AsynchronousFileChannelWithHandler_Test extends _
      * writeAsync(channel, handler, attachment)} method invokes
      * {@link CompletionHandler#failed(Throwable, Object) handler.failed(exc, attachment)}.
      */
-    @DisplayName("(channel, position, handler, attachment) -> handler.failed(exc, attachment)")
+    @DisplayName(
+            "(channel, position, handler, attachment) -> handler.failed(exc, attachment)")
     @Test
     @SuppressWarnings({"unchecked"})
     void _Failed_() {
@@ -105,7 +106,6 @@ class HelloWorld_63_WriteAsync_AsynchronousFileChannelWithHandler_Test extends _
         // ------------------------------------------------------------------------------------ WHEN
         service.writeAsync(channel, position, handler, attachment);
         // ------------------------------------------------------------------------------------ THEN
-        verify(handler, timeout(SECONDS.toMillis(8L)).times(1))
-                .failed(same(exc), same(attachment));
+        verify(handler, timeout(SECONDS.toMillis(8L)).times(1)).failed(same(exc), same(attachment));
     }
 }

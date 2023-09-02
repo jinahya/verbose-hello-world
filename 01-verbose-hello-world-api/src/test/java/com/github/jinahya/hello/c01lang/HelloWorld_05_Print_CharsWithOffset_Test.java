@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Test;
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -65,7 +66,6 @@ class HelloWorld_05_Print_CharsWithOffset_Test extends _HelloWorldTest {
         var array = arrayCaptor().getValue();
         assertNotNull(array);
         assertEquals(BYTES, array.length);
-        assertNotNull(result);
-        assertEquals(BYTES, result.length);
+        assertSame(chars, result);
     }
 }

@@ -43,21 +43,29 @@ class HelloWorldClientUdp1 {
      * @param consumer the consumer accepts the decoded string.
      * @throws IOException if an I/O error occurs.
      */
-    public static void connect(SocketAddress endpoint, Consumer<? super String> consumer)
+    public static void connect(SocketAddress endpoint,
+                               Consumer<? super String> consumer)
             throws IOException {
         Objects.requireNonNull(endpoint, "endpoint is null");
         Objects.requireNonNull(consumer, "consumer is null");
-        try (var client = new DatagramSocket(null)) {                             // <1>
-            client.send(new DatagramPacket(new byte[0], 0, endpoint));            // <2>
+        try (var client = new DatagramSocket(
+                null)) {                             // <1>
+            client.send(new DatagramPacket(new byte[0], 0,
+                                           endpoint));            // <2>
             log.debug("[C] sent to {}", endpoint);
             var array = new byte[HelloWorld.BYTES];                               // <3>
-            var packet = new DatagramPacket(array, array.length);                 // <4>
-            client.receive(packet);                                               // <5>
+            var packet = new DatagramPacket(array,
+                                            array.length);                 // <4>
+            client.receive(
+                    packet);                                               // <5>
             var length = packet.getLength();
-            assert length == HelloWorld.BYTES;                                    // <6>
+            assert length
+                   == HelloWorld.BYTES;                                    // <6>
             log.debug("[C] received from {}", packet.getSocketAddress());
-            var string = new String(array, 0, length, StandardCharsets.US_ASCII); // <7>
-            consumer.accept(string);                                              // <8>
+            var string = new String(array, 0, length,
+                                    StandardCharsets.US_ASCII); // <7>
+            consumer.accept(
+                    string);                                              // <8>
         }
     }
 
@@ -71,10 +79,12 @@ class HelloWorldClientUdp1 {
      * @param consumer the consumer accepts the decoded string.
      * @throws IOException if an I/O error occurs.
      */
-    public static void connect(int count, SocketAddress endpoint, Consumer<? super String> consumer)
+    public static void connect(int count, SocketAddress endpoint,
+                               Consumer<? super String> consumer)
             throws IOException {
         if (count <= 0) {
-            throw new IllegalArgumentException("count(" + count + ") is not positive");
+            throw new IllegalArgumentException(
+                    "count(" + count + ") is not positive");
         }
         for (int i = 0; i < count; i++) {
             connect(endpoint, consumer);

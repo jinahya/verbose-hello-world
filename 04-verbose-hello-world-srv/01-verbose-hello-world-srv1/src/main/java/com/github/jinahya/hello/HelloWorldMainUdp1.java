@@ -20,6 +20,7 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import com.github.jinahya.hello.util.HelloWorldServerUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -39,7 +40,7 @@ class HelloWorldMainUdp1 {
      * @throws IOException if an I/O error occurs.
      */
     public static void main(String... args) throws IOException {
-        var endpoint = HelloWorldServerUtils.parseEndpoint(args);
+        var endpoint = HelloWorldServerUtils.parseAddr(args);
         try (var server = new HelloWorldServerUdp1()) {
             server.open(endpoint, null);
             HelloWorldServerUtils.readQuitFromStandardInput();

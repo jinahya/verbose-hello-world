@@ -36,18 +36,25 @@ public final class HelloWorldTestUtils {
     public static <T extends ByteBuffer> T print(T buffer) {
         Objects.requireNonNull(buffer, "buffer is null");
         var padding = 11;
-        System.out.println("---------------------------------------------------------------------");
+        System.out.println(
+                "---------------------------------------------------------------------");
         System.out.printf("%1$" + padding + "s: %2$s%n", "buffer", buffer);
-        System.out.printf("%1$" + padding + "s: %2$d%n", "remaining", buffer.remaining());
-        System.out.printf("%1$" + padding + "s: %2$b%n", "direct", buffer.isDirect());
-        System.out.printf("%1$" + padding + "s: %2$b%n", "hasArray", buffer.hasArray());
+        System.out.printf("%1$" + padding + "s: %2$d%n", "remaining",
+                          buffer.remaining());
+        System.out.printf("%1$" + padding + "s: %2$b%n", "direct",
+                          buffer.isDirect());
+        System.out.printf("%1$" + padding + "s: %2$b%n", "hasArray",
+                          buffer.hasArray());
         if (buffer.hasArray()) {
-            System.out.printf("%1$" + padding + "s: %2$d%n", "arrayOffset", buffer.arrayOffset());
+            System.out.printf("%1$" + padding + "s: %2$d%n", "arrayOffset",
+                              buffer.arrayOffset());
         }
-        System.out.println("---------------------------------------------------------------------");
+        System.out.println(
+                "---------------------------------------------------------------------");
         var arrayOffset = buffer.hasArray() ? buffer.arrayOffset() : 0;
         var ppadding = padding + arrayOffset + buffer.position() + 3;
-        System.out.printf("%1$" + ppadding + "c pos(%2$d)%n", '↓', buffer.position()); //   ↓ pos(p)
+        System.out.printf("%1$" + ppadding + "c pos(%2$d)%n", '↓',
+                          buffer.position()); //   ↓ pos(p)
         System.out.printf("%1$" + padding + "s: ", "buffer");
         for (int i = 0; i < arrayOffset; i++) {
             System.out.print(' ');
@@ -58,31 +65,38 @@ public final class HelloWorldTestUtils {
         for (int i = 0; i < buffer.remaining(); i++) {
             System.out.print('*');
         }
-        for (int i = buffer.position() + buffer.remaining(); i < buffer.capacity(); i++) {
+        for (int i = buffer.position() + buffer.remaining();
+             i < buffer.capacity(); i++) {
             System.out.print('-');
         }
-        System.out.printf(" %1$c cap(%2$d)%n", '←', buffer.capacity()); //                  ← cap(c)
+        System.out.printf(" %1$c cap(%2$d)%n", '←',
+                          buffer.capacity()); //                  ← cap(c)
         var lpadding = padding + arrayOffset + buffer.limit() + 3;
-        System.out.printf("%1$" + lpadding + "c lim(%2$d)%n", '↑', buffer.limit()); //      ↑ lim(l)
+        System.out.printf("%1$" + lpadding + "c lim(%2$d)%n", '↑',
+                          buffer.limit()); //      ↑ lim(l)
         if (buffer.hasArray()) {
             for (int i = 0; i < (padding + buffer.arrayOffset() + 2); i++) {
                 System.out.print(' ');
             }
-            System.out.printf("%1$c arrayOffset(%2$d)%n", '↓', buffer.arrayOffset());
+            System.out.printf("%1$c arrayOffset(%2$d)%n", '↓',
+                              buffer.arrayOffset());
             System.out.printf("%1$" + padding + "s: ", "array");
             for (int i = 0; i < buffer.arrayOffset(); i++) {
                 System.out.print('-');
             }
             var array = buffer.array();
-            for (int i = buffer.arrayOffset(); i < buffer.arrayOffset() + buffer.capacity(); i++) {
+            for (int i = buffer.arrayOffset();
+                 i < buffer.arrayOffset() + buffer.capacity(); i++) {
                 System.out.print('+');
             }
-            for (int i = buffer.arrayOffset() + buffer.capacity(); i < array.length; i++) {
+            for (int i = buffer.arrayOffset() + buffer.capacity();
+                 i < array.length; i++) {
                 System.out.print('-');
             }
             System.out.printf(" %1$c length(%2$d)%n", '←', array.length);
         }
-        System.out.println("---------------------------------------------------------------------");
+        System.out.println(
+                "---------------------------------------------------------------------");
         return buffer;
     }
 

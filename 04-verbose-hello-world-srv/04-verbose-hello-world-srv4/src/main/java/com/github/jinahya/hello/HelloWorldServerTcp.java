@@ -20,6 +20,7 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import com.github.jinahya.hello.util.HelloWorldServerUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -45,8 +46,7 @@ import static java.util.Objects.requireNonNull;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorldServerTcp
-        extends AbstractHelloWorldServer {
+class HelloWorldServerTcp extends AbstractHelloWorldServer {
 
     /**
      * Creates a new instance with specified local address to bind.
@@ -62,8 +62,7 @@ class HelloWorldServerTcp
      * @param selector a selector.
      * @throws IOException if an I/O error occurs.
      */
-    private void handle(Set<SelectionKey> keys, Selector selector)
-            throws IOException {
+    private void handle(Set<SelectionKey> keys, Selector selector) throws IOException {
         requireNonNull(keys, "keys is null");
         if (keys.isEmpty()) {
             throw new IllegalArgumentException("empty keys");
@@ -105,7 +104,8 @@ class HelloWorldServerTcp
         }
         log.info("server bound to {}", server.getLocalAddress());
         if (dir != null) {
-            HelloWorldServerUtils.writePortNumber(dir, server.socket().getLocalPort());
+            HelloWorldServerUtils.writePortNumber(dir, server.socket()
+                    .getLocalPort());
         }
         thread = new Thread(() -> {
             try (var selector = Selector.open()) {

@@ -33,11 +33,13 @@ public class HelloWorldImpl implements HelloWorld {
     public byte[] set(byte[] array, int index) {
         Objects.requireNonNull(array, "array is null");
         if (index < 0) {
-            throw new ArrayIndexOutOfBoundsException("index(" + index + ") < 0");
+            throw new ArrayIndexOutOfBoundsException(
+                    "index(" + index + ") < 0");
         }
         if (index + BYTES > array.length) {
             throw new ArrayIndexOutOfBoundsException(
-                    "index(" + index + ") + " + BYTES + " > array.length(" + array.length + ")");
+                    "index(" + index + ") + " + BYTES + " > array.length("
+                    + array.length + ")");
         }
         // TODO: Set 'hello, world' on array starting at index
         return array;

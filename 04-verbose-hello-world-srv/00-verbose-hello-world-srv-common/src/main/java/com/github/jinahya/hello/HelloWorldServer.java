@@ -20,6 +20,8 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import com.github.jinahya.hello.util.HelloWorldServerUtils;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.SocketAddress;
@@ -65,6 +67,6 @@ public interface HelloWorldServer
      * @return an instance of {@link HelloWorld}.
      */
     default HelloWorld service() {
-        return HelloWorldServerHelper.service();
+        return HelloWorldServerHelper.loadService();
     }
 }

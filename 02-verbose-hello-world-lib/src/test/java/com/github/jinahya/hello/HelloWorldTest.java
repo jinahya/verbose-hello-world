@@ -57,7 +57,8 @@ abstract class HelloWorldTest {
         var array = (byte[]) null;
         var index = current().nextInt() & MAX_VALUE;
         // ------------------------------------------------------------------------------- WHEN/THEN
-        assertThrows(NullPointerException.class, () -> service.set((byte[]) null, 0));
+        assertThrows(NullPointerException.class,
+                     () -> service.set((byte[]) null, 0));
     }
 
     /**
@@ -72,7 +73,8 @@ abstract class HelloWorldTest {
         var array = new byte[0];
         var index = current().nextInt() | Integer.MIN_VALUE;
         // ------------------------------------------------------------------------------- WHEN/THEN
-        assertThrows(IndexOutOfBoundsException.class, () -> service.set(array, index));
+        assertThrows(IndexOutOfBoundsException.class,
+                     () -> service.set(array, index));
     }
 
     /**
@@ -80,7 +82,8 @@ abstract class HelloWorldTest {
      * {@code IndexOutOfBoundsException} when ({@code index} +
      * {@value com.github.jinahya.hello.HelloWorld#BYTES}) is greater than {@code array.length}.
      */
-    @DisplayName("set(array, index > (array.length - 12))IndexOutOfBoundsException")
+    @DisplayName(
+            "set(array, index > (array.length - 12))IndexOutOfBoundsException")
     @Test
     void set_ThrowsIndexOutOfBoundsException_SpaceIsNotEnough() {
         // ----------------------------------------------------------------------------------- GIVEN
@@ -88,7 +91,8 @@ abstract class HelloWorldTest {
         var array = new byte[BYTES << 1];
         var index = current().nextInt(BYTES + 1, MAX_VALUE);
         // ------------------------------------------------------------------------------- WHEN/THEN
-        assertThrows(IndexOutOfBoundsException.class, () -> service.set(array, index));
+        assertThrows(IndexOutOfBoundsException.class,
+                     () -> service.set(array, index));
     }
 
     /**

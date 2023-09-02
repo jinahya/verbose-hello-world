@@ -34,6 +34,8 @@ class HelloWorldModule extends AbstractModule {
     @Override
     protected void configure() {
         bind(HelloWorld.class)
-                .toProvider(() -> ServiceLoader.load(HelloWorld.class).iterator().next());
+                .toProvider(
+                        () -> ServiceLoader.load(HelloWorld.class).iterator()
+                                .next());
     }
 }

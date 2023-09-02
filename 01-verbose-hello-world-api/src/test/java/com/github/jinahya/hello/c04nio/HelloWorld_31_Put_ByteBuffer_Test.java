@@ -61,7 +61,8 @@ class HelloWorld_31_Put_ByteBuffer_Test extends _HelloWorldTest {
      * {@code buffer} as its {@link ByteBuffer#position() position} increased by
      * {@value HelloWorld#BYTES}.
      */
-    @DisplayName("(buffer.hasArray()) -> set(buffer.array, buffer.arrayOffset + buffer.position)")
+    @DisplayName(
+            "(buffer.hasArray()) -> set(buffer.array, buffer.arrayOffset + buffer.position)")
     @Test
     void __BufferHasBackingArray() {
         // ----------------------------------------------------------------------------------- GIVEN

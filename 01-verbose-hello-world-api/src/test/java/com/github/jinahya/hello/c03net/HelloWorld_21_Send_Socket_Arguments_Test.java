@@ -52,6 +52,9 @@ class HelloWorld_21_Send_Socket_Arguments_Test extends _HelloWorldTest {
         var service = serviceInstance();
         Socket socket = null;
         // ------------------------------------------------------------------------------- WHEN/THEN
-        assertThrows(NullPointerException.class, () -> service.send(socket));
+        assertThrows(
+                NullPointerException.class,
+                () -> service.send(socket)
+        );
     }
 }

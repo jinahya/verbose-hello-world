@@ -22,6 +22,8 @@ package com.github.jinahya.hello;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * Constants for Hello World servers.
  *
@@ -36,7 +38,39 @@ public class HelloWorldServerConstants {
 
     public static final String SOLI = "soli!";
 
-    public static final int UDP_HEADER_SIZE = 4 + 4 + 4 + 2 + 2 + 2 + 2;
+    // ---------------------------------------------------------------------------------------------
+
+    static final int PORT = Short.MAX_VALUE;
+
+    // ------------------------------------------------------------------------------------- TIMEOUT
+
+    static final TimeUnit ACCEPT_TIMEOUT_UNIT = TimeUnit.SECONDS;
+
+    static final long ACCEPT_TIMEOUT_DURATION = 32L;
+
+    static final long ACCEPT_TIMEOUT_IN_MILLIS =
+            ACCEPT_TIMEOUT_UNIT.toMillis(ACCEPT_TIMEOUT_DURATION);
+
+    static final TimeUnit CONNECT_TIMEOUT_UNIT = TimeUnit.SECONDS;
+
+    static final long CONNECT_TIMEOUT_DURATION = 1L;
+
+    static final long CONNECT_TIMEOUT_IN_MILLIS =
+            CONNECT_TIMEOUT_UNIT.toMillis(CONNECT_TIMEOUT_DURATION);
+
+    static final TimeUnit READ_TIMEOUT_UNIT = TimeUnit.SECONDS;
+
+    static final long READ_TIMEOUT_DURATION = 1L;
+
+    static final long READ_TIMEOUT_IN_MILLIS =
+            READ_TIMEOUT_UNIT.toMillis(READ_TIMEOUT_DURATION);
+
+    static final TimeUnit WRITE_TIMEOUT_UNIT = TimeUnit.SECONDS;
+
+    static final long WRITE_TIMEOUT_DURATION = 8L;
+
+    static final long WRITE_TIMEOUT_IN_MILLIS =
+            WRITE_TIMEOUT_UNIT.toMillis(WRITE_TIMEOUT_DURATION);
 
     private HelloWorldServerConstants() {
         throw new AssertionError("instantiation is not allowed");

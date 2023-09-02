@@ -23,6 +23,7 @@ package com.github.jinahya.hello.util;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
@@ -56,14 +57,16 @@ public final class HelloWorldLangUtils {
     }
 
     @SuppressWarnings({"unchecked"})
-    public static <T extends AutoCloseable> T uncloseableProxy(final T closeable) {
+    public static <T extends AutoCloseable> T uncloseableProxy(
+            final T closeable) {
         Objects.requireNonNull(closeable, "closeable is null");
         return (T) Proxy.newProxyInstance(
                 closeable.getClass().getClassLoader(),
                 new Class<?>[] {AutoCloseable.class},
                 (proxy, method, args) -> {
                     if (CLOSE.equals(method)) {
-                        throw new UnsupportedOperationException("unable to close");
+                        throw new UnsupportedOperationException(
+                                "unable to close");
                     }
                     return method.invoke(closeable);
                 }
@@ -109,9 +112,34 @@ public final class HelloWorldLangUtils {
         thread.start();
     }
 
-    public static void readLinesAndRunWhenTests(Predicate<? super String> predicate,
-                                                Runnable runnable,
-                                                Consumer<? super String> consumer) {
+    public static void readLinesAndCloseWhenTests(Predicate<? super String> predicate,
+                                                  Closeable closeable,
+                                                  Consumer<? super String> consumer) {
+        Objects.requireNonNull(closeable, "closeable is null");
+        readLinesAndCallWhenTests(
+                predicate,
+                () -> {
+                    closeable.close();
+                    return null;
+                },
+                consumer
+        );
+    }
+
+    public static void readLinesAndCloseWhenTests(Predicate<? super String> predicate,
+                                                  Closeable closeable) {
+        readLinesAndCloseWhenTests(
+                predicate,
+                closeable,
+                l -> {
+                }
+        );
+    }
+
+    public static void readLinesAndRunWhenTests(
+            Predicate<? super String> predicate,
+            Runnable runnable,
+            Consumer<? super String> consumer) {
         Objects.requireNonNull(runnable, "runnable is null");
         readLinesAndCallWhenTests(
                 predicate,
@@ -134,13 +162,16 @@ public final class HelloWorldLangUtils {
      * @deprecated Use {@link #readLinesAndCallWhenTests(Predicate, Callable, Consumer)}
      */
     @Deprecated(forRemoval = true)
-    public static void readLinesAndCallWhenEquals(String string, Callable<Void> callable,
+    public static void readLinesAndCallWhenEquals(String string,
+                                                  Callable<Void> callable,
                                                   Consumer<? super String> consumer) {
         Objects.requireNonNull(string, "string is null");
-        readLinesAndCallWhenTests(l -> l.equalsIgnoreCase(string), callable, consumer);
+        readLinesAndCallWhenTests(l -> l.equalsIgnoreCase(string), callable,
+                                  consumer);
     }
 
-    private static int[] trimByCodepoints(int[] codePoints, int from, int to, Charset charset,
+    private static int[] trimByCodepoints(int[] codePoints, int from, int to,
+                                          Charset charset,
                                           final int bytes) {
         if (from == to) {
             return Arrays.copyOfRange(codePoints, 0, to);
@@ -161,14 +192,17 @@ public final class HelloWorldLangUtils {
         return trimByCodepoints(codePoints, from, to, charset, bytes);
     }
 
-    public static String trimByCodepoints(String string, Charset charset, final int bytes) {
+    public static String trimByCodepoints(String string, Charset charset,
+                                          final int bytes) {
         Objects.requireNonNull(string, "string is null");
         Objects.requireNonNull(charset, "charset is null");
         if (bytes <= 0) {
-            throw new IllegalArgumentException("bytes(" + bytes + ") is not positive");
+            throw new IllegalArgumentException(
+                    "bytes(" + bytes + ") is not positive");
         }
         var codePoints = string.codePoints().toArray();
-        var c = trimByCodepoints(codePoints, 0, codePoints.length, charset, bytes);
+        var c = trimByCodepoints(codePoints, 0, codePoints.length, charset,
+                                 bytes);
         return new String(c, 0, c.length);
     }
 

@@ -20,6 +20,7 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import com.github.jinahya.hello.util.HelloWorldServerUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -36,17 +37,18 @@ public class HelloWorldMainTcp2 {
     /**
      * The main method of this program which {@link HelloWorldServer#open(SocketAddress) opens} an
      * instance of {@link HelloWorldServerTcp2}, with an endpoint
-     * {@link HelloWorldServerUtils#parseEndpoint(String...) parsed} from specified command line
+     * {@link HelloWorldServerUtils#parseAddr(String...) parsed} from specified command line
      * arguments, and sends {@code hello, world} bytes to clients.
      *
      * @param args an array of command line arguments from which an endpoint is parsed.
      * @throws IOException          if an I/O error occurs.
      * @throws InterruptedException if interrupted while running.
-     * @see HelloWorldServerUtils#parseEndpoint(String...)
+     * @see HelloWorldServerUtils#parseAddr(String...)
      * @see HelloWorldServer#open(SocketAddress)
      */
-    public static void main(String... args) throws IOException, InterruptedException {
-        var endpoint = HelloWorldServerUtils.parseEndpoint(args);
+    public static void main(String... args)
+            throws IOException, InterruptedException {
+        var endpoint = HelloWorldServerUtils.parseAddr(args);
         try (var server = new HelloWorldServerTcp2()) {
             server.open(endpoint);
             HelloWorldServerUtils.startReadingQuitFromStandardInput().join();

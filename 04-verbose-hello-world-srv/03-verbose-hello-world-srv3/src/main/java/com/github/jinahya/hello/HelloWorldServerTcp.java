@@ -20,6 +20,7 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import com.github.jinahya.hello.util.HelloWorldServerUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -42,9 +43,11 @@ import java.util.concurrent.Executors;
 class HelloWorldServerTcp extends AbstractHelloWorldServer {
 
     @Override
-    protected void openInternal(SocketAddress endpoint, Path dir) throws IOException {
+    protected void openInternal(SocketAddress endpoint, Path dir)
+            throws IOException {
         server = ServerSocketChannel.open();
-        if (endpoint instanceof InetSocketAddress && ((InetSocketAddress) endpoint).getPort() > 0) {
+        if (endpoint instanceof InetSocketAddress
+            && ((InetSocketAddress) endpoint).getPort() > 0) {
             server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
         }
         try {
@@ -55,12 +58,14 @@ class HelloWorldServerTcp extends AbstractHelloWorldServer {
         }
         log.info("server bound to {}", server.getLocalAddress());
         if (dir != null) {
-            HelloWorldServerUtils.writePortNumber(dir, server.socket().getLocalPort());
+            HelloWorldServerUtils.writePortNumber(dir, server.socket()
+                    .getLocalPort());
         }
         var thread = new Thread(() -> {
             var executor = Executors.newCachedThreadPool();
             var service = new ExecutorCompletionService<Void>(executor);
-            var monitor = HelloWorldServerUtils.startMonitoringCompletedTasks(service);
+            var monitor = HelloWorldServerUtils.startMonitoringCompletedTasks(
+                    service);
             while (!Thread.currentThread().isInterrupted()) {
                 SocketChannel client;
                 try {

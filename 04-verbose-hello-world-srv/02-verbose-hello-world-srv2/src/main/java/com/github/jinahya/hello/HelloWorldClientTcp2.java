@@ -20,6 +20,7 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import com.github.jinahya.hello.util.HelloWorldServerUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -46,10 +47,12 @@ class HelloWorldClientTcp2 {
      * @throws InterruptedException if the current thread interrupted while waiting all clients to
      *                              finish.
      */
-    static void runClients(int count, SocketAddress endpoint, Consumer<? super String> consumer)
+    static void runClients(int count, SocketAddress endpoint,
+                           Consumer<? super String> consumer)
             throws InterruptedException {
         if (count <= 0) {
-            throw new IllegalArgumentException("count(" + count + ") is not positive");
+            throw new IllegalArgumentException(
+                    "count(" + count + ") is not positive");
         }
         Objects.requireNonNull(endpoint, "endpoint is null");
         Objects.requireNonNull(consumer, "consumer is null");
@@ -59,8 +62,10 @@ class HelloWorldClientTcp2 {
                 try (var client = new Socket()) {
                     client.setSoTimeout((int) TimeUnit.SECONDS.toMillis(1L));
                     client.connect(endpoint);
-                    log.debug("[C] connected to {}", client.getRemoteSocketAddress());
-                    var array = client.getInputStream().readNBytes(HelloWorld.BYTES);
+                    log.debug("[C] connected to {}",
+                              client.getRemoteSocketAddress());
+                    var array = client.getInputStream()
+                            .readNBytes(HelloWorld.BYTES);
                     assert array.length == HelloWorld.BYTES;
                     var string = new String(array, StandardCharsets.US_ASCII);
                     consumer.accept(string);

@@ -95,7 +95,8 @@ class HelloWorld_65_AppendCompletable_Path_Test extends _HelloWorldTest {
                 } // @formatter:on
             });
             return future;
-        }).given(serviceInstance()).writeCompletable(notNull(), longThat(v -> v >= 0L));
+        }).given(serviceInstance())
+                .writeCompletable(notNull(), longThat(v -> v >= 0L));
     }
 
     @Test
@@ -142,7 +143,7 @@ class HelloWorld_65_AppendCompletable_Path_Test extends _HelloWorldTest {
             log.debug("lastModifiedTime: {}", getLastModifiedTime(path));
             try (var channel = FileChannel.open(path, WRITE)) {
                 for (var src = allocate(current().nextInt(1024)); src.hasRemaining(); ) {
-                    channel.write(src);
+                    var w = channel.write(src);
                 }
                 channel.force(true);
                 log.debug("lastModifiedTime: {}", getLastModifiedTime(path));

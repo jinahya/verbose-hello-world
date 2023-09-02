@@ -20,6 +20,7 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import com.github.jinahya.hello.util.HelloWorldServerUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -46,7 +47,8 @@ class HelloWorldServerTcp1Test {
                 log.error("failed to read port number from " + dir, ioe);
                 return;
             } catch (InterruptedException ie) {
-                log.error("interrupted while reading port number from " + dir, ie);
+                log.error("interrupted while reading port number from " + dir,
+                          ie);
                 Thread.currentThread().interrupt();
                 return;
             }

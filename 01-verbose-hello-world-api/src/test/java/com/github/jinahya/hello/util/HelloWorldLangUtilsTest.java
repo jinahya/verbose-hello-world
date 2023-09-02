@@ -45,8 +45,11 @@ class HelloWorldLangUtilsTest {
         void __(String string) {
             var charset = StandardCharsets.UTF_8;
             var previous = string;
-            for (int bytes = previous.getBytes(charset).length + 1; bytes > 0; bytes--) {
-                var trimmed = HelloWorldLangUtils.trimByCodepoints(string, charset, bytes);
+            for (int bytes = previous.getBytes(charset).length + 1; bytes > 0;
+                 bytes--) {
+                var trimmed = HelloWorldLangUtils.trimByCodepoints(string,
+                                                                   charset,
+                                                                   bytes);
                 assertTrue(trimmed.getBytes(charset).length <= bytes);
                 assertTrue(previous.startsWith(trimmed));
                 previous = trimmed;

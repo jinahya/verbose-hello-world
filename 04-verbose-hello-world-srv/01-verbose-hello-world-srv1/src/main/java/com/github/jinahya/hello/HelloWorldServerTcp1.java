@@ -20,6 +20,7 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import com.github.jinahya.hello.util.HelloWorldServerUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -46,7 +47,8 @@ class HelloWorldServerTcp1 implements HelloWorldServer {
         }
         close();
         server = new ServerSocket();
-        if (endpoint instanceof InetSocketAddress && ((InetSocketAddress) endpoint).getPort() > 0) {
+        if (endpoint instanceof InetSocketAddress
+            && ((InetSocketAddress) endpoint).getPort() > 0) {
             server.setReuseAddress(true);
         }
         try {

@@ -39,7 +39,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  */
 @DisplayName("write(channel) arguments")
 @Slf4j
-class HelloWorld_33_Write_WritableByteChannel_Arguments_Test extends _HelloWorldTest {
+class HelloWorld_33_Write_WritableByteChannel_Arguments_Test
+        extends _HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(WritableByteChannel) write(channel)} method throws a
@@ -52,6 +53,9 @@ class HelloWorld_33_Write_WritableByteChannel_Arguments_Test extends _HelloWorld
         var service = serviceInstance();
         var channel = (WritableByteChannel) null;
         // ------------------------------------------------------------------------------- WHEN/THEN
-        assertThrows(NullPointerException.class, () -> service.write(channel));
+        assertThrows(
+                NullPointerException.class,
+                () -> service.write(channel)
+        );
     }
 }

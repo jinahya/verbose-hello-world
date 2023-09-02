@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
+import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.anyChar;
@@ -57,7 +58,8 @@ class HelloWorld_09_Append_Appendable_Test extends _HelloWorldTest {
      * {@value HelloWorld#BYTES} characters, appends each character in resulting array to
      * {@code appendable}, and returns the {@code appendable}.
      */
-    @DisplayName("(appendable)appendable <- print(char[12]).forEach(appendable::append")
+    @DisplayName(
+            "(appendable)appendable <- print(char[12]).forEach(appendable::append")
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- GIVEN
@@ -69,8 +71,8 @@ class HelloWorld_09_Append_Appendable_Test extends _HelloWorldTest {
         verify(service, times(1)).print(charsCaptor().capture());
         var chars = charsCaptor().getValue();
         assertNotNull(chars);
-        assertSame(HelloWorld.BYTES, chars.length);
-        verify(appendable, times(HelloWorld.BYTES)).append(anyChar());
+        assertSame(BYTES, chars.length);
+        verify(appendable, times(BYTES)).append(anyChar());
         assertSame(appendable, result);
     }
 }

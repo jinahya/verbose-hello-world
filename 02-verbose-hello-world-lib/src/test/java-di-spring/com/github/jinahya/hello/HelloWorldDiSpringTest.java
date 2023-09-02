@@ -27,7 +27,8 @@ class HelloWorldDiSpringTest extends HelloWorldDiTest {
 
     @BeforeEach
     void _beforeEach() {
-        var context = new AnnotationConfigApplicationContext(HelloWorldDiSpringConfiguration.class);
+        var context = new AnnotationConfigApplicationContext(
+                HelloWorldDiSpringConfiguration.class);
         var factory = context.getAutowireCapableBeanFactory();
         factory.autowireBean(this);
     }

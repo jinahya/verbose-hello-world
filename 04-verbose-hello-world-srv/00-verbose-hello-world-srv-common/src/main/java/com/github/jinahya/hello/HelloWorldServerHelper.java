@@ -36,7 +36,7 @@ final class HelloWorldServerHelper {
      *
      * @return an instance of {@link HelloWorld} interface.
      */
-    static HelloWorld service() {
+    static HelloWorld loadService() {
         var result = service;
         if (result == null) {
             service = result = ServiceLoader.load(HelloWorld.class).iterator().next();

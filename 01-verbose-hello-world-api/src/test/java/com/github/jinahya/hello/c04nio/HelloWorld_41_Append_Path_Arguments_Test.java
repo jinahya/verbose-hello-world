@@ -52,6 +52,9 @@ class HelloWorld_41_Append_Path_Arguments_Test extends _HelloWorldTest {
         var service = serviceInstance();
         var path = (Path) null;
         // ------------------------------------------------------------------------------- WHEN/THEN
-        assertThrows(NullPointerException.class, () -> service.append(path));
+        assertThrows(
+                NullPointerException.class,
+                () -> service.append(path)
+        );
     }
 }

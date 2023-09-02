@@ -45,11 +45,13 @@ public class HelloWorldSecurityUtils {
      * @param count  the number of bytes, preceding {@code buffer}'s current position, to be updated
      *               to the {@code digest}.
      */
-    public static void updatePreceding(MessageDigest digest, ByteBuffer buffer, final int count) {
+    public static void updatePreceding(MessageDigest digest, ByteBuffer buffer,
+                                       final int count) {
         Objects.requireNonNull(digest, "digest is null");
         Objects.requireNonNull(buffer, "buffer is null");
         if (count < 0) {
-            throw new IllegalArgumentException("bytes(" + count + ") is negative");
+            throw new IllegalArgumentException(
+                    "bytes(" + count + ") is negative");
         }
         if (count == 0) {
             return;
@@ -68,7 +70,8 @@ public class HelloWorldSecurityUtils {
                     count
             );
         } else {
-            HelloWorldNioUtils.flipAcceptAndRestore(buffer, b -> digest.update(b));
+            HelloWorldNioUtils.flipAcceptAndRestore(buffer,
+                                                    b -> digest.update(b));
         }
     }
 
@@ -82,7 +85,8 @@ public class HelloWorldSecurityUtils {
      * {@link #updatePreceding(MessageDigest, ByteBuffer, int) updatePreceding(digest, buffer,
      * bytes)} method with {@code digest}, {@code buffer}, and {@code buffer.position()}.
      */
-    public static void updateAllPreceding(MessageDigest digest, ByteBuffer buffer) {
+    public static void updateAllPreceding(MessageDigest digest,
+                                          ByteBuffer buffer) {
         updatePreceding(digest, buffer, buffer.position());
     }
 

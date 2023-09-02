@@ -7,5 +7,6 @@ interface Stopwatch<C> {
 
     C start();
 
-    <T extends TemporalAmount> T stop(C carrier, LongFunction<? extends T> mapper);
+    <T extends TemporalAmount> T stop(C carrier,
+                                      LongFunction<? extends T> mapper);
 }

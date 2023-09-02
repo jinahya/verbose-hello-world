@@ -20,6 +20,7 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import com.github.jinahya.hello.util.HelloWorldServerUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -32,7 +33,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static com.github.jinahya.hello.HelloWorldServerUtils.loadHelloWorld;
+import static com.github.jinahya.hello.util.HelloWorldServerUtils.loadHelloWorld;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**

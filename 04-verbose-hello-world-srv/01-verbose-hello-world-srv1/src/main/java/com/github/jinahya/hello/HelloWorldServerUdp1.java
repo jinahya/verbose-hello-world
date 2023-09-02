@@ -20,6 +20,7 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import com.github.jinahya.hello.util.HelloWorldServerUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -40,14 +41,16 @@ import java.util.Objects;
 class HelloWorldServerUdp1 implements HelloWorldServer {
 
     @Override
-    public synchronized void open(SocketAddress endpoint, Path dir) throws IOException {
+    public synchronized void open(SocketAddress endpoint, Path dir)
+            throws IOException {
         Objects.requireNonNull(endpoint, "endpoint is null");
         if (dir != null && !Files.isDirectory(dir)) {
             throw new IllegalArgumentException("not a directory: " + dir);
         }
         close();
         socket = new DatagramSocket(null);
-        if (endpoint instanceof InetSocketAddress && ((InetSocketAddress) endpoint).getPort() > 0) {
+        if (endpoint instanceof InetSocketAddress
+            && ((InetSocketAddress) endpoint).getPort() > 0) {
             socket.setReuseAddress(true);
         }
         try {
