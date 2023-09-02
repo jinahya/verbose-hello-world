@@ -40,7 +40,7 @@ class Rfc862Tcp2Client {
             super();
             bytes = _Rfc862Utils.randomBytesLessThanOneMillion();
             buffer.position(buffer.limit());
-            _Rfc862Utils.logClientBytesSending(bytes);
+            _Rfc862Utils.logClientBytes(bytes);
             log.info("buffer.capacity: {}", buffer.capacity());
         }
         private final ByteBuffer slice = buffer.slice();

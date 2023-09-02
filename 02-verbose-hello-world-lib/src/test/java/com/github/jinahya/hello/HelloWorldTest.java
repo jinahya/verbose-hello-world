@@ -57,7 +57,7 @@ abstract class HelloWorldTest {
         var array = (byte[]) null;
         var index = current().nextInt() & MAX_VALUE;
         // ------------------------------------------------------------------------------- WHEN/THEN
-        assertThrows(NullPointerException.class, () -> service.set(null, 0));
+        assertThrows(NullPointerException.class, () -> service.set((byte[]) null, 0));
     }
 
     /**

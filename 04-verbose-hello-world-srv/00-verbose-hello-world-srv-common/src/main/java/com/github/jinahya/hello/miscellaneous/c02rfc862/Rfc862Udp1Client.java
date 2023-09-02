@@ -53,7 +53,7 @@ class Rfc862Udp1Client {
             var array = new byte[ThreadLocalRandom.current().nextInt(client.getSendBufferSize())];
             ThreadLocalRandom.current().nextBytes(array);
             var packet = new DatagramPacket(array, array.length, _Rfc862Constants.ADDR);
-            _Rfc862Utils.logClientBytesSending(packet.getLength());
+            _Rfc862Utils.logClientBytes(packet.getLength());
             client.send(packet); // IOException
             var digest = _Rfc862Utils.newDigest();
             digest.update(array, 0, packet.getLength());

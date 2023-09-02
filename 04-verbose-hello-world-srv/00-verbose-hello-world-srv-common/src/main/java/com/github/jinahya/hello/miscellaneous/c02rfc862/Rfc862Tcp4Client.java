@@ -39,7 +39,7 @@ class Rfc862Tcp4Client {
         Attachment() {
             super();
             bytes = _Rfc862Utils.randomBytesLessThanOneMillion();
-            _Rfc862Utils.logClientBytesSending(bytes);
+            _Rfc862Utils.logClientBytes(bytes);
             buffer.position(buffer.limit());
         }
     }

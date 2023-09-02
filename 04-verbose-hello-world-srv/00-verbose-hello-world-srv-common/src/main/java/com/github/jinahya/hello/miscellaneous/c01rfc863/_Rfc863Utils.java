@@ -33,6 +33,8 @@ import java.util.concurrent.ThreadLocalRandom;
 @Slf4j
 final class _Rfc863Utils {
 
+    // -------------------------------------------------------------------------------- array/buffer
+
     /**
      * Returns a new array of bytes whose length is between {@code 1} and {@code 1024}, both
      * inclusive.
@@ -54,6 +56,8 @@ final class _Rfc863Utils {
     static ByteBuffer newBuffer() {
         return ByteBuffer.wrap(newArray());
     }
+
+    // --------------------------------------------------------------------------------------- bytes
 
     /**
      * Returns a new {@code int} greater than or equals to {@code 0} and less than specified value.
@@ -95,6 +99,8 @@ final class _Rfc863Utils {
         log.info("{} bytes received (and discarded)", bytes);
     }
 
+    // -------------------------------------------------------------------------------------- digest
+
     /**
      * Returns a new message digest of {@link _Rfc863Constants#ALGORITHM}.
      *
@@ -117,7 +123,8 @@ final class _Rfc863Utils {
         log.info("digest: {}", HexFormat.of().formatHex(digest.digest()));
     }
 
-    static void logSelectionKey(SelectionKey key) {
+    // ----------------------------------------------------------------------------------------- key
+    static void logKey(SelectionKey key) {
         Objects.requireNonNull(key, "key is null");
         log.debug(
                 """

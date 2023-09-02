@@ -50,8 +50,7 @@ class ChatUdp2Client {
         assert PERIOD_TO_SEND_KEEP.toSeconds() > 0;
     }
 
-    public static void main(String... args)
-            throws Exception {
+    public static void main(String... args) throws Exception {
         InetAddress addr;
         try {
             addr = InetAddress.getByName(args[0]);

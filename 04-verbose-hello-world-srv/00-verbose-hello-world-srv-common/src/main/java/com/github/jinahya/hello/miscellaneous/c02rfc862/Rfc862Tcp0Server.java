@@ -45,7 +45,7 @@ class Rfc862Tcp0Server {
                     client.getOutputStream().flush();
                     digest.update((byte) b);
                 }
-                _Rfc862Utils.logServerBytesSent(bytes);
+                _Rfc862Utils.logServerBytes(bytes);
                 _Rfc862Utils.logDigest(digest);
             }
         }

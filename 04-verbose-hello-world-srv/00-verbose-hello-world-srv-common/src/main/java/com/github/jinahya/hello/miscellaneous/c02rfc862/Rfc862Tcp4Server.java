@@ -144,7 +144,7 @@ class Rfc862Tcp4Server {
             if (!group.awaitTermination(8L, TimeUnit.SECONDS)) {
                 log.error("channel group has not been terminated for a while");
             }
-            _Rfc862Utils.logServerBytesSent(attachment.bytes);
+            _Rfc862Utils.logServerBytes(attachment.bytes);
             _Rfc862Utils.logDigest(attachment.digest);
         }
     }

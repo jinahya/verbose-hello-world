@@ -42,7 +42,7 @@ class Rfc862Tcp1Client {
             client.setSoTimeout(_Rfc862Utils.soTimeoutInMillisAsInt());
             var digest = _Rfc862Utils.newDigest();
             var bytes = _Rfc862Utils.randomBytesLessThanOneMillion();
-            _Rfc862Utils.logClientBytesSending(bytes);
+            _Rfc862Utils.logClientBytes(bytes);
             var array = _Rfc862Utils.newArray();
             log.info("array.length: {}", array.length);
             for (int r; bytes > 0; ) {

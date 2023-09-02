@@ -91,7 +91,7 @@ class Rfc862Tcp2Server {
                         } else {
                             channel.close();
                             assert !key.isValid();
-                            _Rfc862Utils.logServerBytesSent(attachment.bytes);
+                            _Rfc862Utils.logServerBytes(attachment.bytes);
                             _Rfc862Utils.logDigest(attachment.digest);
                             continue;
                         }
@@ -115,7 +115,7 @@ class Rfc862Tcp2Server {
                             if ((key.interestOps() & SelectionKey.OP_READ) == 0) {
                                 channel.close();
                                 assert !key.isValid();
-                                _Rfc862Utils.logServerBytesSent(attachment.bytes);
+                                _Rfc862Utils.logServerBytes(attachment.bytes);
                                 _Rfc862Utils.logDigest(attachment.digest);
                             }
                         }

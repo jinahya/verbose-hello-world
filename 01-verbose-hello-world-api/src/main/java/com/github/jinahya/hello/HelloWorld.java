@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.io.UncheckedIOException;
+import java.io.Writer;
 import java.net.Socket;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
@@ -97,9 +98,9 @@ public interface HelloWorld {
      * <p>
      * The elements in the array, on successful return, will be set as follows.
      * <pre>
-     *   0    &lt;= index                                 (index + 12)   &lt;= array.length
-     *   ↓       ↓                                               ↓       ↓
-     * |   |...|'h'|'e'|'l'|'l'|'o'|','|' '|'w'|'o'|'r'|'l'|'d'|...|   |
+     *  0   &lt;= index            index+12     &lt;= array.length
+     *  ↓      ↓                       ↓        ↓
+     * | |....|h|e|l|l|o|,| |w|o|r|l|d| |....| |
      * </pre>
      *
      * @param array the array on which bytes are set.
@@ -116,6 +117,13 @@ public interface HelloWorld {
     /**
      * Sets the <a href="#hello-world-bytes">hello-world-bytes</a> on specified array starting at
      * {@code 0}.
+     * <p>
+     * The elements in the array, on successful return, will be set as follows.
+     * <pre>
+     *  0                      12     &lt;= array.length
+     *  ↓                       ↓        ↓
+     * |h|e|l|l|o|,| |w|o|r|l|d| |....| |
+     * </pre>
      *
      * @param array the array on which bytes are set.
      * @return given {@code array}.
@@ -128,6 +136,101 @@ public interface HelloWorld {
     default byte[] set(byte[] array) {
         // TODO: set 'hello, world' bytes on array.
         return null;
+    }
+
+    /**
+     * Prints the <a href="#hello-world-bytes">hello-world-bytes</a> on specified chars starting at
+     * specified position.
+     * <p>
+     * The elements in the chars, on successful return, will be set as follows.
+     * <pre>
+     *   0     &lt;= offset                                  offset+12 &lt;=         chars.length
+     *   ↓        ↓                                               ↓            ↓
+     * |   |....|'h'|'e'|'l'|'l'|'o'|','|' '|'w'|'o'|'r'|'l'|'d'|   |....|   |
+     * </pre>
+     *
+     * @param chars  the chars on which bytes are set.
+     * @param offset the starting offset of the {@code chars}.
+     * @return given {@code chars}.
+     * @throws NullPointerException           if {@code chars} is {@code null}.
+     * @throws ArrayIndexOutOfBoundsException if {@code offset} is negative or {@code chars.length}
+     *                                        is less than or equal to ({@code offset} +
+     *                                        {@value #BYTES}).
+     * @implSpec The default implementation invokes {@link #set(byte[]) set(array)} method with an
+     * array of {@value #BYTES} bytes, and copies each element in returned array into {@code chars}
+     * starting at {@code offset}.
+     * @see #set(byte[])
+     */
+    default char[] print(char[] chars, int offset) {
+        if (chars == null) {
+            throw new NullPointerException("chars is null");
+        }
+        if (offset < 0) {
+            throw new IllegalArgumentException("offset(" + offset + ") is negative");
+        }
+        if (offset + BYTES > chars.length) {
+            throw new ArrayIndexOutOfBoundsException(
+                    "offset(" + offset + ") + " + BYTES + " > chars.length(" + chars.length + ")"
+            );
+        }
+        for (var b : set(new byte[BYTES])) {
+            chars[offset++] = (char) b;
+        }
+        return chars;
+    }
+
+    /**
+     * Prints the <a href="#hello-world-bytes">hello-world-bytes</a> on specified array starting at
+     * {@code 0}.
+     * <p>
+     * The elements in the chars, on successful return, will be set as follows.
+     * <pre>
+     *   0                                              12 &lt;=         chars.length
+     *   ↓                                               ↓            ↓
+     * |'h'|'e'|'l'|'l'|'o'|','|' '|'w'|'o'|'r'|'l'|'d'|   |....|   |
+     * </pre>
+     *
+     * @param chars the chars on which characters are set.
+     * @return given {@code chars}.
+     * @throws NullPointerException           if {@code chars} is {@code null}.
+     * @throws ArrayIndexOutOfBoundsException if {@code chars.length} is less than {@link #BYTES}.
+     * @implSpec The default implementation invokes {@link #print(char[], int) set(chars, offset)}
+     * method with {@code chars} and {@code 0}, and returns the {@code chars}.
+     * @see #print(char[], int)
+     */
+    default char[] print(char[] chars) {
+        if (chars == null) {
+            throw new NullPointerException("chars is null");
+        }
+        if (chars.length < BYTES) {
+            throw new ArrayIndexOutOfBoundsException(
+                    "chars.length(" + chars.length + ") < " + BYTES
+            );
+        }
+        return print(chars, 0);
+    }
+
+    /**
+     * Appends the <a href="#hello-world-bytes">hello-world-bytes</a> to specified appendable.
+     *
+     * @param appendable the appendable to which chars are appended.
+     * @return given {@code appendable}.
+     * @throws NullPointerException if {@code appendable} is {@code null}.
+     * @implSpec The default implementation invokes {@link #print(char[]) print(chars)} method with
+     * an array of {@value #BYTES} characters, appends each character in returned array to
+     * {@code appendable} using {@link Appendable#append(char)} method, and returns the
+     * {@code appendable}.
+     * @see #print(char[])
+     * @see Appendable#append(char)
+     */
+    default <T extends Appendable> T append(T appendable) throws IOException {
+        if (appendable == null) {
+            throw new NullPointerException("appendable is null");
+        }
+        for (var c : print(new char[BYTES])) {
+            appendable.append(c);
+        }
+        return appendable;
     }
 
     /**
@@ -157,6 +260,32 @@ public interface HelloWorld {
     }
 
     /**
+     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified writer.
+     *
+     * @param <T>    writer type parameter
+     * @param writer the writer to which characters are written.
+     * @return given {@code writer}.
+     * @throws NullPointerException if {@code writer} is {@code null}.
+     * @throws IOException          if an I/O error occurs.
+     * @apiNote This method does not {@link Writer#flush() flush} the {@code writer}.
+     * @implSpec The default implementation invokes {@link #append(Appendable) append(appendable)},
+     * and returns the result.
+     * @implNote Subclasses may override the default implementation to invoke
+     * {@link #print(char[]) print(chars)} method with an array of {@value #BYTES} chars, writes
+     * result to {@code writer} by invoking {@link Writer#write(char[])} method on {@code writer}
+     * with the result, and returns the {@code writer}.
+     * @see #append(Appendable)
+     * @see #print(char[])
+     * @see Writer#write(char[])
+     */
+    default <T extends Writer> T write(T writer) throws IOException {
+        if (writer == null) {
+            throw new NullPointerException("writer is null");
+        }
+        return append(writer);
+    }
+
+    /**
      * Appends the <a href="#hello-world-bytes">hello-world-bytes</a> to the end of specified file.
      *
      * @param <T>  file type parameter
@@ -180,27 +309,6 @@ public interface HelloWorld {
         // TODO: Flush the stream.
         // TODO: Close the stream.
         return file;
-    }
-
-    /**
-     * Sends the <a href="#hello-world-bytes">hello-world-bytes</a> through specified socket.
-     *
-     * @param <T>    socket type parameter
-     * @param socket the socket through which bytes are sent.
-     * @return given {@code socket}.
-     * @throws NullPointerException if {@code socket} is {@code null}.
-     * @throws IOException          if an I/O error occurs.
-     * @implSpec The default implementation invokes {@link #write(OutputStream)} method with
-     * {@link Socket#getOutputStream() socket.outputStream}, and returns the {@code socket}.
-     * @see Socket#getOutputStream()
-     * @see #write(OutputStream)
-     */
-    default <T extends Socket> T send(T socket) throws IOException {
-        if (socket == null) {
-            throw new NullPointerException("socket is null");
-        }
-        // TODO: Invoke write(stream) with socket.outputStream.
-        return socket;
     }
 
     /**
@@ -251,6 +359,27 @@ public interface HelloWorld {
         var array = set(new byte[BYTES]);
         // TODO: Implement!
         return file;
+    }
+
+    /**
+     * Sends the <a href="#hello-world-bytes">hello-world-bytes</a> through specified socket.
+     *
+     * @param <T>    socket type parameter
+     * @param socket the socket through which bytes are sent.
+     * @return given {@code socket}.
+     * @throws NullPointerException if {@code socket} is {@code null}.
+     * @throws IOException          if an I/O error occurs.
+     * @implSpec The default implementation invokes {@link #write(OutputStream)} method with
+     * {@link Socket#getOutputStream() socket.outputStream}, and returns the {@code socket}.
+     * @see Socket#getOutputStream()
+     * @see #write(OutputStream)
+     */
+    default <T extends Socket> T send(T socket) throws IOException {
+        if (socket == null) {
+            throw new NullPointerException("socket is null");
+        }
+        // TODO: Invoke write(stream) with socket.outputStream.
+        return socket;
     }
 
     /**
@@ -358,12 +487,16 @@ public interface HelloWorld {
      * {@link FileChannel#force(boolean) forces}/{@link WritableByteChannel#close() closes} the
      * channel, and returns the {@code path}.
      * @see FileChannel#open(Path, OpenOption...)
+     * @see StandardOpenOption#CREATE
+     * @see StandardOpenOption#WRITE
      * @see StandardOpenOption#APPEND
      * @see #write(WritableByteChannel)
+     * @see FileChannel#force(boolean)
      */
     default <T extends Path> T append(T path) throws IOException {
         Objects.requireNonNull(path, "path is null");
-        // TODO: Open a file channel from the path and invoke write(channel) method with it.
+        // TODO: Open a file channel from the path as an appending mode.
+        // TODO: Invoke write(channel) method with it.
         // TODO: Force the channel with true.
         // TODO: Close the channel.
         return path;

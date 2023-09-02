@@ -42,7 +42,7 @@ class Rfc862Udp1Server {
             digest.update(array, 0, packet.getLength());
             _Rfc862Utils.logDigest(digest);
             server.send(packet);
-            _Rfc862Utils.logServerBytesSent(packet.getLength());
+            _Rfc862Utils.logServerBytes(packet.getLength());
         }
     }
 

@@ -37,7 +37,7 @@ class Rfc862Tcp3Client {
             super();
             buffer.position(buffer.limit());
             bytes = _Rfc862Utils.randomBytesLessThanOneMillion();
-            _Rfc862Utils.logClientBytesSending(bytes);
+            _Rfc862Utils.logClientBytes(bytes);
         }
     }
     // @formatter:on

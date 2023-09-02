@@ -62,7 +62,7 @@ class Rfc862Tcp3Server {
                 for (attachment.buffer.flip(); attachment.buffer.hasRemaining(); ) {
                     var w = client.write(attachment.buffer).get(timeout, unit);
                 }
-                _Rfc862Utils.logServerBytesSent(attachment.bytes);
+                _Rfc862Utils.logServerBytes(attachment.bytes);
                 _Rfc862Utils.logDigest(attachment.digest);
             }
         }
