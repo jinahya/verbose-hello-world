@@ -30,7 +30,7 @@ class Rfc863Tcp0Server {
 
     public static void main(String... args) throws Exception {
         try (var server = new ServerSocket()) {
-            HelloWorldNetUtils.printSocketOptions(server);
+            HelloWorldNetUtils.printSocketOptions(ServerSocket.class, server);
             server.bind(_Rfc863Constants.ADDR, 1);
             log.info("bound to {}", server.getLocalSocketAddress());
             server.setSoTimeout((int) _Rfc863Constants.ACCEPT_TIMEOUT_IN_MILLIS);

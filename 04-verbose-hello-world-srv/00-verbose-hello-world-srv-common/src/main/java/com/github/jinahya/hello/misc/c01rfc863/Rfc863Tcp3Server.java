@@ -35,12 +35,11 @@ class Rfc863Tcp3Server {
 
     public static void main(String... args) throws Exception {
         try (var server = AsynchronousServerSocketChannel.open()) {
-            HelloWorldNetUtils.printSocketOptions(server);
+            HelloWorldNetUtils.printSocketOptions(AsynchronousServerSocketChannel.class, server);
             server.bind(_Rfc863Constants.ADDR);
             log.info("bound to {}", server.getLocalAddress());
-            try (var client = server.accept()
-                    .get(_Rfc863Constants.ACCEPT_TIMEOUT_DURATION,
-                         _Rfc863Constants.ACCEPT_TIMEOUT_UNIT)) {
+            try (var client = server.accept().get(_Rfc863Constants.ACCEPT_TIMEOUT_DURATION,
+                                                  _Rfc863Constants.ACCEPT_TIMEOUT_UNIT)) {
                 log.info("accepted from {}, through {}", client.getRemoteAddress(),
                          client.getLocalAddress());
                 var attachment = new Attachment();
@@ -49,9 +48,9 @@ class Rfc863Tcp3Server {
                         attachment.buffer.clear();
                     }
                     assert attachment.buffer.hasRemaining();
-                    if ((r = client.read(attachment.buffer)
-                            .get(_Rfc863Constants.READ_TIMEOUT_DURATION,
-                                 _Rfc863Constants.READ_TIMEOUT_UNIT)) == -1) {
+                    r = client.read(attachment.buffer).get(_Rfc863Constants.READ_TIMEOUT_DURATION,
+                                                           _Rfc863Constants.READ_TIMEOUT_UNIT);
+                    if (r == -1) {
                         break;
                     }
                     assert r > 0;

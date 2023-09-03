@@ -39,28 +39,28 @@ class Rfc863Tcp2Client {
     static class Attachment extends Rfc863Tcp2Server.Attachment {
         Attachment() {
             super();
-            bytes = ThreadLocalRandom.current().nextInt(1048576);
+            bytes = _Rfc863Utils.newBytesLessThanMillion();
             _Rfc863Utils.logClientBytes(bytes);
             buffer.position(buffer.limit());
         }
-        /**
-         * Clears the {@code buffer}, randomizes {@code buffer}'s
-         * {@link ByteBuffer#array() backing array}, and sets {@code buffer}'s {@code limit} with
-         * smaller of {@code buffer.limit()} and {@code bytes}.
-         */
-        @Override
-        void clearBuffer() {
-            super.clearBuffer();
-            ThreadLocalRandom.current().nextBytes(buffer.array());
-            buffer.clear().limit(Math.min(buffer.limit(), bytes));
-        }
+//        /**
+//         * Clears the {@code buffer}, randomizes the {@code buffer}'s
+//         * {@link ByteBuffer#array() backing array}, and sets the {@code buffer}'s {@code limit} with
+//         * smaller of {@code buffer.limit()} and {@link #bytes}.
+//         */
+//        @Override
+//        void clearBuffer() {
+//            super.clearBuffer();
+//            ThreadLocalRandom.current().nextBytes(buffer.array());
+//            buffer.clear().limit(Math.min(buffer.limit(), bytes));
+//        }
     }
     // @formatter:on
 
     public static void main(String... args) throws Exception {
         try (var selector = Selector.open();
              var client = SocketChannel.open()) {
-            HelloWorldNetUtils.printSocketOptions(client);
+            HelloWorldNetUtils.printSocketOptions(SocketChannel.class, client);
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(HOST, 0));
                 log.info("(optionally) bound to {}", client.getLocalAddress());

@@ -23,6 +23,9 @@ package com.github.jinahya.hello.misc.c01rfc863;
 import com.github.jinahya.hello.util.HelloWorldNetUtils;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.Closeable;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -41,17 +44,6 @@ class Rfc863Tcp2Server {
             log.debug("buffer.capacity: {}", buffer.capacity());
         }
         /**
-         * {@link ByteBuffer#clear() clears} {@code buffer}.
-         * @throws IllegalStateException if the {@code buffer} sill has
-         *                               {@link ByteBuffer#remaining() remaining}.
-         */
-        void clearBuffer() {
-            if (buffer.hasRemaining()) {
-                throw new IllegalArgumentException("buffer still has remaining");
-            }
-            buffer.clear();
-        }
-        /**
          * Updates specified number of bytes preceding current position of {@code buffer} to
          * {@code digest}.
          * @param bytes the number of bytes preceding current position of the {@code buffer} to be
@@ -61,16 +53,16 @@ class Rfc863Tcp2Server {
             if (bytes < 0) {
                 throw new IllegalArgumentException("bytes(" + bytes + ") is negative");
             }
-            // TODO: adjust the slice's position and limit, and update to the digest
-            // TODO: change the slice's scope to private
+            digest.update(
+                    slice.position(buffer.position() - bytes).limit(buffer.position())
+            );
         }
         /**
          * Logs out the final result of {@code digest}.
          * @see _Rfc863Utils#logDigest(MessageDigest)
          */
         void logDigest() {
-            // TODO: Implement!
-            // TODO: change the digest's scope as private
+            _Rfc863Utils.logDigest(digest);
         }
         int bytes;
         final ByteBuffer buffer = _Rfc863Utils.newBuffer();
@@ -82,7 +74,7 @@ class Rfc863Tcp2Server {
     public static void main(String... args) throws Exception {
         try (var selector = Selector.open();
              var server = ServerSocketChannel.open()) {
-            HelloWorldNetUtils.printSocketOptions(server);
+            HelloWorldNetUtils.printSocketOptions(ServerSocketChannel.class, server);
             server.bind(_Rfc863Constants.ADDR, 1);
             log.info("bound to {}", server.getLocalAddress());
             server.configureBlocking(false);

@@ -34,7 +34,7 @@ class Rfc863Udp1Client {
 
     public static void main(String... args) throws Exception {
         try (var client = new DatagramSocket(null)) {
-            HelloWorldNetUtils.printSocketOptions(client);
+            HelloWorldNetUtils.printSocketOptions(DatagramSocket.class, client);
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc863Constants.HOST, 0));
                 log.info("(optionally) bound to {}", client.getLocalSocketAddress());
@@ -57,9 +57,7 @@ class Rfc863Udp1Client {
             _Rfc863Utils.logClientBytes(array.length);
             var packet = new DatagramPacket(array, array.length, _Rfc863Constants.ADDR);
             client.send(packet);
-            var digest = _Rfc863Utils.newDigest();
-            digest.update(array, 0, packet.getLength());
-            _Rfc863Utils.logDigest(digest);
+            _Rfc863Utils.logDigest(array, 0, packet.getLength());
             if (connect) {
                 client.disconnect();
             }

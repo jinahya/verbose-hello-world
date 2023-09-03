@@ -43,6 +43,18 @@ class Rfc863Tcp4Client {
             super();
             this.client = Objects.requireNonNull(client, "client is null");
         }
+        void write(CompletionHandler<Integer, ? super Attachment> handler) {
+            Objects.requireNonNull(handler, "handler is null");
+            if (!buffer.hasRemaining()) {
+                ThreadLocalRandom.current().nextBytes(buffer.array());
+                buffer.clear().limit(Math.min(buffer.remaining(), bytes));
+            }
+            client.write(
+                    buffer, // <src>
+                    this,   // <attachment>
+                    handler // <handler>
+            );
+        }
         final AsynchronousSocketChannel client;
         final CountDownLatch latch = new CountDownLatch(2);
     }
@@ -52,7 +64,6 @@ class Rfc863Tcp4Client {
     private static final
     CompletionHandler<Integer, Attachment> W_HANDLER = new CompletionHandler<>() {
         @Override public void completed(Integer result, Attachment attachment) {
-            assert result > 0 : "buffer passed with no remaining?";
             attachment.digest.update(
                     attachment.slice
                             .position(attachment.buffer.position() - result)
@@ -96,14 +107,9 @@ class Rfc863Tcp4Client {
             attachment.latch.countDown(); // -1 for being connected to the server
             if (!attachment.buffer.hasRemaining()) {
                 ThreadLocalRandom.current().nextBytes(attachment.buffer.array());
-                attachment.buffer
-                        .clear()
-                        .limit(Math.min(attachment.buffer.remaining(), attachment.bytes));
-            }
-            if (!attachment.buffer.hasRemaining()) {
-                assert attachment.bytes == 0;
-                attachment.latch.countDown(); // -1 for all sent
-                return;
+                attachment.buffer.clear().limit(
+                        Math.min(attachment.buffer.remaining(), attachment.bytes)
+                );
             }
             attachment.client.write(
                     attachment.buffer, // <src>
@@ -124,13 +130,13 @@ class Rfc863Tcp4Client {
         try (var client = AsynchronousSocketChannel.open()) {
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc863Constants.HOST, 0));
-                log.info("bound to {}", client.getLocalAddress());
+                log.info("(optionally) bound to {}", client.getLocalAddress());
             }
             var attachment = new Attachment(client);
             attachment.client.connect(
                     _Rfc863Constants.ADDR, // <remote>
-                    attachment,               // <attachment>
-                    C_HANDLER                 // <handler>
+                    attachment,            // <attachment>
+                    C_HANDLER              // <handler>
             );
             attachment.latch.await();
         }

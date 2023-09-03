@@ -24,12 +24,10 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.EOFException;
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 class Rfc862Tcp2Client {
@@ -41,9 +39,7 @@ class Rfc862Tcp2Client {
             bytes = _Rfc862Utils.randomBytesLessThanOneMillion();
             buffer.position(buffer.limit());
             _Rfc862Utils.logClientBytes(bytes);
-            log.info("buffer.capacity: {}", buffer.capacity());
         }
-        private final ByteBuffer slice = buffer.slice();
     }
     // @formatter:on
 
@@ -73,7 +69,7 @@ class Rfc862Tcp2Client {
                 client.register(selector, SelectionKey.OP_CONNECT);
             }
             while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
-                if (selector.select(TimeUnit.SECONDS.toMillis(16L)) == 0) {
+                if (selector.select(_Rfc862Constants.CONNECT_TIMEOUT_IN_MILLIS) == 0) {
                     break;
                 }
                 for (var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
@@ -83,15 +79,13 @@ class Rfc862Tcp2Client {
                         assert channel == client;
                         var connected = channel.finishConnect();
                         assert connected;
-                        log.info("connected to {}, through {}",
-                                 channel.getRemoteAddress(),
+                        log.info("connected to {}, through {}", channel.getRemoteAddress(),
                                  channel.getLocalAddress());
                         key.interestOpsAnd(~SelectionKey.OP_CONNECT);
                         assert key.attachment() == null;
                         var attachment = new Attachment();
                         key.attach(attachment);
-                        key.interestOpsOr(
-                                SelectionKey.OP_WRITE | SelectionKey.OP_READ);
+                        key.interestOpsOr(SelectionKey.OP_WRITE | SelectionKey.OP_READ);
                         if (attachment.bytes == 0) {
                             log.warn("zero bytes to send; canceling...");
                             key.cancel();
@@ -103,14 +97,11 @@ class Rfc862Tcp2Client {
                         assert channel == client;
                         var attachment = (Attachment) key.attachment();
                         assert attachment != null;
-                        assert attachment.bytes > 0;
                         if (!attachment.buffer.hasRemaining()) {
-                            ThreadLocalRandom.current()
-                                    .nextBytes(attachment.buffer.array());
-                            attachment.buffer.clear().limit(Math.min(
-                                    attachment.buffer.remaining(),
-                                    attachment.bytes
-                            ));
+                            ThreadLocalRandom.current().nextBytes(attachment.buffer.array());
+                            attachment.buffer.clear().limit(
+                                    Math.min(attachment.buffer.remaining(), attachment.bytes)
+                            );
                         }
                         var w = channel.write(attachment.buffer);
                         assert w >= 0;
@@ -130,11 +121,13 @@ class Rfc862Tcp2Client {
                         assert channel == client;
                         var attachment = (Attachment) key.attachment();
                         assert attachment != null;
+//                        attachment.buffer.mark(); // mark -> position
                         var r = channel.read(
                                 attachment.slice
                                         .position(0)
                                         .limit(attachment.buffer.position())
                         );
+                        attachment.buffer.rewind();
                         if (r == -1) {
                             if (attachment.bytes > 0) {
                                 throw new EOFException("unexpected eof");

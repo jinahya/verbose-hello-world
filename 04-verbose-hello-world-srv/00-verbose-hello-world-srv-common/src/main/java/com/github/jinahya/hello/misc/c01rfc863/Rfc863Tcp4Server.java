@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
+import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 
 @Slf4j
@@ -33,6 +34,22 @@ class Rfc863Tcp4Server {
 
     // @formatter:off
     static class Attachment extends Rfc863Tcp3Server.Attachment {
+        void read(CompletionHandler<Integer, ? super Attachment> handler) {
+            Objects.requireNonNull(handler, "handler is null");
+            if (client == null) {
+                throw new IllegalArgumentException("client is currently null");
+            }
+            if (buffer.hasRemaining()) {
+                buffer.clear();
+            }
+            client.read(
+                    buffer,                                 // <dst>
+                    _Rfc863Constants.READ_TIMEOUT_DURATION, // <timeout>
+                    _Rfc863Constants.READ_TIMEOUT_UNIT,     // <unit>
+                    this,                                   // <attachment>
+                    handler                                 // <handler>
+            );
+        }
         AsynchronousSocketChannel client;
         final CountDownLatch latch = new CountDownLatch(2);
     }
@@ -53,7 +70,6 @@ class Rfc863Tcp4Server {
                 attachment.latch.countDown(); // -1 for being all received
                 return;
             }
-            assert result > 0 : "buffer passed with no remaining?";
             attachment.bytes += result;
             attachment.digest.update(
                     attachment.slice
@@ -88,7 +104,6 @@ class Rfc863Tcp4Server {
     private static final
     CompletionHandler<AsynchronousSocketChannel, Attachment> A_HANDLER = new CompletionHandler<>() {
         @Override public void completed(AsynchronousSocketChannel result, Attachment attachment) {
-            attachment.client = result;
             try {
                 log.info("accepted from {}, through {}", result.getRemoteAddress(),
                           result.getLocalAddress());
@@ -96,6 +111,7 @@ class Rfc863Tcp4Server {
                 log.error("failed to get addresses from {}", attachment.client, ioe);
             }
             attachment.latch.countDown(); // -1 for being accepted
+            attachment.client = result;
             if (!attachment.buffer.hasRemaining()) {
                 attachment.buffer.clear();
             }
@@ -125,9 +141,8 @@ class Rfc863Tcp4Server {
                     attachment, // <attachment>
                     A_HANDLER   // <handler>
             );
-            var broken = attachment.latch.await(
-                    _Rfc863Constants.ACCEPT_TIMEOUT_DURATION,
-                    _Rfc863Constants.ACCEPT_TIMEOUT_UNIT
+            var broken = attachment.latch.await(_Rfc863Constants.ACCEPT_TIMEOUT_DURATION,
+                                                _Rfc863Constants.ACCEPT_TIMEOUT_UNIT
             );
             if (!broken) {
                 log.error("latch hasn't been broken!");

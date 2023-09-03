@@ -46,7 +46,7 @@ final class _Rfc862Constants {
 
     static final TimeUnit CONNECT_TIMEOUT_UNIT = TimeUnit.SECONDS;
 
-    static final long CONNECT_TIMEOUT_DURATION = 1L;
+    static final long CONNECT_TIMEOUT_DURATION = 2L;
 
     static final long CONNECT_TIMEOUT_IN_MILLIS =
             CONNECT_TIMEOUT_UNIT.toMillis(CONNECT_TIMEOUT_DURATION);

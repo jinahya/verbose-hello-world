@@ -31,17 +31,15 @@ class Rfc863Udp1Server {
 
     public static void main(String... args) throws Exception {
         try (var server = new DatagramSocket(null)) {
-            HelloWorldNetUtils.printSocketOptions(server);
+            HelloWorldNetUtils.printSocketOptions(DatagramSocket.class, server);
             server.bind(_Rfc863Constants.ADDR);
             log.info("bound to {}", server.getLocalSocketAddress());
+            server.setSoTimeout((int) _Rfc863Constants.ACCEPT_TIMEOUT_IN_MILLIS);
             var array = new byte[server.getReceiveBufferSize()];
             var packet = new DatagramPacket(array, array.length);
-            server.setSoTimeout((int) _Rfc863Constants.ACCEPT_TIMEOUT_IN_MILLIS);
             server.receive(packet);
             _Rfc863Utils.logServerBytes(packet.getLength());
-            var digest = _Rfc863Utils.newDigest();
-            digest.update(array, 0, packet.getLength());
-            _Rfc863Utils.logDigest(digest);
+            _Rfc863Utils.logDigest(packet.getData(), 0, packet.getLength());
         }
     }
 

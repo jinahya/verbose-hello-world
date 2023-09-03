@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.EOFException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
@@ -36,18 +37,19 @@ class Rfc862Tcp1Client {
                 client.bind(new InetSocketAddress(_Rfc862Constants.HOST, 0));
                 log.info("(optionally) bound to {}", client.getLocalSocketAddress());
             }
-            client.connect(_Rfc862Constants.ADDR);
+            client.connect(_Rfc862Constants.ADDR, (int) _Rfc862Constants.CONNECT_TIMEOUT_IN_MILLIS);
             log.info("connected to {}, through {}", client.getRemoteSocketAddress(),
                      client.getLocalSocketAddress());
-            client.setSoTimeout(_Rfc862Utils.soTimeoutInMillisAsInt());
+            client.setSoTimeout((int) _Rfc862Constants.READ_TIMEOUT_IN_MILLIS);
             var digest = _Rfc862Utils.newDigest();
             var bytes = _Rfc862Utils.randomBytesLessThanOneMillion();
             _Rfc862Utils.logClientBytes(bytes);
             var array = _Rfc862Utils.newArray();
-            log.info("array.length: {}", array.length);
+            log.debug("array.length: {}", array.length);
             for (int r; bytes > 0; ) {
                 ThreadLocalRandom.current().nextBytes(array);
                 var l = Math.min(array.length, bytes);
+                assert l > 0;
                 client.getOutputStream().write(array, 0, l);
                 client.getOutputStream().flush();
                 bytes -= l;
@@ -57,11 +59,11 @@ class Rfc862Tcp1Client {
                 }
                 assert r > 0;
             }
-            _Rfc862Utils.logDigest(digest);
             client.shutdownOutput();
-            for (int r; (r = client.getInputStream().read(array)) != -1; ) {
-                assert r > 0;
+            while ((client.getInputStream().read(array)) != -1) {
+                // does nothing
             }
+            _Rfc862Utils.logDigest(digest);
         }
     }
 

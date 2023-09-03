@@ -39,35 +39,32 @@ class Rfc863Tcp3Client {
 
     public static void main(String... args) throws Exception {
         try (var client = AsynchronousSocketChannel.open()) {
-            HelloWorldNetUtils.printSocketOptions(client);
+            HelloWorldNetUtils.printSocketOptions(AsynchronousSocketChannel.class, client);
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(HOST, 0));
                 log.info("(optionally) bound to {}", client.getLocalAddress());
             }
-            client.connect(_Rfc863Constants.ADDR)
-                    .get(_Rfc863Constants.CONNECT_TIMEOUT_DURATION,
-                         _Rfc863Constants.CONNECT_TIMEOUT_UNIT);
+            client.connect(_Rfc863Constants.ADDR).get(_Rfc863Constants.CONNECT_TIMEOUT_DURATION,
+                                                      _Rfc863Constants.CONNECT_TIMEOUT_UNIT);
             log.info("connected to {}, through {}", client.getRemoteAddress(),
                      client.getLocalAddress());
             var attachment = new Attachment();
             for (int w; attachment.bytes > 0; ) {
                 if (!attachment.buffer.hasRemaining()) {
                     ThreadLocalRandom.current().nextBytes(attachment.buffer.array());
-                    attachment.buffer
-                            .clear()
-                            .limit(Math.min(attachment.buffer.remaining(), attachment.bytes));
+                    attachment.buffer.clear().limit(
+                            Math.min(attachment.buffer.remaining(), attachment.bytes)
+                    );
                 }
                 assert attachment.buffer.hasRemaining();
                 w = client.write(attachment.buffer).get();
                 assert w >= 0;
-                if (w > 0) {
-                    attachment.bytes -= w;
-                    attachment.digest.update(
-                            attachment.slice
-                                    .position(attachment.buffer.position() - w)
-                                    .limit(attachment.buffer.position())
-                    );
-                }
+                attachment.bytes -= w;
+                attachment.digest.update(
+                        attachment.slice
+                                .position(attachment.buffer.position() - w)
+                                .limit(attachment.buffer.position())
+                );
             }
             _Rfc863Utils.logDigest(attachment.digest);
         }

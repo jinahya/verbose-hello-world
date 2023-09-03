@@ -26,20 +26,12 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.HexFormat;
+import java.util.Base64;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
 final class _Rfc862Utils {
-
-    static long soTimeInMillis() {
-        return _Rfc862Constants.SO_TIMEOUT.toMillis();
-    }
-
-    static int soTimeoutInMillisAsInt() {
-        return Math.toIntExact(soTimeInMillis());
-    }
 
     // -------------------------------------------------------------------------------- array/buffer
 
@@ -128,9 +120,23 @@ final class _Rfc862Utils {
         }
     }
 
-    static void logDigest(MessageDigest digest) {
+    static byte[] logDigest(MessageDigest digest) {
         Objects.requireNonNull(digest, "digest is null");
-        log.info("digest: {}", HexFormat.of().formatHex(digest.digest()));
+        var result = digest.digest();
+        log.info("digest: {}", Base64.getEncoder().encodeToString(result));
+        return result;
+    }
+
+    static byte[] logDigest(byte[] array, int offset, int length) {
+        var digest = newDigest();
+        digest.update(array, offset, length);
+        return logDigest(digest);
+    }
+
+    static byte[] logDigest(ByteBuffer buffer) {
+        var digest = newDigest();
+        digest.update(buffer);
+        return logDigest(digest);
     }
 
     // ----------------------------------------------------------------------------------------- key

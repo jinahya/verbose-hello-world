@@ -34,7 +34,7 @@ class Rfc863Tcp0Client {
 
     public static void main(String... args) throws Exception {
         try (var client = new Socket()) {
-            HelloWorldNetUtils.printSocketOptions(client);
+            HelloWorldNetUtils.printSocketOptions(Socket.class, client);
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(HOST, 0));
                 log.info("(optionally) bound to {}", client.getLocalSocketAddress());

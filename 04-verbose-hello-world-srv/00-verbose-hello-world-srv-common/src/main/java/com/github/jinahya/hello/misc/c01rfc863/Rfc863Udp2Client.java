@@ -39,7 +39,7 @@ class Rfc863Udp2Client {
     public static void main(String... args) throws Exception {
         try (var selector = Selector.open();
              var client = DatagramChannel.open()) {
-            HelloWorldNetUtils.printSocketOptions(client);
+            HelloWorldNetUtils.printSocketOptions(DatagramChannel.class, client);
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc863Constants.HOST, 0));
                 log.info("(optionally) bound to {}", client.getLocalAddress());
@@ -57,7 +57,8 @@ class Rfc863Udp2Client {
             }
             client.configureBlocking(false);
             var clientKey = client.register(selector, SelectionKey.OP_WRITE);
-            if (selector.select(TimeUnit.SECONDS.toMillis(16L)) == 0) {
+            if (selector.selectNow() == 0) {
+                log.error("not immediately writable?");
                 return;
             }
             var key = selector.selectedKeys().iterator().next();
@@ -75,13 +76,11 @@ class Rfc863Udp2Client {
             var w = channel.send(buffer, _Rfc863Constants.ADDR);
             assert w == buffer.position();
             assert !buffer.hasRemaining();
-            var digest = _Rfc863Utils.newDigest();
-            digest.update(buffer.flip());
-            _Rfc863Utils.logDigest(digest);
+            _Rfc863Utils.logDigest(buffer.flip());
             key.cancel();
             assert !key.isValid();
             if (connect) {
-                client.disconnect(); // UncheckedIOException
+                client.disconnect();
             }
         }
     }

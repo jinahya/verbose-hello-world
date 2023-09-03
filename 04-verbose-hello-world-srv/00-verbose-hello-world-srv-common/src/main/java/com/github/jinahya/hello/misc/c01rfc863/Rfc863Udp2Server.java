@@ -36,7 +36,7 @@ class Rfc863Udp2Server {
     public static void main(String... args) throws Exception {
         try (var selector = Selector.open();
              var server = DatagramChannel.open()) {
-            HelloWorldNetUtils.printSocketOptions(server);
+            HelloWorldNetUtils.printSocketOptions(DatagramChannel.class, server);
             server.bind(_Rfc863Constants.ADDR);
             log.info("bound to {}", server.getLocalAddress());
             server.configureBlocking(false);
@@ -53,9 +53,7 @@ class Rfc863Udp2Server {
             var source = channel.receive(buffer);
             assert source != null;
             _Rfc863Utils.logServerBytes(buffer.position());
-            var digest = _Rfc863Utils.newDigest();
-            digest.update(buffer.flip());
-            _Rfc863Utils.logDigest(digest);
+            _Rfc863Utils.logDigest(buffer.flip());
             key.cancel();
             assert !key.isValid();
         }

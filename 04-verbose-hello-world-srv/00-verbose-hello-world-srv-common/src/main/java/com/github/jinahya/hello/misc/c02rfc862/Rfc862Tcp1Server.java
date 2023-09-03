@@ -32,15 +32,15 @@ class Rfc862Tcp1Server {
         try (var server = new ServerSocket()) {
             server.bind(_Rfc862Constants.ADDR);
             log.info("bound to {}", server.getLocalSocketAddress());
-            server.setSoTimeout(_Rfc862Utils.soTimeoutInMillisAsInt());
+            server.setSoTimeout((int) _Rfc862Constants.ACCEPT_TIMEOUT_IN_MILLIS);
             try (var client = server.accept()) {
                 log.info("accepted from {}, through {}", client.getRemoteSocketAddress(),
                          client.getLocalSocketAddress());
-                client.setSoTimeout(_Rfc862Utils.soTimeoutInMillisAsInt());
+                client.setSoTimeout((int) _Rfc862Constants.READ_TIMEOUT_IN_MILLIS);
                 var digest = _Rfc862Utils.newDigest();
                 var bytes = 0L;
                 var array = _Rfc862Utils.newArray();
-                log.info("array.length: {}", array.length);
+                log.debug("array.length: {}", array.length);
                 for (int r; (r = client.getInputStream().read(array)) != -1; ) {
                     assert r > 0;
                     bytes += r;

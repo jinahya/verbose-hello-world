@@ -74,15 +74,15 @@ final class _Rfc863Utils {
         return ThreadLocalRandom.current().nextInt(maxExclusive);
     }
 
-    private static final int MAX_BYTES = 1048576;
+    private static final int MILLION = 1048576;
 
     /**
-     * Returns a new {@code int} between {@code 0}(inclusive) and {@value #MAX_BYTES}(inclusive).
+     * Returns a new {@code int} between {@code 0}(inclusive) and {@value #MILLION}(inclusive).
      *
-     * @return a new {@code int} between {@code 0}(inclusive) and {@value #MAX_BYTES}(inclusive).
+     * @return a new {@code int} between {@code 0}(inclusive) and {@value #MILLION}(inclusive).
      */
-    static int newBytes() {
-        return newBytes(MAX_BYTES);
+    static int newBytesLessThanMillion() {
+        return newBytes(MILLION);
     }
 
     static void logClientBytes(long bytes) {
@@ -90,7 +90,7 @@ final class _Rfc863Utils {
             throw new IllegalArgumentException(
                     "bytes(" + bytes + ") is negative");
         }
-        log.info("sending {} bytes...", bytes);
+        log.info("sending {} bytes", bytes);
     }
 
     static void logServerBytes(long bytes) {
@@ -124,6 +124,18 @@ final class _Rfc863Utils {
     static void logDigest(MessageDigest digest) {
         Objects.requireNonNull(digest, "digest is null");
         log.info("digest: {}", HexFormat.of().formatHex(digest.digest()));
+    }
+
+    static void logDigest(byte[] array, int offset, int length) {
+        var digest = newDigest();
+        digest.update(array, offset, length);
+        logDigest(digest);
+    }
+
+    static void logDigest(ByteBuffer buffer) {
+        var digest = newDigest();
+        digest.update(buffer);
+        logDigest(digest);
     }
 
     // ----------------------------------------------------------------------------------------- key

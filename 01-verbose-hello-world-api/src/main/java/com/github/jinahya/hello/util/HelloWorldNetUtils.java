@@ -22,7 +22,9 @@ package com.github.jinahya.hello.util;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.net.Socket;
 import java.net.SocketOption;
 import java.net.StandardSocketOptions;
 import java.util.Objects;
@@ -61,21 +63,45 @@ public final class HelloWorldNetUtils {
         }
     }
 
-    public static void printSocketOptions(Object socket)
+    /**
+     * .
+     *
+     * @param clazz
+     * @param object
+     * @param <T>
+     * @throws ReflectiveOperationException
+     * @see Socket#getOption(SocketOption)
+     * @see java.net.ServerSocket#getOption(SocketOption)
+     * @see java.nio.channels.SocketChannel#getOption(SocketOption)
+     * @see java.nio.channels.ServerSocketChannel#getOption(SocketOption)
+     * @see java.net.DatagramSocket#getOption(SocketOption)
+     * @see java.nio.channels.DatagramChannel#getOption(SocketOption)
+     * @see java.nio.channels.AsynchronousSocketChannel#getOption(SocketOption)
+     * @see java.nio.channels.AsynchronousServerSocketChannel#getOption(SocketOption)
+     */
+    public static <T> void printSocketOptions(Class<T> clazz, T object)
             throws ReflectiveOperationException {
-        Objects.requireNonNull(socket, "socket is null");
-        var method = socket.getClass()
-                .getMethod("getOption", SocketOption.class);
+        Objects.requireNonNull(object, "object is null");
+        Method method;
+        try {
+            method = clazz.getMethod("getOption", SocketOption.class);
+        } catch (NoSuchMethodException nsme) {
+            log.error("no getOption(" + SocketOption.class.getSimpleName() + ") found on " + clazz);
+            return;
+        }
+        if (!method.canAccess(object)) {
+            method.setAccessible(true);
+        }
         acceptEachStandardSocketOption(so -> {
-            var name = so.name();
             var type = so.type();
             Object value;
             try {
-                value = method.invoke(socket, so);
+                value = method.invoke(object, so);
             } catch (ReflectiveOperationException roe) {
                 value = "[ERROR] " +
                         Optional.ofNullable(roe.getCause())
-                                .map(Throwable::getMessage).orElse(null);
+                                .map(Throwable::getMessage)
+                                .orElse(null);
             }
             System.out.printf("%1$s%n", so);
             System.out.printf("\ttype:\t%1$s%n", type);
