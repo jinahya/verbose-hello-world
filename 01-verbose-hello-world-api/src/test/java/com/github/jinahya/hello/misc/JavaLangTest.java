@@ -1,4 +1,4 @@
-package com.github.jinahya.hello;
+package com.github.jinahya.hello.misc;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
@@ -16,7 +16,6 @@ class JavaLangTest {
     void byteToChar() {
         byte b = (byte) ThreadLocalRandom.current().nextInt();
         char c = (char) b;
-        log.debug("byte: {}, char: {}", b, c);
         assertEquals(b, (byte) c);
     }
 }

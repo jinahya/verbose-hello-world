@@ -108,7 +108,7 @@ class Rfc862Tcp2Client {
                         attachment.digest.update(
                                 attachment.slice
                                         .position(attachment.buffer.position() - w)
-                                        .limit(attachment.buffer.limit())
+                                        .limit(attachment.buffer.position())
                         );
                         if ((attachment.bytes -= w) == 0) {
                             channel.shutdownOutput();
@@ -121,13 +121,11 @@ class Rfc862Tcp2Client {
                         assert channel == client;
                         var attachment = (Attachment) key.attachment();
                         assert attachment != null;
-//                        attachment.buffer.mark(); // mark -> position
-                        var r = channel.read(
-                                attachment.slice
-                                        .position(0)
-                                        .limit(attachment.buffer.position())
-                        );
-                        attachment.buffer.rewind();
+                        attachment.buffer.flip(); // limit -> position, position -> zero
+                        var r = channel.read(attachment.buffer);
+                        attachment.buffer
+                                .limit(attachment.buffer.capacity())
+                                .position(attachment.buffer.limit());
                         if (r == -1) {
                             if (attachment.bytes > 0) {
                                 throw new EOFException("unexpected eof");
@@ -135,7 +133,9 @@ class Rfc862Tcp2Client {
                             key.interestOpsAnd(~SelectionKey.OP_READ);
                             key.cancel();
                             assert !key.isValid();
+                            continue;
                         }
+                        assert r >= 0;
                     }
                 }
             }

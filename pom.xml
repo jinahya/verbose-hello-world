@@ -128,6 +128,11 @@
         <version>${version.asciidoctorj-pdf}</version>
       </dependency>
       <dependency>
+        <groupId>org.bouncycastle</groupId>
+        <artifactId>bcprov-lts8on</artifactId>
+        <version>2.73.3</version>
+      </dependency>
+      <dependency>
         <groupId>org.glassfish.hk2</groupId>
         <artifactId>hk2</artifactId>
         <version>${version.org.glassfish.hk2}</version>

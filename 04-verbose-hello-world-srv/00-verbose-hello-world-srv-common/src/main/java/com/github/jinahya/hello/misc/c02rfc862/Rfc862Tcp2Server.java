@@ -40,6 +40,7 @@ class Rfc862Tcp2Server {
         }
         int bytes;
         final ByteBuffer buffer = _Rfc862Utils.newBuffer();
+//        final ByteBuffer slice = buffer.asReadOnlyBuffer();
         final ByteBuffer slice = buffer.slice();
         final MessageDigest digest = _Rfc862Utils.newDigest();
     }
@@ -102,7 +103,7 @@ class Rfc862Tcp2Server {
                         assert w > 0;
                         attachment.digest.update(
                                 attachment.slice
-                                        .position(attachment.buffer.position() - w)
+                                        .position(0)
                                         .limit(attachment.buffer.position())
                         );
                         if (attachment.buffer.compact().position() == 0) {
