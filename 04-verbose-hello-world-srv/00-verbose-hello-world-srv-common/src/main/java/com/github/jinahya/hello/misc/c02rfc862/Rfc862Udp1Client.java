@@ -27,13 +27,13 @@ import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 class Rfc862Udp1Client {
 
     public static void main(String... args) throws Exception {
         try (var client = new DatagramSocket(null)) {
+            client.setSoTimeout((int) _Rfc862Constants.READ_TIMEOUT_IN_MILLIS);
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc862Constants.HOST, 0));
                 log.info("(optionally) bound to {}", client.getLocalSocketAddress());
@@ -49,15 +49,12 @@ class Rfc862Udp1Client {
                     connect = false;
                 }
             }
-            client.setSoTimeout((int) TimeUnit.SECONDS.toMillis(16L));
             var array = new byte[ThreadLocalRandom.current().nextInt(client.getSendBufferSize())];
             ThreadLocalRandom.current().nextBytes(array);
             var packet = new DatagramPacket(array, array.length, _Rfc862Constants.ADDR);
             _Rfc862Utils.logClientBytes(packet.getLength());
             client.send(packet);
-            var digest = _Rfc862Utils.newDigest();
-            digest.update(array, 0, packet.getLength());
-            _Rfc862Utils.logDigest(digest);
+            _Rfc862Utils.logDigest(array, 0, packet.getLength());
             client.receive(packet);
             if (connect) {
                 client.disconnect(); // UncheckedIOException

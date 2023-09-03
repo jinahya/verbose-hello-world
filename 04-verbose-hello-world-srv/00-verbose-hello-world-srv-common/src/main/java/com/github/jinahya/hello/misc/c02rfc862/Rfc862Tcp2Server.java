@@ -22,6 +22,9 @@ package com.github.jinahya.hello.misc.c02rfc862;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.Closeable;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -32,17 +35,54 @@ import java.security.MessageDigest;
 @Slf4j
 class Rfc862Tcp2Server {
 
-    // @formatter:off
-    static class Attachment {
+    // @formatter:on
+    static class Attachment implements Closeable {
+
+        /**
+         * Creates a new instance.
+         */
         Attachment() {
             super();
+            buffer = _Rfc862Utils.newBuffer();
+            slice = buffer.asReadOnlyBuffer();
+            digest = _Rfc862Utils.newDigest();
             log.debug("buffer.capacity: {}", buffer.capacity());
         }
-        int bytes;
-        final ByteBuffer buffer = _Rfc862Utils.newBuffer();
-//        final ByteBuffer slice = buffer.asReadOnlyBuffer();
-        final ByteBuffer slice = buffer.slice();
-        final MessageDigest digest = _Rfc862Utils.newDigest();
+
+        @Override
+        public void close() throws IOException {
+            // does nothing
+        }
+
+        final void closeUnchecked() {
+            try {
+                close();
+            } catch (IOException ioe) {
+                throw new UncheckedIOException("failed to close", ioe);
+            }
+        }
+
+        //        /**
+//         * Updates specified number of bytes preceding current position of {@code buffer} to
+//         * {@code digest}.
+//         *
+//         * @param bytes the number of bytes preceding current position of the {@code buffer} to be
+//         *              updated to the {@code digest}.
+//         */
+//        void updateDigest(int bytes) {
+//            if (bytes < 0) {
+//                throw new IllegalArgumentException("bytes(" + bytes + ") is negative");
+//            }
+//            digest.update(slice.position(buffer.position() - bytes).limit(buffer.position()));
+//        }
+
+        final ByteBuffer buffer;
+
+        final ByteBuffer slice;
+
+        final MessageDigest digest;
+
+        volatile int bytes;
     }
     // @formatter:on
 

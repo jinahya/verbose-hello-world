@@ -26,9 +26,13 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.stream.Stream;
+
+import static org.awaitility.Awaitility.await;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 class Rfc862TcpTest {
@@ -72,7 +76,7 @@ class Rfc862TcpTest {
                 throw new RuntimeException(e);
             }
         });
-        Thread.sleep(100L);
+        await().pollDelay(Duration.ofMillis(100L)).untilAsserted(() -> assertTrue(true));
         var client = executor.submit(() -> {
             try {
                 clientClass.getMethod("main", String[].class)

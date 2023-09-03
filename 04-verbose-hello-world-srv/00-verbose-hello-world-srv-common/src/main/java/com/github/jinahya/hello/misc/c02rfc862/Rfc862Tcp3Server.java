@@ -23,7 +23,6 @@ package com.github.jinahya.hello.misc.c02rfc862;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.channels.AsynchronousServerSocketChannel;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 class Rfc862Tcp3Server {
@@ -34,33 +33,37 @@ class Rfc862Tcp3Server {
     // @formatter:on
 
     public static void main(String... args) throws Exception {
-        var timeout = 8L;
-        var unit = TimeUnit.SECONDS;
         try (var server = AsynchronousServerSocketChannel.open()) {
             server.bind(_Rfc862Constants.ADDR);
             log.info("bound to {}", server.getLocalAddress());
-            try (var client = server.accept().get(timeout, unit)) {
+            try (var client = server.accept().get(_Rfc862Constants.ACCEPT_TIMEOUT_DURATION,
+                                                  _Rfc862Constants.ACCEPT_TIMEOUT_UNIT)) {
                 log.info("accepted from {}, through {}", client.getRemoteAddress(),
                          client.getLocalAddress());
                 var attachment = new Attachment();
+                int r, w;
                 while (true) {
-                    var r = client.read(attachment.buffer).get(timeout, unit);
+                    r = client.read(attachment.buffer).get(_Rfc862Constants.READ_TIMEOUT_DURATION,
+                                                           _Rfc862Constants.READ_TIMEOUT_UNIT);
                     if (r == -1) {
-                        client.shutdownInput();
                         break;
                     }
+                    assert r >= 0;
                     attachment.bytes += r;
                     attachment.digest.update(
                             attachment.slice
                                     .position(attachment.buffer.position() - r)
                                     .limit(attachment.buffer.position())
                     );
-                    attachment.buffer.flip(); // limit -> position; position -> zero
-                    var w = client.write(attachment.buffer).get(timeout, unit);
+                    attachment.buffer.flip();
+                    w = client.write(attachment.buffer).get();
+                    assert w >= 0;
                     attachment.buffer.compact();
                 }
+                client.shutdownInput();
                 for (attachment.buffer.flip(); attachment.buffer.hasRemaining(); ) {
-                    var w = client.write(attachment.buffer).get(timeout, unit);
+                    w = client.write(attachment.buffer).get();
+                    assert w >= 0;
                 }
                 _Rfc862Utils.logServerBytes(attachment.bytes);
                 _Rfc862Utils.logDigest(attachment.digest);

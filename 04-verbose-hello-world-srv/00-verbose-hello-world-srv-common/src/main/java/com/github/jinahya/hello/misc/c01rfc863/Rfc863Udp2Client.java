@@ -61,7 +61,8 @@ class Rfc863Udp2Client {
                 log.error("not immediately writable?");
                 return;
             }
-            var key = selector.selectedKeys().iterator().next();
+            var i = selector.selectedKeys().iterator();
+            var key = i.next();
             assert key == clientKey;
             assert key.isWritable();
             var channel = (DatagramChannel) key.channel();
@@ -79,6 +80,7 @@ class Rfc863Udp2Client {
             _Rfc863Utils.logDigest(buffer.flip());
             key.cancel();
             assert !key.isValid();
+            i.remove();
             if (connect) {
                 client.disconnect();
             }

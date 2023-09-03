@@ -23,30 +23,36 @@ package com.github.jinahya.hello.misc.c02rfc862;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.channels.AsynchronousChannelGroup;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
+import java.util.Objects;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 class Rfc862Tcp4Server {
 
-    // @formatter:off
+    // @formatter:on
     static class Attachment extends Rfc862Tcp3Server.Attachment {
-        void shutdownGroupNow() {
-            if (group == null) {
-                throw new IllegalStateException("group is null");
-            }
-            try {
-                group.shutdownNow();
-            } catch (IOException ioe) {
-                throw new UncheckedIOException("failed to shutdown group: " + group, ioe);
-            }
+
+        Attachment(final AsynchronousChannelGroup group) {
+            super();
+            this.group = Objects.requireNonNull(group, "group is null");
         }
-        AsynchronousChannelGroup group;
+
+        @Override
+        public void close() throws IOException {
+            if (client != null) {
+                client.close();
+                client = null;
+            }
+            group.shutdownNow();
+            super.close();
+        }
+
+        private final AsynchronousChannelGroup group;
+
         AsynchronousSocketChannel client;
     }
     // @formatter:on
@@ -55,21 +61,25 @@ class Rfc862Tcp4Server {
     private static final
     CompletionHandler<Integer, Attachment> W_HANDLER = new CompletionHandler<>() {
         @Override public void completed(Integer result, Attachment attachment) {
+            assert result > 0;
             attachment.digest.update(
                     attachment.slice
                             .position(attachment.buffer.position() - result)
                             .limit(attachment.buffer.position())
             );
+            attachment.buffer.compact();
+            assert attachment.buffer.hasRemaining();
             attachment.client.read(
-                    attachment.buffer.compact(), // <dst>
-                    8L, TimeUnit.SECONDS,
-                    attachment,                  // <attachment>
-                    R_HANDLER                    // <handler>
+                    attachment.buffer,                      // <dst>
+                    _Rfc862Constants.READ_TIMEOUT_DURATION, // <timeout>
+                    _Rfc862Constants.READ_TIMEOUT_UNIT,     // <unit>
+                    attachment,                             // <attachment>
+                    R_HANDLER                               // <handler>
             );
         }
         @Override public void failed(Throwable exc, Attachment attachment) {
             log.error("failed to write", exc);
-            attachment.shutdownGroupNow();
+            attachment.closeUnchecked();
         }
     };
     // @formatter:on
@@ -80,27 +90,23 @@ class Rfc862Tcp4Server {
         @Override public void completed(Integer result, Attachment attachment) {
             if (result == -1) {
                 if (attachment.buffer.position() == 0) { // no more bytes to send back, either
-                    try {
-                        attachment.client.close();
-                    } catch (IOException ioe) {
-                        log.error("failed to close {}", attachment.client, ioe);
-                    }
-                    attachment.shutdownGroupNow();
+                    attachment.closeUnchecked();
                     return;
                 }
             } else {
                 attachment.bytes += result;
             }
+            attachment.buffer.flip();
+            assert attachment.buffer.hasRemaining();
             attachment.client.write(
-                    attachment.buffer.flip(), // <src>
-                    8L, TimeUnit.SECONDS,
-                    attachment,               // <attachment>
-                    W_HANDLER                 // <handler>
+                    attachment.buffer, // <src>
+                    attachment,        // <attachment>
+                    W_HANDLER          // <handler>
             );
         }
         @Override public void failed(Throwable exc, Attachment attachment) {
             log.error("failed to read", exc);
-            attachment.shutdownGroupNow();
+            attachment.closeUnchecked();
         }
     };
     // @formatter:on
@@ -109,6 +115,7 @@ class Rfc862Tcp4Server {
     private static final
     CompletionHandler<AsynchronousSocketChannel, Attachment> A_HANDLER = new CompletionHandler<>() {
         @Override public void completed(AsynchronousSocketChannel result, Attachment attachment) {
+            assert result != null;
             try {
                 log.info("accepted from {}, through {}", result.getRemoteAddress(),
                          result.getLocalAddress());
@@ -116,16 +123,18 @@ class Rfc862Tcp4Server {
                 log.error("failed get addresses from {}", result, ioe);
             }
             attachment.client = result;
+            assert attachment.buffer.hasRemaining();
             attachment.client.read(
-                    attachment.buffer, // <dst>
-                    8L, TimeUnit.SECONDS,
-                    attachment,        // <attachment>
-                    R_HANDLER          // <handler>
+                    attachment.buffer,                      // <dst>
+                    _Rfc862Constants.READ_TIMEOUT_DURATION, // <timeout>
+                    _Rfc862Constants.READ_TIMEOUT_UNIT,     // <unit>
+                    attachment,                             // <attachment>
+                    R_HANDLER                               // <handler>
             );
         }
         @Override public void failed(Throwable exc, Attachment attachment) {
             log.error("failed to accept", exc);
-            attachment.shutdownGroupNow();
+            attachment.closeUnchecked();
         }
     };
     // @formatter:on
@@ -135,14 +144,14 @@ class Rfc862Tcp4Server {
         try (var server = AsynchronousServerSocketChannel.open(group)) {
             server.bind(_Rfc862Constants.ADDR);
             log.info("bound to {}", server.getLocalAddress());
-            var attachment = new Attachment();
-            attachment.group = group;
+            var attachment = new Attachment(group);
             server.accept(
                     attachment, // <attachment>
                     A_HANDLER   // <handler>
             );
-            if (!group.awaitTermination(8L, TimeUnit.SECONDS)) {
-                log.error("channel group has not been terminated for a while");
+            if (!group.awaitTermination(_Rfc862Constants.ACCEPT_TIMEOUT_DURATION,
+                                        _Rfc862Constants.ACCEPT_TIMEOUT_UNIT)) {
+                throw new RuntimeException("channel group has not been terminated!");
             }
             _Rfc862Utils.logServerBytes(attachment.bytes);
             _Rfc862Utils.logDigest(attachment.digest);

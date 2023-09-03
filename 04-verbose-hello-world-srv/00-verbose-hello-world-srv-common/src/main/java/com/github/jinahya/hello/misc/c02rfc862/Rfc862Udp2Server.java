@@ -20,7 +20,6 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
-import com.github.jinahya.hello.util.HelloWorldSecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.SocketAddress;
@@ -29,17 +28,16 @@ import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
-import java.security.MessageDigest;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
 class Rfc862Udp2Server {
 
-    // @formatter:off
     static class Attachment {
+
         ByteBuffer buffer;
+
         SocketAddress address;
-        final MessageDigest digest = _Rfc862Utils.newDigest();
     }
     // @formatter:on
 
@@ -74,11 +72,8 @@ class Rfc862Udp2Server {
                         var attachment = (Attachment) key.attachment();
                         attachment.buffer.flip();
                         var w = channel.send(attachment.buffer, attachment.address);
-                        log.info("{} byte(s) sent to {}", w, attachment.address);
-                        HelloWorldSecurityUtils.updateAllPreceding(
-                                attachment.digest, attachment.buffer
-                        );
-                        _Rfc862Utils.logDigest(attachment.digest);
+                        _Rfc862Utils.logServerBytes(attachment.buffer.position());
+                        _Rfc862Utils.logDigest(attachment.buffer.flip());
                         key.cancel();
                     }
                 }

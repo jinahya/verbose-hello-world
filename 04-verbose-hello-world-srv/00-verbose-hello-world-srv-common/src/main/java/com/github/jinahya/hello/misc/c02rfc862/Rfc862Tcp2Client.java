@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.EOFException;
 import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
@@ -32,14 +33,25 @@ import java.util.concurrent.ThreadLocalRandom;
 @Slf4j
 class Rfc862Tcp2Client {
 
-    // @formatter:off
-    private static class Attachment extends Rfc862Tcp2Server.Attachment {
+    // @formatter:on
+    static class Attachment extends Rfc862Tcp2Server.Attachment {
+
         Attachment() {
             super();
-            bytes = _Rfc862Utils.randomBytesLessThanOneMillion();
             buffer.position(buffer.limit());
+            bytes = _Rfc862Utils.randomBytesLessThanOneMillion();
             _Rfc862Utils.logClientBytes(bytes);
         }
+//
+//        /**
+//         * Clears the {@code buffer}, re-randomizes the {@code buffer}'s
+//         * {@link ByteBuffer#array() backing array}, and sets the {@code buffer}'s {@code limit}
+//         * with smaller of {@code buffer.limit()} and {@link #bytes}.
+//         */
+//        void clearBuffer() {
+//            ThreadLocalRandom.current().nextBytes(buffer.array());
+//            buffer.clear().limit(Math.min(buffer.limit(), bytes));
+//        }
     }
     // @formatter:on
 

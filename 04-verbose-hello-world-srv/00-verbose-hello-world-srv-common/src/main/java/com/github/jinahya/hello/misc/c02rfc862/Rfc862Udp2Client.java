@@ -20,7 +20,6 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
-import com.github.jinahya.hello.util.HelloWorldSecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
@@ -31,13 +30,12 @@ import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 class Rfc862Udp2Client {
 
     // @formatter:off
-    private static class Attachment extends Rfc862Udp2Server.Attachment {
+    static class Attachment extends Rfc862Udp2Server.Attachment {
     }
     // @formatter:on
 
@@ -60,46 +58,51 @@ class Rfc862Udp2Client {
                 }
             }
             client.configureBlocking(false);
-            client.register(selector, SelectionKey.OP_WRITE);
-            while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
-                if (selector.select(TimeUnit.SECONDS.toMillis(8L)) == 0) {
+            var clientKey = client.register(selector, SelectionKey.OP_WRITE);
+            while (clientKey.isValid()) {
+                if (selector.select(_Rfc862Constants.ACCEPT_TIMEOUT_IN_MILLIS) == 0) {
                     break;
                 }
                 for (var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
                     var key = i.next();
+                    assert key == clientKey;
                     if (key.isWritable()) {
                         var channel = (DatagramChannel) key.channel();
+                        assert channel == client;
                         var attachment = new Attachment();
-                        key.attach(attachment);
                         attachment.buffer = ByteBuffer.allocate(
                                 ThreadLocalRandom.current().nextInt(
-                                        channel.getOption(StandardSocketOptions.SO_SNDBUF)
+                                        channel.getOption(StandardSocketOptions.SO_SNDBUF) + 1
                                 )
                         );
+                        attachment.address = _Rfc862Constants.ADDR;
+                        key.attach(attachment);
                         ThreadLocalRandom.current().nextBytes(attachment.buffer.array());
-                        var w = channel.send(attachment.buffer, _Rfc862Constants.ADDR);
-                        log.info("{} byte(s) sent to {}", w, _Rfc862Constants.ADDR);
+                        _Rfc862Utils.logClientBytes(attachment.buffer.remaining());
+                        var w = channel.send(attachment.buffer, attachment.address);
                         assert w == attachment.buffer.position();
                         assert !attachment.buffer.hasRemaining();
-                        HelloWorldSecurityUtils.updateAllPreceding(
-                                attachment.digest, attachment.buffer
-                        );
-                        _Rfc862Utils.logDigest(attachment.digest);
+                        _Rfc862Utils.logDigest(attachment.buffer.flip());
                         key.interestOpsAnd(~SelectionKey.OP_WRITE);
                         key.interestOpsOr(SelectionKey.OP_READ);
                     }
                     if (key.isReadable()) {
                         var channel = (DatagramChannel) key.channel();
+                        assert channel == client;
                         var attachment = (Attachment) key.attachment();
-                        attachment.buffer.flip();
+                        attachment.buffer.clear();
                         attachment.address = channel.receive(attachment.buffer);
                         log.info("{} byte(s) received from {}", attachment.buffer.position(),
                                  attachment.address);
                         assert !attachment.buffer.hasRemaining();
                         key.interestOpsAnd(~SelectionKey.OP_READ);
                         key.cancel();
+                        assert !key.isValid();
                     }
                 }
+            }
+            if (connect) {
+                client.disconnect();
             }
         }
     }

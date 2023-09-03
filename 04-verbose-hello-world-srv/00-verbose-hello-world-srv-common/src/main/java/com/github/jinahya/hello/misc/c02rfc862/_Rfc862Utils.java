@@ -89,7 +89,7 @@ final class _Rfc862Utils {
             throw new IllegalArgumentException(
                     "bytes(" + bytes + ") is negative");
         }
-        log.info("sending (and receiving back) {} bytes...", bytes);
+        log.info("sending (and receiving back) {} bytes", bytes);
     }
 
     static void logServerBytes(long bytes) {

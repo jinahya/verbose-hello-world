@@ -24,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 class Rfc862Udp1Server {
@@ -33,16 +32,13 @@ class Rfc862Udp1Server {
         try (var server = new DatagramSocket(null)) {
             server.bind(_Rfc862Constants.ADDR);
             log.info("bound to {}", server.getLocalSocketAddress());
-            server.setSoTimeout((int) TimeUnit.SECONDS.toMillis(16L));
+            server.setSoTimeout((int) _Rfc862Constants.ACCEPT_TIMEOUT_IN_MILLIS);
             var array = new byte[server.getReceiveBufferSize()];
             var packet = new DatagramPacket(array, array.length);
             server.receive(packet);
-            log.info("received from {}", packet.getSocketAddress());
-            var digest = _Rfc862Utils.newDigest();
-            digest.update(array, 0, packet.getLength());
-            _Rfc862Utils.logDigest(digest);
             server.send(packet);
             _Rfc862Utils.logServerBytes(packet.getLength());
+            _Rfc862Utils.logDigest(array, 0, packet.getLength());
         }
     }
 
