@@ -82,9 +82,9 @@ public final class HelloWorldLangUtils {
      * @param callable  the callable to be called when a line passes {@code predicate}.
      * @param consumer  the consumer be accepted with lines not pass.
      */
-    public static void readLinesAndCallWhenTests(Predicate<? super String> predicate,
-                                                 Callable<Void> callable,
-                                                 Consumer<? super String> consumer) {
+    public static void readLinesAndCallWhenTests(final Predicate<? super String> predicate,
+                                                 final Callable<Void> callable,
+                                                 final Consumer<? super String> consumer) {
         Objects.requireNonNull(predicate, "predicate is null");
         Objects.requireNonNull(callable, "callable is null");
         Objects.requireNonNull(consumer, "consumer is null");
@@ -112,9 +112,9 @@ public final class HelloWorldLangUtils {
         thread.start();
     }
 
-    public static void readLinesAndCloseWhenTests(Predicate<? super String> predicate,
-                                                  Closeable closeable,
-                                                  Consumer<? super String> consumer) {
+    public static void readLinesAndCloseWhenTests(final Predicate<? super String> predicate,
+                                                  final Closeable closeable,
+                                                  final Consumer<? super String> consumer) {
         Objects.requireNonNull(closeable, "closeable is null");
         readLinesAndCallWhenTests(
                 predicate,
@@ -126,20 +126,20 @@ public final class HelloWorldLangUtils {
         );
     }
 
-    public static void readLinesAndCloseWhenTests(Predicate<? super String> predicate,
-                                                  Closeable closeable) {
+    public static void readLinesAndCloseWhenTests(final Predicate<? super String> predicate,
+                                                  final Closeable closeable) {
         readLinesAndCloseWhenTests(
                 predicate,
                 closeable,
                 l -> {
+                    // does nothing
                 }
         );
     }
 
-    public static void readLinesAndRunWhenTests(
-            Predicate<? super String> predicate,
-            Runnable runnable,
-            Consumer<? super String> consumer) {
+    public static void readLinesAndRunWhenTests(final Predicate<? super String> predicate,
+                                                final Runnable runnable,
+                                                final Consumer<? super String> consumer) {
         Objects.requireNonNull(runnable, "runnable is null");
         readLinesAndCallWhenTests(
                 predicate,
@@ -151,28 +151,19 @@ public final class HelloWorldLangUtils {
         );
     }
 
-    /**
-     * Starts a new {@link Thread#isDaemon() daemon} thread which continuously reads lines from
-     * {@link System#in}, calls specified callable when it reads a line equals (ignoring the case)
-     * to specified string, otherwise, accepts lines to specified consumer.
-     *
-     * @param string   the string to match.
-     * @param callable the callable to be called when reads {@code string}.
-     * @param consumer the consumer be accepted with read lines other than {@code string}
-     * @deprecated Use {@link #readLinesAndCallWhenTests(Predicate, Callable, Consumer)}
-     */
-    @Deprecated(forRemoval = true)
-    public static void readLinesAndCallWhenEquals(String string,
-                                                  Callable<Void> callable,
-                                                  Consumer<? super String> consumer) {
-        Objects.requireNonNull(string, "string is null");
-        readLinesAndCallWhenTests(l -> l.equalsIgnoreCase(string), callable,
-                                  consumer);
+    public static void readLinesAndRunWhenTests(final Predicate<? super String> predicate,
+                                                final Runnable runnable) {
+        readLinesAndRunWhenTests(
+                predicate,
+                runnable,
+                l -> {
+                    // does nothing
+                }
+        );
     }
 
-    private static int[] trimByCodepoints(int[] codePoints, int from, int to,
-                                          Charset charset,
-                                          final int bytes) {
+    private static int[] trimByCodepoints(final int[] codePoints, int from, int to,
+                                          final Charset charset, final int bytes) {
         if (from == to) {
             return Arrays.copyOfRange(codePoints, 0, to);
         }
@@ -192,18 +183,16 @@ public final class HelloWorldLangUtils {
         return trimByCodepoints(codePoints, from, to, charset, bytes);
     }
 
-    public static String trimByCodepoints(String string, Charset charset,
+    public static String trimByCodepoints(final String string, final Charset charset,
                                           final int bytes) {
         Objects.requireNonNull(string, "string is null");
         Objects.requireNonNull(charset, "charset is null");
         if (bytes <= 0) {
-            throw new IllegalArgumentException(
-                    "bytes(" + bytes + ") is not positive");
+            throw new IllegalArgumentException("bytes(" + bytes + ") is not positive");
         }
         var codePoints = string.codePoints().toArray();
-        var c = trimByCodepoints(codePoints, 0, codePoints.length, charset,
-                                 bytes);
-        return new String(c, 0, c.length);
+        codePoints = trimByCodepoints(codePoints, 0, codePoints.length, charset, bytes);
+        return new String(codePoints, 0, codePoints.length);
     }
 
     // @formatter:off
