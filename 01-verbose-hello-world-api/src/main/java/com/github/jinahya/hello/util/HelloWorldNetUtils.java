@@ -24,12 +24,20 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.net.DatagramSocket;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketOption;
 import java.net.StandardSocketOptions;
+import java.nio.channels.AsynchronousServerSocketChannel;
+import java.nio.channels.AsynchronousSocketChannel;
+import java.nio.channels.DatagramChannel;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Utilities for {@link java.net} package.
@@ -63,29 +71,75 @@ public final class HelloWorldNetUtils {
         }
     }
 
+    public static <T> void acceptSocketOptions(
+            final Class<T> clazz, T object,
+            final Function<? super SocketOption<?>, ? extends Function<? super Class<?>, Consumer<Object>>> function) {
+        Objects.requireNonNull(clazz, "clazz is null");
+        Objects.requireNonNull(object, "object is null");
+        Objects.requireNonNull(function, "function is null");
+        Method method;
+        try {
+            method = clazz.getMethod("getOption", SocketOption.class);
+        } catch (final NoSuchMethodException nsme) {
+            log.error("no getOption(" + SocketOption.class.getSimpleName() + ") found on " + clazz);
+            return;
+        }
+        if (!method.canAccess(object)) {
+            method.setAccessible(true);
+        }
+        acceptEachStandardSocketOption(so -> {
+            var type = so.type();
+            Object value;
+            try {
+                value = method.invoke(object, so);
+            } catch (final ReflectiveOperationException roe) {
+                value = Optional.ofNullable(roe.getCause())
+                        .map(Throwable::getMessage)
+                        .map(m -> {
+                            if (m.equals("'" + so.name() + "' not supported")) {
+                                return "NOT SUPPORTED";
+                            }
+                            return m;
+                        })
+                        .orElse(null);
+            }
+            function.apply(so).apply(type).accept(value);
+        });
+    }
+
+    public static <T> void acceptSocketOptionsHelper(
+            final Class<T> clazz, Object object,
+            final Function<? super SocketOption<?>, ? extends Function<? super Class<?>, Consumer<Object>>> function) {
+        acceptSocketOptions(clazz, clazz.cast(object), function);
+    }
+
     /**
-     * .
+     * Prints socket options of specified object.
      *
-     * @param clazz
-     * @param object
-     * @param <T>
-     * @throws ReflectiveOperationException
+     * @param clazz  a class of the object.
+     * @param object the object whose socket options are printed.
+     * @param <T>    object type parameter
      * @see Socket#getOption(SocketOption)
-     * @see java.net.ServerSocket#getOption(SocketOption)
-     * @see java.nio.channels.SocketChannel#getOption(SocketOption)
-     * @see java.nio.channels.ServerSocketChannel#getOption(SocketOption)
-     * @see java.net.DatagramSocket#getOption(SocketOption)
-     * @see java.nio.channels.DatagramChannel#getOption(SocketOption)
-     * @see java.nio.channels.AsynchronousSocketChannel#getOption(SocketOption)
-     * @see java.nio.channels.AsynchronousServerSocketChannel#getOption(SocketOption)
+     * @see ServerSocket#getOption(SocketOption)
+     * @see DatagramSocket#getOption(SocketOption)
+     * @see SocketChannel#getOption(SocketOption)
+     * @see ServerSocketChannel#getOption(SocketOption)
+     * @see DatagramChannel#getOption(SocketOption)
+     * @see AsynchronousSocketChannel#getOption(SocketOption)
+     * @see AsynchronousServerSocketChannel#getOption(SocketOption)
      */
-    public static <T> void printSocketOptions(Class<T> clazz, T object)
-            throws ReflectiveOperationException {
+    public static <T> void printSocketOptions(final Class<T> clazz, T object) {
+        acceptSocketOptions(clazz, object, o -> t -> v -> {
+            System.out.printf("%1$-17s\t%2$-17s %3$s%n", o, t.getSimpleName(), v);
+        });
+        if (true) {
+            return;
+        }
         Objects.requireNonNull(object, "object is null");
         Method method;
         try {
             method = clazz.getMethod("getOption", SocketOption.class);
-        } catch (NoSuchMethodException nsme) {
+        } catch (final NoSuchMethodException nsme) {
             log.error("no getOption(" + SocketOption.class.getSimpleName() + ") found on " + clazz);
             return;
         }
@@ -98,14 +152,11 @@ public final class HelloWorldNetUtils {
             try {
                 value = method.invoke(object, so);
             } catch (ReflectiveOperationException roe) {
-                value = "[ERROR] " +
-                        Optional.ofNullable(roe.getCause())
-                                .map(Throwable::getMessage)
-                                .orElse(null);
+                value = Optional.ofNullable(roe.getCause())
+                        .map(Throwable::getMessage)
+                        .orElse(null);
             }
-            System.out.printf("%1$s%n", so);
-            System.out.printf("\ttype:\t%1$s%n", type);
-            System.out.printf("\tvalue:\t%1$s%n", value);
+            System.out.printf("%1$-17s\t%2$-17s %3$s%n", so, type.getSimpleName(), value);
         });
     }
 

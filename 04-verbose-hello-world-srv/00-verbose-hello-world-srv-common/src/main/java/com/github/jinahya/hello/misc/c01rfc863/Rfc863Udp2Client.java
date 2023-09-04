@@ -20,7 +20,6 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
-import com.github.jinahya.hello.util.HelloWorldNetUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
@@ -31,7 +30,6 @@ import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 class Rfc863Udp2Client {
@@ -39,7 +37,6 @@ class Rfc863Udp2Client {
     public static void main(String... args) throws Exception {
         try (var selector = Selector.open();
              var client = DatagramChannel.open()) {
-            HelloWorldNetUtils.printSocketOptions(DatagramChannel.class, client);
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc863Constants.HOST, 0));
                 log.info("(optionally) bound to {}", client.getLocalAddress());

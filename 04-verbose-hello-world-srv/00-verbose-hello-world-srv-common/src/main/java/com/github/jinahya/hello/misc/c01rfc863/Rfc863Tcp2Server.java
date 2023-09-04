@@ -20,12 +20,8 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
-import com.github.jinahya.hello.util.HelloWorldNetUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -74,7 +70,6 @@ class Rfc863Tcp2Server {
     public static void main(String... args) throws Exception {
         try (var selector = Selector.open();
              var server = ServerSocketChannel.open()) {
-            HelloWorldNetUtils.printSocketOptions(ServerSocketChannel.class, server);
             server.bind(_Rfc863Constants.ADDR, 1);
             log.info("bound to {}", server.getLocalAddress());
             server.configureBlocking(false);

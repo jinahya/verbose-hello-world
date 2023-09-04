@@ -20,11 +20,9 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
-import com.github.jinahya.hello.util.HelloWorldNetUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
@@ -60,7 +58,6 @@ class Rfc863Tcp2Client {
     public static void main(String... args) throws Exception {
         try (var selector = Selector.open();
              var client = SocketChannel.open()) {
-            HelloWorldNetUtils.printSocketOptions(SocketChannel.class, client);
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(HOST, 0));
                 log.info("(optionally) bound to {}", client.getLocalAddress());

@@ -20,7 +20,6 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
-import com.github.jinahya.hello.util.HelloWorldNetUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.ServerSocket;
@@ -30,7 +29,6 @@ class Rfc863Tcp0Server {
 
     public static void main(String... args) throws Exception {
         try (var server = new ServerSocket()) {
-            HelloWorldNetUtils.printSocketOptions(ServerSocket.class, server);
             server.bind(_Rfc863Constants.ADDR, 1);
             log.info("bound to {}", server.getLocalSocketAddress());
             server.setSoTimeout((int) _Rfc863Constants.ACCEPT_TIMEOUT_IN_MILLIS);

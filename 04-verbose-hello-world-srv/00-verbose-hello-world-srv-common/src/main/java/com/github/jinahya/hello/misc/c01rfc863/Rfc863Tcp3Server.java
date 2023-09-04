@@ -20,7 +20,6 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
-import com.github.jinahya.hello.util.HelloWorldNetUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.channels.AsynchronousServerSocketChannel;
@@ -35,7 +34,6 @@ class Rfc863Tcp3Server {
 
     public static void main(String... args) throws Exception {
         try (var server = AsynchronousServerSocketChannel.open()) {
-            HelloWorldNetUtils.printSocketOptions(AsynchronousServerSocketChannel.class, server);
             server.bind(_Rfc863Constants.ADDR);
             log.info("bound to {}", server.getLocalAddress());
             try (var client = server.accept().get(_Rfc863Constants.ACCEPT_TIMEOUT_DURATION,
