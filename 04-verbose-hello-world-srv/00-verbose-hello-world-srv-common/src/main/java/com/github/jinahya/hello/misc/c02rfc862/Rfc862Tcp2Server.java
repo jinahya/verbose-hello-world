@@ -62,19 +62,19 @@ class Rfc862Tcp2Server {
             }
         }
 
-        //        /**
-//         * Updates specified number of bytes preceding current position of {@code buffer} to
-//         * {@code digest}.
-//         *
-//         * @param bytes the number of bytes preceding current position of the {@code buffer} to be
-//         *              updated to the {@code digest}.
-//         */
-//        void updateDigest(int bytes) {
-//            if (bytes < 0) {
-//                throw new IllegalArgumentException("bytes(" + bytes + ") is negative");
-//            }
-//            digest.update(slice.position(buffer.position() - bytes).limit(buffer.position()));
-//        }
+        /**
+         * Updates specified number of bytes preceding current position of {@code buffer} to
+         * {@code digest}.
+         *
+         * @param bytes the number of bytes preceding current position of the {@code buffer} to be
+         *              updated to the {@code digest}.
+         */
+        void updateDigest(int bytes) {
+            if (bytes < 0) {
+                throw new IllegalArgumentException("bytes(" + bytes + ") is negative");
+            }
+            digest.update(slice.position(buffer.position() - bytes).limit(buffer.position()));
+        }
 
         final ByteBuffer buffer;
 
@@ -119,10 +119,10 @@ class Rfc862Tcp2Server {
                         var r = channel.read(attachment.buffer);
                         if (r == -1) {
                             if (attachment.buffer.position() == 0) {
-                                channel.close();
-                                assert !key.isValid();
                                 _Rfc862Utils.logServerBytes(attachment.bytes);
                                 _Rfc862Utils.logDigest(attachment.digest);
+                                channel.close();
+                                assert !key.isValid();
                                 continue;
                             }
                         } else {

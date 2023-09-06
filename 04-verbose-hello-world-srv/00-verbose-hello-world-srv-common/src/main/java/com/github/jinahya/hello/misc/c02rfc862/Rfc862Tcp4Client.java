@@ -82,8 +82,8 @@ class Rfc862Tcp4Client {
                 return;
             }
             attachment.buffer
-                    .position(attachment.buffer.limit())
-                    .limit(attachment.buffer.capacity());
+                    .limit(attachment.buffer.capacity())
+                    .position(attachment.buffer.limit());
             if (!attachment.buffer.hasRemaining()) {
                 ThreadLocalRandom.current().nextBytes(attachment.buffer.array());
                 attachment.buffer.clear().limit(
@@ -101,14 +101,16 @@ class Rfc862Tcp4Client {
         @Override
         public void failed(Throwable exc, Attachment attachment) {
             log.error("failed to read", exc);
+            attachment.closeUnchecked();
         }
     };
     // @formatter:on
 
-    // @formatter:off
+    // @formatter:on
     private static final
     CompletionHandler<Integer, Attachment> W_HANDLER = new CompletionHandler<>() {
-        @Override public void completed(Integer result, Attachment attachment) {
+        @Override
+        public void completed(Integer result, Attachment attachment) {
             assert result > 0;
             attachment.digest.update(
                     attachment.slice
@@ -119,7 +121,8 @@ class Rfc862Tcp4Client {
                 try {
                     attachment.client.shutdownOutput();
                 } catch (IOException ioe) {
-                    log.error("failed to shutdown output of {}", attachment.client, ioe);
+                    throw new UncheckedIOException(
+                            "failed to shutdown output of " + attachment.client, ioe);
                 }
                 _Rfc862Utils.logDigest(attachment.digest);
 //                attachment.buffer
@@ -136,7 +139,9 @@ class Rfc862Tcp4Client {
                     R_HANDLER                               // <handler>
             );
         }
-        @Override public void failed(Throwable exc, Attachment attachment) {
+
+        @Override
+        public void failed(Throwable exc, Attachment attachment) {
             log.error("failed to write", exc);
             attachment.closeUnchecked();
         }
