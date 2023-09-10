@@ -25,7 +25,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.EOFException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
@@ -54,14 +53,13 @@ class Rfc862Tcp1Client {
                 client.getOutputStream().flush();
                 bytes -= l;
                 digest.update(array, 0, l);
-                if ((r = client.getInputStream().read(array)) == -1) {
-                    throw new EOFException("unexpected eof");
+                for (int s = 0; s < l; ) {
+                    if ((r = client.getInputStream().read(array)) == -1) {
+                        throw new EOFException("unexpected eof");
+                    }
+                    assert r > 0;
+                    s += r;
                 }
-                assert r > 0;
-            }
-            client.shutdownOutput();
-            while ((client.getInputStream().read(array)) != -1) {
-                // does nothing
             }
             _Rfc862Utils.logDigest(digest);
         }

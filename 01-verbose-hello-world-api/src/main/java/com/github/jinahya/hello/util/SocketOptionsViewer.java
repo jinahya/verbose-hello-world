@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Map;
@@ -37,14 +38,19 @@ import java.util.concurrent.Callable;
  * @see HelloWorldNetUtils#printSocketOptions(Class, Object)
  */
 @Slf4j
-class SocketOptionsViewer {
+class SocketOptionsViewer extends AbstractViewer {
 
-    public static void main(String... args) throws Exception {
-        if (GraphicsEnvironment.isHeadless()) {
-            SocketOptionsPrinter.main(args);
+    private static final String NAME = "Socket Options Viewer";
+
+    static {
+        System.setProperty("apple.awt.application.name", NAME);
+    }
+
+    public static void main(final String... args) throws Exception {
+        if (!init(args, SocketOptionsPrinter.class)) {
             return;
         }
-        var model = new DefaultTableModel();
+        final var model = new DefaultTableModel();
         {
             final var list = new ArrayList<String>();
             HelloWorldNetUtils.acceptEachStandardSocketOption(so -> list.add(so.name()));
@@ -59,12 +65,35 @@ class SocketOptionsViewer {
             );
             model.addColumn(e.getKey().getSimpleName(), list.toArray(Object[]::new));
         }
-        final var frame = new JFrame("Socket Options Viewer");
-        final var table = new JTable(model);
+        final var table = new JTable(model) {
+            @Override
+            public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
+                final Component c = super.prepareRenderer(renderer, row, column);
+                final var value = getModel().getValueAt(row, column);
+                final var font = c.getFont();
+                // make first column bold
+                if (column == 0) {
+                    c.setFont(font.deriveFont(Font.BOLD));
+                } else {
+                    c.setFont(getFont());
+                }
+                // make 'NOT SUPPORTED' gray
+                if (HelloWorldNetUtils.VALUE_OF_UNSUPPORTED_SOCKET_OPTION.equals(value)) {
+                    c.setForeground(Color.GRAY);
+                } else {
+                    c.setForeground(getForeground());
+                }
+                return c;
+            }
+        };
+        // make header's font bold
+        {
+            var header = table.getTableHeader();
+            header.setFont(header.getFont().deriveFont(Font.BOLD));
+        }
         table.setDefaultEditor(Object.class, null);
+        final var frame = new JFrame(NAME);
         frame.setContentPane(new JScrollPane(table));
-        frame.pack();
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.setVisible(true);
+        show(frame);
     }
 }

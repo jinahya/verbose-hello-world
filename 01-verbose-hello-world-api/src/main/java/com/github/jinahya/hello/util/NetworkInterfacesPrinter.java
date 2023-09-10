@@ -31,6 +31,7 @@ import java.util.Enumeration;
 import java.util.HexFormat;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.ObjIntConsumer;
 import java.util.stream.Stream;
 
 /**
@@ -47,8 +48,7 @@ class NetworkInterfacesPrinter {
         Objects.requireNonNull(indent, "indent is null");
         Objects.requireNonNull(clazz, "clazz is null");
         Objects.requireNonNull(object, "object is null");
-        for (var descriptor : Introspector.getBeanInfo(clazz)
-                .getPropertyDescriptors()) {
+        for (var descriptor : Introspector.getBeanInfo(clazz).getPropertyDescriptors()) {
             var reader = descriptor.getReadMethod();
             if (reader == null || reader.getDeclaringClass() != clazz) {
                 continue;
@@ -120,6 +120,15 @@ class NetworkInterfacesPrinter {
         Objects.requireNonNull(indent, "indent is null");
         Objects.requireNonNull(object, "object is null");
         printHelper(indent, object.getClass(), object);
+    }
+
+    static void acceptEachNetworkInterface(final ObjIntConsumer<? super NetworkInterface> consumer)
+            throws Exception {
+        Objects.requireNonNull(consumer, "consumer is null");
+        int i = 0;
+        for (final var e = NetworkInterface.getNetworkInterfaces(); e.hasMoreElements(); ) {
+            consumer.accept(e.nextElement(), i++);
+        }
     }
 
     public static void main(String... args) throws Exception {

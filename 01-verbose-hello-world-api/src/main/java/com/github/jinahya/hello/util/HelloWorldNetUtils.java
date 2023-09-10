@@ -47,6 +47,8 @@ import java.util.function.Function;
 @Slf4j
 public final class HelloWorldNetUtils {
 
+    static final String VALUE_OF_UNSUPPORTED_SOCKET_OPTION = "NOT SUPPORTED";
+
     public static void acceptEachStandardSocketOption(
             final Consumer<? super SocketOption<?>> consumer) {
         Objects.requireNonNull(consumer, "consumer is null");
@@ -97,7 +99,7 @@ public final class HelloWorldNetUtils {
                         .map(Throwable::getMessage)
                         .map(m -> {
                             if (m.equals("'" + so.name() + "' not supported")) {
-                                return "NOT SUPPORTED";
+                                return VALUE_OF_UNSUPPORTED_SOCKET_OPTION;
                             }
                             return m;
                         })
