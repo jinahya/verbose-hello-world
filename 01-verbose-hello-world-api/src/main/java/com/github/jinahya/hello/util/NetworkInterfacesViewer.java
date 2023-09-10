@@ -188,6 +188,9 @@ class NetworkInterfacesViewer extends AbstractViewer {
             }
         });
 
+        final var treeExpandedIcon = (Icon) UIManager.get("Tree.expandedIcon"); // v
+        final var treeClosedIcon = (Icon) UIManager.get("Tree.closedIcon");
+
         var columnModel = new DefaultTableColumnModel();
         {
             final var column = new TableColumn(0);
@@ -286,8 +289,8 @@ class NetworkInterfacesViewer extends AbstractViewer {
         table.setDefaultEditor(Object.class, null);
 
         final var frame = new JFrame(NAME);
-//        frame.setContentPane(new JScrollPane(tree));
-        frame.setContentPane(new JScrollPane(table));
+        frame.setContentPane(new JScrollPane(tree));
+//        frame.setContentPane(new JScrollPane(table));
         show(frame);
     }
 }
