@@ -63,12 +63,12 @@ abstract class AbstractViewer {
         }
         frame.pack();
         // set width with device's max width
-        {
-            final var environment = GraphicsEnvironment.getLocalGraphicsEnvironment();
-            final var device = environment.getDefaultScreenDevice();
-            final var mode = device.getDisplayMode();
-            frame.setSize(new Dimension(mode.getWidth(), frame.getHeight()));
-        }
+//        {
+//            final var environment = GraphicsEnvironment.getLocalGraphicsEnvironment();
+//            final var device = environment.getDefaultScreenDevice();
+//            final var mode = device.getDisplayMode();
+//            frame.setSize(new Dimension(mode.getWidth(), frame.getHeight()));
+//        }
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setVisible(true);
     }

@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.Array;
+import java.net.InterfaceAddress;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -33,6 +33,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * A utility class for {@link java.beans} package.
@@ -123,99 +124,93 @@ public class JavaBeansUtils {
         final Object value;
     }
 
-    public static <PARENT, T> void acceptEachProperty(
-            final PARENT parent,
+    public static <R, T> void acceptEachProperty(
+            final R parent,
             final Class<? super T> clazz, final T object,
-            final Function<? super PARENT, ? extends Function<? super String, ? extends Function<? super PropertyValue, ? extends PARENT>>> function1,
-            final Function<? super PARENT, ? extends Function<? super String, ? extends IntFunction<? extends Function<? super PropertyValue, ? extends PARENT>>>> function2)
+            final Function<? super R,
+                    ? extends Function<? super String,
+                            ? extends Function<? super PropertyValue,
+                                    ? extends R>>> function1,
+            final Function<? super R,
+                    ? extends Function<? super String,
+                            ? extends IntFunction<
+                                    ? extends Function<
+                                            ? super PropertyValue, ? extends R>>>> function2)
             throws IntrospectionException, ReflectiveOperationException {
         Objects.requireNonNull(parent, "parent is null");
         Objects.requireNonNull(clazz, "clazz is null");
         Objects.requireNonNull(object, "object is null");
         Objects.requireNonNull(function1, "function1 is null");
         Objects.requireNonNull(function2, "function2 is null");
-//        log.debug("clazz: {}", clazz);
         for (var descriptor : Introspector.getBeanInfo(clazz).getPropertyDescriptors()) {
             var reader = descriptor.getReadMethod();
             if (reader == null || reader.getDeclaringClass() != clazz) {
                 continue;
             }
-//            log.debug("descriptor.name: {}", descriptor.getName());
+            if (clazz == InterfaceAddress.class) {
+                log.debug("d: {}", descriptor);
+            }
             final var name = descriptor.getName();
             var value = reader.invoke(object);
-
-            PARENT p = function1.apply(parent).apply(name)
-                    .apply(PropertyValue.of(descriptor, value));
-//            log.debug("p: {}", p);
-
+            R r = function1.apply(parent).apply(name).apply(PropertyValue.of(descriptor, value));
             if (value != null && value.getClass().isArray() &&
                 !value.getClass().componentType().isPrimitive()) {
                 value = Arrays.asList((Object[]) value);
-//                final int length = Array.getLength(value);
-//                for (int j = 0; j < length; j++) {
-//                    final var v = PropertyValue.of(descriptor, j, Array.get(value, j));
-//                    final PARENT result = function2.apply(p).apply(name).apply(j).apply(v);
-//                    if (result != null) {
-//                        acceptEachProperty(result, v, function1, function2);
-//                    }
-//                }
-//                continue;
             }
             if (value instanceof Enumeration<?> enumeration) {
                 value = Collections.list(enumeration);
-//                for (int i = 0; enumeration.hasMoreElements(); i++) {
-//                    final var v = PropertyValue.of(descriptor, i, enumeration.nextElement());
-//                    final PARENT result = function2.apply(p).apply(name).apply(i).apply(v);
-//                    if (result != null) {
-//                        acceptEachProperty(result, v, function1, function2);
-//                    }
-//                }
-//                continue;
             }
             if (value instanceof Iterable<?> iterable) {
-                int i = 0;
-                for (final var e : iterable) {
-                    final var v = PropertyValue.of(descriptor, i, e);
-                    final PARENT result = function2.apply(p).apply(name).apply(i).apply(v);
-                    if (result != null) {
-                        acceptEachProperty(result, e, function1, function2);
-                    }
-                    i++;
-                }
-                continue;
+                value = StreamSupport.stream(iterable.spliterator(), false);
             }
             if (value instanceof Stream<?> stream) {
                 var i = 0;
                 for (final var iterator = stream.iterator(); iterator.hasNext(); ) {
-                    final var v = PropertyValue.of(descriptor, i, iterator.next());
-                    final var result = function2.apply(p).apply(name).apply(i).apply(v);
-                    if (result != null) {
-                        acceptEachProperty(result, v, function1, function2);
+                    final var next = iterator.next();
+                    final var propertyValue = PropertyValue.of(descriptor, i, next);
+                    final var p = function2.apply(r).apply(name).apply(i).apply(propertyValue);
+                    if (next instanceof InterfaceAddress ia) {
+                        log.debug("interfaceAddress: {}, p: {}", ia, p);
+                    }
+                    if (p != null) {
+                        acceptEachProperty(p, next, function1, function2);
                     }
                     i++;
                 }
-                continue;
             }
-//            function1.apply(parent).apply(name).accept(PropertyValue.of(descriptor, value));
         }
     }
 
-    private static <PARENT, T> void acceptEachPropertyHelper(
-            final PARENT parent, final Class<T> clazz, final Object object,
-            final Function<? super PARENT, ? extends Function<? super String, ? extends Function<? super PropertyValue, ? extends PARENT>>> function1,
-            final Function<? super PARENT, ? extends Function<? super String, ? extends IntFunction<? extends Function<? super PropertyValue, ? extends PARENT>>>> function2)
+    private static <R, T> void acceptEachPropertyHelper(
+            final R r, final Class<T> clazz, final Object object,
+            final Function<? super R,
+                    ? extends Function<? super String,
+                            ? extends Function<? super PropertyValue,
+                                    ? extends R>>> function1,
+            final Function<? super R,
+                    ? extends Function<? super String,
+                            ? extends IntFunction<
+                                    ? extends Function<? super PropertyValue,
+                                            ? extends R>>>> function2)
             throws IntrospectionException, ReflectiveOperationException {
         Objects.requireNonNull(clazz, "clazz is null");
-        acceptEachProperty(parent, clazz, clazz.cast(object), function1, function2);
+        acceptEachProperty(r, clazz, clazz.cast(object), function1, function2);
     }
 
-    public static <PARENT> void acceptEachProperty(
-            final PARENT parent, final Object object,
-            final Function<? super PARENT, ? extends Function<? super String, ? extends Function<? super PropertyValue, ? extends PARENT>>> function1,
-            final Function<? super PARENT, ? extends Function<? super String, ? extends IntFunction<? extends Function<? super PropertyValue, ? extends PARENT>>>> function2)
+    public static <R> void acceptEachProperty(
+            final R r, final Object object,
+            final Function<? super R,
+                    ? extends Function<? super String,
+                            ? extends Function<? super PropertyValue,
+                                    ? extends R>>> function1,
+            final Function<? super R,
+                    ? extends Function<? super String,
+                            ? extends IntFunction<
+                                    ? extends Function<? super PropertyValue,
+                                            ? extends R>>>> function2)
             throws IntrospectionException, ReflectiveOperationException {
         Objects.requireNonNull(object, "object is null");
-        acceptEachPropertyHelper(parent, object.getClass(), object, function1, function2);
+        acceptEachPropertyHelper(r, object.getClass(), object, function1, function2);
     }
 
     private JavaBeansUtils() {

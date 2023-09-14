@@ -23,24 +23,25 @@ package com.github.jinahya.hello.util;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
+import javax.swing.event.CellEditorListener;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeWillExpandListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.ExpandVetoException;
-import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.Serial;
 import java.net.NetworkInterface;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashSet;
+import java.util.EventObject;
 import java.util.Objects;
 
 /**
@@ -49,248 +50,205 @@ import java.util.Objects;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see NetworkInterfacesPrinter
  */
+@SuppressWarnings({
+        "java:S1199" // nested code block
+})
 @Slf4j
 class NetworkInterfacesViewer extends AbstractViewer {
 
     private static final String NAME = "Network Interfaces Properties";
 
-    private static class PropertyNode extends DefaultMutableTreeNode {
-
-        @Serial
-        private static final long serialVersionUID = -7457100976727315195L;
-
+    private static class PropertyNode extends DefaultMutableTreeNode { // @formatter:off
+        @Serial private static final long serialVersionUID = -7457100976727315195L;
         PropertyNode(final JavaBeansUtils.PropertyValue userObject) {
             super(Objects.requireNonNull(userObject, "userObject is null"));
         }
-
         JavaBeansUtils.PropertyValue getPropertyValue() {
             return (JavaBeansUtils.PropertyValue) getUserObject();
         }
-    }
+    } // @formatter:on
 
-    public static void main(String... args) throws Exception {
+    public static void main(final String... args) throws Exception {
         if (!init(args, NetworkInterfacesPrinter.class)) {
             return;
         }
-        final var treeRoot = new DefaultMutableTreeNode();
+        final var root = new DefaultMutableTreeNode();
         NetworkInterfacesPrinter.acceptEachNetworkInterface((ni, i) -> {
             final var userObject = JavaBeansUtils.PropertyValue.of(
                     "networkInterface[" + i + ']', NetworkInterface.class, ni);
-            treeRoot.add(new PropertyNode(userObject));
+            root.add(new PropertyNode(userObject));
         });
-        for (final var e = treeRoot.children(); e.hasMoreElements(); ) {
+        for (final var e = root.children(); e.hasMoreElements(); ) {
             var parent = (PropertyNode) e.nextElement();
             JavaBeansUtils.acceptEachProperty(
                     parent,
                     ((JavaBeansUtils.PropertyValue) parent.getUserObject()).value,
                     p -> n -> v -> {
-//                        log.debug("p: {}, n: {}, v: {}", p, n, v);
                         var child = new PropertyNode(v);
                         p.add(child);
                         return child;
                     },
                     p -> n -> i -> v -> {
-//                        log.debug("p: {}, n: {}, i: {}, v: {}", p, n, i, v);
                         var child = new PropertyNode(
-                                JavaBeansUtils.PropertyValue.of(
-                                        v.name,
-                                        v.type,
-                                        v.value)
+                                JavaBeansUtils.PropertyValue.of(v.name, v.type, v.value)
                         );
                         p.add(child);
                         return child;
                     }
             );
         }
-
-        final var treeModel = new DefaultTreeModel(treeRoot);
-
-        final JTree tree = new JTree(treeModel) {
-//            @Override
-//            public String convertValueToText(Object value, boolean selected, boolean expandedPathComponents,
-//                                             boolean leaf, int row, boolean hasFocus) {
-////                log.debug("value: {} {}", value,
-////                          Optional.ofNullable(value).map(Object::getClass).orElse(null));
-//                if (value instanceof PropertyNode) {
-//                    return ((PropertyNode) value).getPropertyValue().name;
-//                }
-//                return super.convertValueToText(value, selected, expandedPathComponents, leaf, row, hasFocus);
-//            }
-        };
-        tree.setRootVisible(false);
-        tree.setShowsRootHandles(true);
-        tree.setCellEditor(null);
-
-        //        tree.setCellRenderer(new DefaultTreeCellRenderer() {
-//            @Override
-//            public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel,
-//                                                          boolean expandedPathComponents, boolean leaf, int row,
-//                                                          boolean hasFocus) {
-//                final var component = super.getTreeCellRendererComponent(tree, value, sel, expandedPathComponents,
-//                                                                         leaf, row,
-//                                                                         hasFocus);
-//                final var userObject = (JavaBeansUtils.PropertyValue) ((DefaultMutableTreeNode) value).getUserObject();
-//                setText(userObject.name);
-//                return this;
-//            }
-//        });
-        tree.addTreeWillExpandListener(new TreeWillExpandListener() {
-            @Override
-            public void treeWillExpand(TreeExpansionEvent event) throws ExpandVetoException {
-                log.debug("expandedPathComponents: {}, {}", tree.getRowCount(), event);
+        final int[] renderingRow = new int[1];
+        final var tree = new JTree[1];
+        final var table = new JTable[1];
+        tree[0] = new JTree() { // @formatter:off
+            @Override  public void setBounds(int x, int y, int width, int height) {
+                super.setBounds(table[0].getX(), 0, width, table[0].getHeight());
             }
-
-            @Override
-            public void treeWillCollapse(TreeExpansionEvent event) throws ExpandVetoException {
-                log.debug("collapsed: {}, {}", tree.getRowCount(), event);
+            @Override public void paint(final Graphics g) {
+                g.translate(0, -renderingRow[0] * table[0].getRowHeight());
+                super.paint(g);
             }
-        });
-
-        final var tableModel = new DefaultTableModel() {
-
-            @Override
-            public int getRowCount() {
-                final var rowCount = tree.getRowCount();
-//                log.debug("rowCount: {}", rowCount);
-                return rowCount;
+        }; // @formatter:on
+        tree[0].getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+        tree[0].addMouseListener(new MouseAdapter() { // @formatter:off
+            @Override public void mouseClicked(MouseEvent e) {
+                log.debug("mouseClicked({})", e);
+                super.mouseClicked(e);
             }
-
-//            @Override
-//            public int getColumnCount() {
-//                final var columnCount = super.getColumnCount();
-//                log.debug("columnCount: {}", columnCount);
-//                return columnCount;
-//            }
-
-            @Override
-            public Object getValueAt(final int rowIndex, final int columnIndex) {
-                return tree.getPathForRow(rowIndex);
+        }); // @formatter:on
+        final var treeModel = new DefaultTreeModel(root);
+        tree[0].setModel(treeModel);
+        tree[0].setCellRenderer(new DefaultTreeCellRenderer() { // @formatter:off
+            @Override public Component getTreeCellRendererComponent(
+                    final JTree tree, Object value, final boolean sel, final boolean expanded,
+                    final boolean leaf, final int row, final boolean hasFocus) {
+                if (value instanceof PropertyNode node) { value = node.getPropertyValue().name; }
+                return super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row,
+                                                          hasFocus);
             }
-        };
+        }); // @formatter:on
 
+        table[0] = new JTable() { // @formatter:off
+            @Override public void updateUI() {
+                super.updateUI();
+                tree[0].updateUI();
+            }
+        }; // formatter:on
+        table[0].setColumnSelectionAllowed(false);
+        table[0].setDefaultEditor(Object.class, null);
+        final var tableModel = new DefaultTableModel() { // @formatter:off
+            @Override public int getRowCount() { return tree[0].getRowCount(); }
+            @Override public Object getValueAt(final int rowIndex, final int columnIndex) {
+                return tree[0].getPathForRow(rowIndex);
+            }
+        }; // @formatter:on
         {
-            final var treeCellRenderer = (DefaultTreeCellRenderer) tree.getCellRenderer();
+            final var treeCellRenderer = (DefaultTreeCellRenderer) tree[0].getCellRenderer();
             treeCellRenderer.setLeafIcon(null);
             treeCellRenderer.setClosedIcon(null);
             treeCellRenderer.setOpenIcon(null);
         }
-
-        final var expandedPathComponents = new HashSet<>();
-        tree.addTreeWillExpandListener(new TreeWillExpandListener() {
+        tree[0].addTreeWillExpandListener(new TreeWillExpandListener() { // @formatter:on
             @Override
             public void treeWillExpand(TreeExpansionEvent event) throws ExpandVetoException {
-                expandedPathComponents.add(event.getPath().getLastPathComponent());
+                tableModel.fireTableDataChanged();
             }
-
             @Override
             public void treeWillCollapse(TreeExpansionEvent event) throws ExpandVetoException {
-                expandedPathComponents.remove(event.getPath().getLastPathComponent());
+                tableModel.fireTableDataChanged();
             }
-        });
-
-        final var treeExpandedIcon = (Icon) UIManager.get("Tree.expandedIcon"); // v
-        final var treeClosedIcon = (Icon) UIManager.get("Tree.closedIcon");
-
-        var columnModel = new DefaultTableColumnModel();
+        }); // @formatter:on
+        final var nameColumn = 0;
+        final var valueColumn = nameColumn + 1;
+        final var typeColumn = valueColumn + 1;
+        final var columnModel = new DefaultTableColumnModel();
         {
-            final var column = new TableColumn(0);
+            final var column = new TableColumn(nameColumn);
             column.setHeaderValue("name");
-            column.setCellRenderer(new DefaultTableCellRenderer() {
-                @Override
-                public Component getTableCellRendererComponent(
+            column.setCellRenderer(new DefaultTableCellRenderer() { // @formatter:off
+                @Override public Component getTableCellRendererComponent(
                         final JTable table, Object value, final boolean isSelected,
                         final boolean hasFocus, final int row, final int column) {
-                    var path = (TreePath) value;
-                    var node = (PropertyNode) path.getLastPathComponent();
-                    value = node.getPropertyValue().name;
-                    final var tableComponent = (JLabel) super.getTableCellRendererComponent(
-                            table, value, isSelected, hasFocus, row, column);
-//                    if (node.getChildCount() > 0) {
-//                        if (expandedPathComponents.contains(node)) {
-//                            tableComponent.setIcon((Icon) UIManager.get("Tree.openIcon"));
-//                            tableComponent.setIcon((Icon) UIManager.get("Tree.expandedIcon"));
-//                        } else {
-//                            tableComponent.setIcon((Icon) UIManager.get("Tree.closedIcon"));
-//                            tableComponent.setIcon((Icon) UIManager.get("Tree.leafIcon"));
-//                        }
-//                    } else {
-//                        // leaf
-//                        tableComponent.setIcon((Icon) UIManager.get("Tree.leafIcon"));
-//                    }
-
-                    UIDefaults defaults = UIManager.getDefaults();
-                    Enumeration<Object> keysEnumeration = defaults.keys();
-                    ArrayList<Object> keysList = Collections.list(keysEnumeration);
-                    for (Object key : keysList) {
-                        final var string = Objects.toString(key);
-                        if (Objects.toString(key).startsWith("Tree.") && string.endsWith("Icon")) {
-                            log.debug(">>>> key: {}", key);
-                        }
-                    }
-
-                    tableComponent.setIcon((Icon) UIManager.get("Tree.expandedIcon")); // v
-//                    tableComponent.setIcon((Icon) UIManager.get("Tree.closedIcon")); // directory
-
-                    if (true) {
-                        return tableComponent;
-                    }
-//                    log.debug("table: foreground: {}, background: {}",
-//                              tableComponent.getForeground(),
-//                              tableComponent.getBackground());
-                    final var treeComponent = tree.getCellRenderer()
-                            .getTreeCellRendererComponent(tree, value, isSelected, true, false,
-                                                          row, false);
-                    treeComponent.setBackground(tableComponent.getBackground());
-                    treeComponent.setForeground(tableComponent.getForeground());
-//                    log.debug("tree foreground: {}, background: {}", treeComponent.getForeground(),
-//                              treeComponent.getBackground());
-//                    SwingUtilities.updateComponentTreeUI(treeComponent);
-                    return treeComponent;
+                    renderingRow[0] = row;
+                    return tree[0];
                 }
-            });
+            }); // @formatter:on
+            column.setCellEditor(new TableCellEditor() { // @formatter:off
+                @Override public Component getTableCellEditorComponent(
+                        JTable table, Object value, boolean isSelected, int row, int column) {
+                    if (column != nameColumn) { return null; }
+                    return tree[0];
+                }
+                @Override public Object getCellEditorValue() { return null; }
+                @Override public boolean isCellEditable(final EventObject anEvent) {
+                    if (!(anEvent instanceof MouseEvent me)) { return false; }
+                    log.debug("me: {}", me);
+                    final var point = me.getPoint();
+                    final var row = table[0].rowAtPoint(point);
+                    final var column = table[0].columnAtPoint(point);
+                    if (column != nameColumn) { return false; }
+                    final var me2 = new MouseEvent(
+                            tree[0], me.getID(), me.getWhen(), me.getModifiersEx(),
+                            me.getX() - table[0].getCellRect(0, column, true).x, me.getY(),
+                            me.getClickCount(), me.isPopupTrigger(), me.getButton()
+                    );
+                    log.debug("dispatching");
+                    tree[0].dispatchEvent(me2);
+                    tableModel.fireTableDataChanged();
+                    return false;
+                }
+                @Override public boolean shouldSelectCell(EventObject anEvent) { return false; }
+                @Override public boolean stopCellEditing() { return true; }
+                @Override public void cancelCellEditing() { }
+                @Override public void addCellEditorListener(final CellEditorListener l) { }
+                @Override public void removeCellEditorListener(CellEditorListener l) { }
+            }); // @formatter:on
             columnModel.addColumn(column);
         }
         {
-            final var column = new TableColumn(1);
+            final var column = new TableColumn(valueColumn);
             column.setHeaderValue("value");
-            column.setCellRenderer(new DefaultTableCellRenderer() {
-                @Override
-                public Component getTableCellRendererComponent(
+            column.setCellRenderer(new DefaultTableCellRenderer() { // @formatter:off
+                @Override public Component getTableCellRendererComponent(
                         final JTable table, Object value, final boolean isSelected,
                         final boolean hasFocus, final int row, final int column) {
-                    var path = (TreePath) value;
-                    var node = (PropertyNode) path.getLastPathComponent();
-                    value = node.getPropertyValue().value;
+                    final var path = tree[0].getPathForRow(row);
+                    final var node = (PropertyNode) path.getLastPathComponent();
+                    value = Objects.toString(node.getPropertyValue().value);
                     return super.getTableCellRendererComponent(table, value, isSelected, hasFocus,
                                                                row, column);
                 }
-            });
+            }); // @formatter:on
             columnModel.addColumn(column);
         }
         {
-            final var column = new TableColumn(2);
+            final var column = new TableColumn(typeColumn);
             column.setHeaderValue("type");
-            column.setCellRenderer(new DefaultTableCellRenderer() {
-                @Override
-                public Component getTableCellRendererComponent(
+            column.setCellRenderer(new DefaultTableCellRenderer() { // @formatter:off
+                @Override public Component getTableCellRendererComponent(
                         final JTable table, Object value, final boolean isSelected,
                         final boolean hasFocus, final int row, final int column) {
-                    var path = (TreePath) value;
-                    var node = (PropertyNode) path.getLastPathComponent();
-                    value = node.getPropertyValue().name;
+                    final var path = tree[0].getPathForRow(row);
+                    final var node = (PropertyNode) path.getLastPathComponent();
+                    value = node.getPropertyValue().type.getName();
                     return super.getTableCellRendererComponent(table, value, isSelected, hasFocus,
                                                                row, column);
                 }
-            });
+            }); // @formatter:on
             columnModel.addColumn(column);
         }
-
-        final var table = new JTable(tableModel, columnModel);
-        table.setDefaultEditor(Object.class, null);
-
+        table[0].setModel(tableModel);
+        table[0].setColumnModel(columnModel);
+        table[0].getSelectionModel().addListSelectionListener(e -> {
+            final var lastIndex = e.getLastIndex();
+            tree[0].setSelectionInterval(lastIndex, lastIndex);
+        });
+        tree[0].setModel(treeModel);
+        tree[0].setRootVisible(false);
+        tree[0].setShowsRootHandles(true);
+        tree[0].setRowHeight(table[0].getRowHeight());
         final var frame = new JFrame(NAME);
-        frame.setContentPane(new JScrollPane(tree));
-//        frame.setContentPane(new JScrollPane(table));
+        frame.setContentPane(new JScrollPane(table[0]));
         show(frame);
     }
 }
