@@ -50,7 +50,8 @@ class Rfc863Tcp2Server {
                 throw new IllegalArgumentException("bytes(" + bytes + ") is negative");
             }
             digest.update(
-                    slice.position(buffer.position() - bytes).limit(buffer.position())
+                    slice.position(buffer.position() - bytes)
+                            .limit(buffer.position())
             );
         }
         /**
@@ -60,7 +61,7 @@ class Rfc863Tcp2Server {
         void logDigest() {
             _Rfc863Utils.logDigest(digest);
         }
-        int bytes;
+        int bytes; // bytes to send or received
         final ByteBuffer buffer = _Rfc863Utils.newBuffer();
         final ByteBuffer slice = buffer.slice();
         final MessageDigest digest = _Rfc863Utils.newDigest();
