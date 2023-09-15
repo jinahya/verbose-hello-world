@@ -22,49 +22,42 @@ package com.github.jinahya.hello.misc.c01rfc863;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.security.MessageDigest;
+import java.nio.channels.WritableByteChannel;
 
 @Slf4j
 class Rfc863Tcp2Server {
 
-    // @formatter:off
-    static class Attachment {
-        /** Creates a new instance. */
-        Attachment() {
-            super();
-            log.debug("buffer.capacity: {}", buffer.capacity());
-        }
+    // @formatter:on
+    static class Attachment extends _Rfc863Attachment.Server {
+
         /**
-         * Updates specified number of bytes preceding current position of {@code buffer} to
-         * {@code digest}.
-         * @param bytes the number of bytes preceding current position of the {@code buffer} to be
-         *              updated to the {@code digest}.
+         * Reads a sequence of bytes from specified channel into {@link #buffer}.
+         *
+         * @param channel the channel from which bytes are written.
+         * @return a number of bytes read from the {@code channel}.
+         * {@link ReadableByteChannel#read(ByteBuffer) channel.read(buffer)}.
+         * @throws IOException if an I/O error occurs.
+         * @see Rfc863Tcp2Client.Attachment#writeTo(WritableByteChannel)
          */
-        void updateDigest(int bytes) {
-            if (bytes < 0) {
-                throw new IllegalArgumentException("bytes(" + bytes + ") is negative");
+        int readFrom(final ReadableByteChannel channel) throws IOException {
+            if (!buffer.hasRemaining()) {
+                buffer.clear();
             }
-            digest.update(
-                    slice.position(buffer.position() - bytes)
-                            .limit(buffer.position())
-            );
+            final int r = channel.read(buffer);
+            if (r <= 0) {
+                return r;
+            }
+            updateDigest(r);
+            increaseBytes(r);
+            return r;
         }
-        /**
-         * Logs out the final result of {@code digest}.
-         * @see _Rfc863Utils#logDigest(MessageDigest)
-         */
-        void logDigest() {
-            _Rfc863Utils.logDigest(digest);
-        }
-        int bytes; // bytes to send or received
-        final ByteBuffer buffer = _Rfc863Utils.newBuffer();
-        final ByteBuffer slice = buffer.slice();
-        final MessageDigest digest = _Rfc863Utils.newDigest();
     }
     // @formatter:on
 
@@ -96,27 +89,17 @@ class Rfc863Tcp2Server {
                         var channel = (SocketChannel) key.channel();
                         var attachment = (Attachment) key.attachment();
                         assert attachment != null;
-                        if (!attachment.buffer.hasRemaining()) {
-                            attachment.buffer.clear();
-                        }
-                        assert attachment.buffer.hasRemaining();
-                        var r = channel.read(attachment.buffer);
+                        var r = attachment.readFrom(channel);
                         if (r == -1) {
                             key.interestOpsAnd(~SelectionKey.OP_READ);
                             channel.close();
                             assert !key.isValid();
-                            _Rfc863Utils.logServerBytes(attachment.bytes);
-                            _Rfc863Utils.logDigest(attachment.digest);
+                            attachment.logServerBytes();
+                            attachment.logDigest();
                             serverKey.cancel();
                             assert !serverKey.isValid();
                         } else {
-                            assert r > 0;
-                            attachment.bytes += r;
-                            attachment.digest.update(
-                                    attachment.slice
-                                            .position(attachment.buffer.position() - r)
-                                            .limit(attachment.buffer.position())
-                            );
+                            assert r > 0; // why?
                         }
                     }
                 }

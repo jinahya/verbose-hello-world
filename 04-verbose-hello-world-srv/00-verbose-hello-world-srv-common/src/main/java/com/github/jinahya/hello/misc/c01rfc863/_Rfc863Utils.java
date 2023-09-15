@@ -42,7 +42,9 @@ final class _Rfc863Utils {
      * @return a new non-empty array of bytes.
      */
     static byte[] newArray() {
-        return new byte[ThreadLocalRandom.current().nextInt(1024) + 1];
+        final var array = new byte[ThreadLocalRandom.current().nextInt(1024) + 1];
+        log.debug("array.length: {}", array.length);
+        return array;
     }
 
     /**
@@ -54,7 +56,9 @@ final class _Rfc863Utils {
      * @see #newArray()
      */
     static ByteBuffer newBuffer() {
-        return ByteBuffer.wrap(newArray());
+        final var buffer = ByteBuffer.wrap(newArray());
+        log.debug("buffer.capacity: {}", buffer.capacity());
+        return buffer;
     }
 
     // --------------------------------------------------------------------------------------- bytes

@@ -20,7 +20,6 @@ package com.github.jinahya.hello.util;
  * #L%
  */
 
-import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.util.SystemInfo;
 import lombok.extern.slf4j.Slf4j;
 

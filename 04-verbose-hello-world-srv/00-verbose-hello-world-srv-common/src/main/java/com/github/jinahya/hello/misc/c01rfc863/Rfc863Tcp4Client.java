@@ -33,63 +33,66 @@ import java.util.concurrent.ThreadLocalRandom;
 @Slf4j
 class Rfc863Tcp4Client {
 
-    // @formatter:off
-    static final class Attachment extends Rfc863Tcp3Client.Attachment {
+    // @formatter:on
+    static final class Attachment extends _Rfc863Attachment.Client {
+
         /**
          * Creates a new instance holds specified client.
+         *
          * @param client the client to hold.
          */
-        Attachment(AsynchronousSocketChannel client) {
+        Attachment(final AsynchronousSocketChannel client) {
             super();
             this.client = Objects.requireNonNull(client, "client is null");
         }
-        void write(CompletionHandler<Integer, ? super Attachment> handler) {
+
+        @Override
+        public void close() throws IOException {
+            client.close();
+            super.close();
+        }
+
+        void connectWith(final CompletionHandler<Void, ? super Attachment> handler) {
             Objects.requireNonNull(handler, "handler is null");
-            if (!buffer.hasRemaining()) {
-                ThreadLocalRandom.current().nextBytes(buffer.array());
-                buffer.clear().limit(Math.min(buffer.remaining(), bytes));
-            }
-            client.write(
-                    buffer, // <src>
-                    this,   // <attachment>
-                    handler // <handler>
+            client.connect(
+                    _Rfc863Constants.ADDR, // <remote>
+                    this,                  // <attachment>
+                    handler                // <handler>
             );
         }
-        final AsynchronousSocketChannel client;
-        final CountDownLatch latch = new CountDownLatch(2);
+
+        void writeWith(final CompletionHandler<Integer, ? super Attachment> handler) {
+            Objects.requireNonNull(handler, "handler is null");
+            client.write(
+                    getBufferForWriting(), // <src>
+                    this,                  // <attachment>
+                    handler                // <handler>
+            );
+        }
+
+        private final AsynchronousSocketChannel client;
     }
     // @formatter:on
+
+    private static final CountDownLatch LATCH = new CountDownLatch(2); // connected + all sent
 
     // @formatter:off
     private static final
     CompletionHandler<Integer, Attachment> W_HANDLER = new CompletionHandler<>() {
-        @Override public void completed(Integer result, Attachment attachment) {
-            attachment.digest.update(
-                    attachment.slice
-                            .position(attachment.buffer.position() - result)
-                            .limit(attachment.buffer.position())
-            );
-            if ((attachment.bytes -= result) == 0) {
-                _Rfc863Utils.logDigest(attachment.digest);
-                attachment.latch.countDown(); // -1 for all sent
+        @Override public void completed(final Integer result, final Attachment attachment) {
+            attachment.updateDigest(result);
+            if (attachment.decreaseBytes(result) == 0) {
+                attachment.logDigest();
+                assert LATCH.getCount() == 1;
+                LATCH.countDown(); // -1 for all sent
                 return;
             }
-            if (!attachment.buffer.hasRemaining()) {
-                ThreadLocalRandom.current().nextBytes(attachment.buffer.array());
-                attachment.buffer.clear().limit(
-                        Math.min(attachment.buffer.remaining(), attachment.bytes)
-                );
-            }
-            attachment.client.write(
-                    attachment.buffer, // <src>
-                    attachment,        // <attachment>
-                    this               // <handler>
-            );
+            attachment.writeWith(this);
         }
-        @Override public void failed(Throwable exc, Attachment attachment) {
+        @Override public void failed(final Throwable exc, final Attachment attachment) {
             log.error("failed to write", exc);
-            assert attachment.latch.getCount() == 1;
-            attachment.latch.countDown();
+            assert LATCH.getCount() == 1;
+            LATCH.countDown();
         }
     };
     // @formatter:on
@@ -97,48 +100,40 @@ class Rfc863Tcp4Client {
     // @formatter:off
     private static final
     CompletionHandler<Void, Attachment> C_HANDLER = new CompletionHandler<>() {
-        @Override public void completed(Void result, Attachment attachment) {
+        @Override public void completed(final Void result, final Attachment attachment) {
             try {
                 log.info("connected to {}, through {}", attachment.client.getRemoteAddress(),
                           attachment.client.getLocalAddress());
-            } catch (IOException ioe) {
+            } catch (final IOException ioe) {
                 log.error("failed to get addresses from {}", attachment.client, ioe);
             }
-            attachment.latch.countDown(); // -1 for being connected to the server
-            if (!attachment.buffer.hasRemaining()) {
-                ThreadLocalRandom.current().nextBytes(attachment.buffer.array());
-                attachment.buffer.clear().limit(
-                        Math.min(attachment.buffer.remaining(), attachment.bytes)
-                );
-            }
-            attachment.client.write(
-                    attachment.buffer, // <src>
-                    attachment,        // attachment>
-                    W_HANDLER          // <handler>
-            );
+            assert LATCH.getCount() == 2;
+            LATCH.countDown(); // -1 for being connected to the server
+            assert LATCH.getCount() == 1;
+            attachment.writeWith(W_HANDLER);
         }
-        @Override public void failed(Throwable exc, Attachment attachment) {
+        @Override public void failed(final Throwable exc, final Attachment attachment) {
             log.error("failed to connect", exc);
-            while (attachment.latch.getCount() > 0) {
-                attachment.latch.countDown();
-            }
+            assert LATCH.getCount() == 2;
+            LATCH.countDown();
+            LATCH.countDown();
         }
     };
     // @formatter:on
 
     public static void main(String... args) throws Exception {
+        log.debug("{}", LATCH.getCount());
         try (var client = AsynchronousSocketChannel.open()) {
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc863Constants.HOST, 0));
                 log.info("(optionally) bound to {}", client.getLocalAddress());
             }
-            var attachment = new Attachment(client);
-            attachment.client.connect(
-                    _Rfc863Constants.ADDR, // <remote>
-                    attachment,            // <attachment>
-                    C_HANDLER              // <handler>
-            );
-            attachment.latch.await();
+            try (var attachment = new Attachment(client)) {
+                log.debug("???????: {}", LATCH.getCount());
+                attachment.connectWith(C_HANDLER);
+                LATCH.await();
+                log.debug("???????: {}", LATCH.getCount());
+            }
         }
     }
 

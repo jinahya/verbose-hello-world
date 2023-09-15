@@ -22,13 +22,28 @@ package com.github.jinahya.hello.misc.c01rfc863;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.AsynchronousServerSocketChannel;
+import java.util.Objects;
+import java.util.concurrent.Future;
 
 @Slf4j
 class Rfc863Tcp3Server {
 
-    // @formatter:off
-    static class Attachment extends Rfc863Tcp2Server.Attachment {
+    // @formatter:on
+    static class Attachment extends _Rfc863Attachment.Server {
+
+        /**
+         * .
+         *
+         * @param channel
+         * @return
+         * @see Rfc863Tcp3Client.Attachment#writeTo(AsynchronousByteChannel)
+         */
+        Future<Integer> readFrom(final AsynchronousByteChannel channel) {
+            Objects.requireNonNull(channel, "channel is null");
+            return channel.read(getBufferForReading());
+        }
     }
     // @formatter:on
 
@@ -42,25 +57,17 @@ class Rfc863Tcp3Server {
                          client.getLocalAddress());
                 var attachment = new Attachment();
                 for (int r; ; ) {
-                    if (!attachment.buffer.hasRemaining()) {
-                        attachment.buffer.clear();
-                    }
-                    assert attachment.buffer.hasRemaining();
-                    r = client.read(attachment.buffer).get(_Rfc863Constants.READ_TIMEOUT_DURATION,
-                                                           _Rfc863Constants.READ_TIMEOUT_UNIT);
+                    r = attachment.readFrom(client).get(_Rfc863Constants.READ_TIMEOUT_DURATION,
+                                                        _Rfc863Constants.READ_TIMEOUT_UNIT);
                     if (r == -1) {
                         break;
                     }
-                    assert r > 0;
-                    attachment.bytes += r;
-                    attachment.digest.update(
-                            attachment.slice
-                                    .position(attachment.buffer.position() - r)
-                                    .limit(attachment.buffer.position())
-                    );
+                    assert r > 0; // why not 0?
+                    attachment.updateDigest(r);
+                    attachment.increaseBytes(r);
                 }
-                _Rfc863Utils.logServerBytes(attachment.bytes);
-                _Rfc863Utils.logDigest(attachment.digest);
+                attachment.logServerBytes();
+                attachment.logDigest();
             }
         }
     }

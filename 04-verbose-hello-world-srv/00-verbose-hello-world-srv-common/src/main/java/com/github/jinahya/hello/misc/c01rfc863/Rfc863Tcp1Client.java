@@ -38,10 +38,10 @@ class Rfc863Tcp1Client {
             client.connect(_Rfc863Constants.ADDR, (int) _Rfc863Constants.CONNECT_TIMEOUT_IN_MILLIS);
             log.info("connected to {}, through {}", client.getRemoteSocketAddress(),
                      client.getLocalSocketAddress());
-            var digest = _Rfc863Utils.newDigest();
+            final var digest = _Rfc863Utils.newDigest();
             var bytes = _Rfc863Utils.newBytesLessThanMillion();
             _Rfc863Utils.logClientBytes(bytes);
-            var array = _Rfc863Utils.newArray();
+            final var array = _Rfc863Utils.newArray();
             log.debug("array.length: {}", array.length);
             while (bytes > 0) {
                 ThreadLocalRandom.current().nextBytes(array);

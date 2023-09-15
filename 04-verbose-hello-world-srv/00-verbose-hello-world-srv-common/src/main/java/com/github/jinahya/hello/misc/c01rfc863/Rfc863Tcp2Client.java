@@ -22,36 +22,50 @@ package com.github.jinahya.hello.misc.c01rfc863;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
+import java.nio.channels.WritableByteChannel;
+import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static com.github.jinahya.hello.misc.c01rfc863._Rfc863Constants.HOST;
 
+/**
+ * .
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ * @see Rfc863Tcp2Server
+ */
 @Slf4j
 class Rfc863Tcp2Client {
 
-    // @formatter:off
-    static class Attachment extends Rfc863Tcp2Server.Attachment {
-        Attachment() {
-            super();
-            bytes = _Rfc863Utils.newBytesLessThanMillion();
-            _Rfc863Utils.logClientBytes(bytes);
-            buffer.position(buffer.limit());
+    // @formatter:on
+    static class Attachment extends _Rfc863Attachment.Client {
+
+        /**
+         * Writes a sequence of random bytes to specified channel from {@link #buffer}.
+         *
+         * @param channel the channel to which bytes are written.
+         * @return number of bytes written to the {@code channel}.
+         * @throws IOException if an I/O error occurs.
+         * @see Rfc863Tcp2Server.Attachment#readFrom(ReadableByteChannel)
+         */
+        int writeTo(final WritableByteChannel channel) throws IOException {
+            Objects.requireNonNull(channel, "channel is null");
+            if (!buffer.hasRemaining()) {
+                ThreadLocalRandom.current().nextBytes(buffer.array());
+                buffer.clear().limit(Math.min(buffer.limit(), getBytes()));
+            }
+            final int w = channel.write(buffer);
+            assert w >= 0;
+            updateDigest(w);
+            decreaseBytes(w);
+            return w;
         }
-//        /**
-//         * Clears the {@code buffer}, randomizes the {@code buffer}'s
-//         * {@link ByteBuffer#array() backing array}, and sets the {@code buffer}'s {@code limit} with
-//         * smaller of {@code buffer.limit()} and {@link #bytes}.
-//         */
-//        @Override
-//        void clearBuffer() {
-//            super.clearBuffer();
-//            ThreadLocalRandom.current().nextBytes(buffer.array());
-//            buffer.clear().limit(Math.min(buffer.limit(), bytes));
-//        }
     }
     // @formatter:on
 
@@ -69,7 +83,7 @@ class Rfc863Tcp2Client {
                          client.getLocalAddress());
                 var attachment = new Attachment();
                 clientKey = client.register(selector, 0, attachment);
-                if (attachment.bytes > 0) {
+                if (attachment.getBytes() > 0) {
                     clientKey.interestOpsOr(SelectionKey.OP_WRITE);
                 } else {
                     clientKey.cancel();
@@ -94,38 +108,27 @@ class Rfc863Tcp2Client {
                         key.interestOpsAnd(~SelectionKey.OP_CONNECT);
                         var attachment = new Attachment();
                         key.attach(attachment);
-                        if (attachment.bytes > 0) {
-                            key.interestOps(SelectionKey.OP_WRITE);
-                        } else {
+                        if (attachment.getBytes() == 0) {
+                            log.warn("no bytes to send");
                             key.cancel();
                             assert !key.isValid();
+                            continue;
                         }
+                        key.interestOps(SelectionKey.OP_WRITE);
                         continue;
                     }
                     if (key.isWritable()) {
                         var channel = (SocketChannel) key.channel();
                         assert channel == client;
                         var attachment = (Attachment) key.attachment();
-                        assert attachment.bytes > 0;
-                        if (!attachment.buffer.hasRemaining()) {
-                            ThreadLocalRandom.current().nextBytes(attachment.buffer.array());
-                            attachment.buffer.clear().limit(Math.min(
-                                    attachment.buffer.remaining(), attachment.bytes
-                            ));
-                        }
-                        assert attachment.buffer.hasRemaining();
-                        var w = channel.write(attachment.buffer);
-                        assert w >= 0;
-                        attachment.digest.update(
-                                attachment.slice
-                                        .position(attachment.buffer.position() - w)
-                                        .limit(attachment.buffer.position())
-                        );
-                        if ((attachment.bytes -= w) == 0) {
+                        assert attachment.getBytes() > 0;
+                        var w = attachment.writeTo(channel);
+                        assert w > 0; // why?
+                        if (attachment.getBytes() == 0) {
                             key.interestOpsAnd(~SelectionKey.OP_WRITE);
                             key.cancel();
                             assert !key.isValid();
-                            _Rfc863Utils.logDigest(attachment.digest);
+                            attachment.logDigest();
                         }
                     }
                 }

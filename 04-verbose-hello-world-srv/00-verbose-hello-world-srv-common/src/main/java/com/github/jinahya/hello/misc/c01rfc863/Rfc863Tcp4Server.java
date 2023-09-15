@@ -32,101 +32,78 @@ import java.util.concurrent.CountDownLatch;
 @Slf4j
 class Rfc863Tcp4Server {
 
-    // @formatter:off
-    static class Attachment extends Rfc863Tcp3Server.Attachment {
-        void read(CompletionHandler<Integer, ? super Attachment> handler) {
+    // @formatter:on
+    static class Attachment extends _Rfc863Attachment.Server {
+
+        Attachment(final AsynchronousSocketChannel client) {
+            super();
+            this.client = Objects.requireNonNull(client, "client is null");
+        }
+
+        @Override
+        public void close() throws IOException {
+            client.close();
+            super.close();
+        }
+
+        void readWith(final CompletionHandler<Integer, ? super Attachment> handler) {
             Objects.requireNonNull(handler, "handler is null");
-            if (client == null) {
-                throw new IllegalArgumentException("client is currently null");
-            }
-            if (buffer.hasRemaining()) {
-                buffer.clear();
-            }
             client.read(
-                    buffer,                                 // <dst>
+                    getBufferForReading(),                  // <dst>
                     _Rfc863Constants.READ_TIMEOUT_DURATION, // <timeout>
                     _Rfc863Constants.READ_TIMEOUT_UNIT,     // <unit>
                     this,                                   // <attachment>
                     handler                                 // <handler>
             );
         }
-        AsynchronousSocketChannel client;
-        final CountDownLatch latch = new CountDownLatch(2);
+
+        private final AsynchronousSocketChannel client;
     }
     // @formatter:off
+
+    private static final CountDownLatch LATCH = new CountDownLatch(2); // accepted + all received
 
     // @formatter:off
     private static final
     CompletionHandler<Integer, Attachment> R_HANDLER = new CompletionHandler<>() {
-        @Override public void completed(Integer result, Attachment attachment) {
+        @Override public void completed(final Integer result, final Attachment attachment) {
             if (result == -1) {
-                try {
-                    attachment.client.close();
-                } catch (IOException ioe) {
-                    log.error("failed to close {}", attachment.client, ioe);
-                }
-                _Rfc863Utils.logServerBytes(attachment.bytes);
-                _Rfc863Utils.logDigest(attachment.digest);
-                attachment.latch.countDown(); // -1 for being all received
+                attachment.logServerBytes();
+                attachment.logDigest();
+                attachment.closeUnchecked();
+                LATCH.countDown(); // -1 for being all received
                 return;
             }
-            attachment.bytes += result;
-            attachment.digest.update(
-                    attachment.slice
-                            .position(attachment.buffer.position() - result)
-                            .limit(attachment.buffer.position())
-            );
-            if (!attachment.buffer.hasRemaining()) {
-                attachment.buffer.clear();
-            }
-            attachment.client.read(
-                    attachment.buffer,                      // <dst>
-                    _Rfc863Constants.READ_TIMEOUT_DURATION, // <timeout>
-                    _Rfc863Constants.READ_TIMEOUT_UNIT,     // <unit>
-                    attachment,                             // <attachment>
-                    this                                    // <handler>
-            );
+            attachment.updateDigest(result);
+            attachment.increaseBytes(result);
+            attachment.readWith(this);
         }
-        @Override public void failed(Throwable exc, Attachment attachment) {
+        @Override public void failed(final Throwable exc, final Attachment attachment) {
             log.error("failed to read", exc);
-            try {
-                attachment.client.close();
-            } catch (IOException ioe) {
-                log.error("failed to close {}", attachment.client, ioe);
-            }
-            assert attachment.latch.getCount() == 1;
-            attachment.latch.countDown();
+            attachment.closeUnchecked();
+            assert LATCH.getCount() == 1;
+            LATCH.countDown();
         }
     };
     // @formatter:on
 
     // @formatter:off
     private static final
-    CompletionHandler<AsynchronousSocketChannel, Attachment> A_HANDLER = new CompletionHandler<>() {
-        @Override public void completed(AsynchronousSocketChannel result, Attachment attachment) {
+    CompletionHandler<AsynchronousSocketChannel, Void> A_HANDLER = new CompletionHandler<>() {
+        @Override public void completed(final AsynchronousSocketChannel result, final Void attachment) {
             try {
                 log.info("accepted from {}, through {}", result.getRemoteAddress(),
                           result.getLocalAddress());
             } catch (final IOException ioe) {
-                log.error("failed to get addresses from {}", attachment.client, ioe);
+                log.error("failed to get addresses from {}", result, ioe);
             }
-            attachment.latch.countDown(); // -1 for being accepted
-            attachment.client = result;
-            if (!attachment.buffer.hasRemaining()) {
-                attachment.buffer.clear();
-            }
-            attachment.client.read(
-                    attachment.buffer,                      // <dst>
-                    _Rfc863Constants.READ_TIMEOUT_DURATION, // <timeout>
-                    _Rfc863Constants.READ_TIMEOUT_UNIT,     // <unit>
-                    attachment,                             // <attachment>
-                    R_HANDLER                               // <handler>
-            );
+            LATCH.countDown(); // -1 for being accepted
+            new Attachment(result).readWith(R_HANDLER);
         }
-        @Override public void failed(Throwable exc, Attachment attachment) {
+        @Override public void failed(Throwable exc, Void attachment) {
             log.error("failed to accept", exc);
-            while (attachment.latch.getCount() > 0L) {
-                attachment.latch.countDown();
+            while (LATCH.getCount() > 0L) {
+                LATCH.countDown();
             }
         }
     };
@@ -136,15 +113,12 @@ class Rfc863Tcp4Server {
         try (var server = AsynchronousServerSocketChannel.open()) {
             server.bind(_Rfc863Constants.ADDR);
             log.info("bound to {}", server.getLocalAddress());
-            var attachment = new Attachment();
             server.accept(
-                    attachment, // <attachment>
+                    null, // <attachment>
                     A_HANDLER   // <handler>
             );
-            var broken = attachment.latch.await(_Rfc863Constants.ACCEPT_TIMEOUT_DURATION,
-                                                _Rfc863Constants.ACCEPT_TIMEOUT_UNIT
-            );
-            if (!broken) {
+            if (!LATCH.await(_Rfc863Constants.ACCEPT_TIMEOUT_DURATION,
+                             _Rfc863Constants.ACCEPT_TIMEOUT_UNIT)) {
                 log.error("latch hasn't been broken!");
             }
         }

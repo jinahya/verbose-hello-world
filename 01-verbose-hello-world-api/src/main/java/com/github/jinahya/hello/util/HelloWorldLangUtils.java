@@ -258,6 +258,69 @@ public final class HelloWorldLangUtils {
         return stopStopWatch1();
     }
 
+    public static final class OfInt {
+
+        public static int requireGreaterThanOrEqualTo(final int value, final int against) {
+            if (value < against) {
+                throw new IllegalArgumentException("value(" + value + ") < " + against);
+            }
+            return value;
+        }
+
+        public static int requireGreaterThan(final int value, final int against) {
+            if (requireGreaterThanOrEqualTo(value, against) == against) {
+                throw new IllegalArgumentException("value(" + value + ") == " + against);
+            }
+            return value;
+        }
+
+        public static int requireLessThanOrEqualTo(final int value, final int against) {
+            if (value > against) {
+                throw new IllegalArgumentException("value(" + value + ") > " + against);
+            }
+            return value;
+        }
+
+        public static int requireLessThan(final int value, final int against) {
+            if (requireLessThanOrEqualTo(value, against) == against) {
+                throw new IllegalArgumentException("value(" + value + ") == " + against);
+            }
+            return value;
+        }
+
+        public static int requireNonPositive(final int value) {
+            if (value > 0) {
+                throw new IllegalArgumentException("value(" + value + ") > 0");
+            }
+            return value;
+        }
+
+        public static int requireNonNegative(final int value) {
+            if (value < 0) {
+                throw new IllegalArgumentException("value(" + value + ") < 0");
+            }
+            return value;
+        }
+
+        public static int requireNegative(final int value) {
+            if (requireNonPositive(value) == 0) {
+                throw new IllegalArgumentException("value(" + value + ") == 0");
+            }
+            return value;
+        }
+
+        public static int requirePositive(final int value) {
+            if (requireNonNegative(value) == 0) {
+                throw new IllegalArgumentException("value(" + value + ") == 0");
+            }
+            return value;
+        }
+
+        private OfInt() {
+            throw new IllegalArgumentException("");
+        }
+    }
+
     private HelloWorldLangUtils() {
         throw new AssertionError("instantiation is not allowed");
     }

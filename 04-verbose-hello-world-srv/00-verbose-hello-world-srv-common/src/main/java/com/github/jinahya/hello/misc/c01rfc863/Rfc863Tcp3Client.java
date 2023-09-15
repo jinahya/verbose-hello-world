@@ -23,7 +23,10 @@ package com.github.jinahya.hello.misc.c01rfc863;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
+import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.AsynchronousSocketChannel;
+import java.util.Objects;
+import java.util.concurrent.Future;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static com.github.jinahya.hello.misc.c01rfc863._Rfc863Constants.HOST;
@@ -31,8 +34,19 @@ import static com.github.jinahya.hello.misc.c01rfc863._Rfc863Constants.HOST;
 @Slf4j
 class Rfc863Tcp3Client {
 
-    // @formatter:off
-    static class Attachment extends Rfc863Tcp2Client.Attachment {
+    // @formatter:on
+    static class Attachment extends _Rfc863Attachment.Client {
+
+        /**
+         * .
+         *
+         * @param channel
+         * @return
+         * @see Rfc863Tcp3Server.Attachment#readFrom(AsynchronousByteChannel)
+         */
+        Future<Integer> writeTo(AsynchronousByteChannel channel) {
+            return Objects.requireNonNull(channel, "channel is null").write(getBufferForWriting());
+        }
     }
     // @formatter:on
 
@@ -46,25 +60,15 @@ class Rfc863Tcp3Client {
                                                       _Rfc863Constants.CONNECT_TIMEOUT_UNIT);
             log.info("connected to {}, through {}", client.getRemoteAddress(),
                      client.getLocalAddress());
-            var attachment = new Attachment();
-            for (int w; attachment.bytes > 0; ) {
-                if (!attachment.buffer.hasRemaining()) {
-                    ThreadLocalRandom.current().nextBytes(attachment.buffer.array());
-                    attachment.buffer.clear().limit(
-                            Math.min(attachment.buffer.remaining(), attachment.bytes)
-                    );
-                }
-                assert attachment.buffer.hasRemaining();
-                w = client.write(attachment.buffer).get();
-                assert w >= 0;
-                attachment.bytes -= w;
-                attachment.digest.update(
-                        attachment.slice
-                                .position(attachment.buffer.position() - w)
-                                .limit(attachment.buffer.position())
-                );
+            final var attachment = new Attachment();
+            attachment.logClientBytes();
+            while (attachment.getBytes() > 0) {
+                final var w = attachment.writeTo(client).get();
+                assert w > 0; // why not 0?
+                attachment.updateDigest(w);
+                attachment.decreaseBytes(w);
             }
-            _Rfc863Utils.logDigest(attachment.digest);
+            attachment.logDigest();
         }
     }
 
