@@ -24,19 +24,23 @@ import java.time.Duration;
 
 public final class Stopwatch {
 
-    private static final StopwatchSpi<?> INSTANCE = StopwatchProvider1.INSTANCE;
+    private static final StopwatchSpi<Void> INSTANCE = StopwatchProvider1.INSTANCE;
 
     /**
      * Starts a stopwatch bound to current thread.
+     *
+     * @return a carrier to be used with {@link #stopStopWatch(Object)}.
      */
-    public static void startStopWatch() {
-        INSTANCE.start();
+    public static Object startStopWatch() {
+        return INSTANCE.start();
     }
 
     /**
      * Returns a duration elapsed since {@link #startStopWatch()} method invoked.
+     *
+     * @param carrier a carrier resulted from {@link #startStopWatch()}.
      */
-    public static Duration stopStopWatch() {
+    public static Duration stopStopWatch(final Object carrier) {
         return INSTANCE.stop(null, Duration::ofNanos);
     }
 
