@@ -23,32 +23,13 @@ package com.github.jinahya.hello.misc.c01rfc863;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
-import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.AsynchronousSocketChannel;
-import java.util.Objects;
-import java.util.concurrent.Future;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static com.github.jinahya.hello.misc.c01rfc863._Rfc863Constants.HOST;
 
 @Slf4j
 class Rfc863Tcp3Client {
-
-    // @formatter:on
-    static class Attachment extends _Rfc863Attachment.Client {
-
-        /**
-         * .
-         *
-         * @param channel
-         * @return
-         * @see Rfc863Tcp3Server.Attachment#readFrom(AsynchronousByteChannel)
-         */
-        Future<Integer> writeTo(AsynchronousByteChannel channel) {
-            return Objects.requireNonNull(channel, "channel is null").write(getBufferForWriting());
-        }
-    }
-    // @formatter:on
 
     public static void main(String... args) throws Exception {
         try (var client = AsynchronousSocketChannel.open()) {
@@ -60,15 +41,15 @@ class Rfc863Tcp3Client {
                                                       _Rfc863Constants.CONNECT_TIMEOUT_UNIT);
             log.info("connected to {}, through {}", client.getRemoteAddress(),
                      client.getLocalAddress());
-            final var attachment = new Attachment();
-            attachment.logClientBytes();
-            while (attachment.getBytes() > 0) {
-                final var w = attachment.writeTo(client).get();
-                assert w > 0; // why not 0?
-                attachment.updateDigest(w);
-                attachment.decreaseBytes(w);
+            try (var attachment = new Rfc863Tcp3ClientAttachment()) {
+                while (attachment.getBytes() > 0) {
+                    final var w = attachment.writeTo(client).get();
+                    assert w > 0; // why not 0?
+                    attachment.updateDigest(w);
+                    attachment.decreaseBytes(w);
+                }
+//                attachment.logDigest();
             }
-            attachment.logDigest();
         }
     }
 

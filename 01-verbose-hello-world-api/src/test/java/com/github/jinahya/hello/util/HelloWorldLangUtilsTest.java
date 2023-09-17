@@ -20,28 +20,68 @@ package com.github.jinahya.hello.util;
  * #L%
  */
 
+import com.google.common.primitives.Primitives;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import static com.github.jinahya.hello.util.HelloWorldLangUtils.PRIMITIVE_CLASSES;
+import static com.github.jinahya.hello.util.HelloWorldLangUtils.WRAPPER_CLASSES;
 import static com.github.jinahya.hello.util.HelloWorldLangUtils.startStopWatch1;
 import static com.github.jinahya.hello.util.HelloWorldLangUtils.stopStopWatch1;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.awaitility.Awaitility.await;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 class HelloWorldLangUtilsTest {
+
+    @Test
+    void __() {
+        assertEquals(Primitives.allPrimitiveTypes(), WRAPPER_CLASSES.keySet());
+        assertEquals(Primitives.allWrapperTypes(), PRIMITIVE_CLASSES.keySet());
+    }
+
+    @Nested
+    class IsPrimitiveTest {
+
+        private static Set<Class<?>> getPrimitiveClasses() {
+            return HelloWorldLangUtils.WRAPPER_CLASSES.keySet();
+        }
+
+        @MethodSource({"getPrimitiveClasses"})
+        @ParameterizedTest
+        void __(final Class<?> clazz) {
+            assertTrue(HelloWorldLangUtils.isPrimitive(clazz));
+        }
+    }
+
+    @Nested
+    class IsWrapperTest {
+
+        private static Set<Class<?>> getWrapperClasses() {
+            return HelloWorldLangUtils.PRIMITIVE_CLASSES.keySet();
+        }
+
+        @MethodSource({"getWrapperClasses"})
+        @ParameterizedTest
+        void __(final Class<?> clazz) {
+            assertTrue(HelloWorldLangUtils.isWrapper(clazz));
+        }
+    }
 
     @Nested
     class OfIntTest {

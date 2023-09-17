@@ -58,6 +58,7 @@
     <version.asciidoctorj-pdf>2.3.9</version.asciidoctorj-pdf>
     <version.com.formdev>3.2.1</version.com.formdev>
     <version.com.google.dagger>2.48</version.com.google.dagger>
+    <version.com.google.guava>32.1.2-jre</version.com.google.guava>
     <version.maven-surefire>3.1.2</version.maven-surefire>
     <version.maven-failsafe>${version.maven-surefire}</version.maven-failsafe>
     <version.maven-javadoc-plugin>3.5.0</version.maven-javadoc-plugin>
@@ -97,6 +98,13 @@
         <groupId>com.google.dagger</groupId>
         <artifactId>dagger-compiler</artifactId>
         <version>${version.com.google.dagger}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava-bom</artifactId>
+        <version>${version.com.google.guava}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>com.google.inject</groupId>
@@ -195,11 +203,11 @@
         <artifactId>reactive-streams</artifactId>
         <version>${version.org.reactivestreams}</version>
       </dependency>
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>jul-to-slf4j</artifactId>
-        <version>${version.org.slf4j}</version>
-      </dependency>
+<!--      <dependency>-->
+<!--        <groupId>org.slf4j</groupId>-->
+<!--        <artifactId>jul-to-slf4j</artifactId>-->
+<!--        <version>${version.org.slf4j}</version>-->
+<!--      </dependency>-->
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>

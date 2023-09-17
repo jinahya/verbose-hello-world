@@ -29,6 +29,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import static org.awaitility.Awaitility.await;
@@ -65,28 +66,31 @@ class Rfc863TcpTest {
     void __(Class<?> serverClass, Class<?> clientClass) throws Exception {
         log.debug("server: {}", serverClass.getSimpleName());
         log.debug("client: {}", clientClass.getSimpleName());
-        serverClass.getClassLoader().setDefaultAssertionStatus(true);
-        clientClass.getClassLoader().setDefaultAssertionStatus(true);
-        var executor = Executors.newFixedThreadPool(2);
-        var server = executor.submit(() -> {
+//        serverClass.getClassLoader().setDefaultAssertionStatus(true);
+//        clientClass.getClassLoader().setDefaultAssertionStatus(true);
+//        final var executor = Executors.newFixedThreadPool(2);
+        final var executor = Executors.newCachedThreadPool();
+        final var serverFuture = executor.submit(() -> {
             try {
                 serverClass.getMethod("main", String[].class)
                         .invoke(null, new Object[] {new String[0]});
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 throw new RuntimeException(e);
             }
         });
         await().pollDelay(Duration.ofMillis(100L)).untilAsserted(() -> assertTrue(true));
-        var client = executor.submit(() -> {
+        final var clientFuture = executor.submit(() -> {
             try {
                 clientClass.getMethod("main", String[].class)
                         .invoke(null, new Object[] {new String[0]});
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 throw new RuntimeException(e);
             }
         });
-        client.get();
-        server.get();
+        clientFuture.get();
+        serverFuture.get();
         executor.shutdown();
+        final var terminated = executor.awaitTermination(32L, TimeUnit.SECONDS);
+        assert terminated;
     }
 }

@@ -39,10 +39,9 @@ class Rfc863Tcp1Client {
             log.info("connected to {}, through {}", client.getRemoteSocketAddress(),
                      client.getLocalSocketAddress());
             final var digest = _Rfc863Utils.newDigest();
-            var bytes = _Rfc863Utils.newBytesLessThanMillion();
+            var bytes = _Rfc863Utils.newBytesSome();
             _Rfc863Utils.logClientBytes(bytes);
             final var array = _Rfc863Utils.newArray();
-            log.debug("array.length: {}", array.length);
             while (bytes > 0) {
                 ThreadLocalRandom.current().nextBytes(array);
                 var l = Math.min(array.length, bytes);

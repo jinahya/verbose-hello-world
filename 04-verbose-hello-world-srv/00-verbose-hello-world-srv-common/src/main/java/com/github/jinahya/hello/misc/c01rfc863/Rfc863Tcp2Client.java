@@ -22,14 +22,10 @@ package com.github.jinahya.hello.misc.c01rfc863;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
-import java.nio.channels.WritableByteChannel;
-import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static com.github.jinahya.hello.misc.c01rfc863._Rfc863Constants.HOST;
@@ -43,33 +39,7 @@ import static com.github.jinahya.hello.misc.c01rfc863._Rfc863Constants.HOST;
 @Slf4j
 class Rfc863Tcp2Client {
 
-    // @formatter:on
-    static class Attachment extends _Rfc863Attachment.Client {
-
-        /**
-         * Writes a sequence of random bytes to specified channel from {@link #buffer}.
-         *
-         * @param channel the channel to which bytes are written.
-         * @return number of bytes written to the {@code channel}.
-         * @throws IOException if an I/O error occurs.
-         * @see Rfc863Tcp2Server.Attachment#readFrom(ReadableByteChannel)
-         */
-        int writeTo(final WritableByteChannel channel) throws IOException {
-            Objects.requireNonNull(channel, "channel is null");
-            if (!buffer.hasRemaining()) {
-                ThreadLocalRandom.current().nextBytes(buffer.array());
-                buffer.clear().limit(Math.min(buffer.limit(), getBytes()));
-            }
-            final int w = channel.write(buffer);
-            assert w >= 0;
-            updateDigest(w);
-            decreaseBytes(w);
-            return w;
-        }
-    }
-    // @formatter:on
-
-    public static void main(String... args) throws Exception {
+    public static void main(final String... args) throws Exception {
         try (var selector = Selector.open();
              var client = SocketChannel.open()) {
             if (ThreadLocalRandom.current().nextBoolean()) {
@@ -81,13 +51,13 @@ class Rfc863Tcp2Client {
             if (client.connect(_Rfc863Constants.ADDR)) {
                 log.info("connected (immediately) to {}, through {}", client.getRemoteAddress(),
                          client.getLocalAddress());
-                var attachment = new Attachment();
+                var attachment = new Rfc863Tcp2ClientAttachment();
                 clientKey = client.register(selector, 0, attachment);
-                if (attachment.getBytes() > 0) {
-                    clientKey.interestOpsOr(SelectionKey.OP_WRITE);
-                } else {
+                if (attachment.getBytes() == 0) {
                     clientKey.cancel();
                     assert !clientKey.isValid();
+                } else {
+                    clientKey.interestOpsOr(SelectionKey.OP_WRITE);
                 }
             } else {
                 clientKey = client.register(selector, SelectionKey.OP_CONNECT);
@@ -99,14 +69,14 @@ class Rfc863Tcp2Client {
                 for (var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
                     var key = i.next();
                     if (key.isConnectable()) {
-                        var channel = (SocketChannel) key.channel();
+                        final var channel = (SocketChannel) key.channel();
                         assert channel == client;
-                        var connected = channel.finishConnect();
+                        final var connected = channel.finishConnect();
                         assert connected;
                         log.info("connected to {}, through {}", channel.getRemoteAddress(),
                                  channel.getLocalAddress());
                         key.interestOpsAnd(~SelectionKey.OP_CONNECT);
-                        var attachment = new Attachment();
+                        var attachment = new Rfc863Tcp2ClientAttachment();
                         key.attach(attachment);
                         if (attachment.getBytes() == 0) {
                             log.warn("no bytes to send");
@@ -118,17 +88,17 @@ class Rfc863Tcp2Client {
                         continue;
                     }
                     if (key.isWritable()) {
-                        var channel = (SocketChannel) key.channel();
+                        final var channel = (SocketChannel) key.channel();
                         assert channel == client;
-                        var attachment = (Attachment) key.attachment();
+                        final var attachment = (Rfc863Tcp2ClientAttachment) key.attachment();
                         assert attachment.getBytes() > 0;
-                        var w = attachment.writeTo(channel);
+                        final var w = attachment.writeTo(channel);
                         assert w > 0; // why?
                         if (attachment.getBytes() == 0) {
                             key.interestOpsAnd(~SelectionKey.OP_WRITE);
+                            attachment.close();
                             key.cancel();
                             assert !key.isValid();
-                            attachment.logDigest();
                         }
                     }
                 }

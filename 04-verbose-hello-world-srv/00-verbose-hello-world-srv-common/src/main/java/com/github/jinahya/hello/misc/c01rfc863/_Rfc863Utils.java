@@ -35,6 +35,10 @@ final class _Rfc863Utils {
 
     // -------------------------------------------------------------------------------- array/buffer
 
+    private static byte[] newArray_() {
+        return new byte[ThreadLocalRandom.current().nextInt(1024) + 1];
+    }
+
     /**
      * Returns a new array of bytes whose length is between {@code 1} and {@code 1024}, both
      * inclusive.
@@ -42,7 +46,7 @@ final class _Rfc863Utils {
      * @return a new non-empty array of bytes.
      */
     static byte[] newArray() {
-        final var array = new byte[ThreadLocalRandom.current().nextInt(1024) + 1];
+        final var array = newArray_();
         log.debug("array.length: {}", array.length);
         return array;
     }
@@ -56,7 +60,7 @@ final class _Rfc863Utils {
      * @see #newArray()
      */
     static ByteBuffer newBuffer() {
-        final var buffer = ByteBuffer.wrap(newArray());
+        final var buffer = ByteBuffer.wrap(newArray_());
         log.debug("buffer.capacity: {}", buffer.capacity());
         return buffer;
     }
@@ -78,15 +82,13 @@ final class _Rfc863Utils {
         return ThreadLocalRandom.current().nextInt(maxExclusive);
     }
 
-    private static final int MILLION = 1048576;
-
     /**
-     * Returns a new {@code int} between {@code 0}(inclusive) and {@value #MILLION}(inclusive).
+     * Returns a new {@code int} between {@code 0}(inclusive) and {@code 65536}(exclusive).
      *
-     * @return a new {@code int} between {@code 0}(inclusive) and {@value #MILLION}(inclusive).
+     * @return a new {@code int} between {@code 0}(inclusive) and {@code 65536}(exclusive).
      */
-    static int newBytesLessThanMillion() {
-        return newBytes(MILLION);
+    static int newBytesSome() {
+        return newBytes(65536);
     }
 
     static void logClientBytes(long bytes) {

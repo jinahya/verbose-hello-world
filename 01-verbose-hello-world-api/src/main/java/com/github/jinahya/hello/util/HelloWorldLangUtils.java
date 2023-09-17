@@ -32,11 +32,14 @@ import java.nio.charset.Charset;
 import java.time.Duration;
 import java.time.temporal.TemporalAmount;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 import java.util.function.LongFunction;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Utilities for {@link java.lang} package.
@@ -45,6 +48,49 @@ import java.util.function.Predicate;
  */
 @Slf4j
 public final class HelloWorldLangUtils {
+
+    static final Map<Class<?>, Class<?>> WRAPPER_CLASSES = Map.of(
+            boolean.class, Boolean.class,
+            byte.class, Byte.class,
+            short.class, Short.class,
+            int.class, Integer.class,
+            long.class, Long.class,
+            char.class, Character.class,
+            float.class, Float.class,
+            double.class, Double.class,
+            void.class, Void.class
+    );
+
+    public static Set<Class<?>> getAllPrimitiveTypes() {
+        return WRAPPER_CLASSES.keySet();
+    }
+
+    public static boolean isPrimitive(final Class<?> clazz) {
+        Objects.requireNonNull(clazz, "clazz is null");
+        return WRAPPER_CLASSES.containsKey(clazz);
+    }
+
+    public static Class<?> getWrapperType(final Class<?> clazz) {
+        Objects.requireNonNull(clazz, "clazz is null");
+        if (!isPrimitive(clazz)) {
+            throw new IllegalArgumentException("not a primitive type: " + clazz);
+        }
+        return WRAPPER_CLASSES.get(clazz);
+    }
+
+    static final Map<Class<?>, Class<?>> PRIMITIVE_CLASSES =
+            WRAPPER_CLASSES.entrySet()
+                    .stream()
+                    .collect(Collectors.toUnmodifiableMap(Map.Entry::getValue, Map.Entry::getKey));
+
+    public static Set<Class<?>> getAllWrapperTypes() {
+        return PRIMITIVE_CLASSES.keySet();
+    }
+
+    public static boolean isWrapper(final Class<?> clazz) {
+        Objects.requireNonNull(clazz, "clazz is null");
+        return PRIMITIVE_CLASSES.containsKey(clazz);
+    }
 
     private static final Method CLOSE;
 

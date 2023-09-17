@@ -21,12 +21,12 @@ package com.github.jinahya.hello.util;
  */
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ClassUtils;
 
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.net.InterfaceAddress;
-import java.util.Arrays;
+import java.net.Inet6Address;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Objects;
@@ -143,46 +143,58 @@ public class JavaBeansUtils {
         Objects.requireNonNull(function1, "function1 is null");
         Objects.requireNonNull(function2, "function2 is null");
         for (var descriptor : Introspector.getBeanInfo(clazz).getPropertyDescriptors()) {
+            if (clazz == Inet6Address.class) {
+                log.debug("Inet6Address.d: {}", descriptor);
+            }
             var reader = descriptor.getReadMethod();
             if (reader == null || reader.getDeclaringClass() != clazz) {
                 continue;
             }
-            if (clazz == InterfaceAddress.class) {
-                log.debug("d: {}", descriptor);
-            }
+            final var type = descriptor.getPropertyType();
             final var name = descriptor.getName();
             var value = reader.invoke(object);
-            R r = function1.apply(parent).apply(name).apply(PropertyValue.of(descriptor, value));
-            if (value != null && value.getClass().isArray() &&
-                !value.getClass().componentType().isPrimitive()) {
-                value = Arrays.asList((Object[]) value);
+            final R child = function1.apply(parent).apply(name)
+                    .apply(PropertyValue.of(descriptor, value));
+            if (value == null) {
+                continue;
             }
-            if (value instanceof Enumeration<?> enumeration) {
-                value = Collections.list(enumeration);
+            if (type.isPrimitive()) {
+                continue;
             }
-            if (value instanceof Iterable<?> iterable) {
-                value = StreamSupport.stream(iterable.spliterator(), false);
+            if (type.isArray() && type.componentType().isPrimitive()) {
+                continue;
             }
-            if (value instanceof Stream<?> stream) {
+            if (value instanceof Enumeration<?> e) {
+                value = Collections.list(e);
+            }
+            if (value instanceof Iterable<?> i) {
+                value = StreamSupport.stream(i.spliterator(), false);
+            }
+            if (value instanceof Stream<?> s) {
                 var i = 0;
-                for (final var iterator = stream.iterator(); iterator.hasNext(); ) {
+                for (final var iterator = s.iterator(); iterator.hasNext(); ) {
                     final var next = iterator.next();
                     final var propertyValue = PropertyValue.of(descriptor, i, next);
-                    final var p = function2.apply(r).apply(name).apply(i).apply(propertyValue);
-                    if (next instanceof InterfaceAddress ia) {
-                        log.debug("interfaceAddress: {}, p: {}", ia, p);
-                    }
-                    if (p != null) {
-                        acceptEachProperty(p, next, function1, function2);
+                    final var grandchild = function2.apply(child).apply(name).apply(i)
+                            .apply(propertyValue);
+                    if (grandchild != null) {
+                        acceptEachProperty(grandchild, next, function1, function2);
                     }
                     i++;
                 }
+                continue;
+            }
+            if (ClassUtils.isPrimitiveWrapper(type)) {
+                continue;
+            }
+            if (type == String.class) {
+                continue;
             }
         }
     }
 
     private static <R, T> void acceptEachPropertyHelper(
-            final R r, final Class<T> clazz, final Object object,
+            final R parent, final Class<T> clazz, final Object object,
             final Function<? super R,
                     ? extends Function<? super String,
                             ? extends Function<? super PropertyValue,
@@ -194,11 +206,11 @@ public class JavaBeansUtils {
                                             ? extends R>>>> function2)
             throws IntrospectionException, ReflectiveOperationException {
         Objects.requireNonNull(clazz, "clazz is null");
-        acceptEachProperty(r, clazz, clazz.cast(object), function1, function2);
+        acceptEachProperty(parent, clazz, clazz.cast(object), function1, function2);
     }
 
     public static <R> void acceptEachProperty(
-            final R r, final Object object,
+            final R parent, final Object object,
             final Function<? super R,
                     ? extends Function<? super String,
                             ? extends Function<? super PropertyValue,
@@ -210,7 +222,7 @@ public class JavaBeansUtils {
                                             ? extends R>>>> function2)
             throws IntrospectionException, ReflectiveOperationException {
         Objects.requireNonNull(object, "object is null");
-        acceptEachPropertyHelper(r, object.getClass(), object, function1, function2);
+        acceptEachPropertyHelper(parent, object.getClass(), object, function1, function2);
     }
 
     private JavaBeansUtils() {

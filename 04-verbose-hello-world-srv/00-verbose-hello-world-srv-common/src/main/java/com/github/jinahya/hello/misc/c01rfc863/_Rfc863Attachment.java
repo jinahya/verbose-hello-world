@@ -12,34 +12,46 @@ import java.util.concurrent.ThreadLocalRandom;
 @Slf4j
 abstract class _Rfc863Attachment implements Closeable {
 
-    protected abstract static class Server extends _Rfc863Attachment {
+    abstract static class Server extends _Rfc863Attachment {
 
+        /**
+         * Creates a new instance.
+         */
         Server() {
             super(0);
         }
+
+        @Override
+        public void close() throws IOException {
+            _Rfc863Utils.logServerBytes(getBytes());
+            super.close();
+        }
     }
 
-    protected abstract static class Client extends _Rfc863Attachment {
+    abstract static class Client extends _Rfc863Attachment {
 
+        /**
+         * Creates a new instance.
+         */
         Client() {
-            super(_Rfc863Utils.newBytesLessThanMillion());
-            buffer.position(buffer.limit());
-            logClientBytes();
+            super(_Rfc863Utils.newBytesSome());
+            _Rfc863Utils.logClientBytes(getBytes());
         }
     }
 
     /**
      * Creates a new instance.
      */
-    _Rfc863Attachment(final int bytes) {
+    private _Rfc863Attachment(final int bytes) {
         super();
         this.bytes = bytes;
     }
 
     // --------------------------------------------------------------------------- java.io.Closeable
+
     @Override
     public void close() throws IOException {
-        // empty
+        _Rfc863Utils.logDigest(digest);
     }
 
     final void closeUnchecked() {
@@ -51,7 +63,13 @@ abstract class _Rfc863Attachment implements Closeable {
     }
 
     // --------------------------------------------------------------------------------------- bytes
-    int getBytes() {
+
+    /**
+     * Returns current value of {@link #bytes} property.
+     *
+     * @return current value of {@link #bytes} property.
+     */
+    final int getBytes() {
         return bytes;
     }
 
@@ -67,30 +85,28 @@ abstract class _Rfc863Attachment implements Closeable {
         return getBytes();
     }
 
-    int increaseBytes(final int delta) {
+    final int increaseBytes(final int delta) {
         if (delta < 0) {
             throw new IllegalArgumentException("delta(" + delta + ") < 0");
         }
         return bytes(getBytes() + delta);
     }
 
-    int decreaseBytes(final int delta) {
+    final int decreaseBytes(final int delta) {
         if (delta < 0) {
             throw new IllegalArgumentException("delta(" + delta + ") < 0");
         }
         return bytes(getBytes() - delta);
     }
 
-    void logClientBytes() {
-        _Rfc863Utils.logClientBytes(bytes);
-    }
-
-    void logServerBytes() {
-        _Rfc863Utils.logServerBytes(bytes);
-    }
-
     // -------------------------------------------------------------------------------------- buffer
-    ByteBuffer getBufferForReading() {
+
+    /**
+     * Returns {@link #buffer} configured for reading.
+     *
+     * @return the {@link #buffer} with non-zero remaining.
+     */
+    final ByteBuffer getBufferForReading() {
         if (!buffer.hasRemaining()) {
             buffer.clear();
         }
@@ -98,7 +114,12 @@ abstract class _Rfc863Attachment implements Closeable {
         return buffer;
     }
 
-    ByteBuffer getBufferForWriting() {
+    /**
+     * Returns {@link #buffer} configured for writing.
+     *
+     * @return the {@link #buffer} with non-zero remaining.
+     */
+    final ByteBuffer getBufferForWriting() {
         if (!buffer.hasRemaining()) {
             ThreadLocalRandom.current().nextBytes(buffer.array());
             buffer.clear().limit(Math.min(buffer.limit(), bytes));
@@ -115,9 +136,8 @@ abstract class _Rfc863Attachment implements Closeable {
      *
      * @param bytes the number of bytes preceding current position of the {@code buffer} to be
      *              updated to the {@code digest}.
-     * @return given {@code bytes}.
      */
-    int updateDigest(final int bytes) {
+    final void updateDigest(final int bytes) {
         if (bytes < 0) {
             throw new IllegalArgumentException("bytes(" + bytes + ") is negative");
         }
@@ -129,24 +149,14 @@ abstract class _Rfc863Attachment implements Closeable {
                 slice.position(buffer.position() - bytes)
                         .limit(buffer.position())
         );
-        return bytes;
-    }
-
-    /**
-     * Logs out the final result of {@code digest}.
-     *
-     * @see _Rfc863Utils#logDigest(MessageDigest)
-     */
-    void logDigest() {
-        _Rfc863Utils.logDigest(digest);
     }
 
     // ---------------------------------------------------------------------------------------------
     private int bytes; // bytes to send or received
 
-    final ByteBuffer buffer = _Rfc863Utils.newBuffer();
+    private final ByteBuffer buffer = _Rfc863Utils.newBuffer();
 
-    final ByteBuffer slice = buffer.slice();
+    private final ByteBuffer slice = buffer.slice();
 
-    final MessageDigest digest = _Rfc863Utils.newDigest();
+    private final MessageDigest digest = _Rfc863Utils.newDigest();
 }

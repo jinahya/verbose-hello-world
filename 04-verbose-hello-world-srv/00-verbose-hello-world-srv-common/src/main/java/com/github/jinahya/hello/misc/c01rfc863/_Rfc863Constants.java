@@ -66,6 +66,20 @@ final class _Rfc863Constants {
     static final long WRITE_TIMEOUT_IN_MILLIS =
             WRITE_TIMEOUT_UNIT.toMillis(WRITE_TIMEOUT_DURATION);
 
+    static final TimeUnit SERVER_TIMEOUT_UNIT = TimeUnit.SECONDS;
+
+    static final long SERVER_TIMEOUT_DURATION = 32L;
+
+    static final long SERVER_TIMEOUT_IN_MILLIS =
+            SERVER_TIMEOUT_UNIT.toMillis(SERVER_TIMEOUT_DURATION);
+
+    static final TimeUnit CLIENT_TIMEOUT_UNIT = TimeUnit.SECONDS;
+
+    static final long CLIENT_TIMEOUT_DURATION = 32L;
+
+    static final long CLIENT_TIMEOUT_IN_MILLIS =
+            CLIENT_TIMEOUT_UNIT.toMillis(CLIENT_TIMEOUT_DURATION);
+
     // -------------------------------------------------------------------------------------- DIGEST
 
     static final String ALGORITHM = "SHA-1";
