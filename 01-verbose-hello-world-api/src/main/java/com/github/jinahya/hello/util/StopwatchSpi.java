@@ -20,27 +20,12 @@ package com.github.jinahya.hello.util;
  * #L%
  */
 
-import java.time.Duration;
+import java.time.temporal.TemporalAmount;
+import java.util.function.LongFunction;
 
-public final class Stopwatch {
+interface StopwatchSpi<C> {
 
-    private static final StopwatchSpi<?> INSTANCE = StopwatchProvider1.INSTANCE;
+    C start();
 
-    /**
-     * Starts a stopwatch bound to current thread.
-     */
-    public static void startStopWatch() {
-        INSTANCE.start();
-    }
-
-    /**
-     * Returns a duration elapsed since {@link #startStopWatch()} method invoked.
-     */
-    public static Duration stopStopWatch() {
-        return INSTANCE.stop(null, Duration::ofNanos);
-    }
-
-    private Stopwatch() {
-        throw new AssertionError("instantiation is not allowed");
-    }
+    <T extends TemporalAmount> T stop(C carrier, LongFunction<? extends T> mapper);
 }

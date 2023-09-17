@@ -51,7 +51,7 @@ class Rfc863Tcp2Client {
             if (client.connect(_Rfc863Constants.ADDR)) {
                 log.info("connected (immediately) to {}, through {}", client.getRemoteAddress(),
                          client.getLocalAddress());
-                var attachment = new Rfc863Tcp2ClientAttachment();
+                final var attachment = new Rfc863Tcp2ClientAttachment();
                 clientKey = client.register(selector, 0, attachment);
                 if (attachment.getBytes() == 0) {
                     clientKey.cancel();
@@ -76,10 +76,10 @@ class Rfc863Tcp2Client {
                         log.info("connected to {}, through {}", channel.getRemoteAddress(),
                                  channel.getLocalAddress());
                         key.interestOpsAnd(~SelectionKey.OP_CONNECT);
-                        var attachment = new Rfc863Tcp2ClientAttachment();
+                        final var attachment = new Rfc863Tcp2ClientAttachment();
                         key.attach(attachment);
                         if (attachment.getBytes() == 0) {
-                            log.warn("no bytes to send");
+                            log.warn("no bytes to send; canceling...");
                             key.cancel();
                             assert !key.isValid();
                             continue;

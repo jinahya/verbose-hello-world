@@ -29,7 +29,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @Slf4j
 class Rfc863Tcp1Client {
 
-    public static void main(String... args) throws Exception {
+    public static void main(final String... args) throws Exception {
         try (var client = new Socket()) {
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc863Constants.HOST, 0));
@@ -39,12 +39,12 @@ class Rfc863Tcp1Client {
             log.info("connected to {}, through {}", client.getRemoteSocketAddress(),
                      client.getLocalSocketAddress());
             final var digest = _Rfc863Utils.newDigest();
-            var bytes = _Rfc863Utils.newBytesSome();
+            var bytes = _Rfc863Utils.newBytes();
             _Rfc863Utils.logClientBytes(bytes);
             final var array = _Rfc863Utils.newArray();
             while (bytes > 0) {
                 ThreadLocalRandom.current().nextBytes(array);
-                var l = Math.min(array.length, bytes);
+                final var l = Math.min(array.length, bytes);
                 client.getOutputStream().write(array, 0, l);
                 digest.update(array, 0, l);
                 bytes -= l;

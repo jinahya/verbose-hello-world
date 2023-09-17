@@ -34,10 +34,12 @@ abstract class _Rfc863Attachment implements Closeable {
          * Creates a new instance.
          */
         Client() {
-            super(_Rfc863Utils.newBytesSome());
+            super(_Rfc863Utils.newBytes());
             _Rfc863Utils.logClientBytes(getBytes());
         }
     }
+
+    // ---------------------------------------------------------------------------------------------
 
     /**
      * Creates a new instance.
@@ -73,6 +75,11 @@ abstract class _Rfc863Attachment implements Closeable {
         return bytes;
     }
 
+    /**
+     * Replaces current value of {@code bytes} property with specified value.
+     *
+     * @param bytes new value for the {@code bytes} property.
+     */
     private void setBytes(final int bytes) {
         if (bytes < 0) {
             throw new IllegalArgumentException("bytes(" + bytes + ") < 0");
@@ -80,11 +87,26 @@ abstract class _Rfc863Attachment implements Closeable {
         this.bytes = bytes;
     }
 
+    /**
+     * Replaces current value of {@code bytes} property with specified value, and returns updated
+     * value of the {@code bytes} property.
+     *
+     * @param bytes new value for the {@code bytes} property.
+     * @return updated value of the {@code bytes} property.
+     */
     private int bytes(final int bytes) {
         setBytes(bytes);
         return getBytes();
     }
 
+    /**
+     * Increases current value of {@code bytes} property by specified value, and returns updated
+     * value of the {@code bytes} property.
+     *
+     * @param delta delta value for the {@code bytes} property; should be greater than or equal to
+     *              zero.
+     * @return updated value of the {@code bytes} property.
+     */
     final int increaseBytes(final int delta) {
         if (delta < 0) {
             throw new IllegalArgumentException("delta(" + delta + ") < 0");
@@ -92,6 +114,14 @@ abstract class _Rfc863Attachment implements Closeable {
         return bytes(getBytes() + delta);
     }
 
+    /**
+     * Decreases current value of {@code bytes} property by specified value, and returns updated
+     * value of the {@code bytes} property.
+     *
+     * @param delta delta value for the {@code bytes} property; should be greater than or equal to
+     *              zero.
+     * @return updated value of the {@code bytes} property.
+     */
     final int decreaseBytes(final int delta) {
         if (delta < 0) {
             throw new IllegalArgumentException("delta(" + delta + ") < 0");

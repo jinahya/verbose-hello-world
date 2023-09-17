@@ -2,7 +2,6 @@ package com.github.jinahya.hello.misc.c01rfc863;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 
@@ -12,41 +11,33 @@ final class Rfc863Tcp4ServerHandlers {
     enum Accept
             implements CompletionHandler<AsynchronousSocketChannel, Rfc863Tcp4ServerAttachment> {
 
-        HANDLER() {
+        HANDLER() { // @formatter:off
             @Override
             public void completed(final AsynchronousSocketChannel result,
                                   final Rfc863Tcp4ServerAttachment attachment) {
-                try {
-                    log.info("accepted from {}, through {}", result.getRemoteAddress(),
-                             result.getLocalAddress());
-                } catch (final IOException ioe) {
-                    log.error("failed to get addresses from {}", result, ioe);
-                }
                 attachment.setClient(result);
-                assert attachment.latch.getCount() == Rfc863Tcp4ServerAttachment.COUNT;
-                attachment.latch.countDown(); // -1 for being accepted
+                attachment.countDownLatch(Rfc863Tcp4ServerAttachment.LATCH_COUNT); // accepted
                 attachment.readWith(Read.HANDLER);
             }
-
             @Override
             public void failed(final Throwable exc, final Rfc863Tcp4ServerAttachment attachment) {
                 log.error("failed to accept", exc);
-                assert attachment.latch.getCount() == Rfc863Tcp4ServerAttachment.COUNT;
-                attachment.latch.countDown();
-                attachment.latch.countDown();
+                attachment.closeUnchecked();
+                attachment.countDownLatch(Rfc863Tcp4ServerAttachment.LATCH_COUNT);
+                attachment.countDownLatch(Rfc863Tcp4ServerAttachment.LATCH_COUNT - 1L);
             }
-        }
+        } // @formatter:on
     }
 
     private enum Read implements CompletionHandler<Integer, Rfc863Tcp4ServerAttachment> {
 
-        HANDLER() {
+        HANDLER() { // @formatter:off
             @Override
             public void completed(final Integer result,
                                   final Rfc863Tcp4ServerAttachment attachment) {
                 if (result == -1) {
-                    assert attachment.latch.getCount() == Rfc863Tcp4ServerAttachment.COUNT - 1L;
-                    attachment.latch.countDown();
+                    attachment.closeUnchecked();
+                    attachment.countDownLatch(Rfc863Tcp4ServerAttachment.LATCH_COUNT - 1L);
                     return;
                 }
                 assert result > 0; // why?
@@ -54,14 +45,13 @@ final class Rfc863Tcp4ServerHandlers {
                 attachment.increaseBytes(result);
                 attachment.readWith(this);
             }
-
             @Override
             public void failed(final Throwable exc, final Rfc863Tcp4ServerAttachment attachment) {
                 log.error("failed to read", exc);
-                assert attachment.latch.getCount() == Rfc863Tcp4ServerAttachment.COUNT - 1L;
-                attachment.latch.countDown();
+                attachment.closeUnchecked();
+                attachment.countDownLatch(Rfc863Tcp4ServerAttachment.LATCH_COUNT - 1L);
             }
-        }
+        } // @formatter:on
     }
 
     /**

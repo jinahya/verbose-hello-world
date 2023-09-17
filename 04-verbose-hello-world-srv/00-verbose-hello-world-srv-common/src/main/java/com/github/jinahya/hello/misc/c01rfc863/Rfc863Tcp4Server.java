@@ -36,13 +36,15 @@ class Rfc863Tcp4Server {
                         attachment,                             // <attachment>
                         Rfc863Tcp4ServerHandlers.Accept.HANDLER // <handler>
                 );
-                final var broken = attachment.latch.await(_Rfc863Constants.SERVER_TIMEOUT_DURATION,
-                                                          _Rfc863Constants.SERVER_TIMEOUT_UNIT);
+                final var broken = attachment.awaitLatch();
                 assert broken;
             }
         }
     }
 
+    /**
+     * Creates a new instance.
+     */
     private Rfc863Tcp4Server() {
         throw new AssertionError("instantiation is not allowed");
     }

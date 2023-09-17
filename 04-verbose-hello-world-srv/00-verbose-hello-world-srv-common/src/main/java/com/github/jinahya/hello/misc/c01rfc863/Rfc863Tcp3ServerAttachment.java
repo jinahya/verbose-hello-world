@@ -1,27 +1,53 @@
 package com.github.jinahya.hello.misc.c01rfc863;
 
-import java.nio.channels.AsynchronousByteChannel;
+import java.io.IOException;
+import java.nio.channels.AsynchronousSocketChannel;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeoutException;
 
 final class Rfc863Tcp3ServerAttachment extends _Rfc863Attachment.Server {
 
     /**
      * Creates a new instance.
      */
-    Rfc863Tcp3ServerAttachment() {
+    Rfc863Tcp3ServerAttachment(final AsynchronousSocketChannel client) {
         super();
+        this.client = Objects.requireNonNull(client, "client is null");
+    }
+
+    @Override
+    public void close() throws IOException {
+        client.close();
+        super.close();
     }
 
     /**
-     * .
+     * Reads a sequence of bytes.
      *
-     * @param channel
-     * @return
-     * @see Rfc863Tcp3ClientAttachment#writeTo(AsynchronousByteChannel)
+     * @return A future representing the result of the operation.
+     * @see Rfc863Tcp3ClientAttachment#write()
      */
-    Future<Integer> readFrom(final AsynchronousByteChannel channel) {
-        Objects.requireNonNull(channel, "channel is null");
-        return channel.read(getBufferForReading());
+    Future<Integer> read() {
+        return client.read(getBufferForReading());
     }
+
+    /**
+     * Reads a sequence of bytes,, and returns the result.
+     *
+     * @return a number of bytes read.
+     * @see Rfc863Tcp3ClientAttachment#writeAndGet()
+     */
+    int readAndGet() throws ExecutionException, InterruptedException, TimeoutException {
+        final var result = read().get(_Rfc863Constants.READ_TIMEOUT_DURATION,
+                                      _Rfc863Constants.READ_TIMEOUT_UNIT);
+        if (result != -1) {
+            updateDigest(result);
+            increaseBytes(result);
+        }
+        return result;
+    }
+
+    private final AsynchronousSocketChannel client;
 }

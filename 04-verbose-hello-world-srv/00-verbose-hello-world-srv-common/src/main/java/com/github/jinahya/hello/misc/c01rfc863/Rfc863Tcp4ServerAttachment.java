@@ -1,14 +1,18 @@
 package com.github.jinahya.hello.misc.c01rfc863;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 
+@Slf4j
 final class Rfc863Tcp4ServerAttachment extends _Rfc863Attachment.Server {
 
-    static final int COUNT = 2; // accepted + all received
+    static final int LATCH_COUNT = 2; // accepted + all received
 
     // ---------------------------------------------------------------------------------------------
 
@@ -23,13 +27,13 @@ final class Rfc863Tcp4ServerAttachment extends _Rfc863Attachment.Server {
 
     @Override
     public void close() throws IOException {
-        if (client != null) {
-            client.close();
+        synchronized (this) {
+            if (client != null) {
+                client.close();
+            }
         }
         super.close();
     }
-
-    // --------------------------------------------------------------------------------------- latch
 
     // -------------------------------------------------------------------------------------- client
 
@@ -41,8 +45,24 @@ final class Rfc863Tcp4ServerAttachment extends _Rfc863Attachment.Server {
             }
             this.client = client;
         }
+        logConnected();
     }
 
+    private void logConnected() {
+        try {
+            log.info("accepted from {}, through {}", client.getRemoteAddress(),
+                     client.getLocalAddress());
+        } catch (final IOException ioe) {
+            throw new UncheckedIOException(ioe);
+        }
+    }
+
+    /**
+     * Reads a sequence of bytes from {@code client}.
+     *
+     * @param handler a handler for consuming the result.
+     * @see Rfc863Tcp4ClientAttachment#writeWith(CompletionHandler)
+     */
     void readWith(final CompletionHandler<Integer, ? super Rfc863Tcp4ServerAttachment> handler) {
         synchronized (this) {
             if (client == null) {
@@ -59,9 +79,32 @@ final class Rfc863Tcp4ServerAttachment extends _Rfc863Attachment.Server {
         );
     }
 
+    // --------------------------------------------------------------------------------------- latch
+
+    void countDownLatch(final long expectedCount) {
+        if (expectedCount <= 0) {
+            throw new IllegalArgumentException(
+                    "expectedCount(" + expectedCount + ") is not positive"
+            );
+        }
+        synchronized (latch) {
+            if (latch.getCount() != expectedCount) {
+                throw new IllegalArgumentException(
+                        "latch.count(" + latch.getCount() + ')' +
+                        " != expectedCount(" + expectedCount + ')'
+                );
+            }
+            latch.countDown();
+        }
+    }
+
+    boolean awaitLatch() throws InterruptedException {
+        return latch.await(_Rfc863Constants.SERVER_TIMEOUT_DURATION,
+                           _Rfc863Constants.SERVER_TIMEOUT_UNIT);
+    }
+
     // ---------------------------------------------------------------------------------------------
-
-    final CountDownLatch latch = new CountDownLatch(COUNT);
-
     private AsynchronousSocketChannel client;
+
+    private final CountDownLatch latch = new CountDownLatch(LATCH_COUNT);
 }

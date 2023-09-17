@@ -27,7 +27,7 @@ import java.net.ServerSocket;
 @Slf4j
 class Rfc863Tcp0Server {
 
-    public static void main(String... args) throws Exception {
+    public static void main(final String... args) throws Exception {
         try (var server = new ServerSocket()) {
             server.bind(_Rfc863Constants.ADDR, 1);
             log.info("bound to {}", server.getLocalSocketAddress());
@@ -36,7 +36,7 @@ class Rfc863Tcp0Server {
                 log.info("accepted from {}, through {}", client.getRemoteSocketAddress(),
                          client.getLocalSocketAddress());
                 client.setSoTimeout((int) _Rfc863Constants.READ_TIMEOUT_IN_MILLIS);
-                var digest = _Rfc863Utils.newDigest();
+                final var digest = _Rfc863Utils.newDigest();
                 var bytes = 0L;
                 for (int b; (b = client.getInputStream().read()) != -1; bytes++) {
                     digest.update((byte) b);

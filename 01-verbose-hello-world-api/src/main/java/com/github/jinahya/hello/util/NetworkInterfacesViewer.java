@@ -35,14 +35,17 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.ExpandVetoException;
-import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.Serial;
 import java.net.NetworkInterface;
 import java.util.EventObject;
+import java.util.HexFormat;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * A class renders properties of all {@link NetworkInterface}s.
@@ -58,44 +61,43 @@ class NetworkInterfacesViewer extends AbstractViewer {
 
     private static final String NAME = "Network Interfaces Properties";
 
-    private static class PropertyNode extends DefaultMutableTreeNode { // @formatter:off
-        @Serial private static final long serialVersionUID = -7457100976727315195L;
-        PropertyNode(final JavaBeansUtils.PropertyValue userObject) {
+    private static class PropertyNode
+            extends DefaultMutableTreeNode
+            implements JavaBeansUtils.PropertyInfoHolder {
+
+        @Serial
+        private static final long serialVersionUID = -7457100976727315195L;
+
+        private PropertyNode(final JavaBeansUtils.PropertyInfo userObject) {
             super(Objects.requireNonNull(userObject, "userObject is null"));
         }
-        JavaBeansUtils.PropertyValue getPropertyValue() {
-            return (JavaBeansUtils.PropertyValue) getUserObject();
+
+        @Override
+        public JavaBeansUtils.PropertyInfo get() {
+            return (JavaBeansUtils.PropertyInfo) getUserObject();
         }
-    } // @formatter:on
+    }
 
     public static void main(final String... args) throws Exception {
         if (!init(args, NetworkInterfacesPrinter.class)) {
             return;
         }
         final var root = new DefaultMutableTreeNode();
-        NetworkInterfacesPrinter.acceptEachNetworkInterface((ni, i) -> {
-            final var userObject = JavaBeansUtils.PropertyValue.of(
-                    "networkInterface[" + i + ']', NetworkInterface.class, ni);
-            root.add(new PropertyNode(userObject));
-        });
-        for (final var e = root.children(); e.hasMoreElements(); ) {
-            var parent = (PropertyNode) e.nextElement();
-            JavaBeansUtils.acceptEachProperty(
-                    parent,
-                    ((JavaBeansUtils.PropertyValue) parent.getUserObject()).value,
-                    p -> n -> v -> {
-                        var child = new PropertyNode(v);
-                        p.add(child);
-                        return child;
-                    },
-                    p -> n -> i -> v -> {
-                        var child = new PropertyNode(
-                                JavaBeansUtils.PropertyValue.of(v.name, v.type, v.value)
-                        );
-                        p.add(child);
-                        return child;
-                    }
-            );
+        {
+            var index = 0;
+            for (final var e = NetworkInterface.getNetworkInterfaces(); e.hasMoreElements(); ) {
+                final var value = e.nextElement();
+                final var child = new PropertyNode(
+                        new JavaBeansUtils.PropertyInfo(null, "networkInterface",
+                                                        NetworkInterface.class, index++, value)
+                );
+                root.add(child);
+                JavaBeansUtils.acceptEachProperty(child, value, p -> i -> {
+                    final var c = new PropertyNode(i);
+                    p.add(c);
+                    return c;
+                });
+            }
         }
         final int[] renderingRow = new int[1];
         final var tree = new JTree[1];
@@ -109,7 +111,18 @@ class NetworkInterfacesViewer extends AbstractViewer {
                 super.paint(g);
             }
         }; // @formatter:on
-        tree[0].getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+//        tree[0].getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+//        tree[0].addFocusListener(new FocusListener() {
+//            @Override
+//            public void focusGained(FocusEvent e) {
+//                log.debug("focusGained: {}", e);
+//            }
+//
+//            @Override
+//            public void focusLost(FocusEvent e) {
+//            }
+//        });
+//        tree[0].setToggleClickCount(1);
         tree[0].addMouseListener(new MouseAdapter() { // @formatter:off
             @Override public void mouseClicked(MouseEvent e) {
                 log.debug("mouseClicked({})", e);
@@ -118,15 +131,28 @@ class NetworkInterfacesViewer extends AbstractViewer {
         }); // @formatter:on
         final var treeModel = new DefaultTreeModel(root);
         tree[0].setModel(treeModel);
-        tree[0].setCellRenderer(new DefaultTreeCellRenderer() { // @formatter:off
-            @Override public Component getTreeCellRendererComponent(
-                    final JTree tree, Object value, final boolean sel, final boolean expanded,
-                    final boolean leaf, final int row, final boolean hasFocus) {
-                if (value instanceof PropertyNode node) { value = node.getPropertyValue().name; }
+        tree[0].setCellRenderer(new DefaultTreeCellRenderer() { // @formatter:on
+            @Override
+            public Component getTreeCellRendererComponent(final JTree tree, Object value,
+                                                          final boolean sel, final boolean expanded,
+                                                          final boolean leaf, final int row,
+                                                          final boolean hasFocus) {
+                if (value instanceof PropertyNode node) {
+                    final var info = node.get();
+                    value = info.name + Optional.ofNullable(info.index).map(i -> "[" + i + ']')
+                            .orElse("");
+                }
                 return super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row,
                                                           hasFocus);
             }
         }); // @formatter:on
+
+        UIManager.addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                log.debug("UIManager property changed: {}", evt);
+            }
+        });
 
         table[0] = new JTable() { // @formatter:off
             @Override public void updateUI() {
@@ -137,6 +163,7 @@ class NetworkInterfacesViewer extends AbstractViewer {
         table[0].setColumnSelectionAllowed(false);
         table[0].setDefaultEditor(Object.class, null);
         final var tableModel = new DefaultTableModel() { // @formatter:off
+            @Serial private static final long serialVersionUID=7137590333486505662L;
             @Override public int getRowCount() { return tree[0].getRowCount(); }
             @Override public Object getValueAt(final int rowIndex, final int columnIndex) {
                 return tree[0].getPathForRow(rowIndex);
@@ -148,7 +175,28 @@ class NetworkInterfacesViewer extends AbstractViewer {
             treeCellRenderer.setClosedIcon(null);
             treeCellRenderer.setOpenIcon(null);
         }
-        tree[0].addTreeWillExpandListener(new TreeWillExpandListener() { // @formatter:on
+//        tree[0].addTreeSelectionListener(e -> {
+//            log.debug("\ntree selection: {}", e);
+//            final var path = e.getPath();
+//            final var node = (PropertyNode) path.getLastPathComponent();
+//            if (node.isLeaf()) {
+//                return;
+//            }
+//            final var row = tree[0].getRowForPath(path);
+//            log.debug("row: {}", row);
+//            if (tree[0].isCollapsed(row)) {
+//                tree[0].expandPath(path);
+////                table[0].getSelectionModel().setSelectionInterval(row, row);
+//            } else {
+//                tree[0].collapsePath(path);
+////                    tree[0].setSelectionRow(row);
+////                table[0].getSelectionModel().setSelectionInterval(row, row);
+//            }
+////            tree[0].setSelectionRow(row);
+//            tableModel.fireTableDataChanged();
+////            table[0].getSelectionModel().setSelectionInterval(row, row);
+//        });
+        tree[0].addTreeWillExpandListener(new TreeWillExpandListener() { // @formatter:off
             @Override
             public void treeWillExpand(TreeExpansionEvent event) throws ExpandVetoException {
                 tableModel.fireTableDataChanged();
@@ -182,7 +230,6 @@ class NetworkInterfacesViewer extends AbstractViewer {
                 @Override public Object getCellEditorValue() { return null; }
                 @Override public boolean isCellEditable(final EventObject anEvent) {
                     if (!(anEvent instanceof MouseEvent me)) { return false; }
-                    log.debug("me: {}", me);
                     final var point = me.getPoint();
                     final var row = table[0].rowAtPoint(point);
                     final var column = table[0].columnAtPoint(point);
@@ -192,7 +239,6 @@ class NetworkInterfacesViewer extends AbstractViewer {
                             me.getX() - table[0].getCellRect(0, column, true).x, me.getY(),
                             me.getClickCount(), me.isPopupTrigger(), me.getButton()
                     );
-                    log.debug("dispatching");
                     tree[0].dispatchEvent(me2);
                     tableModel.fireTableDataChanged();
                     return false;
@@ -208,13 +254,19 @@ class NetworkInterfacesViewer extends AbstractViewer {
         {
             final var column = new TableColumn(valueColumn);
             column.setHeaderValue("value");
-            column.setCellRenderer(new DefaultTableCellRenderer() { // @formatter:off
-                @Override public Component getTableCellRendererComponent(
+            column.setCellRenderer(new DefaultTableCellRenderer() { // @formatter:on
+                @Override
+                public Component getTableCellRendererComponent(
                         final JTable table, Object value, final boolean isSelected,
                         final boolean hasFocus, final int row, final int column) {
                     final var path = tree[0].getPathForRow(row);
                     final var node = (PropertyNode) path.getLastPathComponent();
-                    value = Objects.toString(node.getPropertyValue().value);
+                    value = node.get().value;
+                    if (value instanceof byte[] b) {
+                        value = HexFormat.of().formatHex(b);
+                    } else {
+                        value = Objects.toString(value);
+                    }
                     return super.getTableCellRendererComponent(table, value, isSelected, hasFocus,
                                                                row, column);
                 }
@@ -230,7 +282,7 @@ class NetworkInterfacesViewer extends AbstractViewer {
                         final boolean hasFocus, final int row, final int column) {
                     final var path = tree[0].getPathForRow(row);
                     final var node = (PropertyNode) path.getLastPathComponent();
-                    value = node.getPropertyValue().type.getName();
+                    value = node.get().type.getName();
                     return super.getTableCellRendererComponent(table, value, isSelected, hasFocus,
                                                                row, column);
                 }
@@ -239,9 +291,10 @@ class NetworkInterfacesViewer extends AbstractViewer {
         }
         table[0].setModel(tableModel);
         table[0].setColumnModel(columnModel);
+        table[0].getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table[0].getSelectionModel().addListSelectionListener(e -> {
-            final var lastIndex = e.getLastIndex();
-            tree[0].setSelectionInterval(lastIndex, lastIndex);
+            final var selectedRow = table[0].getSelectedRow();
+            tree[0].setSelectionInterval(selectedRow, selectedRow);
         });
         tree[0].setModel(treeModel);
         tree[0].setRootVisible(false);

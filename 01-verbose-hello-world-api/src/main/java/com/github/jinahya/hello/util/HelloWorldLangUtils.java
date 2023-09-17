@@ -29,15 +29,12 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.nio.charset.Charset;
-import java.time.Duration;
-import java.time.temporal.TemporalAmount;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
-import java.util.function.LongFunction;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -239,69 +236,6 @@ public final class HelloWorldLangUtils {
         var codePoints = string.codePoints().toArray();
         codePoints = trimByCodepoints(codePoints, 0, codePoints.length, charset, bytes);
         return new String(codePoints, 0, codePoints.length);
-    }
-
-    // @formatter:off
-    private interface Stopwatch<C> {
-        C start();
-        <T extends TemporalAmount> T stop(C carrier, LongFunction<? extends T> mapper);
-    }
-    // @formatter:on
-
-    // @formatter:off
-    private enum Stopwatch1 implements Stopwatch<Void> {
-        INSTANCE() {
-            @Override
-            public Void start() {
-                START_NANOS1.set(System.nanoTime());
-                return null;
-            }
-            @Override
-            public <T extends TemporalAmount> T stop(Void carrier,
-                                                     LongFunction<? extends T> mapper) {
-                try {
-                    return mapper.apply(System.nanoTime() - START_NANOS1.get());
-                } finally {
-                    START_NANOS1.remove();
-                }
-            }
-        };
-        private static final ThreadLocal<Long> START_NANOS1 =
-                ThreadLocal.withInitial(System::nanoTime);
-    }
-    // @formatter:on
-
-    static void startStopWatch1() {
-        Stopwatch1.INSTANCE.start();
-    }
-
-    static Duration stopStopWatch1() {
-        return Stopwatch1.INSTANCE.stop(null, Duration::ofNanos);
-    }
-
-    //    private static final ScopedValue<Long> START_NANOS = ScopedValue.newInstance();
-//
-//    public static ScopedValue.Carrier<Long> startStopwatch() {
-//        return ScopedValue.where(START_NANOS, System.nanoTime());
-//    }
-//
-//    public static Duration stopStopwatch(ScopedValue.Carrier<Long> carrier) {
-//        Objects.requireNonNull(carrier, "carrier is null");
-//        return carrier.call(v -> Duration.ofNanos(System.nanoTime() - v));
-//    }
-
-    /**
-     * Starts a stopwatch bound to current thread.
-     */
-    public static void startStopWatch() {
-        startStopWatch1();
-    }
-
-    /**
-     * Returns a duration elapsed since {@link #startStopWatch()} method invoked.
-     */
-    public static Duration stopStopWatch() {
-        return stopStopWatch1();
     }
 
     public static final class OfInt {

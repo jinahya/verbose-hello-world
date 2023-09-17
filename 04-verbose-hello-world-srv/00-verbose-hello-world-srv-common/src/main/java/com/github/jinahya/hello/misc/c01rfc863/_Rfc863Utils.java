@@ -23,7 +23,6 @@ package com.github.jinahya.hello.misc.c01rfc863;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.ByteBuffer;
-import java.nio.channels.SelectionKey;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
@@ -35,7 +34,12 @@ final class _Rfc863Utils {
 
     // -------------------------------------------------------------------------------- array/buffer
 
-    private static byte[] newArray_() {
+    /**
+     * Returns a new array of bytes whose length is between 1 and 1024, both inclusive.
+     *
+     * @return a new array of bytes.
+     */
+    private static byte[] array() {
         return new byte[ThreadLocalRandom.current().nextInt(1024) + 1];
     }
 
@@ -46,7 +50,7 @@ final class _Rfc863Utils {
      * @return a new non-empty array of bytes.
      */
     static byte[] newArray() {
-        final var array = newArray_();
+        final var array = array();
         log.debug("array.length: {}", array.length);
         return array;
     }
@@ -60,7 +64,7 @@ final class _Rfc863Utils {
      * @see #newArray()
      */
     static ByteBuffer newBuffer() {
-        final var buffer = ByteBuffer.wrap(newArray_());
+        final var buffer = ByteBuffer.wrap(array());
         log.debug("buffer.capacity: {}", buffer.capacity());
         return buffer;
     }
@@ -70,11 +74,11 @@ final class _Rfc863Utils {
     /**
      * Returns a new {@code int} greater than or equals to {@code 0} and less than specified value.
      *
-     * @param maxExclusive the maximum value, exclusive.
+     * @param maxExclusive the maximum value, exclusive; must be positive.
      * @return a new {@code int} greater than or equals to {@code 0} and less than
      * {@code maxExclusive}.
      */
-    static int newBytes(final int maxExclusive) {
+    private static int newBytes(final int maxExclusive) {
         if (maxExclusive <= 0) {
             throw new IllegalArgumentException(
                     "maxExclusive(" + maxExclusive + ") is not positive");
@@ -87,22 +91,30 @@ final class _Rfc863Utils {
      *
      * @return a new {@code int} between {@code 0}(inclusive) and {@code 65536}(exclusive).
      */
-    static int newBytesSome() {
+    static int newBytes() {
         return newBytes(65536);
     }
 
-    static void logClientBytes(long bytes) {
+    /**
+     * Logs specified client bytes.
+     *
+     * @param bytes the client bytes to log.
+     */
+    static void logClientBytes(final long bytes) {
         if (bytes < 0) {
-            throw new IllegalArgumentException(
-                    "bytes(" + bytes + ") is negative");
+            throw new IllegalArgumentException("bytes(" + bytes + ") is negative");
         }
         log.info("sending {} bytes", bytes);
     }
 
-    static void logServerBytes(long bytes) {
+    /**
+     * Logs specified server bytes.
+     *
+     * @param bytes the server bytes to log.
+     */
+    static void logServerBytes(final long bytes) {
         if (bytes < 0) {
-            throw new IllegalArgumentException(
-                    "bytes(" + bytes + ") is negative");
+            throw new IllegalArgumentException("bytes(" + bytes + ") is negative");
         }
         log.info("{} bytes received (and discarded)", bytes);
     }
@@ -127,37 +139,38 @@ final class _Rfc863Utils {
         }
     }
 
-    static void logDigest(MessageDigest digest) {
+    static void logDigest(final MessageDigest digest) {
         Objects.requireNonNull(digest, "digest is null");
         log.info("digest: {}", HexFormat.of().formatHex(digest.digest()));
     }
 
-    static void logDigest(byte[] array, int offset, int length) {
-        var digest = newDigest();
+    static void logDigest(final byte[] array, final int offset, final int length) {
+        final var digest = newDigest();
         digest.update(array, offset, length);
         logDigest(digest);
     }
 
-    static void logDigest(ByteBuffer buffer) {
-        var digest = newDigest();
+    static void logDigest(final ByteBuffer buffer) {
+        final var digest = newDigest();
         digest.update(buffer);
         logDigest(digest);
     }
 
     // ----------------------------------------------------------------------------------------- key
-    static void logKey(SelectionKey key) {
-        Objects.requireNonNull(key, "key is null");
-        log.debug(
-                """
-                        key: {}
-                        \tconnectable: {}\tacceptable: {}\treadable: {}\twritable; {}""",
-                key,
-                key.isConnectable(),
-                key.isAcceptable(),
-                key.isReadable(),
-                key.isWritable()
-        );
-    }
+
+//    static void logKey(final SelectionKey key) {
+//        Objects.requireNonNull(key, "key is null");
+//        log.debug(
+//                """
+//                        key: {}
+//                        \tconnectable: {}\tacceptable: {}\treadable: {}\twritable; {}""",
+//                key,
+//                key.isConnectable(),
+//                key.isAcceptable(),
+//                key.isReadable(),
+//                key.isWritable()
+//        );
+//    }
 
     private _Rfc863Utils() {
         throw new AssertionError("instantiation is not allowed");

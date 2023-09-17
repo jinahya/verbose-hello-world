@@ -15,12 +15,12 @@ final class Rfc863Tcp2ServerAttachment extends _Rfc863Attachment.Server {
     }
 
     /**
-     * Reads a sequence of bytes from specified channel into {@link #buffer}.
+     * Reads a sequence of bytes from specified channel.
      *
-     * @param channel the channel from which bytes are written.
+     * @param channel the channel from which bytes are read.
      * @return a number of bytes read from the {@code channel}.
-     * {@link ReadableByteChannel#read(ByteBuffer) channel.read(buffer)}.
      * @throws IOException if an I/O error occurs.
+     * @see ReadableByteChannel#read(ByteBuffer)
      * @see Rfc863Tcp2ClientAttachment#writeTo(WritableByteChannel)
      */
     int readFrom(final ReadableByteChannel channel) throws IOException {

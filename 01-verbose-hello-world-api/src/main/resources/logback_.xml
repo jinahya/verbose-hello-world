@@ -28,7 +28,4 @@
   </root>
   <logger name="com.github.jinahya.hello" level="debug"/>
   <logger name="java.awt" level="warn"/>
-<!--  <logger name="java.awt.mixing" level="warn"/>-->
-<!--  <logger name="java.awt.mixing.Component" level="warn"/>-->
-<!--  <logger name="java.awt.mixing.Container" level="warn"/>-->
 </configuration>

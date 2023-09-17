@@ -27,9 +27,7 @@ import java.nio.channels.AsynchronousServerSocketChannel;
 @Slf4j
 class Rfc863Tcp3Server {
 
-    // @formatter:on
-
-    public static void main(String... args) throws Exception {
+    public static void main(final String... args) throws Exception {
         try (var server = AsynchronousServerSocketChannel.open()) {
             server.bind(_Rfc863Constants.ADDR);
             log.info("bound to {}", server.getLocalAddress());
@@ -37,16 +35,9 @@ class Rfc863Tcp3Server {
                                                   _Rfc863Constants.ACCEPT_TIMEOUT_UNIT)) {
                 log.info("accepted from {}, through {}", client.getRemoteAddress(),
                          client.getLocalAddress());
-                try (var attachment = new Rfc863Tcp3ServerAttachment()) {
-                    for (int r; ; ) {
-                        r = attachment.readFrom(client).get(_Rfc863Constants.READ_TIMEOUT_DURATION,
-                                                            _Rfc863Constants.READ_TIMEOUT_UNIT);
-                        if (r == -1) {
-                            break;
-                        }
+                try (var attachment = new Rfc863Tcp3ServerAttachment(client)) {
+                    for (int r; (r = attachment.readAndGet()) != -1; ) {
                         assert r > 0; // why not 0?
-                        attachment.updateDigest(r);
-                        attachment.increaseBytes(r);
                     }
                 }
             }

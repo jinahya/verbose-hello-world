@@ -31,7 +31,7 @@ import static com.github.jinahya.hello.misc.c01rfc863._Rfc863Constants.HOST;
 @Slf4j
 class Rfc863Tcp3Client {
 
-    public static void main(String... args) throws Exception {
+    public static void main(final String... args) throws Exception {
         try (var client = AsynchronousSocketChannel.open()) {
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(HOST, 0));
@@ -41,14 +41,11 @@ class Rfc863Tcp3Client {
                                                       _Rfc863Constants.CONNECT_TIMEOUT_UNIT);
             log.info("connected to {}, through {}", client.getRemoteAddress(),
                      client.getLocalAddress());
-            try (var attachment = new Rfc863Tcp3ClientAttachment()) {
-                while (attachment.getBytes() > 0) {
-                    final var w = attachment.writeTo(client).get();
+            try (var attachment = new Rfc863Tcp3ClientAttachment(client)) {
+                for (int w; attachment.getBytes() > 0; ) {
+                    w = attachment.writeAndGet();
                     assert w > 0; // why not 0?
-                    attachment.updateDigest(w);
-                    attachment.decreaseBytes(w);
                 }
-//                attachment.logDigest();
             }
         }
     }

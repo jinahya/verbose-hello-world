@@ -1,6 +1,7 @@
 package com.github.jinahya.hello.misc.c01rfc863;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.Objects;
@@ -15,11 +16,12 @@ final class Rfc863Tcp2ClientAttachment extends _Rfc863Attachment.Client {
     }
 
     /**
-     * Writes a sequence of random bytes to specified channel from {@link #buffer}.
+     * Writes a sequence of random bytes to specified channel.
      *
      * @param channel the channel to which bytes are written.
      * @return number of bytes written to the {@code channel}, possibly zero.
      * @throws IOException if an I/O error occurs.
+     * @see WritableByteChannel#write(ByteBuffer)
      * @see Rfc863Tcp2ServerAttachment#readFrom(ReadableByteChannel)
      */
     int writeTo(final WritableByteChannel channel) throws IOException {

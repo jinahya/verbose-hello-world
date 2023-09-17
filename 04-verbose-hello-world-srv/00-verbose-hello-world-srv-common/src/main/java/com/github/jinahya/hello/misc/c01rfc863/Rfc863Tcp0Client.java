@@ -31,7 +31,7 @@ import static com.github.jinahya.hello.misc.c01rfc863._Rfc863Constants.HOST;
 @Slf4j
 class Rfc863Tcp0Client {
 
-    public static void main(String... args) throws Exception {
+    public static void main(final String... args) throws Exception {
         try (var client = new Socket()) {
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(HOST, 0));
@@ -40,8 +40,8 @@ class Rfc863Tcp0Client {
             client.connect(_Rfc863Constants.ADDR, (int) _Rfc863Constants.CONNECT_TIMEOUT_IN_MILLIS);
             log.info("connected to {}, through {}", client.getRemoteSocketAddress(),
                      client.getLocalSocketAddress());
-            var digest = _Rfc863Utils.newDigest();
-            var bytes = _Rfc863Utils.newBytes(1024);
+            final var digest = _Rfc863Utils.newDigest();
+            var bytes = _Rfc863Utils.newBytes();
             _Rfc863Utils.logClientBytes(bytes);
             for (int b; bytes-- > 0; ) {
                 b = ThreadLocalRandom.current().nextInt(255);

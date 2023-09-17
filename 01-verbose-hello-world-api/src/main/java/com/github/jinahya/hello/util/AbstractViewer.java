@@ -20,6 +20,7 @@ package com.github.jinahya.hello.util;
  * #L%
  */
 
+import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.util.SystemInfo;
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,9 +38,15 @@ import java.util.Objects;
 abstract class AbstractViewer {
 
     static {
+        LoggingUtils.setLevel("java.awt", "INFO");
+        LoggingUtils.setLevel("javax.swing", "INFO");
+        LoggingUtils.setLevel("sun", "INFO");
+    }
+
+    static {
         // https://www.formdev.com/flatlaf/macos/
-//        System.setProperty("apple.awt.application.appearance", "system");
-//        System.setProperty("apple.laf.useScreenMenuBar", "true");
+        System.setProperty("apple.awt.application.appearance", "system");
+        System.setProperty("apple.laf.useScreenMenuBar", "true");
     }
 
     static boolean init(final String[] args, final Class<?> alternative) throws Exception {
@@ -50,7 +57,7 @@ abstract class AbstractViewer {
             return false;
         }
         {
-//            FlatLightLaf.setup();
+            FlatLightLaf.setup();
         }
         return true;
     }
@@ -58,15 +65,15 @@ abstract class AbstractViewer {
     static void show(final JFrame frame) {
         Objects.requireNonNull(frame, "frame is null");
         if (SystemInfo.isMacFullWindowContentSupported) {
-//            frame.getRootPane().putClientProperty("apple.awt.transparentTitleBar", true);
+            frame.getRootPane().putClientProperty("apple.awt.transparentTitleBar", true);
         }
         frame.pack();
         // set width with device's max width
 //        {
-//            final var environment = GraphicsEnvironment.getLocalGraphicsEnvironment();
-//            final var device = environment.getDefaultScreenDevice();
-//            final var mode = device.getDisplayMode();
-//            frame.setSize(new Dimension(mode.getWidth(), frame.getHeight()));
+        final var environment = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        final var device = environment.getDefaultScreenDevice();
+        final var mode = device.getDisplayMode();
+        frame.setSize(new Dimension(mode.getWidth(), frame.getHeight()));
 //        }
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setVisible(true);

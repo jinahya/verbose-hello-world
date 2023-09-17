@@ -37,8 +37,7 @@ class Rfc863Tcp4Client {
             }
             try (var attachment = new Rfc863Tcp4ClientAttachment(client)) {
                 attachment.connectWith(Rfc863Tcp4ClientHandlers.Connect.HANDLER);
-                final var broken = attachment.latch.await(_Rfc863Constants.CLIENT_TIMEOUT_DURATION,
-                                                          _Rfc863Constants.CLIENT_TIMEOUT_UNIT);
+                final var broken = attachment.awaitLatch();
                 assert broken;
             }
         }
