@@ -37,7 +37,7 @@ import java.util.concurrent.ThreadLocalRandom;
 class Rfc862Tcp4Client {
 
     // @formatter:on
-    private static class Attachment extends Rfc862Tcp3Client.Attachment {
+    private static class Attachment extends Rfc862Tcp3ClientAttachment {
 
         Attachment(AsynchronousChannelGroup group, AsynchronousSocketChannel client) {
             super();

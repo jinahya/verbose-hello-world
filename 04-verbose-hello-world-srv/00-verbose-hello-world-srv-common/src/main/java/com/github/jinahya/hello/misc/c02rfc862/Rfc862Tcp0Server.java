@@ -27,7 +27,7 @@ import java.net.ServerSocket;
 @Slf4j
 class Rfc862Tcp0Server {
 
-    public static void main(String... args) throws Exception {
+    public static void main(final String... args) throws Exception {
         try (var server = new ServerSocket()) {
             server.bind(_Rfc862Constants.ADDR);
             log.info("bound to {}", server.getLocalSocketAddress());

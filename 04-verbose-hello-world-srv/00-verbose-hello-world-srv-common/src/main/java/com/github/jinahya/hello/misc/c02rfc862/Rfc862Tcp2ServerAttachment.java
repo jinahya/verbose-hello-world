@@ -5,25 +5,36 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.Objects;
 
-final class Rfc862Tcp2ClientAttachment extends _Rfc862Attachment.Client {
+// @formatter:on
+final class Rfc862Tcp2ServerAttachment extends _Rfc862Attachment.Server {
 
-    Rfc862Tcp2ClientAttachment() {
+    /**
+     * Creates a new instance.
+     */
+    Rfc862Tcp2ServerAttachment() {
         super();
+    }
+
+    @Override
+    public void close() throws IOException {
+        // does nothing
     }
 
     int readFrom(final ReadableByteChannel channel) throws IOException {
         Objects.requireNonNull(channel, "channel is null");
-        buffer.flip(); // limit -> position, position -> zero
         final var r = channel.read(buffer);
-        buffer.position(buffer.limit()).limit(buffer.capacity());
+        if (r != -1) {
+            increaseBytes(r);
+        }
         return r;
     }
 
     int writeTo(final WritableByteChannel channel) throws IOException {
         Objects.requireNonNull(channel, "channel is null");
-        final var r = channel.write(getBufferForWriting());
-        updateDigest(r);
-        decreaseBytes(r);
-        return r;
+        buffer.flip();
+        final var w = channel.write(buffer);
+        updateDigest(w);
+        buffer.compact();
+        return w;
     }
 }

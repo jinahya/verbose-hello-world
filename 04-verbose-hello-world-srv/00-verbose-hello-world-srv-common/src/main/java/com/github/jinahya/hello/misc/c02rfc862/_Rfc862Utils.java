@@ -36,7 +36,7 @@ final class _Rfc862Utils extends _Rfc86_Utils {
         if (bytes < 0) {
             throw new IllegalArgumentException("bytes(" + bytes + ") is negative");
         }
-        log.info("sending (and getting echoed back) {} byte(s)", bytes);
+        log.info("sending (and getting echoed-back) {} byte(s)", bytes);
     }
 
     static void logServerBytes(final int bytes) {

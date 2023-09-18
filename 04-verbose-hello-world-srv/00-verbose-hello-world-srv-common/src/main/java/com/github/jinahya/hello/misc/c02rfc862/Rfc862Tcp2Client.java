@@ -43,16 +43,16 @@ class Rfc862Tcp2Client {
             if (client.connect(_Rfc862Constants.ADDR)) {
                 log.info("connected, immediately, to {}, through {}", client.getRemoteAddress(),
                          client.getLocalAddress());
-                var attachment = new Rfc862Tcp2ClientAttachment();
-                var clientKey = client.register(
+                final var attachment = new Rfc862Tcp2ClientAttachment();
+                final var key = client.register(
                         selector,
                         SelectionKey.OP_WRITE | SelectionKey.OP_READ,
                         attachment
                 );
                 if (attachment.getBytes() == 0) {
                     log.warn("bytes == 0; canceling...");
-                    clientKey.cancel();
-                    assert !clientKey.isValid();
+                    key.cancel();
+                    assert !key.isValid();
                 }
             } else {
                 client.register(selector, SelectionKey.OP_CONNECT);
@@ -62,9 +62,9 @@ class Rfc862Tcp2Client {
                     break;
                 }
                 for (var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
-                    var key = i.next();
+                    final var key = i.next();
                     if (key.isConnectable()) {
-                        var channel = (SocketChannel) key.channel();
+                        final var channel = (SocketChannel) key.channel();
                         assert channel == client;
                         var connected = channel.finishConnect();
                         assert connected;
@@ -72,51 +72,35 @@ class Rfc862Tcp2Client {
                                  channel.getLocalAddress());
                         key.interestOpsAnd(~SelectionKey.OP_CONNECT);
                         assert key.attachment() == null;
-                        var attachment = new Rfc862Tcp2ClientAttachment();
+                        final var attachment = new Rfc862Tcp2ClientAttachment();
                         key.attach(attachment);
                         key.interestOpsOr(SelectionKey.OP_WRITE | SelectionKey.OP_READ);
                         if (attachment.getBytes() == 0) {
-                            log.warn("zero bytes to send; canceling...");
+                            log.warn("bytes == 0; canceling...");
                             key.cancel();
                         }
-                        continue;
+//                        continue;
                     }
                     if (key.isWritable()) {
-                        var channel = (SocketChannel) key.channel();
+                        final var channel = (SocketChannel) key.channel();
                         assert channel == client;
-                        var attachment = (Rfc862Tcp2ClientAttachment) key.attachment();
+                        final var attachment = (Rfc862Tcp2ClientAttachment) key.attachment();
                         assert attachment != null;
-                        if (!attachment.buffer.hasRemaining()) {
-                            ThreadLocalRandom.current().nextBytes(attachment.buffer.array());
-                            attachment.buffer.clear().limit(
-                                    Math.min(attachment.buffer.remaining(), attachment.bytes)
-                            );
-                        }
-                        var w = channel.write(attachment.buffer);
+                        final var w = attachment.writeTo(channel);
                         assert w >= 0;
-                        attachment.digest.update(
-                                attachment.slice
-                                        .position(attachment.buffer.position() - w)
-                                        .limit(attachment.buffer.position())
-                        );
-                        if ((attachment.bytes -= w) == 0) {
+                        if (attachment.getBytes() == 0) {
                             channel.shutdownOutput();
                             key.interestOpsAnd(~SelectionKey.OP_WRITE);
-                            _Rfc862Utils.logDigest(attachment.digest);
                         }
                     }
                     if (key.isReadable()) {
-                        var channel = (SocketChannel) key.channel();
+                        final var channel = (SocketChannel) key.channel();
                         assert channel == client;
-                        var attachment = (Rfc862Tcp2ClientAttachment) key.attachment();
+                        final var attachment = (Rfc862Tcp2ClientAttachment) key.attachment();
                         assert attachment != null;
-                        attachment.buffer.flip(); // limit -> position, position -> zero
-                        var r = channel.read(attachment.buffer);
-                        attachment.buffer
-                                .limit(attachment.buffer.capacity())
-                                .position(attachment.buffer.limit());
+                        final var r = attachment.readFrom(channel);
                         if (r == -1) {
-                            if (attachment.bytes > 0) {
+                            if (attachment.getBytes() > 0) {
                                 throw new EOFException("unexpected eof");
                             }
                             key.interestOpsAnd(~SelectionKey.OP_READ);
