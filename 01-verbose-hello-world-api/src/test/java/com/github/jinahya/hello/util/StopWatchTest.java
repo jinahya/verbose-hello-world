@@ -25,10 +25,10 @@ class StopWatchTest {
         final var executor = Executors.newFixedThreadPool(count);
         for (int i = 0; i < count; i++) {
             futures.add(executor.submit(() -> {
-                final var carrier = Stopwatch.startStopWatch();
+                final var carrier = Stopwatch.startStopwatch();
                 var sleep = Duration.ofMillis(current().nextLong(1024));
                 await().pollDelay(sleep).until(() -> true);
-                var elapsed = Stopwatch.stopStopWatch(carrier);
+                var elapsed = Stopwatch.stopStopwatch(carrier);
                 assertTrue(elapsed.compareTo(sleep) >= 0);
             }));
         }
