@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.misc.c01rfc863;
+package com.github.jinahya.hello.misc.c02rfc862;
 
 import com.github.jinahya.hello.misc._Rfc86_Attachment;
 import lombok.extern.slf4j.Slf4j;
@@ -9,9 +9,9 @@ import java.security.MessageDigest;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
-abstract class _Rfc863Attachment extends _Rfc86_Attachment {
+abstract class _Rfc862Attachment extends _Rfc86_Attachment {
 
-    abstract static class Server extends _Rfc863Attachment {
+    abstract static class Server extends _Rfc862Attachment {
 
         /**
          * Creates a new instance.
@@ -22,19 +22,19 @@ abstract class _Rfc863Attachment extends _Rfc86_Attachment {
 
         @Override
         public void close() throws IOException {
-            _Rfc863Utils.logServerBytes(getBytes());
+//            _Rfc862Utils.logServerBytes(getBytes());
             super.close();
         }
     }
 
-    abstract static class Client extends _Rfc863Attachment {
+    abstract static class Client extends _Rfc862Attachment {
 
         /**
          * Creates a new instance.
          */
         Client() {
-            super(_Rfc863Utils.randomBytes());
-            _Rfc863Utils.logClientBytes(getBytes());
+            super(_Rfc862Utils.randomBytes());
+//            _Rfc862Utils.logClientBytes(getBytes());
         }
     }
 
@@ -43,7 +43,7 @@ abstract class _Rfc863Attachment extends _Rfc86_Attachment {
     /**
      * Creates a new instance.
      */
-    private _Rfc863Attachment(final int bytes) {
+    private _Rfc862Attachment(final int bytes) {
         super(bytes);
     }
 
@@ -51,8 +51,7 @@ abstract class _Rfc863Attachment extends _Rfc86_Attachment {
 
     @Override
     public void close() throws IOException {
-        _Rfc863Utils.logDigest(digest);
-        super.close();
+//        _Rfc862Utils.logDigest(digest);
     }
 
     // --------------------------------------------------------------------------------------- bytes
@@ -101,5 +100,5 @@ abstract class _Rfc863Attachment extends _Rfc86_Attachment {
 
     // ---------------------------------------------------------------------------------------------
 
-    private final MessageDigest digest = _Rfc863Utils.newDigest();
+    private final MessageDigest digest = _Rfc862Utils.newDigest();
 }

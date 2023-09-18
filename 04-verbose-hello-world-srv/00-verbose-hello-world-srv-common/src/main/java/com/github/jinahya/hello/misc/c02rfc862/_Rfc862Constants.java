@@ -20,57 +20,26 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
-import java.net.InetAddress;
+import com.github.jinahya.hello.misc._Rfc86_Constants;
+
 import java.net.InetSocketAddress;
-import java.time.Duration;
-import java.util.concurrent.TimeUnit;
 
-final class _Rfc862Constants {
+final class _Rfc862Constants extends _Rfc86_Constants {
 
-    private static final int _RFC862_PORT = 7;
+    private static final int RFC862_PORT = 7;
 
-    static final InetAddress HOST = InetAddress.getLoopbackAddress();
-
-    private static final int PORT = _RFC862_PORT + 50000;
+    private static final int PORT = RFC862_PORT + 50000;
 
     static final InetSocketAddress ADDR = new InetSocketAddress(HOST, PORT);
 
     // ------------------------------------------------------------------------------------- TIMEOUT
 
-    static final TimeUnit ACCEPT_TIMEOUT_UNIT = TimeUnit.SECONDS;
-
-    static final long ACCEPT_TIMEOUT_DURATION = 32L;
-
-    static final long ACCEPT_TIMEOUT_IN_MILLIS =
-            ACCEPT_TIMEOUT_UNIT.toMillis(ACCEPT_TIMEOUT_DURATION);
-
-    static final TimeUnit CONNECT_TIMEOUT_UNIT = TimeUnit.SECONDS;
-
-    static final long CONNECT_TIMEOUT_DURATION = 2L;
-
-    static final long CONNECT_TIMEOUT_IN_MILLIS =
-            CONNECT_TIMEOUT_UNIT.toMillis(CONNECT_TIMEOUT_DURATION);
-
-    static final TimeUnit READ_TIMEOUT_UNIT = TimeUnit.SECONDS;
-
-    static final long READ_TIMEOUT_DURATION = 1L;
-
-    static final long READ_TIMEOUT_IN_MILLIS =
-            READ_TIMEOUT_UNIT.toMillis(READ_TIMEOUT_DURATION);
-
-    static final TimeUnit WRITE_TIMEOUT_UNIT = TimeUnit.SECONDS;
-
-    static final long WRITE_TIMEOUT_DURATION = 8L;
-
-    static final long WRITE_TIMEOUT_IN_MILLIS =
-            WRITE_TIMEOUT_UNIT.toMillis(WRITE_TIMEOUT_DURATION);
-
     // -------------------------------------------------------------------------------------- DIGEST
     static final String ALGORITHM = "SHA-256";
 
-    static final Duration SO_TIMEOUT = Duration.ofSeconds(16L);
-
+    // ---------------------------------------------------------------------------------------------
     private _Rfc862Constants() {
+        super();
         throw new AssertionError("instantiation is not allowed");
     }
 }

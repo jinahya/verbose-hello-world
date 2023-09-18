@@ -21,7 +21,6 @@ package com.github.jinahya.hello.util;
  */
 
 import java.time.Duration;
-import java.time.Period;
 import java.util.function.LongFunction;
 
 /**

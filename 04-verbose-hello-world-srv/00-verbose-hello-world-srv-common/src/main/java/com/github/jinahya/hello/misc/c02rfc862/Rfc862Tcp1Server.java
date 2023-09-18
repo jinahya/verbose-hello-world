@@ -37,9 +37,9 @@ class Rfc862Tcp1Server {
                 log.info("accepted from {}, through {}", client.getRemoteSocketAddress(),
                          client.getLocalSocketAddress());
                 client.setSoTimeout((int) _Rfc862Constants.READ_TIMEOUT_IN_MILLIS);
-                var digest = _Rfc862Utils.newDigest();
-                var bytes = 0L;
-                var array = _Rfc862Utils.newArray();
+                final var digest = _Rfc862Utils.newDigest();
+                var bytes = 0;
+                final var array = _Rfc862Utils.newArray();
                 log.debug("array.length: {}", array.length);
                 for (int r; (r = client.getInputStream().read(array)) != -1; ) {
                     assert r > 0;

@@ -24,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.EOFException;
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
@@ -33,29 +32,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @Slf4j
 class Rfc862Tcp2Client {
 
-    // @formatter:on
-    static class Attachment extends Rfc862Tcp2Server.Attachment {
-
-        Attachment() {
-            super();
-            buffer.position(buffer.limit());
-            bytes = _Rfc862Utils.randomBytesLessThanOneMillion();
-            _Rfc862Utils.logClientBytes(bytes);
-        }
-//
-//        /**
-//         * Clears the {@code buffer}, re-randomizes the {@code buffer}'s
-//         * {@link ByteBuffer#array() backing array}, and sets the {@code buffer}'s {@code limit}
-//         * with smaller of {@code buffer.limit()} and {@link #bytes}.
-//         */
-//        void clearBuffer() {
-//            ThreadLocalRandom.current().nextBytes(buffer.array());
-//            buffer.clear().limit(Math.min(buffer.limit(), bytes));
-//        }
-    }
-    // @formatter:on
-
-    public static void main(String... args) throws Exception {
+    public static void main(final String... args) throws Exception {
         try (var selector = Selector.open();
              var client = SocketChannel.open()) {
             if (ThreadLocalRandom.current().nextBoolean()) {
@@ -66,13 +43,13 @@ class Rfc862Tcp2Client {
             if (client.connect(_Rfc862Constants.ADDR)) {
                 log.info("connected, immediately, to {}, through {}", client.getRemoteAddress(),
                          client.getLocalAddress());
-                var attachment = new Attachment();
+                var attachment = new Rfc862Tcp2ClientAttachment();
                 var clientKey = client.register(
                         selector,
                         SelectionKey.OP_WRITE | SelectionKey.OP_READ,
                         attachment
                 );
-                if (attachment.bytes == 0) {
+                if (attachment.getBytes() == 0) {
                     log.warn("bytes == 0; canceling...");
                     clientKey.cancel();
                     assert !clientKey.isValid();
@@ -95,10 +72,10 @@ class Rfc862Tcp2Client {
                                  channel.getLocalAddress());
                         key.interestOpsAnd(~SelectionKey.OP_CONNECT);
                         assert key.attachment() == null;
-                        var attachment = new Attachment();
+                        var attachment = new Rfc862Tcp2ClientAttachment();
                         key.attach(attachment);
                         key.interestOpsOr(SelectionKey.OP_WRITE | SelectionKey.OP_READ);
-                        if (attachment.bytes == 0) {
+                        if (attachment.getBytes() == 0) {
                             log.warn("zero bytes to send; canceling...");
                             key.cancel();
                         }
@@ -107,7 +84,7 @@ class Rfc862Tcp2Client {
                     if (key.isWritable()) {
                         var channel = (SocketChannel) key.channel();
                         assert channel == client;
-                        var attachment = (Attachment) key.attachment();
+                        var attachment = (Rfc862Tcp2ClientAttachment) key.attachment();
                         assert attachment != null;
                         if (!attachment.buffer.hasRemaining()) {
                             ThreadLocalRandom.current().nextBytes(attachment.buffer.array());
@@ -131,7 +108,7 @@ class Rfc862Tcp2Client {
                     if (key.isReadable()) {
                         var channel = (SocketChannel) key.channel();
                         assert channel == client;
-                        var attachment = (Attachment) key.attachment();
+                        var attachment = (Rfc862Tcp2ClientAttachment) key.attachment();
                         assert attachment != null;
                         attachment.buffer.flip(); // limit -> position, position -> zero
                         var r = channel.read(attachment.buffer);
