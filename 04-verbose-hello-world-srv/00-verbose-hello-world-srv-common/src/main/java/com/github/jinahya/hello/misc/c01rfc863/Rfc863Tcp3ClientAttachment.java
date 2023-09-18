@@ -43,7 +43,7 @@ final class Rfc863Tcp3ClientAttachment extends _Rfc863Attachment.Client {
     int writeAndGet() throws ExecutionException, InterruptedException {
         final var result = write().get();
         updateDigest(result);
-        increaseBytes(result);
+        decreaseBytes(result);
         return result;
     }
 
