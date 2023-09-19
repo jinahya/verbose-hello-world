@@ -23,7 +23,7 @@ package com.github.jinahya.hello.misc.c03chat;
 import com.github.jinahya.hello.HelloWorldServerConstants;
 import com.github.jinahya.hello.util.HelloWorldServerUtils;
 import com.github.jinahya.hello.misc.c03chat._ChatMessage.OfBuffer;
-import com.github.jinahya.hello.util.HelloWorldLangUtils;
+import com.github.jinahya.hello.util.JavaLangUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetAddress;
@@ -81,7 +81,7 @@ class ChatUdp2Client {
                     PERIOD_TO_SEND_KEEP.toSeconds(), // <period>
                     TimeUnit.SECONDS           // <unit>
             ));
-            HelloWorldLangUtils.readLinesAndCallWhenTests(
+            JavaLangUtils.readLinesAndCallWhenTests(
                     HelloWorldServerUtils::isQuit, // <predicate>
                     () -> {                        // <callable>
                         clientKey.cancel();

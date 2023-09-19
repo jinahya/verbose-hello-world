@@ -22,71 +22,15 @@ package com.github.jinahya.hello.misc.c02rfc862;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.security.MessageDigest;
 
 @Slf4j
 class Rfc862Tcp2Server {
 
-    // @formatter:on
-    static class Attachment implements Closeable {
-
-        /**
-         * Creates a new instance.
-         */
-        Attachment() {
-            super();
-            buffer = _Rfc862Utils.newBuffer();
-            slice = buffer.asReadOnlyBuffer();
-            digest = _Rfc862Utils.newDigest();
-            log.debug("buffer.capacity: {}", buffer.capacity());
-        }
-
-        @Override
-        public void close() throws IOException {
-            // does nothing
-        }
-
-        final void closeUnchecked() {
-            try {
-                close();
-            } catch (IOException ioe) {
-                throw new UncheckedIOException("failed to close", ioe);
-            }
-        }
-
-        /**
-         * Updates specified number of bytes preceding current position of {@code buffer} to
-         * {@code digest}.
-         *
-         * @param bytes the number of bytes preceding current position of the {@code buffer} to be
-         *              updated to the {@code digest}.
-         */
-        void updateDigest(int bytes) {
-            if (bytes < 0) {
-                throw new IllegalArgumentException("bytes(" + bytes + ") is negative");
-            }
-            digest.update(slice.position(buffer.position() - bytes).limit(buffer.position()));
-        }
-
-        final ByteBuffer buffer;
-
-        final ByteBuffer slice;
-
-        final MessageDigest digest;
-
-        volatile int bytes;
-    }
-    // @formatter:on
-
-    public static void main(String... args) throws Exception {
+    public static void main(final String... args) throws Exception {
         try (var selector = Selector.open();
              var server = ServerSocketChannel.open()) {
             server.bind(_Rfc862Constants.ADDR);
@@ -98,56 +42,48 @@ class Rfc862Tcp2Server {
                     break;
                 }
                 for (var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
-                    var key = i.next();
+                    final var key = i.next();
                     if (key.isAcceptable()) {
-                        var channel = ((ServerSocketChannel) key.channel());
+                        final var channel = ((ServerSocketChannel) key.channel());
                         assert channel == server;
-                        var client = channel.accept();
+                        final var client = channel.accept();
                         log.info("accepted from {}, through {}", client.getRemoteAddress(),
                                  client.getLocalAddress());
                         key.interestOpsAnd(~SelectionKey.OP_ACCEPT);
                         key.cancel();
                         assert !key.isValid();
                         client.configureBlocking(false);
-                        client.register(selector, SelectionKey.OP_READ, new Attachment());
-                        continue;
+                        client.register(selector, SelectionKey.OP_READ,
+                                        new Rfc862Tcp2ServerAttachment());
+//                        continue;
                     }
                     if (key.isReadable()) {
-                        var channel = (SocketChannel) key.channel();
-                        var attachment = (Attachment) key.attachment();
+                        final var channel = (SocketChannel) key.channel();
+                        final var attachment = (Rfc862Tcp2ServerAttachment) key.attachment();
                         assert attachment != null;
-                        var r = channel.read(attachment.buffer);
+                        final var r = attachment.readFrom(channel);
+                        assert r >= -1;
                         if (r == -1) {
-                            if (attachment.buffer.position() == 0) {
-                                _Rfc862Utils.logServerBytes(attachment.bytes);
-                                _Rfc862Utils.logDigest(attachment.digest);
-                                channel.close();
-                                assert !key.isValid();
-                                continue;
-                            }
-                        } else {
-                            attachment.bytes += r;
+                            key.interestOpsAnd(~SelectionKey.OP_READ);
                         }
-                        if (attachment.buffer.position() > 0) {
+                        if (r > 0) {
                             key.interestOpsOr(SelectionKey.OP_WRITE);
                         }
                     }
                     if (key.isWritable()) {
-                        var channel = (SocketChannel) key.channel();
-                        var attachment = (Attachment) key.attachment();
+                        final var channel = (SocketChannel) key.channel();
+                        final var attachment = (Rfc862Tcp2ServerAttachment) key.attachment();
                         assert attachment != null;
-                        assert attachment.buffer.position() > 0;
-                        attachment.buffer.flip();
-                        assert attachment.buffer.hasRemaining();
-                        var w = channel.write(attachment.buffer);
-                        assert w > 0;
-                        attachment.digest.update(
-                                attachment.slice
-                                        .position(0)
-                                        .limit(attachment.buffer.position())
-                        );
-                        if (attachment.buffer.compact().position() == 0) {
-                            key.interestOpsAnd(~SelectionKey.OP_WRITE);
+                        final var w = attachment.writeTo(channel);
+                        assert w >= 0;
+                        if (w == 0) {
+                            if ((key.interestOps() & SelectionKey.OP_READ)
+                                == SelectionKey.OP_READ) {
+                                key.interestOpsOr(~SelectionKey.OP_WRITE);
+                            } else {
+                                key.cancel();
+                                assert !key.isValid();
+                            }
                         }
                     }
                 }

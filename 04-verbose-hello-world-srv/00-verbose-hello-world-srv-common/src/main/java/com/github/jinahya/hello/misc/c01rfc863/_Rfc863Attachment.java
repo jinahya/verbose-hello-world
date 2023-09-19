@@ -1,16 +1,15 @@
 package com.github.jinahya.hello.misc.c01rfc863;
 
+import com.github.jinahya.hello.misc._Rfc86_Attachment;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.Closeable;
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
-abstract class _Rfc863Attachment implements Closeable {
+abstract class _Rfc863Attachment extends _Rfc86_Attachment {
 
     abstract static class Server extends _Rfc863Attachment {
 
@@ -23,7 +22,7 @@ abstract class _Rfc863Attachment implements Closeable {
 
         @Override
         public void close() throws IOException {
-            _Rfc863Utils.logServerBytes(getBytes());
+            _Rfc863Utils.logServerBytes(bytes());
             super.close();
         }
     }
@@ -34,8 +33,8 @@ abstract class _Rfc863Attachment implements Closeable {
          * Creates a new instance.
          */
         Client() {
-            super(_Rfc863Utils.newBytes());
-            _Rfc863Utils.logClientBytes(getBytes());
+            super(_Rfc863Utils.randomBytes());
+            _Rfc863Utils.logClientBytes(bytes());
         }
     }
 
@@ -45,8 +44,7 @@ abstract class _Rfc863Attachment implements Closeable {
      * Creates a new instance.
      */
     private _Rfc863Attachment(final int bytes) {
-        super();
-        this.bytes = bytes;
+        super(bytes);
     }
 
     // --------------------------------------------------------------------------- java.io.Closeable
@@ -54,80 +52,10 @@ abstract class _Rfc863Attachment implements Closeable {
     @Override
     public void close() throws IOException {
         _Rfc863Utils.logDigest(digest);
-    }
-
-    final void closeUnchecked() {
-        try {
-            close();
-        } catch (final IOException ioe) {
-            throw new UncheckedIOException(ioe);
-        }
+        super.close();
     }
 
     // --------------------------------------------------------------------------------------- bytes
-
-    /**
-     * Returns current value of {@link #bytes} property.
-     *
-     * @return current value of {@link #bytes} property.
-     */
-    final int getBytes() {
-        return bytes;
-    }
-
-    /**
-     * Replaces current value of {@code bytes} property with specified value.
-     *
-     * @param bytes new value for the {@code bytes} property.
-     */
-    private void setBytes(final int bytes) {
-        if (bytes < 0) {
-            throw new IllegalArgumentException("bytes(" + bytes + ") < 0");
-        }
-        this.bytes = bytes;
-    }
-
-    /**
-     * Replaces current value of {@code bytes} property with specified value, and returns updated
-     * value of the {@code bytes} property.
-     *
-     * @param bytes new value for the {@code bytes} property.
-     * @return updated value of the {@code bytes} property.
-     */
-    private int bytes(final int bytes) {
-        setBytes(bytes);
-        return getBytes();
-    }
-
-    /**
-     * Increases current value of {@code bytes} property by specified value, and returns updated
-     * value of the {@code bytes} property.
-     *
-     * @param delta delta value for the {@code bytes} property; should be greater than or equal to
-     *              zero.
-     * @return updated value of the {@code bytes} property.
-     */
-    final int increaseBytes(final int delta) {
-        if (delta < 0) {
-            throw new IllegalArgumentException("delta(" + delta + ") < 0");
-        }
-        return bytes(getBytes() + delta);
-    }
-
-    /**
-     * Decreases current value of {@code bytes} property by specified value, and returns updated
-     * value of the {@code bytes} property.
-     *
-     * @param delta delta value for the {@code bytes} property; should be greater than or equal to
-     *              zero.
-     * @return updated value of the {@code bytes} property.
-     */
-    final int decreaseBytes(final int delta) {
-        if (delta < 0) {
-            throw new IllegalArgumentException("delta(" + delta + ") < 0");
-        }
-        return bytes(getBytes() - delta);
-    }
 
     // -------------------------------------------------------------------------------------- buffer
 
@@ -152,7 +80,7 @@ abstract class _Rfc863Attachment implements Closeable {
     final ByteBuffer getBufferForWriting() {
         if (!buffer.hasRemaining()) {
             ThreadLocalRandom.current().nextBytes(buffer.array());
-            buffer.clear().limit(Math.min(buffer.limit(), bytes));
+            buffer.clear().limit(Math.min(buffer.limit(), bytes()));
         }
         assert buffer.hasRemaining();
         return buffer;
@@ -168,25 +96,10 @@ abstract class _Rfc863Attachment implements Closeable {
      *              updated to the {@code digest}.
      */
     final void updateDigest(final int bytes) {
-        if (bytes < 0) {
-            throw new IllegalArgumentException("bytes(" + bytes + ") is negative");
-        }
-        if (bytes > buffer.position()) {
-            throw new IllegalArgumentException(
-                    "bytes(" + bytes + ") > buffer.position(" + buffer.position() + ")");
-        }
-        digest.update(
-                slice.position(buffer.position() - bytes)
-                        .limit(buffer.position())
-        );
+        updateDigest(bytes, digest);
     }
 
     // ---------------------------------------------------------------------------------------------
-    private int bytes; // bytes to send or received
-
-    private final ByteBuffer buffer = _Rfc863Utils.newBuffer();
-
-    private final ByteBuffer slice = buffer.slice();
 
     private final MessageDigest digest = _Rfc863Utils.newDigest();
 }

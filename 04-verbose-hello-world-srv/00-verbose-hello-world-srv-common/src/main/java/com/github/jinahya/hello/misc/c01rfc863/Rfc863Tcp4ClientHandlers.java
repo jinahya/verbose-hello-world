@@ -14,7 +14,7 @@ final class Rfc863Tcp4ClientHandlers {
             public void completed(final Void result, final Rfc863Tcp4ClientAttachment attachment) {
                 attachment.logConnected();
                 attachment.countDownLatch(Rfc863Tcp4ClientAttachment.LATCH_COUNT);
-                attachment.writeWith(Write.HANDLER);
+                attachment.write(Write.HANDLER);
             }
             @Override
             public void failed(final Throwable exc, final Rfc863Tcp4ClientAttachment attachment) {
@@ -38,7 +38,7 @@ final class Rfc863Tcp4ClientHandlers {
                     attachment.countDownLatch(Rfc863Tcp4ClientAttachment.LATCH_COUNT - 1L);
                     return;
                 }
-                attachment.writeWith(this);
+                attachment.write(this);
             }
             @Override
             public void failed(final Throwable exc, final Rfc863Tcp4ClientAttachment attachment) {

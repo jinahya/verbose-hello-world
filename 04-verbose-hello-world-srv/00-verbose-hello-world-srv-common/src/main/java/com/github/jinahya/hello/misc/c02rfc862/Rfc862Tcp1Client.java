@@ -40,11 +40,10 @@ class Rfc862Tcp1Client {
             log.info("connected to {}, through {}", client.getRemoteSocketAddress(),
                      client.getLocalSocketAddress());
             client.setSoTimeout((int) _Rfc862Constants.READ_TIMEOUT_IN_MILLIS);
-            var digest = _Rfc862Utils.newDigest();
-            var bytes = _Rfc862Utils.randomBytesLessThanOneMillion();
+            final var digest = _Rfc862Utils.newDigest();
+            var bytes = _Rfc862Utils.randomBytes();
             _Rfc862Utils.logClientBytes(bytes);
-            var array = _Rfc862Utils.newArray();
-            log.debug("array.length: {}", array.length);
+            final var array = _Rfc862Utils.newArray();
             for (int r; bytes > 0; ) {
                 ThreadLocalRandom.current().nextBytes(array);
                 var l = Math.min(array.length, bytes);
@@ -53,12 +52,9 @@ class Rfc862Tcp1Client {
                 client.getOutputStream().flush();
                 bytes -= l;
                 digest.update(array, 0, l);
-                for (int s = 0; s < l; ) {
-                    if ((r = client.getInputStream().read(array)) == -1) {
-                        throw new EOFException("unexpected eof");
-                    }
-                    assert r > 0;
-                    s += r;
+                r = client.getInputStream().readNBytes(array, 0, l);
+                if (r < l) {
+                    throw new EOFException("unexpected eof");
                 }
             }
             _Rfc862Utils.logDigest(digest);

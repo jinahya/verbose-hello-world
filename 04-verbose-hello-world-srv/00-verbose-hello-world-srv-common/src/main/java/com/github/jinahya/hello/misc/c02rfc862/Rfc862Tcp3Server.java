@@ -20,6 +20,7 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
+import com.github.jinahya.hello.misc._Rfc86_Constants;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.channels.AsynchronousServerSocketChannel;
@@ -27,46 +28,43 @@ import java.nio.channels.AsynchronousServerSocketChannel;
 @Slf4j
 class Rfc862Tcp3Server {
 
-    // @formatter:off
-    static class Attachment extends Rfc862Tcp2Server.Attachment {
-    }
-    // @formatter:on
-
-    public static void main(String... args) throws Exception {
+    public static void main(final String... args) throws Exception {
         try (var server = AsynchronousServerSocketChannel.open()) {
             server.bind(_Rfc862Constants.ADDR);
             log.info("bound to {}", server.getLocalAddress());
-            try (var client = server.accept().get(_Rfc862Constants.ACCEPT_TIMEOUT_DURATION,
-                                                  _Rfc862Constants.ACCEPT_TIMEOUT_UNIT)) {
+            try (var client = server.accept().get(_Rfc86_Constants.ACCEPT_TIMEOUT_DURATION,
+                                                  _Rfc86_Constants.ACCEPT_TIMEOUT_UNIT)) {
                 log.info("accepted from {}, through {}", client.getRemoteAddress(),
                          client.getLocalAddress());
-                var attachment = new Attachment();
-                int r, w;
-                while (true) {
-                    r = client.read(attachment.buffer).get(_Rfc862Constants.READ_TIMEOUT_DURATION,
-                                                           _Rfc862Constants.READ_TIMEOUT_UNIT);
-                    if (r == -1) {
-                        break;
+                try (var attachment = new Rfc862Tcp3ServerAttachment(client)) {
+                    int r, w;
+                    while (true) {
+                        r = client.read(attachment.buffer)
+                                .get(_Rfc862Constants.READ_TIMEOUT_DURATION,
+                                     _Rfc862Constants.READ_TIMEOUT_UNIT);
+                        if (r == -1) {
+                            break;
+                        }
+                        assert r >= 0;
+                        attachment.bytes += r;
+                        attachment.digest.update(
+                                attachment.slice
+                                        .position(attachment.buffer.position() - r)
+                                        .limit(attachment.buffer.position())
+                        );
+                        attachment.buffer.flip();
+                        w = client.write(attachment.buffer).get();
+                        assert w >= 0;
+                        attachment.buffer.compact();
                     }
-                    assert r >= 0;
-                    attachment.bytes += r;
-                    attachment.digest.update(
-                            attachment.slice
-                                    .position(attachment.buffer.position() - r)
-                                    .limit(attachment.buffer.position())
-                    );
-                    attachment.buffer.flip();
-                    w = client.write(attachment.buffer).get();
-                    assert w >= 0;
-                    attachment.buffer.compact();
+                    client.shutdownInput();
+                    for (attachment.buffer.flip(); attachment.buffer.hasRemaining(); ) {
+                        w = client.write(attachment.buffer).get();
+                        assert w >= 0;
+                    }
+                    _Rfc862Utils.logServerBytes(attachment.bytes);
+                    _Rfc862Utils.logDigest(attachment.digest);
                 }
-                client.shutdownInput();
-                for (attachment.buffer.flip(); attachment.buffer.hasRemaining(); ) {
-                    w = client.write(attachment.buffer).get();
-                    assert w >= 0;
-                }
-                _Rfc862Utils.logServerBytes(attachment.bytes);
-                _Rfc862Utils.logDigest(attachment.digest);
             }
         }
     }

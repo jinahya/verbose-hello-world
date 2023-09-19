@@ -20,141 +20,59 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
+import com.github.jinahya.hello.misc._Rfc86_Utils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.ByteBuffer;
-import java.nio.channels.SelectionKey;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
-import java.util.Objects;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Function;
 
 @Slf4j
-final class _Rfc862Utils {
+final class _Rfc862Utils extends _Rfc86_Utils {
 
-    // -------------------------------------------------------------------------------- array/buffer
-
-    static byte[] newArray() {
-        return new byte[ThreadLocalRandom.current().nextInt(1024) + 1024];
-    }
-
-    static ByteBuffer newBuffer() {
-        return ByteBuffer.wrap(newArray());
-    }
-
-    static int randomBytesLessThan(int maxBytes) {
-        if (maxBytes <= 0) {
-            throw new IllegalArgumentException(
-                    "maxBytes(" + maxBytes + ") is not positive");
-        }
-        return ThreadLocalRandom.current().nextInt(
-                Math.min(65536, maxBytes)
-        );
-    }
-
-    static int randomBytesLessThanOneMillion() {
-        return randomBytesLessThan(1048576);
-    }
     // --------------------------------------------------------------------------------------- bytes
-
-    /**
-     * Returns a new {@code int} greater than or equals to {@code 0} and less than specified value.
-     *
-     * @param maxExclusive the maximum value, exclusive.
-     * @return a new {@code int} greater than or equals to {@code 0} and less than
-     * {@code maxExclusive}.
-     */
-    static int newBytes(final int maxExclusive) {
-        if (maxExclusive <= 0) {
-            throw new IllegalArgumentException(
-                    "maxExclusive(" + maxExclusive + ") is not positive");
-        }
-        return ThreadLocalRandom.current().nextInt(maxExclusive);
-    }
-
-    private static final int MAX_BYTES = 1048576;
-
-    /**
-     * Returns a new {@code int} between {@code 0}(inclusive) and {@value #MAX_BYTES}(inclusive).
-     *
-     * @return a new {@code int} between {@code 0}(inclusive) and {@value #MAX_BYTES}(inclusive).
-     */
-    static int newBytes() {
-        return newBytes(MAX_BYTES);
-    }
-
-    static void logClientBytes(long bytes) {
+    static void logClientBytes(final int bytes) {
         if (bytes < 0) {
-            throw new IllegalArgumentException(
-                    "bytes(" + bytes + ") is negative");
+            throw new IllegalArgumentException("bytes(" + bytes + ") is negative");
         }
-        log.info("sending (and receiving back) {} bytes", bytes);
+        log.info("sending (and getting echoed-back) {} byte(s)", bytes);
     }
 
-    static void logServerBytes(long bytes) {
+    static void logServerBytes(final int bytes) {
         if (bytes < 0) {
-            throw new IllegalArgumentException(
-                    "bytes(" + bytes + ") is negative");
+            throw new IllegalArgumentException("bytes(" + bytes + ") is negative");
         }
-        log.info("{} bytes received (and sent back)", bytes);
+        log.info("received (and echoed back) {} byte(s)", bytes);
     }
 
     // -------------------------------------------------------------------------------------- digest
+    static MessageDigest newDigest() {
+        return newDigest(_Rfc862Constants.ALGORITHM);
+    }
+
+    private static Function<? super byte[], ? extends CharSequence> PRINTER =
+            b -> Base64.getEncoder().encodeToString(b);
+
+    static void logDigest(final MessageDigest digest) {
+        logDigest(digest, PRINTER);
+    }
+
+    static void logDigest(final byte[] array, final int offset, final int length) {
+        logDigest(_Rfc862Constants.ALGORITHM, array, offset, length, PRINTER);
+    }
+
+    static void logDigest(final ByteBuffer buffer) {
+        logDigest(_Rfc862Constants.ALGORITHM, buffer, PRINTER);
+    }
+
+    // ---------------------------------------------------------------------------------------------
 
     /**
-     * Returns a new message digest of {@link _Rfc862Constants#ALGORITHM}.
-     *
-     * @return a new message digest of {@link _Rfc862Constants#ALGORITHM}.
-     * @see _Rfc862Constants#ALGORITHM
+     * Creates a new instance.
      */
-    static MessageDigest newDigest() {
-        try {
-            return MessageDigest.getInstance(_Rfc862Constants.ALGORITHM);
-        } catch (NoSuchAlgorithmException nsae) {
-            throw new RuntimeException(
-                    "failed to create a message digest with "
-                    + _Rfc862Constants.ALGORITHM,
-                    nsae
-            );
-        }
-    }
-
-    static byte[] logDigest(MessageDigest digest) {
-        Objects.requireNonNull(digest, "digest is null");
-        var result = digest.digest();
-        log.info("digest: {}", Base64.getEncoder().encodeToString(result));
-        return result;
-    }
-
-    static byte[] logDigest(byte[] array, int offset, int length) {
-        var digest = newDigest();
-        digest.update(array, offset, length);
-        return logDigest(digest);
-    }
-
-    static byte[] logDigest(ByteBuffer buffer) {
-        var digest = newDigest();
-        digest.update(buffer);
-        return logDigest(digest);
-    }
-
-    // ----------------------------------------------------------------------------------------- key
-    static void logKey(SelectionKey key) {
-        Objects.requireNonNull(key, "key is null");
-        log.debug(
-                """
-                        key: {}
-                        \tconnectable: {}\tacceptable: {}\treadable: {}\twritable; {}""",
-                key,
-                key.isConnectable(),
-                key.isAcceptable(),
-                key.isReadable(),
-                key.isWritable()
-        );
-    }
-
     private _Rfc862Utils() {
+        super();
         throw new AssertionError("instantiation is not allowed");
     }
 }

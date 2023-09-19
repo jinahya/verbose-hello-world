@@ -26,8 +26,6 @@ import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Map;
@@ -44,7 +42,7 @@ import java.util.stream.Collectors;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-public final class HelloWorldLangUtils {
+public final class JavaLangUtils {
 
     static final Map<Class<?>, Class<?>> WRAPPER_CLASSES = Map.of(
             boolean.class, Boolean.class,
@@ -87,33 +85,6 @@ public final class HelloWorldLangUtils {
     public static boolean isWrapper(final Class<?> clazz) {
         Objects.requireNonNull(clazz, "clazz is null");
         return PRIMITIVE_CLASSES.containsKey(clazz);
-    }
-
-    private static final Method CLOSE;
-
-    static {
-        try {
-            CLOSE = AutoCloseable.class.getMethod("close");
-        } catch (NoSuchMethodException nsme) {
-            throw new InstantiationError(nsme.toString());
-        }
-    }
-
-    @SuppressWarnings({"unchecked"})
-    public static <T extends AutoCloseable> T uncloseableProxy(
-            final T closeable) {
-        Objects.requireNonNull(closeable, "closeable is null");
-        return (T) Proxy.newProxyInstance(
-                closeable.getClass().getClassLoader(),
-                new Class<?>[] {AutoCloseable.class},
-                (proxy, method, args) -> {
-                    if (CLOSE.equals(method)) {
-                        throw new UnsupportedOperationException(
-                                "unable to close");
-                    }
-                    return method.invoke(closeable);
-                }
-        );
     }
 
     /**
@@ -301,7 +272,7 @@ public final class HelloWorldLangUtils {
         }
     }
 
-    private HelloWorldLangUtils() {
+    private JavaLangUtils() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

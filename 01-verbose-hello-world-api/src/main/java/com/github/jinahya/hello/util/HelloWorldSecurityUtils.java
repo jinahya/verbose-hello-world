@@ -70,7 +70,7 @@ public class HelloWorldSecurityUtils {
                     count
             );
         } else {
-            HelloWorldNioUtils.flipAcceptAndRestore(buffer,
+            JavaNioUtils.flipAcceptAndRestore(buffer,
                                                     b -> digest.update(b));
         }
     }

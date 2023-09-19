@@ -32,13 +32,13 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.nio.charset.StandardCharsets;
 import java.util.Set;
 
-import static com.github.jinahya.hello.util.HelloWorldLangUtils.PRIMITIVE_CLASSES;
-import static com.github.jinahya.hello.util.HelloWorldLangUtils.WRAPPER_CLASSES;
+import static com.github.jinahya.hello.util.JavaLangUtils.PRIMITIVE_CLASSES;
+import static com.github.jinahya.hello.util.JavaLangUtils.WRAPPER_CLASSES;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-class HelloWorldLangUtilsTest {
+class JavaLangUtilsTest {
 
     @Test
     void __() {
@@ -50,13 +50,13 @@ class HelloWorldLangUtilsTest {
     class IsPrimitiveTest {
 
         private static Set<Class<?>> getPrimitiveClasses() {
-            return HelloWorldLangUtils.WRAPPER_CLASSES.keySet();
+            return JavaLangUtils.WRAPPER_CLASSES.keySet();
         }
 
         @MethodSource({"getPrimitiveClasses"})
         @ParameterizedTest
         void __(final Class<?> clazz) {
-            assertTrue(HelloWorldLangUtils.isPrimitive(clazz));
+            assertTrue(JavaLangUtils.isPrimitive(clazz));
         }
     }
 
@@ -64,13 +64,13 @@ class HelloWorldLangUtilsTest {
     class IsWrapperTest {
 
         private static Set<Class<?>> getWrapperClasses() {
-            return HelloWorldLangUtils.PRIMITIVE_CLASSES.keySet();
+            return JavaLangUtils.PRIMITIVE_CLASSES.keySet();
         }
 
         @MethodSource({"getWrapperClasses"})
         @ParameterizedTest
         void __(final Class<?> clazz) {
-            assertTrue(HelloWorldLangUtils.isWrapper(clazz));
+            assertTrue(JavaLangUtils.isWrapper(clazz));
         }
     }
 
@@ -103,9 +103,9 @@ class HelloWorldLangUtilsTest {
             var previous = string;
             for (int bytes = previous.getBytes(charset).length + 1; bytes > 0;
                  bytes--) {
-                var trimmed = HelloWorldLangUtils.trimByCodepoints(string,
-                                                                   charset,
-                                                                   bytes);
+                var trimmed = JavaLangUtils.trimByCodepoints(string,
+                                                             charset,
+                                                             bytes);
                 assertTrue(trimmed.getBytes(charset).length <= bytes);
                 assertTrue(previous.startsWith(trimmed));
                 previous = trimmed;

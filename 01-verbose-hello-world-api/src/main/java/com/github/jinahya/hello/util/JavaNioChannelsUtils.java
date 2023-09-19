@@ -20,18 +20,22 @@ package com.github.jinahya.hello.util;
  * #L%
  */
 
-import java.time.temporal.TemporalAmount;
-import java.util.function.LongFunction;
+import java.nio.channels.CompletionHandler;
+import java.util.function.BiConsumer;
 
-interface StopwatchSpi<C> {
+/**
+ * Utilities for {@link java.nio.channels} package.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
+public final class JavaNioChannelsUtils {
 
-    C start();
+//    public static <V, A> CompletionHandler<V, A> newCompletionHandler(
+//            final BiConsumer<? super A, ? super A> completed,
+//            final BiConsumer<? super Throwable, ? super A> failed) {
+//    }
 
-    <T extends TemporalAmount> T stop(C carrier, LongFunction<? extends T> mapper);
-
-    @SuppressWarnings({"unchecked"})
-    default <T extends TemporalAmount> T stopHelper(final Object carrier,
-                                                    final LongFunction<? extends T> mapper) {
-        return stop((C) carrier, mapper);
+    private JavaNioChannelsUtils() {
+        throw new AssertionError("instantiation is not allowed");
     }
 }

@@ -34,7 +34,7 @@ import java.util.concurrent.Executors;
 class Rfc862Tcp4Server {
 
     // @formatter:on
-    static class Attachment extends Rfc862Tcp3Server.Attachment {
+    static class Attachment extends Rfc862Tcp3ServerAttachment {
 
         Attachment(final AsynchronousChannelGroup group) {
             super();

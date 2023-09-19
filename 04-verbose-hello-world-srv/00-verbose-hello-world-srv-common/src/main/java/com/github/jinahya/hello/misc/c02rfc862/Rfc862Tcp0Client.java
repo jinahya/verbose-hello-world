@@ -30,7 +30,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @Slf4j
 class Rfc862Tcp0Client {
 
-    public static void main(String... args) throws Exception {
+    public static void main(final String... args) throws Exception {
         try (var client = new Socket()) {
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc862Constants.HOST, 0));
@@ -40,14 +40,14 @@ class Rfc862Tcp0Client {
             log.info("connected to {}, through {}", client.getRemoteSocketAddress(),
                      client.getLocalSocketAddress());
             client.setSoTimeout((int) _Rfc862Constants.READ_TIMEOUT_IN_MILLIS);
-            var digest = _Rfc862Utils.newDigest();
-            var bytes = _Rfc862Utils.randomBytesLessThan(1024);
+            final var digest = _Rfc862Utils.newDigest();
+            var bytes = _Rfc862Utils.randomBytes();
             _Rfc862Utils.logClientBytes(bytes);
             for (int b; bytes > 0; bytes--) {
-                b = ThreadLocalRandom.current().nextInt();
+                b = ThreadLocalRandom.current().nextInt(256);
                 client.getOutputStream().write(b);
                 client.getOutputStream().flush();
-                digest.update((byte) (b & 0xFF));
+                digest.update((byte) b);
                 if ((client.getInputStream().read()) == -1) {
                     throw new EOFException("unexpected eof");
                 }

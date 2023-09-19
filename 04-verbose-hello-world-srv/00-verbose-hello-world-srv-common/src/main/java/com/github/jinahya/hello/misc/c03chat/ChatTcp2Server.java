@@ -21,7 +21,7 @@ package com.github.jinahya.hello.misc.c03chat;
  */
 
 import com.github.jinahya.hello.util.HelloWorldServerUtils;
-import com.github.jinahya.hello.util.HelloWorldLangUtils;
+import com.github.jinahya.hello.util.JavaLangUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -54,7 +54,7 @@ class ChatTcp2Server {
             log.debug("bound to {}", server.getLocalAddress());
             server.configureBlocking(false);
             var serverKey = server.register(selector, SelectionKey.OP_ACCEPT);
-            HelloWorldLangUtils.readLinesAndCallWhenTests(
+            JavaLangUtils.readLinesAndCallWhenTests(
                     HelloWorldServerUtils::isQuit, // <predicate>
                     () -> {                        // <callable>
                         serverKey.cancel();

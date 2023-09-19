@@ -61,7 +61,7 @@ final class Rfc863Tcp4ServerAttachment extends _Rfc863Attachment.Server {
      * Reads a sequence of bytes from {@code client}.
      *
      * @param handler a handler for consuming the result.
-     * @see Rfc863Tcp4ClientAttachment#writeWith(CompletionHandler)
+     * @see Rfc863Tcp4ClientAttachment#write(CompletionHandler)
      */
     void readWith(final CompletionHandler<Integer, ? super Rfc863Tcp4ServerAttachment> handler) {
         synchronized (this) {

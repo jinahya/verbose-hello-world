@@ -30,7 +30,7 @@ import java.util.function.Function;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-public final class HelloWorldNioUtils {
+public final class JavaNioUtils {
 
     public static <B extends Buffer, R> R flipApplyAndRestore(
             B buffer, Function<? super B, ? extends R> function) {
@@ -59,7 +59,7 @@ public final class HelloWorldNioUtils {
         );
     }
 
-    private HelloWorldNioUtils() {
+    private JavaNioUtils() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

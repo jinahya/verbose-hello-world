@@ -130,7 +130,7 @@ public class JavaBeansUtils {
         Objects.requireNonNull(type, "type is null");
         Objects.requireNonNull(value, "value is null");
         if (type.isPrimitive()
-            || HelloWorldLangUtils.isWrapper(type)
+            || JavaLangUtils.isWrapper(type)
             || (type.isArray() && type.componentType().isPrimitive())
             || type == String.class) {
             return false;
@@ -140,8 +140,8 @@ public class JavaBeansUtils {
 
     private static <T> boolean checkHelper(final Class<T> type, final Object value) {
         Objects.requireNonNull(type, "type is null");
-        if (HelloWorldLangUtils.isPrimitive(type)) {
-            return checkHelper(HelloWorldLangUtils.getWrapperType(type), value);
+        if (JavaLangUtils.isPrimitive(type)) {
+            return checkHelper(JavaLangUtils.getWrapperType(type), value);
         }
         return check(type, type.cast(value));
     }

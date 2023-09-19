@@ -42,7 +42,7 @@ class Rfc863Tcp3Client {
             log.info("connected to {}, through {}", client.getRemoteAddress(),
                      client.getLocalAddress());
             try (var attachment = new Rfc863Tcp3ClientAttachment(client)) {
-                for (int w; attachment.getBytes() > 0; ) {
+                for (int w; attachment.bytes() > 0; ) {
                     w = attachment.writeAndGet();
                     assert w > 0; // why not 0?
                 }

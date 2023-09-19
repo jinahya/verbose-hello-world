@@ -20,7 +20,7 @@ package com.github.jinahya.hello.misc.c03chat;
  * #L%
  */
 
-import com.github.jinahya.hello.util.HelloWorldLangUtils;
+import com.github.jinahya.hello.util.JavaLangUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.ByteBuffer;
@@ -271,8 +271,8 @@ class _ChatMessage {
         static void setMessage(byte[] array, String message) {
             requireValid(array);
             Objects.requireNonNull(message, "message is null");
-            var value = HelloWorldLangUtils.trimByCodepoints(message, CHARSET,
-                                                             MESSAGE_LENGTH)
+            var value = JavaLangUtils.trimByCodepoints(message, CHARSET,
+                                                       MESSAGE_LENGTH)
                     .getBytes(CHARSET);
             setMessageBytes(array, value);
         }

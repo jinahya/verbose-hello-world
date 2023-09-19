@@ -21,7 +21,7 @@ package com.github.jinahya.hello.misc.c03chat;
  */
 
 import com.github.jinahya.hello.util.HelloWorldServerUtils;
-import com.github.jinahya.hello.util.HelloWorldLangUtils;
+import com.github.jinahya.hello.util.JavaLangUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetAddress;
@@ -60,7 +60,7 @@ class ChatTcp2Client {
             } else {
                 clientKey = client.register(selector, SelectionKey.OP_CONNECT);
             }
-            HelloWorldLangUtils.readLinesAndCallWhenTests(
+            JavaLangUtils.readLinesAndCallWhenTests(
                     HelloWorldServerUtils::isQuit, // <predicate>
                     () -> {                        // <callable>
                         clientKey.cancel();

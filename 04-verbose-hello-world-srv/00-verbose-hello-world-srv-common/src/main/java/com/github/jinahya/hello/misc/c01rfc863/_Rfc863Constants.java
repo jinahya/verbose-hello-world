@@ -20,71 +20,29 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.util.concurrent.TimeUnit;
+import com.github.jinahya.hello.misc._Rfc86_Constants;
 
-final class _Rfc863Constants {
+import java.net.InetSocketAddress;
+
+final class _Rfc863Constants extends _Rfc86_Constants {
 
     // ------------------------------------------------------------------------------------- ADDRESS
 
-    private static final int _RFC863_PORT = 9;
+    private static final int RFC863_PORT = 9;
 
-    static final InetAddress HOST = InetAddress.getLoopbackAddress();
-
-    private static final int PORT = _RFC863_PORT + 50000;
+    private static final int PORT = RFC863_PORT + 50000;
 
     static final InetSocketAddress ADDR = new InetSocketAddress(HOST, PORT);
 
     // ------------------------------------------------------------------------------------- TIMEOUT
 
-    static final TimeUnit ACCEPT_TIMEOUT_UNIT = TimeUnit.SECONDS;
-
-    static final long ACCEPT_TIMEOUT_DURATION = 32L;
-
-    static final long ACCEPT_TIMEOUT_IN_MILLIS =
-            ACCEPT_TIMEOUT_UNIT.toMillis(ACCEPT_TIMEOUT_DURATION);
-
-    static final TimeUnit CONNECT_TIMEOUT_UNIT = TimeUnit.SECONDS;
-
-    static final long CONNECT_TIMEOUT_DURATION = 1L;
-
-    static final long CONNECT_TIMEOUT_IN_MILLIS =
-            CONNECT_TIMEOUT_UNIT.toMillis(CONNECT_TIMEOUT_DURATION);
-
-    static final TimeUnit READ_TIMEOUT_UNIT = TimeUnit.SECONDS;
-
-    static final long READ_TIMEOUT_DURATION = 1L;
-
-    static final long READ_TIMEOUT_IN_MILLIS =
-            READ_TIMEOUT_UNIT.toMillis(READ_TIMEOUT_DURATION);
-
-    static final TimeUnit WRITE_TIMEOUT_UNIT = TimeUnit.SECONDS;
-
-    static final long WRITE_TIMEOUT_DURATION = 8L;
-
-    static final long WRITE_TIMEOUT_IN_MILLIS =
-            WRITE_TIMEOUT_UNIT.toMillis(WRITE_TIMEOUT_DURATION);
-
-    static final TimeUnit SERVER_TIMEOUT_UNIT = TimeUnit.SECONDS;
-
-    static final long SERVER_TIMEOUT_DURATION = 32L;
-
-    static final long SERVER_TIMEOUT_IN_MILLIS =
-            SERVER_TIMEOUT_UNIT.toMillis(SERVER_TIMEOUT_DURATION);
-
-    static final TimeUnit CLIENT_TIMEOUT_UNIT = TimeUnit.SECONDS;
-
-    static final long CLIENT_TIMEOUT_DURATION = 32L;
-
-    static final long CLIENT_TIMEOUT_IN_MILLIS =
-            CLIENT_TIMEOUT_UNIT.toMillis(CLIENT_TIMEOUT_DURATION);
-
     // -------------------------------------------------------------------------------------- DIGEST
 
     static final String ALGORITHM = "SHA-1";
 
+    // ---------------------------------------------------------------------------------------------
     private _Rfc863Constants() {
+        super();
         throw new AssertionError("instantiation is not allowed");
     }
 }

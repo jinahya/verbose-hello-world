@@ -21,7 +21,7 @@ package com.github.jinahya.hello.misc.c03chat;
  */
 
 import com.github.jinahya.hello.util.HelloWorldServerUtils;
-import com.github.jinahya.hello.util.HelloWorldLangUtils;
+import com.github.jinahya.hello.util.JavaLangUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -78,7 +78,7 @@ class ChatTcp1Client {
         public void run() {
             BlockingQueue<String> queue = new ArrayBlockingQueue<>(1);
             var current = Thread.currentThread();
-            HelloWorldLangUtils.readLinesAndCallWhenTests(
+            JavaLangUtils.readLinesAndCallWhenTests(
                     HelloWorldServerUtils::isQuit, // <predicate>
                     () -> {                        // <callable>
                         current.interrupt();

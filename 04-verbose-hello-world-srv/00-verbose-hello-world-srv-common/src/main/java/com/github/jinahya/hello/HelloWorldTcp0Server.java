@@ -28,7 +28,7 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 
 import static com.github.jinahya.hello.HelloWorldServerHelper.loadService;
-import static com.github.jinahya.hello.util.HelloWorldLangUtils.readLinesAndCloseWhenTests;
+import static com.github.jinahya.hello.util.JavaLangUtils.readLinesAndCloseWhenTests;
 
 @Slf4j
 class HelloWorldTcp0Server {

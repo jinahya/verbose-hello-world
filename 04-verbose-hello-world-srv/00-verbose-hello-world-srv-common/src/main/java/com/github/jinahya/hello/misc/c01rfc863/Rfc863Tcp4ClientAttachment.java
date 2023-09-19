@@ -34,7 +34,7 @@ final class Rfc863Tcp4ClientAttachment extends _Rfc863Attachment.Client {
 
     // -------------------------------------------------------------------------------------- client
 
-    void connectWith(final CompletionHandler<Void, ? super Rfc863Tcp4ClientAttachment> handler) {
+    void connect(final CompletionHandler<Void, ? super Rfc863Tcp4ClientAttachment> handler) {
         Objects.requireNonNull(handler, "handler is null");
         client.connect(
                 _Rfc863Constants.ADDR, // <remote>
@@ -49,7 +49,7 @@ final class Rfc863Tcp4ClientAttachment extends _Rfc863Attachment.Client {
      * @param handler a handler for consuming the result.
      * @see Rfc863Tcp4ServerAttachment#readWith(CompletionHandler)
      */
-    void writeWith(final CompletionHandler<Integer, ? super Rfc863Tcp4ClientAttachment> handler) {
+    void write(final CompletionHandler<Integer, ? super Rfc863Tcp4ClientAttachment> handler) {
         Objects.requireNonNull(handler, "handler is null");
         client.write(
                 getBufferForWriting(), // <src>

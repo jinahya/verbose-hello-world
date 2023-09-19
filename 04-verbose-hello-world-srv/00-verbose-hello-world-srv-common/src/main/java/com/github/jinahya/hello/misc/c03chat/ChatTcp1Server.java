@@ -21,7 +21,7 @@ package com.github.jinahya.hello.misc.c03chat;
  */
 
 import com.github.jinahya.hello.util.HelloWorldServerUtils;
-import com.github.jinahya.hello.util.HelloWorldLangUtils;
+import com.github.jinahya.hello.util.JavaLangUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -131,7 +131,7 @@ class ChatTcp1Server {
             server.bind(new InetSocketAddress(InetAddress.getByName("::"),
                                               _ChatConstants.PORT));
             log.info("bound on {}", server.getLocalSocketAddress());
-            HelloWorldLangUtils.readLinesAndCallWhenTests(
+            JavaLangUtils.readLinesAndCallWhenTests(
                     HelloWorldServerUtils::isQuit, // <predicate>
                     () -> {                        // <callable>
                         server.close();
