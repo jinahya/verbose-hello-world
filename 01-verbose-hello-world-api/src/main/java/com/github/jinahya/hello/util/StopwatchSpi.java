@@ -28,4 +28,10 @@ interface StopwatchSpi<C> {
     C start();
 
     <T extends TemporalAmount> T stop(C carrier, LongFunction<? extends T> mapper);
+
+    @SuppressWarnings({"unchecked"})
+    default <T extends TemporalAmount> T stopHelper(final Object carrier,
+                                                    final LongFunction<? extends T> mapper) {
+        return stop((C) carrier, mapper);
+    }
 }

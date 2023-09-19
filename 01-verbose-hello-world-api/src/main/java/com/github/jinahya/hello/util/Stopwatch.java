@@ -41,7 +41,7 @@ public final class Stopwatch {
      * @param carrier a carrier resulted from {@link #startStopWatch()}.
      */
     public static Duration stopStopWatch(final Object carrier) {
-        return INSTANCE.stop(null, Duration::ofNanos);
+        return INSTANCE.stopHelper(carrier, Duration::ofNanos);
     }
 
     private Stopwatch() {
