@@ -48,57 +48,43 @@ class Rfc863Tcp2Client {
                 log.info("(optionally) bound to {}", client.getLocalAddress());
             }
             client.configureBlocking(false);
-            SelectionKey clientKey;
+            final SelectionKey clientKey;
             if (client.connect(_Rfc863Constants.ADDR)) {
-                log.info("connected (immediately) to {}, through {}", client.getRemoteAddress(),
+                log.info("(immediately) connected to {}, through {}", client.getRemoteAddress(),
                          client.getLocalAddress());
-                final var attachment = new Rfc863Tcp2ClientAttachment();
-                clientKey = client.register(selector, 0, attachment);
-                if (attachment.getBytes() == 0) {
-                    clientKey.cancel();
-                    assert !clientKey.isValid();
-                } else {
-                    clientKey.interestOpsOr(SelectionKey.OP_WRITE);
-                }
+                clientKey = client.register(selector, SelectionKey.OP_WRITE,
+                                            new Rfc863Tcp2ClientAttachment());
             } else {
                 clientKey = client.register(selector, SelectionKey.OP_CONNECT);
             }
-            while (clientKey.isValid()) {
-                if (selector.select((int) _Rfc86_Constants.CONNECT_TIMEOUT_IN_MILLIS) == 0) {
+            while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
+                if (selector.select(_Rfc86_Constants.CLIENT_TIMEOUT_IN_MILLIS) == 0) {
                     break;
                 }
                 for (final var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
-                    var key = i.next();
-                    if (key.isConnectable()) {
-                        final var channel = (SocketChannel) key.channel();
+                    final var selectedKey = i.next();
+                    if (selectedKey.isConnectable()) {
+                        final var channel = (SocketChannel) selectedKey.channel();
                         assert channel == client;
-                        final var connected = channel.finishConnect();
-                        assert connected;
-                        log.info("connected to {}, through {}", channel.getRemoteAddress(),
-                                 channel.getLocalAddress());
-                        key.interestOpsAnd(~SelectionKey.OP_CONNECT);
-                        final var attachment = new Rfc863Tcp2ClientAttachment();
-                        key.attach(attachment);
-                        if (attachment.getBytes() == 0) {
-                            log.warn("no bytes to send; canceling...");
-                            key.cancel();
-                            assert !key.isValid();
-                        } else {
-                            key.interestOps(SelectionKey.OP_WRITE);
+                        if (channel.finishConnect()) {
+                            log.info("connected to {}, through {}", channel.getRemoteAddress(),
+                                     channel.getLocalAddress());
+                            selectedKey.interestOpsAnd(~SelectionKey.OP_CONNECT);
+                            selectedKey.attach(new Rfc863Tcp2ClientAttachment());
+                            selectedKey.interestOps(SelectionKey.OP_WRITE);
                         }
                     }
-                    if (key.isWritable()) {
-                        final var channel = (SocketChannel) key.channel();
+                    if (selectedKey.isWritable()) {
+                        final var channel = (SocketChannel) selectedKey.channel();
                         assert channel == client;
-                        final var attachment = (Rfc863Tcp2ClientAttachment) key.attachment();
-                        assert attachment.getBytes() > 0;
+                        final var attachment = (Rfc863Tcp2ClientAttachment) selectedKey.attachment();
                         final var w = attachment.write(channel);
-                        assert w > 0; // why?
+                        assert w >= 0; // why?
                         if (attachment.getBytes() == 0) {
-                            key.interestOpsAnd(~SelectionKey.OP_WRITE);
+                            selectedKey.interestOpsAnd(~SelectionKey.OP_WRITE);
                             attachment.close();
-                            key.cancel();
-                            assert !key.isValid();
+                            selectedKey.cancel();
+                            assert !selectedKey.isValid();
                         }
                     }
                 }

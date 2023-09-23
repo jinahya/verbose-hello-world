@@ -46,10 +46,10 @@ import java.util.concurrent.Callable;
 @Slf4j
 class SocketOptionsPrinter {
 
-    static final Map<Class<?>, Callable<?>> PARIS;
+    static final Map<Class<?>, Callable<?>> CLASSES_AND_INITIALIZERS;
 
     static {
-        var m = new LinkedHashMap<Class<?>, Callable<?>>();
+        final var m = new LinkedHashMap<Class<?>, Callable<?>>();
         m.put(Socket.class, Socket::new);
         m.put(ServerSocket.class, ServerSocket::new);
         m.put(DatagramSocket.class, DatagramSocket::new);
@@ -58,7 +58,7 @@ class SocketOptionsPrinter {
         m.put(DatagramChannel.class, DatagramChannel::open);
         m.put(AsynchronousSocketChannel.class, AsynchronousSocketChannel::open);
         m.put(AsynchronousServerSocketChannel.class, AsynchronousServerSocketChannel::open);
-        PARIS = Collections.unmodifiableMap(m);
+        CLASSES_AND_INITIALIZERS = Collections.unmodifiableMap(m);
     }
 
     private static <T extends Closeable> void print(final Class<T> clazz,
@@ -80,7 +80,7 @@ class SocketOptionsPrinter {
     }
 
     public static void main(String... args) throws Exception {
-        for (final Map.Entry<Class<?>, Callable<?>> pair : PARIS.entrySet()) {
+        for (final Map.Entry<Class<?>, Callable<?>> pair : CLASSES_AND_INITIALIZERS.entrySet()) {
             printHelper(pair.getKey().asSubclass(Closeable.class), pair.getValue());
         }
     }

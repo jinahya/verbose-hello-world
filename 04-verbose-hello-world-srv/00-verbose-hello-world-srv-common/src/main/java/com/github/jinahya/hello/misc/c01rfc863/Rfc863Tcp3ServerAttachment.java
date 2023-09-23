@@ -1,11 +1,12 @@
 package com.github.jinahya.hello.misc.c01rfc863;
 
+import com.github.jinahya.hello.misc._Rfc86_Constants;
+
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.util.Objects;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.TimeUnit;
 
 final class Rfc863Tcp3ServerAttachment extends _Rfc863Attachment.Server {
 
@@ -21,32 +22,24 @@ final class Rfc863Tcp3ServerAttachment extends _Rfc863Attachment.Server {
     }
 
     /**
-     * Reads a sequence of bytes.
-     *
-     * @return A future representing the result of the operation.
-     * @see Rfc863Tcp3ClientAttachment#write()
-     */
-    Future<Integer> read() {
-        return client.read(getBufferForReading());
-    }
-
-    /**
      * Reads a sequence of bytes,, and returns the result.
      *
      * @return a number of bytes read.
-     * @throws ExecutionException
-     * @throws InterruptedException
-     * @throws TimeoutException
-     * @see Rfc863Tcp3ClientAttachment#writeAndGet()
+     * @throws Exception if any thrown.
+     * @see #getBufferForReading()
+     * @see AsynchronousSocketChannel#read(ByteBuffer)
+     * @see _Rfc86_Constants#READ_TIMEOUT
+     * @see _Rfc86_Constants#READ_TIMEOUT_UNIT
+     * @see java.util.concurrent.Future#get(long, TimeUnit)
+     * @see Rfc863Tcp3ClientAttachment#write()
      */
-    int readAndGet() throws ExecutionException, InterruptedException, TimeoutException {
-        final var result = read().get(_Rfc863Constants.READ_TIMEOUT_DURATION,
-                                      _Rfc863Constants.READ_TIMEOUT_UNIT);
-        if (result != -1) {
-            updateDigest(result);
-            increaseBytes(result);
+    int read() throws Exception {
+        final var r = client.read(getBufferForReading())
+                .get(_Rfc86_Constants.READ_TIMEOUT, _Rfc86_Constants.READ_TIMEOUT_UNIT);
+        if (r != -1) {
+            increaseBytes(updateDigest(r));
         }
-        return result;
+        return r;
     }
 
     private final AsynchronousSocketChannel client;

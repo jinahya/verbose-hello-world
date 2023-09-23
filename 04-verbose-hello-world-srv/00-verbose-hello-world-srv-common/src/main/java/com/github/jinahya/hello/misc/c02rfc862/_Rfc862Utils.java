@@ -25,53 +25,49 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
-import java.util.Base64;
-import java.util.function.Function;
+import java.util.Objects;
 
 @Slf4j
 final class _Rfc862Utils {
 
     // --------------------------------------------------------------------------------------- bytes
-    static void logClientBytes(final int bytes) {
+    static int logClientBytes(final int bytes) {
         if (bytes < 0) {
             throw new IllegalArgumentException("bytes(" + bytes + ") is negative");
         }
         log.info("sending (and getting echoed-back) {} byte(s)", bytes);
+        return bytes;
     }
 
-    static void logServerBytes(final int bytes) {
+    static int logServerBytes(final int bytes) {
         if (bytes < 0) {
             throw new IllegalArgumentException("bytes(" + bytes + ") is negative");
         }
-        log.info("received (and echoed back) {} byte(s)", bytes);
+        log.info("{} byte(s) received (and echoed back)", bytes);
+        return bytes;
     }
 
     // -------------------------------------------------------------------------------------- digest
     static MessageDigest newDigest() {
-        return null;
-//        return newDigest(_Rfc862Constants.ALGORITHM);
+        return _Rfc86_Utils.newDigest(_Rfc862Constants.ALGORITHM);
     }
 
-    private static Function<? super byte[], ? extends CharSequence> PRINTER =
-            b -> Base64.getEncoder().encodeToString(b);
-
     static void logDigest(final MessageDigest digest) {
-//        logDigest(digest, PRINTER);
+        Objects.requireNonNull(digest, "digest is null");
+        _Rfc86_Utils.logDigest(digest, _Rfc862Constants.PRINTER);
     }
 
     static void logDigest(final byte[] array, final int offset, final int length) {
-//        logDigest(_Rfc862Constants.ALGORITHM, array, offset, length, PRINTER);
+        _Rfc86_Utils.logDigest(_Rfc862Constants.ALGORITHM, array, offset, length,
+                               _Rfc862Constants.PRINTER);
     }
 
     static void logDigest(final ByteBuffer buffer) {
-//        logDigest(_Rfc862Constants.ALGORITHM, buffer, PRINTER);
+        _Rfc86_Utils.logDigest(_Rfc862Constants.ALGORITHM, buffer, _Rfc862Constants.PRINTER);
     }
 
     // ---------------------------------------------------------------------------------------------
 
-    /**
-     * Creates a new instance.
-     */
     private _Rfc862Utils() {
         super();
         throw new AssertionError("instantiation is not allowed");

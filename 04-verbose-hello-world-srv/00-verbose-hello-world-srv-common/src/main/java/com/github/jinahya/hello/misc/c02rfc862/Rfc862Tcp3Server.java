@@ -21,6 +21,7 @@ package com.github.jinahya.hello.misc.c02rfc862;
  */
 
 import com.github.jinahya.hello.misc._Rfc86_Constants;
+import com.github.jinahya.hello.misc._Rfc86_Utils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.channels.AsynchronousServerSocketChannel;
@@ -32,38 +33,18 @@ class Rfc862Tcp3Server {
         try (var server = AsynchronousServerSocketChannel.open()) {
             server.bind(_Rfc862Constants.ADDR);
             log.info("bound to {}", server.getLocalAddress());
-            try (var client = server.accept().get(_Rfc86_Constants.ACCEPT_TIMEOUT_DURATION,
+            try (var client = server.accept().get(_Rfc86_Constants.ACCEPT_TIMEOUT,
                                                   _Rfc86_Constants.ACCEPT_TIMEOUT_UNIT)) {
-                log.info("accepted from {}, through {}", client.getRemoteAddress(),
-                         client.getLocalAddress());
+                _Rfc86_Utils.logAccepted(client);
                 try (var attachment = new Rfc862Tcp3ServerAttachment(client)) {
-                    int r, w;
-//                    while (true) {
-//                        r = client.read(attachment.buffer)
-//                                .get(_Rfc862Constants.READ_TIMEOUT_DURATION,
-//                                     _Rfc862Constants.READ_TIMEOUT_UNIT);
-//                        if (r == -1) {
-//                            break;
-//                        }
-//                        assert r >= 0;
-//                        attachment.bytes += r;
-//                        attachment.digest.update(
-//                                attachment.slice
-//                                        .position(attachment.buffer.position() - r)
-//                                        .limit(attachment.buffer.position())
-//                        );
-//                        attachment.buffer.flip();
-//                        w = client.write(attachment.buffer).get();
-//                        assert w >= 0;
-//                        attachment.buffer.compact();
-//                    }
-//                    client.shutdownInput();
-//                    for (attachment.buffer.flip(); attachment.buffer.hasRemaining(); ) {
-//                        w = client.write(attachment.buffer).get();
-//                        assert w >= 0;
-//                    }
-//                    _Rfc862Utils.logServerBytes(attachment.bytes);
-//                    _Rfc862Utils.logDigest(attachment.digest);
+                    for (int r; (r = attachment.read()) != -1; ) {
+                        assert r >= 0;
+                        final var w = attachment.write();
+                        assert w >= 0;
+                    }
+                    while (attachment.write() > 0) {
+                        // do nothing
+                    }
                 }
             }
         }

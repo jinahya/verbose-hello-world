@@ -44,7 +44,7 @@ class Rfc863Tcp4Client {
                     new Rfc863Tcp4ClientAttachment(group, client), // <attachment>
                     Rfc863Tcp4ClientHandlers.Connect.HANDLER       // <handler>
             );
-            final var terminated = group.awaitTermination(_Rfc86_Constants.CLIENT_TIMEOUT_DURATION,
+            final var terminated = group.awaitTermination(_Rfc86_Constants.CLIENT_TIMEOUT,
                                                           _Rfc86_Constants.CLIENT_TIMEOUT_UNIT);
             assert terminated : "channel group hasn't been terminated";
         }

@@ -42,7 +42,7 @@ class Rfc862Tcp4Client {
             try (var attachment = new Rfc862Tcp4ClientAttachment(group, client)) {
                 attachment.connect();
                 final var terminated = group.awaitTermination(
-                        _Rfc86_Constants.CLIENT_TIMEOUT_DURATION,
+                        _Rfc86_Constants.CLIENT_TIMEOUT,
                         _Rfc86_Constants.CLIENT_TIMEOUT_UNIT);
                 assert terminated : "channel group hasn't been terminated!";
             }

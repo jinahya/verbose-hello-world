@@ -7,9 +7,8 @@ import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.HexFormat;
 import java.util.Objects;
-import java.util.function.Consumer;
+import java.util.function.Function;
 
 @Slf4j
 public abstract class _AbstractRfc86_Attachment
@@ -20,8 +19,10 @@ public abstract class _AbstractRfc86_Attachment
      *
      * @param bytes     the initial value for the {@code bytes} property.
      * @param algorithm an algorithm for {@link MessageDigest}.
+     * @param printer   a function for printing digest.
      */
-    protected _AbstractRfc86_Attachment(final int bytes, final String algorithm) {
+    protected _AbstractRfc86_Attachment(final int bytes, final String algorithm,
+                                        Function<? super byte[], ? extends CharSequence> printer) {
         super();
         this.bytes = bytes;
         try {
@@ -29,6 +30,7 @@ public abstract class _AbstractRfc86_Attachment
         } catch (final NoSuchAlgorithmException nsae) {
             throw new IllegalArgumentException("unknown algorithm", nsae);
         }
+        this.printer = Objects.requireNonNull(printer, "printer is null");
     }
 
     // --------------------------------------------------------------------------- java.io.Closeable
@@ -81,20 +83,11 @@ public abstract class _AbstractRfc86_Attachment
     }
 
     // -------------------------------------------------------------------------------------- buffer
-    protected final ByteBuffer getBuffer() {
-        return buffer;
-    }
-
-    protected ByteBuffer getBuffer(final Consumer<? super ByteBuffer> consumer) {
-        Objects.requireNonNull(consumer, "consumer is null");
-        consumer.accept(buffer);
-        return getBuffer();
-    }
 
     // -------------------------------------------------------------------------------------- digest
 
     @Override
-    public int updateDigest(final int bytes) {
+    public final int updateDigest(final int bytes) {
         if (bytes < 0) {
             throw new IllegalArgumentException("bytes(" + bytes + ") is negative");
         }
@@ -111,15 +104,17 @@ public abstract class _AbstractRfc86_Attachment
 
     @Override
     public final void logDigest() {
-        _Rfc86_Utils.logDigest(digest, b -> HexFormat.of().formatHex(b));
+        _Rfc86_Utils.logDigest(digest, printer);
     }
 
     // ---------------------------------------------------------------------------------------------
     private int bytes; // bytes to send or received
 
-    private final ByteBuffer buffer = _Rfc86_Utils.newBuffer();
+    protected final ByteBuffer buffer = _Rfc86_Utils.newBuffer();
 
     private final ByteBuffer slice = buffer.slice();
 
     private final MessageDigest digest;
+
+    private final Function<? super byte[], ? extends CharSequence> printer;
 }

@@ -39,7 +39,7 @@ class Rfc863Tcp4Server {
                     new Rfc863Tcp4ServerAttachment(group),  // <attachment>
                     Rfc863Tcp4ServerHandlers.Accept.HANDLER // <handler>
             );
-            final var terminated = group.awaitTermination(_Rfc86_Constants.SERVER_TIMEOUT_DURATION,
+            final var terminated = group.awaitTermination(_Rfc86_Constants.SERVER_TIMEOUT,
                                                           _Rfc86_Constants.SERVER_TIMEOUT_UNIT);
             assert terminated : "channel group hasn't been terminated";
         }

@@ -28,7 +28,7 @@ final class Rfc863Tcp4ServerHandlers {
                 attachment.client = result;
                 attachment.client.read(
                         attachment.getBufferForReading(),        // <src>
-                        _Rfc86_Constants.WRITE_TIMEOUT_DURATION, // <timeout>
+                        _Rfc86_Constants.WRITE_TIMEOUT, // <timeout>
                         _Rfc86_Constants.WRITE_TIMEOUT_UNIT,     // <unit>
                         attachment,                              // <attachment>
                         Rfc863Tcp4ServerHandlers.Read.HANDLER    // <handler>
@@ -56,7 +56,7 @@ final class Rfc863Tcp4ServerHandlers {
                 attachment.increaseBytes(attachment.updateDigest(result));
                 attachment.client.read(
                         attachment.getBufferForReading(),        // <src>
-                        _Rfc86_Constants.WRITE_TIMEOUT_DURATION, // <timeout>
+                        _Rfc86_Constants.WRITE_TIMEOUT, // <timeout>
                         _Rfc86_Constants.WRITE_TIMEOUT_UNIT,     // <unit>
                         attachment,                              // <attachment>
                         Rfc863Tcp4ServerHandlers.Read.HANDLER    // <handler>

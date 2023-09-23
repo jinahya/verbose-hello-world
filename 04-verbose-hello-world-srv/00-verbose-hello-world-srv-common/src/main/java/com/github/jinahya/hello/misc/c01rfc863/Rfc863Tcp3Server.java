@@ -20,6 +20,8 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
+import com.github.jinahya.hello.misc._Rfc86_Constants;
+import com.github.jinahya.hello.misc._Rfc86_Utils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.channels.AsynchronousServerSocketChannel;
@@ -31,12 +33,11 @@ class Rfc863Tcp3Server {
         try (var server = AsynchronousServerSocketChannel.open()) {
             server.bind(_Rfc863Constants.ADDR);
             log.info("bound to {}", server.getLocalAddress());
-            try (var client = server.accept().get(_Rfc863Constants.ACCEPT_TIMEOUT_DURATION,
-                                                  _Rfc863Constants.ACCEPT_TIMEOUT_UNIT)) {
-                log.info("accepted from {}, through {}", client.getRemoteAddress(),
-                         client.getLocalAddress());
+            try (var client = server.accept().get(_Rfc86_Constants.ACCEPT_TIMEOUT,
+                                                  _Rfc86_Constants.ACCEPT_TIMEOUT_UNIT)) {
+                _Rfc86_Utils.logAccepted(client);
                 try (var attachment = new Rfc863Tcp3ServerAttachment(client)) {
-                    for (int r; (r = attachment.readAndGet()) != -1; ) {
+                    for (int r; (r = attachment.read()) != -1; ) {
                         assert r > 0; // why not 0?
                     }
                 }

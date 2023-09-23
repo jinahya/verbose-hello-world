@@ -57,7 +57,7 @@ import java.util.Optional;
         "java:S1199" // nested code block
 })
 @Slf4j
-class NetworkInterfacesViewer extends AbstractViewer {
+class NetworkInterfacesViewer extends _AbstractViewer {
 
     private static final String NAME = "Network Interfaces Properties";
 
@@ -111,18 +111,6 @@ class NetworkInterfacesViewer extends AbstractViewer {
                 super.paint(g);
             }
         }; // @formatter:on
-//        tree[0].getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-//        tree[0].addFocusListener(new FocusListener() {
-//            @Override
-//            public void focusGained(FocusEvent e) {
-//                log.debug("focusGained: {}", e);
-//            }
-//
-//            @Override
-//            public void focusLost(FocusEvent e) {
-//            }
-//        });
-//        tree[0].setToggleClickCount(1);
         tree[0].addMouseListener(new MouseAdapter() { // @formatter:off
             @Override public void mouseClicked(MouseEvent e) {
                 log.debug("mouseClicked({})", e);
@@ -160,6 +148,7 @@ class NetworkInterfacesViewer extends AbstractViewer {
                 tree[0].updateUI();
             }
         }; // formatter:on
+        table[0].getTableHeader().setReorderingAllowed(false);
         table[0].setColumnSelectionAllowed(false);
         table[0].setDefaultEditor(Object.class, null);
         final var tableModel = new DefaultTableModel() { // @formatter:off
@@ -175,27 +164,6 @@ class NetworkInterfacesViewer extends AbstractViewer {
             treeCellRenderer.setClosedIcon(null);
             treeCellRenderer.setOpenIcon(null);
         }
-//        tree[0].addTreeSelectionListener(e -> {
-//            log.debug("\ntree selection: {}", e);
-//            final var path = e.getPath();
-//            final var node = (PropertyNode) path.getLastPathComponent();
-//            if (node.isLeaf()) {
-//                return;
-//            }
-//            final var row = tree[0].getRowForPath(path);
-//            log.debug("row: {}", row);
-//            if (tree[0].isCollapsed(row)) {
-//                tree[0].expandPath(path);
-////                table[0].getSelectionModel().setSelectionInterval(row, row);
-//            } else {
-//                tree[0].collapsePath(path);
-////                    tree[0].setSelectionRow(row);
-////                table[0].getSelectionModel().setSelectionInterval(row, row);
-//            }
-////            tree[0].setSelectionRow(row);
-//            tableModel.fireTableDataChanged();
-////            table[0].getSelectionModel().setSelectionInterval(row, row);
-//        });
         tree[0].addTreeWillExpandListener(new TreeWillExpandListener() { // @formatter:off
             @Override
             public void treeWillExpand(TreeExpansionEvent event) throws ExpandVetoException {

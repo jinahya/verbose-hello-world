@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Objects;
@@ -41,6 +42,17 @@ import java.util.stream.Stream;
 public class JavaBeansUtils {
 
     public static class PropertyInfo {
+
+        static PropertyInfo of(final PropertyInfo parent, final PropertyDescriptor descriptor,
+                               final Integer index, final Object value) {
+            Objects.requireNonNull(descriptor, "descriptor is null");
+            return new PropertyInfo(
+                    parent, descriptor.getName(),
+                    descriptor.getPropertyType(),
+                    index,
+                    value
+            );
+        }
 
         PropertyInfo(final PropertyInfo parent, final String name, final Class<?> type,
                      final Integer index, final Object value) {

@@ -22,7 +22,7 @@ final class Rfc863Tcp4ClientHandlers {
                 }
                 attachment.client.write(
                         attachment.getBufferForWriting(),
-                        _Rfc86_Constants.WRITE_TIMEOUT_DURATION,
+                        _Rfc86_Constants.WRITE_TIMEOUT,
                         _Rfc86_Constants.WRITE_TIMEOUT_UNIT,
                         attachment,
                         Write.HANDLER
@@ -49,7 +49,7 @@ final class Rfc863Tcp4ClientHandlers {
                 }
                 attachment.client.write(
                         attachment.getBufferForWriting(),        // <src>
-                        _Rfc86_Constants.WRITE_TIMEOUT_DURATION, // <timeout>
+                        _Rfc86_Constants.WRITE_TIMEOUT, // <timeout>
                         _Rfc86_Constants.WRITE_TIMEOUT_UNIT,     // <unit>
                         attachment,                              // <attachment>
                         this                                     // <handler>

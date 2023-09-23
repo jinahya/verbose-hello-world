@@ -23,6 +23,8 @@ package com.github.jinahya.hello.misc.c02rfc862;
 import com.github.jinahya.hello.misc._Rfc86_Constants;
 
 import java.net.InetSocketAddress;
+import java.util.Base64;
+import java.util.function.Function;
 
 final class _Rfc862Constants extends _Rfc86_Constants {
 
@@ -32,10 +34,13 @@ final class _Rfc862Constants extends _Rfc86_Constants {
 
     static final InetSocketAddress ADDR = new InetSocketAddress(HOST, PORT);
 
-    // ------------------------------------------------------------------------------------- TIMEOUT
+    // ------------------------------------------------------------------------------------- timeout
 
-    // -------------------------------------------------------------------------------------- DIGEST
+    // -------------------------------------------------------------------------------------- digest
     static final String ALGORITHM = "SHA-256";
+
+    static final Function<? super byte[], ? extends CharSequence> PRINTER =
+            b -> Base64.getEncoder().encodeToString(b);
 
     // ---------------------------------------------------------------------------------------------
     private _Rfc862Constants() {

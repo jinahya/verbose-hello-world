@@ -43,8 +43,7 @@ class Rfc862Tcp0Client {
                      client.getLocalSocketAddress());
             client.setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_IN_MILLIS);
             final var digest = _Rfc862Utils.newDigest();
-            var bytes = _Rfc86_Utils.randomBytes();
-            _Rfc862Utils.logClientBytes(bytes);
+            var bytes = _Rfc862Utils.logClientBytes(_Rfc86_Utils.randomBytes());
             for (int b; bytes > 0; bytes--) {
                 b = ThreadLocalRandom.current().nextInt(256);
                 client.getOutputStream().write(b);

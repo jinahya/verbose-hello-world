@@ -20,6 +20,8 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
+import com.github.jinahya.hello.misc._Rfc86_Constants;
+import com.github.jinahya.hello.misc._Rfc86_Utils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
@@ -37,14 +39,13 @@ class Rfc863Tcp3Client {
                 client.bind(new InetSocketAddress(HOST, 0));
                 log.info("(optionally) bound to {}", client.getLocalAddress());
             }
-            client.connect(_Rfc863Constants.ADDR).get(_Rfc863Constants.CONNECT_TIMEOUT_DURATION,
-                                                      _Rfc863Constants.CONNECT_TIMEOUT_UNIT);
-            log.info("connected to {}, through {}", client.getRemoteAddress(),
-                     client.getLocalAddress());
+            client.connect(_Rfc863Constants.ADDR).get(_Rfc86_Constants.CONNECT_TIMEOUT,
+                                                      _Rfc86_Constants.CONNECT_TIMEOUT_UNIT);
+            _Rfc86_Utils.logConnected(client);
             try (var attachment = new Rfc863Tcp3ClientAttachment(client)) {
                 for (int w; attachment.getBytes() > 0; ) {
-                    w = attachment.writeAndGet();
-                    assert w > 0; // why not 0?
+                    w = attachment.write();
+                    assert w > 0; // why?
                 }
             }
         }

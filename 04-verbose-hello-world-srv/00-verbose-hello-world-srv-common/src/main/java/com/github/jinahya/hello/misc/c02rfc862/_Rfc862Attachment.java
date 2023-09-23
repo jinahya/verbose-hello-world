@@ -17,17 +17,11 @@ abstract class _Rfc862Attachment extends _AbstractRfc86_Attachment {
          * Creates a new instance.
          */
         Client() {
-            super(_Rfc86_Utils.randomBytes());
-            getBuffer(b -> b.position(b.limit()));
+            super(_Rfc862Utils.logClientBytes(_Rfc86_Utils.randomBytes()));
+            buffer.position(buffer.limit());
         }
 
-        /**
-         * Returns the {@link #getBuffer() buffer} configured for reading.
-         *
-         * @return the {@link #getBuffer() buffer} with non-zero remaining.
-         */
         ByteBuffer getBufferForReading() {
-            final var buffer = getBuffer();
             if (!buffer.hasRemaining()) {
                 buffer.clear();
             }
@@ -35,13 +29,7 @@ abstract class _Rfc862Attachment extends _AbstractRfc86_Attachment {
             return buffer;
         }
 
-        /**
-         * Returns {@link #getBuffer() buffer} configured for writing.
-         *
-         * @return the {@link #getBuffer() buffer} with non-zero remaining.
-         */
         final ByteBuffer getBufferForWriting() {
-            final var buffer = getBuffer();
             if (!buffer.hasRemaining()) {
                 ThreadLocalRandom.current().nextBytes(buffer.array());
                 buffer.clear().limit(Math.min(buffer.limit(), getBytes()));
@@ -62,17 +50,17 @@ abstract class _Rfc862Attachment extends _AbstractRfc86_Attachment {
 
         @Override
         public void close() throws IOException {
-//            _Rfc862Utils.logServerBytes(getBytes());
+            _Rfc862Utils.logServerBytes(getBytes());
+            logDigest();
             super.close();
         }
 
         /**
-         * Returns {@link #getBuffer() buffer} configured for reading.
+         * Returns {@link #buffer} configured for reading.
          *
-         * @return the {@link #getBuffer() buffer} with non-zero remaining.
+         * @return the {@link #buffer} with non-zero remaining.
          */
         final ByteBuffer getBufferForReading() {
-            final var buffer = getBuffer();
             if (!buffer.hasRemaining()) {
                 buffer.clear();
             }
@@ -81,12 +69,11 @@ abstract class _Rfc862Attachment extends _AbstractRfc86_Attachment {
         }
 
         /**
-         * Returns {@link #getBuffer() buffer} configured for writing.
+         * Returns {@link #buffer} configured for writing.
          *
-         * @return the {@link #getBuffer() buffer} with non-zero remaining.
+         * @return the {@link #buffer} with non-zero remaining.
          */
         final ByteBuffer getBufferForWriting() {
-            final var buffer = getBuffer();
             if (!buffer.hasRemaining()) {
                 ThreadLocalRandom.current().nextBytes(buffer.array());
                 buffer.clear().limit(Math.min(buffer.limit(), getBytes()));
@@ -102,7 +89,7 @@ abstract class _Rfc862Attachment extends _AbstractRfc86_Attachment {
      * Creates a new instance.
      */
     private _Rfc862Attachment(final int bytes) {
-        super(bytes, _Rfc862Constants.ALGORITHM);
+        super(bytes, _Rfc862Constants.ALGORITHM, _Rfc862Constants.PRINTER);
     }
 
     // --------------------------------------------------------------------------- java.io.Closeable
@@ -119,4 +106,6 @@ abstract class _Rfc862Attachment extends _AbstractRfc86_Attachment {
     abstract ByteBuffer getBufferForReading();
 
     abstract ByteBuffer getBufferForWriting();
+
+    // -------------------------------------------------------------------------------------- digest
 }

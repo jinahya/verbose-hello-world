@@ -23,10 +23,12 @@ package com.github.jinahya.hello.misc.c01rfc863;
 import com.github.jinahya.hello.misc._Rfc86_Constants;
 
 import java.net.InetSocketAddress;
+import java.util.HexFormat;
+import java.util.function.Function;
 
 final class _Rfc863Constants extends _Rfc86_Constants {
 
-    // ------------------------------------------------------------------------------------- ADDRESS
+    // ---------------------------------------------------------------------------------------- addr
 
     private static final int RFC863_PORT = 9;
 
@@ -34,11 +36,14 @@ final class _Rfc863Constants extends _Rfc86_Constants {
 
     static final InetSocketAddress ADDR = new InetSocketAddress(HOST, PORT);
 
-    // ------------------------------------------------------------------------------------- TIMEOUT
+    // ------------------------------------------------------------------------------------- timeout
 
-    // -------------------------------------------------------------------------------------- DIGEST
+    // -------------------------------------------------------------------------------------- digest
 
     static final String ALGORITHM = "SHA-1";
+
+    static Function<? super byte[], ? extends CharSequence> PRINTER =
+            b -> HexFormat.of().formatHex(b);
 
     // ---------------------------------------------------------------------------------------------
     private _Rfc863Constants() {

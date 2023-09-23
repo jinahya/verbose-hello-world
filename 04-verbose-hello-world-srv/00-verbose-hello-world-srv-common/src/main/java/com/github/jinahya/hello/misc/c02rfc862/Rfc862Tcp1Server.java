@@ -20,6 +20,7 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
+import com.github.jinahya.hello.misc._Rfc86_Constants;
 import com.github.jinahya.hello.misc._Rfc86_Utils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,19 +32,18 @@ class Rfc862Tcp1Server {
 
     public static void main(String... args) throws Exception {
         try (var server = new ServerSocket()) {
-            server.bind(_Rfc862Constants.ADDR);
+            server.bind(_Rfc862Constants.ADDR, 0);
             log.info("bound to {}", server.getLocalSocketAddress());
-            server.setSoTimeout((int) _Rfc862Constants.ACCEPT_TIMEOUT_IN_MILLIS);
+            server.setSoTimeout((int) _Rfc86_Constants.ACCEPT_TIMEOUT_IN_MILLIS);
             try (var client = server.accept()) {
                 log.info("accepted from {}, through {}", client.getRemoteSocketAddress(),
                          client.getLocalSocketAddress());
-                client.setSoTimeout((int) _Rfc862Constants.READ_TIMEOUT_IN_MILLIS);
+                client.setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_IN_MILLIS);
                 final var digest = _Rfc862Utils.newDigest();
                 var bytes = 0;
                 final var array = _Rfc86_Utils.newArray();
-                for (int r; (r = client.getInputStream().read(array)) != -1; ) {
+                for (int r; (r = client.getInputStream().read(array)) != -1; bytes += r) {
                     assert r > 0;
-                    bytes += r;
                     client.getOutputStream().write(array, 0, r);
                     client.getOutputStream().flush();
                     digest.update(array, 0, r);

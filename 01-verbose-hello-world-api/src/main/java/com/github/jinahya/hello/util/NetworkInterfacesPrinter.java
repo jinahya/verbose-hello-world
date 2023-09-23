@@ -44,7 +44,7 @@ class NetworkInterfacesPrinter {
         indent(depth - 1);
     }
 
-    public static void main(String... args) throws Exception {
+    public static void main(final String... args) throws Exception {
         int index = 0;
         for (final var e = NetworkInterface.getNetworkInterfaces(); e.hasMoreElements(); ) {
             final var networkInterface = e.nextElement();

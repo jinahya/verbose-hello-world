@@ -25,8 +25,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
-import java.util.HexFormat;
-import java.util.function.Function;
 
 @Slf4j
 final class _Rfc863Utils {
@@ -65,19 +63,17 @@ final class _Rfc863Utils {
         return _Rfc86_Utils.newDigest(_Rfc863Constants.ALGORITHM);
     }
 
-    private static Function<? super byte[], ? extends CharSequence> PRINTER =
-            b -> HexFormat.of().formatHex(b);
-
     static void logDigest(final MessageDigest digest) {
-        _Rfc86_Utils.logDigest(digest, PRINTER);
+        _Rfc86_Utils.logDigest(digest, _Rfc863Constants.PRINTER);
     }
 
     static void logDigest(final byte[] array, final int offset, final int length) {
-        _Rfc86_Utils.logDigest(_Rfc863Constants.ALGORITHM, array, offset, length, PRINTER);
+        _Rfc86_Utils.logDigest(_Rfc863Constants.ALGORITHM, array, offset, length,
+                               _Rfc863Constants.PRINTER);
     }
 
     static void logDigest(final ByteBuffer buffer) {
-        _Rfc86_Utils.logDigest(_Rfc863Constants.ALGORITHM, buffer, PRINTER);
+        _Rfc86_Utils.logDigest(_Rfc863Constants.ALGORITHM, buffer, _Rfc863Constants.PRINTER);
     }
 
     /**

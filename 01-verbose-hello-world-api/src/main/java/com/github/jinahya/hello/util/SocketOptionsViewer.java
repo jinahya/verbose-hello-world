@@ -38,7 +38,7 @@ import java.util.concurrent.Callable;
  * @see HelloWorldNetUtils#printSocketOptions(Class, Object)
  */
 @Slf4j
-class SocketOptionsViewer extends AbstractViewer {
+class SocketOptionsViewer extends _AbstractViewer {
 
     private static final String NAME = "Socket Options Viewer";
 
@@ -56,7 +56,7 @@ class SocketOptionsViewer extends AbstractViewer {
             HelloWorldNetUtils.acceptEachStandardSocketOption(so -> list.add(so.name()));
             model.addColumn("OPTION", list.toArray(Object[]::new));
         }
-        for (final Map.Entry<Class<?>, Callable<?>> e : SocketOptionsPrinter.PARIS.entrySet()) {
+        for (final Map.Entry<Class<?>, Callable<?>> e : SocketOptionsPrinter.CLASSES_AND_INITIALIZERS.entrySet()) {
             final var list = new ArrayList<>();
             HelloWorldNetUtils.acceptSocketOptionsHelper(
                     e.getKey(),

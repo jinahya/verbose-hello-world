@@ -21,13 +21,12 @@ package com.github.jinahya.hello.misc.c02rfc862;
  */
 
 import com.github.jinahya.hello.misc._Rfc86_Constants;
+import com.github.jinahya.hello.misc._Rfc86_Utils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.EOFException;
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.AsynchronousSocketChannel;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
@@ -36,22 +35,14 @@ class Rfc862Tcp3Client {
     public static void main(final String... args) throws Exception {
         try (var client = AsynchronousSocketChannel.open()) {
             if (ThreadLocalRandom.current().nextBoolean()) {
-                client.bind(new InetSocketAddress(_Rfc862Constants.HOST, 0));
+                client.bind(new InetSocketAddress(_Rfc86_Constants.HOST, 0));
                 log.info("(optionally) bound to {}", client.getLocalAddress());
             }
+            client.connect(_Rfc862Constants.ADDR).get(_Rfc86_Constants.CONNECT_TIMEOUT,
+                                                      _Rfc86_Constants.CONNECT_TIMEOUT_UNIT);
+            _Rfc86_Utils.logConnected(client);
             try (var attachment = new Rfc862Tcp3ClientAttachment(client)) {
-                client.connect(_Rfc862Constants.ADDR)
-                        .get(_Rfc86_Constants.CONNECT_TIMEOUT_DURATION,
-                             _Rfc86_Constants.CONNECT_TIMEOUT_UNIT
-                        );
-                try {
-                    log.info("connected to {}, through {}", client.getRemoteAddress(),
-                             client.getLocalAddress());
-                } catch (final IOException ioe) {
-                    throw new ExecutionException("failed to get addresses from " + client, ioe);
-                }
-                int w, r;
-                while (attachment.getBytes() > 0) {
+                for (int w, r; attachment.getBytes() > 0; ) {
                     w = attachment.write();
                     assert w > 0; // why?
                     r = attachment.read();
@@ -61,9 +52,9 @@ class Rfc862Tcp3Client {
                     assert r > 0; // why?
                 }
                 assert attachment.getBytes() == 0;
+                attachment.logDigest();
                 client.shutdownOutput();
-//                attachment.logDigest();
-                while ((r = attachment.read()) == -1) {
+                for (int r; (r = attachment.read()) != -1; ) {
                     assert r >= 0;
                 }
             }

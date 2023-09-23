@@ -5,7 +5,6 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.Objects;
 
-// @formatter:on
 final class Rfc862Tcp2ServerAttachment extends _Rfc862Attachment.Server {
 
     /**
@@ -15,14 +14,8 @@ final class Rfc862Tcp2ServerAttachment extends _Rfc862Attachment.Server {
         super();
     }
 
-    @Override
-    public void close() throws IOException {
-        // does nothing
-    }
-
-    int readFrom(final ReadableByteChannel channel) throws IOException {
+    int read(final ReadableByteChannel channel) throws IOException {
         Objects.requireNonNull(channel, "channel is null");
-        final var buffer = getBuffer();
         final var r = channel.read(buffer);
         if (r != -1) {
             increaseBytes(r);
@@ -30,9 +23,8 @@ final class Rfc862Tcp2ServerAttachment extends _Rfc862Attachment.Server {
         return r;
     }
 
-    int writeTo(final WritableByteChannel channel) throws IOException {
+    int write(final WritableByteChannel channel) throws IOException {
         Objects.requireNonNull(channel, "channel is null");
-        final var buffer = getBuffer();
         buffer.flip();
         final var w = channel.write(buffer);
         updateDigest(w);

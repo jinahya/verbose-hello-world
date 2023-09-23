@@ -20,6 +20,7 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
+import com.github.jinahya.hello.misc._Rfc86_Constants;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.EOFException;
@@ -36,79 +37,70 @@ class Rfc862Tcp2Client {
         try (var selector = Selector.open();
              var client = SocketChannel.open()) {
             if (ThreadLocalRandom.current().nextBoolean()) {
-                client.bind(new InetSocketAddress(_Rfc862Constants.HOST, 0));
+                client.bind(new InetSocketAddress(_Rfc86_Constants.HOST, 0));
                 log.info("(optionally) bound to {}", client.getLocalAddress());
             }
             client.configureBlocking(false);
+            final SelectionKey clientKey;
             if (client.connect(_Rfc862Constants.ADDR)) {
-                log.info("connected, immediately, to {}, through {}", client.getRemoteAddress(),
+                log.info("(immediately) connected to {}, through {}", client.getRemoteAddress(),
                          client.getLocalAddress());
-                final var attachment = new Rfc862Tcp2ClientAttachment();
-                final var key = client.register(
+                clientKey = client.register(
                         selector,
                         SelectionKey.OP_WRITE | SelectionKey.OP_READ,
-                        attachment
+                        new Rfc862Tcp2ClientAttachment()
                 );
-                if (attachment.getBytes() == 0) {
-                    log.warn("bytes == 0; canceling...");
-                    key.cancel();
-                    assert !key.isValid();
-                }
             } else {
-                client.register(selector, SelectionKey.OP_CONNECT);
+                clientKey = client.register(selector, SelectionKey.OP_CONNECT);
             }
             while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
-                if (selector.select(_Rfc862Constants.CONNECT_TIMEOUT_IN_MILLIS) == 0) {
+                if (selector.select(_Rfc86_Constants.CONNECT_TIMEOUT_IN_MILLIS) == 0) {
                     break;
                 }
                 for (var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
-                    final var key = i.next();
-                    if (key.isConnectable()) {
-                        final var channel = (SocketChannel) key.channel();
+                    final var selectedKey = i.next();
+                    if (selectedKey.isConnectable()) {
+                        final var channel = (SocketChannel) selectedKey.channel();
                         assert channel == client;
-                        var connected = channel.finishConnect();
-                        assert connected;
-                        log.info("connected to {}, through {}", channel.getRemoteAddress(),
-                                 channel.getLocalAddress());
-                        key.interestOpsAnd(~SelectionKey.OP_CONNECT);
-                        assert key.attachment() == null;
-                        final var attachment = new Rfc862Tcp2ClientAttachment();
-                        key.attach(attachment);
-                        key.interestOpsOr(SelectionKey.OP_WRITE | SelectionKey.OP_READ);
-                        if (attachment.getBytes() == 0) {
-                            log.warn("bytes == 0; canceling...");
-                            key.cancel();
+                        if (channel.finishConnect()) {
+                            log.info("connected to {}, through {}", channel.getRemoteAddress(),
+                                     channel.getLocalAddress());
+                            selectedKey.interestOpsAnd(~SelectionKey.OP_CONNECT);
+                            assert selectedKey.attachment() == null;
+                            selectedKey.attach(new Rfc862Tcp2ClientAttachment());
+                            selectedKey.interestOpsOr(SelectionKey.OP_WRITE | SelectionKey.OP_READ);
                         }
-//                        continue;
                     }
-                    if (key.isWritable()) {
-                        final var channel = (SocketChannel) key.channel();
+                    if (selectedKey.isWritable()) {
+                        final var channel = (SocketChannel) selectedKey.channel();
                         assert channel == client;
-                        final var attachment = (Rfc862Tcp2ClientAttachment) key.attachment();
+                        final var attachment =
+                                (Rfc862Tcp2ClientAttachment) selectedKey.attachment();
                         assert attachment != null;
-                        final var w = attachment.writeTo(channel);
+                        final var w = attachment.write(channel);
                         assert w >= 0;
                         if (attachment.getBytes() == 0) {
                             channel.shutdownOutput();
-                            key.interestOpsAnd(~SelectionKey.OP_WRITE);
+                            selectedKey.interestOpsAnd(~SelectionKey.OP_WRITE);
+                            attachment.logDigest();
                         }
                     }
-                    if (key.isReadable()) {
-                        final var channel = (SocketChannel) key.channel();
+                    if (selectedKey.isReadable()) {
+                        final var channel = (SocketChannel) selectedKey.channel();
                         assert channel == client;
-                        final var attachment = (Rfc862Tcp2ClientAttachment) key.attachment();
+                        final var attachment =
+                                (Rfc862Tcp2ClientAttachment) selectedKey.attachment();
                         assert attachment != null;
-                        final var r = attachment.readFrom(channel);
+                        final var r = attachment.read(channel);
                         if (r == -1) {
                             if (attachment.getBytes() > 0) {
                                 throw new EOFException("unexpected eof");
                             }
-                            key.interestOpsAnd(~SelectionKey.OP_READ);
-                            key.cancel();
-                            assert !key.isValid();
-                            continue;
+                            selectedKey.interestOpsAnd(~SelectionKey.OP_READ);
+                            selectedKey.cancel();
+                            assert !selectedKey.isValid();
+                            attachment.close();
                         }
-                        assert r >= 0;
                     }
                 }
             }

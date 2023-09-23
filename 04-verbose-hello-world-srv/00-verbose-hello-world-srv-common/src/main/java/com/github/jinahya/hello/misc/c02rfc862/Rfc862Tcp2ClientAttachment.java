@@ -11,20 +11,18 @@ final class Rfc862Tcp2ClientAttachment extends _Rfc862Attachment.Client {
         super();
     }
 
-    int readFrom(final ReadableByteChannel channel) throws IOException {
+    int read(final ReadableByteChannel channel) throws IOException {
         Objects.requireNonNull(channel, "channel is null");
-        final var buffer = getBuffer();
         buffer.flip(); // limit -> position, position -> zero
         final var r = channel.read(buffer);
         buffer.position(buffer.limit()).limit(buffer.capacity());
         return r;
     }
 
-    int writeTo(final WritableByteChannel channel) throws IOException {
+    int write(final WritableByteChannel channel) throws IOException {
         Objects.requireNonNull(channel, "channel is null");
-        final var r = channel.write(getBufferForWriting());
-        updateDigest(r);
-        decreaseBytes(r);
-        return r;
+        final var w = channel.write(getBufferForWriting());
+        decreaseBytes(updateDigest(w));
+        return w;
     }
 }

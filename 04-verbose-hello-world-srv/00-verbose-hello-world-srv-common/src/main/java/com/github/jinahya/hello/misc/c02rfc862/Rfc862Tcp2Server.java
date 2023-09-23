@@ -37,53 +37,64 @@ class Rfc862Tcp2Server {
             server.bind(_Rfc862Constants.ADDR);
             log.info("bound to {}", server.getLocalAddress());
             server.configureBlocking(false);
-            server.register(selector, SelectionKey.OP_ACCEPT);
+            final var serverKey = server.register(selector, SelectionKey.OP_ACCEPT);
             while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
                 if (selector.select(_Rfc86_Constants.ACCEPT_TIMEOUT_IN_MILLIS) == 0) {
                     break;
                 }
                 for (var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
-                    final var key = i.next();
-                    if (key.isAcceptable()) {
-                        final var channel = ((ServerSocketChannel) key.channel());
+                    final var selectedKey = i.next();
+                    if (selectedKey.isAcceptable()) {
+                        assert selectedKey == serverKey;
+                        assert selectedKey.channel() instanceof ServerSocketChannel;
+                        final var channel = ((ServerSocketChannel) selectedKey.channel());
                         assert channel == server;
                         final var client = channel.accept();
+                        assert !channel.isBlocking() && client != null;
                         log.info("accepted from {}, through {}", client.getRemoteAddress(),
                                  client.getLocalAddress());
-                        key.interestOpsAnd(~SelectionKey.OP_ACCEPT);
-                        key.cancel();
-                        assert !key.isValid();
+                        selectedKey.interestOpsAnd(~SelectionKey.OP_ACCEPT);
+                        selectedKey.cancel();
+                        assert !selectedKey.isValid();
                         client.configureBlocking(false);
-                        client.register(selector, SelectionKey.OP_READ,
-                                        new Rfc862Tcp2ServerAttachment());
-//                        continue;
+                        final var clientKey = client.register(
+                                selector,                        // <sel>
+                                SelectionKey.OP_READ,            // <ops>
+                                new Rfc862Tcp2ServerAttachment() // <att>
+                        );
+                        continue;
                     }
-                    if (key.isReadable()) {
-                        final var channel = (SocketChannel) key.channel();
-                        final var attachment = (Rfc862Tcp2ServerAttachment) key.attachment();
+                    if (selectedKey.isReadable()) {
+                        assert selectedKey.channel() instanceof SocketChannel;
+                        final var channel = (SocketChannel) selectedKey.channel();
+                        final var attachment =
+                                (Rfc862Tcp2ServerAttachment) selectedKey.attachment();
                         assert attachment != null;
-                        final var r = attachment.readFrom(channel);
+                        final var r = attachment.read(channel);
                         assert r >= -1;
                         if (r == -1) {
-                            key.interestOpsAnd(~SelectionKey.OP_READ);
+                            selectedKey.interestOpsAnd(~SelectionKey.OP_READ);
                         }
                         if (r > 0) {
-                            key.interestOpsOr(SelectionKey.OP_WRITE);
+                            selectedKey.interestOpsOr(SelectionKey.OP_WRITE);
                         }
                     }
-                    if (key.isWritable()) {
-                        final var channel = (SocketChannel) key.channel();
-                        final var attachment = (Rfc862Tcp2ServerAttachment) key.attachment();
+                    if (selectedKey.isWritable()) {
+                        assert selectedKey.channel() instanceof SocketChannel;
+                        final var channel = (SocketChannel) selectedKey.channel();
+                        final var attachment =
+                                (Rfc862Tcp2ServerAttachment) selectedKey.attachment();
                         assert attachment != null;
-                        final var w = attachment.writeTo(channel);
-                        assert w >= 0;
+                        final var w = attachment.write(channel);
+                        assert w >= 0; // why?
                         if (w == 0) {
-                            if ((key.interestOps() & SelectionKey.OP_READ)
+                            if ((selectedKey.interestOps() & SelectionKey.OP_READ)
                                 == SelectionKey.OP_READ) {
-                                key.interestOpsOr(~SelectionKey.OP_WRITE);
+                                selectedKey.interestOpsAnd(~SelectionKey.OP_WRITE);
                             } else {
-                                key.cancel();
-                                assert !key.isValid();
+                                attachment.close();
+                                channel.close();
+                                assert !selectedKey.isValid();
                             }
                         }
                     }

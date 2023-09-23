@@ -149,7 +149,7 @@ class Rfc862Tcp4Server {
                     attachment, // <attachment>
                     A_HANDLER   // <handler>
             );
-            if (!group.awaitTermination(_Rfc862Constants.ACCEPT_TIMEOUT_DURATION,
+            if (!group.awaitTermination(_Rfc862Constants.ACCEPT_TIMEOUT,
                                         _Rfc862Constants.ACCEPT_TIMEOUT_UNIT)) {
                 throw new RuntimeException("channel group has not been terminated!");
             }

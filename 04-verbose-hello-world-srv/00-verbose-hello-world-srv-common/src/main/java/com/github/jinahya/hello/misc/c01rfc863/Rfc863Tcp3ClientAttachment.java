@@ -3,11 +3,10 @@ package com.github.jinahya.hello.misc.c01rfc863;
 import com.github.jinahya.hello.misc._Rfc86_Constants;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.util.Objects;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.TimeUnit;
 
 final class Rfc863Tcp3ClientAttachment extends _Rfc863Attachment.Client {
 
@@ -25,36 +24,25 @@ final class Rfc863Tcp3ClientAttachment extends _Rfc863Attachment.Client {
         super.close();
     }
 
-    // -------------------------------------------------------------------------------------- client
-
     /**
-     * Writes a sequence of bytes.
+     * Writes a sequence of bytes to {@code client}, and returns the number of bytes written to the
+     * {@code client}.
      *
-     * @return a future representing a number of bytes written.
+     * @return a number of bytes written to the {@code client}.
+     * @throws Exception if any thrown.
+     * @see #getBufferForWriting()
+     * @see AsynchronousSocketChannel#write(ByteBuffer)
+     * @see _Rfc86_Constants#WRITE_TIMEOUT
+     * @see _Rfc86_Constants#WRITE_TIMEOUT_UNIT
+     * @see java.util.concurrent.Future#get(long, TimeUnit)
      * @see Rfc863Tcp3ServerAttachment#read()
      */
-    Future<Integer> write() {
-        return client.write(getBufferForWriting());
+    int write() throws Exception {
+        final var w = client.write(getBufferForWriting())
+                .get(_Rfc86_Constants.WRITE_TIMEOUT, _Rfc86_Constants.WRITE_TIMEOUT_UNIT);
+        decreaseBytes(updateDigest(w));
+        return w;
     }
-
-    /**
-     * Writes a sequence of bytes, and returns the result.
-     *
-     * @return a number of bytes written.
-     * @throws ExecutionException
-     * @throws InterruptedException
-     * @throws TimeoutException
-     * @see Rfc863Tcp3ServerAttachment#readAndGet()
-     */
-    int writeAndGet() throws ExecutionException, InterruptedException, TimeoutException {
-        final var result = write().get(_Rfc86_Constants.WRITE_TIMEOUT_DURATION,
-                                       _Rfc86_Constants.WRITE_TIMEOUT_UNIT);
-        updateDigest(result);
-        decreaseBytes(result);
-        return result;
-    }
-
-    // ---------------------------------------------------------------------------------------------
 
     private final AsynchronousSocketChannel client;
 }

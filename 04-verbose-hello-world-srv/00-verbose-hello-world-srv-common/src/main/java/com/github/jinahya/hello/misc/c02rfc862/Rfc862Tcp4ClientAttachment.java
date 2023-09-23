@@ -33,16 +33,15 @@ final class Rfc862Tcp4ClientAttachment extends _Rfc862Attachment.Client {
     // -------------------------------------------------------------------------------------- buffer
 
     ByteBuffer bufferForWriting() {
-        return getBuffer(b -> {
-            if (!b.hasRemaining()) {
-                ThreadLocalRandom.current().nextBytes(b.array());
-                b.limit(Math.min(b.remaining(), getBytes()));
-            }
-        });
+        if (!buffer.hasRemaining()) {
+            ThreadLocalRandom.current().nextBytes(buffer.array());
+            buffer.limit(Math.min(buffer.remaining(), getBytes()));
+        }
+        return buffer;
     }
 
     ByteBuffer bufferForReading() {
-        return getBuffer(ByteBuffer::flip);
+        return buffer.flip();
     }
 
     // --------------------------------------------------------------------------------------- group
@@ -91,14 +90,13 @@ final class Rfc862Tcp4ClientAttachment extends _Rfc862Attachment.Client {
     }
 
     void write() {
-        final var buffer = getBuffer();
         if (!buffer.hasRemaining()) {
             ThreadLocalRandom.current().nextBytes(buffer.array());
             buffer.limit(Math.min(buffer.remaining(), getBytes()));
         }
         client.write(
-                getBuffer(),
-                _Rfc86_Constants.READ_TIMEOUT_DURATION,
+                buffer,
+                _Rfc86_Constants.READ_TIMEOUT,
                 _Rfc86_Constants.READ_TIMEOUT_UNIT,
                 this,
                 new CompletionHandler<>() { // @formatter:off
@@ -126,10 +124,9 @@ final class Rfc862Tcp4ClientAttachment extends _Rfc862Attachment.Client {
     }
 
     void read() {
-        final var buffer = getBuffer();
         client.read(
-                getBuffer().flip(),
-                _Rfc86_Constants.READ_TIMEOUT_DURATION,
+                buffer.flip(),
+                _Rfc86_Constants.READ_TIMEOUT,
                 _Rfc86_Constants.READ_TIMEOUT_UNIT,
                 this,
                 new CompletionHandler<>() { // @formatter:off

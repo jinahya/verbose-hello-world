@@ -22,7 +22,11 @@ package com.github.jinahya.hello.misc;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
+import java.net.Socket;
 import java.nio.ByteBuffer;
+import java.nio.channels.AsynchronousSocketChannel;
+import java.nio.channels.SocketChannel;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
@@ -116,6 +120,41 @@ public final class _Rfc86_Utils {
         final var digest = newDigest(algorithm);
         digest.update(buffer);
         logDigest(digest, printer);
+    }
+
+    // -------------------------------------------------------------------------------------- client
+    private static final String LOG_FORMAT_CONNECTED = "connected to {}, through {}";
+
+    private static final String LOG_FORMAT_ACCEPTED = "accepted from {}, through {}";
+
+    public static void logConnected(final Socket client) {
+        Objects.requireNonNull(client, "client is null");
+        log.info(LOG_FORMAT_CONNECTED, client.getRemoteSocketAddress(), client.getLocalAddress());
+    }
+
+    public static void logAccepted(final Socket client) {
+        Objects.requireNonNull(client, "client is null");
+        log.info(LOG_FORMAT_ACCEPTED, client.getRemoteSocketAddress(), client.getLocalAddress());
+    }
+
+    public static void logConnected(final SocketChannel client) throws IOException {
+        Objects.requireNonNull(client, "client is null");
+        log.info(LOG_FORMAT_CONNECTED, client.getRemoteAddress(), client.getLocalAddress());
+    }
+
+    public static void logAccepted(final SocketChannel client) throws IOException {
+        Objects.requireNonNull(client, "client is null");
+        log.info(LOG_FORMAT_ACCEPTED, client.getRemoteAddress(), client.getLocalAddress());
+    }
+
+    public static void logConnected(final AsynchronousSocketChannel client) throws IOException {
+        Objects.requireNonNull(client, "client is null");
+        log.info(LOG_FORMAT_CONNECTED, client.getRemoteAddress(), client.getLocalAddress());
+    }
+
+    public static void logAccepted(final AsynchronousSocketChannel client) throws IOException {
+        Objects.requireNonNull(client, "client is null");
+        log.info(LOG_FORMAT_ACCEPTED, client.getRemoteAddress(), client.getLocalAddress());
     }
 
     // ---------------------------------------------------------------------------------------------

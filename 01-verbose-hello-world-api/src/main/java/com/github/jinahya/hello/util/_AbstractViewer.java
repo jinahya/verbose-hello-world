@@ -35,7 +35,7 @@ import java.util.Objects;
  * @see HelloWorldNetUtils#printSocketOptions(Class, Object)
  */
 @Slf4j
-abstract class AbstractViewer {
+abstract class _AbstractViewer {
 
     static {
         LoggingUtils.setLevel("java.awt", "INFO");
@@ -68,13 +68,13 @@ abstract class AbstractViewer {
             frame.getRootPane().putClientProperty("apple.awt.transparentTitleBar", true);
         }
         frame.pack();
-        // set width with device's max width
-//        {
-        final var environment = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        final var device = environment.getDefaultScreenDevice();
-        final var mode = device.getDisplayMode();
-        frame.setSize(new Dimension(mode.getWidth(), frame.getHeight()));
-//        }
+        if (false) {
+            // set width with device's max width
+            final var environment = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            final var device = environment.getDefaultScreenDevice();
+            final var mode = device.getDisplayMode();
+            frame.setSize(new Dimension(mode.getWidth(), frame.getHeight()));
+        }
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setVisible(true);
     }
