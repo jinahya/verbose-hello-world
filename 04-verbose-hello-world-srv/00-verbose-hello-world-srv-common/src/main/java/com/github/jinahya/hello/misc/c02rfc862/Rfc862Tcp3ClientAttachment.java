@@ -1,5 +1,6 @@
 package com.github.jinahya.hello.misc.c02rfc862;
 
+import com.github.jinahya.hello.misc._Rfc86_Constants;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -23,20 +24,20 @@ final class Rfc862Tcp3ClientAttachment extends _Rfc862Attachment.Client {
     }
 
     int write() throws ExecutionException, InterruptedException, TimeoutException {
-        final var result = client.write(getBufferForWriting()).get(
-                _Rfc862Constants.WRITE_TIMEOUT_DURATION, _Rfc862Constants.WRITE_TIMEOUT_UNIT
+        final var w = client.write(getBufferForWriting()).get(
+                _Rfc86_Constants.WRITE_TIMEOUT_DURATION, _Rfc86_Constants.WRITE_TIMEOUT_UNIT
         );
-        updateDigest(result);
-        decreaseBytes(result);
-        return result;
+        decreaseBytes(updateDigest(w));
+        return w;
     }
 
     int read() throws ExecutionException, InterruptedException, TimeoutException {
+        final var buffer = getBuffer();
         buffer.flip();
         final var result = client.read(getBufferForReading()).get(
                 _Rfc862Constants.READ_TIMEOUT_DURATION, _Rfc862Constants.READ_TIMEOUT_UNIT);
         buffer.position(buffer.limit()).limit(buffer.capacity());
-        if (bytes() == 0) {
+        if (getBytes() == 0) {
             buffer.clear();
         }
         return result;

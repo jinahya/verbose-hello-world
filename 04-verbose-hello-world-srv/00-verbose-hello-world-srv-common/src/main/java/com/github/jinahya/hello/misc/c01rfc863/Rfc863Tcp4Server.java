@@ -20,70 +20,28 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
+import com.github.jinahya.hello.misc._Rfc86_Constants;
 import lombok.extern.slf4j.Slf4j;
 
-import java.nio.ByteBuffer;
+import java.nio.channels.AsynchronousChannelGroup;
 import java.nio.channels.AsynchronousServerSocketChannel;
-import java.nio.channels.AsynchronousSocketChannel;
-import java.nio.channels.CompletionHandler;
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
 
 @Slf4j
 class Rfc863Tcp4Server {
 
-    private static void __(final String... args) throws Exception { // @formatter:off
-        try (var server = AsynchronousServerSocketChannel.open()) {
-            server.bind(_Rfc863Constants.ADDR);
-            final var latch = new CountDownLatch(2);
-            server.accept(
-                    (Void) null,                // <attachment>
-                    new CompletionHandler<>() { // <handler>
-                        @Override
-                        public void completed(AsynchronousSocketChannel client, Void attachment) {
-                            latch.countDown(); // 2 -> 1
-                            final var dst = ByteBuffer.allocate(128);
-                            client.read(dst, attachment, new CompletionHandler<>() {
-                                @Override
-                                public void completed(Integer bytes, Void attachment) {
-                                    if (bytes == -1) {
-                                        latch.countDown(); // 1 -> 0
-                                        return;
-                                    }
-                                    client.read(
-                                            dst.clear(), // <dst>
-                                            attachment,  // <attachment>
-                                            this         // <handler>
-                                    );
-                                }
-                                @Override
-                                public void failed(Throwable exc, Void attachment) {
-                                    latch.countDown(); // 1 -> 0
-                                }
-                            });
-                        }
-                        @Override
-                        public void failed(Throwable exc, Void attachment) {
-                            latch.countDown(); // 2 -> 1
-                            latch.countDown(); // 1 -> 0
-                        }
-                    }
-            );
-            latch.await();
-        }
-    } // @formatter:on
-
     public static void main(final String... args) throws Exception {
-        try (var server = AsynchronousServerSocketChannel.open()) {
-            server.bind(_Rfc863Constants.ADDR);
+        final var group = AsynchronousChannelGroup.withThreadPool(Executors.newCachedThreadPool());
+        try (var server = AsynchronousServerSocketChannel.open(group)) {
+            server.bind(_Rfc863Constants.ADDR, 1);
             log.info("bound to {}", server.getLocalAddress());
-            try (var attachment = new Rfc863Tcp4ServerAttachment()) {
-                server.accept(
-                        attachment,                             // <attachment>
-                        Rfc863Tcp4ServerHandlers.Accept.HANDLER // <handler>
-                );
-                final var broken = attachment.awaitLatch();
-                assert broken;
-            }
+            server.accept(
+                    new Rfc863Tcp4ServerAttachment(group),  // <attachment>
+                    Rfc863Tcp4ServerHandlers.Accept.HANDLER // <handler>
+            );
+            final var terminated = group.awaitTermination(_Rfc86_Constants.SERVER_TIMEOUT_DURATION,
+                                                          _Rfc86_Constants.SERVER_TIMEOUT_UNIT);
+            assert terminated : "channel group hasn't been terminated";
         }
     }
 

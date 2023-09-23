@@ -1,15 +1,15 @@
 package com.github.jinahya.hello.misc.c01rfc863;
 
-import com.github.jinahya.hello.misc._Rfc86_Attachment;
+import com.github.jinahya.hello.misc._AbstractRfc86_Attachment;
+import com.github.jinahya.hello.misc._Rfc86_Utils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.security.MessageDigest;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
-abstract class _Rfc863Attachment extends _Rfc86_Attachment {
+abstract class _Rfc863Attachment extends _AbstractRfc86_Attachment {
 
     abstract static class Server extends _Rfc863Attachment {
 
@@ -22,7 +22,7 @@ abstract class _Rfc863Attachment extends _Rfc86_Attachment {
 
         @Override
         public void close() throws IOException {
-            _Rfc863Utils.logServerBytes(bytes());
+            _Rfc863Utils.logServerBytes(getBytes());
             super.close();
         }
     }
@@ -33,73 +33,48 @@ abstract class _Rfc863Attachment extends _Rfc86_Attachment {
          * Creates a new instance.
          */
         Client() {
-            super(_Rfc863Utils.randomBytes());
-            _Rfc863Utils.logClientBytes(bytes());
+            super(_Rfc86_Utils.randomBytes());
+            _Rfc863Utils.logClientBytes(getBytes());
         }
     }
-
-    // ---------------------------------------------------------------------------------------------
 
     /**
      * Creates a new instance.
      */
     private _Rfc863Attachment(final int bytes) {
-        super(bytes);
+        super(bytes, _Rfc863Constants.ALGORITHM);
     }
-
-    // --------------------------------------------------------------------------- java.io.Closeable
 
     @Override
     public void close() throws IOException {
-        _Rfc863Utils.logDigest(digest);
+        logDigest();
         super.close();
     }
 
-    // --------------------------------------------------------------------------------------- bytes
-
-    // -------------------------------------------------------------------------------------- buffer
-
     /**
-     * Returns {@link #buffer} configured for reading.
+     * Returns a buffer reading.
      *
-     * @return the {@link #buffer} with non-zero remaining.
+     * @return a buffer for reading.
      */
     final ByteBuffer getBufferForReading() {
+        final var buffer = getBuffer();
         if (!buffer.hasRemaining()) {
             buffer.clear();
         }
-        assert buffer.hasRemaining();
         return buffer;
     }
 
     /**
-     * Returns {@link #buffer} configured for writing.
+     * Returns a buffer for writing.
      *
-     * @return the {@link #buffer} with non-zero remaining.
+     * @return a buffer for writing.
      */
     final ByteBuffer getBufferForWriting() {
+        final var buffer = getBuffer();
         if (!buffer.hasRemaining()) {
             ThreadLocalRandom.current().nextBytes(buffer.array());
-            buffer.clear().limit(Math.min(buffer.limit(), bytes()));
+            buffer.clear().limit(Math.min(buffer.limit(), getBytes()));
         }
-        assert buffer.hasRemaining();
         return buffer;
     }
-
-    // -------------------------------------------------------------------------------------- digest
-
-    /**
-     * Updates specified number of bytes preceding current position of {@code buffer} to
-     * {@code digest}.
-     *
-     * @param bytes the number of bytes preceding current position of the {@code buffer} to be
-     *              updated to the {@code digest}.
-     */
-    final void updateDigest(final int bytes) {
-        updateDigest(bytes, digest);
-    }
-
-    // ---------------------------------------------------------------------------------------------
-
-    private final MessageDigest digest = _Rfc863Utils.newDigest();
 }

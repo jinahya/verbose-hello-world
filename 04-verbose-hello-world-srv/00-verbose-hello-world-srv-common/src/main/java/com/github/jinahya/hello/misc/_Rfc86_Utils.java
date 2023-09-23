@@ -30,7 +30,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 
 @Slf4j
-public abstract class _Rfc86_Utils {
+public final class _Rfc86_Utils {
 
     // -------------------------------------------------------------------------------- array/buffer
 
@@ -72,27 +72,12 @@ public abstract class _Rfc86_Utils {
     // --------------------------------------------------------------------------------------- bytes
 
     /**
-     * Returns a new {@code int} greater than or equals to {@code 0} and less than specified value.
-     *
-     * @param maxExclusive the maximum value, exclusive; must be positive.
-     * @return a new {@code int} greater than or equals to {@code 0} and less than
-     * {@code maxExclusive}.
-     */
-    private static int randomBytes(final int maxExclusive) {
-        if (maxExclusive <= 0) {
-            throw new IllegalArgumentException(
-                    "maxExclusive(" + maxExclusive + ") is not positive");
-        }
-        return ThreadLocalRandom.current().nextInt(maxExclusive);
-    }
-
-    /**
      * Returns a new {@code int} between {@code 0}(inclusive) and {@code 65536}(exclusive).
      *
      * @return a new {@code int} between {@code 0}(inclusive) and {@code 65536}(exclusive).
      */
     public static int randomBytes() {
-        return randomBytes(65536);
+        return ThreadLocalRandom.current().nextInt(65536);
     }
 
     // -------------------------------------------------------------------------------------- digest
@@ -102,7 +87,7 @@ public abstract class _Rfc86_Utils {
      *
      * @return the algorithm.
      */
-    protected static MessageDigest newDigest(final String algorithm) {
+    public static MessageDigest newDigest(final String algorithm) {
         Objects.requireNonNull(algorithm, "algorithm is null");
         try {
             return MessageDigest.getInstance(algorithm);
@@ -111,25 +96,23 @@ public abstract class _Rfc86_Utils {
         }
     }
 
-    protected static void logDigest(
-            final MessageDigest digest,
-            final Function<? super byte[], ? extends CharSequence> printer) {
+    public static void logDigest(final MessageDigest digest,
+                                 final Function<? super byte[], ? extends CharSequence> printer) {
         Objects.requireNonNull(digest, "digest is null");
         Objects.requireNonNull(printer, "printer is null");
         log.info("digest: {}", printer.apply(digest.digest()));
     }
 
-    protected static void logDigest(
-            final String algorithm, final byte[] array, final int offset, final int length,
-            final Function<? super byte[], ? extends CharSequence> printer) {
+    public static void logDigest(final String algorithm, final byte[] array, final int offset,
+                                 final int length,
+                                 final Function<? super byte[], ? extends CharSequence> printer) {
         final var digest = newDigest(algorithm);
         digest.update(array, offset, length);
         logDigest(digest, printer);
     }
 
-    protected static void logDigest(
-            final String algorithm, final ByteBuffer buffer,
-            final Function<? super byte[], ? extends CharSequence> printer) {
+    public static void logDigest(final String algorithm, final ByteBuffer buffer,
+                                 final Function<? super byte[], ? extends CharSequence> printer) {
         final var digest = newDigest(algorithm);
         digest.update(buffer);
         logDigest(digest, printer);
@@ -140,7 +123,7 @@ public abstract class _Rfc86_Utils {
     /**
      * Creates a new instance.
      */
-    protected _Rfc86_Utils() {
-        super();
+    private _Rfc86_Utils() {
+        throw new AssertionError("instantiation is not allowed");
     }
 }

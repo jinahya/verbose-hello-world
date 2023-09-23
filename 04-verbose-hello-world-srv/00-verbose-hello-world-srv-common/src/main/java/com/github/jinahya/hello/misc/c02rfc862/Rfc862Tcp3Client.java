@@ -20,6 +20,7 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
+import com.github.jinahya.hello.misc._Rfc86_Constants;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.EOFException;
@@ -39,10 +40,10 @@ class Rfc862Tcp3Client {
                 log.info("(optionally) bound to {}", client.getLocalAddress());
             }
             try (var attachment = new Rfc862Tcp3ClientAttachment(client)) {
-                client.connect(_Rfc862Constants.ADDR).get(
-                        _Rfc862Constants.CONNECT_TIMEOUT_DURATION,
-                        _Rfc862Constants.CONNECT_TIMEOUT_UNIT
-                );
+                client.connect(_Rfc862Constants.ADDR)
+                        .get(_Rfc86_Constants.CONNECT_TIMEOUT_DURATION,
+                             _Rfc86_Constants.CONNECT_TIMEOUT_UNIT
+                        );
                 try {
                     log.info("connected to {}, through {}", client.getRemoteAddress(),
                              client.getLocalAddress());
@@ -50,7 +51,7 @@ class Rfc862Tcp3Client {
                     throw new ExecutionException("failed to get addresses from " + client, ioe);
                 }
                 int w, r;
-                while (attachment.bytes() > 0) {
+                while (attachment.getBytes() > 0) {
                     w = attachment.write();
                     assert w > 0; // why?
                     r = attachment.read();
@@ -59,9 +60,9 @@ class Rfc862Tcp3Client {
                     }
                     assert r > 0; // why?
                 }
-                assert attachment.bytes() == 0;
+                assert attachment.getBytes() == 0;
                 client.shutdownOutput();
-                attachment.logDigest();
+//                attachment.logDigest();
                 while ((r = attachment.read()) == -1) {
                     assert r >= 0;
                 }

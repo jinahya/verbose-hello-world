@@ -38,32 +38,32 @@ class Rfc862Tcp3Server {
                          client.getLocalAddress());
                 try (var attachment = new Rfc862Tcp3ServerAttachment(client)) {
                     int r, w;
-                    while (true) {
-                        r = client.read(attachment.buffer)
-                                .get(_Rfc862Constants.READ_TIMEOUT_DURATION,
-                                     _Rfc862Constants.READ_TIMEOUT_UNIT);
-                        if (r == -1) {
-                            break;
-                        }
-                        assert r >= 0;
-                        attachment.bytes += r;
-                        attachment.digest.update(
-                                attachment.slice
-                                        .position(attachment.buffer.position() - r)
-                                        .limit(attachment.buffer.position())
-                        );
-                        attachment.buffer.flip();
-                        w = client.write(attachment.buffer).get();
-                        assert w >= 0;
-                        attachment.buffer.compact();
-                    }
-                    client.shutdownInput();
-                    for (attachment.buffer.flip(); attachment.buffer.hasRemaining(); ) {
-                        w = client.write(attachment.buffer).get();
-                        assert w >= 0;
-                    }
-                    _Rfc862Utils.logServerBytes(attachment.bytes);
-                    _Rfc862Utils.logDigest(attachment.digest);
+//                    while (true) {
+//                        r = client.read(attachment.buffer)
+//                                .get(_Rfc862Constants.READ_TIMEOUT_DURATION,
+//                                     _Rfc862Constants.READ_TIMEOUT_UNIT);
+//                        if (r == -1) {
+//                            break;
+//                        }
+//                        assert r >= 0;
+//                        attachment.bytes += r;
+//                        attachment.digest.update(
+//                                attachment.slice
+//                                        .position(attachment.buffer.position() - r)
+//                                        .limit(attachment.buffer.position())
+//                        );
+//                        attachment.buffer.flip();
+//                        w = client.write(attachment.buffer).get();
+//                        assert w >= 0;
+//                        attachment.buffer.compact();
+//                    }
+//                    client.shutdownInput();
+//                    for (attachment.buffer.flip(); attachment.buffer.hasRemaining(); ) {
+//                        w = client.write(attachment.buffer).get();
+//                        assert w >= 0;
+//                    }
+//                    _Rfc862Utils.logServerBytes(attachment.bytes);
+//                    _Rfc862Utils.logDigest(attachment.digest);
                 }
             }
         }

@@ -20,6 +20,7 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
+import com.github.jinahya.hello.misc._Rfc86_Utils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.ServerSocket;
@@ -38,7 +39,7 @@ class Rfc863Tcp1Server {
                 client.setSoTimeout((int) _Rfc863Constants.READ_TIMEOUT_IN_MILLIS);
                 final var digest = _Rfc863Utils.newDigest();
                 var bytes = 0L;
-                final var array = _Rfc863Utils.newArray();
+                final var array = _Rfc86_Utils.newArray();
                 for (int r; (r = client.getInputStream().read(array)) != -1; bytes += r) {
                     digest.update(array, 0, r);
                 }

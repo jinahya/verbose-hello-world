@@ -1,10 +1,13 @@
 package com.github.jinahya.hello.misc.c01rfc863;
 
+import com.github.jinahya.hello.misc._Rfc86_Constants;
+
 import java.io.IOException;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeoutException;
 
 final class Rfc863Tcp3ClientAttachment extends _Rfc863Attachment.Client {
 
@@ -38,10 +41,14 @@ final class Rfc863Tcp3ClientAttachment extends _Rfc863Attachment.Client {
      * Writes a sequence of bytes, and returns the result.
      *
      * @return a number of bytes written.
+     * @throws ExecutionException
+     * @throws InterruptedException
+     * @throws TimeoutException
      * @see Rfc863Tcp3ServerAttachment#readAndGet()
      */
-    int writeAndGet() throws ExecutionException, InterruptedException {
-        final var result = write().get();
+    int writeAndGet() throws ExecutionException, InterruptedException, TimeoutException {
+        final var result = write().get(_Rfc86_Constants.WRITE_TIMEOUT_DURATION,
+                                       _Rfc86_Constants.WRITE_TIMEOUT_UNIT);
         updateDigest(result);
         decreaseBytes(result);
         return result;

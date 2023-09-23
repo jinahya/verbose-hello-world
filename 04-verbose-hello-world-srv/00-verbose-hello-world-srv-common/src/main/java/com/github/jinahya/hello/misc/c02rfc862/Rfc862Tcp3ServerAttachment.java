@@ -6,7 +6,7 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
-final class Rfc862Tcp3ServerAttachment extends _Rfc862Attachment.Server {
+class Rfc862Tcp3ServerAttachment extends _Rfc862Attachment.Server {
 
     Rfc862Tcp3ServerAttachment(final AsynchronousSocketChannel client) {
         super();
@@ -22,11 +22,12 @@ final class Rfc862Tcp3ServerAttachment extends _Rfc862Attachment.Server {
 
     // -------------------------------------------------------------------------------------- client
     int read() throws ExecutionException, InterruptedException, TimeoutException {
+        final var buffer = getBuffer();
         buffer.flip();
         final var result = client.read(buffer).get(_Rfc862Constants.READ_TIMEOUT_DURATION,
                                                    _Rfc862Constants.READ_TIMEOUT_UNIT);
         buffer.position(buffer.limit()).limit(buffer.capacity());
-        if (bytes() == 0) {
+        if (getBytes() == 0) {
             buffer.clear();
         }
         return result;

@@ -20,6 +20,7 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
+import com.github.jinahya.hello.misc._Rfc86_Constants;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
@@ -53,7 +54,7 @@ class Rfc863Tcp2Client {
                          client.getLocalAddress());
                 final var attachment = new Rfc863Tcp2ClientAttachment();
                 clientKey = client.register(selector, 0, attachment);
-                if (attachment.bytes() == 0) {
+                if (attachment.getBytes() == 0) {
                     clientKey.cancel();
                     assert !clientKey.isValid();
                 } else {
@@ -63,10 +64,10 @@ class Rfc863Tcp2Client {
                 clientKey = client.register(selector, SelectionKey.OP_CONNECT);
             }
             while (clientKey.isValid()) {
-                if (selector.select((int) _Rfc863Constants.CONNECT_TIMEOUT_IN_MILLIS) == 0) {
+                if (selector.select((int) _Rfc86_Constants.CONNECT_TIMEOUT_IN_MILLIS) == 0) {
                     break;
                 }
-                for (var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
+                for (final var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
                     var key = i.next();
                     if (key.isConnectable()) {
                         final var channel = (SocketChannel) key.channel();
@@ -78,23 +79,22 @@ class Rfc863Tcp2Client {
                         key.interestOpsAnd(~SelectionKey.OP_CONNECT);
                         final var attachment = new Rfc863Tcp2ClientAttachment();
                         key.attach(attachment);
-                        if (attachment.bytes() == 0) {
+                        if (attachment.getBytes() == 0) {
                             log.warn("no bytes to send; canceling...");
                             key.cancel();
                             assert !key.isValid();
-                            continue;
+                        } else {
+                            key.interestOps(SelectionKey.OP_WRITE);
                         }
-                        key.interestOps(SelectionKey.OP_WRITE);
-                        continue;
                     }
                     if (key.isWritable()) {
                         final var channel = (SocketChannel) key.channel();
                         assert channel == client;
                         final var attachment = (Rfc863Tcp2ClientAttachment) key.attachment();
-                        assert attachment.bytes() > 0;
-                        final var w = attachment.writeTo(channel);
+                        assert attachment.getBytes() > 0;
+                        final var w = attachment.write(channel);
                         assert w > 0; // why?
-                        if (attachment.bytes() == 0) {
+                        if (attachment.getBytes() == 0) {
                             key.interestOpsAnd(~SelectionKey.OP_WRITE);
                             attachment.close();
                             key.cancel();

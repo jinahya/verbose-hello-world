@@ -9,9 +9,6 @@ import java.util.concurrent.TimeoutException;
 
 final class Rfc863Tcp3ServerAttachment extends _Rfc863Attachment.Server {
 
-    /**
-     * Creates a new instance.
-     */
     Rfc863Tcp3ServerAttachment(final AsynchronousSocketChannel client) {
         super();
         this.client = Objects.requireNonNull(client, "client is null");
@@ -37,6 +34,9 @@ final class Rfc863Tcp3ServerAttachment extends _Rfc863Attachment.Server {
      * Reads a sequence of bytes,, and returns the result.
      *
      * @return a number of bytes read.
+     * @throws ExecutionException
+     * @throws InterruptedException
+     * @throws TimeoutException
      * @see Rfc863Tcp3ClientAttachment#writeAndGet()
      */
     int readAndGet() throws ExecutionException, InterruptedException, TimeoutException {

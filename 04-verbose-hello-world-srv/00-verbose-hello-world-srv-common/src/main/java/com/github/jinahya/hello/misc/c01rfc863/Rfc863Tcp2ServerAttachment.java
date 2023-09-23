@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.util.Objects;
 
 final class Rfc863Tcp2ServerAttachment extends _Rfc863Attachment.Server {
 
@@ -21,15 +22,15 @@ final class Rfc863Tcp2ServerAttachment extends _Rfc863Attachment.Server {
      * @return a number of bytes read from the {@code channel}.
      * @throws IOException if an I/O error occurs.
      * @see ReadableByteChannel#read(ByteBuffer)
-     * @see Rfc863Tcp2ClientAttachment#writeTo(WritableByteChannel)
+     * @see Rfc863Tcp2ClientAttachment#write(WritableByteChannel)
      */
-    int readFrom(final ReadableByteChannel channel) throws IOException {
+    int read(final ReadableByteChannel channel) throws IOException {
+        Objects.requireNonNull(channel, "channel is null");
         final int r = channel.read(getBufferForReading());
         if (r == -1) {
             return r;
         }
-        updateDigest(r);
-        increaseBytes(r);
+        increaseBytes(updateDigest(r));
         return r;
     }
 }

@@ -20,10 +20,10 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
+import com.github.jinahya.hello.misc._Rfc86_Constants;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
-import java.net.SocketException;
 import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
@@ -34,50 +34,48 @@ import java.util.concurrent.ThreadLocalRandom;
 @Slf4j
 class Rfc863Udp2Client {
 
-    public static void main(String... args) throws Exception {
+    public static void main(final String... args) throws Exception {
         try (var selector = Selector.open();
              var client = DatagramChannel.open()) {
             if (ThreadLocalRandom.current().nextBoolean()) {
-                client.bind(new InetSocketAddress(_Rfc863Constants.HOST, 0));
+                client.bind(new InetSocketAddress(_Rfc86_Constants.HOST, 0));
                 log.info("(optionally) bound to {}", client.getLocalAddress());
             }
-            var connect = ThreadLocalRandom.current().nextBoolean();
+            final var connect = ThreadLocalRandom.current().nextBoolean();
             if (connect) {
-                try {
-                    client.connect(_Rfc863Constants.ADDR);
-                    log.info("(optionally) connected to {}, through {}", client.getRemoteAddress(),
-                             client.getLocalAddress());
-                } catch (SocketException se) {
-                    log.warn("failed to connect", se);
-                    connect = false;
-                }
+                client.connect(_Rfc863Constants.ADDR);
+                log.info("(optionally) connected to {}, through {}", client.getRemoteAddress(),
+                         client.getLocalAddress());
             }
             client.configureBlocking(false);
-            var clientKey = client.register(selector, SelectionKey.OP_WRITE);
-            if (selector.selectNow() == 0) {
-                log.error("not immediately writable?");
-                return;
+            final var clientKey = client.register(selector, SelectionKey.OP_WRITE);
+            while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
+                if (selector.select(_Rfc86_Constants.CONNECT_TIMEOUT_IN_MILLIS) == 0) {
+                    break;
+                }
+                for (final var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
+                    final var selectedKey = i.next();
+                    assert selectedKey == clientKey;
+                    assert selectedKey.isWritable();
+                    final var channel = (DatagramChannel) selectedKey.channel();
+                    assert channel == client;
+                    final ByteBuffer buffer;
+                    {
+                        final var bound = channel.getOption(StandardSocketOptions.SO_SNDBUF) + 1;
+                        final var length = ThreadLocalRandom.current().nextInt(bound);
+                        final var array = new byte[length];
+                        ThreadLocalRandom.current().nextBytes(array);
+                        buffer = ByteBuffer.wrap(array);
+                    }
+                    _Rfc863Utils.logClientBytes(buffer.remaining());
+                    final var w = channel.send(buffer, _Rfc863Constants.ADDR);
+                    assert w == buffer.position();
+                    assert !buffer.hasRemaining(); // why?
+                    _Rfc863Utils.logDigest(buffer.flip());
+                    selectedKey.cancel();
+                    assert !selectedKey.isValid();
+                }
             }
-            var i = selector.selectedKeys().iterator();
-            var key = i.next();
-            assert key == clientKey;
-            assert key.isWritable();
-            var channel = (DatagramChannel) key.channel();
-            assert channel == client;
-            var buffer = ByteBuffer.allocate(
-                    ThreadLocalRandom.current().nextInt(
-                            channel.getOption(StandardSocketOptions.SO_SNDBUF) + 1
-                    )
-            );
-            ThreadLocalRandom.current().nextBytes(buffer.array());
-            _Rfc863Utils.logClientBytes(buffer.remaining());
-            var w = channel.send(buffer, _Rfc863Constants.ADDR);
-            assert w == buffer.position();
-            assert !buffer.hasRemaining();
-            _Rfc863Utils.logDigest(buffer.flip());
-            key.cancel();
-            assert !key.isValid();
-            i.remove();
             if (connect) {
                 client.disconnect();
             }

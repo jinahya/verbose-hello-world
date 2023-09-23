@@ -33,16 +33,16 @@ final class Rfc862Tcp4ClientAttachment extends _Rfc862Attachment.Client {
     // -------------------------------------------------------------------------------------- buffer
 
     ByteBuffer bufferForWriting() {
-        return buffer(b -> {
+        return getBuffer(b -> {
             if (!b.hasRemaining()) {
                 ThreadLocalRandom.current().nextBytes(b.array());
-                b.limit(Math.min(b.remaining(), bytes()));
+                b.limit(Math.min(b.remaining(), getBytes()));
             }
         });
     }
 
     ByteBuffer bufferForReading() {
-        return buffer(ByteBuffer::flip);
+        return getBuffer(ByteBuffer::flip);
     }
 
     // --------------------------------------------------------------------------------------- group
@@ -91,12 +91,13 @@ final class Rfc862Tcp4ClientAttachment extends _Rfc862Attachment.Client {
     }
 
     void write() {
+        final var buffer = getBuffer();
         if (!buffer.hasRemaining()) {
             ThreadLocalRandom.current().nextBytes(buffer.array());
-            buffer.limit(Math.min(buffer.remaining(), bytes()));
+            buffer.limit(Math.min(buffer.remaining(), getBytes()));
         }
         client.write(
-                buffer(),
+                getBuffer(),
                 _Rfc86_Constants.READ_TIMEOUT_DURATION,
                 _Rfc86_Constants.READ_TIMEOUT_UNIT,
                 this,
@@ -125,8 +126,9 @@ final class Rfc862Tcp4ClientAttachment extends _Rfc862Attachment.Client {
     }
 
     void read() {
+        final var buffer = getBuffer();
         client.read(
-                buffer().flip(),
+                getBuffer().flip(),
                 _Rfc86_Constants.READ_TIMEOUT_DURATION,
                 _Rfc86_Constants.READ_TIMEOUT_UNIT,
                 this,

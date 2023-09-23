@@ -49,7 +49,7 @@ class Rfc862Tcp2Client {
                         SelectionKey.OP_WRITE | SelectionKey.OP_READ,
                         attachment
                 );
-                if (attachment.bytes() == 0) {
+                if (attachment.getBytes() == 0) {
                     log.warn("bytes == 0; canceling...");
                     key.cancel();
                     assert !key.isValid();
@@ -75,7 +75,7 @@ class Rfc862Tcp2Client {
                         final var attachment = new Rfc862Tcp2ClientAttachment();
                         key.attach(attachment);
                         key.interestOpsOr(SelectionKey.OP_WRITE | SelectionKey.OP_READ);
-                        if (attachment.bytes() == 0) {
+                        if (attachment.getBytes() == 0) {
                             log.warn("bytes == 0; canceling...");
                             key.cancel();
                         }
@@ -88,7 +88,7 @@ class Rfc862Tcp2Client {
                         assert attachment != null;
                         final var w = attachment.writeTo(channel);
                         assert w >= 0;
-                        if (attachment.bytes() == 0) {
+                        if (attachment.getBytes() == 0) {
                             channel.shutdownOutput();
                             key.interestOpsAnd(~SelectionKey.OP_WRITE);
                         }
@@ -100,7 +100,7 @@ class Rfc862Tcp2Client {
                         assert attachment != null;
                         final var r = attachment.readFrom(channel);
                         if (r == -1) {
-                            if (attachment.bytes() > 0) {
+                            if (attachment.getBytes() > 0) {
                                 throw new EOFException("unexpected eof");
                             }
                             key.interestOpsAnd(~SelectionKey.OP_READ);

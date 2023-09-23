@@ -20,6 +20,8 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
+import com.github.jinahya.hello.misc._Rfc86_Constants;
+import com.github.jinahya.hello.misc._Rfc86_Utils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.EOFException;
@@ -36,14 +38,14 @@ class Rfc862Tcp1Client {
                 client.bind(new InetSocketAddress(_Rfc862Constants.HOST, 0));
                 log.info("(optionally) bound to {}", client.getLocalSocketAddress());
             }
-            client.connect(_Rfc862Constants.ADDR, (int) _Rfc862Constants.CONNECT_TIMEOUT_IN_MILLIS);
+            client.connect(_Rfc862Constants.ADDR, (int) _Rfc86_Constants.CONNECT_TIMEOUT_IN_MILLIS);
             log.info("connected to {}, through {}", client.getRemoteSocketAddress(),
                      client.getLocalSocketAddress());
-            client.setSoTimeout((int) _Rfc862Constants.READ_TIMEOUT_IN_MILLIS);
+            client.setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_IN_MILLIS);
             final var digest = _Rfc862Utils.newDigest();
-            var bytes = _Rfc862Utils.randomBytes();
+            var bytes = _Rfc86_Utils.randomBytes();
             _Rfc862Utils.logClientBytes(bytes);
-            final var array = _Rfc862Utils.newArray();
+            final var array = _Rfc86_Utils.newArray();
             for (int r; bytes > 0; ) {
                 ThreadLocalRandom.current().nextBytes(array);
                 var l = Math.min(array.length, bytes);

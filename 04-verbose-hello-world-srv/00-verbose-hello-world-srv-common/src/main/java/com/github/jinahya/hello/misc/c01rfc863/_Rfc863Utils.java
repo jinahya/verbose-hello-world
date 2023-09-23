@@ -29,9 +29,7 @@ import java.util.HexFormat;
 import java.util.function.Function;
 
 @Slf4j
-final class _Rfc863Utils extends _Rfc86_Utils {
-
-    // --------------------------------------------------------------------------------------- bytes
+final class _Rfc863Utils {
 
     /**
      * Logs specified client bytes.
@@ -57,8 +55,6 @@ final class _Rfc863Utils extends _Rfc86_Utils {
         log.info("{} bytes received (and discarded)", bytes);
     }
 
-    // -------------------------------------------------------------------------------------- digest
-
     /**
      * Returns a new message digest of {@link _Rfc863Constants#ALGORITHM}.
      *
@@ -66,25 +62,23 @@ final class _Rfc863Utils extends _Rfc86_Utils {
      * @see _Rfc863Constants#ALGORITHM
      */
     static MessageDigest newDigest() {
-        return newDigest(_Rfc863Constants.ALGORITHM);
+        return _Rfc86_Utils.newDigest(_Rfc863Constants.ALGORITHM);
     }
 
     private static Function<? super byte[], ? extends CharSequence> PRINTER =
             b -> HexFormat.of().formatHex(b);
 
     static void logDigest(final MessageDigest digest) {
-        logDigest(digest, PRINTER);
+        _Rfc86_Utils.logDigest(digest, PRINTER);
     }
 
     static void logDigest(final byte[] array, final int offset, final int length) {
-        logDigest(_Rfc863Constants.ALGORITHM, array, offset, length, PRINTER);
+        _Rfc86_Utils.logDigest(_Rfc863Constants.ALGORITHM, array, offset, length, PRINTER);
     }
 
     static void logDigest(final ByteBuffer buffer) {
-        logDigest(_Rfc863Constants.ALGORITHM, buffer, PRINTER);
+        _Rfc86_Utils.logDigest(_Rfc863Constants.ALGORITHM, buffer, PRINTER);
     }
-
-    // ---------------------------------------------------------------------------------------------
 
     /**
      * Creates a new instance.

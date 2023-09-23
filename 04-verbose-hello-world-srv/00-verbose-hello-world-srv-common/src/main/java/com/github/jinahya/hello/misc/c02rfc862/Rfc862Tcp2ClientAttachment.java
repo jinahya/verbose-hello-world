@@ -13,6 +13,7 @@ final class Rfc862Tcp2ClientAttachment extends _Rfc862Attachment.Client {
 
     int readFrom(final ReadableByteChannel channel) throws IOException {
         Objects.requireNonNull(channel, "channel is null");
+        final var buffer = getBuffer();
         buffer.flip(); // limit -> position, position -> zero
         final var r = channel.read(buffer);
         buffer.position(buffer.limit()).limit(buffer.capacity());

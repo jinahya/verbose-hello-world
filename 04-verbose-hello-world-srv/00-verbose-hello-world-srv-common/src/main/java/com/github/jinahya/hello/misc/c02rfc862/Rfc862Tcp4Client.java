@@ -40,15 +40,11 @@ class Rfc862Tcp4Client {
                 log.info("(optionally) bound to {}", client.getLocalAddress());
             }
             try (var attachment = new Rfc862Tcp4ClientAttachment(group, client)) {
-                client.connect(
-                        _Rfc862Constants.ADDR,                   // <remote>
-                        attachment,                              // <attachment>
-                        Rfc862Tcp4ClientHandlers.Connect.HANDLER // <handler>
-                );
-                if (!group.awaitTermination(_Rfc86_Constants.CLIENT_TIMEOUT_DURATION,
-                                            _Rfc86_Constants.CLIENT_TIMEOUT_UNIT)) {
-                    log.error("channel group has not been terminated!");
-                }
+                attachment.connect();
+                final var terminated = group.awaitTermination(
+                        _Rfc86_Constants.CLIENT_TIMEOUT_DURATION,
+                        _Rfc86_Constants.CLIENT_TIMEOUT_UNIT);
+                assert terminated : "channel group hasn't been terminated!";
             }
         }
     }

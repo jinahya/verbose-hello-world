@@ -20,6 +20,7 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
+import com.github.jinahya.hello.misc._Rfc86_Utils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
@@ -39,9 +40,9 @@ class Rfc863Tcp1Client {
             log.info("connected to {}, through {}", client.getRemoteSocketAddress(),
                      client.getLocalSocketAddress());
             final var digest = _Rfc863Utils.newDigest();
-            var bytes = _Rfc863Utils.randomBytes();
+            var bytes = _Rfc86_Utils.randomBytes();
             _Rfc863Utils.logClientBytes(bytes);
-            final var array = _Rfc863Utils.newArray();
+            final var array = _Rfc86_Utils.newArray();
             while (bytes > 0) {
                 ThreadLocalRandom.current().nextBytes(array);
                 final var l = Math.min(array.length, bytes);

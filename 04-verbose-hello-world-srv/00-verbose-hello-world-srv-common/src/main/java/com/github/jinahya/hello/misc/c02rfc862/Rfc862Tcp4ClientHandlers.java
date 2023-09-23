@@ -33,6 +33,7 @@ final class Rfc862Tcp4ClientHandlers {
         HANDLER() { // @formatter:off
             @Override
             public void completed(final Void result, final Rfc862Tcp4ClientAttachment attachment) {
+                Rfc862Tcp4ClientHandlers.Connect.HANDLER.completed(result, attachment);
                 attachment.write();
             }
             @Override
@@ -64,13 +65,13 @@ final class Rfc862Tcp4ClientHandlers {
             public void completed(final Integer result,
                                   final Rfc862Tcp4ClientAttachment attachment) {
                 if (result == -1) {
-                    if (attachment.bytes() > 0) {
+                    if (attachment.getBytes() > 0) {
                         throw new UncheckedIOException(new EOFException("unexpected eof"));
                     }
                     attachment.closeUnchecked();
                     return;
                 }
-                if (attachment.bytes() == 0) { // all bytes have already been sent
+                if (attachment.getBytes() == 0) { // all bytes have already been sent
                     attachment.read();
                     return;
                 }

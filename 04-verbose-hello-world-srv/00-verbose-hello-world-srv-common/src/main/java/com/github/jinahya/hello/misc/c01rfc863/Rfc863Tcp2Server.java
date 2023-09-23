@@ -20,6 +20,7 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
+import com.github.jinahya.hello.misc._Rfc86_Constants;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.channels.SelectionKey;
@@ -38,7 +39,7 @@ class Rfc863Tcp2Server {
             server.configureBlocking(false);
             final var serverKey = server.register(selector, SelectionKey.OP_ACCEPT);
             while (serverKey.isValid()) {
-                if (selector.select(_Rfc863Constants.ACCEPT_TIMEOUT_IN_MILLIS) == 0) {
+                if (selector.select(_Rfc86_Constants.ACCEPT_TIMEOUT_IN_MILLIS) == 0) {
                     break;
                 }
                 for (final var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
@@ -59,7 +60,7 @@ class Rfc863Tcp2Server {
                         final var channel = (SocketChannel) key.channel();
                         final var attachment = (Rfc863Tcp2ServerAttachment) key.attachment();
                         assert attachment != null;
-                        final var r = attachment.readFrom(channel);
+                        final var r = attachment.read(channel);
                         if (r == -1) {
                             key.interestOpsAnd(~SelectionKey.OP_READ);
                             channel.close();

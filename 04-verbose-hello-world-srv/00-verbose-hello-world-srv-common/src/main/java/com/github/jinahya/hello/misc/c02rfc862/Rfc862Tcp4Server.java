@@ -37,7 +37,7 @@ class Rfc862Tcp4Server {
     static class Attachment extends Rfc862Tcp3ServerAttachment {
 
         Attachment(final AsynchronousChannelGroup group) {
-            super();
+            super(null);
             this.group = Objects.requireNonNull(group, "group is null");
         }
 
@@ -62,20 +62,20 @@ class Rfc862Tcp4Server {
     CompletionHandler<Integer, Attachment> W_HANDLER = new CompletionHandler<>() {
         @Override public void completed(Integer result, Attachment attachment) {
             assert result > 0;
-            attachment.digest.update(
-                    attachment.slice
-                            .position(attachment.buffer.position() - result)
-                            .limit(attachment.buffer.position())
-            );
-            attachment.buffer.compact();
-            assert attachment.buffer.hasRemaining();
-            attachment.client.read(
-                    attachment.buffer,                      // <dst>
-                    _Rfc862Constants.READ_TIMEOUT_DURATION, // <timeout>
-                    _Rfc862Constants.READ_TIMEOUT_UNIT,     // <unit>
-                    attachment,                             // <attachment>
-                    R_HANDLER                               // <handler>
-            );
+//            attachment.digest.update(
+//                    attachment.slice
+//                            .position(attachment.buffer.position() - result)
+//                            .limit(attachment.buffer.position())
+//            );
+//            attachment.buffer.compact();
+//            assert attachment.buffer.hasRemaining();
+//            attachment.client.read(
+//                    attachment.buffer,                      // <dst>
+//                    _Rfc862Constants.READ_TIMEOUT_DURATION, // <timeout>
+//                    _Rfc862Constants.READ_TIMEOUT_UNIT,     // <unit>
+//                    attachment,                             // <attachment>
+//                    R_HANDLER                               // <handler>
+//            );
         }
         @Override public void failed(Throwable exc, Attachment attachment) {
             log.error("failed to write", exc);
@@ -88,21 +88,21 @@ class Rfc862Tcp4Server {
     private static final
     CompletionHandler<Integer, Attachment> R_HANDLER = new CompletionHandler<>() {
         @Override public void completed(Integer result, Attachment attachment) {
-            if (result == -1) {
-                if (attachment.buffer.position() == 0) { // no more bytes to send back, either
-                    attachment.closeUnchecked();
-                    return;
-                }
-            } else {
-                attachment.bytes += result;
-            }
-            attachment.buffer.flip();
-            assert attachment.buffer.hasRemaining();
-            attachment.client.write(
-                    attachment.buffer, // <src>
-                    attachment,        // <attachment>
-                    W_HANDLER          // <handler>
-            );
+//            if (result == -1) {
+//                if (attachment.buffer.position() == 0) { // no more bytes to send back, either
+//                    attachment.closeUnchecked();
+//                    return;
+//                }
+//            } else {
+//                attachment.bytes += result;
+//            }
+//            attachment.buffer.flip();
+//            assert attachment.buffer.hasRemaining();
+//            attachment.client.write(
+//                    attachment.buffer, // <src>
+//                    attachment,        // <attachment>
+//                    W_HANDLER          // <handler>
+//            );
         }
         @Override public void failed(Throwable exc, Attachment attachment) {
             log.error("failed to read", exc);
@@ -123,14 +123,14 @@ class Rfc862Tcp4Server {
                 log.error("failed get addresses from {}", result, ioe);
             }
             attachment.client = result;
-            assert attachment.buffer.hasRemaining();
-            attachment.client.read(
-                    attachment.buffer,                      // <dst>
-                    _Rfc862Constants.READ_TIMEOUT_DURATION, // <timeout>
-                    _Rfc862Constants.READ_TIMEOUT_UNIT,     // <unit>
-                    attachment,                             // <attachment>
-                    R_HANDLER                               // <handler>
-            );
+//            assert attachment.buffer.hasRemaining();
+//            attachment.client.read(
+//                    attachment.buffer,                      // <dst>
+//                    _Rfc862Constants.READ_TIMEOUT_DURATION, // <timeout>
+//                    _Rfc862Constants.READ_TIMEOUT_UNIT,     // <unit>
+//                    attachment,                             // <attachment>
+//                    R_HANDLER                               // <handler>
+//            );
         }
         @Override public void failed(Throwable exc, Attachment attachment) {
             log.error("failed to accept", exc);
@@ -153,8 +153,8 @@ class Rfc862Tcp4Server {
                                         _Rfc862Constants.ACCEPT_TIMEOUT_UNIT)) {
                 throw new RuntimeException("channel group has not been terminated!");
             }
-            _Rfc862Utils.logServerBytes(attachment.bytes);
-            _Rfc862Utils.logDigest(attachment.digest);
+//            _Rfc862Utils.logServerBytes(attachment.bytes);
+//            _Rfc862Utils.logDigest(attachment.digest);
         }
     }
 

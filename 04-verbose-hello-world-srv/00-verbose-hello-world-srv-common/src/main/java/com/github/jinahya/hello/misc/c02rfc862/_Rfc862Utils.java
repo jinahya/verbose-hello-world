@@ -29,7 +29,7 @@ import java.util.Base64;
 import java.util.function.Function;
 
 @Slf4j
-final class _Rfc862Utils extends _Rfc86_Utils {
+final class _Rfc862Utils {
 
     // --------------------------------------------------------------------------------------- bytes
     static void logClientBytes(final int bytes) {
@@ -48,22 +48,23 @@ final class _Rfc862Utils extends _Rfc86_Utils {
 
     // -------------------------------------------------------------------------------------- digest
     static MessageDigest newDigest() {
-        return newDigest(_Rfc862Constants.ALGORITHM);
+        return null;
+//        return newDigest(_Rfc862Constants.ALGORITHM);
     }
 
     private static Function<? super byte[], ? extends CharSequence> PRINTER =
             b -> Base64.getEncoder().encodeToString(b);
 
     static void logDigest(final MessageDigest digest) {
-        logDigest(digest, PRINTER);
+//        logDigest(digest, PRINTER);
     }
 
     static void logDigest(final byte[] array, final int offset, final int length) {
-        logDigest(_Rfc862Constants.ALGORITHM, array, offset, length, PRINTER);
+//        logDigest(_Rfc862Constants.ALGORITHM, array, offset, length, PRINTER);
     }
 
     static void logDigest(final ByteBuffer buffer) {
-        logDigest(_Rfc862Constants.ALGORITHM, buffer, PRINTER);
+//        logDigest(_Rfc862Constants.ALGORITHM, buffer, PRINTER);
     }
 
     // ---------------------------------------------------------------------------------------------

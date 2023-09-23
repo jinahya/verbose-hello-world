@@ -30,10 +30,20 @@ import java.util.function.BiConsumer;
  */
 public final class JavaNioChannelsUtils {
 
-//    public static <V, A> CompletionHandler<V, A> newCompletionHandler(
-//            final BiConsumer<? super A, ? super A> completed,
-//            final BiConsumer<? super Throwable, ? super A> failed) {
-//    }
+    // @formatter:off
+    public static <V, A> CompletionHandler<V, A> newCompletionHandler(
+            final BiConsumer<? super V, ? super A> completed,
+            final BiConsumer<? super Throwable, ? super A> failed) {
+        return new CompletionHandler<V, A>() {
+            @Override public void completed(final V result, final A attachment) {
+                completed.accept(result, attachment);
+            }
+            @Override public void failed(final Throwable exc, final A attachment) {
+                failed.accept(exc, attachment);
+            }
+        };
+    }
+    // @formatter:on
 
     private JavaNioChannelsUtils() {
         throw new AssertionError("instantiation is not allowed");

@@ -20,6 +20,7 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
+import com.github.jinahya.hello.misc._Rfc86_Constants;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.StandardSocketOptions;
@@ -28,32 +29,40 @@ import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 
-// https://datatracker.ietf.org/doc/html/rfc863
 @Slf4j
 class Rfc863Udp2Server {
 
-    public static void main(String... args) throws Exception {
+    public static void main(final String... args) throws Exception {
         try (var selector = Selector.open();
              var server = DatagramChannel.open()) {
             server.bind(_Rfc863Constants.ADDR);
             log.info("bound to {}", server.getLocalAddress());
             server.configureBlocking(false);
-            var serverKey = server.register(selector, SelectionKey.OP_READ);
-            if (selector.select(_Rfc863Constants.ACCEPT_TIMEOUT_IN_MILLIS) == 0) {
-                return;
+            final var serverKey = server.register(selector, SelectionKey.OP_READ);
+            while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
+                if (selector.select(_Rfc86_Constants.ACCEPT_TIMEOUT_IN_MILLIS) == 0) {
+                    break;
+                }
+                for (final var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
+                    final var selectedKey = i.next();
+                    assert selectedKey == serverKey;
+                    assert selectedKey.isReadable();
+                    final var channel = (DatagramChannel) selectedKey.channel();
+                    assert channel == server;
+                    final ByteBuffer buffer;
+                    {
+                        final var capacity = channel.getOption(StandardSocketOptions.SO_RCVBUF);
+                        buffer = ByteBuffer.allocate(capacity);
+                    }
+                    final var source = channel.receive(buffer);
+                    log.debug("received from {}", source);
+                    assert source != null;
+                    _Rfc863Utils.logServerBytes(buffer.position());
+                    _Rfc863Utils.logDigest(buffer.flip());
+                    selectedKey.cancel();
+                    assert !selectedKey.isValid();
+                }
             }
-            var key = selector.selectedKeys().iterator().next();
-            assert key == serverKey;
-            assert key.isReadable();
-            var channel = (DatagramChannel) key.channel();
-            assert channel == server;
-            var buffer = ByteBuffer.allocate(channel.getOption(StandardSocketOptions.SO_RCVBUF));
-            var source = channel.receive(buffer);
-            assert source != null;
-            _Rfc863Utils.logServerBytes(buffer.position());
-            _Rfc863Utils.logDigest(buffer.flip());
-            key.cancel();
-            assert !key.isValid();
         }
     }
 

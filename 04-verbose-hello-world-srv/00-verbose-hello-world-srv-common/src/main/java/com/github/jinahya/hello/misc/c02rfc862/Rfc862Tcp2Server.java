@@ -20,6 +20,7 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
+import com.github.jinahya.hello.misc._Rfc86_Constants;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.channels.SelectionKey;
@@ -38,7 +39,7 @@ class Rfc862Tcp2Server {
             server.configureBlocking(false);
             server.register(selector, SelectionKey.OP_ACCEPT);
             while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
-                if (selector.select(_Rfc862Constants.ACCEPT_TIMEOUT_IN_MILLIS) == 0) {
+                if (selector.select(_Rfc86_Constants.ACCEPT_TIMEOUT_IN_MILLIS) == 0) {
                     break;
                 }
                 for (var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
