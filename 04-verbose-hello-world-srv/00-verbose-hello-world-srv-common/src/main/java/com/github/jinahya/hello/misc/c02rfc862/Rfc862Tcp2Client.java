@@ -21,9 +21,9 @@ package com.github.jinahya.hello.misc.c02rfc862;
  */
 
 import com.github.jinahya.hello.misc._Rfc86_Constants;
+import com.github.jinahya.hello.misc._Rfc86_Utils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.EOFException;
 import java.net.InetSocketAddress;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -45,11 +45,8 @@ class Rfc862Tcp2Client {
             if (client.connect(_Rfc862Constants.ADDR)) {
                 log.info("(immediately) connected to {}, through {}", client.getRemoteAddress(),
                          client.getLocalAddress());
-                clientKey = client.register(
-                        selector,
-                        SelectionKey.OP_WRITE | SelectionKey.OP_READ,
-                        new Rfc862Tcp2ClientAttachment()
-                );
+                clientKey = client.register(selector, SelectionKey.OP_WRITE);
+                clientKey.attach(new Rfc862Tcp2ClientAttachment(clientKey));
             } else {
                 clientKey = client.register(selector, SelectionKey.OP_CONNECT);
             }
@@ -60,15 +57,15 @@ class Rfc862Tcp2Client {
                 for (var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
                     final var selectedKey = i.next();
                     if (selectedKey.isConnectable()) {
+                        assert selectedKey == clientKey;
                         final var channel = (SocketChannel) selectedKey.channel();
                         assert channel == client;
                         if (channel.finishConnect()) {
-                            log.info("connected to {}, through {}", channel.getRemoteAddress(),
-                                     channel.getLocalAddress());
+                            _Rfc86_Utils.logConnected(channel);
                             selectedKey.interestOpsAnd(~SelectionKey.OP_CONNECT);
                             assert selectedKey.attachment() == null;
-                            selectedKey.attach(new Rfc862Tcp2ClientAttachment());
-                            selectedKey.interestOpsOr(SelectionKey.OP_WRITE | SelectionKey.OP_READ);
+                            selectedKey.attach(new Rfc862Tcp2ClientAttachment(selectedKey));
+                            selectedKey.interestOpsOr(SelectionKey.OP_WRITE);
                         }
                     }
                     if (selectedKey.isWritable()) {
@@ -77,13 +74,8 @@ class Rfc862Tcp2Client {
                         final var attachment =
                                 (Rfc862Tcp2ClientAttachment) selectedKey.attachment();
                         assert attachment != null;
-                        final var w = attachment.write(channel);
-                        assert w >= 0;
-                        if (attachment.getBytes() == 0) {
-                            channel.shutdownOutput();
-                            selectedKey.interestOpsAnd(~SelectionKey.OP_WRITE);
-                            attachment.logDigest();
-                        }
+                        final var w = attachment.write();
+                        assert w > 0;
                     }
                     if (selectedKey.isReadable()) {
                         final var channel = (SocketChannel) selectedKey.channel();
@@ -91,16 +83,8 @@ class Rfc862Tcp2Client {
                         final var attachment =
                                 (Rfc862Tcp2ClientAttachment) selectedKey.attachment();
                         assert attachment != null;
-                        final var r = attachment.read(channel);
-                        if (r == -1) {
-                            if (attachment.getBytes() > 0) {
-                                throw new EOFException("unexpected eof");
-                            }
-                            selectedKey.interestOpsAnd(~SelectionKey.OP_READ);
-                            selectedKey.cancel();
-                            assert !selectedKey.isValid();
-                            attachment.close();
-                        }
+                        final var r = attachment.read();
+                        assert r >= -1;
                     }
                 }
             }

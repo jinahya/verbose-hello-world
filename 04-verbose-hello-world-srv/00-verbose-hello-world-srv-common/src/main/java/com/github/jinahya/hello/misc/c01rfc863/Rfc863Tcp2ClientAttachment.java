@@ -1,9 +1,10 @@
 package com.github.jinahya.hello.misc.c01rfc863;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.SelectionKey;
 import java.nio.channels.WritableByteChannel;
+import java.util.Objects;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * An attachment class used by {@link Rfc863Tcp2Client}.
@@ -12,26 +13,36 @@ import java.nio.channels.WritableByteChannel;
  */
 final class Rfc863Tcp2ClientAttachment extends _Rfc863Attachment.Client {
 
-    /**
-     * Creates a new instance.
-     */
-    Rfc863Tcp2ClientAttachment() {
+    Rfc863Tcp2ClientAttachment(final SelectionKey clientKey) {
         super();
+        this.clientKey = Objects.requireNonNull(clientKey, "clientKey is null");
     }
 
-    /**
-     * Writes a sequence of random bytes to specified channel.
-     *
-     * @param channel the channel to which bytes are written.
-     * @return number of bytes written to the {@code channel}, possibly zero.
-     * @throws IOException if an I/O error occurs.
-     * @see WritableByteChannel#write(ByteBuffer)
-     * @see Rfc863Tcp2ServerAttachment#read(ReadableByteChannel)
-     */
-    int write(final WritableByteChannel channel) throws IOException {
-        final int w = channel.write(getBufferForWriting());
+    @Override
+    public void close() throws IOException {
+        clientKey.channel().close();
+        super.close();
+    }
+
+    int write() throws IOException {
+        if (!clientKey.isValid()) {
+            throw new IllegalStateException("clientKey is currently not valid");
+        }
+        if (!clientKey.isWritable()) {
+            throw new IllegalStateException("clientKey is currently not writable");
+        }
+        if (!buffer.hasRemaining()) {
+            ThreadLocalRandom.current().nextBytes(buffer.array());
+            buffer.clear().limit(Math.min(buffer.limit(), getBytes()));
+        }
+        final int w = ((WritableByteChannel) clientKey.channel()).write(buffer);
         assert w >= 0;
-        decreaseBytes(updateDigest(w));
+        if (decreaseBytes(updateDigest(w)) == 0) {
+            close();
+            assert !clientKey.isValid();
+        }
         return w;
     }
+
+    private final SelectionKey clientKey;
 }

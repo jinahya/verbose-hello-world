@@ -21,6 +21,7 @@ package com.github.jinahya.hello.misc.c01rfc863;
  */
 
 import com.github.jinahya.hello.misc._Rfc86_Constants;
+import com.github.jinahya.hello.misc._Rfc86_Utils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.channels.SelectionKey;
@@ -45,30 +46,26 @@ class Rfc863Tcp2Server {
                 for (final var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
                     final var selectedKey = i.next();
                     if (selectedKey.isAcceptable()) {
+                        assert selectedKey == serverKey;
                         final var channel = (ServerSocketChannel) selectedKey.channel();
                         assert channel == server;
                         final var client = channel.accept();
-                        log.info("accepted from {}, through {}", client.getRemoteAddress(),
-                                 client.getLocalAddress());
-                        selectedKey.interestOpsAnd(~SelectionKey.OP_ACCEPT);
+                        _Rfc86_Utils.logAccepted(client);
+                        selectedKey.interestOpsAnd(~SelectionKey.OP_ACCEPT); // redundant
                         selectedKey.cancel();
                         assert !selectedKey.isValid();
                         client.configureBlocking(false);
-                        client.register(selector, SelectionKey.OP_READ,
-                                        new Rfc863Tcp2ServerAttachment());
+                        final var clientKey = client.register(selector, SelectionKey.OP_READ);
+                        clientKey.attach(new Rfc863Tcp2ServerAttachment(clientKey));
                         continue;
                     }
                     if (selectedKey.isReadable()) {
-                        final var channel = (SocketChannel) selectedKey.channel();
-                        final var attachment = (Rfc863Tcp2ServerAttachment) selectedKey.attachment();
+                        assert selectedKey.channel() instanceof SocketChannel;
+                        final var attachment =
+                                (Rfc863Tcp2ServerAttachment) selectedKey.attachment();
                         assert attachment != null;
-                        final var r = attachment.read(channel);
-                        if (r == -1) {
-                            selectedKey.interestOpsAnd(~SelectionKey.OP_READ);
-                            attachment.close();
-                            selectedKey.cancel();
-                            assert !selectedKey.isValid();
-                        }
+                        final var r = attachment.read();
+                        assert r >= -1;
                     }
                 }
             }

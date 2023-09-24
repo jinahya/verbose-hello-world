@@ -1,36 +1,43 @@
 package com.github.jinahya.hello.misc.c01rfc863;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.WritableByteChannel;
+import java.nio.channels.SelectionKey;
 import java.util.Objects;
 
 final class Rfc863Tcp2ServerAttachment extends _Rfc863Attachment.Server {
 
-    /**
-     * Creates a new instance.
-     */
-    Rfc863Tcp2ServerAttachment() {
+    Rfc863Tcp2ServerAttachment(final SelectionKey clientKey) {
         super();
+        this.clientKey = Objects.requireNonNull(clientKey, "clientKey is null");
     }
 
-    /**
-     * Reads a sequence of bytes from specified channel.
-     *
-     * @param channel the channel from which bytes are read.
-     * @return a number of bytes read from the {@code channel}.
-     * @throws IOException if an I/O error occurs.
-     * @see ReadableByteChannel#read(ByteBuffer)
-     * @see Rfc863Tcp2ClientAttachment#write(WritableByteChannel)
-     */
-    int read(final ReadableByteChannel channel) throws IOException {
-        Objects.requireNonNull(channel, "channel is null");
-        final int r = channel.read(getBufferForReading());
-        if (r == -1) {
-            return r;
+    @Override
+    public void close() throws IOException {
+        clientKey.channel().close();
+        super.close();
+    }
+
+    int read() throws IOException {
+        if (!clientKey.isValid()) {
+            throw new IllegalStateException("clientKey is currently not valid");
         }
-        increaseBytes(updateDigest(r));
+        if (!clientKey.isReadable()) {
+            throw new IllegalStateException("clientKey is currently not readable");
+        }
+        if (!buffer.hasRemaining()) {
+            buffer.clear();
+        }
+        final int r = ((ReadableByteChannel) clientKey.channel()).read(buffer);
+        if (r == -1) {
+            close();
+            assert !clientKey.isValid();
+        } else {
+            assert r >= 0;
+            increaseBytes(updateDigest(r));
+        }
         return r;
     }
+
+    private final SelectionKey clientKey;
 }

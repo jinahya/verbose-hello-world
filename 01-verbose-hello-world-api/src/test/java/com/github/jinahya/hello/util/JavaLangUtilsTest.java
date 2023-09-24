@@ -75,7 +75,7 @@ class JavaLangUtilsTest {
     }
 
     @Nested
-    class OfIntTest {
+    class IntsTest {
 
     }
 

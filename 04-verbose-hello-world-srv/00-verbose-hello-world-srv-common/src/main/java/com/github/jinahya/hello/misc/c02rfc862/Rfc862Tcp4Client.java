@@ -36,16 +36,14 @@ class Rfc862Tcp4Client {
         final var group = AsynchronousChannelGroup.withThreadPool(Executors.newCachedThreadPool());
         try (var client = AsynchronousSocketChannel.open(group)) {
             if (ThreadLocalRandom.current().nextBoolean()) {
-                client.bind(new InetSocketAddress(_Rfc862Constants.HOST, 0));
+                client.bind(new InetSocketAddress(_Rfc86_Constants.HOST, 0));
                 log.info("(optionally) bound to {}", client.getLocalAddress());
             }
-            try (var attachment = new Rfc862Tcp4ClientAttachment(group, client)) {
-                attachment.connect();
-                final var terminated = group.awaitTermination(
-                        _Rfc86_Constants.CLIENT_TIMEOUT,
-                        _Rfc86_Constants.CLIENT_TIMEOUT_UNIT);
-                assert terminated : "channel group hasn't been terminated!";
-            }
+            new Rfc862Tcp4ClientAttachment(group, client).connect();
+            final var terminated = group.awaitTermination(
+                    _Rfc86_Constants.CLIENT_TIMEOUT, _Rfc86_Constants.CLIENT_TIMEOUT_UNIT
+            );
+            assert terminated : "channel group hasn't been terminated!";
         }
     }
 

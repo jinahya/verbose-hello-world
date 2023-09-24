@@ -20,141 +20,26 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
+import com.github.jinahya.hello.misc._Rfc86_Constants;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.nio.channels.AsynchronousChannelGroup;
 import java.nio.channels.AsynchronousServerSocketChannel;
-import java.nio.channels.AsynchronousSocketChannel;
-import java.nio.channels.CompletionHandler;
-import java.util.Objects;
 import java.util.concurrent.Executors;
 
 @Slf4j
 class Rfc862Tcp4Server {
 
-    // @formatter:on
-    static class Attachment extends Rfc862Tcp3ServerAttachment {
-
-        Attachment(final AsynchronousChannelGroup group) {
-            super(null);
-            this.group = Objects.requireNonNull(group, "group is null");
-        }
-
-        @Override
-        public void close() throws IOException {
-            if (client != null) {
-                client.close();
-                client = null;
-            }
-            group.shutdownNow();
-            super.close();
-        }
-
-        private final AsynchronousChannelGroup group;
-
-        AsynchronousSocketChannel client;
-    }
-    // @formatter:on
-
-    // @formatter:off
-    private static final
-    CompletionHandler<Integer, Attachment> W_HANDLER = new CompletionHandler<>() {
-        @Override public void completed(Integer result, Attachment attachment) {
-            assert result > 0;
-//            attachment.digest.update(
-//                    attachment.slice
-//                            .position(attachment.buffer.position() - result)
-//                            .limit(attachment.buffer.position())
-//            );
-//            attachment.buffer.compact();
-//            assert attachment.buffer.hasRemaining();
-//            attachment.client.read(
-//                    attachment.buffer,                      // <dst>
-//                    _Rfc862Constants.READ_TIMEOUT_DURATION, // <timeout>
-//                    _Rfc862Constants.READ_TIMEOUT_UNIT,     // <unit>
-//                    attachment,                             // <attachment>
-//                    R_HANDLER                               // <handler>
-//            );
-        }
-        @Override public void failed(Throwable exc, Attachment attachment) {
-            log.error("failed to write", exc);
-            attachment.closeUnchecked();
-        }
-    };
-    // @formatter:on
-
-    // @formatter:off
-    private static final
-    CompletionHandler<Integer, Attachment> R_HANDLER = new CompletionHandler<>() {
-        @Override public void completed(Integer result, Attachment attachment) {
-//            if (result == -1) {
-//                if (attachment.buffer.position() == 0) { // no more bytes to send back, either
-//                    attachment.closeUnchecked();
-//                    return;
-//                }
-//            } else {
-//                attachment.bytes += result;
-//            }
-//            attachment.buffer.flip();
-//            assert attachment.buffer.hasRemaining();
-//            attachment.client.write(
-//                    attachment.buffer, // <src>
-//                    attachment,        // <attachment>
-//                    W_HANDLER          // <handler>
-//            );
-        }
-        @Override public void failed(Throwable exc, Attachment attachment) {
-            log.error("failed to read", exc);
-            attachment.closeUnchecked();
-        }
-    };
-    // @formatter:on
-
-    // @formatter:off
-    private static final
-    CompletionHandler<AsynchronousSocketChannel, Attachment> A_HANDLER = new CompletionHandler<>() {
-        @Override public void completed(AsynchronousSocketChannel result, Attachment attachment) {
-            assert result != null;
-            try {
-                log.info("accepted from {}, through {}", result.getRemoteAddress(),
-                         result.getLocalAddress());
-            } catch (IOException ioe) {
-                log.error("failed get addresses from {}", result, ioe);
-            }
-            attachment.client = result;
-//            assert attachment.buffer.hasRemaining();
-//            attachment.client.read(
-//                    attachment.buffer,                      // <dst>
-//                    _Rfc862Constants.READ_TIMEOUT_DURATION, // <timeout>
-//                    _Rfc862Constants.READ_TIMEOUT_UNIT,     // <unit>
-//                    attachment,                             // <attachment>
-//                    R_HANDLER                               // <handler>
-//            );
-        }
-        @Override public void failed(Throwable exc, Attachment attachment) {
-            log.error("failed to accept", exc);
-            attachment.closeUnchecked();
-        }
-    };
-    // @formatter:on
-
-    public static void main(String... args) throws Exception {
-        var group = AsynchronousChannelGroup.withThreadPool(Executors.newCachedThreadPool());
+    public static void main(final String... args) throws Exception {
+        final var group = AsynchronousChannelGroup.withThreadPool(Executors.newCachedThreadPool());
         try (var server = AsynchronousServerSocketChannel.open(group)) {
-            server.bind(_Rfc862Constants.ADDR);
+            server.bind(_Rfc862Constants.ADDR, 0);
             log.info("bound to {}", server.getLocalAddress());
-            var attachment = new Attachment(group);
-            server.accept(
-                    attachment, // <attachment>
-                    A_HANDLER   // <handler>
+            new Rfc862Tcp4ServerAttachment(group, server).accept();
+            final var terminated = group.awaitTermination(
+                    _Rfc86_Constants.SERVER_TIMEOUT, _Rfc86_Constants.SERVER_TIMEOUT_UNIT
             );
-            if (!group.awaitTermination(_Rfc862Constants.ACCEPT_TIMEOUT,
-                                        _Rfc862Constants.ACCEPT_TIMEOUT_UNIT)) {
-                throw new RuntimeException("channel group has not been terminated!");
-            }
-//            _Rfc862Utils.logServerBytes(attachment.bytes);
-//            _Rfc862Utils.logDigest(attachment.digest);
+            assert terminated : "channel group has not been terminated!";
         }
     }
 

@@ -23,9 +23,12 @@ package com.github.jinahya.hello.misc;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
+import java.nio.channels.NetworkChannel;
 import java.nio.channels.SocketChannel;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -39,12 +42,17 @@ public final class _Rfc86_Utils {
     // -------------------------------------------------------------------------------- array/buffer
 
     /**
-     * Returns a new array of bytes whose length is between 1 and 1024, both inclusive.
+     * Returns a new array of bytes whose length is between {@code 1} and {@code 8192}, both
+     * inclusive.
      *
      * @return a new array of bytes.
      */
     private static byte[] array() {
-        return new byte[ThreadLocalRandom.current().nextInt(1024) + 1];
+        var array = new byte[ThreadLocalRandom.current().nextInt(8192) + 1];
+        if (ThreadLocalRandom.current().nextBoolean()) {
+            array = new byte[1];
+        }
+        return array;
     }
 
     /**
@@ -127,6 +135,12 @@ public final class _Rfc86_Utils {
 
     private static final String LOG_FORMAT_ACCEPTED = "accepted from {}, through {}";
 
+    private static SocketAddress getLocalAddress(final NetworkChannel channel)
+            throws IOException {
+        Objects.requireNonNull(channel, "channel is null");
+        return channel.getLocalAddress();
+    }
+
     public static void logConnected(final Socket client) {
         Objects.requireNonNull(client, "client is null");
         log.info(LOG_FORMAT_CONNECTED, client.getRemoteSocketAddress(), client.getLocalAddress());
@@ -137,24 +151,40 @@ public final class _Rfc86_Utils {
         log.info(LOG_FORMAT_ACCEPTED, client.getRemoteSocketAddress(), client.getLocalAddress());
     }
 
-    public static void logConnected(final SocketChannel client) throws IOException {
+    public static void logConnected(final SocketChannel client) {
         Objects.requireNonNull(client, "client is null");
-        log.info(LOG_FORMAT_CONNECTED, client.getRemoteAddress(), client.getLocalAddress());
+        try {
+            log.info(LOG_FORMAT_CONNECTED, client.getRemoteAddress(), getLocalAddress(client));
+        } catch (final IOException ioe) {
+            throw new UncheckedIOException(ioe);
+        }
     }
 
-    public static void logAccepted(final SocketChannel client) throws IOException {
+    public static void logAccepted(final SocketChannel client) {
         Objects.requireNonNull(client, "client is null");
-        log.info(LOG_FORMAT_ACCEPTED, client.getRemoteAddress(), client.getLocalAddress());
+        try {
+            log.info(LOG_FORMAT_ACCEPTED, client.getRemoteAddress(), getLocalAddress(client));
+        } catch (final IOException ioe) {
+            throw new UncheckedIOException(ioe);
+        }
     }
 
-    public static void logConnected(final AsynchronousSocketChannel client) throws IOException {
+    public static void logConnected(final AsynchronousSocketChannel client) {
         Objects.requireNonNull(client, "client is null");
-        log.info(LOG_FORMAT_CONNECTED, client.getRemoteAddress(), client.getLocalAddress());
+        try {
+            log.info(LOG_FORMAT_CONNECTED, client.getRemoteAddress(), getLocalAddress(client));
+        } catch (final IOException ioe) {
+            throw new UncheckedIOException(ioe);
+        }
     }
 
-    public static void logAccepted(final AsynchronousSocketChannel client) throws IOException {
+    public static void logAccepted(final AsynchronousSocketChannel client) {
         Objects.requireNonNull(client, "client is null");
-        log.info(LOG_FORMAT_ACCEPTED, client.getRemoteAddress(), client.getLocalAddress());
+        try {
+            log.info(LOG_FORMAT_ACCEPTED, client.getRemoteAddress(), getLocalAddress(client));
+        } catch (IOException ioe) {
+            throw new UncheckedIOException(ioe);
+        }
     }
 
     // ---------------------------------------------------------------------------------------------

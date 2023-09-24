@@ -20,6 +20,7 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
+import com.github.jinahya.hello.misc._Rfc86_Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Named;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -72,7 +73,7 @@ class Rfc862TcpTest {
             try {
                 serverClass.getMethod("main", String[].class)
                         .invoke(null, new Object[] {new String[0]});
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 throw new RuntimeException(e);
             }
         });
@@ -81,12 +82,12 @@ class Rfc862TcpTest {
             try {
                 clientClass.getMethod("main", String[].class)
                         .invoke(null, new Object[] {new String[0]});
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 throw new RuntimeException(e);
             }
         });
-        client.get();
-        server.get();
+        client.get(_Rfc86_Constants.CLIENT_TIMEOUT, _Rfc86_Constants.CLIENT_TIMEOUT_UNIT);
+        server.get(_Rfc86_Constants.SERVER_TIMEOUT, _Rfc86_Constants.SERVER_TIMEOUT_UNIT);
         executor.shutdown();
     }
 }

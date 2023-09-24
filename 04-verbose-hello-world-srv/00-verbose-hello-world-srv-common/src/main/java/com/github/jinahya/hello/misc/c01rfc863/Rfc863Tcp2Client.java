@@ -21,6 +21,7 @@ package com.github.jinahya.hello.misc.c01rfc863;
  */
 
 import com.github.jinahya.hello.misc._Rfc86_Constants;
+import com.github.jinahya.hello.misc._Rfc86_Utils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
@@ -52,8 +53,8 @@ class Rfc863Tcp2Client {
             if (client.connect(_Rfc863Constants.ADDR)) {
                 log.info("(immediately) connected to {}, through {}", client.getRemoteAddress(),
                          client.getLocalAddress());
-                clientKey = client.register(selector, SelectionKey.OP_WRITE,
-                                            new Rfc863Tcp2ClientAttachment());
+                clientKey = client.register(selector, SelectionKey.OP_WRITE);
+                clientKey.attach(new Rfc863Tcp2ClientAttachment(clientKey));
             } else {
                 clientKey = client.register(selector, SelectionKey.OP_CONNECT);
             }
@@ -64,28 +65,23 @@ class Rfc863Tcp2Client {
                 for (final var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
                     final var selectedKey = i.next();
                     if (selectedKey.isConnectable()) {
+                        assert selectedKey == clientKey;
                         final var channel = (SocketChannel) selectedKey.channel();
                         assert channel == client;
                         if (channel.finishConnect()) {
-                            log.info("connected to {}, through {}", channel.getRemoteAddress(),
-                                     channel.getLocalAddress());
+                            _Rfc86_Utils.logConnected(channel);
                             selectedKey.interestOpsAnd(~SelectionKey.OP_CONNECT);
-                            selectedKey.attach(new Rfc863Tcp2ClientAttachment());
+                            selectedKey.attach(new Rfc863Tcp2ClientAttachment(selectedKey));
                             selectedKey.interestOps(SelectionKey.OP_WRITE);
                         }
                     }
                     if (selectedKey.isWritable()) {
                         final var channel = (SocketChannel) selectedKey.channel();
                         assert channel == client;
-                        final var attachment = (Rfc863Tcp2ClientAttachment) selectedKey.attachment();
-                        final var w = attachment.write(channel);
+                        final var attachment =
+                                (Rfc863Tcp2ClientAttachment) selectedKey.attachment();
+                        final var w = attachment.write();
                         assert w >= 0; // why?
-                        if (attachment.getBytes() == 0) {
-                            selectedKey.interestOpsAnd(~SelectionKey.OP_WRITE);
-                            attachment.close();
-                            selectedKey.cancel();
-                            assert !selectedKey.isValid();
-                        }
                     }
                 }
             }

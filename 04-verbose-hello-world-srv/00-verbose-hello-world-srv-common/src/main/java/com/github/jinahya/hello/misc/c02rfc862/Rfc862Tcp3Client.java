@@ -42,20 +42,20 @@ class Rfc862Tcp3Client {
                                                       _Rfc86_Constants.CONNECT_TIMEOUT_UNIT);
             _Rfc86_Utils.logConnected(client);
             try (var attachment = new Rfc862Tcp3ClientAttachment(client)) {
-                for (int w, r; attachment.getBytes() > 0; ) {
+                for (int w, r; ; ) {
                     w = attachment.write();
-                    assert w > 0; // why?
-                    r = attachment.read();
-                    if (r == -1) {
-                        throw new EOFException("unexpected eof");
+                    assert w >= 0; // why?
+                    if (w == 0) {
+                        break;
                     }
-                    assert r > 0; // why?
+                    r = attachment.read();
+//                    assert r > 0; // why?
                 }
                 assert attachment.getBytes() == 0;
                 attachment.logDigest();
                 client.shutdownOutput();
                 for (int r; (r = attachment.read()) != -1; ) {
-                    assert r >= 0;
+                    assert r > 0;
                 }
             }
         }

@@ -209,7 +209,7 @@ public final class JavaLangUtils {
         return new String(codePoints, 0, codePoints.length);
     }
 
-    public static final class OfInt {
+    public static final class Ints {
 
         public static int requireGreaterThanOrEqualTo(final int value, final int against) {
             if (value < against) {
@@ -267,7 +267,7 @@ public final class JavaLangUtils {
             return value;
         }
 
-        private OfInt() {
+        private Ints() {
             throw new IllegalArgumentException("");
         }
     }
