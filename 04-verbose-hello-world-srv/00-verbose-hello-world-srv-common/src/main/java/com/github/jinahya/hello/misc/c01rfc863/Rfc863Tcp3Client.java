@@ -25,27 +25,64 @@ import com.github.jinahya.hello.misc._Rfc86_Utils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
-import java.nio.channels.AsynchronousSocketChannel;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
+import java.nio.channels.SocketChannel;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static com.github.jinahya.hello.misc.c01rfc863._Rfc863Constants.HOST;
 
+/**
+ * .
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ * @see Rfc863Tcp3Server
+ */
 @Slf4j
 class Rfc863Tcp3Client {
 
     public static void main(final String... args) throws Exception {
-        try (var client = AsynchronousSocketChannel.open()) {
+        try (var selector = Selector.open();
+             var client = SocketChannel.open()) {
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(HOST, 0));
                 log.info("(optionally) bound to {}", client.getLocalAddress());
             }
-            client.connect(_Rfc863Constants.ADDR).get(_Rfc86_Constants.CONNECT_TIMEOUT,
-                                                      _Rfc86_Constants.CONNECT_TIMEOUT_UNIT);
-            _Rfc86_Utils.logConnected(client);
-            try (var attachment = new Rfc863Tcp3ClientAttachment(client)) {
-                for (int w; attachment.getBytes() > 0; ) {
-                    w = attachment.write();
-                    assert w > 0; // why?
+            client.configureBlocking(false);
+            final SelectionKey clientKey;
+            if (client.connect(_Rfc863Constants.ADDR)) {
+                log.info("(immediately) connected to {}, through {}", client.getRemoteAddress(),
+                         client.getLocalAddress());
+                clientKey = client.register(selector, SelectionKey.OP_WRITE);
+                clientKey.attach(new Rfc863Tcp3ClientAttachment(clientKey));
+            } else {
+                clientKey = client.register(selector, SelectionKey.OP_CONNECT);
+            }
+            while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
+                if (selector.select(_Rfc86_Constants.CLIENT_TIMEOUT_IN_MILLIS) == 0) {
+                    break;
+                }
+                for (final var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
+                    final var selectedKey = i.next();
+                    if (selectedKey.isConnectable()) {
+                        assert selectedKey == clientKey;
+                        final var channel = (SocketChannel) selectedKey.channel();
+                        assert channel == client;
+                        if (channel.finishConnect()) {
+                            _Rfc86_Utils.logConnected(channel);
+                            selectedKey.interestOpsAnd(~SelectionKey.OP_CONNECT);
+                            selectedKey.attach(new Rfc863Tcp3ClientAttachment(selectedKey));
+                            selectedKey.interestOps(SelectionKey.OP_WRITE);
+                        }
+                    }
+                    if (selectedKey.isWritable()) {
+                        final var channel = (SocketChannel) selectedKey.channel();
+                        assert channel == client;
+                        final var attachment =
+                                (Rfc863Tcp3ClientAttachment) selectedKey.attachment();
+                        final var w = attachment.write();
+                        assert w >= 0; // why?
+                    }
                 }
             }
         }

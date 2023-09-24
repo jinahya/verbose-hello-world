@@ -7,13 +7,13 @@ import java.io.IOException;
 import java.nio.channels.CompletionHandler;
 
 @Slf4j
-final class Rfc863Tcp4ClientHandlers {
+final class Rfc863Tcp5ClientHandlers {
 
     // @formatter:off
-    enum Connect implements CompletionHandler<Void, Rfc863Tcp4ClientAttachment> {
+    enum Connect implements CompletionHandler<Void, Rfc863Tcp5ClientAttachment> {
         HANDLER() {
             @Override
-            public void completed(final Void result, final Rfc863Tcp4ClientAttachment attachment) {
+            public void completed(final Void result, final Rfc863Tcp5ClientAttachment attachment) {
                 try {
                     log.info("connected to {}, through {}", attachment.client.getRemoteAddress(),
                              attachment.client.getLocalAddress());
@@ -29,7 +29,7 @@ final class Rfc863Tcp4ClientHandlers {
                 );
             }
             @Override
-            public void failed(final Throwable exc, final Rfc863Tcp4ClientAttachment attachment) {
+            public void failed(final Throwable exc, final Rfc863Tcp5ClientAttachment attachment) {
                 log.error("failed to connect", exc);
                 attachment.closeUnchecked();
             }
@@ -38,11 +38,11 @@ final class Rfc863Tcp4ClientHandlers {
     // @formatter:on
 
     // @formatter:off
-    enum Write implements CompletionHandler<Integer, Rfc863Tcp4ClientAttachment> {
+    enum Write implements CompletionHandler<Integer, Rfc863Tcp5ClientAttachment> {
         HANDLER() {
             @Override
             public void completed(final Integer result,
-                                  final Rfc863Tcp4ClientAttachment attachment) {
+                                  final Rfc863Tcp5ClientAttachment attachment) {
                 if (attachment.decreaseBytes(attachment.updateDigest(result)) == 0) {
                     attachment.closeUnchecked();
                     return;
@@ -56,7 +56,7 @@ final class Rfc863Tcp4ClientHandlers {
                 );
             }
             @Override
-            public void failed(final Throwable exc, final Rfc863Tcp4ClientAttachment attachment) {
+            public void failed(final Throwable exc, final Rfc863Tcp5ClientAttachment attachment) {
                 log.error("failed to write", exc);
                 attachment.closeUnchecked();
             }
@@ -64,7 +64,7 @@ final class Rfc863Tcp4ClientHandlers {
     }
     // @formatter:on
 
-    private Rfc863Tcp4ClientHandlers() {
+    private Rfc863Tcp5ClientHandlers() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

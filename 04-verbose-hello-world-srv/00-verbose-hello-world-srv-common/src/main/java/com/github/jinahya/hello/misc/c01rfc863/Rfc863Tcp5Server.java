@@ -23,38 +23,32 @@ package com.github.jinahya.hello.misc.c01rfc863;
 import com.github.jinahya.hello.misc._Rfc86_Constants;
 import lombok.extern.slf4j.Slf4j;
 
-import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
-import java.util.concurrent.ThreadLocalRandom;
+import java.nio.channels.AsynchronousChannelGroup;
+import java.nio.channels.AsynchronousServerSocketChannel;
+import java.util.concurrent.Executors;
 
 @Slf4j
-class Rfc863Tcp2Server {
+class Rfc863Tcp5Server {
 
     public static void main(final String... args) throws Exception {
-        try (var server = ServerSocketChannel.open()) {
+        final var group = AsynchronousChannelGroup.withThreadPool(Executors.newCachedThreadPool());
+        try (var server = AsynchronousServerSocketChannel.open(group)) {
             server.bind(_Rfc863Constants.ADDR, 1);
             log.info("bound to {}", server.getLocalAddress());
-            assert server.isBlocking();
-            final SocketChannel client;
-            if (ThreadLocalRandom.current().nextBoolean()) {
-                final var serverSocket = server.socket();
-                serverSocket.setSoTimeout((int) _Rfc86_Constants.ACCEPT_TIMEOUT_IN_MILLIS);
-                final var clientSocket = serverSocket.accept();
-                clientSocket.setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_IN_MILLIS);
-                client = clientSocket.getChannel();
-                assert client != null;
-            } else {
-                client = server.accept();
-            }
-            try (var attachment = new Rfc863Tcp2ServerAttachment(client)) {
-                while (attachment.read() != -1) {
-                    // does nothing
-                }
-            }
+            server.accept(
+                    new Rfc863Tcp5ServerAttachment(group),  // <attachment>
+                    Rfc863Tcp5ServerHandlers.Accept.HANDLER // <handler>
+            );
+            final var terminated = group.awaitTermination(_Rfc86_Constants.SERVER_TIMEOUT,
+                                                          _Rfc86_Constants.SERVER_TIMEOUT_UNIT);
+            assert terminated : "channel group hasn't been terminated";
         }
     }
 
-    private Rfc863Tcp2Server() {
+    /**
+     * Creates a new instance.
+     */
+    private Rfc863Tcp5Server() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

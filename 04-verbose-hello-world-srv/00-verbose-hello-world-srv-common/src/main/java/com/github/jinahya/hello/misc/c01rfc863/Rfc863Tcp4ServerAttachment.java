@@ -1,30 +1,46 @@
 package com.github.jinahya.hello.misc.c01rfc863;
 
-import lombok.extern.slf4j.Slf4j;
+import com.github.jinahya.hello.misc._Rfc86_Constants;
 
 import java.io.IOException;
-import java.nio.channels.AsynchronousChannelGroup;
+import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
-@Slf4j
 final class Rfc863Tcp4ServerAttachment extends _Rfc863Attachment.Server {
 
-    Rfc863Tcp4ServerAttachment(final AsynchronousChannelGroup group) {
+    Rfc863Tcp4ServerAttachment(final AsynchronousSocketChannel client) {
         super();
-        this.group = Objects.requireNonNull(group, "group is null");
+        this.client = Objects.requireNonNull(client, "client is null");
     }
 
     @Override
     public void close() throws IOException {
-        if (client != null) {
-            client.close();
-        }
-        group.shutdownNow();
+        client.close();
         super.close();
     }
 
-    private final AsynchronousChannelGroup group;
+    /**
+     * Reads a sequence of bytes,, and returns the result.
+     *
+     * @return a number of bytes read.
+     * @throws Exception if any thrown.
+     * @see #getBufferForReading()
+     * @see AsynchronousSocketChannel#read(ByteBuffer)
+     * @see _Rfc86_Constants#READ_TIMEOUT
+     * @see _Rfc86_Constants#READ_TIMEOUT_UNIT
+     * @see java.util.concurrent.Future#get(long, TimeUnit)
+     * @see Rfc863Tcp4ClientAttachment#write()
+     */
+    int read() throws Exception {
+        final var r = client.read(getBufferForReading())
+                .get(_Rfc86_Constants.READ_TIMEOUT, _Rfc86_Constants.READ_TIMEOUT_UNIT);
+        if (r != -1) {
+            increaseBytes(updateDigest(r));
+        }
+        return r;
+    }
 
-    AsynchronousSocketChannel client;
+    private final AsynchronousSocketChannel client;
 }

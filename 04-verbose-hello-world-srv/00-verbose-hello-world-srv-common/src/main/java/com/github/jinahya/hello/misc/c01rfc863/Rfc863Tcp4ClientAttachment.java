@@ -1,29 +1,54 @@
 package com.github.jinahya.hello.misc.c01rfc863;
 
-import lombok.extern.slf4j.Slf4j;
+import com.github.jinahya.hello.misc._Rfc86_Constants;
 
 import java.io.IOException;
-import java.nio.channels.AsynchronousChannelGroup;
+import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.util.Objects;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 
-@Slf4j
 final class Rfc863Tcp4ClientAttachment extends _Rfc863Attachment.Client {
 
-    Rfc863Tcp4ClientAttachment(final AsynchronousChannelGroup group,
-                               final AsynchronousSocketChannel client) {
+    /**
+     * Creates a new instance holding specified client.
+     *
+     * @param client the client to hold.
+     */
+    Rfc863Tcp4ClientAttachment(final AsynchronousSocketChannel client) {
         super();
-        this.group = Objects.requireNonNull(group, "group is null");
         this.client = Objects.requireNonNull(client, "client is null");
     }
 
     @Override
     public void close() throws IOException {
-        group.shutdownNow();
+        client.close();
         super.close();
     }
 
-    private final AsynchronousChannelGroup group;
+    /**
+     * Writes a sequence of bytes to {@code client}, and returns the number of bytes written to the
+     * {@code client}.
+     *
+     * @return a number of bytes written to the {@code client}.
+     * @throws Exception if any thrown.
+     * @see AsynchronousSocketChannel#write(ByteBuffer)
+     * @see _Rfc86_Constants#WRITE_TIMEOUT
+     * @see _Rfc86_Constants#WRITE_TIMEOUT_UNIT
+     * @see java.util.concurrent.Future#get(long, TimeUnit)
+     * @see Rfc863Tcp4ServerAttachment#read()
+     */
+    int write() throws Exception {
+        if (!buffer.hasRemaining()) {
+            ThreadLocalRandom.current().nextBytes(buffer.array());
+            buffer.clear().limit(Math.min(buffer.limit(), getBytes()));
+        }
+        final var w = client.write(buffer)
+                .get(_Rfc86_Constants.WRITE_TIMEOUT, _Rfc86_Constants.WRITE_TIMEOUT_UNIT);
+        decreaseBytes(updateDigest(w));
+        return w;
+    }
 
-    final AsynchronousSocketChannel client;
+    private final AsynchronousSocketChannel client;
 }

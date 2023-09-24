@@ -8,15 +8,15 @@ import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 
 @Slf4j
-final class Rfc863Tcp4ServerHandlers {
+final class Rfc863Tcp5ServerHandlers {
 
     // @formatter:off
     enum Accept
-            implements CompletionHandler<AsynchronousSocketChannel, Rfc863Tcp4ServerAttachment> {
+            implements CompletionHandler<AsynchronousSocketChannel, Rfc863Tcp5ServerAttachment> {
         HANDLER() {
             @Override
             public void completed(final AsynchronousSocketChannel result,
-                                  final Rfc863Tcp4ServerAttachment attachment) {
+                                  final Rfc863Tcp5ServerAttachment attachment) {
                 try {
                     log.info("accepted from {}, through {}", result.getRemoteAddress(),
                              result.getLocalAddress());
@@ -31,11 +31,11 @@ final class Rfc863Tcp4ServerHandlers {
                         _Rfc86_Constants.WRITE_TIMEOUT, // <timeout>
                         _Rfc86_Constants.WRITE_TIMEOUT_UNIT,     // <unit>
                         attachment,                              // <attachment>
-                        Rfc863Tcp4ServerHandlers.Read.HANDLER    // <handler>
+                        Rfc863Tcp5ServerHandlers.Read.HANDLER    // <handler>
                 );
             }
             @Override
-            public void failed(final Throwable exc, final Rfc863Tcp4ServerAttachment attachment) {
+            public void failed(final Throwable exc, final Rfc863Tcp5ServerAttachment attachment) {
                 log.error("failed to accept", exc);
                 attachment.closeUnchecked();
             }
@@ -44,11 +44,11 @@ final class Rfc863Tcp4ServerHandlers {
     // @formatter:on
 
     // @formatter:off
-    enum Read implements CompletionHandler<Integer, Rfc863Tcp4ServerAttachment> {
+    enum Read implements CompletionHandler<Integer, Rfc863Tcp5ServerAttachment> {
         HANDLER() {
             @Override
             public void completed(final Integer result,
-                                  final Rfc863Tcp4ServerAttachment attachment) {
+                                  final Rfc863Tcp5ServerAttachment attachment) {
                 if (result == -1) {
                     attachment.closeUnchecked();
                     return;
@@ -59,11 +59,11 @@ final class Rfc863Tcp4ServerHandlers {
                         _Rfc86_Constants.WRITE_TIMEOUT, // <timeout>
                         _Rfc86_Constants.WRITE_TIMEOUT_UNIT,     // <unit>
                         attachment,                              // <attachment>
-                        Rfc863Tcp4ServerHandlers.Read.HANDLER    // <handler>
+                        Rfc863Tcp5ServerHandlers.Read.HANDLER    // <handler>
                 );
             }
             @Override
-            public void failed(final Throwable exc, final Rfc863Tcp4ServerAttachment attachment) {
+            public void failed(final Throwable exc, final Rfc863Tcp5ServerAttachment attachment) {
                 log.error("failed to read", exc);
                 attachment.closeUnchecked();
             }
@@ -71,7 +71,7 @@ final class Rfc863Tcp4ServerHandlers {
     }
     // @formatter:on
 
-    private Rfc863Tcp4ServerHandlers() {
+    private Rfc863Tcp5ServerHandlers() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

@@ -35,6 +35,12 @@ public abstract class _AbstractRfc86_Attachment
 
     // --------------------------------------------------------------------------- java.io.Closeable
 
+    /**
+     * Closes this attachment.
+     *
+     * @throws IOException if an I/O error occurs.
+     * @apiNote Default imeplemtation does nothing.
+     */
     @Override
     public void close() throws IOException {
         // empty

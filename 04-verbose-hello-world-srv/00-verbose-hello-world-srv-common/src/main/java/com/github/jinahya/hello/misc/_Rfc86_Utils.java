@@ -49,7 +49,7 @@ public final class _Rfc86_Utils {
      */
     private static byte[] array() {
         var array = new byte[ThreadLocalRandom.current().nextInt(8192) + 1];
-        if (ThreadLocalRandom.current().nextBoolean()) {
+        if (false && ThreadLocalRandom.current().nextBoolean()) {
             array = new byte[1];
         }
         return array;
@@ -78,6 +78,7 @@ public final class _Rfc86_Utils {
     public static ByteBuffer newBuffer() {
         final var buffer = ByteBuffer.wrap(array());
         log.debug("buffer.capacity: {}", buffer.capacity());
+        assert buffer.arrayOffset() == 0;
         return buffer;
     }
 

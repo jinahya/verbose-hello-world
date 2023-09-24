@@ -21,33 +21,30 @@ package com.github.jinahya.hello.misc.c01rfc863;
  */
 
 import com.github.jinahya.hello.misc._Rfc86_Constants;
+import com.github.jinahya.hello.misc._Rfc86_Utils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.nio.channels.AsynchronousChannelGroup;
 import java.nio.channels.AsynchronousServerSocketChannel;
-import java.util.concurrent.Executors;
 
 @Slf4j
 class Rfc863Tcp4Server {
 
     public static void main(final String... args) throws Exception {
-        final var group = AsynchronousChannelGroup.withThreadPool(Executors.newCachedThreadPool());
-        try (var server = AsynchronousServerSocketChannel.open(group)) {
-            server.bind(_Rfc863Constants.ADDR, 1);
+        try (var server = AsynchronousServerSocketChannel.open()) {
+            server.bind(_Rfc863Constants.ADDR);
             log.info("bound to {}", server.getLocalAddress());
-            server.accept(
-                    new Rfc863Tcp4ServerAttachment(group),  // <attachment>
-                    Rfc863Tcp4ServerHandlers.Accept.HANDLER // <handler>
-            );
-            final var terminated = group.awaitTermination(_Rfc86_Constants.SERVER_TIMEOUT,
-                                                          _Rfc86_Constants.SERVER_TIMEOUT_UNIT);
-            assert terminated : "channel group hasn't been terminated";
+            try (var client = server.accept().get(_Rfc86_Constants.ACCEPT_TIMEOUT,
+                                                  _Rfc86_Constants.ACCEPT_TIMEOUT_UNIT)) {
+                _Rfc86_Utils.logAccepted(client);
+                try (var attachment = new Rfc863Tcp4ServerAttachment(client)) {
+                    for (int r; (r = attachment.read()) != -1; ) {
+                        assert r > 0; // why not 0?
+                    }
+                }
+            }
         }
     }
 
-    /**
-     * Creates a new instance.
-     */
     private Rfc863Tcp4Server() {
         throw new AssertionError("instantiation is not allowed");
     }

@@ -52,6 +52,11 @@ abstract class _Rfc863Attachment extends _AbstractRfc86_Attachment {
         super(bytes, _Rfc863Constants.ALGORITHM, _Rfc863Constants.PRINTER);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IOException {@inheritDoc}.
+     */
     @Override
     public void close() throws IOException {
         logDigest();

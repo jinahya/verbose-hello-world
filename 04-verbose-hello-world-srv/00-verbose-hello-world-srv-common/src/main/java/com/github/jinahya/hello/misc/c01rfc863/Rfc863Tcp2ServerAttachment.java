@@ -1,43 +1,43 @@
 package com.github.jinahya.hello.misc.c01rfc863;
 
-import java.io.IOException;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.SelectionKey;
-import java.util.Objects;
+import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
+import java.nio.channels.SocketChannel;
+import java.util.Objects;
+import java.util.concurrent.ThreadLocalRandom;
+
+@Slf4j
 final class Rfc863Tcp2ServerAttachment extends _Rfc863Attachment.Server {
 
-    Rfc863Tcp2ServerAttachment(final SelectionKey clientKey) {
+    Rfc863Tcp2ServerAttachment(final SocketChannel client) {
         super();
-        this.clientKey = Objects.requireNonNull(clientKey, "clientKey is null");
-    }
-
-    @Override
-    public void close() throws IOException {
-        clientKey.channel().close();
-        super.close();
+        this.client = Objects.requireNonNull(client, "client is null");
     }
 
     int read() throws IOException {
-        if (!clientKey.isValid()) {
-            throw new IllegalStateException("clientKey is currently not valid");
-        }
-        if (!clientKey.isReadable()) {
-            throw new IllegalStateException("clientKey is currently not readable");
-        }
         if (!buffer.hasRemaining()) {
             buffer.clear();
         }
-        final int r = ((ReadableByteChannel) clientKey.channel()).read(buffer);
-        if (r == -1) {
-            close();
-            assert !clientKey.isValid();
-        } else {
-            assert r >= 0;
+        if (ThreadLocalRandom.current().nextBoolean()) {
+            assert buffer.arrayOffset() == 0;
+            final var r = client.socket().getInputStream().read(
+                    buffer.array(),    // <b>
+                    buffer.position(), // <off>
+                    buffer.remaining() // <len>
+            );
+            if (r != -1) {
+                buffer.position(buffer.position() + r);
+                increaseBytes(updateDigest(r));
+            }
+            return r;
+        }
+        final int r = client.read(buffer);
+        if (r != -1) {
             increaseBytes(updateDigest(r));
         }
         return r;
     }
 
-    private final SelectionKey clientKey;
+    private final SocketChannel client;
 }

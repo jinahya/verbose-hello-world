@@ -101,7 +101,6 @@ public final class JavaLangUtils {
                                                  final Consumer<? super String> consumer) {
         Objects.requireNonNull(predicate, "predicate is null");
         Objects.requireNonNull(callable, "callable is null");
-        Objects.requireNonNull(consumer, "consumer is null");
         var thread = new Thread(() -> {
             var reader = new BufferedReader(new InputStreamReader(System.in));
             try {
@@ -109,7 +108,9 @@ public final class JavaLangUtils {
                     if (predicate.test(line.strip())) {
                         break;
                     }
-                    consumer.accept(line);
+                    if (consumer!= null) {
+                        consumer.accept(line);
+                    }
                 }
             } catch (IOException ioe) {
                 log.error("failed to read line", ioe);

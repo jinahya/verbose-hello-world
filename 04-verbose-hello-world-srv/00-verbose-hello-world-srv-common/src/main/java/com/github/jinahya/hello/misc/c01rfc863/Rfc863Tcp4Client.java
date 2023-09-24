@@ -21,32 +21,33 @@ package com.github.jinahya.hello.misc.c01rfc863;
  */
 
 import com.github.jinahya.hello.misc._Rfc86_Constants;
+import com.github.jinahya.hello.misc._Rfc86_Utils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
-import java.nio.channels.AsynchronousChannelGroup;
 import java.nio.channels.AsynchronousSocketChannel;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
+
+import static com.github.jinahya.hello.misc.c01rfc863._Rfc863Constants.HOST;
 
 @Slf4j
 class Rfc863Tcp4Client {
 
     public static void main(final String... args) throws Exception {
-        final var group = AsynchronousChannelGroup.withThreadPool(Executors.newCachedThreadPool());
-        try (var client = AsynchronousSocketChannel.open(group)) {
+        try (var client = AsynchronousSocketChannel.open()) {
             if (ThreadLocalRandom.current().nextBoolean()) {
-                client.bind(new InetSocketAddress(_Rfc86_Constants.HOST, 0));
+                client.bind(new InetSocketAddress(HOST, 0));
                 log.info("(optionally) bound to {}", client.getLocalAddress());
             }
-            client.connect(
-                    _Rfc863Constants.ADDR,                         // <remote>
-                    new Rfc863Tcp4ClientAttachment(group, client), // <attachment>
-                    Rfc863Tcp4ClientHandlers.Connect.HANDLER       // <handler>
-            );
-            final var terminated = group.awaitTermination(_Rfc86_Constants.CLIENT_TIMEOUT,
-                                                          _Rfc86_Constants.CLIENT_TIMEOUT_UNIT);
-            assert terminated : "channel group hasn't been terminated";
+            client.connect(_Rfc863Constants.ADDR).get(_Rfc86_Constants.CONNECT_TIMEOUT,
+                                                      _Rfc86_Constants.CONNECT_TIMEOUT_UNIT);
+            _Rfc86_Utils.logConnected(client);
+            try (var attachment = new Rfc863Tcp4ClientAttachment(client)) {
+                for (int w; attachment.getBytes() > 0; ) {
+                    w = attachment.write();
+                    assert w > 0; // why?
+                }
+            }
         }
     }
 

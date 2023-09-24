@@ -21,50 +21,36 @@ package com.github.jinahya.hello.misc.c01rfc863;
  */
 
 import com.github.jinahya.hello.misc._Rfc86_Constants;
-import com.github.jinahya.hello.misc._Rfc86_Utils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
-import java.nio.channels.SocketChannel;
+import java.nio.channels.AsynchronousChannelGroup;
+import java.nio.channels.AsynchronousSocketChannel;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
 
-/**
- * .
- *
- * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see Rfc863Tcp3Server
- */
 @Slf4j
-class Rfc863Tcp2Client {
+class Rfc863Tcp5Client {
 
     public static void main(final String... args) throws Exception {
-        try (var client = SocketChannel.open()) {
+        final var group = AsynchronousChannelGroup.withThreadPool(Executors.newCachedThreadPool());
+        try (var client = AsynchronousSocketChannel.open(group)) {
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc86_Constants.HOST, 0));
                 log.info("(optionally) bound to {}", client.getLocalAddress());
             }
-            assert client.isBlocking();
-            if (ThreadLocalRandom.current().nextBoolean()) {
-                client.socket().connect(
-                        _Rfc863Constants.ADDR, (int) _Rfc86_Constants.CONNECT_TIMEOUT_IN_MILLIS
-                );
-                _Rfc86_Utils.logConnected(client.socket());
-            } else {
-                if (!client.connect(_Rfc863Constants.ADDR)) {
-                    log.error("failed to connect");
-                    return;
-                }
-                _Rfc86_Utils.logConnected(client);
-            }
-            try (var attachment = new Rfc863Tcp2ClientAttachment(client)) {
-                while (attachment.write() > 0) {
-                    // does nothing
-                }
-            }
+            client.connect(
+                    _Rfc863Constants.ADDR,                         // <remote>
+                    new Rfc863Tcp5ClientAttachment(group, client), // <attachment>
+                    Rfc863Tcp5ClientHandlers.Connect.HANDLER       // <handler>
+            );
+            final var terminated = group.awaitTermination(_Rfc86_Constants.CLIENT_TIMEOUT,
+                                                          _Rfc86_Constants.CLIENT_TIMEOUT_UNIT);
+            assert terminated : "channel group hasn't been terminated";
         }
     }
 
-    private Rfc863Tcp2Client() {
+    private Rfc863Tcp5Client() {
         throw new AssertionError("instantiation is not allowed");
     }
 }
