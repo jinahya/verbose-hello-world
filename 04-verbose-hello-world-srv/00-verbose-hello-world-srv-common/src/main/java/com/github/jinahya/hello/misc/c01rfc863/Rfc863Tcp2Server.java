@@ -21,7 +21,6 @@ package com.github.jinahya.hello.misc.c01rfc863;
  */
 
 import com.github.jinahya.hello.misc._Rfc86_Constants;
-import com.github.jinahya.hello.misc._Rfc86_Utils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.channels.ServerSocketChannel;
@@ -45,10 +44,10 @@ class Rfc863Tcp2Server {
                 clientSocket.setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_IN_MILLIS);
                 client = clientSocket.getChannel();
                 assert client != null;
+                return;
             } else {
                 client = server.accept();
             }
-            _Rfc86_Utils.logAccepted(client);
             // ----------------------------------------------------------------------------- RECEIVE
             try (var attachment = new Rfc863Tcp2ServerAttachment(client)) {
                 while (attachment.read() != -1) {

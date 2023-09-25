@@ -42,39 +42,39 @@ public abstract class _Rfc86_Constants {
             ACCEPT_TIMEOUT_UNIT.toMillis(ACCEPT_TIMEOUT);
 
     // ----------------------------------------------------------------------------- CONNECT_TIMEOUT
-    public static final long CONNECT_TIMEOUT = 1L;
+    public static final long CONNECT_TIMEOUT = 32L;
 
-    public static final TimeUnit CONNECT_TIMEOUT_UNIT = TIMEOUT_UNIT;
+    public static final TimeUnit CONNECT_TIMEOUT_UNIT = TimeUnit.MINUTES;
 
     public static final long CONNECT_TIMEOUT_IN_MILLIS =
             CONNECT_TIMEOUT_UNIT.toMillis(CONNECT_TIMEOUT);
 
     // -------------------------------------------------------------------------------- READ_TIMEOUT
-    public static final long READ_TIMEOUT = 2L;
+    public static final long READ_TIMEOUT = 32L;
 
-    public static final TimeUnit READ_TIMEOUT_UNIT = TIMEOUT_UNIT;
+    public static final TimeUnit READ_TIMEOUT_UNIT = TimeUnit.SECONDS;
 
     public static final long READ_TIMEOUT_IN_MILLIS = READ_TIMEOUT_UNIT.toMillis(READ_TIMEOUT);
 
     // ------------------------------------------------------------------------------- WRITE_TIMEOUT
-    public static final long WRITE_TIMEOUT = 8L;
+    public static final long WRITE_TIMEOUT = 32L;
 
-    public static final TimeUnit WRITE_TIMEOUT_UNIT = TIMEOUT_UNIT;
+    public static final TimeUnit WRITE_TIMEOUT_UNIT = TimeUnit.SECONDS;
 
     public static final long WRITE_TIMEOUT_IN_MILLIS = WRITE_TIMEOUT_UNIT.toMillis(WRITE_TIMEOUT);
 
     // ------------------------------------------------------------------------------ SERVER_TIMEOUT
-    public static final long SERVER_TIMEOUT = ACCEPT_TIMEOUT;
+    public static final long SERVER_TIMEOUT = 60L;
 
-    public static final TimeUnit SERVER_TIMEOUT_UNIT = ACCEPT_TIMEOUT_UNIT;
+    public static final TimeUnit SERVER_TIMEOUT_UNIT = TimeUnit.SECONDS;
 
     public static final long SERVER_TIMEOUT_IN_MILLIS =
             SERVER_TIMEOUT_UNIT.toMillis(SERVER_TIMEOUT);
 
     // ------------------------------------------------------------------------------ CLIENT_TIMEOUT
-    public static final long CLIENT_TIMEOUT = SERVER_TIMEOUT;
+    public static final long CLIENT_TIMEOUT = 60L;
 
-    public static final TimeUnit CLIENT_TIMEOUT_UNIT = SERVER_TIMEOUT_UNIT;
+    public static final TimeUnit CLIENT_TIMEOUT_UNIT = TimeUnit.SECONDS;
 
     public static final long CLIENT_TIMEOUT_IN_MILLIS =
             CLIENT_TIMEOUT_UNIT.toMillis(CLIENT_TIMEOUT);

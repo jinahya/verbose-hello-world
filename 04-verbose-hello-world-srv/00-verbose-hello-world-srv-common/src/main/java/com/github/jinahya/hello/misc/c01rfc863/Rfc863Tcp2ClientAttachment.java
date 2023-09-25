@@ -1,5 +1,7 @@
 package com.github.jinahya.hello.misc.c01rfc863;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.IOException;
 import java.nio.channels.SocketChannel;
 import java.util.Objects;
@@ -10,6 +12,7 @@ import java.util.concurrent.ThreadLocalRandom;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@Slf4j
 final class Rfc863Tcp2ClientAttachment extends _Rfc863Attachment.Client {
 
     Rfc863Tcp2ClientAttachment(final SocketChannel client) {
@@ -18,15 +21,9 @@ final class Rfc863Tcp2ClientAttachment extends _Rfc863Attachment.Client {
     }
 
     int write() throws IOException {
-        if (!buffer.hasRemaining()) {
-            ThreadLocalRandom.current().nextBytes(buffer.array());
-            buffer.clear().limit(Math.min(buffer.limit(), getBytes()));
-        }
-        if (!buffer.hasRemaining()) {
-            assert getBytes() == 0;
-            return 0;
-        }
+        assert client.isBlocking();
         if (ThreadLocalRandom.current().nextBoolean()) {
+            final var buffer = getBufferForWriting();
             final var w = buffer.remaining();
             assert w > 0;
             assert buffer.arrayOffset() == 0;
@@ -39,7 +36,7 @@ final class Rfc863Tcp2ClientAttachment extends _Rfc863Attachment.Client {
             decreaseBytes(updateDigest(w));
             return w;
         }
-        final var w = client.write(buffer);
+        final var w = client.write(getBufferForWriting());
         assert w > 0;
         assert !buffer.hasRemaining();
         decreaseBytes(updateDigest(w));

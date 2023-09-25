@@ -54,7 +54,7 @@ final class Rfc863Tcp5ServerAttachment extends _Rfc863Attachment.Server {
     /**
      * Accepts a connection from {@code server}.
      *
-     * @see #acceptor
+     * @see #accepted
      */
     void accept() {
         if (client != null) {
@@ -62,16 +62,16 @@ final class Rfc863Tcp5ServerAttachment extends _Rfc863Attachment.Server {
         }
         server.accept(
                 null,
-                acceptor
+                accepted
         );
     }
 
     /**
      * Reads a sequence of bytes from the {@code client}.
      *
-     * @see #reader
+     * @see #read
      */
-    void read() {
+    private void read() {
         if (client == null) {
             throw new IllegalStateException("client is currently null");
         }
@@ -80,7 +80,7 @@ final class Rfc863Tcp5ServerAttachment extends _Rfc863Attachment.Server {
                 _Rfc86_Constants.READ_TIMEOUT,      // <timeout>
                 _Rfc86_Constants.READ_TIMEOUT_UNIT, // <unit>
                 null,                               // <attachment>
-                reader                              // <handler>
+                read                              // <handler>
         );
     }
 
@@ -89,11 +89,9 @@ final class Rfc863Tcp5ServerAttachment extends _Rfc863Attachment.Server {
 
     private final AsynchronousServerSocketChannel server;
 
-    private AsynchronousSocketChannel client;
-
     // @formatter:off
     private final
-    CompletionHandler<AsynchronousSocketChannel, Void> acceptor = new CompletionHandler<>() {
+    CompletionHandler<AsynchronousSocketChannel, Void> accepted = new CompletionHandler<>() {
         @Override
         public void completed(final AsynchronousSocketChannel result, final Void attachment) {
             client = _Rfc86_Utils.logAccepted(result);
@@ -106,8 +104,10 @@ final class Rfc863Tcp5ServerAttachment extends _Rfc863Attachment.Server {
     };
     // @formatter:on
 
+    private AsynchronousSocketChannel client;
+
     // @formatter:off
-    private final CompletionHandler<Integer, Void> reader = new CompletionHandler<>() {
+    private final CompletionHandler<Integer, Void> read = new CompletionHandler<>() {
         @Override public void completed(final Integer result, final Void attachment) {
             if (result == -1) {
                 closeUnchecked();

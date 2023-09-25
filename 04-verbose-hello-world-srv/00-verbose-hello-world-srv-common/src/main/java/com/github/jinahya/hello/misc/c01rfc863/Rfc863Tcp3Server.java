@@ -64,7 +64,7 @@ class Rfc863Tcp3Server {
                     }
                     // --------------------------------------------------------------------- RECEIVE
                     if (selectedKey.isReadable()) {
-                        final var channel = serverKey.channel();
+                        final var channel = selectedKey.channel();
                         assert channel instanceof SocketChannel;
                         final var attachment =
                                 (Rfc863Tcp3ServerAttachment) selectedKey.attachment();

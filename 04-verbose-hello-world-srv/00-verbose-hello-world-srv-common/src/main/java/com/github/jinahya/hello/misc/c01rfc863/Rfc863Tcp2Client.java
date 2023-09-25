@@ -47,14 +47,13 @@ class Rfc863Tcp2Client {
             // ----------------------------------------------------------------------------- CONNECT
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.socket().connect(
-                        _Rfc863Constants.ADDR, (int) _Rfc86_Constants.CONNECT_TIMEOUT_IN_MILLIS
+                        _Rfc863Constants.ADDR,
+                        (int) _Rfc86_Constants.CONNECT_TIMEOUT_IN_MILLIS
                 );
                 _Rfc86_Utils.logConnected(client.socket());
             } else {
-                if (!client.connect(_Rfc863Constants.ADDR)) {
-                    log.error("failed to connect");
-                    return;
-                }
+                final var connected = client.connect(_Rfc863Constants.ADDR);
+                assert !client.isBlocking() || connected;
                 _Rfc86_Utils.logConnected(client);
             }
             // -------------------------------------------------------------------------------- SEND

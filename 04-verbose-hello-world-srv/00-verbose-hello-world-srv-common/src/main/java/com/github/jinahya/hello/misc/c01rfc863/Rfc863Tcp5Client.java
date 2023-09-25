@@ -39,11 +39,7 @@ class Rfc863Tcp5Client {
                 client.bind(new InetSocketAddress(_Rfc86_Constants.HOST, 0));
                 log.info("(optionally) bound to {}", client.getLocalAddress());
             }
-            client.connect(
-                    _Rfc863Constants.ADDR,                         // <remote>
-                    new Rfc863Tcp5ClientAttachment(group, client), // <attachment>
-                    Rfc863Tcp5ClientHandlers.Connect.HANDLER       // <handler>
-            );
+            new Rfc863Tcp5ClientAttachment(group, client).connect();
             final var terminated = group.awaitTermination(_Rfc86_Constants.CLIENT_TIMEOUT,
                                                           _Rfc86_Constants.CLIENT_TIMEOUT_UNIT);
             assert terminated : "channel group hasn't been terminated";

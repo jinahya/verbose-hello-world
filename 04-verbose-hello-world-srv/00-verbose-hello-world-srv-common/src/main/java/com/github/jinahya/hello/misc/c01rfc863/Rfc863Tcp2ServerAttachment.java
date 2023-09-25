@@ -16,10 +16,10 @@ final class Rfc863Tcp2ServerAttachment extends _Rfc863Attachment.Server {
     }
 
     int read() throws IOException {
-        if (!buffer.hasRemaining()) {
-            buffer.clear();
-        }
+        assert client != null;
+        assert client.isBlocking();
         if (ThreadLocalRandom.current().nextBoolean()) {
+            final var buffer = getBufferForReading();
             assert buffer.arrayOffset() == 0;
             final var r = client.socket().getInputStream().read(
                     buffer.array(),    // <b>
@@ -32,7 +32,7 @@ final class Rfc863Tcp2ServerAttachment extends _Rfc863Attachment.Server {
             }
             return r;
         }
-        final int r = client.read(buffer);
+        final int r = client.read(getBufferForReading());
         if (r != -1) {
             increaseBytes(updateDigest(r));
         }
