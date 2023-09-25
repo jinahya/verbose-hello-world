@@ -44,6 +44,7 @@ class Rfc863Tcp2Client {
                 log.info("(optionally) bound to {}", client.getLocalAddress());
             }
             assert client.isBlocking();
+            // ----------------------------------------------------------------------------- CONNECT
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.socket().connect(
                         _Rfc863Constants.ADDR, (int) _Rfc86_Constants.CONNECT_TIMEOUT_IN_MILLIS
@@ -56,6 +57,7 @@ class Rfc863Tcp2Client {
                 }
                 _Rfc86_Utils.logConnected(client);
             }
+            // -------------------------------------------------------------------------------- SEND
             try (var attachment = new Rfc863Tcp2ClientAttachment(client)) {
                 while (attachment.write() > 0) {
                     // does nothing

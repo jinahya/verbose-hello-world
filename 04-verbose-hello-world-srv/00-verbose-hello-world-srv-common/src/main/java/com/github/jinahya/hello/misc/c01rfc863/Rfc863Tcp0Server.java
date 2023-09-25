@@ -20,6 +20,8 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
+import com.github.jinahya.hello.misc._Rfc86_Constants;
+import com.github.jinahya.hello.misc._Rfc86_Utils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.ServerSocket;
@@ -31,11 +33,10 @@ class Rfc863Tcp0Server {
         try (var server = new ServerSocket()) {
             server.bind(_Rfc863Constants.ADDR, 1);
             log.info("bound to {}", server.getLocalSocketAddress());
-            server.setSoTimeout((int) _Rfc863Constants.ACCEPT_TIMEOUT_IN_MILLIS);
+            server.setSoTimeout((int) _Rfc86_Constants.ACCEPT_TIMEOUT_IN_MILLIS);
             try (var client = server.accept()) {
-                log.info("accepted from {}, through {}", client.getRemoteSocketAddress(),
-                         client.getLocalSocketAddress());
-                client.setSoTimeout((int) _Rfc863Constants.READ_TIMEOUT_IN_MILLIS);
+                _Rfc86_Utils.logAccepted(client);
+                client.setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_IN_MILLIS);
                 final var digest = _Rfc863Utils.newDigest();
                 var bytes = 0L;
                 for (int b; (b = client.getInputStream().read()) != -1; bytes++) {

@@ -142,50 +142,56 @@ public final class _Rfc86_Utils {
         return channel.getLocalAddress();
     }
 
-    public static void logConnected(final Socket client) {
+    public static <T extends Socket> T logConnected(final T client) {
         Objects.requireNonNull(client, "client is null");
         log.info(LOG_FORMAT_CONNECTED, client.getRemoteSocketAddress(), client.getLocalAddress());
+        return client;
     }
 
-    public static void logAccepted(final Socket client) {
+    public static <T extends Socket> T logAccepted(final T client) {
         Objects.requireNonNull(client, "client is null");
         log.info(LOG_FORMAT_ACCEPTED, client.getRemoteSocketAddress(), client.getLocalAddress());
+        return client;
     }
 
-    public static void logConnected(final SocketChannel client) {
+    public static <T extends SocketChannel> T logConnected(final T client) {
         Objects.requireNonNull(client, "client is null");
         try {
             log.info(LOG_FORMAT_CONNECTED, client.getRemoteAddress(), getLocalAddress(client));
         } catch (final IOException ioe) {
             throw new UncheckedIOException(ioe);
         }
+        return client;
     }
 
-    public static void logAccepted(final SocketChannel client) {
+    public static <T extends SocketChannel> T logAccepted(final T client) {
         Objects.requireNonNull(client, "client is null");
         try {
             log.info(LOG_FORMAT_ACCEPTED, client.getRemoteAddress(), getLocalAddress(client));
         } catch (final IOException ioe) {
             throw new UncheckedIOException(ioe);
         }
+        return client;
     }
 
-    public static void logConnected(final AsynchronousSocketChannel client) {
+    public static <T extends AsynchronousSocketChannel> T logConnected(final T client) {
         Objects.requireNonNull(client, "client is null");
         try {
             log.info(LOG_FORMAT_CONNECTED, client.getRemoteAddress(), getLocalAddress(client));
         } catch (final IOException ioe) {
             throw new UncheckedIOException(ioe);
         }
+        return client;
     }
 
-    public static void logAccepted(final AsynchronousSocketChannel client) {
+    public static <T extends AsynchronousSocketChannel> T logAccepted(final T client) {
         Objects.requireNonNull(client, "client is null");
         try {
             log.info(LOG_FORMAT_ACCEPTED, client.getRemoteAddress(), getLocalAddress(client));
         } catch (IOException ioe) {
             throw new UncheckedIOException(ioe);
         }
+        return client;
     }
 
     // ---------------------------------------------------------------------------------------------

@@ -34,11 +34,12 @@ final class _Rfc863Utils {
      *
      * @param bytes the client bytes to log.
      */
-    static void logClientBytes(final long bytes) {
+    static int logClientBytes(final int bytes) {
         if (bytes < 0) {
             throw new IllegalArgumentException("bytes(" + bytes + ") is negative");
         }
         log.info("sending {} bytes", bytes);
+        return bytes;
     }
 
     /**

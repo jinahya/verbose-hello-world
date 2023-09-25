@@ -2,6 +2,7 @@ package com.github.jinahya.hello.misc.c01rfc863;
 
 import java.io.IOException;
 import java.nio.channels.SelectionKey;
+import java.nio.channels.SocketChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
@@ -16,12 +17,12 @@ final class Rfc863Tcp3ClientAttachment extends _Rfc863Attachment.Client {
     Rfc863Tcp3ClientAttachment(final SelectionKey clientKey) {
         super();
         this.clientKey = Objects.requireNonNull(clientKey, "clientKey is null");
-    }
-
-    @Override
-    public void close() throws IOException {
-        clientKey.channel().close();
-        super.close();
+        if (!(clientKey.channel() instanceof SocketChannel)) {
+            throw new IllegalArgumentException(
+                    "clientKey.channel(" + clientKey.channel() + ")"
+                    + " is not an instance of " + SocketChannel.class.getSimpleName()
+            );
+        }
     }
 
     int write() throws IOException {
@@ -37,8 +38,9 @@ final class Rfc863Tcp3ClientAttachment extends _Rfc863Attachment.Client {
         }
         final int w = ((WritableByteChannel) clientKey.channel()).write(buffer);
         assert w >= 0;
-        if (decreaseBytes(updateDigest(w)) == 0) {
+        if (decreaseBytes(updateDigest(w)) == 0) { // all bytes have been sent
             close();
+            clientKey.cancel();
             assert !clientKey.isValid();
         }
         return w;

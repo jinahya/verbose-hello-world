@@ -2,12 +2,9 @@ package com.github.jinahya.hello.misc.c01rfc863;
 
 import com.github.jinahya.hello.misc._Rfc86_Constants;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.util.Objects;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 
 final class Rfc863Tcp4ClientAttachment extends _Rfc863Attachment.Client {
 
@@ -21,12 +18,6 @@ final class Rfc863Tcp4ClientAttachment extends _Rfc863Attachment.Client {
         this.client = Objects.requireNonNull(client, "client is null");
     }
 
-    @Override
-    public void close() throws IOException {
-        client.close();
-        super.close();
-    }
-
     /**
      * Writes a sequence of bytes to {@code client}, and returns the number of bytes written to the
      * {@code client}.
@@ -34,18 +25,13 @@ final class Rfc863Tcp4ClientAttachment extends _Rfc863Attachment.Client {
      * @return a number of bytes written to the {@code client}.
      * @throws Exception if any thrown.
      * @see AsynchronousSocketChannel#write(ByteBuffer)
-     * @see _Rfc86_Constants#WRITE_TIMEOUT
-     * @see _Rfc86_Constants#WRITE_TIMEOUT_UNIT
-     * @see java.util.concurrent.Future#get(long, TimeUnit)
      * @see Rfc863Tcp4ServerAttachment#read()
      */
     int write() throws Exception {
-        if (!buffer.hasRemaining()) {
-            ThreadLocalRandom.current().nextBytes(buffer.array());
-            buffer.clear().limit(Math.min(buffer.limit(), getBytes()));
-        }
-        final var w = client.write(buffer)
+        final var w = client.write(getBufferForWriting())
                 .get(_Rfc86_Constants.WRITE_TIMEOUT, _Rfc86_Constants.WRITE_TIMEOUT_UNIT);
+        assert w >= 0;
+        assert w != 0 || getBytes() == 0;
         decreaseBytes(updateDigest(w));
         return w;
     }

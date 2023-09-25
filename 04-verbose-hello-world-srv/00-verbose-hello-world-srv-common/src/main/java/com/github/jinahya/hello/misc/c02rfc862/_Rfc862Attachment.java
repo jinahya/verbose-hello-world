@@ -1,6 +1,6 @@
 package com.github.jinahya.hello.misc.c02rfc862;
 
-import com.github.jinahya.hello.misc._AbstractRfc86_Attachment;
+import com.github.jinahya.hello.misc._Rfc86_Attachment;
 import com.github.jinahya.hello.misc._Rfc86_Utils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -9,7 +9,7 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
-abstract class _Rfc862Attachment extends _AbstractRfc86_Attachment {
+abstract class _Rfc862Attachment extends _Rfc86_Attachment {
 
     abstract static class Client extends _Rfc862Attachment {
 

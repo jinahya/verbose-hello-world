@@ -51,7 +51,6 @@ class Rfc862Tcp3Client {
                     r = attachment.read();
 //                    assert r > 0; // why?
                 }
-                assert attachment.getBytes() == 0;
                 attachment.logDigest();
                 client.shutdownOutput();
                 for (int r; (r = attachment.read()) != -1; ) {

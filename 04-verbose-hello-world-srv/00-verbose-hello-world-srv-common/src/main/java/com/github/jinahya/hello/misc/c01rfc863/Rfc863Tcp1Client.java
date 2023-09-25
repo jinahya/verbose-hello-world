@@ -20,6 +20,7 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
+import com.github.jinahya.hello.misc._Rfc86_Constants;
 import com.github.jinahya.hello.misc._Rfc86_Utils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,22 +34,20 @@ class Rfc863Tcp1Client {
     public static void main(final String... args) throws Exception {
         try (var client = new Socket()) {
             if (ThreadLocalRandom.current().nextBoolean()) {
-                client.bind(new InetSocketAddress(_Rfc863Constants.HOST, 0));
+                client.bind(new InetSocketAddress(_Rfc86_Constants.HOST, 0));
                 log.info("(optionally) bound to {}", client.getLocalSocketAddress());
             }
-            client.connect(_Rfc863Constants.ADDR, (int) _Rfc863Constants.CONNECT_TIMEOUT_IN_MILLIS);
-            log.info("connected to {}, through {}", client.getRemoteSocketAddress(),
-                     client.getLocalSocketAddress());
+            client.connect(_Rfc863Constants.ADDR, (int) _Rfc86_Constants.CONNECT_TIMEOUT_IN_MILLIS);
+            _Rfc86_Utils.logConnected(client);
             final var digest = _Rfc863Utils.newDigest();
-            var bytes = _Rfc86_Utils.randomBytes();
-            _Rfc863Utils.logClientBytes(bytes);
+            var bytes = _Rfc863Utils.logClientBytes(_Rfc86_Utils.randomBytes());
             final var array = _Rfc86_Utils.newArray();
             while (bytes > 0) {
                 ThreadLocalRandom.current().nextBytes(array);
-                final var l = Math.min(array.length, bytes);
-                client.getOutputStream().write(array, 0, l);
-                digest.update(array, 0, l);
-                bytes -= l;
+                final var len = Math.min(array.length, bytes);
+                client.getOutputStream().write(array, 0, len);
+                digest.update(array, 0, len);
+                bytes -= len;
             }
             client.getOutputStream().flush();
             _Rfc863Utils.logDigest(digest);

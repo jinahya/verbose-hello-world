@@ -3,6 +3,7 @@ package com.github.jinahya.hello.misc.c01rfc863;
 import java.io.IOException;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SelectionKey;
+import java.nio.channels.SocketChannel;
 import java.util.Objects;
 
 final class Rfc863Tcp3ServerAttachment extends _Rfc863Attachment.Server {
@@ -10,6 +11,12 @@ final class Rfc863Tcp3ServerAttachment extends _Rfc863Attachment.Server {
     Rfc863Tcp3ServerAttachment(final SelectionKey clientKey) {
         super();
         this.clientKey = Objects.requireNonNull(clientKey, "clientKey is null");
+        if (!(clientKey.channel() instanceof SocketChannel)) {
+            throw new IllegalArgumentException(
+                    "clientKey.channel(" + clientKey.channel() + ")"
+                    + " is not an instance of " + SocketChannel.class.getSimpleName()
+            );
+        }
     }
 
     @Override

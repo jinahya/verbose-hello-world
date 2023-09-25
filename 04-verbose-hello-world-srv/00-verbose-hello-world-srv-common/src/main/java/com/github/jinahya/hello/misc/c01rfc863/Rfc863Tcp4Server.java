@@ -37,8 +37,8 @@ class Rfc863Tcp4Server {
                                                   _Rfc86_Constants.ACCEPT_TIMEOUT_UNIT)) {
                 _Rfc86_Utils.logAccepted(client);
                 try (var attachment = new Rfc863Tcp4ServerAttachment(client)) {
-                    for (int r; (r = attachment.read()) != -1; ) {
-                        assert r > 0; // why not 0?
+                    while ((attachment.read()) != -1) {
+                        // does nothing
                     }
                 }
             }

@@ -32,12 +32,6 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import static com.github.jinahya.hello.misc.c01rfc863._Rfc863Constants.HOST;
 
-/**
- * .
- *
- * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see Rfc863Tcp3Server
- */
 @Slf4j
 class Rfc863Tcp3Client {
 
@@ -49,6 +43,7 @@ class Rfc863Tcp3Client {
                 log.info("(optionally) bound to {}", client.getLocalAddress());
             }
             client.configureBlocking(false);
+            // ------------------------------------------------------------------------- CONNECT/TRY
             final SelectionKey clientKey;
             if (client.connect(_Rfc863Constants.ADDR)) {
                 log.info("(immediately) connected to {}, through {}", client.getRemoteAddress(),
@@ -58,12 +53,14 @@ class Rfc863Tcp3Client {
             } else {
                 clientKey = client.register(selector, SelectionKey.OP_CONNECT);
             }
+            // ------------------------------------------------------------------------------ SELECT
             while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
                 if (selector.select(_Rfc86_Constants.CLIENT_TIMEOUT_IN_MILLIS) == 0) {
                     break;
                 }
                 for (final var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
                     final var selectedKey = i.next();
+                    // -------------------------------------------------------------- CONNECT/FINISH
                     if (selectedKey.isConnectable()) {
                         assert selectedKey == clientKey;
                         final var channel = (SocketChannel) selectedKey.channel();
@@ -72,16 +69,17 @@ class Rfc863Tcp3Client {
                             _Rfc86_Utils.logConnected(channel);
                             selectedKey.interestOpsAnd(~SelectionKey.OP_CONNECT);
                             selectedKey.attach(new Rfc863Tcp3ClientAttachment(selectedKey));
-                            selectedKey.interestOps(SelectionKey.OP_WRITE);
+                            selectedKey.interestOpsOr(SelectionKey.OP_WRITE);
                         }
                     }
+                    // ------------------------------------------------------------------------ SEND
                     if (selectedKey.isWritable()) {
                         final var channel = (SocketChannel) selectedKey.channel();
                         assert channel == client;
                         final var attachment =
                                 (Rfc863Tcp3ClientAttachment) selectedKey.attachment();
                         final var w = attachment.write();
-                        assert w >= 0; // why?
+                        assert w >= 0;
                     }
                 }
             }

@@ -43,9 +43,8 @@ class Rfc863Tcp4Client {
                                                       _Rfc86_Constants.CONNECT_TIMEOUT_UNIT);
             _Rfc86_Utils.logConnected(client);
             try (var attachment = new Rfc863Tcp4ClientAttachment(client)) {
-                for (int w; attachment.getBytes() > 0; ) {
-                    w = attachment.write();
-                    assert w > 0; // why?
+                while (attachment.write() > 0) {
+                    // does nothing
                 }
             }
         }

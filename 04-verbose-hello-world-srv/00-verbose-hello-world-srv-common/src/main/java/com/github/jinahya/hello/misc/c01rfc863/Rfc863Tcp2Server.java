@@ -21,6 +21,7 @@ package com.github.jinahya.hello.misc.c01rfc863;
  */
 
 import com.github.jinahya.hello.misc._Rfc86_Constants;
+import com.github.jinahya.hello.misc._Rfc86_Utils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.channels.ServerSocketChannel;
@@ -35,6 +36,7 @@ class Rfc863Tcp2Server {
             server.bind(_Rfc863Constants.ADDR, 1);
             log.info("bound to {}", server.getLocalAddress());
             assert server.isBlocking();
+            // ------------------------------------------------------------------------------ ACCEPT
             final SocketChannel client;
             if (ThreadLocalRandom.current().nextBoolean()) {
                 final var serverSocket = server.socket();
@@ -46,6 +48,8 @@ class Rfc863Tcp2Server {
             } else {
                 client = server.accept();
             }
+            _Rfc86_Utils.logAccepted(client);
+            // ----------------------------------------------------------------------------- RECEIVE
             try (var attachment = new Rfc863Tcp2ServerAttachment(client)) {
                 while (attachment.read() != -1) {
                     // does nothing

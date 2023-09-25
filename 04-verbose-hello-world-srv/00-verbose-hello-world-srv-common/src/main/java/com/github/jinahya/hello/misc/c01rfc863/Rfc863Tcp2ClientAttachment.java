@@ -28,6 +28,7 @@ final class Rfc863Tcp2ClientAttachment extends _Rfc863Attachment.Client {
         }
         if (ThreadLocalRandom.current().nextBoolean()) {
             final var w = buffer.remaining();
+            assert w > 0;
             assert buffer.arrayOffset() == 0;
             client.socket().getOutputStream().write(
                     buffer.array(),    // <b>
@@ -40,6 +41,7 @@ final class Rfc863Tcp2ClientAttachment extends _Rfc863Attachment.Client {
         }
         final var w = client.write(buffer);
         assert w > 0;
+        assert !buffer.hasRemaining();
         decreaseBytes(updateDigest(w));
         return w;
     }

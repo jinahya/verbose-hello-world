@@ -108,7 +108,7 @@ public final class JavaLangUtils {
                     if (predicate.test(line.strip())) {
                         break;
                     }
-                    if (consumer!= null) {
+                    if (consumer != null) {
                         consumer.accept(line);
                     }
                 }
@@ -247,11 +247,15 @@ public final class JavaLangUtils {
             return value;
         }
 
-        public static int requireNonNegative(final int value) {
+        public static int requireNonNegative(final int value, final String message) {
             if (value < 0) {
-                throw new IllegalArgumentException("value(" + value + ") < 0");
+                throw new IllegalArgumentException(message);
             }
             return value;
+        }
+
+        public static int requireNonNegative(final int value) {
+            return requireNonNegative(value, "value(" + value + ") < 0");
         }
 
         public static int requireNegative(final int value) {

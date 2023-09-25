@@ -20,6 +20,7 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
+import com.github.jinahya.hello.misc._Rfc86_Constants;
 import com.github.jinahya.hello.misc._Rfc86_Utils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -38,14 +39,12 @@ class Rfc863Tcp0Client {
                 client.bind(new InetSocketAddress(HOST, 0));
                 log.info("(optionally) bound to {}", client.getLocalSocketAddress());
             }
-            client.connect(_Rfc863Constants.ADDR, (int) _Rfc863Constants.CONNECT_TIMEOUT_IN_MILLIS);
-            log.info("connected to {}, through {}", client.getRemoteSocketAddress(),
-                     client.getLocalSocketAddress());
+            client.connect(_Rfc863Constants.ADDR, (int) _Rfc86_Constants.CONNECT_TIMEOUT_IN_MILLIS);
+            _Rfc86_Utils.logConnected(client);
             final var digest = _Rfc863Utils.newDigest();
-            var bytes = _Rfc86_Utils.randomBytes();
-            _Rfc863Utils.logClientBytes(bytes);
+            var bytes = _Rfc863Utils.logClientBytes(_Rfc86_Utils.randomBytes());
             for (int b; bytes-- > 0; ) {
-                b = ThreadLocalRandom.current().nextInt(255);
+                b = ThreadLocalRandom.current().nextInt(256); // [0..256)
                 client.getOutputStream().write(b);
                 digest.update((byte) b);
             }

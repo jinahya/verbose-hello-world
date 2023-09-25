@@ -37,6 +37,7 @@ final class Rfc863Tcp4ServerAttachment extends _Rfc863Attachment.Server {
         final var r = client.read(getBufferForReading())
                 .get(_Rfc86_Constants.READ_TIMEOUT, _Rfc86_Constants.READ_TIMEOUT_UNIT);
         if (r != -1) {
+            assert r > 0; // why?
             increaseBytes(updateDigest(r));
         }
         return r;

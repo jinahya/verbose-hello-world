@@ -37,35 +37,44 @@ class Rfc863Tcp3Server {
              var server = ServerSocketChannel.open()) {
             server.bind(_Rfc863Constants.ADDR, 1);
             log.info("bound to {}", server.getLocalAddress());
+            // ------------------------------------------------------------------ CONFIGURE/REGISTER
             server.configureBlocking(false);
             final var serverKey = server.register(selector, SelectionKey.OP_ACCEPT);
+            // ------------------------------------------------------------------------------ SELECT
             while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
                 if (selector.select(_Rfc86_Constants.ACCEPT_TIMEOUT_IN_MILLIS) == 0) {
                     break;
                 }
+                // -------------------------------------------------------------------------- HANDLE
                 for (final var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
                     final var selectedKey = i.next();
+                    // ---------------------------------------------------------------------- ACCEPT
                     if (selectedKey.isAcceptable()) {
                         assert selectedKey == serverKey;
                         final var channel = (ServerSocketChannel) selectedKey.channel();
                         assert channel == server;
-                        final var client = channel.accept();
-                        _Rfc86_Utils.logAccepted(client);
-                        selectedKey.interestOpsAnd(~SelectionKey.OP_ACCEPT); // redundant
+                        final var client = _Rfc86_Utils.logAccepted(channel.accept());
+                        selectedKey.interestOpsAnd(~SelectionKey.OP_ACCEPT);
                         selectedKey.cancel();
                         assert !selectedKey.isValid();
                         client.configureBlocking(false);
                         final var clientKey = client.register(selector, SelectionKey.OP_READ);
                         clientKey.attach(new Rfc863Tcp3ServerAttachment(clientKey));
-                        continue;
+                        continue; // why?
                     }
+                    // --------------------------------------------------------------------- RECEIVE
                     if (selectedKey.isReadable()) {
-                        assert selectedKey.channel() instanceof SocketChannel;
+                        final var channel = serverKey.channel();
+                        assert channel instanceof SocketChannel;
                         final var attachment =
                                 (Rfc863Tcp3ServerAttachment) selectedKey.attachment();
                         assert attachment != null;
                         final var r = attachment.read();
                         assert r >= -1;
+                        if (r == -1) {
+                            assert !channel.isOpen();
+                            assert !serverKey.isValid();
+                        }
                     }
                 }
             }
