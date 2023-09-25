@@ -20,12 +20,12 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
+import com.github.jinahya.hello.util.Stopwatch;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.ArrayList;
-import java.util.IntSummaryStatistics;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -34,9 +34,10 @@ import java.util.concurrent.TimeUnit;
 class Z_Rfc863Tcp1Client {
 
     public static void main(final String... args) throws Exception {
+        final Object carrier = Stopwatch.startStopwatch();
         final var futures = new ArrayList<Future<Integer>>();
         final var service = Executors.newFixedThreadPool(Z__Rfc863Constants.SERVER_THREADS);
-        for (int i = 0; i < 16; i++) {
+        for (int i = 0; i < Z__Rfc863Constants.CLIENT_ROUNDS; i++) {
             for (final Class<?> clientClass : Z__Rfc863Constants.CLIENT_CLASSES) {
                 futures.add(
                         service.submit(() -> {
@@ -50,20 +51,20 @@ class Z_Rfc863Tcp1Client {
             }
         }
         service.shutdown();
-        final var total = new IntSummaryStatistics();
-        final var error = new IntSummaryStatistics();
+        int total = 0;
+        int error = 0;
         for (final var future : futures) {
-            total.accept(1);
+            total++;
             if (future.get() != 0) {
-                error.accept(1);
+                error++;
             }
         }
-        log.debug("total: {}", total.getSum());
-        log.debug("error: {}", error.getSum());
-        log.debug("awaiting service to be terminated...");
+        log.debug("total: {}", total);
+        log.debug("error: {}", error);
         if (!service.awaitTermination(10L, TimeUnit.MINUTES)) {
             log.error("service hasn't been terminated for a while");
         }
+        log.debug("elapsed: {}", Stopwatch.stopStopwatch(carrier));
     }
 
     /**

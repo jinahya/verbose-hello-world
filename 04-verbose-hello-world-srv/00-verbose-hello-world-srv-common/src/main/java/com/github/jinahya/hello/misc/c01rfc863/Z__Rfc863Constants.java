@@ -41,6 +41,8 @@ final class Z__Rfc863Constants {
 
     static final long SELECT_TIMEOUT = TimeUnit.SECONDS.toMillis(4L);
 
+    static final int CLIENT_ROUNDS = 32;
+
     /**
      * An unmodifiable list of client classes.
      */

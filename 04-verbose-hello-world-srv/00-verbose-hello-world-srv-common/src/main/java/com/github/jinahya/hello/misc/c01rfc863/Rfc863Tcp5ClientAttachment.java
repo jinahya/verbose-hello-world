@@ -31,19 +31,19 @@ final class Rfc863Tcp5ClientAttachment extends _Rfc863Attachment.Client {
     // -------------------------------------------------------------------------------------- client
     void connect() {
         client.connect(
-                _Rfc863Constants.ADDR,
-                null,
-                connected
+                _Rfc863Constants.ADDR, // <remote>
+                null,                  // <attachment>
+                connected              // <handler>
         );
     }
 
     private void write() {
         client.write(
-                getBufferForWriting(),
-                _Rfc86_Constants.WRITE_TIMEOUT,
-                _Rfc86_Constants.WRITE_TIMEOUT_UNIT,
-                null,
-                written
+                getBufferForWriting(),               // <src>
+                _Rfc86_Constants.WRITE_TIMEOUT,      // <timeout
+                _Rfc86_Constants.WRITE_TIMEOUT_UNIT, // <unit>
+                null,                                // <attachment>
+                written                              // <handler>
         );
     }
 

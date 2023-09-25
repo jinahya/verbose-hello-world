@@ -18,9 +18,7 @@ final class Z__Rfc863Utils {
                 path,
                 main.getName()
         );
-        return new ProcessBuilder(command)
-                .inheritIO()
-                .start();
+        return new ProcessBuilder(command).start();
     }
 
     private Z__Rfc863Utils() {

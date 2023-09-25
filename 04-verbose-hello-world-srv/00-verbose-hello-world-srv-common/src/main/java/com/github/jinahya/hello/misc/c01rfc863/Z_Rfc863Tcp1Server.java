@@ -27,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.StandardSocketOptions;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -35,6 +36,8 @@ class Z_Rfc863Tcp1Server {
 
     public static void main(final String... args) throws Exception {
         try (var server = new ServerSocket()) {
+            server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
+            server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
             server.bind(_Rfc863Constants.ADDR);
             log.info("bound to {}", server.getLocalSocketAddress());
             JavaLangUtils.readLinesAndCloseWhenTests(
