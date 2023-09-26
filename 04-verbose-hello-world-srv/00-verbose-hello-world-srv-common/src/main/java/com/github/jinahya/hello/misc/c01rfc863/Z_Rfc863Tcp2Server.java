@@ -33,6 +33,7 @@ import java.nio.channels.SocketChannel;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
+@SuppressWarnings({"java:S101"})
 class Z_Rfc863Tcp2Server {
 
     public static void main(final String... args) throws Exception {
@@ -40,7 +41,7 @@ class Z_Rfc863Tcp2Server {
              var server = ServerSocketChannel.open()) {
             server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
             server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
-            server.bind(_Rfc863Constants.ADDR);
+            server.bind(_Rfc863Constants.ADDR, Z__Rfc863Constants.SERVER_BACKLOG);
             log.info("bound to {}", server.getLocalAddress());
             JavaLangUtils.readLinesAndCloseWhenTests(
                     HelloWorldServerUtils::isQuit, // <predicate>
@@ -63,7 +64,7 @@ class Z_Rfc863Tcp2Server {
                         final var clientKey = client.register(
                                 selector,
                                 SelectionKey.OP_READ,
-                                ByteBuffer.allocate(Z__Rfc863Constants.CLIENT_BUFLEN)
+                                ByteBuffer.allocate(Z__Rfc863Constants.SERVER_BUFLEN)
                         );
                     }
                     if (selectedKey.isReadable()) {

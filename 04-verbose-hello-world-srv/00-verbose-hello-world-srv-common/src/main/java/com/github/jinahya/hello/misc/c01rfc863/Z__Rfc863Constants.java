@@ -19,9 +19,9 @@ final class Z__Rfc863Constants {
     // ---------------------------------------------------------------------------------------------
     static final int SERVER_THREADS = 128;
 
-    static final int SERVER_BACKLOG = SERVER_THREADS << 1;
+    static final int SERVER_BACKLOG = 128;
 
-    static final int SERVER_BUFLEN = 1024;
+    static final int SERVER_BUFLEN = 8192;
 
     static final int CLIENT_BUFLEN = 1024;
 

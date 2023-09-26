@@ -24,8 +24,11 @@ final class Rfc863Tcp5ClientAttachment extends _Rfc863Attachment.Client {
 
     @Override
     public void close() throws IOException {
-        group.shutdownNow();
-        super.close();
+        try {
+            group.shutdownNow();
+        } finally {
+            super.close();
+        }
     }
 
     // -------------------------------------------------------------------------------------- client
@@ -68,7 +71,7 @@ final class Rfc863Tcp5ClientAttachment extends _Rfc863Attachment.Client {
     // @formatter:off
     private final CompletionHandler<Integer, Void> written = new CompletionHandler<>() {
         @Override public void completed(final Integer result, final Void attachment) {
-            if (decreaseBytes(updateDigest(result)) == 0) {
+            if (decreaseBytes(updateDigest(result)) == 0) { // no more bytes to send
                 closeUnchecked();
                 return;
             }

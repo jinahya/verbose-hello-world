@@ -36,8 +36,8 @@ class Z_Rfc863Tcp1Client {
     public static void main(final String... args) throws Exception {
         final Object carrier = Stopwatch.startStopwatch();
         final var futures = new ArrayList<Future<Integer>>();
-        final var service = Executors.newFixedThreadPool(Z__Rfc863Constants.SERVER_THREADS);
-        for (int i = 0; i < Z__Rfc863Constants.CLIENT_ROUNDS; i++) {
+        final var service = Executors.newFixedThreadPool(32);
+        for (int i = 0; i < 32; i++) {
             for (final Class<?> clientClass : Z__Rfc863Constants.CLIENT_CLASSES) {
                 futures.add(
                         service.submit(() -> {
@@ -51,6 +51,9 @@ class Z_Rfc863Tcp1Client {
             }
         }
         service.shutdown();
+        if (!service.awaitTermination(10L, TimeUnit.MINUTES)) {
+            log.error("service hasn't been terminated for a while");
+        }
         int total = 0;
         int error = 0;
         for (final var future : futures) {
@@ -61,15 +64,9 @@ class Z_Rfc863Tcp1Client {
         }
         log.debug("total: {}", total);
         log.debug("error: {}", error);
-        if (!service.awaitTermination(10L, TimeUnit.MINUTES)) {
-            log.error("service hasn't been terminated for a while");
-        }
         log.debug("elapsed: {}", Stopwatch.stopStopwatch(carrier));
     }
 
-    /**
-     * Creates a new instance.
-     */
     private Z_Rfc863Tcp1Client() {
         throw new AssertionError("instantiation is not allowed");
     }

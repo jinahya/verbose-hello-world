@@ -27,6 +27,7 @@ abstract class _Rfc863Attachment extends _Rfc86_Attachment {
                 ThreadLocalRandom.current().nextBytes(buffer.array());
                 buffer.clear().limit(Math.min(buffer.limit(), getBytes()));
             }
+            assert buffer.hasRemaining() || getBytes() == 0;
             return buffer;
         }
     }
