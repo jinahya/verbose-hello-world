@@ -50,14 +50,14 @@ public abstract class _Rfc86_Constants {
             CONNECT_TIMEOUT_UNIT.toMillis(CONNECT_TIMEOUT);
 
     // -------------------------------------------------------------------------------- READ_TIMEOUT
-    public static final long READ_TIMEOUT = 32L;
+    public static final long READ_TIMEOUT = 64L;
 
     public static final TimeUnit READ_TIMEOUT_UNIT = TimeUnit.SECONDS;
 
     public static final long READ_TIMEOUT_IN_MILLIS = READ_TIMEOUT_UNIT.toMillis(READ_TIMEOUT);
 
     // ------------------------------------------------------------------------------- WRITE_TIMEOUT
-    public static final long WRITE_TIMEOUT = 32L;
+    public static final long WRITE_TIMEOUT = 64L;
 
     public static final TimeUnit WRITE_TIMEOUT_UNIT = TimeUnit.SECONDS;
 

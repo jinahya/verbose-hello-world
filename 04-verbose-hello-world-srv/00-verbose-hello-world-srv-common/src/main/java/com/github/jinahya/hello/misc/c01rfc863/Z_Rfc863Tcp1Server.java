@@ -38,14 +38,14 @@ class Z_Rfc863Tcp1Server {
         try (var server = new ServerSocket()) {
             server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
             server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
-            server.bind(_Rfc863Constants.ADDR);
+            server.bind(_Rfc863Constants.ADDR, Z__Rfc863Constants.SERVER_BACKLOG);
             log.info("bound to {}", server.getLocalSocketAddress());
             JavaLangUtils.readLinesAndCloseWhenTests(
                     HelloWorldServerUtils::isQuit, // <predicate>
                     server,                        // <closeable>
                     null                           // <consumer>
             );
-            final var service = Executors.newFixedThreadPool(Z__Rfc863Constants.SERVER_THREADS);
+            final var service = Executors.newCachedThreadPool();
             while (!server.isClosed()) {
                 final Socket client;
                 try {

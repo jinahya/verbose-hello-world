@@ -68,7 +68,7 @@ public abstract class _Rfc86_Attachment implements Closeable {
         try {
             close();
         } catch (final IOException ioe) {
-            throw new UncheckedIOException(ioe);
+            throw new UncheckedIOException("failed to close", ioe);
         }
     }
 
@@ -79,7 +79,8 @@ public abstract class _Rfc86_Attachment implements Closeable {
      *
      * @return {@code true} if this attachment is closed; {@code false} otherwise.
      */
-    public final boolean isClosed() {
+    // TODO: remove! not used in anywhere.
+    protected final boolean isClosed() {
         return closed;
     }
 

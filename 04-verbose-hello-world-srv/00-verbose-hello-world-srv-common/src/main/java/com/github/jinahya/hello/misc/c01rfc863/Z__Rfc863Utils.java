@@ -1,5 +1,7 @@
 package com.github.jinahya.hello.misc.c01rfc863;
 
+import org.slf4j.event.Level;
+
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
@@ -16,9 +18,12 @@ final class Z__Rfc863Utils {
                 java,
                 "-cp",
                 path,
-                main.getName()
+                main.getName(),
+                Level.ERROR.name()
         );
-        return new ProcessBuilder(command).start();
+        return new ProcessBuilder(command)
+                .inheritIO()
+                .start();
     }
 
     private Z__Rfc863Utils() {

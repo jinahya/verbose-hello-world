@@ -21,6 +21,7 @@ package com.github.jinahya.hello.misc.c01rfc863;
  */
 
 import com.github.jinahya.hello.misc._Rfc86_Constants;
+import com.github.jinahya.hello.util.LoggingUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
@@ -33,6 +34,9 @@ import java.util.concurrent.ThreadLocalRandom;
 class Rfc863Tcp5Client {
 
     public static void main(final String... args) throws Exception {
+        if (args.length > 0) {
+            LoggingUtils.setLevelForAllLoggers(args[0]);
+        }
         final var group = AsynchronousChannelGroup.withThreadPool(Executors.newCachedThreadPool());
         try (var client = AsynchronousSocketChannel.open(group)) {
             if (ThreadLocalRandom.current().nextBoolean()) {
