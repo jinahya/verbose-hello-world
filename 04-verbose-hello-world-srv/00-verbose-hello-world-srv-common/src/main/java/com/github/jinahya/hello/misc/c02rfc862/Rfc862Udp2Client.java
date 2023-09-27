@@ -24,8 +24,6 @@ import com.github.jinahya.hello.misc._Rfc86_Constants;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
-import java.net.StandardSocketOptions;
-import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -59,29 +57,17 @@ class Rfc862Udp2Client {
                     if (selectedKey.isWritable()) {
                         final var channel = (DatagramChannel) selectedKey.channel();
                         assert channel == client;
-                        final var attachment = ByteBuffer.allocate(
-                                ThreadLocalRandom.current().nextInt(
-                                        channel.getOption(StandardSocketOptions.SO_SNDBUF) + 1
-                                )
-                        );
+                        final var attachment = new Rfc862Udp2ClientAttachment(channel);
                         selectedKey.attach(attachment);
-                        ThreadLocalRandom.current().nextBytes(attachment.array());
-                        _Rfc862Utils.logClientBytes(attachment.remaining());
-                        final var w = channel.send(attachment, _Rfc862Constants.ADDR);
-                        assert w == attachment.position();
-                        assert !attachment.hasRemaining();
-                        _Rfc862Utils.logDigest(attachment.flip());
+                        final var s = attachment.send();
                         selectedKey.interestOpsAnd(~SelectionKey.OP_WRITE);
                         selectedKey.interestOpsOr(SelectionKey.OP_READ);
                     }
                     if (selectedKey.isReadable()) {
                         final var channel = (DatagramChannel) selectedKey.channel();
                         assert channel == client;
-                        final var attachment = (ByteBuffer) selectedKey.attachment();
-                        attachment.clear();
-                        final var address = channel.receive(attachment);
-                        log.debug("{} byte(s) received from {}", attachment.position(), address);
-                        assert !attachment.hasRemaining();
+                        final var attachment = (Rfc862Udp2ClientAttachment) selectedKey.attachment();
+                        final var address = attachment.receive();
                         selectedKey.interestOpsAnd(~SelectionKey.OP_READ);
                         selectedKey.cancel();
                         assert !selectedKey.isValid();

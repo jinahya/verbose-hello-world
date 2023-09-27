@@ -43,9 +43,8 @@ class Rfc863Udp1Client {
                 log.info("(optionally) connected to {}, through {}",
                          client.getRemoteSocketAddress(), client.getLocalSocketAddress());
             }
-            final var array = new byte[
-                    ThreadLocalRandom.current().nextInt(client.getSendBufferSize() + 1)
-                    ];
+            final var length = ThreadLocalRandom.current().nextInt(client.getSendBufferSize() + 1);
+            final var array = new byte[length];
             ThreadLocalRandom.current().nextBytes(array);
             _Rfc863Utils.logClientBytes(array.length);
             final var packet = new DatagramPacket(array, array.length, _Rfc863Constants.ADDR);
