@@ -50,7 +50,7 @@ class TreeTableModelAdapter extends AbstractTableModel {
             if (columnIndex == treeColumnIndex) {
                 return tree.getModel();
             } else {
-                return treeTableModel.getValueAt(tree.getPathForRow(rowIndex), columnIndex);
+//                return treeTableModel.getValueAt(tree.getPathForRow(rowIndex), columnIndex);
             }
         }
         return tableModel.getValueAt(rowIndex, columnIndex);
