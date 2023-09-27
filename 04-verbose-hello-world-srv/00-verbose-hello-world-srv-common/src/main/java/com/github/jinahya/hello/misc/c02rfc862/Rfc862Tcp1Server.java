@@ -26,18 +26,16 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.net.ServerSocket;
 
-// https://www.rfc-editor.org/rfc/rfc862
 @Slf4j
 class Rfc862Tcp1Server {
 
-    public static void main(String... args) throws Exception {
+    public static void main(final String... args) throws Exception {
         try (var server = new ServerSocket()) {
-            server.bind(_Rfc862Constants.ADDR, 0);
+            server.bind(_Rfc862Constants.ADDR, 1);
             log.info("bound to {}", server.getLocalSocketAddress());
             server.setSoTimeout((int) _Rfc86_Constants.ACCEPT_TIMEOUT_IN_MILLIS);
             try (var client = server.accept()) {
-                log.info("accepted from {}, through {}", client.getRemoteSocketAddress(),
-                         client.getLocalSocketAddress());
+                _Rfc86_Utils.logAccepted(client);
                 client.setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_IN_MILLIS);
                 final var digest = _Rfc862Utils.newDigest();
                 var bytes = 0;

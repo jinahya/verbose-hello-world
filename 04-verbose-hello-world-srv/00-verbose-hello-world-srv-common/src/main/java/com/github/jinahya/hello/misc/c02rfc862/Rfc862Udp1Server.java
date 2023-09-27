@@ -20,6 +20,7 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
+import com.github.jinahya.hello.misc._Rfc86_Constants;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
@@ -28,14 +29,15 @@ import java.net.DatagramSocket;
 @Slf4j
 class Rfc862Udp1Server {
 
-    public static void main(String... args) throws Exception {
+    public static void main(final String... args) throws Exception {
         try (var server = new DatagramSocket(null)) {
             server.bind(_Rfc862Constants.ADDR);
             log.info("bound to {}", server.getLocalSocketAddress());
-            server.setSoTimeout((int) _Rfc862Constants.ACCEPT_TIMEOUT_IN_MILLIS);
-            var array = new byte[server.getReceiveBufferSize()];
-            var packet = new DatagramPacket(array, array.length);
+            server.setSoTimeout((int) _Rfc86_Constants.ACCEPT_TIMEOUT_IN_MILLIS);
+            final var array = new byte[server.getReceiveBufferSize()];
+            final var packet = new DatagramPacket(array, array.length);
             server.receive(packet);
+            log.debug("{} byte(s) received from {}", packet.getLength(), packet.getSocketAddress());
             server.send(packet);
             _Rfc862Utils.logServerBytes(packet.getLength());
             _Rfc862Utils.logDigest(array, 0, packet.getLength());

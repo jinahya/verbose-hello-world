@@ -56,10 +56,7 @@ class Rfc862Tcp2Server {
                         selectedKey.cancel();
                         assert !selectedKey.isValid();
                         client.configureBlocking(false);
-                        final var clientKey = client.register(
-                                selector,            // <sel>
-                                SelectionKey.OP_READ // <ops>
-                        );
+                        final var clientKey = client.register(selector, SelectionKey.OP_READ);
                         clientKey.attach(new Rfc862Tcp2ServerAttachment(clientKey));
                         continue;
                     }
@@ -69,6 +66,7 @@ class Rfc862Tcp2Server {
                         assert attachment != null;
                         final var r = attachment.read();
                         assert r >= -1;
+                        assert r != -1 || (selectedKey.interestOps() & SelectionKey.OP_READ) == 0;
                     }
                     if (selectedKey.isWritable()) {
                         final var attachment =
@@ -76,6 +74,7 @@ class Rfc862Tcp2Server {
                         assert attachment != null;
                         final var w = attachment.write();
                         assert w >= 0;
+                        assert selectedKey.isValid() || !selectedKey.channel().isOpen();
                     }
                 }
             }

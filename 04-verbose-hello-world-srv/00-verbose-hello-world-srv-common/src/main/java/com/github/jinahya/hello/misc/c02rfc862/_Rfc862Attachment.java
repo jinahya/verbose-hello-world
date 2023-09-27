@@ -13,22 +13,17 @@ abstract class _Rfc862Attachment extends _Rfc86_Attachment {
 
     abstract static class Client extends _Rfc862Attachment {
 
-        /**
-         * Creates a new instance.
-         */
         Client() {
             super(_Rfc862Utils.logClientBytes(_Rfc86_Utils.randomBytes()));
             buffer.position(buffer.limit());
         }
 
-        ByteBuffer getBufferForReading() {
-            if (!buffer.hasRemaining()) {
-                buffer.clear();
-            }
-            assert buffer.hasRemaining();
-            return buffer;
+        @Override
+        final ByteBuffer getBufferForReading() {
+            return buffer.flip();
         }
 
+        @Override
         final ByteBuffer getBufferForWriting() {
             if (!buffer.hasRemaining()) {
                 ThreadLocalRandom.current().nextBytes(buffer.array());
@@ -41,9 +36,6 @@ abstract class _Rfc862Attachment extends _Rfc86_Attachment {
 
     abstract static class Server extends _Rfc862Attachment {
 
-        /**
-         * Creates a new instance.
-         */
         Server() {
             super(0);
         }
@@ -55,31 +47,14 @@ abstract class _Rfc862Attachment extends _Rfc86_Attachment {
             super.close();
         }
 
-        /**
-         * Returns {@link #buffer} configured for reading.
-         *
-         * @return the {@link #buffer} with non-zero remaining.
-         */
+        @Override
         final ByteBuffer getBufferForReading() {
-            if (!buffer.hasRemaining()) {
-                buffer.clear();
-            }
-            assert buffer.hasRemaining();
             return buffer;
         }
 
-        /**
-         * Returns {@link #buffer} configured for writing.
-         *
-         * @return the {@link #buffer} with non-zero remaining.
-         */
+        @Override
         final ByteBuffer getBufferForWriting() {
-            if (!buffer.hasRemaining()) {
-                ThreadLocalRandom.current().nextBytes(buffer.array());
-                buffer.clear().limit(Math.min(buffer.limit(), getBytes()));
-            }
-            assert buffer.hasRemaining();
-            return buffer;
+            return buffer.flip();
         }
     }
 
@@ -105,6 +80,7 @@ abstract class _Rfc862Attachment extends _Rfc86_Attachment {
 
     abstract ByteBuffer getBufferForReading();
 
+    //
     abstract ByteBuffer getBufferForWriting();
 
     // -------------------------------------------------------------------------------------- digest

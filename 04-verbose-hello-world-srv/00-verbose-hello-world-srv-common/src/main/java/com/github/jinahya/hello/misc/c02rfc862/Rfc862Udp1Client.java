@@ -20,44 +20,41 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
+import com.github.jinahya.hello.misc._Rfc86_Constants;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
-import java.net.SocketException;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
 class Rfc862Udp1Client {
 
-    public static void main(String... args) throws Exception {
+    public static void main(final String... args) throws Exception {
         try (var client = new DatagramSocket(null)) {
-            client.setSoTimeout((int) _Rfc862Constants.READ_TIMEOUT_IN_MILLIS);
             if (ThreadLocalRandom.current().nextBoolean()) {
-                client.bind(new InetSocketAddress(_Rfc862Constants.HOST, 0));
+                client.bind(new InetSocketAddress(_Rfc86_Constants.HOST, 0));
                 log.info("(optionally) bound to {}", client.getLocalSocketAddress());
             }
-            var connect = ThreadLocalRandom.current().nextBoolean();
+            final var connect = ThreadLocalRandom.current().nextBoolean();
             if (connect) {
-                try {
-                    client.connect(_Rfc862Constants.ADDR);
-                    log.info("(optionally) connected to {}, through {}",
-                             client.getRemoteSocketAddress(), client.getLocalSocketAddress());
-                } catch (SocketException se) {
-                    log.warn("failed to connect", se);
-                    connect = false;
-                }
+                client.connect(_Rfc862Constants.ADDR);
+                log.info("(optionally) connected to {}, through {}",
+                         client.getRemoteSocketAddress(), client.getLocalSocketAddress());
             }
-            var array = new byte[ThreadLocalRandom.current().nextInt(client.getSendBufferSize())];
+            final var length = ThreadLocalRandom.current().nextInt(client.getSendBufferSize());
+            final var array = new byte[length];
             ThreadLocalRandom.current().nextBytes(array);
-            var packet = new DatagramPacket(array, array.length, _Rfc862Constants.ADDR);
+            final var packet = new DatagramPacket(array, array.length, _Rfc862Constants.ADDR);
             _Rfc862Utils.logClientBytes(packet.getLength());
             client.send(packet);
             _Rfc862Utils.logDigest(array, 0, packet.getLength());
+            client.setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_IN_MILLIS);
             client.receive(packet);
+            log.debug("{} byte(s) received from {}", packet.getLength(), packet.getSocketAddress());
             if (connect) {
-                client.disconnect(); // UncheckedIOException
+                client.disconnect();
             }
         }
     }

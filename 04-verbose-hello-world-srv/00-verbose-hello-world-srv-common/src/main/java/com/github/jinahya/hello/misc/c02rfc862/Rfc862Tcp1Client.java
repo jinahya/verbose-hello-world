@@ -32,19 +32,18 @@ import java.util.concurrent.ThreadLocalRandom;
 @Slf4j
 class Rfc862Tcp1Client {
 
-    public static void main(String... args) throws Exception {
+    public static void main(final String... args) throws Exception {
         try (var client = new Socket()) {
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc86_Constants.HOST, 0));
                 log.info("(optionally) bound to {}", client.getLocalSocketAddress());
             }
             client.connect(_Rfc862Constants.ADDR, (int) _Rfc86_Constants.CONNECT_TIMEOUT_IN_MILLIS);
-            log.info("connected to {}, through {}", client.getRemoteSocketAddress(),
-                     client.getLocalSocketAddress());
+            _Rfc86_Utils.logConnected(client);
             client.setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_IN_MILLIS);
             final var digest = _Rfc862Utils.newDigest();
-            final var array = _Rfc86_Utils.newArray();
             var bytes = _Rfc862Utils.logClientBytes(_Rfc86_Utils.randomBytes());
+            final var array = _Rfc86_Utils.newArray();
             for (int l, r; bytes > 0; ) {
                 ThreadLocalRandom.current().nextBytes(array);
                 l = Math.min(array.length, bytes);

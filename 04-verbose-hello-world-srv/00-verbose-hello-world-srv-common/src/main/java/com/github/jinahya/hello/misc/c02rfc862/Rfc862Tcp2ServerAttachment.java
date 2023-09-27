@@ -3,10 +3,10 @@ package com.github.jinahya.hello.misc.c02rfc862;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SelectionKey;
-import java.nio.channels.WritableByteChannel;
+import java.nio.channels.SocketChannel;
 import java.util.Objects;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
 final class Rfc862Tcp2ServerAttachment extends _Rfc862Attachment.Server {
@@ -23,13 +23,10 @@ final class Rfc862Tcp2ServerAttachment extends _Rfc862Attachment.Server {
     }
 
     int read() throws IOException {
-        if (!clientKey.isValid()) {
-            throw new IllegalStateException("clientKey is currently not valid");
-        }
-        if (!clientKey.isReadable()) {
-            throw new IllegalStateException("clientKey is currently not readable");
-        }
-        final var r = ((ReadableByteChannel) clientKey.channel()).read(buffer);
+        assert clientKey.isValid();
+        assert clientKey.isReadable();
+        final var channel = (SocketChannel) clientKey.channel();
+        final var r = channel.read(buffer);
         if (r == -1) {
             clientKey.interestOpsAnd(~SelectionKey.OP_READ);
         } else if (r > 0) {
@@ -40,17 +37,19 @@ final class Rfc862Tcp2ServerAttachment extends _Rfc862Attachment.Server {
     }
 
     int write() throws IOException {
-        if (!clientKey.isValid()) {
-            throw new IllegalStateException("clientKey is currently not valid");
-        }
-        if (!clientKey.isWritable()) {
-            throw new IllegalStateException("clientKey is currently not writable");
-        }
+        assert clientKey.isValid();
+        assert clientKey.isWritable();
+        final var channel = (SocketChannel) clientKey.channel();
         buffer.flip();
-        final var w = ((WritableByteChannel) clientKey.channel()).write(buffer);
+        final var w = channel.write(buffer);
         updateDigest(w);
         buffer.compact();
         if (buffer.position() == 0 && (clientKey.interestOps() & SelectionKey.OP_READ) == 0) {
+            if (ThreadLocalRandom.current().nextBoolean()) {
+                clientKey.interestOpsAnd(~SelectionKey.OP_WRITE);
+                clientKey.cancel();
+                assert !clientKey.isValid();
+            }
             close();
             assert !clientKey.isValid();
         }

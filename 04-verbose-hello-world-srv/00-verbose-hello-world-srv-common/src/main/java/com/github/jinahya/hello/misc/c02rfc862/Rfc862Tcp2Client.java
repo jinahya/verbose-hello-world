@@ -85,6 +85,7 @@ class Rfc862Tcp2Client {
                         assert attachment != null;
                         final var r = attachment.read();
                         assert r >= -1;
+                        assert r == -1 || selectedKey.isValid();
                     }
                 }
             }

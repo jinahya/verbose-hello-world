@@ -20,6 +20,7 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
+import com.github.jinahya.hello.misc._Rfc86_Constants;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.SocketAddress;
@@ -28,20 +29,18 @@ import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 class Rfc862Udp2Server {
 
-    static class Attachment {
+    private static final class Attachment {
 
         ByteBuffer buffer;
 
         SocketAddress address;
     }
-    // @formatter:on
 
-    public static void main(String... args) throws Exception {
+    public static void main(final String... args) throws Exception {
         try (var selector = Selector.open();
              var server = DatagramChannel.open()) {
             server.bind(_Rfc862Constants.ADDR);
@@ -49,32 +48,34 @@ class Rfc862Udp2Server {
             server.configureBlocking(false);
             server.register(selector, SelectionKey.OP_READ);
             while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
-                if (selector.select(TimeUnit.SECONDS.toMillis(8L)) == 0) {
+                if (selector.select(_Rfc86_Constants.READ_TIMEOUT_IN_MILLIS) == 0) {
                     break;
                 }
-                for (var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
-                    var key = i.next();
-                    if (key.isReadable()) {
-                        var channel = (DatagramChannel) key.channel();
-                        var attachment = new Attachment();
+                for (final var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
+                    final var selectedKey = i.next();
+                    if (selectedKey.isReadable()) {
+                        final var channel = (DatagramChannel) selectedKey.channel();
+                        final var attachment = new Attachment();
                         attachment.buffer = ByteBuffer.allocate(
                                 channel.getOption(StandardSocketOptions.SO_RCVBUF)
                         );
-                        key.attach(attachment);
+                        selectedKey.attach(attachment);
                         attachment.address = channel.receive(attachment.buffer);
-                        log.info("{} byte(s) received from {}", attachment.buffer.position(),
-                                 attachment.address);
-                        key.interestOpsAnd(~SelectionKey.OP_READ);
-                        key.interestOpsOr(SelectionKey.OP_WRITE);
+                        log.debug("{} byte(s) received from {}", attachment.buffer.position(),
+                                  attachment.address);
+                        selectedKey.interestOpsAnd(~SelectionKey.OP_READ);
+                        selectedKey.interestOpsOr(SelectionKey.OP_WRITE);
                     }
-                    if (key.isWritable()) {
-                        var channel = (DatagramChannel) key.channel();
-                        var attachment = (Attachment) key.attachment();
+                    if (selectedKey.isWritable()) {
+                        final var channel = (DatagramChannel) selectedKey.channel();
+                        final var attachment = (Attachment) selectedKey.attachment();
                         attachment.buffer.flip();
-                        var w = channel.send(attachment.buffer, attachment.address);
+                        final var w = channel.send(attachment.buffer, attachment.address);
+                        assert w == attachment.buffer.position();
+                        assert !attachment.buffer.hasRemaining();
                         _Rfc862Utils.logServerBytes(attachment.buffer.position());
                         _Rfc862Utils.logDigest(attachment.buffer.flip());
-                        key.cancel();
+                        selectedKey.cancel();
                     }
                 }
             }
