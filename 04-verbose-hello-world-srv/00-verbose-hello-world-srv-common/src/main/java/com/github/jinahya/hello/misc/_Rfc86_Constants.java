@@ -23,6 +23,12 @@ package com.github.jinahya.hello.misc;
 import java.net.InetAddress;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Shared constants for {@link com.github.jinahya.hello.misc.c01rfc863} package and
+ * {@link com.github.jinahya.hello.misc.c02rfc862} package.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 public abstract class _Rfc86_Constants {
 
     // -------------------------------------------------------------------------- HOST / PORT / ADDR
@@ -81,9 +87,6 @@ public abstract class _Rfc86_Constants {
 
     // ---------------------------------------------------------------------------------------------
 
-    /**
-     * Creates a new instance.
-     */
     protected _Rfc86_Constants() {
         super();
     }

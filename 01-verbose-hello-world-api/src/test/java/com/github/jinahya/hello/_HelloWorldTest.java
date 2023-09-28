@@ -274,7 +274,7 @@ public abstract class _HelloWorldTest {
     }
 
     /**
-     * Stubs {@link #serviceInstance()}'s {@link HelloWorld#put(ByteBuffer) put(buffer[12])} method
+     * Stubs {@code serviceInstance()}'s {@link HelloWorld#put(ByteBuffer) put(buffer[12])} method
      * to return given {@code buffer} as its position increased by {@value HelloWorld#BYTES}.
      */
     protected void _stub_PutBuffer_ToReturnTheBuffer_AsItsPositionIncreasedBy12() {
@@ -289,9 +289,9 @@ public abstract class _HelloWorldTest {
     }
 
     /**
-     * Stubs {@link #serviceInstance() serviceInstance}'s
-     * {@link HelloWorld#write(OutputStream) write(stream)} method to write
-     * {@value HelloWorld#BYTES} bytes to the {@code stream}, and return the {@code stream}.
+     * Stubs {@code serviceInstance}'s {@link HelloWorld#write(OutputStream) write(stream)} method
+     * to write {@value HelloWorld#BYTES} bytes to the {@code stream}, and return the
+     * {@code stream}.
      */
     protected void _stub_WriteStream_ToWrite12BytesAndReturnTheStream()
             throws IOException {
@@ -303,8 +303,8 @@ public abstract class _HelloWorldTest {
     }
 
     /**
-     * Stubs {@link #serviceInstance() serviceInstance}'s {@link HelloWorld#set(byte[]) set(array)}
-     * method to just return the {@code array}.
+     * Stubs {@code serviceInstance}'s {@link HelloWorld#set(byte[]) set(array)} method to just
+     * return the {@code array}.
      */
     protected void _stub_SetArray_ToReturnTheArray() {
         Mockito.doAnswer(i -> i.getArgument(0))
@@ -313,9 +313,8 @@ public abstract class _HelloWorldTest {
     }
 
     /**
-     * Stubs {@link #serviceInstance() serviceInstance}'s
-     * {@link HelloWorld#set(byte[], int) set(array, index)} method to just return the {@code array}
-     * argument.
+     * Stubs {@code serviceInstance}'s {@link HelloWorld#set(byte[], int) set(array, index)} method
+     * to just return the {@code array} argument.
      */
     @BeforeEach
     void _stub_SetArrayWithIndex_ToReturnTheArray() {
@@ -325,8 +324,8 @@ public abstract class _HelloWorldTest {
     }
 
     /**
-     * Stubs {@link #serviceInstance() serviceInstance}'s
-     * {@link HelloWorld#print(char[]) print(chars)} method to just return the {@code chars}.
+     * Stubs {@code serviceInstance}'s {@link HelloWorld#print(char[]) print(chars)} method to just
+     * return the {@code chars}.
      */
     protected void _stub_PrintChars_ToReturnTheChars() {
         Mockito.doAnswer(i -> i.getArgument(0))
@@ -335,9 +334,8 @@ public abstract class _HelloWorldTest {
     }
 
     /**
-     * Stubs {@link #serviceInstance() serviceInstance}'s
-     * {@link HelloWorld#print(char[], int) print(chars, offset)} method to just return the
-     * {@code chars} argument.
+     * Stubs {@code serviceInstance}'s {@link HelloWorld#print(char[], int) print(chars, offset)}
+     * method to just return the {@code chars} argument.
      */
     protected void _stub_PrintCharsWithOffset_ToReturnTheChars() {
         Mockito.doAnswer(i -> i.getArgument(0))            // <1>

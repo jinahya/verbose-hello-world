@@ -9,9 +9,9 @@ package com.github.jinahya.hello.misc;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,7 +25,7 @@ package com.github.jinahya.hello.misc;
  *
  * @see <a href="https://www.rfc-editor.org/rfc/rfc768">RFC 768: User Datagram
  * Protocol</a>
- * @see <a href="https://datatracker.ietf.org/doc/html/rfc768>RFC 768: User
+ * @see <a href="https://datatracker.ietf.org/doc/html/rfc768">RFC 768: User
  * Datagram Protocol</a>
  */
 public final class Rfc768Constants {

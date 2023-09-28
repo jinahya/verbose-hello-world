@@ -69,11 +69,11 @@
     <version.org.jboss.weld.se>${version.org.jboss.weld}</version.org.jboss.weld.se> <!-- weld-se-core -->
     <version.org.junit.jupiter>5.10.0</version.org.junit.jupiter>
     <version.org.mockito>5.5.0</version.org.mockito>
-    <version.org.mockito.mockito-inline>5.2.0</version.org.mockito.mockito-inline> <!-- https://search.maven.org/artifact/org.mockito/mockito-inline -->
+    <!--    <version.org.mockito.mockito-inline>5.2.0</version.org.mockito.mockito-inline> &lt;!&ndash; https://search.maven.org/artifact/org.mockito/mockito-inline &ndash;&gt;-->
     <version.org.reactivestreams>1.0.4</version.org.reactivestreams>
-    <version.org.projectlombok>1.18.28</version.org.projectlombok>
+    <version.org.projectlombok>1.18.30</version.org.projectlombok>
     <version.org.slf4j>2.0.7</version.org.slf4j>
-    <version.org.springframework>6.0.11</version.org.springframework>
+    <version.org.springframework>6.0.12</version.org.springframework>
     <version.org.springframework.boot>3.1.2</version.org.springframework.boot>
   </properties>
 
@@ -178,28 +178,28 @@
         <artifactId>junit-jupiter</artifactId>
         <version>${version.org.junit.jupiter}</version>
       </dependency>
-      <!--      <dependency>-->
-      <!--        <groupId>org.mockito</groupId>-->
-      <!--        <artifactId>mockito-bom</artifactId>-->
-      <!--        <version>5.4.0</version>-->
-      <!--        <type>pom</type>-->
-      <!--        <scope>import</scope>-->
-      <!--      </dependency>-->
       <dependency>
         <groupId>org.mockito</groupId>
-        <artifactId>mockito-core</artifactId>
+        <artifactId>mockito-bom</artifactId>
         <version>${version.org.mockito}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
+      <!--      <dependency>-->
+      <!--        <groupId>org.mockito</groupId>-->
+      <!--        <artifactId>mockito-core</artifactId>-->
+      <!--        <version>${version.org.mockito}</version>-->
+      <!--      </dependency>-->
       <!--      <dependency>-->
       <!--        <groupId>org.mockito</groupId>-->
       <!--        <artifactId>mockito-inline</artifactId>-->
       <!--        <version>${version.org.mockito.mockito-inline}</version>-->
       <!--      </dependency>-->
-      <dependency>
-        <groupId>org.mockito</groupId>
-        <artifactId>mockito-junit-jupiter</artifactId>
-        <version>${version.org.mockito}</version>
-      </dependency>
+      <!--      <dependency>-->
+      <!--        <groupId>org.mockito</groupId>-->
+      <!--        <artifactId>mockito-junit-jupiter</artifactId>-->
+      <!--        <version>${version.org.mockito}</version>-->
+      <!--      </dependency>-->
       <dependency>
         <groupId>org.projectlombok</groupId>
         <artifactId>lombok</artifactId>
@@ -297,7 +297,7 @@
         <plugin>
           <groupId>com.github.spotbugs</groupId>
           <artifactId>spotbugs-maven-plugin</artifactId>
-          <version>4.7.3.5</version>
+          <version>4.7.3.6</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -396,8 +396,8 @@
           <configuration>
             <!--            <detectLinks>true</detectLinks>-->
             <links>
-              <link>https://static.javadoc.io/org.mockito/mockito-core/${version.org.mockito}</link>
-              <link>https://static.javadoc.io/org.mockito/junit-jupiter/${version.org.mockito}</link>
+<!--              <link>https://static.javadoc.io/org.junit.jupiter/junit-jupiter-api/${version.org.junit.jupiter}</link>-->
+              <link>https://static.javadoc.io/org.mockito/mockito-junit-jupiter/${version.org.mockito}</link>
               <link>https://junit.org/junit5/docs/current/api/</link>
             </links>
             <show>package</show>

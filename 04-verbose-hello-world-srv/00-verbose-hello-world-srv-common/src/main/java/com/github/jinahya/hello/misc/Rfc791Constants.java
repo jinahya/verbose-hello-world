@@ -25,7 +25,7 @@ package com.github.jinahya.hello.misc;
  *
  * @see <a href="https://www.rfc-editor.org/rfc/rfc791">RFC 791: INTERNET
  * PROTOCOL</a>
- * @see <a href="https://datatracker.ietf.org/doc/html/rfc791>RFC 791: INTERNET
+ * @see <a href="https://datatracker.ietf.org/doc/html/rfc791">RFC 791: INTERNET
  * PROTOCOL</a>
  */
 public final class Rfc791Constants {

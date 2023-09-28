@@ -613,7 +613,7 @@ public interface HelloWorld {
      *
      *                                          p(12)
      *                                          ↓
-     * &lt;buffer&gt:       |h|e|l|l|o|,| |w|o|r|l|d|
+     * &lt;buffer&gt;:       |h|e|l|l|o|,| |w|o|r|l|d|
      *
      *                                         &lt;position&gt; + 12
      *                                          ↓

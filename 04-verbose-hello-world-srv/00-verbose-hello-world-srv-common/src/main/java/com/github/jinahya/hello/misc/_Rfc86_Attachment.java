@@ -13,6 +13,12 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
+/**
+ * An abstract attachment class for {@link com.github.jinahya.hello.misc.c01rfc863} package and
+ * {@link com.github.jinahya.hello.misc.c02rfc862} package.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @Slf4j
 @SuppressWarnings({
         "java:S101" // _AbstractRfc86_...

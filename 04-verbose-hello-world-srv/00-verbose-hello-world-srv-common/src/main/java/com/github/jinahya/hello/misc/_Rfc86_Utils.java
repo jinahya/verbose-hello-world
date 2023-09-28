@@ -36,6 +36,12 @@ import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 
+/**
+ * Utilities for for {@link com.github.jinahya.hello.misc.c01rfc863} package and
+ * {@link com.github.jinahya.hello.misc.c02rfc862} package.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @Slf4j
 public final class _Rfc86_Utils {
 

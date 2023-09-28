@@ -52,4 +52,6 @@ See [dockerhub/maven](https://hub.docker.com/_/maven) for available tags.
   * [Java Security Standard Algorithm Names](https://docs.oracle.com/en/java/javase/11/docs/specs/security/standard-names.html) (javase/11)
   * [Java Security Standard Algorithm Names](https://docs.oracle.com/en/java/javase/17/docs/specs/security/standard-names.html) (javase/17)
 * JDK Bug System
-    * [(aio) AsynchronousCloseException not notified to completion handler when channel group shutdown](https://bugs.openjdk.org/browse/JDK-7056546) 
+    * [(aio) AsynchronousCloseException not notified to completion handler when channel group shutdown](https://bugs.openjdk.org/browse/JDK-7056546)
+* stackoverflow.com
+  * [Multi module POM - creating a site that works](https://stackoverflow.com/q/10848715/330457)
