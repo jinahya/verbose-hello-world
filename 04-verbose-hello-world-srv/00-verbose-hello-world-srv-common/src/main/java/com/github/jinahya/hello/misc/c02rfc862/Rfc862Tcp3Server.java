@@ -24,26 +24,57 @@ import com.github.jinahya.hello.misc._Rfc86_Constants;
 import com.github.jinahya.hello.misc._Rfc86_Utils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.nio.channels.AsynchronousServerSocketChannel;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
+import java.nio.channels.ServerSocketChannel;
 
 @Slf4j
 class Rfc862Tcp3Server {
 
     public static void main(final String... args) throws Exception {
-        try (var server = AsynchronousServerSocketChannel.open()) {
+        try (var selector = Selector.open();
+             var server = ServerSocketChannel.open()) {
             server.bind(_Rfc862Constants.ADDR);
             log.info("bound to {}", server.getLocalAddress());
-            try (var client = server.accept().get(_Rfc86_Constants.ACCEPT_TIMEOUT,
-                                                  _Rfc86_Constants.ACCEPT_TIMEOUT_UNIT)) {
-                _Rfc86_Utils.logAccepted(client);
-                try (var attachment = new Rfc862Tcp3ServerAttachment(client)) {
-                    for (int r; (r = attachment.read()) != -1; ) {
-                        assert r >= 0;
+            server.configureBlocking(false);
+            final var serverKey = server.register(selector, SelectionKey.OP_ACCEPT);
+            while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
+                if (selector.select(_Rfc86_Constants.ACCEPT_TIMEOUT_IN_MILLIS) == 0) {
+                    break;
+                }
+                for (var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
+                    final var selectedKey = i.next();
+                    if (selectedKey.isAcceptable()) {
+                        assert selectedKey == serverKey;
+                        assert selectedKey.channel() instanceof ServerSocketChannel;
+                        final var channel = ((ServerSocketChannel) selectedKey.channel());
+                        assert channel == server;
+                        final var client = channel.accept();
+                        assert !channel.isBlocking() && client != null;
+                        _Rfc86_Utils.logAccepted(client);
+                        selectedKey.interestOpsAnd(~SelectionKey.OP_ACCEPT);
+                        selectedKey.cancel();
+                        assert !selectedKey.isValid();
+                        client.configureBlocking(false);
+                        final var clientKey = client.register(selector, SelectionKey.OP_READ);
+                        clientKey.attach(new Rfc862Tcp3ServerAttachment(clientKey));
+                        continue;
+                    }
+                    if (selectedKey.isReadable()) {
+                        final var attachment =
+                                (Rfc862Tcp3ServerAttachment) selectedKey.attachment();
+                        assert attachment != null;
+                        final var r = attachment.read();
+                        assert r >= -1;
+                        assert r != -1 || (selectedKey.interestOps() & SelectionKey.OP_READ) == 0;
+                    }
+                    if (selectedKey.isWritable()) {
+                        final var attachment =
+                                (Rfc862Tcp3ServerAttachment) selectedKey.attachment();
+                        assert attachment != null;
                         final var w = attachment.write();
                         assert w >= 0;
-                    }
-                    while (attachment.write() > 0) {
-                        // do nothing
+                        assert selectedKey.isValid() || !selectedKey.channel().isOpen();
                     }
                 }
             }

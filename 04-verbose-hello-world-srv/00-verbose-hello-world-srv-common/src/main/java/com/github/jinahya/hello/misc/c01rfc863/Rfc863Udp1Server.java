@@ -21,6 +21,7 @@ package com.github.jinahya.hello.misc.c01rfc863;
  */
 
 import com.github.jinahya.hello.misc._Rfc86_Constants;
+import com.github.jinahya.hello.util.ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
@@ -34,14 +35,19 @@ class Rfc863Udp1Server {
             server.bind(_Rfc863Constants.ADDR);
             log.info("bound to {}", server.getLocalSocketAddress());
             server.setSoTimeout((int) _Rfc86_Constants.ACCEPT_TIMEOUT_IN_MILLIS);
+            // -------------------------------------------------------------------------------------
             final var array = new byte[server.getReceiveBufferSize()];
             final var packet = new DatagramPacket(array, array.length);
             server.receive(packet);
+            log.debug("{} byte(s) received from {}", packet.getLength(), packet.getSocketAddress());
+            assert packet.getLength() <= array.length;
+            // -------------------------------------------------------------------------------------
             _Rfc863Utils.logServerBytes(packet.getLength());
             _Rfc863Utils.logDigest(packet.getData(), 0, packet.getLength());
         }
     }
 
+    @ExcludeFromCoverage_PrivateConstructor_Obviously
     private Rfc863Udp1Server() {
         throw new AssertionError("instantiation is not allowed");
     }

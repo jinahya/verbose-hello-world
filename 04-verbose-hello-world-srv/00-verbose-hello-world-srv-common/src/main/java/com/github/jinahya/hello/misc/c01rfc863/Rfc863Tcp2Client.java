@@ -22,6 +22,7 @@ package com.github.jinahya.hello.misc.c01rfc863;
 
 import com.github.jinahya.hello.misc._Rfc86_Constants;
 import com.github.jinahya.hello.misc._Rfc86_Utils;
+import com.github.jinahya.hello.util.ExcludeFromCoverage_PrivateConstructor_Obviously;
 import com.github.jinahya.hello.util.LoggingUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,7 +34,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * .
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see Rfc863Tcp3Server
+ * @see Rfc863Tcp2Server
  */
 @Slf4j
 class Rfc863Tcp2Client {
@@ -61,14 +62,35 @@ class Rfc863Tcp2Client {
                 _Rfc86_Utils.logConnected(client);
             }
             // -------------------------------------------------------------------------------- SEND
-            try (var attachment = new Rfc863Tcp2ClientAttachment(client)) {
-                while (attachment.write() > 0) {
-                    // does nothing
+            final var digest = _Rfc863Utils.newDigest();
+            final var buffer = _Rfc86_Utils.newBuffer();
+            for (var bytes = _Rfc863Utils.logClientBytes(_Rfc86_Utils.randomBytes()); bytes > 0; ) {
+                if (!buffer.hasRemaining()) {
+                    ThreadLocalRandom.current().nextBytes(buffer.array());
+                    buffer.clear().limit(Math.min(buffer.limit(), bytes));
                 }
+                assert buffer.hasRemaining();
+                int w;
+                if (ThreadLocalRandom.current().nextBoolean()) {
+                    w = buffer.remaining();
+                    client.socket().getOutputStream().write(
+                            buffer.array(),
+                            buffer.arrayOffset() + buffer.position(),
+                            buffer.remaining()
+                    );
+                    buffer.position(buffer.limit());
+                } else {
+                    w = client.write(buffer);
+                }
+                assert w > 0;
+                assert !buffer.hasRemaining();
+                bytes -= w;
             }
+            _Rfc863Utils.logDigest(digest);
         }
     }
 
+    @ExcludeFromCoverage_PrivateConstructor_Obviously
     private Rfc863Tcp2Client() {
         throw new AssertionError("instantiation is not allowed");
     }

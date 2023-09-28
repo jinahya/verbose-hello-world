@@ -39,12 +39,14 @@ class Rfc863UdpTest {
 
     private static final List<Class<?>> SERVER_CLASSES = List.of(
             Rfc863Udp1Server.class,
-            Rfc863Udp2Server.class
+            Rfc863Udp2Server.class,
+            Rfc863Udp3Server.class
     );
 
     private static final List<Class<?>> CLIENT_CLASSES = List.of(
             Rfc863Udp1Client.class,
-            Rfc863Udp2Client.class
+            Rfc863Udp2Client.class,
+            Rfc863Udp3Client.class
     );
 
     private static Stream<Arguments> getClassesArgumentsList() {

@@ -42,16 +42,16 @@ class Rfc862TcpTest {
             Rfc862Tcp0Server.class,
             Rfc862Tcp1Server.class,
             Rfc862Tcp2Server.class,
-            Rfc862Tcp3Server.class,
-            Rfc862Tcp4Server.class
+            Rfc862Tcp4Server.class,
+            Rfc862Tcp5Server.class
     );
 
     private static final List<Class<?>> CLIENT_CLASSES = List.of(
             Rfc862Tcp0Client.class,
             Rfc862Tcp1Client.class,
             Rfc862Tcp2Client.class,
-            Rfc862Tcp3Client.class,
-            Rfc862Tcp4Client.class
+            Rfc862Tcp4Client.class,
+            Rfc862Tcp5Client.class
     );
 
     private static Stream<Arguments> getClassesArgumentsList() {

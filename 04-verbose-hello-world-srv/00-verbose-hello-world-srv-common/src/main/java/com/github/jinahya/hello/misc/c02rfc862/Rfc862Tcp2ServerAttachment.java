@@ -3,7 +3,6 @@ package com.github.jinahya.hello.misc.c02rfc862;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
@@ -11,50 +10,69 @@ import java.util.concurrent.ThreadLocalRandom;
 @Slf4j
 final class Rfc862Tcp2ServerAttachment extends _Rfc862Attachment.Server {
 
-    Rfc862Tcp2ServerAttachment(final SelectionKey clientKey) {
+    Rfc862Tcp2ServerAttachment(final SocketChannel client) {
         super();
-        this.clientKey = Objects.requireNonNull(clientKey, "clientKey is null");
+        this.client = Objects.requireNonNull(client, "client is null");
     }
 
     @Override
     public void close() throws IOException {
-        clientKey.channel().close();
+        client.close();
+        assert client.socket().isClosed();
         super.close();
     }
 
     int read() throws IOException {
-        assert clientKey.isValid();
-        assert clientKey.isReadable();
-        final var channel = (SocketChannel) clientKey.channel();
-        final var r = channel.read(buffer);
+        assert client.isConnected();
+        assert client.isOpen();
+        assert client.socket().isConnected();
+        assert !client.socket().isClosed();
+        int r;
+        if (ThreadLocalRandom.current().nextBoolean()) {
+            assert buffer.arrayOffset() == 0;
+            r = client.socket().getInputStream().read(
+                    buffer.array(),
+                    buffer.position(),
+                    buffer.limit()
+            );
+            if (r != -1) {
+                buffer.position(buffer.position() + r);
+            }
+        } else {
+            r = client.read(buffer);
+        }
         if (r == -1) {
-            clientKey.interestOpsAnd(~SelectionKey.OP_READ);
-        } else if (r > 0) {
-            clientKey.interestOpsOr(SelectionKey.OP_WRITE);
+            client.shutdownInput();
+        } else {
             increaseBytes(r);
         }
         return r;
     }
 
     int write() throws IOException {
-        assert clientKey.isValid();
-        assert clientKey.isWritable();
-        final var channel = (SocketChannel) clientKey.channel();
+        assert client.isConnected();
+        assert client.isOpen();
+        assert client.socket().isConnected();
+        assert !client.socket().isClosed();
+        int w;
         buffer.flip();
-        final var w = channel.write(buffer);
+        if (ThreadLocalRandom.current().nextBoolean()) {
+            w = buffer.remaining();
+            client.socket().getOutputStream().write(
+                    buffer.array(),
+                    buffer.arrayOffset() + buffer.position(),
+                    buffer.remaining()
+            );
+            buffer.position(buffer.limit());
+        } else {
+            w = client.write(buffer);
+        }
+        assert !buffer.hasRemaining();
         updateDigest(w);
         buffer.compact();
-        if (buffer.position() == 0 && (clientKey.interestOps() & SelectionKey.OP_READ) == 0) {
-            if (ThreadLocalRandom.current().nextBoolean()) {
-                clientKey.interestOpsAnd(~SelectionKey.OP_WRITE);
-                clientKey.cancel();
-                assert !clientKey.isValid();
-            }
-            close();
-            assert !clientKey.isValid();
-        }
+        assert buffer.position() == 0;
         return w;
     }
 
-    private final SelectionKey clientKey;
+    private final SocketChannel client;
 }

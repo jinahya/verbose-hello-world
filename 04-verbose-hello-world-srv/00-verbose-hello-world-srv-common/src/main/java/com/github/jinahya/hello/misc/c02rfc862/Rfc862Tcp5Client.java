@@ -21,45 +21,33 @@ package com.github.jinahya.hello.misc.c02rfc862;
  */
 
 import com.github.jinahya.hello.misc._Rfc86_Constants;
-import com.github.jinahya.hello.misc._Rfc86_Utils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
+import java.nio.channels.AsynchronousChannelGroup;
 import java.nio.channels.AsynchronousSocketChannel;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
-class Rfc862Tcp4Client {
+class Rfc862Tcp5Client {
 
     public static void main(final String... args) throws Exception {
-        try (var client = AsynchronousSocketChannel.open()) {
+        final var group = AsynchronousChannelGroup.withThreadPool(Executors.newCachedThreadPool());
+        try (var client = AsynchronousSocketChannel.open(group)) {
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc86_Constants.HOST, 0));
                 log.info("(optionally) bound to {}", client.getLocalAddress());
             }
-            client.connect(_Rfc862Constants.ADDR).get(_Rfc86_Constants.CONNECT_TIMEOUT,
-                                                      _Rfc86_Constants.CONNECT_TIMEOUT_UNIT);
-            _Rfc86_Utils.logConnected(client);
-            try (var attachment = new Rfc862Tcp4ClientAttachment(client)) {
-                for (int w, r; ; ) {
-                    w = attachment.write();
-                    assert w >= 0; // why?
-                    if (w == 0) {
-                        break;
-                    }
-                    r = attachment.read();
-//                    assert r > 0; // why?
-                }
-                attachment.logDigest();
-                client.shutdownOutput();
-                for (int r; (r = attachment.read()) != -1; ) {
-                    assert r > 0;
-                }
-            }
+            new Rfc862Tcp5ClientAttachment(group, client).connect();
+            final var terminated = group.awaitTermination(
+                    _Rfc86_Constants.CLIENT_TIMEOUT, _Rfc86_Constants.CLIENT_TIMEOUT_UNIT
+            );
+            assert terminated : "channel group hasn't been terminated!";
         }
     }
 
-    private Rfc862Tcp4Client() {
+    private Rfc862Tcp5Client() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

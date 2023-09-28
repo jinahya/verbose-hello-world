@@ -21,36 +21,29 @@ package com.github.jinahya.hello.misc.c02rfc862;
  */
 
 import com.github.jinahya.hello.misc._Rfc86_Constants;
-import com.github.jinahya.hello.misc._Rfc86_Utils;
 import lombok.extern.slf4j.Slf4j;
 
+import java.nio.channels.AsynchronousChannelGroup;
 import java.nio.channels.AsynchronousServerSocketChannel;
+import java.util.concurrent.Executors;
 
 @Slf4j
-class Rfc862Tcp4Server {
+class Rfc862Tcp5Server {
 
     public static void main(final String... args) throws Exception {
-        try (var server = AsynchronousServerSocketChannel.open()) {
-            server.bind(_Rfc862Constants.ADDR);
+        final var group = AsynchronousChannelGroup.withThreadPool(Executors.newCachedThreadPool());
+        try (var server = AsynchronousServerSocketChannel.open(group)) {
+            server.bind(_Rfc862Constants.ADDR, 0);
             log.info("bound to {}", server.getLocalAddress());
-            try (var client = server.accept().get(_Rfc86_Constants.ACCEPT_TIMEOUT,
-                                                  _Rfc86_Constants.ACCEPT_TIMEOUT_UNIT)) {
-                _Rfc86_Utils.logAccepted(client);
-                try (var attachment = new Rfc862Tcp4ServerAttachment(client)) {
-                    for (int r; (r = attachment.read()) != -1; ) {
-                        assert r >= 0;
-                        final var w = attachment.write();
-                        assert w >= 0;
-                    }
-                    while (attachment.write() > 0) {
-                        // do nothing
-                    }
-                }
-            }
+            new Rfc862Tcp5ServerAttachment(group, server).accept();
+            final var terminated = group.awaitTermination(
+                    _Rfc86_Constants.SERVER_TIMEOUT, _Rfc86_Constants.SERVER_TIMEOUT_UNIT
+            );
+            assert terminated : "channel group has not been terminated!";
         }
     }
 
-    private Rfc862Tcp4Server() {
+    private Rfc862Tcp5Server() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

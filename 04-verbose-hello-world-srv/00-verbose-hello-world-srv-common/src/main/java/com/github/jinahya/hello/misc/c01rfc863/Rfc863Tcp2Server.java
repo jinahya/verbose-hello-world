@@ -21,6 +21,8 @@ package com.github.jinahya.hello.misc.c01rfc863;
  */
 
 import com.github.jinahya.hello.misc._Rfc86_Constants;
+import com.github.jinahya.hello.misc._Rfc86_Utils;
+import com.github.jinahya.hello.util.ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.channels.ServerSocketChannel;
@@ -37,26 +39,42 @@ class Rfc863Tcp2Server {
             assert server.isBlocking();
             // ------------------------------------------------------------------------------ ACCEPT
             final SocketChannel client;
+            server.socket().setSoTimeout((int) _Rfc86_Constants.ACCEPT_TIMEOUT_IN_MILLIS);
             if (ThreadLocalRandom.current().nextBoolean()) {
-                final var serverSocket = server.socket();
-                serverSocket.setSoTimeout((int) _Rfc86_Constants.ACCEPT_TIMEOUT_IN_MILLIS);
-                final var clientSocket = serverSocket.accept();
-                clientSocket.setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_IN_MILLIS);
-                client = clientSocket.getChannel();
-                assert client != null;
-                return;
+                client = server.socket().accept().getChannel();
             } else {
                 client = server.accept();
             }
+            assert client != null;
             // ----------------------------------------------------------------------------- RECEIVE
-            try (var attachment = new Rfc863Tcp2ServerAttachment(client)) {
-                while (attachment.read() != -1) {
-                    // does nothing
+            client.socket().setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_IN_MILLIS);
+            final var digest = _Rfc863Utils.newDigest();
+            int bytes = 0;
+            final var buffer = _Rfc86_Utils.newBuffer();
+            for (int r; ; ) {
+                if (!buffer.hasRemaining()) {
+                    buffer.clear();
                 }
+                if (ThreadLocalRandom.current().nextBoolean()) {
+                    r = client.socket().getInputStream().read(
+                            buffer.array(),
+                            buffer.arrayOffset() + buffer.position(),
+                            buffer.remaining()
+                    );
+                } else {
+                    r = client.read(buffer);
+                }
+                if (r == -1) {
+                    break;
+                }
+                bytes += r;
             }
+            _Rfc863Utils.logServerBytes(bytes);
+            _Rfc863Utils.logDigest(digest);
         }
     }
 
+    @ExcludeFromCoverage_PrivateConstructor_Obviously
     private Rfc863Tcp2Server() {
         throw new AssertionError("instantiation is not allowed");
     }

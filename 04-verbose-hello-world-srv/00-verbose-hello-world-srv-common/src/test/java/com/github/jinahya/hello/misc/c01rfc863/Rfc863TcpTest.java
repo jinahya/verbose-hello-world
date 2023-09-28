@@ -41,6 +41,7 @@ class Rfc863TcpTest {
     private static final List<Class<?>> SERVER_CLASSES = List.of(
             Rfc863Tcp0Server.class,
             Rfc863Tcp1Server.class,
+            Rfc863Tcp2Server.class,
             Rfc863Tcp3Server.class,
             Rfc863Tcp4Server.class,
             Rfc863Tcp5Server.class
@@ -49,6 +50,7 @@ class Rfc863TcpTest {
     private static final List<Class<?>> CLIENT_CLASSES = List.of(
             Rfc863Tcp0Client.class,
             Rfc863Tcp1Client.class,
+            Rfc863Tcp2Client.class,
             Rfc863Tcp3Client.class,
             Rfc863Tcp4Client.class,
             Rfc863Tcp5Client.class

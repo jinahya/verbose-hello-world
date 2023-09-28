@@ -1,52 +1,54 @@
 package com.github.jinahya.hello.misc.c02rfc862;
 
-import com.github.jinahya.hello.misc._Rfc86_Constants;
-import lombok.extern.slf4j.Slf4j;
-
 import java.io.EOFException;
 import java.io.IOException;
-import java.nio.channels.AsynchronousSocketChannel;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.SocketChannel;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
-@Slf4j
 final class Rfc862Tcp3ClientAttachment extends _Rfc862Attachment.Client {
 
-    Rfc862Tcp3ClientAttachment(final AsynchronousSocketChannel client) {
+    Rfc862Tcp3ClientAttachment(final SelectionKey clientKey) {
         super();
-        this.client = Objects.requireNonNull(client, "client is null");
+        this.clientKey = Objects.requireNonNull(clientKey, "clientKey is null");
     }
 
-    @Override
-    public void close() throws IOException {
-        client.close();
-        super.close();
-    }
-
-    int write() throws Exception {
+    int write() throws IOException {
+        assert clientKey.isValid();
+        assert clientKey.isWritable();
+        final var channel = (SocketChannel) clientKey.channel();
         if (!buffer.hasRemaining()) {
             ThreadLocalRandom.current().nextBytes(buffer.array());
             buffer.clear().limit(Math.min(buffer.limit(), getBytes()));
         }
-        final var w = client.write(buffer)
-                .get(_Rfc86_Constants.WRITE_TIMEOUT, _Rfc86_Constants.WRITE_TIMEOUT_UNIT);
-        decreaseBytes(updateDigest(w));
+        final var w = channel.write(buffer);
+        if (decreaseBytes(updateDigest(w)) == 0) {
+            logDigest();
+            channel.shutdownOutput();
+            clientKey.interestOpsAnd(~SelectionKey.OP_WRITE);
+            buffer.limit(buffer.capacity()).position(buffer.limit());
+        }
         return w;
     }
 
-    int read() throws Exception {
+    int read() throws IOException {
+        assert clientKey.isValid();
+        assert clientKey.isReadable();
         buffer.flip(); // limit -> position, position -> zero
-        if (getBytes() == 0) {
-            buffer.clear();
-        }
-        final var r = client.read(buffer)
-                .get(_Rfc86_Constants.READ_TIMEOUT, _Rfc86_Constants.READ_TIMEOUT_UNIT);
+        final var r = ((ReadableByteChannel) clientKey.channel()).read(buffer);
         buffer.position(buffer.limit()).limit(buffer.capacity());
-        if (r == -1 && getBytes() > 0) {
-            throw new EOFException("unexpected eof");
+        if (r == -1) {
+            if (getBytes() > 0) {
+                throw new EOFException("unexpected eof");
+            }
+            clientKey.interestOpsAnd(~SelectionKey.OP_READ);
+            clientKey.cancel();
+            assert !clientKey.isValid();
         }
         return r;
     }
 
-    private final AsynchronousSocketChannel client;
+    private final SelectionKey clientKey;
 }

@@ -21,6 +21,7 @@ package com.github.jinahya.hello.misc.c01rfc863;
  */
 
 import com.github.jinahya.hello.misc._Rfc86_Constants;
+import com.github.jinahya.hello.util.ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
@@ -43,12 +44,17 @@ class Rfc863Udp1Client {
                 log.info("(optionally) connected to {}, through {}",
                          client.getRemoteSocketAddress(), client.getLocalSocketAddress());
             }
-            final var length = ThreadLocalRandom.current().nextInt(client.getSendBufferSize() + 1);
-            final var array = new byte[length];
+            // -------------------------------------------------------------------------------------
+            final var array = new byte[
+                    ThreadLocalRandom.current().nextInt(client.getSendBufferSize() + 1)
+                    ];
             ThreadLocalRandom.current().nextBytes(array);
             _Rfc863Utils.logClientBytes(array.length);
+            // -------------------------------------------------------------------------------------
             final var packet = new DatagramPacket(array, array.length, _Rfc863Constants.ADDR);
             client.send(packet);
+            assert packet.getLength() == array.length;
+            // -------------------------------------------------------------------------------------
             _Rfc863Utils.logDigest(array, 0, packet.getLength());
             if (connect) {
                 client.disconnect();
@@ -56,6 +62,7 @@ class Rfc863Udp1Client {
         }
     }
 
+    @ExcludeFromCoverage_PrivateConstructor_Obviously
     private Rfc863Udp1Client() {
         throw new AssertionError("instantiation is not allowed");
     }

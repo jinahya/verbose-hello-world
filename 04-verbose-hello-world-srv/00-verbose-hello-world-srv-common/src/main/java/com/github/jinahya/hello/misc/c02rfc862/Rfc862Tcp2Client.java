@@ -25,8 +25,6 @@ import com.github.jinahya.hello.misc._Rfc86_Utils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -34,58 +32,29 @@ import java.util.concurrent.ThreadLocalRandom;
 class Rfc862Tcp2Client {
 
     public static void main(final String... args) throws Exception {
-        try (var selector = Selector.open();
-             var client = SocketChannel.open()) {
+        try (var client = SocketChannel.open()) {
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc86_Constants.HOST, 0));
                 log.info("(optionally) bound to {}", client.getLocalAddress());
             }
-            client.configureBlocking(false);
-            final SelectionKey clientKey;
-            if (client.connect(_Rfc862Constants.ADDR)) {
-                log.info("(immediately) connected to {}, through {}", client.getRemoteAddress(),
-                         client.getLocalAddress());
-                clientKey = client.register(selector, SelectionKey.OP_WRITE);
-                clientKey.attach(new Rfc862Tcp2ClientAttachment(clientKey));
+            if (ThreadLocalRandom.current().nextBoolean()) {
+                client.socket().connect(_Rfc862Constants.ADDR,
+                                        (int) _Rfc86_Constants.CONNECT_TIMEOUT_IN_MILLIS);
+                _Rfc86_Utils.logConnected(client.socket());
             } else {
-                clientKey = client.register(selector, SelectionKey.OP_CONNECT);
+                final var connected = client.connect(_Rfc862Constants.ADDR);
+                assert connected; // why?
+                _Rfc86_Utils.logConnected(client);
             }
-            while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
-                if (selector.select(_Rfc86_Constants.CONNECT_TIMEOUT_IN_MILLIS) == 0) {
-                    break;
-                }
-                for (var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
-                    final var selectedKey = i.next();
-                    if (selectedKey.isConnectable()) {
-                        assert selectedKey == clientKey;
-                        final var channel = (SocketChannel) selectedKey.channel();
-                        assert channel == client;
-                        if (channel.finishConnect()) {
-                            _Rfc86_Utils.logConnected(channel);
-                            selectedKey.interestOpsAnd(~SelectionKey.OP_CONNECT);
-                            assert selectedKey.attachment() == null;
-                            selectedKey.attach(new Rfc862Tcp2ClientAttachment(selectedKey));
-                            selectedKey.interestOpsOr(SelectionKey.OP_WRITE);
-                        }
+            assert client.isConnected();
+            assert client.socket().isConnected();
+            try (var attachment = new Rfc862Tcp2ClientAttachment(client)) {
+                for (boolean write = true; ; ) {
+                    if (write && attachment.write() == 0) {
+                        write = false;
                     }
-                    if (selectedKey.isWritable()) {
-                        final var channel = (SocketChannel) selectedKey.channel();
-                        assert channel == client;
-                        final var attachment =
-                                (Rfc862Tcp2ClientAttachment) selectedKey.attachment();
-                        assert attachment != null;
-                        final var w = attachment.write();
-                        assert w > 0;
-                    }
-                    if (selectedKey.isReadable()) {
-                        final var channel = (SocketChannel) selectedKey.channel();
-                        assert channel == client;
-                        final var attachment =
-                                (Rfc862Tcp2ClientAttachment) selectedKey.attachment();
-                        assert attachment != null;
-                        final var r = attachment.read();
-                        assert r >= -1;
-                        assert r == -1 || selectedKey.isValid();
+                    if (attachment.read() == -1) {
+                        break;
                     }
                 }
             }
