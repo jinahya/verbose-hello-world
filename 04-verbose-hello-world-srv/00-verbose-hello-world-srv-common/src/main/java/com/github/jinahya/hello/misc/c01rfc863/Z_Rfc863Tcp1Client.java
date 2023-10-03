@@ -24,8 +24,9 @@ import com.github.jinahya.hello.util.Stopwatch;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
+import java.net.Socket;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -33,22 +34,31 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 class Z_Rfc863Tcp1Client {
 
+    //    private static final int CLIENTS = 8192;
+    private static final int CLIENTS = 1024;
+
     public static void main(final String... args) throws Exception {
         final Object carrier = Stopwatch.startStopwatch();
         final var futures = new ArrayList<Future<Integer>>();
-        final var service = Executors.newFixedThreadPool(32);
-        for (int i = 0; i < 32; i++) {
-            for (final Class<?> clientClass : Z__Rfc863Constants.CLIENT_CLASSES) {
-                futures.add(
-                        service.submit(() -> {
-                            try {
-                                return Z__Rfc863Utils.fork(clientClass).waitFor();
-                            } catch (final IOException ioe) {
-                                throw new UncheckedIOException(ioe);
-                            }
-                        })
-                );
-            }
+//        final var service = Executors.newFixedThreadPool(Z__Rfc863Constants.SERVER_THREADS);
+        final var service = Executors.newFixedThreadPool(16);
+        final var array = new byte[32768];
+        for (int i = 0; i < CLIENTS; i++) {
+            futures.add(
+                    service.submit(() -> {
+                        try (var client = new Socket()) {
+                            client.setReuseAddress(true);
+                            client.setSoLinger(true, 0);
+                            client.connect(_Rfc863Constants.ADDR);
+                            client.getOutputStream().write(array);
+                            client.getOutputStream().flush();
+                        } catch (final IOException ioe) {
+                            log.error("failed to connect/send", ioe);
+                            throw ioe;
+                        }
+                        return null;
+                    })
+            );
         }
         service.shutdown();
         if (!service.awaitTermination(10L, TimeUnit.MINUTES)) {
@@ -58,7 +68,10 @@ class Z_Rfc863Tcp1Client {
         int error = 0;
         for (final var future : futures) {
             total++;
-            if (future.get() != 0) {
+            try {
+                future.get();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
                 error++;
             }
         }

@@ -277,6 +277,7 @@ public final class JavaLangUtils {
         }
     }
 
+    // ---------------------------------------------------------------------------------------------
     private JavaLangUtils() {
         throw new AssertionError("instantiation is not allowed");
     }

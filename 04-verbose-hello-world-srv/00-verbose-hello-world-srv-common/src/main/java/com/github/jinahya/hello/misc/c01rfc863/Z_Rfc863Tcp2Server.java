@@ -24,6 +24,7 @@ import com.github.jinahya.hello.util.HelloWorldServerUtils;
 import com.github.jinahya.hello.util.JavaLangUtils;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
@@ -59,7 +60,13 @@ class Z_Rfc863Tcp2Server {
                     if (selectedKey.isAcceptable()) {
                         final var channel = (ServerSocketChannel) serverKey.channel();
                         assert channel == server;
-                        final var client = channel.accept();
+                        final SocketChannel client;
+                        try {
+                            client = channel.accept();
+                        } catch (final IOException ioe) {
+                            log.error("failed to accept", ioe);
+                            continue;
+                        }
                         client.configureBlocking(false);
                         final var clientKey = client.register(
                                 selector,
@@ -73,10 +80,15 @@ class Z_Rfc863Tcp2Server {
                         if (!attachment.hasRemaining()) {
                             attachment.clear();
                         }
-                        final var r = channel.read(attachment);
-                        if (r == -1) {
+                        try {
+                            final var r = channel.read(attachment);
+                            if (r == -1) {
+                                channel.close();
+                                assert !selectedKey.isValid();
+                            }
+                        } catch (final IOException ioe) {
+                            log.error("failed to read", ioe);
                             channel.close();
-                            assert !selectedKey.isValid();
                         }
                     }
                 }

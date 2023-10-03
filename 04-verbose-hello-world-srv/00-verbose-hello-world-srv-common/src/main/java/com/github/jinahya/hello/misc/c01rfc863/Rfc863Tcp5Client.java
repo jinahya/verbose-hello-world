@@ -37,7 +37,8 @@ class Rfc863Tcp5Client {
         if (args.length > 0) {
             LoggingUtils.setLevelForAllLoggers(args[0]);
         }
-        final var group = AsynchronousChannelGroup.withThreadPool(Executors.newCachedThreadPool());
+        final var service = Executors.newFixedThreadPool(1);
+        final var group = AsynchronousChannelGroup.withCachedThreadPool(service, 0);
         try (var client = AsynchronousSocketChannel.open(group)) {
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc86_Constants.HOST, 0));

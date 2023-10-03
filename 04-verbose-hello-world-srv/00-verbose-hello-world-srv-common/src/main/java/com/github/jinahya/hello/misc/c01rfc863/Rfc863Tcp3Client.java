@@ -60,7 +60,8 @@ class Rfc863Tcp3Client {
             // ------------------------------------------------------------------------------ SELECT
             while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
                 if (selector.select(_Rfc86_Constants.CLIENT_TIMEOUT_IN_MILLIS) == 0) {
-                    break;
+                    clientKey.cancel();
+                    continue;
                 }
                 for (final var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
                     final var selectedKey = i.next();
@@ -74,16 +75,18 @@ class Rfc863Tcp3Client {
                             selectedKey.interestOpsAnd(~SelectionKey.OP_CONNECT);
                             selectedKey.attach(new Rfc863Tcp3ClientAttachment(selectedKey));
                             selectedKey.interestOpsOr(SelectionKey.OP_WRITE);
+                            assert !selectedKey.isWritable();
                         }
                     }
                     // ------------------------------------------------------------------------ SEND
                     if (selectedKey.isWritable()) {
-                        final var channel = (SocketChannel) selectedKey.channel();
-                        assert channel == client;
                         final var attachment =
                                 (Rfc863Tcp3ClientAttachment) selectedKey.attachment();
+                        assert attachment != null;
                         final var w = attachment.write();
                         assert w >= 0;
+                        assert w > 0 || !attachment.isClosed();
+                        assert w > 0 || !selectedKey.isValid();
                     }
                 }
             }

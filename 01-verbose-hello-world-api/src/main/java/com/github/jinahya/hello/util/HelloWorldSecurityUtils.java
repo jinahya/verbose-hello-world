@@ -71,7 +71,7 @@ public class HelloWorldSecurityUtils {
             );
         } else {
             JavaNioUtils.flipAcceptAndRestore(buffer,
-                                                    b -> digest.update(b));
+                                              b -> digest.update(b));
         }
     }
 

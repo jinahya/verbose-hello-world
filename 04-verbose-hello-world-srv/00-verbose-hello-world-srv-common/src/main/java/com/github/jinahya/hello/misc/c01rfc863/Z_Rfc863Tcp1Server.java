@@ -45,7 +45,8 @@ class Z_Rfc863Tcp1Server {
                     server,                        // <closeable>
                     null                           // <consumer>
             );
-            final var service = Executors.newCachedThreadPool();
+//            final var executor = Executors.newCachedThreadPool();
+            final var executor = Executors.newFixedThreadPool(Z__Rfc863Constants.SERVER_THREADS);
             while (!server.isClosed()) {
                 final Socket client;
                 try {
@@ -54,25 +55,25 @@ class Z_Rfc863Tcp1Server {
                     if (!server.isClosed()) {
                         log.error("failed to accept", ioe);
                     }
-                    break;
+                    continue;
                 }
-                service.submit(() -> {
+                executor.submit(() -> {
                     try (client) {
-                        client.setSoTimeout((int) Z__Rfc863Constants.READ_TIMEOUT_MILLIS);
                         final var array = new byte[Z__Rfc863Constants.SERVER_BUFLEN];
-                        while (!Thread.currentThread().isInterrupted()) {
-                            if (client.getInputStream().read(array) == -1) {
-                                break;
-                            }
+                        while (client.getInputStream().read(array) == -1) {
+                            // do nothing
                         }
+                    } catch (final IOException ioe) {
+                        log.error("failed to read", ioe);
+                        throw ioe;
                     }
                     return null;
                 });
             }
-            service.shutdown();
-            log.debug("awaiting service to be terminated...");
-            if (!service.awaitTermination(10L, TimeUnit.MINUTES)) {
-                log.error("service hasn't been terminated for a while");
+            executor.shutdown();
+            log.debug("awaiting executor to be terminated...");
+            if (!executor.awaitTermination(10L, TimeUnit.MINUTES)) {
+                log.error("executor hasn't been terminated for a while");
             }
         }
     }

@@ -54,15 +54,15 @@ class Rfc863Udp2Client {
                     )
             );
             ThreadLocalRandom.current().nextBytes(buffer.array());
-            _Rfc863Utils.logClientBytes(buffer.remaining());
             ThreadLocalRandom.current().nextBytes(buffer.array());
+            _Rfc863Utils.logClientBytes(buffer.remaining());
             // -------------------------------------------------------------------------------------
             if (ThreadLocalRandom.current().nextBoolean()) {
                 final var packet = new DatagramPacket(
-                        buffer.array(),
-                        buffer.arrayOffset() + buffer.position(),
-                        buffer.remaining(),
-                        _Rfc863Constants.ADDR
+                        buffer.array(),                           // <buf>
+                        buffer.arrayOffset() + buffer.position(), // <offset>
+                        buffer.remaining(),                       // <length>
+                        _Rfc863Constants.ADDR                     // <address>
                 );
                 client.socket().send(packet);
                 assert packet.getLength() == buffer.remaining();

@@ -40,11 +40,14 @@ class Z_Rfc863Tcp3Server {
 
     // @formatter:on
     public static void main(final String... args) throws Exception {
-        final var group = AsynchronousChannelGroup.withThreadPool(Executors.newCachedThreadPool());
+        final var executor = Executors.newFixedThreadPool(Z__Rfc863Constants.SERVER_THREADS);
+//        final var executor = Executors.newCachedThreadPool();
+        final var group = AsynchronousChannelGroup.withThreadPool(executor);
         try (var server = AsynchronousServerSocketChannel.open(group)) {
             server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
             server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
-            server.bind(_Rfc863Constants.ADDR);
+            server.setOption(StandardSocketOptions.SO_LINGER, 0);
+            server.bind(_Rfc863Constants.ADDR, Z__Rfc863Constants.SERVER_BACKLOG);
             log.info("bound to {}", server.getLocalAddress());
             JavaLangUtils.readLinesAndCloseWhenTests(
                     HelloWorldServerUtils::isQuit, // <predicate>

@@ -22,13 +22,6 @@ package com.github.jinahya.hello.util;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.util.Collections;
-import java.util.Objects;
-import java.util.Set;
-import java.util.WeakHashMap;
-
 /**
  * Utilities for {@link java.lang.reflect} package.
  *
@@ -36,54 +29,6 @@ import java.util.WeakHashMap;
  */
 @Slf4j
 public final class JavaLangReflectUtils {
-
-    private static final Method CLOSE;
-
-    static {
-        try {
-            CLOSE = AutoCloseable.class.getMethod("close");
-        } catch (NoSuchMethodException nsme) {
-            throw new InstantiationError(nsme.toString());
-        }
-    }
-
-    @SuppressWarnings({"unchecked"})
-    public static <T extends AutoCloseable> T uncloseableProxy(final T closeable) {
-        Objects.requireNonNull(closeable, "closeable is null");
-        return (T) Proxy.newProxyInstance(
-                closeable.getClass().getClassLoader(),
-                new Class<?>[] {AutoCloseable.class},
-                (proxy, method, args) -> {
-                    if (CLOSE.equals(method)) {
-                        throw new UnsupportedOperationException("unable to close");
-                    }
-                    return method.invoke(closeable);
-                }
-        );
-    }
-
-    private static final Set<AutoCloseable> CLOSED_CLOSEABLES =
-            Collections.newSetFromMap(new WeakHashMap<>());
-
-    @SuppressWarnings({"unchecked"})
-    public static <T extends AutoCloseable> T nonIdempotentCloseableProxy(final T closeable) {
-        Objects.requireNonNull(closeable, "closeable is null");
-        return (T) Proxy.newProxyInstance(
-                closeable.getClass().getClassLoader(),
-                new Class<?>[] {AutoCloseable.class},
-                (proxy, method, args) -> {
-                    if (CLOSE.equals(method)) {
-                        synchronized (CLOSED_CLOSEABLES) {
-                            if (CLOSED_CLOSEABLES.contains(closeable)) {
-                                throw new IllegalStateException("already closed: " + closeable);
-                            }
-                            CLOSED_CLOSEABLES.add(closeable);
-                        }
-                    }
-                    return method.invoke(closeable);
-                }
-        );
-    }
 
     private JavaLangReflectUtils() {
         throw new AssertionError("instantiation is not allowed");

@@ -44,13 +44,14 @@ class Rfc863Udp2Server {
             // -------------------------------------------------------------------------------------
             if (ThreadLocalRandom.current().nextBoolean()) {
                 final var packet = new DatagramPacket(
-                        buffer.array(),
-                        buffer.arrayOffset() + buffer.position(),
-                        buffer.remaining()
+                        buffer.array(),                           // <buf>
+                        buffer.arrayOffset() + buffer.position(), // <offset>
+                        buffer.remaining()                        // <length>
                 );
                 server.socket().receive(packet);
                 log.debug("{} byte(s) received from {}", packet.getLength(),
                           packet.getSocketAddress());
+                assert packet.getLength() == buffer.remaining();
                 buffer.position(buffer.position() + packet.getLength());
             } else {
                 final var address = server.receive(buffer);

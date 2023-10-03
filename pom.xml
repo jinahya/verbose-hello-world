@@ -63,6 +63,7 @@
     <version.maven-failsafe>${version.maven-surefire}</version.maven-failsafe>
     <version.maven-javadoc-plugin>3.5.0</version.maven-javadoc-plugin>
     <version.org.apache.openwebbeans>2.0.27</version.org.apache.openwebbeans>
+    <version.org.aspectj>1.9.20.1</version.org.aspectj>
     <version.org.glassfish.hk2>3.0.4</version.org.glassfish.hk2>
     <version.org.hibernate.validator>8.0.1.Final</version.org.hibernate.validator>
     <version.org.jboss.weld>5.1.1.SP2</version.org.jboss.weld> <!-- weld-junit5 -->
@@ -145,6 +146,16 @@
         <groupId>org.asciidoctor</groupId>
         <artifactId>asciidoctorj-pdf</artifactId>
         <version>${version.asciidoctorj-pdf}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.aspectj</groupId>
+        <artifactId>aspectjrt</artifactId>
+        <version>${version.org.aspectj}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.aspectj</groupId>
+        <artifactId>aspectjtools</artifactId>
+        <version>${version.org.aspectj}</version>
       </dependency>
       <dependency>
         <groupId>org.assertj</groupId>

@@ -31,7 +31,8 @@ import java.util.concurrent.Executors;
 class Rfc863Tcp5Server {
 
     public static void main(final String... args) throws Exception {
-        final var group = AsynchronousChannelGroup.withThreadPool(Executors.newCachedThreadPool());
+        final var service = Executors.newFixedThreadPool(1);
+        final var group = AsynchronousChannelGroup.withCachedThreadPool(service, 0);
         try (var server = AsynchronousServerSocketChannel.open(group)) {
             server.bind(_Rfc863Constants.ADDR, 1);
             log.info("bound to {}", server.getLocalAddress());
@@ -42,9 +43,6 @@ class Rfc863Tcp5Server {
         }
     }
 
-    /**
-     * Creates a new instance.
-     */
     private Rfc863Tcp5Server() {
         throw new AssertionError("instantiation is not allowed");
     }

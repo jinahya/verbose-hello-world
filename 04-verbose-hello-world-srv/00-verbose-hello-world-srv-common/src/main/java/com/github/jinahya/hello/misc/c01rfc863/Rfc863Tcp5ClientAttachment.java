@@ -1,10 +1,31 @@
 package com.github.jinahya.hello.misc.c01rfc863;
 
+/*-
+ * #%L
+ * verbose-hello-world-srv-common
+ * %%
+ * Copyright (C) 2018 - 2023 Jinahya, Inc.
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
 import com.github.jinahya.hello.misc._Rfc86_Constants;
 import com.github.jinahya.hello.misc._Rfc86_Utils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.net.SocketAddress;
 import java.nio.channels.AsynchronousChannelGroup;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
@@ -24,14 +45,17 @@ final class Rfc863Tcp5ClientAttachment extends _Rfc863Attachment.Client {
 
     @Override
     public void close() throws IOException {
-        try {
-            group.shutdownNow();
-        } finally {
-            super.close();
-        }
+        group.shutdownNow();
+        super.close();
     }
 
     // -------------------------------------------------------------------------------------- client
+
+    /**
+     * Make {@code client} to connect to {@link _Rfc863Constants#ADDR}.
+     *
+     * @see AsynchronousSocketChannel#connect(SocketAddress, Object, CompletionHandler)
+     */
     void connect() {
         client.connect(
                 _Rfc863Constants.ADDR, // <remote>
@@ -41,8 +65,9 @@ final class Rfc863Tcp5ClientAttachment extends _Rfc863Attachment.Client {
     }
 
     private void write() {
+        final var buffer = getBufferForWriting();
         client.write(
-                getBufferForWriting(),               // <src>
+                buffer,                              // <src>
                 _Rfc86_Constants.WRITE_TIMEOUT,      // <timeout
                 _Rfc86_Constants.WRITE_TIMEOUT_UNIT, // <unit>
                 null,                                // <attachment>
