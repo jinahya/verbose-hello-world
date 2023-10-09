@@ -33,27 +33,25 @@ class Rfc862Tcp4Client {
 
     public static void main(final String... args) throws Exception {
         try (var client = AsynchronousSocketChannel.open()) {
+            // --------------------------------------------------------------------- BIND/optionally
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc86_Constants.HOST, 0));
                 log.info("(optionally) bound to {}", client.getLocalAddress());
             }
+            // ----------------------------------------------------------------------------- CONNECT
             client.connect(_Rfc862Constants.ADDR).get(_Rfc86_Constants.CONNECT_TIMEOUT,
                                                       _Rfc86_Constants.CONNECT_TIMEOUT_UNIT);
             _Rfc86_Utils.logConnected(client);
+            // ------------------------------------------------------------------------ SEND/RECEIVE
             try (var attachment = new Rfc862Tcp4ClientAttachment(client)) {
-                for (int w, r; ; ) {
-                    w = attachment.write();
-                    assert w >= 0; // why?
-                    if (w == 0) {
-                        break;
-                    }
+                int r;
+                while (attachment.write() > 0) {
                     r = attachment.read();
-//                    assert r > 0; // why?
+                    assert r >= 0;
                 }
-                attachment.logDigest();
                 client.shutdownOutput();
-                for (int r; (r = attachment.read()) != -1; ) {
-                    assert r > 0;
+                while ((r = attachment.read()) != -1) {
+                    assert r >= 0;
                 }
             }
         }

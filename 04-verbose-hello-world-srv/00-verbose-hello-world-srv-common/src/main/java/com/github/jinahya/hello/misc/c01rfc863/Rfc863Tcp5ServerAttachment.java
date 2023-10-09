@@ -64,6 +64,7 @@ final class Rfc863Tcp5ServerAttachment extends _Rfc863Attachment.Server {
     public void close() throws IOException {
         if (client != null) {
             client.close();
+            client = null;
         }
         group.shutdownNow();
         super.close();

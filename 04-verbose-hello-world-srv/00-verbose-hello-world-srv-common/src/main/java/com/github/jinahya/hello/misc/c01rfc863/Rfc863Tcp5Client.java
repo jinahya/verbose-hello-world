@@ -44,10 +44,12 @@ class Rfc863Tcp5Client {
                 client.bind(new InetSocketAddress(_Rfc86_Constants.HOST, 0));
                 log.info("(optionally) bound to {}", client.getLocalAddress());
             }
-            new Rfc863Tcp5ClientAttachment(group, client).connect();
+            final var attachment = new Rfc863Tcp5ClientAttachment(group, client);
+            attachment.connect();
             final var terminated = group.awaitTermination(_Rfc86_Constants.CLIENT_TIMEOUT,
                                                           _Rfc86_Constants.CLIENT_TIMEOUT_UNIT);
             assert terminated : "channel group hasn't been terminated";
+            assert attachment.isClosed();
         }
     }
 

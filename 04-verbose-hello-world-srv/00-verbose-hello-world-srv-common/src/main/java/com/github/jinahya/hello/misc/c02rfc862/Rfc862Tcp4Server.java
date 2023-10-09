@@ -33,12 +33,16 @@ class Rfc862Tcp4Server {
         try (var server = AsynchronousServerSocketChannel.open()) {
             server.bind(_Rfc862Constants.ADDR);
             log.info("bound to {}", server.getLocalAddress());
+            // ------------------------------------------------------------------------------ ACCEPT
             try (var client = server.accept().get(_Rfc86_Constants.ACCEPT_TIMEOUT,
                                                   _Rfc86_Constants.ACCEPT_TIMEOUT_UNIT)) {
                 _Rfc86_Utils.logAccepted(client);
+                // -------------------------------------------------------------------- RECEIVE/SEND
                 try (var attachment = new Rfc862Tcp4ServerAttachment(client)) {
+                    // ------------------------------------------------------------------------ read
                     for (int r; (r = attachment.read()) != -1; ) {
                         assert r >= 0;
+                        // ------------------------------------------------------------------- write
                         final var w = attachment.write();
                         assert w >= 0;
                     }

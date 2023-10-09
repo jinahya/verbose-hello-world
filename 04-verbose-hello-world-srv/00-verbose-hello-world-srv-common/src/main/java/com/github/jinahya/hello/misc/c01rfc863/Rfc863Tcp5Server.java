@@ -36,10 +36,13 @@ class Rfc863Tcp5Server {
         try (var server = AsynchronousServerSocketChannel.open(group)) {
             server.bind(_Rfc863Constants.ADDR, 1);
             log.info("bound to {}", server.getLocalAddress());
-            new Rfc863Tcp5ServerAttachment(group, server).accept();
+            final var attachment = new Rfc863Tcp5ServerAttachment(group, server);
+            attachment.accept();
+            ;
             final var terminated = group.awaitTermination(_Rfc86_Constants.SERVER_TIMEOUT,
                                                           _Rfc86_Constants.SERVER_TIMEOUT_UNIT);
             assert terminated : "channel group hasn't been terminated";
+            assert attachment.isClosed();
         }
     }
 

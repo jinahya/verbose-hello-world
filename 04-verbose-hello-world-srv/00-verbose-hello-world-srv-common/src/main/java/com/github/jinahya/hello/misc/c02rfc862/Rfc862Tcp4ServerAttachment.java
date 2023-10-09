@@ -9,9 +9,9 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,11 +21,13 @@ package com.github.jinahya.hello.misc.c02rfc862;
  */
 
 import com.github.jinahya.hello.misc._Rfc86_Constants;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.util.Objects;
 
+@Slf4j
 class Rfc862Tcp4ServerAttachment extends _Rfc862Attachment.Server {
 
     Rfc862Tcp4ServerAttachment(final AsynchronousSocketChannel client) {
@@ -33,13 +35,14 @@ class Rfc862Tcp4ServerAttachment extends _Rfc862Attachment.Server {
         this.client = Objects.requireNonNull(client, "client is null");
     }
 
-    // ---------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------- java.io.Closeable
     @Override
     public void close() throws IOException {
         client.close();
         super.close();
     }
 
+    // -------------------------------------------------------------------------------------- client
     int read() throws Exception {
         final var r = client.read(buffer)
                 .get(_Rfc86_Constants.READ_TIMEOUT, _Rfc86_Constants.READ_TIMEOUT_UNIT);
@@ -58,5 +61,6 @@ class Rfc862Tcp4ServerAttachment extends _Rfc862Attachment.Server {
         return w;
     }
 
+    // ---------------------------------------------------------------------------------------------
     private final AsynchronousSocketChannel client;
 }
