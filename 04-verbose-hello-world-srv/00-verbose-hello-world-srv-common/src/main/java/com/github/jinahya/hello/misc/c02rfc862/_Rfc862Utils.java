@@ -43,7 +43,7 @@ final class _Rfc862Utils {
         if (bytes < 0) {
             throw new IllegalArgumentException("bytes(" + bytes + ") is negative");
         }
-        log.info("{} byte(s) received (and echoed back)", bytes);
+        log.info("{} byte(s) received (and echoed-back)", bytes);
         return bytes;
     }
 

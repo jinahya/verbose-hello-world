@@ -41,7 +41,7 @@ class Rfc862Tcp1Server {
                 var bytes = 0;
                 final var array = _Rfc86_Utils.newArray();
                 for (int r; (r = client.getInputStream().read(array)) != -1; bytes += r) {
-                    assert r > 0;
+                    assert r > 0; // why?
                     client.getOutputStream().write(array, 0, r);
                     client.getOutputStream().flush();
                     digest.update(array, 0, r);

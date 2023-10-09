@@ -24,6 +24,7 @@ import com.github.jinahya.hello.misc._Rfc86_Constants;
 import com.github.jinahya.hello.misc._Rfc86_Utils;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.EOFException;
 import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.ThreadLocalRandom;
@@ -37,6 +38,8 @@ class Rfc862Tcp2Client {
                 client.bind(new InetSocketAddress(_Rfc86_Constants.HOST, 0));
                 log.info("(optionally) bound to {}", client.getLocalAddress());
             }
+            assert client.isBlocking();
+            // ----------------------------------------------------------------------------- CONNECT
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.socket().connect(_Rfc862Constants.ADDR,
                                         (int) _Rfc86_Constants.CONNECT_TIMEOUT_IN_MILLIS);
@@ -48,16 +51,73 @@ class Rfc862Tcp2Client {
             }
             assert client.isConnected();
             assert client.socket().isConnected();
-            try (var attachment = new Rfc862Tcp2ClientAttachment(client)) {
-                for (boolean write = true; ; ) {
-                    if (write && attachment.write() == 0) {
-                        write = false;
-                    }
-                    if (attachment.read() == -1) {
-                        break;
-                    }
+            // ------------------------------------------------------------------------ SEND/RECEIVE
+            final var digest = _Rfc862Utils.newDigest();
+            final var buffer = _Rfc86_Utils.newBuffer();
+            assert buffer.hasArray();
+            final var slice = buffer.slice();
+            assert slice.hasArray();
+            assert slice.array() == buffer.array();
+            var bytes = _Rfc862Utils.logClientBytes(_Rfc86_Utils.randomBytes());
+            int w; // number of written bytes
+            int r; // number of read bytes
+            for (; bytes > 0; bytes -= w) {
+                // --------------------------------------------------------------------------- write
+                if (!buffer.hasRemaining()) {
+                    ThreadLocalRandom.current().nextBytes(buffer.array());
+                    buffer.clear().limit(Math.min(buffer.limit(), bytes));
                 }
+                assert buffer.hasRemaining();
+                if (ThreadLocalRandom.current().nextBoolean()) {
+                    w = buffer.remaining(); // @@?
+                    client.socket().getOutputStream().write(
+                            buffer.array(),                           // <b>
+                            buffer.arrayOffset() + buffer.position(), // <off>
+                            buffer.remaining()                        // <len>
+                    );
+                    client.socket().getOutputStream().flush();
+                    buffer.position(buffer.position() + w); // buffer.position(buffer.limit())
+                } else {
+                    w = client.write(buffer);
+                }
+                assert w > 0; // why?
+                assert !buffer.hasRemaining(); // why?
+                // ------------------------------------------------------------------- digest/update
+                digest.update(
+                        slice.position(buffer.position() - w)
+                                .limit(buffer.position())
+                );
+                // ---------------------------------------------------------------------------- read
+                buffer.flip(); // limit -> position, position -> zero
+                if (ThreadLocalRandom.current().nextBoolean()) {
+                    r = client.socket().getInputStream().read(
+                            buffer.array(),
+                            buffer.arrayOffset() + buffer.position(),
+                            buffer.remaining()
+                    );
+                    if (r != -1) {
+                        buffer.position(buffer.position() + r);
+                    }
+                } else {
+                    r = client.read(buffer);
+                }
+                if (r == -1) {
+                    throw new EOFException("unexpected eof");
+                }
+                assert r > 0; // why?
+                buffer.position(buffer.limit()).limit(buffer.capacity());
             }
+            // --------------------------------------------------------------------- shutdown output
+            client.shutdownOutput();
+            // ----------------------------------------------------------------------- read/remained
+            do {
+                if (!buffer.hasRemaining()) {
+                    buffer.clear();
+                }
+                r = client.read(buffer);
+            } while (r != -1);
+            // -------------------------------------------------------------------------- digest/log
+            _Rfc862Utils.logDigest(digest);
         }
     }
 

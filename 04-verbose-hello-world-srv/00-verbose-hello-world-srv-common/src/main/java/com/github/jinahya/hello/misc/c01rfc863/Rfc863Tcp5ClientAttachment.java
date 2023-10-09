@@ -30,6 +30,7 @@ import java.nio.channels.AsynchronousChannelGroup;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.Objects;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
 final class Rfc863Tcp5ClientAttachment extends _Rfc863Attachment.Client {
@@ -57,6 +58,7 @@ final class Rfc863Tcp5ClientAttachment extends _Rfc863Attachment.Client {
      * @see AsynchronousSocketChannel#connect(SocketAddress, Object, CompletionHandler)
      */
     void connect() {
+        assert !isClosed();
         client.connect(
                 _Rfc863Constants.ADDR, // <remote>
                 null,                  // <attachment>
@@ -65,10 +67,14 @@ final class Rfc863Tcp5ClientAttachment extends _Rfc863Attachment.Client {
     }
 
     private void write() {
-        final var buffer = getBufferForWriting();
+        assert !isClosed();
+        if (!buffer.hasRemaining()) {
+            ThreadLocalRandom.current().nextBytes(buffer.array());
+            buffer.clear().limit(Math.min(buffer.limit(), getBytes()));
+        }
         client.write(
                 buffer,                              // <src>
-                _Rfc86_Constants.WRITE_TIMEOUT,      // <timeout
+                _Rfc86_Constants.WRITE_TIMEOUT,      // <timeout>
                 _Rfc86_Constants.WRITE_TIMEOUT_UNIT, // <unit>
                 null,                                // <attachment>
                 written                              // <handler>

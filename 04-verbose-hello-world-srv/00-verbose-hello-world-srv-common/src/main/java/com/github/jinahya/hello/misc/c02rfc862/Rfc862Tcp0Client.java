@@ -39,12 +39,12 @@ class Rfc862Tcp0Client {
                 log.info("(optionally) bound to {}", client.getLocalSocketAddress());
             }
             client.connect(_Rfc862Constants.ADDR, (int) _Rfc86_Constants.CONNECT_TIMEOUT_IN_MILLIS);
-            log.info("connected to {}, through {}", client.getRemoteSocketAddress(),
-                     client.getLocalSocketAddress());
+            _Rfc86_Utils.logConnected(client);
             client.setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_IN_MILLIS);
             final var digest = _Rfc862Utils.newDigest();
             var bytes = _Rfc862Utils.logClientBytes(_Rfc86_Utils.randomBytes());
-            for (int b; bytes > 0; bytes--) {
+            int b;
+            for (; bytes > 0; bytes--) {
                 b = ThreadLocalRandom.current().nextInt(256);
                 client.getOutputStream().write(b);
                 client.getOutputStream().flush();

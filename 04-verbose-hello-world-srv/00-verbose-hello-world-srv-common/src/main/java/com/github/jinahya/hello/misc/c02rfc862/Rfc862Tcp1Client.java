@@ -44,15 +44,15 @@ class Rfc862Tcp1Client {
             final var digest = _Rfc862Utils.newDigest();
             var bytes = _Rfc862Utils.logClientBytes(_Rfc86_Utils.randomBytes());
             final var array = _Rfc86_Utils.newArray();
-            for (int l, r; bytes > 0; ) {
+            int l;
+            while (bytes > 0) {
                 ThreadLocalRandom.current().nextBytes(array);
                 l = Math.min(array.length, bytes);
                 client.getOutputStream().write(array, 0, l);
                 client.getOutputStream().flush();
-                bytes -= l;
                 digest.update(array, 0, l);
-                r = client.getInputStream().readNBytes(array, 0, l);
-                if (r < l) {
+                bytes -= l;
+                if ((client.getInputStream().readNBytes(array, 0, l)) < l) {
                     throw new EOFException("unexpected eof");
                 }
             }

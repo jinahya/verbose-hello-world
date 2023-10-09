@@ -36,30 +36,36 @@ class Rfc862Tcp3Server {
              var server = ServerSocketChannel.open()) {
             server.bind(_Rfc862Constants.ADDR);
             log.info("bound to {}", server.getLocalAddress());
+            // ------------------------------------------------------- SERVER/CONFIGURE/NON-BLOCKING
             server.configureBlocking(false);
+            // --------------------------------------------------------------------- SERVER/REGISTER
             final var serverKey = server.register(selector, SelectionKey.OP_ACCEPT);
+            // ------------------------------------------------------------------------------ SELECT
             while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
                 if (selector.select(_Rfc86_Constants.ACCEPT_TIMEOUT_IN_MILLIS) == 0) {
                     break;
                 }
                 for (var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
                     final var selectedKey = i.next();
+                    // --------------------------------------------------------------- server/accept
                     if (selectedKey.isAcceptable()) {
                         assert selectedKey == serverKey;
-                        assert selectedKey.channel() instanceof ServerSocketChannel;
                         final var channel = ((ServerSocketChannel) selectedKey.channel());
                         assert channel == server;
                         final var client = channel.accept();
-                        assert !channel.isBlocking() && client != null;
+                        assert client != null;
                         _Rfc86_Utils.logAccepted(client);
                         selectedKey.interestOpsAnd(~SelectionKey.OP_ACCEPT);
                         selectedKey.cancel();
                         assert !selectedKey.isValid();
+                        // ------------------------------------------- client/configure/non-blocking
                         client.configureBlocking(false);
+                        // --------------------------------------------------------- client/register
                         final var clientKey = client.register(selector, SelectionKey.OP_READ);
                         clientKey.attach(new Rfc862Tcp3ServerAttachment(clientKey));
                         continue;
                     }
+                    // ----------------------------------------------------------------- client/read
                     if (selectedKey.isReadable()) {
                         final var attachment =
                                 (Rfc862Tcp3ServerAttachment) selectedKey.attachment();
@@ -68,6 +74,7 @@ class Rfc862Tcp3Server {
                         assert r >= -1;
                         assert r != -1 || (selectedKey.interestOps() & SelectionKey.OP_READ) == 0;
                     }
+                    // ---------------------------------------------------------------- client/write
                     if (selectedKey.isWritable()) {
                         final var attachment =
                                 (Rfc862Tcp3ServerAttachment) selectedKey.attachment();
@@ -75,6 +82,7 @@ class Rfc862Tcp3Server {
                         final var w = attachment.write();
                         assert w >= 0;
                         assert selectedKey.isValid() || !selectedKey.channel().isOpen();
+                        assert selectedKey.isValid() || attachment.isClosed();
                     }
                 }
             }

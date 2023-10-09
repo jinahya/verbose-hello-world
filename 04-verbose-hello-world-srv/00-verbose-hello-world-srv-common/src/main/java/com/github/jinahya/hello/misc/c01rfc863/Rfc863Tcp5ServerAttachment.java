@@ -77,10 +77,11 @@ final class Rfc863Tcp5ServerAttachment extends _Rfc863Attachment.Server {
      * @see #accepted
      */
     void accept() {
+        assert !isClosed();
         assert client == null;
         server.accept(
                 null,    // <attachment>
-                accepted // <handler
+                accepted // <handler>
         );
     }
 
@@ -90,9 +91,8 @@ final class Rfc863Tcp5ServerAttachment extends _Rfc863Attachment.Server {
      * @see #read
      */
     private void read() {
-        if (client == null) {
-            throw new IllegalStateException("client is currently null");
-        }
+        assert !isClosed();
+        assert client != null;
         client.read(
                 getBufferForReading(),              // <dst>
                 _Rfc86_Constants.READ_TIMEOUT,      // <timeout>
@@ -112,14 +112,10 @@ final class Rfc863Tcp5ServerAttachment extends _Rfc863Attachment.Server {
     CompletionHandler<AsynchronousSocketChannel, Void> accepted = new CompletionHandler<>() {
         @Override
         public void completed(final AsynchronousSocketChannel result, final Void attachment) {
-            assert result != null;
-            assert attachment == null;
             client = _Rfc86_Utils.logAccepted(result);
             read();
         }
         @Override public void failed(final Throwable exc, final Void attachment) {
-            assert exc != null;
-            assert attachment == null;
             log.error("failed to accept", exc, attachment);
             closeUnchecked();
         }
@@ -131,8 +127,6 @@ final class Rfc863Tcp5ServerAttachment extends _Rfc863Attachment.Server {
     // @formatter:off
     private final CompletionHandler<Integer, Void> read = new CompletionHandler<>() {
         @Override public void completed(final Integer result, final Void attachment) {
-            assert result != null;
-            assert attachment == null;
             if (result == -1) {
                 closeUnchecked();
                 return;
@@ -142,8 +136,6 @@ final class Rfc863Tcp5ServerAttachment extends _Rfc863Attachment.Server {
             read();
         }
         @Override public void failed(final Throwable exc, final Void attachment) {
-            assert exc != null;
-            assert attachment == null;
             log.error("failed to read", exc);
             closeUnchecked();
         }

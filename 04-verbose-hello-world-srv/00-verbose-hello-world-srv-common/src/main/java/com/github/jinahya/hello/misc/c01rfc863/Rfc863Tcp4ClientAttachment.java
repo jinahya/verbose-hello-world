@@ -48,6 +48,7 @@ final class Rfc863Tcp4ClientAttachment extends _Rfc863Attachment.Client {
      * @see Rfc863Tcp4ServerAttachment#read()
      */
     int write() throws Exception {
+        assert !isClosed();
         final var buffer = getBufferForWriting();
         final var w = client.write(buffer).get(_Rfc86_Constants.WRITE_TIMEOUT,
                                                _Rfc86_Constants.WRITE_TIMEOUT_UNIT);

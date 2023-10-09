@@ -40,15 +40,14 @@ class Rfc863Tcp3Server {
             // ------------------------------------------------------------------ CONFIGURE/REGISTER
             server.configureBlocking(false);
             final var serverKey = server.register(selector, SelectionKey.OP_ACCEPT);
-            // ------------------------------------------------------------------------------ SELECT
+            // ----------------------------------------------------------------------------- RECEIVE
             while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
                 if (selector.select(_Rfc86_Constants.ACCEPT_TIMEOUT_IN_MILLIS) == 0) {
                     break;
                 }
-                // -------------------------------------------------------------------------- HANDLE
                 for (final var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
                     final var selectedKey = i.next();
-                    // ---------------------------------------------------------------------- ACCEPT
+                    // ---------------------------------------------------------------------- accept
                     if (selectedKey.isAcceptable()) {
                         assert selectedKey == serverKey;
                         final var channel = (ServerSocketChannel) selectedKey.channel();
@@ -62,7 +61,7 @@ class Rfc863Tcp3Server {
                         clientKey.attach(new Rfc863Tcp3ServerAttachment(clientKey));
                         continue; // why?
                     }
-                    // --------------------------------------------------------------------- RECEIVE
+                    // ------------------------------------------------------------------------ read
                     if (selectedKey.isReadable()) {
                         final var channel = (SocketChannel) selectedKey.channel();
                         assert channel != null;

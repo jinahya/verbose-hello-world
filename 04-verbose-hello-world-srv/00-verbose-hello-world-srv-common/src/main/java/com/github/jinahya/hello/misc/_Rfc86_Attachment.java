@@ -30,6 +30,7 @@ import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
@@ -58,6 +59,11 @@ public abstract class _Rfc86_Attachment implements Closeable {
                                 Function<? super byte[], ? extends CharSequence> printer) {
         super();
         this.bytes = bytes;
+        buffer = _Rfc86_Utils.newBuffer();
+        assert buffer.hasArray();
+        slice = buffer.slice();
+        assert slice.hasArray();
+        assert slice.array() == buffer.array();
         try {
             digest = MessageDigest.getInstance(algorithm);
         } catch (final NoSuchAlgorithmException nsae) {
@@ -76,11 +82,8 @@ public abstract class _Rfc86_Attachment implements Closeable {
      */
     @Override
     public void close() throws IOException {
-        synchronized (this) {
-            if (closed) {
-                throw new IllegalStateException("already closed");
-            }
-            closed = true;
+        if (closed.getAndSet(true)) {
+            throw new IllegalStateException("already closed");
         }
     }
 
@@ -106,7 +109,7 @@ public abstract class _Rfc86_Attachment implements Closeable {
      * @return {@code true} if this attachment is closed; {@code false} otherwise.
      */
     public final boolean isClosed() {
-        return closed;
+        return closed.get();
     }
 
     // --------------------------------------------------------------------------------------- bytes
@@ -213,13 +216,13 @@ public abstract class _Rfc86_Attachment implements Closeable {
     }
 
     // ---------------------------------------------------------------------------------------------
-    private volatile boolean closed = false;
+    private final AtomicBoolean closed = new AtomicBoolean();
 
     private int bytes; // bytes to send or received
 
-    protected final ByteBuffer buffer = _Rfc86_Utils.newBuffer();
+    protected final ByteBuffer buffer;
 
-    private final ByteBuffer slice = buffer.slice();
+    private final ByteBuffer slice;
 
     private final MessageDigest digest;
 

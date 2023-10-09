@@ -51,23 +51,34 @@ class Rfc863Tcp2Server {
             final var digest = _Rfc863Utils.newDigest();
             int bytes = 0;
             final var buffer = _Rfc86_Utils.newBuffer();
-            for (int r; ; ) {
+            assert buffer.hasArray();
+            final var slice = buffer.slice();
+            assert slice.hasArray();
+            assert slice.array() == buffer.array();
+            for (int r; ; bytes += r) {
+                // ------------------------------------------------------------------------- prepare
                 if (!buffer.hasRemaining()) {
                     buffer.clear();
                 }
+                assert buffer.hasRemaining();
+                // ---------------------------------------------------------------------------- read
                 if (ThreadLocalRandom.current().nextBoolean()) {
                     r = client.socket().getInputStream().read(
-                            buffer.array(),
-                            buffer.arrayOffset() + buffer.position(),
-                            buffer.remaining()
+                            buffer.array(),                           // <b>
+                            buffer.arrayOffset() + buffer.position(), // <off>
+                            buffer.remaining()                        // <len>
                     );
+                    if (r != -1) {
+                        buffer.position(buffer.position() + r);
+                    }
                 } else {
                     r = client.read(buffer);
                 }
                 if (r == -1) {
                     break;
                 }
-                bytes += r;
+                // -------------------------------------------------------------------------- digest
+                digest.update(slice.position(buffer.position() - r).limit(buffer.position()));
             }
             _Rfc863Utils.logServerBytes(bytes);
             _Rfc863Utils.logDigest(digest);

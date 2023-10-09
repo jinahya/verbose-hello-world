@@ -64,13 +64,19 @@ class Rfc863Tcp2Client {
             // -------------------------------------------------------------------------------- SEND
             final var digest = _Rfc863Utils.newDigest();
             final var buffer = _Rfc86_Utils.newBuffer();
-            for (var bytes = _Rfc863Utils.logClientBytes(_Rfc86_Utils.randomBytes()); bytes > 0; ) {
+            assert buffer.hasArray();
+            final var slice = buffer.slice();
+            assert slice.hasArray();
+            assert slice.array() == buffer.array();
+            var bytes = _Rfc863Utils.logClientBytes(_Rfc86_Utils.randomBytes());
+            for (int w; bytes > 0; bytes -= w) {
+                // ------------------------------------------------------------------------- prepare
                 if (!buffer.hasRemaining()) {
                     ThreadLocalRandom.current().nextBytes(buffer.array());
                     buffer.clear().limit(Math.min(buffer.limit(), bytes));
                 }
                 assert buffer.hasRemaining();
-                int w;
+                // --------------------------------------------------------------------------- write
                 if (ThreadLocalRandom.current().nextBoolean()) {
                     w = buffer.remaining();
                     client.socket().getOutputStream().write(
@@ -82,9 +88,10 @@ class Rfc863Tcp2Client {
                 } else {
                     w = client.write(buffer);
                 }
-                assert w > 0;
-                assert !buffer.hasRemaining();
-                bytes -= w;
+                assert w > 0; // why?
+                assert !buffer.hasRemaining(); // why?
+                // -------------------------------------------------------------------------- digest
+                digest.update(slice.position(buffer.position() - w).limit(buffer.position()));
             }
             _Rfc863Utils.logDigest(digest);
         }

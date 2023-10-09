@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.Objects;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * An attachment class used by {@link Rfc863Tcp3Client}.
@@ -38,16 +39,22 @@ final class Rfc863Tcp3ClientAttachment extends _Rfc863Attachment.Client {
     }
 
     int write() throws IOException {
+        assert !isClosed();
         assert clientKey.isValid();
         assert clientKey.isWritable();
         final var channel = (SocketChannel) clientKey.channel();
-        final var buffer = getBufferForWriting();
+        assert channel != null;
+        assert !channel.isBlocking();
+        if (!buffer.hasRemaining()) {
+            ThreadLocalRandom.current().nextBytes(buffer.array());
+            buffer.clear().limit(Math.min(buffer.limit(), getBytes()));
+        }
         final int w = channel.write(buffer);
         assert w >= 0;
         if (decreaseBytes(updateDigest(w)) == 0) { // no more bytes to send
-            close();
             clientKey.cancel();
             assert !clientKey.isValid();
+            close();
         }
         return w;
     }

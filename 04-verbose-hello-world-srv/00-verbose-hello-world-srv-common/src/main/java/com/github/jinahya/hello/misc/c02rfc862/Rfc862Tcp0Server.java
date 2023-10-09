@@ -21,6 +21,7 @@ package com.github.jinahya.hello.misc.c02rfc862;
  */
 
 import com.github.jinahya.hello.misc._Rfc86_Constants;
+import com.github.jinahya.hello.misc._Rfc86_Utils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.ServerSocket;
@@ -34,14 +35,17 @@ class Rfc862Tcp0Server {
             log.info("bound to {}", server.getLocalSocketAddress());
             server.setSoTimeout((int) _Rfc86_Constants.ACCEPT_TIMEOUT_IN_MILLIS);
             try (var client = server.accept()) {
-                log.info("accepted from {}, through {}", client.getRemoteSocketAddress(),
-                         client.getLocalSocketAddress());
+                _Rfc86_Utils.logAccepted(client);
                 client.setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_IN_MILLIS);
                 final var digest = _Rfc862Utils.newDigest();
                 var bytes = 0;
-                for (int b; (b = client.getInputStream().read()) != -1; bytes++) {
+                int b;
+                // ---------------------------------------------------------------------------- read
+                for (; (b = client.getInputStream().read()) != -1; bytes++) {
+                    // ----------------------------------------------------------------------- write
                     client.getOutputStream().write(b);
                     client.getOutputStream().flush();
+                    // ---------------------------------------------------------------------- digest
                     digest.update((byte) b);
                 }
                 _Rfc862Utils.logServerBytes(bytes);

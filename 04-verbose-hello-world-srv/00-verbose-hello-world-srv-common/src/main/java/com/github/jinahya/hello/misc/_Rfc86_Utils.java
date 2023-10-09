@@ -150,13 +150,15 @@ public final class _Rfc86_Utils {
 
     public static <T extends Socket> T logConnected(final T client) {
         Objects.requireNonNull(client, "client is null");
-        log.info(LOG_FORMAT_CONNECTED, client.getRemoteSocketAddress(), client.getLocalAddress());
+        log.info(LOG_FORMAT_CONNECTED, client.getRemoteSocketAddress(),
+                 client.getLocalSocketAddress());
         return client;
     }
 
     public static <T extends Socket> T logAccepted(final T client) {
         Objects.requireNonNull(client, "client is null");
-        log.info(LOG_FORMAT_ACCEPTED, client.getRemoteSocketAddress(), client.getLocalAddress());
+        log.info(LOG_FORMAT_ACCEPTED, client.getRemoteSocketAddress(),
+                 client.getLocalSocketAddress());
         return client;
     }
 
