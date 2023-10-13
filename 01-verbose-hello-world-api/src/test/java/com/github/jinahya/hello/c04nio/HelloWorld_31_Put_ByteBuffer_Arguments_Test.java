@@ -28,12 +28,10 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
+import java.util.concurrent.ThreadLocalRandom;
 
-import static com.github.jinahya.hello.HelloWorld.BYTES;
-import static java.util.concurrent.ThreadLocalRandom.current;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * A class for testing {@link HelloWorld#put(ByteBuffer) put(buffer)} method regarding arguments
@@ -72,13 +70,14 @@ class HelloWorld_31_Put_ByteBuffer_Arguments_Test extends _HelloWorldTest {
     @Test
     void _ThrowBufferOverflowException_BufferRemainingIsLessThan12() {
         // ----------------------------------------------------------------------------------- GIVEN
-        var service = serviceInstance();
-        var buffer = mock(ByteBuffer.class);
-        when(buffer.remaining()).thenReturn(current().nextInt(BYTES));
+        final var service = serviceInstance();
+        final ByteBuffer buffer;
+        {
+            final var capacity = ThreadLocalRandom.current().nextInt(HelloWorld.BYTES);
+            buffer = ByteBuffer.allocate(capacity);
+        }
         // ------------------------------------------------------------------------------- WHEN/THEN
-        assertThrows(
-                BufferOverflowException.class,
-                () -> service.put(buffer)
-        );
+        assertThatCode(() -> service.put(buffer))
+                .isInstanceOf(BufferOverflowException.class);
     }
 }
