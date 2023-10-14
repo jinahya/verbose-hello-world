@@ -39,7 +39,6 @@ class JavaBeansUtilsTest {
                     null,
                     networkInterface,
                     p -> i -> {
-                        log.debug("{} / {}", p, i);
                         return (JavaBeansUtils.PropertyInfoHolder) () -> i;
                     }
             );

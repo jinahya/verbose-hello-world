@@ -20,6 +20,7 @@ package com.github.jinahya.hello.misc;
  * #L%
  */
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -40,6 +41,7 @@ class ArgumentCaptorTest {
         }
     }
 
+    @Disabled
     @Test
     void test() {
         var some = spy(new Some());

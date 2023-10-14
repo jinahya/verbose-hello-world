@@ -38,9 +38,9 @@ class Rfc863Udp2Server {
             log.info("bound to {}", server.getLocalAddress());
             assert server.isBlocking();
             // -------------------------------------------------------------------------------------
-            final var buffer = ByteBuffer.allocate(
-                    server.getOption(StandardSocketOptions.SO_RCVBUF)
-            );
+            final var soRcvBug = server.getOption(StandardSocketOptions.SO_RCVBUF);
+            final var buffer = ByteBuffer.allocate(soRcvBug);
+            assert buffer.hasArray();
             // -------------------------------------------------------------------------------------
             if (ThreadLocalRandom.current().nextBoolean()) {
                 final var packet = new DatagramPacket(
@@ -51,7 +51,6 @@ class Rfc863Udp2Server {
                 server.socket().receive(packet);
                 log.debug("{} byte(s) received from {}", packet.getLength(),
                           packet.getSocketAddress());
-                assert packet.getLength() == buffer.remaining();
                 buffer.position(buffer.position() + packet.getLength());
             } else {
                 final var address = server.receive(buffer);
