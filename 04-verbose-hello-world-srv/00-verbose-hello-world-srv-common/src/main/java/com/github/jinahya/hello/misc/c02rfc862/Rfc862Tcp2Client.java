@@ -59,8 +59,8 @@ class Rfc862Tcp2Client {
             assert slice.hasArray();
             assert slice.array() == buffer.array();
             var bytes = _Rfc862Utils.logClientBytes(_Rfc86_Utils.randomBytes());
-            int w; // number of written bytes
-            int r; // number of read bytes
+            int w; // number of bytes written
+            int r; // number of bytes read
             for (; bytes > 0; bytes -= w) {
                 // --------------------------------------------------------------------------- write
                 if (!buffer.hasRemaining()) {
@@ -83,12 +83,11 @@ class Rfc862Tcp2Client {
                 assert w > 0; // why?
                 assert !buffer.hasRemaining(); // why?
                 // ------------------------------------------------------------------- digest/update
-                digest.update(
-                        slice.position(buffer.position() - w)
-                                .limit(buffer.position())
-                );
+                digest.update(slice.position(buffer.position() - w).limit(buffer.position()));
                 // ---------------------------------------------------------------------------- read
+                final var limit = buffer.limit();
                 buffer.flip(); // limit -> position, position -> zero
+                assert buffer.remaining() == w;
                 if (ThreadLocalRandom.current().nextBoolean()) {
                     r = client.socket().getInputStream().read(
                             buffer.array(),
@@ -105,17 +104,22 @@ class Rfc862Tcp2Client {
                     throw new EOFException("unexpected eof");
                 }
                 assert r > 0; // why?
-                buffer.position(buffer.limit()).limit(buffer.capacity());
+                buffer.position(buffer.limit()).limit(limit);
             }
             // --------------------------------------------------------------------- shutdown output
             client.shutdownOutput();
             // ----------------------------------------------------------------------- read/remained
-            do {
-                if (!buffer.hasRemaining()) {
-                    buffer.clear();
-                }
+            buffer.clear();
+            while (true) {
                 r = client.read(buffer);
-            } while (r != -1);
+                log.debug("r: {}", r);
+                if (r == -1) {
+                    break;
+                }
+                assert r >= 0;
+                buffer.clear();
+            }
+            client.shutdownInput();
             // -------------------------------------------------------------------------- digest/log
             _Rfc862Utils.logDigest(digest);
         }

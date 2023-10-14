@@ -66,8 +66,7 @@ final class HelloWorldLoggers {
      */
     static System.Logger logger(final Class<?> clazz) {
         Objects.requireNonNull(clazz, "clazz is null");
-        return LOGGERS.computeIfAbsent(clazz,
-                                       k -> System.getLogger(k.getName()));
+        return LOGGERS.computeIfAbsent(clazz, k -> System.getLogger(k.getName()));
     }
 
     /**

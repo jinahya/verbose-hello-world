@@ -39,9 +39,13 @@ class Rfc862Tcp0Server {
                 client.setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_IN_MILLIS);
                 final var digest = _Rfc862Utils.newDigest();
                 var bytes = 0;
-                int b;
-                // ---------------------------------------------------------------------------- read
-                for (; (b = client.getInputStream().read()) != -1; bytes++) {
+                for (int b; true; ) {
+                    // ------------------------------------------------------------------------ read
+                    b = client.getInputStream().read();
+                    if (b == -1) {
+                        break;
+                    }
+                    bytes++;
                     // ----------------------------------------------------------------------- write
                     client.getOutputStream().write(b);
                     client.getOutputStream().flush();
