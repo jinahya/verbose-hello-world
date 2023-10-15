@@ -34,25 +34,35 @@ class Rfc862Tcp1Client {
 
     public static void main(final String... args) throws Exception {
         try (var client = new Socket()) {
+            // -------------------------------------------------------------------------------- BIND
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc86_Constants.HOST, 0));
                 log.info("(optionally) bound to {}", client.getLocalSocketAddress());
             }
+            // ----------------------------------------------------------------------------- CONNECT
             client.connect(_Rfc862Constants.ADDR, (int) _Rfc86_Constants.CONNECT_TIMEOUT_IN_MILLIS);
             _Rfc86_Utils.logConnected(client);
+            // ------------------------------------------------------------------------ SEND/RECEIVE
             client.setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_IN_MILLIS);
             final var digest = _Rfc862Utils.newDigest();
             var bytes = _Rfc862Utils.logClientBytes(_Rfc86_Utils.randomBytes());
             final var array = _Rfc86_Utils.newArray();
-            int l;
-            while (bytes > 0) {
+            int l; // number of bytes to write
+            int r; // number of bytes read
+            for (; bytes > 0; bytes -= l) {
+                // --------------------------------------------------------------------------- write
                 ThreadLocalRandom.current().nextBytes(array);
                 l = Math.min(array.length, bytes);
-                client.getOutputStream().write(array, 0, l);
+                client.getOutputStream().write(
+                        array, // <b>
+                        0,     // <off>
+                        l      // <len>
+                );
                 client.getOutputStream().flush();
+                // -------------------------------------------------------------------------- digest
                 digest.update(array, 0, l);
-                bytes -= l;
-                if ((client.getInputStream().readNBytes(array, 0, l)) < l) {
+                // ---------------------------------------------------------------------------- read
+                if (client.getInputStream().readNBytes(array, 0, l) < l) {
                     throw new EOFException("unexpected eof");
                 }
             }

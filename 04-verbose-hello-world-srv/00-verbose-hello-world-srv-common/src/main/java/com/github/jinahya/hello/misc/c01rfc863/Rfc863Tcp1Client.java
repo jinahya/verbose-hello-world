@@ -22,7 +22,6 @@ package com.github.jinahya.hello.misc.c01rfc863;
 
 import com.github.jinahya.hello.misc._Rfc86_Constants;
 import com.github.jinahya.hello.misc._Rfc86_Utils;
-import com.github.jinahya.hello.util.LoggingUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
@@ -33,27 +32,33 @@ import java.util.concurrent.ThreadLocalRandom;
 class Rfc863Tcp1Client {
 
     public static void main(final String... args) throws Exception {
-        if (args.length > 0) {
-            LoggingUtils.setLevelForAllLoggers(args[0]);
-        }
         try (var client = new Socket()) {
+            // -------------------------------------------------------------------------------- BIND
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc86_Constants.HOST, 0));
                 log.info("(optionally) bound to {}", client.getLocalSocketAddress());
             }
+            // ----------------------------------------------------------------------------- CONNECT
             client.connect(_Rfc863Constants.ADDR, (int) _Rfc86_Constants.CONNECT_TIMEOUT_IN_MILLIS);
             _Rfc86_Utils.logConnected(client);
+            // -------------------------------------------------------------------------------- SEND
             final var digest = _Rfc863Utils.newDigest();
-            var bytes = _Rfc863Utils.logClientBytes(_Rfc86_Utils.randomBytes());
+            var bytes = _Rfc863Utils.logClientBytes(_Rfc86_Utils.randomBytes()); // bytes to send
             final var array = _Rfc86_Utils.newArray();
-            while (bytes > 0) {
+            int len;
+            for (; bytes > 0; bytes -= len) {
+                // --------------------------------------------------------------------------- write
                 ThreadLocalRandom.current().nextBytes(array);
-                final var len = Math.min(array.length, bytes);
-                client.getOutputStream().write(array, 0, len);
+                len = Math.min(array.length, bytes);
+                client.getOutputStream().write(
+                        array, // <b>
+                        0,     // <off>
+                        len    // <len>
+                );
+                client.getOutputStream().flush(); // TODO: move to out of while loop
+                // -------------------------------------------------------------------------- digest
                 digest.update(array, 0, len);
-                bytes -= len;
             }
-            client.getOutputStream().flush();
             _Rfc863Utils.logDigest(digest);
         }
     }

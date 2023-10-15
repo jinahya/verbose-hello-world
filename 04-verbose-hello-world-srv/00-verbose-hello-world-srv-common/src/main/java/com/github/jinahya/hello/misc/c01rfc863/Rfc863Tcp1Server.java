@@ -31,16 +31,27 @@ class Rfc863Tcp1Server {
 
     public static void main(final String... args) throws Exception {
         try (var server = new ServerSocket()) {
+            // -------------------------------------------------------------------------------- BIND
             server.bind(_Rfc863Constants.ADDR, 1);
             log.info("bound to {}", server.getLocalSocketAddress());
+            // ------------------------------------------------------------------------------ ACCEPT
             server.setSoTimeout((int) _Rfc86_Constants.ACCEPT_TIMEOUT_IN_MILLIS);
             try (var client = server.accept()) {
                 _Rfc86_Utils.logAccepted(client);
+                // ------------------------------------------------------------------------- RECEIVE
                 client.setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_IN_MILLIS);
                 final var digest = _Rfc863Utils.newDigest();
-                var bytes = 0L;
+                var bytes = 0L; // number of bytes read so far
                 final var array = _Rfc86_Utils.newArray();
-                for (int r; (r = client.getInputStream().read(array)) != -1; bytes += r) {
+                assert array.length > 0;
+                int r; // number of bytes read
+                for (; ; bytes += r) {
+                    // ------------------------------------------------------------------------ read
+                    r = client.getInputStream().read(array);
+                    if (r == -1) {
+                        break;
+                    }
+                    // ---------------------------------------------------------------------- digest
                     digest.update(array, 0, r);
                 }
                 _Rfc863Utils.logServerBytes(bytes);

@@ -31,17 +31,27 @@ class Rfc863Tcp0Server {
 
     public static void main(final String... args) throws Exception {
         try (var server = new ServerSocket()) {
+            // -------------------------------------------------------------------------------- BIND
             server.bind(_Rfc863Constants.ADDR, 1);
             log.info("bound to {}", server.getLocalSocketAddress());
+            // ------------------------------------------------------------------------------ ACCEPT
             server.setSoTimeout((int) _Rfc86_Constants.ACCEPT_TIMEOUT_IN_MILLIS);
             try (var client = server.accept()) {
                 _Rfc86_Utils.logAccepted(client);
                 client.setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_IN_MILLIS);
                 final var digest = _Rfc863Utils.newDigest();
-                var bytes = 0L;
-                for (int b; (b = client.getInputStream().read()) != -1; bytes++) {
+                var bytes = 0L; // number of bytes read so far
+                int b; // byte to read
+                while (true) {
+                    // ------------------------------------------------------------------------ read
+                    b = client.getInputStream().read();
+                    if (b == -1) {
+                        break;
+                    }
+                    bytes++;
+                    // ---------------------------------------------------------------------- digest
                     digest.update((byte) b);
-                }
+                } // end-of-while-loop
                 _Rfc863Utils.logServerBytes(bytes);
                 _Rfc863Utils.logDigest(digest);
             }

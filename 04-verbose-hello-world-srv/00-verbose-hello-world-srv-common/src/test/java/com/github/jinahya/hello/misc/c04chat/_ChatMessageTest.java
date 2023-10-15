@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.misc.c03chat;
+package com.github.jinahya.hello.misc.c04chat;
 
 /*-
  * #%L
@@ -20,8 +20,8 @@ package com.github.jinahya.hello.misc.c03chat;
  * #L%
  */
 
-import com.github.jinahya.hello.misc.c03chat._ChatMessage.OfArray;
-import com.github.jinahya.hello.misc.c03chat._ChatMessage.OfBuffer;
+import com.github.jinahya.hello.misc.c04chat._ChatMessage.OfArray;
+import com.github.jinahya.hello.misc.c04chat._ChatMessage.OfBuffer;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

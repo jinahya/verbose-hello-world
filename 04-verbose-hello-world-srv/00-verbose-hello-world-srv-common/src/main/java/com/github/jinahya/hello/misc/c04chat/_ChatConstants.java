@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.misc.c03chat;
+package com.github.jinahya.hello.misc.c04chat;
 
 /*-
  * #%L
@@ -22,17 +22,18 @@ package com.github.jinahya.hello.misc.c03chat;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Objects;
+import java.util.Optional;
 
 @Slf4j
-class _ChatUtils {
+final class _ChatConstants {
 
-    static String prependUsername(String message) {
-        Objects.requireNonNull(message, "message is null");
-        return '[' + _ChatConstants.USER_NAME + "] " + message;
-    }
+    static final int PORT = 7 + 40000;
 
-    private _ChatUtils() {
-        throw new IllegalArgumentException("");
+    static final String USER_NAME =
+            Optional.ofNullable(System.getProperty("user.name"))
+                    .orElse("unknown");
+
+    private _ChatConstants() {
+        throw new AssertionError("instantiation is not allowed");
     }
 }

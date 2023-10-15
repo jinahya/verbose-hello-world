@@ -39,8 +39,8 @@ final class _Rfc862Utils {
         return bytes;
     }
 
-    static int logServerBytes(final int bytes) {
-        if (bytes < 0) {
+    static long logServerBytes(final long bytes) {
+        if (bytes < 0L) {
             throw new IllegalArgumentException("bytes(" + bytes + ") is negative");
         }
         log.info("{} byte(s) received (and echoed-back)", bytes);

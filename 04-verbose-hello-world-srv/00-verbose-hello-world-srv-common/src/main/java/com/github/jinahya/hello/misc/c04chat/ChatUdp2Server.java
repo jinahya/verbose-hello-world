@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.misc.c03chat;
+package com.github.jinahya.hello.misc.c04chat;
 
 /*-
  * #%L

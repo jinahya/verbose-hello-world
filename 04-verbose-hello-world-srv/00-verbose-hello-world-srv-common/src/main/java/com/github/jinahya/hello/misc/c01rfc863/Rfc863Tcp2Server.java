@@ -34,54 +34,61 @@ class Rfc863Tcp2Server {
 
     public static void main(final String... args) throws Exception {
         try (var server = ServerSocketChannel.open()) {
+            assert server.isBlocking();
+            // -------------------------------------------------------------------------------- BIND
             server.bind(_Rfc863Constants.ADDR, 1);
             log.info("bound to {}", server.getLocalAddress());
-            assert server.isBlocking();
             // ------------------------------------------------------------------------------ ACCEPT
             final SocketChannel client;
             server.socket().setSoTimeout((int) _Rfc86_Constants.ACCEPT_TIMEOUT_IN_MILLIS);
             if (ThreadLocalRandom.current().nextBoolean()) {
-                client = server.socket().accept().getChannel();
+                final var socket = server.socket().accept();
+                assert socket != null;
+                client = socket.getChannel();
             } else {
                 client = server.accept();
             }
             assert client != null;
+            _Rfc86_Utils.logAccepted(client);
+            assert client.isBlocking();
             // ----------------------------------------------------------------------------- RECEIVE
-            client.socket().setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_IN_MILLIS);
-            final var digest = _Rfc863Utils.newDigest();
-            int bytes = 0;
-            final var buffer = _Rfc86_Utils.newBuffer();
-            assert buffer.hasArray();
-            final var slice = buffer.slice();
-            assert slice.hasArray();
-            assert slice.array() == buffer.array();
-            for (int r; ; bytes += r) {
-                // ------------------------------------------------------------------------- prepare
-                if (!buffer.hasRemaining()) {
-                    buffer.clear();
-                }
-                assert buffer.hasRemaining();
-                // ---------------------------------------------------------------------------- read
-                if (ThreadLocalRandom.current().nextBoolean()) {
-                    r = client.socket().getInputStream().read(
-                            buffer.array(),                           // <b>
-                            buffer.arrayOffset() + buffer.position(), // <off>
-                            buffer.remaining()                        // <len>
-                    );
-                    if (r != -1) {
-                        buffer.position(buffer.position() + r);
+            try (client) {
+                client.socket().setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_IN_MILLIS);
+                final var digest = _Rfc863Utils.newDigest();
+                int bytes = 0;
+                final var buffer = _Rfc86_Utils.newBuffer();
+                assert buffer.hasArray();
+                final var slice = buffer.slice();
+                assert slice.hasArray();
+                assert slice.array() == buffer.array();
+                for (int r; ; bytes += r) {
+                    // ------------------------------------------------------------------------- prepare
+                    if (!buffer.hasRemaining()) {
+                        buffer.clear();
                     }
-                } else {
-                    r = client.read(buffer);
+                    assert buffer.hasRemaining();
+                    // ---------------------------------------------------------------------------- read
+                    if (ThreadLocalRandom.current().nextBoolean()) {
+                        r = client.socket().getInputStream().read(
+                                buffer.array(),                           // <b>
+                                buffer.arrayOffset() + buffer.position(), // <off>
+                                buffer.remaining()                        // <len>
+                        );
+                        if (r != -1) {
+                            buffer.position(buffer.position() + r);
+                        }
+                    } else {
+                        r = client.read(buffer);
+                    }
+                    if (r == -1) {
+                        break;
+                    }
+                    // -------------------------------------------------------------------------- digest
+                    digest.update(slice.position(buffer.position() - r).limit(buffer.position()));
                 }
-                if (r == -1) {
-                    break;
-                }
-                // -------------------------------------------------------------------------- digest
-                digest.update(slice.position(buffer.position() - r).limit(buffer.position()));
+                _Rfc863Utils.logServerBytes(bytes);
+                _Rfc863Utils.logDigest(digest);
             }
-            _Rfc863Utils.logServerBytes(bytes);
-            _Rfc863Utils.logDigest(digest);
         }
     }
 

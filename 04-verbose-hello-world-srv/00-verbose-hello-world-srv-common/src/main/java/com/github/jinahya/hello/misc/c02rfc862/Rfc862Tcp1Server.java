@@ -24,6 +24,7 @@ import com.github.jinahya.hello.misc._Rfc86_Constants;
 import com.github.jinahya.hello.misc._Rfc86_Utils;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.xml.validation.SchemaFactoryLoader;
 import java.net.ServerSocket;
 
 @Slf4j
@@ -31,19 +32,30 @@ class Rfc862Tcp1Server {
 
     public static void main(final String... args) throws Exception {
         try (var server = new ServerSocket()) {
+            // -------------------------------------------------------------------------------- BIND
             server.bind(_Rfc862Constants.ADDR, 1);
             log.info("bound to {}", server.getLocalSocketAddress());
+            // ------------------------------------------------------------------------------ ACCEPT
             server.setSoTimeout((int) _Rfc86_Constants.ACCEPT_TIMEOUT_IN_MILLIS);
             try (var client = server.accept()) {
                 _Rfc86_Utils.logAccepted(client);
+                // -------------------------------------------------------------------- RECEIVE/SEND
                 client.setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_IN_MILLIS);
                 final var digest = _Rfc862Utils.newDigest();
-                var bytes = 0;
+                var bytes = 0; // number of bytes read/written so far
                 final var array = _Rfc86_Utils.newArray();
-                for (int r; (r = client.getInputStream().read(array)) != -1; bytes += r) {
-                    assert r > 0; // why?
+                assert array.length > 0;
+                int r; // number of bytes read
+                for (; ; bytes += r) {
+                    // ------------------------------------------------------------------------ read
+                    r = client.getInputStream().read(array);
+                    if (r == -1) {
+                        break;
+                    }
+                    // ----------------------------------------------------------------------- write
                     client.getOutputStream().write(array, 0, r);
                     client.getOutputStream().flush();
+                    // ---------------------------------------------------------------------- digest
                     digest.update(array, 0, r);
                 }
                 _Rfc862Utils.logServerBytes(bytes);

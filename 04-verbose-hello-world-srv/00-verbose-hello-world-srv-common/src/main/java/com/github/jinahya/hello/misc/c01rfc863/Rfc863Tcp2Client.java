@@ -23,44 +23,37 @@ package com.github.jinahya.hello.misc.c01rfc863;
 import com.github.jinahya.hello.misc._Rfc86_Constants;
 import com.github.jinahya.hello.misc._Rfc86_Utils;
 import com.github.jinahya.hello.util.ExcludeFromCoverage_PrivateConstructor_Obviously;
-import com.github.jinahya.hello.util.LoggingUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.ThreadLocalRandom;
 
-/**
- * .
- *
- * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see Rfc863Tcp2Server
- */
 @Slf4j
 class Rfc863Tcp2Client {
 
     public static void main(final String... args) throws Exception {
-        if (args.length > 0) {
-            LoggingUtils.setLevelForAllLoggers(args[0]);
-        }
         try (var client = SocketChannel.open()) {
+            assert client.isBlocking();
+            // -------------------------------------------------------------------------------- BIND
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc86_Constants.HOST, 0));
                 log.info("(optionally) bound to {}", client.getLocalAddress());
             }
-            assert client.isBlocking();
             // ----------------------------------------------------------------------------- CONNECT
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.socket().connect(
-                        _Rfc863Constants.ADDR,
-                        (int) _Rfc86_Constants.CONNECT_TIMEOUT_IN_MILLIS
+                        _Rfc863Constants.ADDR,                           // <endpoint>
+                        (int) _Rfc86_Constants.CONNECT_TIMEOUT_IN_MILLIS // <timeout>
                 );
                 _Rfc86_Utils.logConnected(client.socket());
             } else {
                 final var connected = client.connect(_Rfc863Constants.ADDR);
-                assert !client.isBlocking() || connected;
+                assert connected || !client.isBlocking();
                 _Rfc86_Utils.logConnected(client);
             }
+            assert client.isConnected();
+            assert client.socket().isConnected();
             // -------------------------------------------------------------------------------- SEND
             final var digest = _Rfc863Utils.newDigest();
             final var buffer = _Rfc86_Utils.newBuffer();
@@ -69,29 +62,34 @@ class Rfc863Tcp2Client {
             assert slice.hasArray();
             assert slice.array() == buffer.array();
             var bytes = _Rfc863Utils.logClientBytes(_Rfc86_Utils.randomBytes());
-            for (int w; bytes > 0; bytes -= w) {
-                // ------------------------------------------------------------------------- prepare
+            int w; // number of bytes written
+            while (bytes > 0) {
+                // --------------------------------------------------------------------------- write
                 if (!buffer.hasRemaining()) {
                     ThreadLocalRandom.current().nextBytes(buffer.array());
                     buffer.clear().limit(Math.min(buffer.limit(), bytes));
                 }
                 assert buffer.hasRemaining();
-                // --------------------------------------------------------------------------- write
                 if (ThreadLocalRandom.current().nextBoolean()) {
                     w = buffer.remaining();
                     client.socket().getOutputStream().write(
-                            buffer.array(),
-                            buffer.arrayOffset() + buffer.position(),
-                            buffer.remaining()
+                            buffer.array(),                           // <b>
+                            buffer.arrayOffset() + buffer.position(), // <off>
+                            buffer.remaining()                        // <len>
                     );
+                    client.socket().getOutputStream().flush();
                     buffer.position(buffer.limit());
                 } else {
                     w = client.write(buffer);
                 }
                 assert w > 0; // why?
                 assert !buffer.hasRemaining(); // why?
-                // -------------------------------------------------------------------------- digest
-                digest.update(slice.position(buffer.position() - w).limit(buffer.position()));
+                bytes -= w;
+                // ------------------------------------------------------------------- update digest
+                digest.update(
+                        slice.position(buffer.position() - w)
+                                .limit(buffer.position())
+                );
             }
             _Rfc863Utils.logDigest(digest);
         }

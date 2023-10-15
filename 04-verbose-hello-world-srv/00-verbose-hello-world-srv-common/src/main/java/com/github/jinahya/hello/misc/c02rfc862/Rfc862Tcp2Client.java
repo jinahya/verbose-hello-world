@@ -20,8 +20,11 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
+import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello.misc._Rfc86_Constants;
 import com.github.jinahya.hello.misc._Rfc86_Utils;
+import com.github.jinahya.hello.util.ExcludeFromCoverage_PrivateConstructor_Obviously;
+import com.github.jinahya.hello.util.JavaNioUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.EOFException;
@@ -34,19 +37,22 @@ class Rfc862Tcp2Client {
 
     public static void main(final String... args) throws Exception {
         try (var client = SocketChannel.open()) {
+            assert client.isBlocking();
+            // -------------------------------------------------------------------------------- BIND
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc86_Constants.HOST, 0));
                 log.info("(optionally) bound to {}", client.getLocalAddress());
             }
-            assert client.isBlocking();
             // ----------------------------------------------------------------------------- CONNECT
             if (ThreadLocalRandom.current().nextBoolean()) {
-                client.socket().connect(_Rfc862Constants.ADDR,
-                                        (int) _Rfc86_Constants.CONNECT_TIMEOUT_IN_MILLIS);
+                client.socket().connect(
+                        _Rfc862Constants.ADDR,                           // <endpoint>
+                        (int) _Rfc86_Constants.CONNECT_TIMEOUT_IN_MILLIS // <timeout>
+                );
                 _Rfc86_Utils.logConnected(client.socket());
             } else {
                 final var connected = client.connect(_Rfc862Constants.ADDR);
-                assert connected; // why?
+                assert connected || !client.isBlocking();
                 _Rfc86_Utils.logConnected(client);
             }
             assert client.isConnected();
@@ -61,7 +67,7 @@ class Rfc862Tcp2Client {
             var bytes = _Rfc862Utils.logClientBytes(_Rfc86_Utils.randomBytes());
             int w; // number of bytes written
             int r; // number of bytes read
-            for (; bytes > 0; bytes -= w) {
+            while (bytes > 0) {
                 // --------------------------------------------------------------------------- write
                 if (!buffer.hasRemaining()) {
                     ThreadLocalRandom.current().nextBytes(buffer.array());
@@ -82,8 +88,12 @@ class Rfc862Tcp2Client {
                 }
                 assert w > 0; // why?
                 assert !buffer.hasRemaining(); // why?
-                // ------------------------------------------------------------------- digest/update
-                digest.update(slice.position(buffer.position() - w).limit(buffer.position()));
+                bytes -= w;
+                // ------------------------------------------------------------------- update digest
+                digest.update(
+                        slice.position(buffer.position() - w)
+                                .limit(buffer.position())
+                );
                 // ---------------------------------------------------------------------------- read
                 final var limit = buffer.limit();
                 buffer.flip(); // limit -> position, position -> zero
@@ -108,23 +118,21 @@ class Rfc862Tcp2Client {
             }
             // --------------------------------------------------------------------- shutdown output
             client.shutdownOutput();
-            // ----------------------------------------------------------------------- read/remained
+            // --------------------------------------------------------------------- read to the eof
             buffer.clear();
             while (true) {
                 r = client.read(buffer);
-                log.debug("r: {}", r);
                 if (r == -1) {
                     break;
                 }
                 assert r >= 0;
                 buffer.clear();
             }
-            client.shutdownInput();
-            // -------------------------------------------------------------------------- digest/log
             _Rfc862Utils.logDigest(digest);
         }
     }
 
+    @ExcludeFromCoverage_PrivateConstructor_Obviously
     private Rfc862Tcp2Client() {
         throw new AssertionError("instantiation is not allowed");
     }

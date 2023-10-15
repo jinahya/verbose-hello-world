@@ -31,15 +31,18 @@ class Rfc862Tcp0Server {
 
     public static void main(final String... args) throws Exception {
         try (var server = new ServerSocket()) {
-            server.bind(_Rfc862Constants.ADDR);
+            // -------------------------------------------------------------------------------- BIND
+            server.bind(_Rfc862Constants.ADDR, 1);
             log.info("bound to {}", server.getLocalSocketAddress());
+            // ------------------------------------------------------------------------------ ACCEPT
             server.setSoTimeout((int) _Rfc86_Constants.ACCEPT_TIMEOUT_IN_MILLIS);
             try (var client = server.accept()) {
                 _Rfc86_Utils.logAccepted(client);
                 client.setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_IN_MILLIS);
                 final var digest = _Rfc862Utils.newDigest();
-                var bytes = 0;
-                for (int b; true; ) {
+                var bytes = 0L; // number of bytes read/written so far
+                int b; // byte read/written
+                while (true) {
                     // ------------------------------------------------------------------------ read
                     b = client.getInputStream().read();
                     if (b == -1) {
