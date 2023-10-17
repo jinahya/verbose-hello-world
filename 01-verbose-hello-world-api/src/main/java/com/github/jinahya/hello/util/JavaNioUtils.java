@@ -25,6 +25,7 @@ import java.nio.ByteBuffer;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 
 /**
  * Utilities for {@link java.nio} package.
@@ -32,6 +33,53 @@ import java.util.function.Function;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 public final class JavaNioUtils {
+
+    // ---------------------------------------------------------------------------------- ByteBuffer
+
+    public static ByteBuffer requireHasPosition(final ByteBuffer buffer, final int position,
+                                                final IntFunction<String> message) {
+        Objects.requireNonNull(buffer, "buffer is null");
+        JavaLangUtils.Ints.requireNonNegative(position);
+        if (buffer.position() != position) {
+            throw new IllegalArgumentException(message.apply(buffer.position()));
+        }
+        return buffer;
+    }
+
+    public static ByteBuffer requireHasPosition(final ByteBuffer buffer, final int position) {
+        return requireHasPosition(
+                buffer,
+                position,
+                p -> "buffer.position(" + p + ") != " + position
+        );
+    }
+
+//    public static ByteBuffer requireHasRemainingGreaterThan(final ByteBuffer buffer,
+//                                                            final int remaining,
+//                                                            final IntFunction<String> message) {
+//        Objects.requireNonNull(buffer, "buffer is null");
+//        JavaLangUtils.Ints.requireGreaterThan(buffer.remaining(), remaining);
+//        if (buffer.position() != position) {
+//            throw new IllegalArgumentException(message.apply(buffer.position()));
+//        }
+//        return buffer;
+//    }
+
+//    public static ByteBuffer requireHasPosition(final ByteBuffer buffer, final int position) {
+//        return requireHasPosition(
+//                buffer,
+//                position,
+//                p -> "buffer.position(" + p + ") != " + position
+//        );
+//    }
+
+    public static ByteBuffer getBytes(final ByteBuffer buffer, final byte[] dst) {
+        return buffer.get(dst);
+    }
+
+    public static ByteBuffer getBytes(final ByteBuffer buffer, int index, final byte[] dst) {
+        return buffer.get(index, dst);
+    }
 
     public static <T extends ByteBuffer> T print(T buffer) {
         Objects.requireNonNull(buffer, "buffer is null");

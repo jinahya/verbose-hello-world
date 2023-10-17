@@ -30,9 +30,11 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
+import java.util.function.IntFunction;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -127,6 +129,11 @@ public final class JavaLangUtils {
         thread.start();
     }
 
+    public static void readLinesAndCallWhenTests(final Predicate<? super String> predicate,
+                                                 final Callable<Void> callable) {
+        readLinesAndCallWhenTests(predicate, callable, null);
+    }
+
     public static void readLinesAndCloseWhenTests(final Predicate<? super String> predicate,
                                                   final Closeable closeable,
                                                   final Consumer<? super String> consumer) {
@@ -210,70 +217,150 @@ public final class JavaLangUtils {
         return new String(codePoints, 0, codePoints.length);
     }
 
+    // ----------------------------------------------------------------------------------------- int
     public static final class Ints {
 
-        public static int requireGreaterThanOrEqualTo(final int value, final int against) {
+        // -------------------------------------------------------------------------------------- GE
+
+        public static int requireGreaterThanOrEqualTo(
+                final int value, final int against,
+                final IntFunction<? extends IntFunction<?>> function) {
+            Objects.requireNonNull(function, "function is null");
             if (value < against) {
-                throw new IllegalArgumentException("value(" + value + ") < " + against);
+                throw new IllegalArgumentException(
+                        Optional.ofNullable(function.apply(value))
+                                .map(f -> f.apply(against))
+                                .map(Object::toString)
+                                .orElse(null)
+                );
             }
             return value;
         }
+
+        private static final IntFunction<IntFunction<String>> REQUIRE_GE_FUNCTION =
+                v -> a -> String.format("%d is not greater than nor equal to %d", v, a);
+
+        public static int requireGreaterThanOrEqualTo(final int value, final int against) {
+            return requireGreaterThanOrEqualTo(
+                    value,
+                    against,
+                    REQUIRE_GE_FUNCTION
+            );
+        }
+
+        // -------------------------------------------------------------------------------------- GT
+        public static int requireGreaterThan(
+                final int value, final int against,
+                final IntFunction<? extends IntFunction<?>> function) {
+            if (requireGreaterThanOrEqualTo(value, against, function) == against) {
+                throw new IllegalArgumentException(
+                        Optional.ofNullable(function.apply(value))
+                                .map(f -> f.apply(against))
+                                .map(Object::toString)
+                                .orElse(null)
+                );
+            }
+            return value;
+        }
+
+        private static final IntFunction<IntFunction<String>> REQUIRE_GT_FUNCTION
+                = v -> a -> String.format("%d is not greater than %d", v, a);
 
         public static int requireGreaterThan(final int value, final int against) {
-            if (requireGreaterThanOrEqualTo(value, against) == against) {
-                throw new IllegalArgumentException("value(" + value + ") == " + against);
+            return requireGreaterThan(value, against, REQUIRE_GT_FUNCTION);
+        }
+
+        // -------------------------------------------------------------------------------------- LE
+        public static int requireLessThanOrEqualTo(
+                final int value, final int against,
+                final IntFunction<? extends IntFunction<?>> function) {
+            Objects.requireNonNull(function, "function is null");
+            if (value < against) {
+                throw new IllegalArgumentException(function.apply(value).apply(against).toString());
             }
             return value;
         }
+
+        private static final IntFunction<IntFunction<String>> REQUIRE_LE_FUNCTION
+                = v -> a -> String.format("%d is not less than nor equal to %d", v, a);
 
         public static int requireLessThanOrEqualTo(final int value, final int against) {
-            if (value > against) {
-                throw new IllegalArgumentException("value(" + value + ") > " + against);
+            return requireLessThanOrEqualTo(value, against, REQUIRE_LE_FUNCTION);
+        }
+
+        // -------------------------------------------------------------------------------------- LT
+        public static int requireLessThan(
+                final int value, final int against,
+                final IntFunction<? extends IntFunction<?>> function) {
+            Objects.requireNonNull(function, "function is null");
+            if (requireLessThanOrEqualTo(value, against, function) == against) {
+                throw new IllegalArgumentException(function.apply(value).apply(against).toString());
             }
             return value;
         }
+
+        private static final IntFunction<IntFunction<String>> REQUIRE_LT_FUNCTION
+                = v -> a -> String.format("%d is not less than %d", v, a);
 
         public static int requireLessThan(final int value, final int against) {
-            if (requireLessThanOrEqualTo(value, against) == against) {
-                throw new IllegalArgumentException("value(" + value + ") == " + against);
-            }
-            return value;
+            return requireLessThan(value, against, REQUIRE_LT_FUNCTION);
         }
+
+        // --------------------------------------------------------------------------- (Non)Positive
+        public static int requireNonPositive(final int value, final IntFunction<?> function) {
+            Objects.requireNonNull(function, "function is null");
+            return requireLessThanOrEqualTo(
+                    value,
+                    0,
+                    v -> a -> function.apply(v).toString()
+            );
+        }
+
+        private static final IntFunction<?> REQUIRE_NP_FUNCTION =
+                v -> String.format("value(%1$d) is not non-positive", v);
 
         public static int requireNonPositive(final int value) {
-            if (value > 0) {
-                throw new IllegalArgumentException("value(" + value + ") > 0");
-            }
-            return value;
+            return requireNonPositive(value, REQUIRE_NP_FUNCTION);
         }
 
-        public static int requireNonNegative(final int value, final String message) {
-            if (value < 0) {
-                throw new IllegalArgumentException(message);
-            }
-            return value;
+        public static int requirePositive(final int value, final IntFunction<?> function) {
+            return requireGreaterThanOrEqualTo(value, 0, v -> a -> function.apply(v));
         }
 
-        public static int requireNonNegative(final int value) {
-            return requireNonNegative(value, "value(" + value + ") < 0");
-        }
-
-        public static int requireNegative(final int value) {
-            if (requireNonPositive(value) == 0) {
-                throw new IllegalArgumentException("value(" + value + ") == 0");
-            }
-            return value;
-        }
+        private static final IntFunction<?> REQUIRE__P_FUNCTION =
+                v -> String.format("value(%1$d) is not positive", v);
 
         public static int requirePositive(final int value) {
-            if (requireNonNegative(value) == 0) {
-                throw new IllegalArgumentException("value(" + value + ") == 0");
-            }
-            return value;
+            return requirePositive(value, REQUIRE__P_FUNCTION);
         }
 
+        // --------------------------------------------------------------------------- (Non)Negative
+
+        public static int requireNonNegative(final int value, final IntFunction<?> function) {
+            return requireGreaterThanOrEqualTo(value, 0, v -> a -> function.apply(v));
+        }
+
+        private static final IntFunction<?> REQUIRE_NN_FUNCTION =
+                v -> String.format("value(%1$d) is not non-negative", v);
+
+        public static int requireNonNegative(final int value) {
+            return requireNonNegative(value, REQUIRE_NN_FUNCTION);
+        }
+
+        public static int requireNegative(final int value, final IntFunction<?> function) {
+            return requireGreaterThanOrEqualTo(value, 0, v -> a -> function.apply(v));
+        }
+
+        private static final IntFunction<?> REQUIRE__N_FUNCTION =
+                v -> String.format("value(%1$d) is not negative", v);
+
+        public static int requireNegative(final int value) {
+            return requireNegative(value, REQUIRE__N_FUNCTION);
+        }
+
+        // -----------------------------------------------------------------------------------------
         private Ints() {
-            throw new IllegalArgumentException("");
+            throw new AssertionError("instantiation is not allowed");
         }
     }
 

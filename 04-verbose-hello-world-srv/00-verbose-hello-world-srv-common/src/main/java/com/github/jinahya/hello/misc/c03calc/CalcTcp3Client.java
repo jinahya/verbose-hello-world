@@ -8,84 +8,134 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
+import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
 class CalcTcp3Client {
 
+    private static void close(final SelectionKey key) {
+        Objects.requireNonNull(key, "key is null").isValid();
+        final var channel = key.channel();
+        try {
+            channel.close();
+            assert !key.isValid();
+        } catch (final IOException ioe) {
+            log.debug("failed to close {}", channel, ioe);
+            key.cancel();
+        }
+        assert !key.isValid();
+    }
+
+    private static void sub(final Selector selector) {
+        while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
+            try {
+                if (selector.select(_CalcConstants.SELECT_TIMEOUT_MILLIS) == 0) {
+                    continue;
+                }
+            } catch (final IOException ioe) {
+                log.error("failed to select", ioe);
+            }
+            for (final var i = selector.selectedKeys().iterator(); i.hasNext(); ) {
+                final var selectedKey = i.next();
+                i.remove();
+                // ------------------------------------------------------------------ connect/finish
+                if (selectedKey.isConnectable()) {
+                    final var channel = (SocketChannel) selectedKey.channel();
+                    try {
+                        if (!channel.finishConnect()) {
+                            continue;
+                        }
+                    } catch (final IOException ioe) {
+                        log.error("failed to finish connecting", ioe);
+                        close(selectedKey);
+                        continue;
+                    }
+                    selectedKey.attach(_CalcMessage.newBufferForClient());
+                    selectedKey.interestOps(SelectionKey.OP_WRITE);
+                }
+                // --------------------------------------------------------------------------- write
+                if (selectedKey.isWritable()) {
+                    final var channel = (SocketChannel) selectedKey.channel();
+                    final var attachment = (ByteBuffer) selectedKey.attachment();
+                    assert attachment.hasRemaining();
+                    try {
+                        final int w = channel.write(attachment);
+                        assert w > 0; // why?
+                    } catch (final IOException ioe) {
+                        log.error("failed to write", ioe);
+                        close(selectedKey);
+                        continue;
+                    }
+                    if (!attachment.hasRemaining()) {
+                        assert attachment.position() == _CalcMessage.LENGTH_REQUEST;
+                        selectedKey.interestOpsAnd(~SelectionKey.OP_WRITE);
+                        attachment.limit(attachment.position() + _CalcMessage.LENGTH_RESPONSE);
+                        selectedKey.interestOps(SelectionKey.OP_READ);
+                    }
+                }
+                // ---------------------------------------------------------------------------- read
+                if (selectedKey.isReadable()) {
+                    final var channel = (SocketChannel) selectedKey.channel();
+                    final var attachment = (ByteBuffer) selectedKey.attachment();
+                    try {
+                        final int r = channel.read(attachment);
+                        if (r == -1) {
+                            log.error("unexpected eof");
+                            close(selectedKey);
+                            continue;
+                        }
+                    } catch (final IOException ioe) {
+                        log.error("failed to read from {}", channel, ioe);
+                        close(selectedKey);
+                        continue;
+                    }
+                    if (!attachment.hasRemaining()) {
+                        selectedKey.interestOpsAnd(~SelectionKey.OP_READ);
+                        close(selectedKey);
+                        _CalcMessage.log(attachment);
+                    }
+                }
+            }
+        }
+    }
+
     public static void main(final String... args) throws IOException {
         try (var selector = Selector.open()) {
-            for (int c = 0; c < _CalcConstants.NUMBER_OF_REQUESTS; c++) {
+            for (int c = 0; c < _CalcConstants.TOTAL_REQUESTS; c++) {
                 final var client = SocketChannel.open();
                 client.configureBlocking(false);
                 // ---------------------------------------------------------------------------- bond
                 if (ThreadLocalRandom.current().nextBoolean()) {
-                    client.bind(new InetSocketAddress(_CalcConstants.HOST, 0));
+                    try {
+                        client.bind(new InetSocketAddress(_CalcConstants.HOST, 0));
+                    } catch (final IOException ioe) {
+                        log.error("failed to bind", ioe);
+                    }
                 }
                 // --------------------------------------------------------------------- connect/try
-                final SelectionKey clientKey;
-                final var connectedImmediately = client.connect(_CalcConstants.ADDR);
-                if (connectedImmediately) {
-                    clientKey = client.register(selector, SelectionKey.OP_WRITE);
-                } else {
-                    clientKey = client.register(selector, SelectionKey.OP_CONNECT);
-                }
-                clientKey.attach(_CalcUtils.newBufferForClient());
-                // -------------------------------------------------------------------------- select
-                while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
-                    if (selector.select(_CalcConstants.SELECT_TIMEOUT_MILLIS) == 0) {
-                        continue;
+                try {
+                    final SelectionKey clientKey;
+                    final var connectedImmediately = client.connect(_CalcConstants.ADDR);
+                    if (connectedImmediately) {
+                        clientKey = client.register(
+                                selector,                         // <sel>
+                                SelectionKey.OP_WRITE,            // <ops>
+                                _CalcMessage.newBufferForClient() // <att>
+                        );
+                    } else {
+                        clientKey = client.register(
+                                selector,               // <sel>
+                                SelectionKey.OP_CONNECT // <ops>
+                        );
                     }
-                    for (final var i = selector.selectedKeys().iterator(); i.hasNext(); ) {
-                        final var selectedKey = i.next();
-                        i.remove();
-                        // ---------------------------------------------------------- connect/finish
-                        if (selectedKey.isConnectable()) {
-                            final var channel = (SocketChannel) selectedKey.channel();
-                            try {
-                                final var connected = channel.finishConnect();
-                                assert connected;
-                            } catch (final IOException ioe) {
-                                log.error("failed to connect", ioe);
-                                channel.close();
-                                assert !selectedKey.isValid();
-                                continue;
-                            }
-                            selectedKey.interestOps(SelectionKey.OP_WRITE);
-                        }
-                        // ------------------------------------------------------------------- write
-                        if (selectedKey.isWritable()) {
-                            final var channel = (SocketChannel) selectedKey.channel();
-                            final var attachment = (ByteBuffer) selectedKey.attachment();
-                            final int w = channel.write(attachment);
-                            if (!attachment.hasRemaining()) {
-                                selectedKey.interestOpsAnd(~SelectionKey.OP_WRITE);
-                                attachment.limit(attachment.capacity());
-                                assert attachment.remaining() == Integer.BYTES;
-                                selectedKey.interestOps(SelectionKey.OP_READ);
-                            }
-                        }
-                        // -------------------------------------------------------------------- read
-                        if (selectedKey.isReadable()) {
-                            final var channel = (SocketChannel) selectedKey.channel();
-                            final var attachment = (ByteBuffer) selectedKey.attachment();
-                            final int r = channel.read(attachment);
-                            if (r == -1) {
-                                log.error("unexpected eof");
-                                channel.close();
-                                assert !selectedKey.isValid();
-                                continue;
-                            }
-                            if (!attachment.hasRemaining()) {
-                                selectedKey.interestOpsAnd(~SelectionKey.OP_READ);
-                                channel.close();
-                                assert !selectedKey.isValid();
-                                _CalcUtils.log(attachment.flip());
-                            }
-                        }
-                    }
+                    assert clientKey.isValid();
+                } catch (final IOException ioe) {
+                    log.error("failed to connect/register", ioe);
+                    continue;
                 }
             }
+            sub(selector);
         }
     }
 }

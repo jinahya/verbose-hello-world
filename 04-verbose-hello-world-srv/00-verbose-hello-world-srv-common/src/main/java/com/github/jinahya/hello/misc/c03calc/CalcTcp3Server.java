@@ -11,21 +11,27 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.util.Objects;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 class CalcTcp3Server {
 
-    private static void close(final SocketChannel client) {
-        Objects.requireNonNull(client, "client is null");
+    private static void close(final SelectionKey key) {
+        final var channel = key.channel();
         try {
-            client.close();
+            channel.close();
+            assert !key.isValid();
         } catch (final IOException ioe) {
-            log.error("failed to close {}", client, ioe);
+            log.debug("failed to close {}", channel, ioe);
+            key.cancel();
         }
+        assert !key.isValid();
     }
 
-    private static void serve(final Selector selector) {
+    private static void sub(final Selector selector) {
+        final var executor = Executors.newFixedThreadPool(_CalcConstants.SERVER_THREADS << 1);
         while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
             try {
                 if (selector.select(_CalcConstants.SELECT_TIMEOUT_MILLIS) == 0) {
@@ -50,83 +56,102 @@ class CalcTcp3Server {
                     try {
                         client.configureBlocking(false);
                         final var clientKey = client.register(
-                                selector,                       // <sel>
-                                SelectionKey.OP_READ,           // <ops>
-                                _CalcUtils.newBufferForServer() // <att>
+                                selector,                         // <sel>
+                                SelectionKey.OP_READ,             // <ops>
+                                _CalcMessage.newBufferForServer() // <att>
                         );
                         assert clientKey.isValid();
                     } catch (final IOException ioe) {
                         log.error("failed to configure/register", ioe);
-                        close(client);
+                        close(selectedKey);
                     }
                 }
                 if (selectedKey.isReadable()) {
                     final var channel = (SocketChannel) selectedKey.channel();
                     final var attachment = (ByteBuffer) selectedKey.attachment();
-                    final int r;
                     try {
-                        r = channel.read(attachment);
+                        final var r = channel.read(attachment);
+                        if (r == -1) {
+                            log.error("unexpected eof");
+                            close(selectedKey);
+                            continue;
+                        }
+                        assert r >= 0;
                     } catch (final IOException ioe) {
                         log.error("failed to read", ioe);
-                        close(channel);
-                        assert !selectedKey.isValid();
+                        close(selectedKey);
                         continue;
                     }
-                    if (r == -1) {
-                        log.error("unexpected eof");
-                        close(channel);
-                        assert !selectedKey.isValid();
-                        continue;
-                    }
-                    assert r >= 0;
                     if (!attachment.hasRemaining()) {
                         selectedKey.interestOpsAnd(~SelectionKey.OP_READ);
-                        CalcOperator.apply(attachment.clear());
-                        assert attachment.remaining() == Integer.BYTES;
-                        selectedKey.interestOpsOr(SelectionKey.OP_WRITE);
+                        if (ThreadLocalRandom.current().nextBoolean()) {
+                            _CalcMessage.apply(attachment);
+                            assert attachment.remaining() == _CalcMessage.LENGTH_RESPONSE;
+                            selectedKey.interestOpsOr(SelectionKey.OP_WRITE);
+                        } else {
+                            _CalcMessage.applyAsync(attachment, executor).handle(
+                                    (b, t) -> {
+                                        if (t != null) {
+                                            log.error("failed to apply", t);
+                                        }
+                                        assert attachment.remaining()
+                                               == _CalcMessage.LENGTH_RESPONSE;
+                                        selectedKey.interestOpsOr(SelectionKey.OP_WRITE);
+                                        selector.wakeup();
+                                        return null;
+                                    }
+                            );
+                        }
                     }
                 }
                 if (selectedKey.isWritable()) {
                     final var channel = (SocketChannel) selectedKey.channel();
                     final var attachment = (ByteBuffer) selectedKey.attachment();
-                    final int w;
                     try {
-                        w = channel.write(attachment);
+                        final int w = channel.write(attachment);
+                        assert w >= 0;
                     } catch (final IOException ioe) {
                         log.error("failed to write", ioe);
-                        close(channel);
-                        assert !selectedKey.isValid();
+                        close(selectedKey);
                         continue;
                     }
-                    assert w >= 0;
                     if (!attachment.hasRemaining()) {
-                        close(channel);
-                        assert !selectedKey.isValid();
+                        close(selectedKey);
                     }
                 }
             }
+        }
+        executor.shutdown();
+        try {
+            final boolean terminated = executor.awaitTermination(10L, TimeUnit.SECONDS);
+            assert terminated : "executor hasn't been terminated";
+        } catch (final InterruptedException ie) {
+            log.error("interrupted while awaiting executor to be terminated", ie);
+            Thread.currentThread().interrupt();
         }
     }
 
     public static void main(final String... args) throws IOException {
         try (var selector = Selector.open();
              var server = ServerSocketChannel.open()) {
-            // -------------------------------------------------------------------------------- BIND
-            server.bind(_CalcConstants.ADDR, 50);
+            // -------------------------------------------------------------------------------- bind
+            server.bind(_CalcConstants.ADDR, _CalcConstants.SERVER_BACKLOG);
             _TcpUtils.logBound(server);
-            // ---------------------------------------------------------------------------- REGISTER
+            // ---------------------------------------------------------------------------- register
             server.configureBlocking(false);
             final var serverKey = server.register(selector, SelectionKey.OP_ACCEPT);
+            // ------------------------------------------------------------ start daemon for "quit!"
             JavaLangUtils.readLinesAndCallWhenTests(
-                    HelloWorldServerUtils::isQuit,
-                    () -> {
+                    HelloWorldServerUtils::isQuit, // <predicate>
+                    () -> {                        // <callable>
                         server.close();
                         assert !serverKey.isValid();
+                        selector.wakeup();
                         return null;
-                    },
-                    null
+                    }
             );
-            serve(selector);
+            // --------------------------------------------------------------------------------- sub
+            sub(selector);
         }
     }
 }

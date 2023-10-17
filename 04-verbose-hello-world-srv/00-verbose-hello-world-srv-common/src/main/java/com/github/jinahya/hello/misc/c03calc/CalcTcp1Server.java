@@ -36,9 +36,9 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 class CalcTcp1Server {
 
-    private static void serve(final ServerSocket server) throws InterruptedException {
+    private static void sub(final ServerSocket server) {
         Objects.requireNonNull(server, "server is null");
-        final var executor = Executors.newCachedThreadPool();
+        final var executor = Executors.newFixedThreadPool(_CalcConstants.SERVER_THREADS);
         while (!server.isClosed()) {
             final Socket client;
             try {
@@ -51,35 +51,46 @@ class CalcTcp1Server {
             }
             executor.submit(() -> {
                 try (client) {
-                    client.setSoTimeout(_CalcConstants.READ_TIMEOUT_MILLIS);
-                    // -------------------------------------------------------------------- read
-                    final var array = _CalcUtils.newArrayForServer();
-                    final var length = array.length - Integer.BYTES;
-                    final int r = client.getInputStream().readNBytes(array, 0, length);
-                    if (r < length) {
+                    client.setSoTimeout((int) _CalcConstants.READ_TIMEOUT_MILLIS);
+                    // ------------------------------------------------------------------------ read
+                    final var array = _CalcMessage.newArrayForServer();
+                    final int r = client.getInputStream().readNBytes(
+                            array,                      // <b>
+                            0,                          // <off>
+                            _CalcMessage.LENGTH_REQUEST // <len>
+                    );
+                    if (r < _CalcMessage.LENGTH_REQUEST) {
                         throw new EOFException("unexpected eof");
                     }
-                    // ------------------------------------------------------------------- apply
-                    CalcOperator.apply(array);
-                    // ------------------------------------------------------------------- write
-                    client.getOutputStream().write(array, length, Integer.BYTES);
+                    // ----------------------------------------------------------------------- apply
+                    _CalcMessage.apply(array);
+                    // ----------------------------------------------------------------------- write
+                    client.getOutputStream().write(
+                            array,                       // <b>
+                            _CalcMessage.LENGTH_REQUEST, // <off>
+                            _CalcMessage.LENGTH_RESPONSE // <len>
+                    );
                     client.getOutputStream().flush();
                 }
                 return null;
             });
         }
         executor.shutdown();
-        final var terminated = executor.awaitTermination(10L, TimeUnit.SECONDS);
-        assert terminated;
+        try {
+            final var terminated = executor.awaitTermination(10L, TimeUnit.SECONDS);
+            assert terminated : "executor hasn't been terminated";
+        } catch (final InterruptedException ie) {
+            log.error("interrupted while awaiting executor to be terminated", ie);
+            Thread.currentThread().interrupt();
+        }
     }
 
-    public static void main(final String... args) throws IOException, InterruptedException {
+    public static void main(final String... args) throws IOException {
         try (var server = new ServerSocket()) {
-            // -------------------------------------------------------------------------------- BIND
-            server.bind(_CalcConstants.ADDR, 50);
+            server.bind(_CalcConstants.ADDR, _CalcConstants.SERVER_BACKLOG);
             _TcpUtils.logBound(server);
             JavaLangUtils.readLinesAndCloseWhenTests(HelloWorldServerUtils::isQuit, server);
-            serve(server);
+            sub(server);
         }
     }
 

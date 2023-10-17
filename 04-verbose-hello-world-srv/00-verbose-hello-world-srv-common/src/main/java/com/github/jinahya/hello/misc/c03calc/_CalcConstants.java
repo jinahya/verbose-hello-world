@@ -35,36 +35,60 @@ final class _CalcConstants extends _Rfc86_Constants {
 
     static final InetSocketAddress ADDR = new InetSocketAddress(HOST, PORT);
 
-    // -------------------------------------------------------------------------------------- CLIENT
-    static final int NUMBER_OF_REQUESTS = 128;
+    static final int NUMBER_OF_THREADS = 128;
 
-    private static final int CLIENT_TIMEOUT_DURATION = 60;
+    // -------------------------------------------------------------------------------------- SERVER
+    static final int SERVER_THREADS = 128;
+
+    static final int SERVER_BACKLOG = 64;
+
+    // ------------------------------------------------------------------------------ SERVER_TIMEOUT
+    private static final long SERVER_READ_TIMEOUT_DURATION = 2L;
+
+    private static final TimeUnit SERVER_READ_TIMEOUT_UNIT = TimeUnit.SECONDS;
+
+    static final long SERVER_READ_TIMEOUT_MILLIS =
+            SERVER_READ_TIMEOUT_UNIT.toMillis(SERVER_READ_TIMEOUT_DURATION);
+
+//    static final long SERVER_PROGRAM_TIMEOUT = 60L;
+//
+//    static final TimeUnit SERVER_PROGRAM_TIMEOUT_UNIT = TimeUnit.SECONDS;
+//
+//    static final long SERVER_PROGRAM_TIMEOUT_IN_MILLIS =
+//            SERVER_PROGRAM_TIMEOUT_UNIT.toMillis(SERVER_PROGRAM_TIMEOUT);
+
+    // -------------------------------------------------------------------------------------- CLIENT
+    static final int TOTAL_REQUESTS = SERVER_BACKLOG << 1;
+
+    static final int CLIENT_THREADS = 128;
+
+    static final long CLIENT_TIMEOUT_DURATION = 60L;
 
     static final TimeUnit CLIENT_TIMEOUT_UNIT = TimeUnit.SECONDS;
 
-    static final int CLIENT_TIMEOUT_MILLIS =
-            (int) CLIENT_TIMEOUT_UNIT.toMillis(CLIENT_TIMEOUT_DURATION);
+    static final long CLIENT_TIMEOUT_MILLIS =
+            CLIENT_TIMEOUT_UNIT.toMillis(CLIENT_TIMEOUT_DURATION);
 
-    // ------------------------------------------------------------------------------------- TIMEOUT
-    private static final long CONNECT_TIMEOUT_DURATION = 2;
+    // ------------------------------------------------------------------------------ CLIENT_TIMEOUT
+    private static final long CONNECT_TIMEOUT_DURATION = 4L;
 
-    static final TimeUnit CONNECT_TIMEOUT_UNIT = TimeUnit.SECONDS;
+    private static final TimeUnit CONNECT_TIMEOUT_UNIT = TimeUnit.SECONDS;
 
     static final int CONNECT_TIMEOUT_MILLIS =
             (int) CONNECT_TIMEOUT_UNIT.toMillis(CONNECT_TIMEOUT_DURATION);
 
-    private static final long READ_TIMEOUT_DURATION = 1;
+    private static final long READ_TIMEOUT_DURATION = 2L;
 
-    static final TimeUnit READ_TIMEOUT_UNIT = TimeUnit.SECONDS;
+    private static final TimeUnit READ_TIMEOUT_UNIT = TimeUnit.SECONDS;
 
-    static final int READ_TIMEOUT_MILLIS = (int) READ_TIMEOUT_UNIT.toMillis(READ_TIMEOUT_DURATION);
+    static final long READ_TIMEOUT_MILLIS = READ_TIMEOUT_UNIT.toMillis(READ_TIMEOUT_DURATION);
 
-    private static final long SELECT_TIMEOUT_DURATION = 8;
+    private static final long SELECT_TIMEOUT_DURATION = 8L;
 
-    static final TimeUnit SELECT_TIMEOUT_UNIT = TimeUnit.SECONDS;
+    private static final TimeUnit SELECT_TIMEOUT_UNIT = TimeUnit.SECONDS;
 
-    static final int SELECT_TIMEOUT_MILLIS =
-            (int) SELECT_TIMEOUT_UNIT.toMillis(SELECT_TIMEOUT_DURATION);
+    static final long SELECT_TIMEOUT_MILLIS =
+            SELECT_TIMEOUT_UNIT.toMillis(SELECT_TIMEOUT_DURATION);
 
     // ---------------------------------------------------------------------------------------------
     private _CalcConstants() {

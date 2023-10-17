@@ -131,7 +131,7 @@ public abstract class _Rfc86_Attachment implements Closeable {
     private void setBytes(final int bytes) {
         this.bytes = JavaLangUtils.Ints.requireNonNegative(
                 bytes,
-                "bytes(" + bytes + ") is negative"
+                v -> "bytes(" + v + ") is negative"
         );
     }
 
@@ -144,7 +144,9 @@ public abstract class _Rfc86_Attachment implements Closeable {
      * @throws IllegalArgumentException when {@code delta} is negative.
      */
     public final int increaseBytes(final int delta) {
-        JavaLangUtils.Ints.requireNonNegative(delta, "delta(" + delta + ") is negative");
+        if (delta < 0) {
+            throw new IllegalArgumentException("delta(" + delta + ") is negative");
+        }
         setBytes(getBytes() + delta);
         return getBytes();
     }
@@ -159,7 +161,9 @@ public abstract class _Rfc86_Attachment implements Closeable {
      *                                  of the {@code bytes} property.
      */
     public final int decreaseBytes(final int delta) {
-        JavaLangUtils.Ints.requireNonNegative(delta, "delta(" + delta + ") is negative");
+        if (delta < 0) {
+            throw new IllegalArgumentException("delta(" + delta + ") is negative");
+        }
         if (delta > getBytes()) {
             throw new IllegalArgumentException("delta(" + delta + ") > bytes(" + bytes + ")");
         }
@@ -195,7 +199,9 @@ public abstract class _Rfc86_Attachment implements Closeable {
      * @throws IllegalArgumentException if {@code bytes} is greater than {@code buffer.position}.
      */
     public final int updateDigest(final int bytes) {
-        JavaLangUtils.Ints.requireNonNegative(bytes, "bytes(" + bytes + ") is negative");
+        if (bytes < 0) {
+            throw new IllegalArgumentException("bytes(" + bytes + ") is negative");
+        }
         if (bytes > buffer.position()) {
             throw new IllegalArgumentException(
                     "bytes(" + bytes + ") > buffer.position(" + buffer.position() + ")"

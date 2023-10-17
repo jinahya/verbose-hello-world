@@ -34,6 +34,8 @@ public class HelloWorldServerConstants {
 
     public static final String QUIT = "quit!";
 
+    public static final String QUIT_AND_ENTER = QUIT + System.lineSeparator();
+
     public static final String KEEP = "keep!";
 
     public static final String SOLI = "soli!";
