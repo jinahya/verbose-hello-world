@@ -20,7 +20,6 @@ package com.github.jinahya.hello.misc;
  * #L%
  */
 
-import com.github.jinahya.hello.util.JavaLangUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Closeable;
@@ -129,10 +128,9 @@ public abstract class _Rfc86_Attachment implements Closeable {
      * @param bytes new value for the {@code bytes} property; must be not negative.
      */
     private void setBytes(final int bytes) {
-        this.bytes = JavaLangUtils.Ints.requireNonNegative(
-                bytes,
-                v -> "bytes(" + v + ") is negative"
-        );
+        if (bytes < 0) {
+            throw new IllegalArgumentException("bytes(" + bytes + ") < 0");
+        }
     }
 
     /**

@@ -22,8 +22,19 @@ package com.github.jinahya.hello.misc.c03calc;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 @Slf4j
 final class _CalcUtils {
+
+    static ExecutorService newExecutorForCients() {
+        return Executors.newFixedThreadPool(_CalcConstants.CLIENT_THREADS);
+    }
+
+    static ExecutorService newExecutorForServers() {
+        return Executors.newFixedThreadPool(_CalcConstants.SERVER_THREADS);
+    }
 
     // ---------------------------------------------------------------------------------------------
 

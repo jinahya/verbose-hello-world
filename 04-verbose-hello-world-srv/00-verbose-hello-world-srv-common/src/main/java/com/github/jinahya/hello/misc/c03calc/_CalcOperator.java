@@ -5,7 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.function.IntBinaryOperator;
 
 /**
- * Operators for calculator.
+ * Constants of operators for calculator.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see <a href="https://ko.wikipedia.org/wiki/%EC%82%AC%EC%B9%99%EC%97%B0%EC%82%B0">사칙연산</a>
@@ -49,13 +49,13 @@ enum _CalcOperator implements IntBinaryOperator {
     };
 
     // ---------------------------------------------------------------------------------------------
-    static final int BYTES = 3;
+    static final int NAME_BYTES = 3;
 
-    static final Charset CHARSET = StandardCharsets.US_ASCII;
+    static final Charset NAME_CHARSET = StandardCharsets.US_ASCII;
 
     static {
         for (final var value : values()) {
-            assert value.name().getBytes(CHARSET).length == BYTES;
+            assert value.name().getBytes(NAME_CHARSET).length == NAME_BYTES;
         }
     }
 }

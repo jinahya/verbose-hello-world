@@ -17,7 +17,7 @@ final class _CalcMessage {
     // ------------------------------------------------------------------------------------ operator
     private static final int OFFSET_OPERATOR = 0;
 
-    private static final int LENGTH_OPERATOR = _CalcOperator.BYTES;
+    private static final int LENGTH_OPERATOR = _CalcOperator.NAME_BYTES;
 
     // ------------------------------------------------------------------------------------ operands
     private static final int LENGTH_OPERAND = Byte.BYTES;
@@ -47,14 +47,14 @@ final class _CalcMessage {
         final var bytes = new byte[LENGTH_OPERATOR];
         buffer.position(OFFSET_OPERATOR).limit(OFFSET_OPERAND1).get(bytes);
         assert !buffer.hasRemaining();
-        return _CalcOperator.valueOf(new String(bytes, _CalcOperator.CHARSET));
+        return _CalcOperator.valueOf(new String(bytes, _CalcOperator.NAME_CHARSET));
     }
 
     private static ByteBuffer operator(final ByteBuffer buffer, final _CalcOperator operator) {
         return buffer
                 .position(OFFSET_OPERATOR)
                 .limit(OFFSET_OPERAND1)
-                .put(operator.name().getBytes(_CalcOperator.CHARSET));
+                .put(operator.name().getBytes(_CalcOperator.NAME_CHARSET));
     }
 
     // ------------------------------------------------------------------------------------ operands
