@@ -28,7 +28,7 @@ import java.util.concurrent.Executors;
 @Slf4j
 final class _CalcUtils {
 
-    static ExecutorService newExecutorForCients() {
+    static ExecutorService newExecutorForClients() {
         return Executors.newFixedThreadPool(_CalcConstants.CLIENT_THREADS);
     }
 

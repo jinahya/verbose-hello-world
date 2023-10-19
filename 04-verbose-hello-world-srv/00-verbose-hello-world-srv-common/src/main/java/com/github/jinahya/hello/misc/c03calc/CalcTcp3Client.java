@@ -3,19 +3,15 @@ package com.github.jinahya.hello.misc.c03calc;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
-import java.util.Objects;
-import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
 class CalcTcp3Client {
 
     private static void close(final SelectionKey key) {
-        Objects.requireNonNull(key, "key is null").isValid();
         final var channel = key.channel();
         try {
             channel.close();
@@ -28,9 +24,39 @@ class CalcTcp3Client {
     }
 
     private static void sub(final Selector selector) {
+        for (var c = 0; c < _CalcConstants.TOTAL_REQUESTS; c++) {
+            // ------------------------------------------------------------------------- connect/try
+            try {
+                final var client = SocketChannel.open();
+                client.configureBlocking(false);
+                final SelectionKey clientKey;
+                try {
+                    final var connectedImmediately = client.connect(_CalcConstants.ADDR);
+                    if (connectedImmediately) {
+                        clientKey = client.register(
+                                selector,                         // <sel>
+                                SelectionKey.OP_WRITE,            // <ops>
+                                _CalcMessage.newBufferForClient() // <att>
+                        );
+                    } else {
+                        clientKey = client.register(
+                                selector,               // <sel>
+                                SelectionKey.OP_CONNECT // <ops>
+                        );
+                    }
+                    assert clientKey.isValid();
+                    selector.wakeup();
+                } catch (final IOException ioe) {
+                    log.error("failed to connect/register", ioe);
+                    client.close();
+                }
+            } catch (final IOException ioe) {
+                log.error("failed to open/close", ioe);
+            }
+        }
         while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
             try {
-                if (selector.select(_CalcConstants.SELECT_TIMEOUT_MILLIS) == 0) {
+                if (selector.select(_CalcConstants.CLIENT_SELECT_TIMEOUT_MILLIS) == 0) {
                     continue;
                 }
             } catch (final IOException ioe) {
@@ -102,39 +128,6 @@ class CalcTcp3Client {
 
     public static void main(final String... args) throws IOException {
         try (var selector = Selector.open()) {
-            for (int c = 0; c < _CalcConstants.TOTAL_REQUESTS; c++) {
-                final var client = SocketChannel.open();
-                client.configureBlocking(false);
-                // ---------------------------------------------------------------------------- bond
-                if (ThreadLocalRandom.current().nextBoolean()) {
-                    try {
-                        client.bind(new InetSocketAddress(_CalcConstants.HOST, 0));
-                    } catch (final IOException ioe) {
-                        log.error("failed to bind", ioe);
-                    }
-                }
-                // --------------------------------------------------------------------- connect/try
-                try {
-                    final SelectionKey clientKey;
-                    final var connectedImmediately = client.connect(_CalcConstants.ADDR);
-                    if (connectedImmediately) {
-                        clientKey = client.register(
-                                selector,                         // <sel>
-                                SelectionKey.OP_WRITE,            // <ops>
-                                _CalcMessage.newBufferForClient() // <att>
-                        );
-                    } else {
-                        clientKey = client.register(
-                                selector,               // <sel>
-                                SelectionKey.OP_CONNECT // <ops>
-                        );
-                    }
-                    assert clientKey.isValid();
-                } catch (final IOException ioe) {
-                    log.error("failed to connect/register", ioe);
-                    continue;
-                }
-            }
             sub(selector);
         }
     }

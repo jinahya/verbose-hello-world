@@ -22,6 +22,7 @@ package com.github.jinahya.hello.misc.c03calc;
 
 import com.github.jinahya.hello.HelloWorldServerConstants;
 import com.github.jinahya.hello.misc._Rfc86_Constants;
+import com.github.jinahya.hello.util.HelloWorldServerUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Named;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -32,8 +33,10 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
@@ -45,13 +48,23 @@ class CalcTcpTest {
 
     private static final List<Class<?>> SERVER_CLASSES = List.of(
             CalcTcp1Server.class,
-            CalcTcp3Server.class
+            CalcTcp3Server.class,
+            CalcTcp5Server.class
     );
+
+    private static List<Class<?>> serverClasses() {
+        return SERVER_CLASSES;
+    }
 
     private static final List<Class<?>> CLIENT_CLASSES = List.of(
             CalcTcp1Client.class,
-            CalcTcp3Client.class
+            CalcTcp3Client.class,
+            CalcTcp5Client.class
     );
+
+    private static List<Class<?>> clientClasses() {
+        return CLIENT_CLASSES;
+    }
 
     private static Stream<Arguments> getClassesArgumentsList() {
         return SERVER_CLASSES.stream()
@@ -62,7 +75,7 @@ class CalcTcpTest {
 
     @MethodSource({"getClassesArgumentsList"})
     @ParameterizedTest
-    void __(Class<?> serverClass, Class<?> clientClass) throws Exception {
+    void __(final Class<?> serverClass, final Class<?> clientClass) throws Exception {
         log.debug("server: {}", serverClass.getSimpleName());
         log.debug("client: {}", clientClass.getSimpleName());
         serverClass.getClassLoader().setDefaultAssertionStatus(true);
@@ -97,6 +110,56 @@ class CalcTcpTest {
             pos.write(HelloWorldServerConstants.QUIT_AND_ENTER.getBytes(StandardCharsets.US_ASCII));
             pos.flush();
             server.get(_Rfc86_Constants.SERVER_TIMEOUT, _Rfc86_Constants.SERVER_TIMEOUT_UNIT);
+            executor.shutdown();
+            final var terminated = executor.awaitTermination(8L, TimeUnit.SECONDS);
+            assert terminated : "executor hasn't been terminated";
+        } finally {
+            System.setIn(systemIn);
+        }
+    }
+
+    @MethodSource({"serverClasses"})
+    @ParameterizedTest
+    void __(final Class<?> serverClass) throws Exception {
+        log.debug("server: {}", serverClass.getSimpleName());
+        serverClass.getClassLoader().setDefaultAssertionStatus(true);
+        final var executor = Executors.newFixedThreadPool(CLIENT_CLASSES.size() + 1);
+        final var systemIn = System.in;
+        final var pos = new PipedOutputStream();
+        final var quitAndEnterBytes = HelloWorldServerUtils.getQuitAndEnterBytes();
+        final var pis = new PipedInputStream(pos, quitAndEnterBytes.length);
+        try {
+            System.setIn(pis);
+            final var server = executor.submit(() -> {
+                try {
+                    serverClass.getMethod("main", String[].class)
+                            .invoke(null, new Object[] {new String[0]});
+                } catch (final Exception e) {
+                    throw new RuntimeException(e);
+                }
+            });
+            await().pollDelay(Duration.ofMillis(100L)).untilAsserted(() -> assertTrue(true));
+            final var futures = new ArrayList<Future<?>>(CLIENT_CLASSES.size());
+            for (final Class<?> clientClass : CLIENT_CLASSES) {
+                log.debug("client: {}", clientClass.getSimpleName());
+                final var future = executor.submit(() -> {
+                    try {
+                        clientClass.getMethod("main", String[].class)
+                                .invoke(null, new Object[] {new String[0]});
+                    } catch (final Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+                futures.add(future);
+            }
+            for (final var future : futures) {
+                future.get(_CalcConstants.CLIENT_PROGRAM_TIMEOUT,
+                           _CalcConstants.CLIENT_PROGRAM_TIMEOUT_UNIT);
+            }
+            pos.write(quitAndEnterBytes);
+            pos.flush();
+            server.get(_CalcConstants.SERVER_PROGRAM_TIMEOUT,
+                       _CalcConstants.SERVER_PROGRAM_TIMEOUT_UNIT);
             executor.shutdown();
             final var terminated = executor.awaitTermination(8L, TimeUnit.SECONDS);
             assert terminated : "executor hasn't been terminated";

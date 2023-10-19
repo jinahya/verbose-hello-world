@@ -29,45 +29,56 @@ import java.util.concurrent.TimeUnit;
 final class _CalcConstants extends _Rfc86_Constants {
 
     // ------------------------------------------------------------------------------------- NETWORK
-    static final InetAddress HOST = InetAddress.getLoopbackAddress();
+    private static final InetAddress HOST = InetAddress.getLoopbackAddress();
 
     private static final int PORT = 30007;
 
     static final InetSocketAddress ADDR = new InetSocketAddress(HOST, PORT);
 
     // -------------------------------------------------------------------------------------- SERVER
-    static final int SERVER_THREADS = 128;
+    static final int SERVER_THREADS = 64;
 
     static final int SERVER_BACKLOG = SERVER_THREADS >> 1;
 
-    // ------------------------------------------------------------------------------ SERVER_TIMEOUT
-    private static final long SERVER_READ_TIMEOUT_DURATION = 2L;
+    private static final long SERVER_ACCEPT_TIMEOUT_DURATION = 8L;
+
+    private static final TimeUnit SERVER_ACCEPT_TIMEOUT_UNIT = TimeUnit.SECONDS;
+
+    static final long SERVER_ACCEPT_TIMEOUT_MILLIS =
+            SERVER_ACCEPT_TIMEOUT_UNIT.toMillis(SERVER_ACCEPT_TIMEOUT_DURATION);
+
+    private static final long SERVER_READ_TIMEOUT_DURATION = 1L;
 
     private static final TimeUnit SERVER_READ_TIMEOUT_UNIT = TimeUnit.SECONDS;
 
     static final long SERVER_READ_TIMEOUT_MILLIS =
             SERVER_READ_TIMEOUT_UNIT.toMillis(SERVER_READ_TIMEOUT_DURATION);
 
-//    static final long SERVER_PROGRAM_TIMEOUT = 60L;
-//
-//    static final TimeUnit SERVER_PROGRAM_TIMEOUT_UNIT = TimeUnit.SECONDS;
-//
-//    static final long SERVER_PROGRAM_TIMEOUT_IN_MILLIS =
-//            SERVER_PROGRAM_TIMEOUT_UNIT.toMillis(SERVER_PROGRAM_TIMEOUT);
+    private static final long SERVER_WRITE_TIMEOUT = 1L;
+
+    private static final TimeUnit SERVER_WRITE_TIMEOUT_UNIT = TimeUnit.SECONDS;
+
+    static final long SERVER_WRITE_TIMEOUT_MILLIS =
+            SERVER_WRITE_TIMEOUT_UNIT.toMillis(SERVER_WRITE_TIMEOUT);
+
+    static final long SERVER_SELECT_TIMEOUT = 8L;
+
+    static final TimeUnit SERVER_SELECT_TIMEOUT_UNIT = TimeUnit.SECONDS;
+
+    static final long SERVER_SELECT_TIMEOUT_MILLIS =
+            SERVER_SELECT_TIMEOUT_UNIT.toMillis(SERVER_SELECT_TIMEOUT);
+
+    static final long SERVER_PROGRAM_TIMEOUT = 60L;
+
+    static final TimeUnit SERVER_PROGRAM_TIMEOUT_UNIT = TimeUnit.SECONDS;
+
+    static final long SERVER_PROGRAM_TIMEOUT_MILLIS =
+            SERVER_PROGRAM_TIMEOUT_UNIT.toMillis(SERVER_PROGRAM_TIMEOUT);
 
     // -------------------------------------------------------------------------------------- CLIENT
-//    static final int TOTAL_REQUESTS = 1024;
     static final int TOTAL_REQUESTS = 8;
 
-    static final int CLIENT_THREADS = TOTAL_REQUESTS;
-
-    // ------------------------------------------------------------------------------------- TIMEOUT
-    static final long CLIENT_TIMEOUT_DURATION = 60L;
-
-    static final TimeUnit CLIENT_TIMEOUT_UNIT = TimeUnit.SECONDS;
-
-    static final long CLIENT_TIMEOUT_MILLIS =
-            CLIENT_TIMEOUT_UNIT.toMillis(CLIENT_TIMEOUT_DURATION);
+    static final int CLIENT_THREADS = 32;
 
     static final long CONNECT_TIMEOUT = 8L;
 
@@ -93,11 +104,19 @@ final class _CalcConstants extends _Rfc86_Constants {
 
     static final long WRITE_TIMEOUT_MILLIS = WRITE_TIMEOUT_UNIT.toMillis(WRITE_TIMEOUT);
 
-    static final long SELECT_TIMEOUT = 8L;
+    static final long CLIENT_SELECT_TIMEOUT = 8L;
 
-    static final TimeUnit SELECT_TIMEOUT_UNIT = TimeUnit.SECONDS;
+    static final TimeUnit CLIENT_SELECT_TIMEOUT_UNIT = TimeUnit.SECONDS;
 
-    static final long SELECT_TIMEOUT_MILLIS = SELECT_TIMEOUT_UNIT.toMillis(SELECT_TIMEOUT);
+    static final long CLIENT_SELECT_TIMEOUT_MILLIS =
+            CLIENT_SELECT_TIMEOUT_UNIT.toMillis(CLIENT_SELECT_TIMEOUT);
+
+    static final long CLIENT_REQUEST_TIMEOUT = 2L;
+
+    static final TimeUnit CLIENT_REQUEST_TIMEOUT_UNIT = TimeUnit.SECONDS;
+
+    static final long CLIENT_REQUEST_TIMEOUT_MILLIS = CLIENT_REQUEST_TIMEOUT_UNIT.toMillis(
+            CLIENT_REQUEST_TIMEOUT);
 
     static final long CLIENT_PROGRAM_TIMEOUT = 8L;
 
@@ -105,13 +124,6 @@ final class _CalcConstants extends _Rfc86_Constants {
 
     static final long CLIENT_PROGRAM_TIMEOUT_MILLIS = CLIENT_PROGRAM_TIMEOUT_UNIT.toMillis(
             CLIENT_PROGRAM_TIMEOUT);
-
-    static final long SERVER_PROGRAM_TIMEOUT = 8L;
-
-    static final TimeUnit SERVER_PROGRAM_TIMEOUT_UNIT = TimeUnit.SECONDS;
-
-    static final long SERVER_PROGRAM_TIMEOUT_MILLIS = SERVER_PROGRAM_TIMEOUT_UNIT.toMillis(
-            SERVER_PROGRAM_TIMEOUT);
 
     // ---------------------------------------------------------------------------------------------
     private _CalcConstants() {

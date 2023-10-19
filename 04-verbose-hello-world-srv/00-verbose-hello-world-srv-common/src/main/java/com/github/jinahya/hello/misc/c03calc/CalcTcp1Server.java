@@ -29,8 +29,8 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.StandardSocketOptions;
 import java.util.Objects;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -38,7 +38,7 @@ class CalcTcp1Server {
 
     private static void sub(final ServerSocket server) {
         Objects.requireNonNull(server, "server is null");
-        final var executor = Executors.newFixedThreadPool(_CalcConstants.SERVER_THREADS);
+        final var executor = _CalcUtils.newExecutorForServers();
         while (!server.isClosed()) {
             final Socket client;
             try {
@@ -49,7 +49,7 @@ class CalcTcp1Server {
                 }
                 continue;
             }
-            executor.submit(() -> {
+            final var future = executor.submit(() -> {
                 try (client) {
                     client.setSoTimeout((int) _CalcConstants.READ_TIMEOUT_MILLIS);
                     // ------------------------------------------------------------------------ read
@@ -74,19 +74,22 @@ class CalcTcp1Server {
                 }
                 return null;
             });
+            assert future != null;
         }
         executor.shutdown();
         try {
             final var terminated = executor.awaitTermination(10L, TimeUnit.SECONDS);
-            assert terminated : "executor hasn't been terminated";
+            assert terminated : "cla hasn't been terminated";
         } catch (final InterruptedException ie) {
-            log.error("interrupted while awaiting executor to be terminated", ie);
+            log.error("interrupted while awaiting cla to be terminated", ie);
             Thread.currentThread().interrupt();
         }
     }
 
     public static void main(final String... args) throws IOException {
         try (var server = new ServerSocket()) {
+            server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
+            server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
             server.bind(_CalcConstants.ADDR, _CalcConstants.SERVER_BACKLOG);
             _TcpUtils.logBound(server);
             JavaLangUtils.readLinesAndCloseWhenTests(HelloWorldServerUtils::isQuit, server);

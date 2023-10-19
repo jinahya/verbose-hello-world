@@ -45,13 +45,13 @@ class CalcTcp1Client {
         return futures;
     }
 
-    public static void main(final String... args) throws InterruptedException {
-        final var executor = _CalcUtils.newExecutorForCients();
+    public static void main(final String... args) {
+        final var executor = _CalcUtils.newExecutorForClients();
         final var futures = sub(executor);
         futures.forEach(f -> {
             try {
-                f.get(_CalcConstants.CLIENT_TIMEOUT_DURATION,
-                      _CalcConstants.CLIENT_TIMEOUT_UNIT);
+                f.get(_CalcConstants.CLIENT_REQUEST_TIMEOUT,
+                      _CalcConstants.CLIENT_REQUEST_TIMEOUT_UNIT);
             } catch (final InterruptedException ie) {
                 log.error("interrupted while getting the result", ie);
                 Thread.currentThread().interrupt();
@@ -63,8 +63,10 @@ class CalcTcp1Client {
         });
         executor.shutdown();
         try {
-            final var terminated = executor.awaitTermination(_CalcConstants.CLIENT_TIMEOUT_DURATION,
-                                                             _CalcConstants.CLIENT_TIMEOUT_UNIT);
+            final var terminated = executor.awaitTermination(
+                    _CalcConstants.CLIENT_PROGRAM_TIMEOUT,
+                    _CalcConstants.CLIENT_PROGRAM_TIMEOUT_UNIT
+            );
             assert terminated : "executor hasn't been terminated";
         } catch (final InterruptedException ie) {
             log.error("interrupted while awaiting executor to be terminated", ie);

@@ -496,17 +496,21 @@ public final class HelloWorldServerUtils {
         return await(latch, 1L, TimeUnit.MINUTES);
     }
 
-    public static boolean isQuit(String string) {
+    public static byte[] getQuitAndEnterBytes() {
+        return (HelloWorldServerConstants.QUIT_AND_ENTER).getBytes(StandardCharsets.US_ASCII);
+    }
+
+    public static boolean isQuit(final String string) {
         Objects.requireNonNull(string, "string is null");
         return string.strip().equalsIgnoreCase(HelloWorldServerConstants.QUIT);
     }
 
-    public static boolean isKeep(String string) {
+    public static boolean isKeep(final String string) {
         Objects.requireNonNull(string, "string is null");
         return string.strip().equalsIgnoreCase(HelloWorldServerConstants.KEEP);
     }
 
-    public static boolean isSoli(String string) {
+    public static boolean isSoli(final String string) {
         Objects.requireNonNull(string, "string is null");
         return string.strip().equalsIgnoreCase(HelloWorldServerConstants.SOLI);
     }

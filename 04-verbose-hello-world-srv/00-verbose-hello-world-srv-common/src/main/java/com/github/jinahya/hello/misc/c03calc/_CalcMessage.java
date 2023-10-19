@@ -203,19 +203,19 @@ final class _CalcMessage {
         return apply(ByteBuffer.wrap(array)).array();
     }
 
-    // ---------------------------------------------------------------------------------- applyAsync
-    static CompletableFuture<ByteBuffer> applyAsync(
-            final ByteBuffer buffer,
-            final Executor executor) {
-        Objects.requireNonNull(buffer, "buffer is null");
-        Objects.requireNonNull(executor, "executor is null");
-        return CompletableFuture.supplyAsync(() -> apply(buffer), executor);
-    }
-
-    static CompletableFuture<byte[]> applyAsync(final byte[] array, final Executor executor) {
-        Objects.requireNonNull(array, "array is null");
-        return applyAsync(ByteBuffer.wrap(array), executor).handle((b, t) -> b.array());
-    }
+//    // ---------------------------------------------------------------------------------- applyAsync
+//    static CompletableFuture<ByteBuffer> applyAsync(
+//            final ByteBuffer buffer,
+//            final Executor executor) {
+//        Objects.requireNonNull(buffer, "buffer is null");
+//        Objects.requireNonNull(executor, "executor is null");
+//        return CompletableFuture.supplyAsync(() -> apply(buffer), executor);
+//    }
+//
+//    static CompletableFuture<byte[]> applyAsync(final byte[] array, final Executor executor) {
+//        Objects.requireNonNull(array, "array is null");
+//        return applyAsync(ByteBuffer.wrap(array), executor).handle((b, t) -> b.array());
+//    }
 
     // ----------------------------------------------------------------------------------------- log
     static void log(final ByteBuffer buffer) {

@@ -14,7 +14,7 @@ class CalcTcp5Client {
 
     private static final
     CompletionHandler<Integer, CalcTcp5Attachment> READ = new CompletionHandler<>() {
-        @Override
+        @Override // @formatter:off
         public void completed(final Integer result, final CalcTcp5Attachment attachment) {
             if (attachment.buffer.hasRemaining()) {
                 attachment.read(this);
@@ -23,17 +23,16 @@ class CalcTcp5Client {
             _CalcMessage.log(attachment.buffer);
             attachment.closeUnchecked();
         }
-
         @Override
         public void failed(final Throwable exc, final CalcTcp5Attachment attachment) {
             log.debug("failed to read", exc);
             attachment.closeUnchecked();
-        }
+        } // @formatter:on
     };
 
     private static final
     CompletionHandler<Integer, CalcTcp5Attachment> WRITTEN = new CompletionHandler<>() {
-        @Override
+        @Override // @formatter:off
         public void completed(final Integer result, final CalcTcp5Attachment attachment) {
             if (attachment.buffer.hasRemaining()) {
                 attachment.write(this);
@@ -43,12 +42,11 @@ class CalcTcp5Client {
             attachment.buffer.limit(attachment.buffer.capacity());
             attachment.read(READ);
         }
-
         @Override
         public void failed(final Throwable exc, final CalcTcp5Attachment attachment) {
             log.debug("failed to write", exc);
             attachment.closeUnchecked();
-        }
+        } // @formatter:on
     };
 
     @SuppressWarnings({
@@ -62,20 +60,19 @@ class CalcTcp5Client {
                     _CalcConstants.ADDR,        // <remote>
                     client,                     // <attachment>
                     new CompletionHandler<>() { // <handler>
-                        @Override
+                        @Override // @formatter:off
                         public void completed(final Void result,
                                               final AsynchronousSocketChannel attachment) {
                             final var attachment_ =
-                                    CalcTcp5Attachment.newInstanceForClient(latch, attachment);
+                                    CalcTcp5Attachment.newInstanceForClient(attachment, latch);
                             attachment_.write(WRITTEN);
                         }
-
                         @Override
                         public void failed(final Throwable exc,
                                            final AsynchronousSocketChannel attachment) {
                             log.error("failed to connect", exc);
                             latch.countDown();
-                        }
+                        } // @formatter:on
                     }
             );
         }

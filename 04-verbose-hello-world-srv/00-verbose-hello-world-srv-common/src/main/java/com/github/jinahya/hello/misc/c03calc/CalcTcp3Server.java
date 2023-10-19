@@ -6,13 +6,13 @@ import com.github.jinahya.hello.util.JavaLangUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -34,7 +34,7 @@ class CalcTcp3Server {
         final var executor = Executors.newFixedThreadPool(_CalcConstants.SERVER_THREADS << 1);
         while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
             try {
-                if (selector.select(_CalcConstants.SELECT_TIMEOUT_MILLIS) == 0) {
+                if (selector.select(_CalcConstants.SERVER_SELECT_TIMEOUT_MILLIS) == 0) {
                     continue;
                 }
             } catch (final IOException ioe) {
@@ -84,24 +84,9 @@ class CalcTcp3Server {
                     }
                     if (!attachment.hasRemaining()) {
                         selectedKey.interestOpsAnd(~SelectionKey.OP_READ);
-                        if (ThreadLocalRandom.current().nextBoolean()) {
-                            _CalcMessage.apply(attachment);
-                            assert attachment.remaining() == _CalcMessage.LENGTH_RESPONSE;
-                            selectedKey.interestOpsOr(SelectionKey.OP_WRITE);
-                        } else {
-                            _CalcMessage.applyAsync(attachment, executor).handle(
-                                    (b, t) -> {
-                                        if (t != null) {
-                                            log.error("failed to apply", t);
-                                        }
-                                        assert attachment.remaining()
-                                               == _CalcMessage.LENGTH_RESPONSE;
-                                        selectedKey.interestOpsOr(SelectionKey.OP_WRITE);
-                                        selector.wakeup();
-                                        return null;
-                                    }
-                            );
-                        }
+                        _CalcMessage.apply(attachment);
+                        assert attachment.remaining() == _CalcMessage.LENGTH_RESPONSE;
+                        selectedKey.interestOpsOr(SelectionKey.OP_WRITE);
                     }
                 }
                 if (selectedKey.isWritable()) {
@@ -134,6 +119,8 @@ class CalcTcp3Server {
     public static void main(final String... args) throws IOException {
         try (var selector = Selector.open();
              var server = ServerSocketChannel.open()) {
+            server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
+            server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
             // -------------------------------------------------------------------------------- bind
             server.bind(_CalcConstants.ADDR, _CalcConstants.SERVER_BACKLOG);
             _TcpUtils.logBound(server);

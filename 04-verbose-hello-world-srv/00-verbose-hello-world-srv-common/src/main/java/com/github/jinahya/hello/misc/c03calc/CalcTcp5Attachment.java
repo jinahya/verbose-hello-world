@@ -16,13 +16,13 @@ class CalcTcp5Attachment extends _Attachment {
     /**
      * Creates a new instance for specified client with {@link _CalcMessage#newBufferForClient()}.
      *
+     * @param client the client.
      * @param latch  a latch to {@link CountDownLatch#countDown() count down} then the new instance
      *               is {@link #close() closed}.
-     * @param client the client.
      * @return a new instance.
      */
-    static CalcTcp5Attachment newInstanceForClient(final CountDownLatch latch,
-                                                   final AsynchronousSocketChannel client) {
+    static CalcTcp5Attachment newInstanceForClient(final AsynchronousSocketChannel client,
+                                                   final CountDownLatch latch) {
         return new CalcTcp5Attachment(client, _CalcMessage.newBufferForClient()) {
             @Override
             public void close() throws IOException {
