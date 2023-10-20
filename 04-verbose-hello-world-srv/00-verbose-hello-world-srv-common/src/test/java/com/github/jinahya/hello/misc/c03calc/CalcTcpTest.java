@@ -24,6 +24,7 @@ import com.github.jinahya.hello.HelloWorldServerConstants;
 import com.github.jinahya.hello.misc._Rfc86_Constants;
 import com.github.jinahya.hello.util.HelloWorldServerUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Named;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -73,6 +74,7 @@ class CalcTcpTest {
                                                 Named.of(cc.getSimpleName(), cc))));
     }
 
+    @DisplayName("one2one")
     @MethodSource({"getClassesArgumentsList"})
     @ParameterizedTest
     void __(final Class<?> serverClass, final Class<?> clientClass) throws Exception {
@@ -118,6 +120,7 @@ class CalcTcpTest {
         }
     }
 
+    @DisplayName("one2many")
     @MethodSource({"serverClasses"})
     @ParameterizedTest
     void __(final Class<?> serverClass) throws Exception {

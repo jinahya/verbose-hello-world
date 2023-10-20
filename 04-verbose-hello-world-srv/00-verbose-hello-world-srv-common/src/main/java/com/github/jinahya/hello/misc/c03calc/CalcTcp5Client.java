@@ -7,7 +7,6 @@ import java.nio.channels.AsynchronousChannelGroup;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executors;
 
 @Slf4j
 class CalcTcp5Client {
@@ -16,12 +15,11 @@ class CalcTcp5Client {
     CompletionHandler<Integer, CalcTcp5Attachment> READ = new CompletionHandler<>() {
         @Override // @formatter:off
         public void completed(final Integer result, final CalcTcp5Attachment attachment) {
-            if (attachment.buffer.hasRemaining()) {
+            if (attachment.hasRemaining()) {
                 attachment.read(this);
                 return;
             }
-            _CalcMessage.log(attachment.buffer);
-            attachment.closeUnchecked();
+            attachment.log().closeUnchecked();
         }
         @Override
         public void failed(final Throwable exc, final CalcTcp5Attachment attachment) {
@@ -34,13 +32,24 @@ class CalcTcp5Client {
     CompletionHandler<Integer, CalcTcp5Attachment> WRITTEN = new CompletionHandler<>() {
         @Override // @formatter:off
         public void completed(final Integer result, final CalcTcp5Attachment attachment) {
-            if (attachment.buffer.hasRemaining()) {
+            if (attachment.hasRemaining()) {
                 attachment.write(this);
                 return;
             }
-            assert attachment.buffer.position() == _CalcMessage.LENGTH_REQUEST;
-            attachment.buffer.limit(attachment.buffer.capacity());
-            attachment.read(READ);
+            attachment.readyToReceiveResult().read(READ);
+        }
+        @Override
+        public void failed(final Throwable exc, final CalcTcp5Attachment attachment) {
+            log.debug("failed to write", exc);
+            attachment.closeUnchecked();
+        } // @formatter:on
+    };
+
+    private static final
+    CompletionHandler<Void, CalcTcp5Attachment> CONNECTED = new CompletionHandler<>() {
+        @Override // @formatter:off
+        public void completed(final Void result, final CalcTcp5Attachment attachment) {
+            attachment.write(WRITTEN);
         }
         @Override
         public void failed(final Throwable exc, final CalcTcp5Attachment attachment) {
@@ -55,31 +64,14 @@ class CalcTcp5Client {
     private static void sub(final AsynchronousChannelGroup group) throws IOException {
         final var latch = new CountDownLatch(_CalcConstants.TOTAL_REQUESTS);
         for (var c = 0; c < _CalcConstants.TOTAL_REQUESTS; c++) {
-            final var client = AsynchronousSocketChannel.open(group);
-            client.connect(
-                    _CalcConstants.ADDR,        // <remote>
-                    client,                     // <attachment>
-                    new CompletionHandler<>() { // <handler>
-                        @Override // @formatter:off
-                        public void completed(final Void result,
-                                              final AsynchronousSocketChannel attachment) {
-                            final var attachment_ =
-                                    CalcTcp5Attachment.newInstanceForClient(attachment, latch);
-                            attachment_.write(WRITTEN);
-                        }
-                        @Override
-                        public void failed(final Throwable exc,
-                                           final AsynchronousSocketChannel attachment) {
-                            log.error("failed to connect", exc);
-                            latch.countDown();
-                        } // @formatter:on
-                    }
-            );
+            CalcTcp5Attachment
+                    .newInstanceForClient(AsynchronousSocketChannel.open(group), latch)
+                    .connect(CONNECTED);
         }
         try {
             final var terminated = latch.await(_CalcConstants.CLIENT_PROGRAM_TIMEOUT,
                                                _CalcConstants.CLIENT_PROGRAM_TIMEOUT_UNIT);
-            assert terminated;
+            assert terminated : "latch hasn't been broken";
         } catch (final InterruptedException ie) {
             log.error("interrupted while awaiting the latch", ie);
             Thread.currentThread().interrupt();
@@ -88,8 +80,6 @@ class CalcTcp5Client {
     }
 
     public static void main(final String... args) throws IOException {
-        final var group = AsynchronousChannelGroup.withThreadPool(
-                Executors.newFixedThreadPool(_CalcConstants.CLIENT_THREADS));
-        sub(group);
+        sub(_CalcUtils.newChannelGroupForServers());
     }
 }

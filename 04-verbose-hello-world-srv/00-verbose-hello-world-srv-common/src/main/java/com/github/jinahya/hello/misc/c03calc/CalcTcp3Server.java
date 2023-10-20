@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.net.StandardSocketOptions;
-import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
@@ -57,7 +56,7 @@ class CalcTcp3Server {
                         client.configureBlocking(false).register(
                                 selector,
                                 SelectionKey.OP_READ,
-                                _CalcMessage.newInstanceForServers().readyToReceiveFromClient()
+                                _CalcMessage.newInstanceForServers()
                         );
                     } catch (final IOException ioe) {
                         log.error("failed to configure/register", ioe);
@@ -68,9 +67,9 @@ class CalcTcp3Server {
                     final var channel = (SocketChannel) selectedKey.channel();
                     final var attachment = (_CalcMessage) selectedKey.attachment();
                     try {
-                        if (!attachment.receive(channel)) {
+                        if (!attachment.receive(channel).hasRemaining()) {
                             selectedKey.interestOpsAnd(~SelectionKey.OP_READ);
-                            attachment.apply().readyToSendToClient();
+                            attachment.apply().readyToSendResult();
                             selectedKey.interestOpsOr(SelectionKey.OP_WRITE);
                         }
                     } catch (final IOException ioe) {
@@ -83,7 +82,7 @@ class CalcTcp3Server {
                     final var channel = (SocketChannel) selectedKey.channel();
                     final var attachment = (_CalcMessage) selectedKey.attachment();
                     try {
-                        if (!attachment.send(channel)) {
+                        if (!attachment.send(channel).hasRemaining()) {
                             selectedKey.interestOpsAnd(~SelectionKey.OP_WRITE);
                             close(selectedKey);
                         }

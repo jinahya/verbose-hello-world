@@ -22,6 +22,8 @@ package com.github.jinahya.hello.misc.c03calc;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
+import java.nio.channels.AsynchronousChannelGroup;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -37,6 +39,14 @@ final class _CalcUtils {
 
     static ExecutorService newExecutorForServers() {
         return Executors.newFixedThreadPool(_CalcConstants.SERVER_THREADS);
+    }
+
+    static AsynchronousChannelGroup newAsynchronousChannelGroupForClients() throws IOException {
+        return AsynchronousChannelGroup.withThreadPool(newExecutorForClients());
+    }
+
+    static AsynchronousChannelGroup newChannelGroupForServers() throws IOException {
+        return AsynchronousChannelGroup.withThreadPool(newExecutorForServers());
     }
 
     // ---------------------------------------------------------------------------------------------

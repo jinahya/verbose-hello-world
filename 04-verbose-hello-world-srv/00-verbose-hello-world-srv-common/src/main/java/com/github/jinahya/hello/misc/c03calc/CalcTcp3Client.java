@@ -35,7 +35,7 @@ class CalcTcp3Client {
                         clientKey = client.register(
                                 selector,                                                  // <sel>
                                 SelectionKey.OP_WRITE,                                     // <ops>
-                                _CalcMessage.newInstanceForClients().readyToSendToServer() // <att>
+                                _CalcMessage.newInstanceForClients() // <att>
                         );
                     } else {
                         clientKey = client.register(
@@ -77,7 +77,7 @@ class CalcTcp3Client {
                         continue;
                     }
                     selectedKey.interestOpsAnd(~SelectionKey.OP_CONNECT);
-                    selectedKey.attach(_CalcMessage.newInstanceForClients().readyToSendToServer());
+                    selectedKey.attach(_CalcMessage.newInstanceForClients());
                     selectedKey.interestOps(SelectionKey.OP_WRITE);
                 }
                 // --------------------------------------------------------------------------- write
@@ -85,10 +85,9 @@ class CalcTcp3Client {
                     final var channel = (SocketChannel) selectedKey.channel();
                     final var attachment = (_CalcMessage) selectedKey.attachment();
                     try {
-                        if (!attachment.send(channel)) {
-//                            log.debug("all written");
+                        if (!attachment.send(channel).hasRemaining()) {
                             selectedKey.interestOpsAnd(~SelectionKey.OP_WRITE);
-                            attachment.readyToReceiveFromServer();
+                            attachment.readyToReceiveResult();
                             selectedKey.interestOpsOr(SelectionKey.OP_READ);
                         }
                     } catch (final IOException ioe) {
@@ -102,7 +101,7 @@ class CalcTcp3Client {
                     final var channel = (SocketChannel) selectedKey.channel();
                     final var attachment = (_CalcMessage) selectedKey.attachment();
                     try {
-                        if (!attachment.receive(channel)) {
+                        if (!attachment.receive(channel).hasRemaining()) {
                             selectedKey.interestOpsAnd(~SelectionKey.OP_READ);
                             attachment.log();
                             close(selectedKey);

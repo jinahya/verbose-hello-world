@@ -21,8 +21,8 @@ class CalcTcp1Client {
                     client.connect(_CalcConstants.ADDR, _CalcConstants.CONNECT_TIMEOUT_MILLIS);
                     client.setSoTimeout((int) _CalcConstants.READ_TIMEOUT_MILLIS);
                     _CalcMessage.newInstanceForClients()
-                            .sendToServer(client.getOutputStream())
-                            .receiveFromServer(client.getInputStream())
+                            .sendRequest(client.getOutputStream())
+                            .receiveResult(client.getInputStream())
                             .log();
                 }
                 return null;

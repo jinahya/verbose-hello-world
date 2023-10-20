@@ -51,9 +51,9 @@ class CalcTcp1Server {
                 try (client) {
                     client.setSoTimeout((int) _CalcConstants.READ_TIMEOUT_MILLIS);
                     _CalcMessage.newInstanceForServers()
-                            .receiveFromClient(client.getInputStream())
+                            .receiveRequest(client.getInputStream())
                             .apply()
-                            .sendToClient(client.getOutputStream());
+                            .sendResult(client.getOutputStream());
                 }
                 return null;
             });

@@ -7,11 +7,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.net.StandardSocketOptions;
-import java.nio.channels.AsynchronousChannelGroup;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
-import java.util.concurrent.Executors;
 
 @Slf4j
 class CalcTcp5Server {
@@ -20,7 +18,7 @@ class CalcTcp5Server {
     CompletionHandler<Integer, CalcTcp5Attachment> WRITTEN = new CompletionHandler<>() {
         @Override // @formatter:off
         public void completed(final Integer result, final CalcTcp5Attachment attachment) {
-            if (attachment.buffer.hasRemaining()) {
+            if (attachment.hasRemaining()) {
                 attachment.write(this);
                 return;
             }
@@ -37,13 +35,11 @@ class CalcTcp5Server {
     CompletionHandler<Integer, CalcTcp5Attachment> READ = new CompletionHandler<>() {
         @Override // @formatter:off
         public void completed(final Integer result, final CalcTcp5Attachment attachment) {
-            if (attachment.buffer.hasRemaining()) {
+            if (attachment.hasRemaining()) {
                 attachment.read(this);
                 return;
             }
-            _CalcMessage.apply(attachment.buffer);
-            assert attachment.buffer.remaining() == _CalcMessage.LENGTH_RESPONSE;
-            attachment.write(WRITTEN);
+            attachment.apply().readyToSendResult().write(WRITTEN);
         }
         @Override
         public void failed(final Throwable exc, final CalcTcp5Attachment attachment) {
@@ -62,10 +58,7 @@ class CalcTcp5Server {
                     @Override // @formatter:off
                     public void completed(final AsynchronousSocketChannel result,
                                           final Void attachment) {
-                        final var attachment_ = CalcTcp5Attachment.newInstanceForServer(result);
-                        assert attachment_.buffer.position() == 0;
-                        assert attachment_.buffer.remaining() == _CalcMessage.LENGTH_REQUEST;
-                        attachment_.read(READ);
+                        CalcTcp5Attachment.newInstanceForServer(result).read(READ);
                         server.accept(
                                 null, // <attachment>
                                 this  // <handler>
@@ -82,8 +75,7 @@ class CalcTcp5Server {
     }
 
     public static void main(final String... args) throws IOException {
-        final var group = AsynchronousChannelGroup.withThreadPool(
-                Executors.newFixedThreadPool(_CalcConstants.CLIENT_THREADS));
+        final var group = _CalcUtils.newChannelGroupForServers();
         try (var server = AsynchronousServerSocketChannel.open(group)) {
             // ------------------------------------------------------------------------------- reuse
             server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
@@ -93,7 +85,7 @@ class CalcTcp5Server {
             _TcpUtils.logBound(server);
             // --------------------------------------------------------------------------------- sub
             sub(server);
-            // -------------------------------------------------------------------------------------
+            // ------------------------------------------------------- read-quite-and-shutdown-group
             JavaLangUtils.readLinesAndCallWhenTests(
                     HelloWorldServerUtils::isQuit,
                     () -> {
@@ -101,6 +93,7 @@ class CalcTcp5Server {
                         return null;
                     }
             );
+            // ------------------------------------------------------------------------- await-group
             while (!group.isTerminated()) {
                 try {
                     final var terminated = group.awaitTermination(

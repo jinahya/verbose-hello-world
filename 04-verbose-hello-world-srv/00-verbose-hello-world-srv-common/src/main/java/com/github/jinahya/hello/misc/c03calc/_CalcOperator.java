@@ -50,7 +50,9 @@ enum _CalcOperator implements IntBinaryOperator {
     };
 
     // ---------------------------------------------------------------------------------------------
-    static final int NAME_BYTES = 3;
+    static final int NAME_LENGTH = 3;
+
+    static final int NAME_BYTES = NAME_LENGTH;
 
     static final Charset NAME_CHARSET = StandardCharsets.US_ASCII;
 
