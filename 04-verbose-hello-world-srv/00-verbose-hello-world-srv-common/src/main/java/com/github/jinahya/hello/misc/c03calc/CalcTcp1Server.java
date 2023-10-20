@@ -25,13 +25,11 @@ import com.github.jinahya.hello.util.HelloWorldServerUtils;
 import com.github.jinahya.hello.util.JavaLangUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.EOFException;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.StandardSocketOptions;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 class CalcTcp1Server {
@@ -49,39 +47,26 @@ class CalcTcp1Server {
                 }
                 continue;
             }
-            final var future = executor.submit(() -> {
+            executor.submit(() -> {
                 try (client) {
                     client.setSoTimeout((int) _CalcConstants.READ_TIMEOUT_MILLIS);
-                    // ------------------------------------------------------------------------ read
-                    final var array = _CalcMessage.newArrayForServer();
-                    final int r = client.getInputStream().readNBytes(
-                            array,                      // <b>
-                            0,                          // <off>
-                            _CalcMessage.LENGTH_REQUEST // <len>
-                    );
-                    if (r < _CalcMessage.LENGTH_REQUEST) {
-                        throw new EOFException("unexpected eof");
-                    }
-                    // ----------------------------------------------------------------------- apply
-                    _CalcMessage.apply(array);
-                    // ----------------------------------------------------------------------- write
-                    client.getOutputStream().write(
-                            array,                       // <b>
-                            _CalcMessage.LENGTH_REQUEST, // <off>
-                            _CalcMessage.LENGTH_RESPONSE // <len>
-                    );
-                    client.getOutputStream().flush();
+                    _CalcMessage.newInstanceForServers()
+                            .receiveFromClient(client.getInputStream())
+                            .apply()
+                            .sendToClient(client.getOutputStream());
                 }
                 return null;
             });
-            assert future != null;
         }
         executor.shutdown();
         try {
-            final var terminated = executor.awaitTermination(10L, TimeUnit.SECONDS);
-            assert terminated : "cla hasn't been terminated";
+            final var terminated = executor.awaitTermination(
+                    _CalcConstants.SERVER_PROGRAM_TIMEOUT,
+                    _CalcConstants.SERVER_PROGRAM_TIMEOUT_UNIT
+            );
+            assert terminated : "executor hasn't been terminated";
         } catch (final InterruptedException ie) {
-            log.error("interrupted while awaiting cla to be terminated", ie);
+            log.error("interrupted while awaiting the executor to be terminated", ie);
             Thread.currentThread().interrupt();
         }
     }

@@ -2,7 +2,6 @@ package com.github.jinahya.hello.misc.c03calc;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.EOFException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,22 +20,10 @@ class CalcTcp1Client {
                 try (var client = new Socket()) {
                     client.connect(_CalcConstants.ADDR, _CalcConstants.CONNECT_TIMEOUT_MILLIS);
                     client.setSoTimeout((int) _CalcConstants.READ_TIMEOUT_MILLIS);
-                    final var array = _CalcMessage.newArrayForClient();
-                    client.getOutputStream().write(
-                            array,                      // <b>
-                            0,                          // <off>
-                            _CalcMessage.LENGTH_REQUEST // <len>
-                    );
-                    client.getOutputStream().flush();
-                    final int r = client.getInputStream().readNBytes(
-                            array,                       // <b>
-                            _CalcMessage.LENGTH_REQUEST, // <off>
-                            _CalcMessage.LENGTH_RESPONSE // <len>
-                    );
-                    if (r < _CalcMessage.LENGTH_RESPONSE) {
-                        throw new EOFException("unexpected eof");
-                    }
-                    _CalcMessage.log(array);
+                    _CalcMessage.newInstanceForClients()
+                            .sendToServer(client.getOutputStream())
+                            .receiveFromServer(client.getInputStream())
+                            .log();
                 }
                 return null;
             });
@@ -47,8 +34,7 @@ class CalcTcp1Client {
 
     public static void main(final String... args) {
         final var executor = _CalcUtils.newExecutorForClients();
-        final var futures = sub(executor);
-        futures.forEach(f -> {
+        sub(executor).forEach(f -> {
             try {
                 f.get(_CalcConstants.CLIENT_REQUEST_TIMEOUT,
                       _CalcConstants.CLIENT_REQUEST_TIMEOUT_UNIT);

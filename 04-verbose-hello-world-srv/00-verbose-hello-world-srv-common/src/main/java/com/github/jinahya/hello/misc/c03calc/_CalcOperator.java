@@ -2,6 +2,7 @@ package com.github.jinahya.hello.misc.c03calc;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import java.util.function.IntBinaryOperator;
 
 /**
@@ -53,9 +54,19 @@ enum _CalcOperator implements IntBinaryOperator {
 
     static final Charset NAME_CHARSET = StandardCharsets.US_ASCII;
 
-    static {
-        for (final var value : values()) {
-            assert value.name().getBytes(NAME_CHARSET).length == NAME_BYTES;
+    static _CalcOperator valueOf(final byte[] nameBytes) {
+        if (Objects.requireNonNull(nameBytes, "nameBytes is null").length != NAME_BYTES) {
+            throw new IllegalArgumentException(
+                    "nameBytes.length(" + nameBytes.length + ") != " + NAME_BYTES);
         }
+        return valueOf(new String(nameBytes, NAME_CHARSET));
+    }
+
+    _CalcOperator() {
+        // empty
+    }
+
+    byte[] toBytes() {
+        return name().getBytes(NAME_CHARSET);
     }
 }

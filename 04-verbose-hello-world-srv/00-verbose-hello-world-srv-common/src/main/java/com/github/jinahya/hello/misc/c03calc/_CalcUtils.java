@@ -26,6 +26,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @Slf4j
+@SuppressWarnings({
+        "java:S101" // _CalcUtils
+})
 final class _CalcUtils {
 
     static ExecutorService newExecutorForClients() {

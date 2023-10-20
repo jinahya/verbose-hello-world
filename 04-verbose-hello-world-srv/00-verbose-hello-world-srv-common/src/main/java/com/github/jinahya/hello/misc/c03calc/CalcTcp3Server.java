@@ -54,13 +54,11 @@ class CalcTcp3Server {
                         continue;
                     }
                     try {
-                        client.configureBlocking(false);
-                        final var clientKey = client.register(
-                                selector,                         // <sel>
-                                SelectionKey.OP_READ,             // <ops>
-                                _CalcMessage.newBufferForServer() // <att>
+                        client.configureBlocking(false).register(
+                                selector,
+                                SelectionKey.OP_READ,
+                                _CalcMessage.newInstanceForServers().readyToReceiveFromClient()
                         );
-                        assert clientKey.isValid();
                     } catch (final IOException ioe) {
                         log.error("failed to configure/register", ioe);
                         close(selectedKey);
@@ -68,40 +66,31 @@ class CalcTcp3Server {
                 }
                 if (selectedKey.isReadable()) {
                     final var channel = (SocketChannel) selectedKey.channel();
-                    final var attachment = (ByteBuffer) selectedKey.attachment();
+                    final var attachment = (_CalcMessage) selectedKey.attachment();
                     try {
-                        final var r = channel.read(attachment);
-                        if (r == -1) {
-                            log.error("unexpected eof");
-                            close(selectedKey);
-                            continue;
+                        if (!attachment.receive(channel)) {
+                            selectedKey.interestOpsAnd(~SelectionKey.OP_READ);
+                            attachment.apply().readyToSendToClient();
+                            selectedKey.interestOpsOr(SelectionKey.OP_WRITE);
                         }
-                        assert r >= 0;
                     } catch (final IOException ioe) {
                         log.error("failed to read", ioe);
                         close(selectedKey);
                         continue;
                     }
-                    if (!attachment.hasRemaining()) {
-                        selectedKey.interestOpsAnd(~SelectionKey.OP_READ);
-                        _CalcMessage.apply(attachment);
-                        assert attachment.remaining() == _CalcMessage.LENGTH_RESPONSE;
-                        selectedKey.interestOpsOr(SelectionKey.OP_WRITE);
-                    }
                 }
                 if (selectedKey.isWritable()) {
                     final var channel = (SocketChannel) selectedKey.channel();
-                    final var attachment = (ByteBuffer) selectedKey.attachment();
+                    final var attachment = (_CalcMessage) selectedKey.attachment();
                     try {
-                        final int w = channel.write(attachment);
-                        assert w >= 0;
+                        if (!attachment.send(channel)) {
+                            selectedKey.interestOpsAnd(~SelectionKey.OP_WRITE);
+                            close(selectedKey);
+                        }
                     } catch (final IOException ioe) {
                         log.error("failed to write", ioe);
                         close(selectedKey);
                         continue;
-                    }
-                    if (!attachment.hasRemaining()) {
-                        close(selectedKey);
                     }
                 }
             }

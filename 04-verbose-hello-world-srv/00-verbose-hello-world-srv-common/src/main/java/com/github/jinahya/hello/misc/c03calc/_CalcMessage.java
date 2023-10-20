@@ -2,22 +2,35 @@ package com.github.jinahya.hello.misc.c03calc;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.EOFException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 
 @Slf4j
+@SuppressWarnings({
+        "java:S101" // class _Calc...
+})
 final class _CalcMessage {
 
     // ------------------------------------------------------------------------------------ operator
     private static final int OFFSET_OPERATOR = 0;
 
+    private static final int POSITION_OPERATOR = 0;
+
+    private static final int INDEX_OPERATOR = 0;
+
     private static final int LENGTH_OPERATOR = _CalcOperator.NAME_BYTES;
+
+    private static final int LIMIT_OPERATOR = POSITION_OPERATOR + LENGTH_OPERATOR;
 
     // ------------------------------------------------------------------------------------ operands
     private static final int LENGTH_OPERAND = Byte.BYTES;
@@ -26,14 +39,32 @@ final class _CalcMessage {
 
     private static final int LENGTH_OPERAND1 = LENGTH_OPERAND;
 
+    private static final int POSITION_OPERAND1 = LIMIT_OPERATOR;
+
+    private static final int INDEX_OPERAND1 = LIMIT_OPERATOR;
+
+    private static final int LIMIT_OPERAND1 = POSITION_OPERAND1 + LENGTH_OPERAND1;
+
     private static final int OFFSET_OPERAND2 = OFFSET_OPERAND1 + LENGTH_OPERAND1;
 
     private static final int LENGTH_OPERAND2 = LENGTH_OPERAND;
+
+    private static final int POSITION_OPERAND2 = LIMIT_OPERAND1;
+
+    private static final int INDEX_OPERAND2 = INDEX_OPERAND1 + LENGTH_OPERAND;
+
+    private static final int LIMIT_OPERAND2 = POSITION_OPERAND2 + LENGTH_OPERAND2;
 
     // -------------------------------------------------------------------------------------- result
     private static final int OFFSET_RESULT = OFFSET_OPERAND2 + LENGTH_OPERAND2;
 
     private static final int LENGTH_RESULT = Byte.BYTES;
+
+    private static final int POSITION_RESULT = LIMIT_OPERAND2;
+
+    private static final int INDEX_RESULT = INDEX_OPERAND2 + LENGTH_OPERAND;
+
+    private static final int LIMIT_RESULT = POSITION_RESULT + LENGTH_RESULT;
 
     // ---------------------------------------------------------------------------------------------
     static final int LENGTH_REQUEST = OFFSET_RESULT;
@@ -218,6 +249,12 @@ final class _CalcMessage {
 //    }
 
     // ----------------------------------------------------------------------------------------- log
+
+    /**
+     * Logs out content of specified buffer.
+     *
+     * @param buffer the buffer whose content are logged out.
+     */
     static void log(final ByteBuffer buffer) {
         Objects.requireNonNull(buffer, "buffer is null");
         log.debug("{}({}, {}) = {}",
@@ -228,14 +265,171 @@ final class _CalcMessage {
         );
     }
 
+    /**
+     * Logs out content of specified array.
+     *
+     * @param array the array whose content are logged out.
+     */
     static void log(final byte[] array) {
         Objects.requireNonNull(array, "array is null");
         log(ByteBuffer.wrap(array));
     }
 
     // ---------------------------------------------------------------------------------------------
+    static _CalcMessage newInstanceForServers() {
+        return new _CalcMessage();
+    }
+
+    static _CalcMessage newInstanceForClients() {
+        return newInstanceForServers()
+                .operator(randomOperator())
+                .operand1(randomOperand())
+                .operand1(randomOperand());
+    }
+
+    // ---------------------------------------------------------------------------------------------
 
     private _CalcMessage() {
-        throw new AssertionError("instantiation is not allowed");
+        super();
+        this.buffer = ByteBuffer.allocate(LENGTH);
     }
+
+    // ------------------------------------------------------------------------------------ blocking
+    _CalcMessage sendToServer(final OutputStream stream) throws IOException {
+        Objects.requireNonNull(stream, "stream is null");
+        stream.write(array(), 0, LENGTH_REQUEST);
+        stream.flush();
+        return this;
+    }
+
+    _CalcMessage receiveFromServer(final InputStream stream) throws IOException {
+        Objects.requireNonNull(stream, "stream is null");
+        if (stream.readNBytes(array(), LENGTH_REQUEST, LENGTH_RESPONSE) < LENGTH_RESPONSE) {
+            throw new EOFException("unexpected eof");
+        }
+        return this;
+    }
+
+    _CalcMessage receiveFromClient(final InputStream stream) throws IOException {
+        Objects.requireNonNull(stream, "stream is null");
+        if (stream.readNBytes(array(), 0, LENGTH_REQUEST) < LENGTH_REQUEST) {
+            throw new EOFException("unexpected eof");
+        }
+        return this;
+    }
+
+    _CalcMessage sendToClient(final OutputStream stream) throws IOException {
+        Objects.requireNonNull(stream, "stream is null");
+        stream.write(array(), LENGTH_REQUEST, LENGTH_RESPONSE);
+        stream.flush();
+        return this;
+    }
+
+    // -------------------------------------------------------------------------------- non-blocking
+    _CalcMessage readyToSendToServer() {
+        buffer.position(0).limit(LENGTH_REQUEST);
+        return this;
+    }
+
+    _CalcMessage readyToReceiveFromServer() {
+        buffer.position(LENGTH_REQUEST).limit(LENGTH);
+        return this;
+    }
+
+    _CalcMessage readyToReceiveFromClient() {
+        return readyToSendToServer();
+    }
+
+    _CalcMessage readyToSendToClient() {
+        return readyToReceiveFromServer();
+    }
+
+    boolean send(final WritableByteChannel channel) throws IOException {
+        Objects.requireNonNull(channel, "channel is null");
+        if (!buffer.hasRemaining()) {
+            throw new IllegalStateException("buffer doesn't have remaining");
+        }
+        channel.write(buffer);
+        return buffer.hasRemaining();
+    }
+
+    boolean receive(final ReadableByteChannel channel) throws IOException {
+        Objects.requireNonNull(channel, "channel is null");
+        if (!buffer.hasRemaining()) {
+            throw new IllegalStateException("buffer doesn't have remaining");
+        }
+        final var r = channel.read(buffer);
+        if (r == -1) {
+            throw new EOFException("unexpected eof");
+        }
+        return buffer.hasRemaining();
+    }
+
+    // -------------------------------------------------------------------------------- asynchronous
+
+    // ---------------------------------------------------------------------------------------------
+    _CalcMessage apply() {
+        return result((byte) operator().applyAsInt(operand1(), operand2()));
+    }
+
+    // ------------------------------------------------------------------------------------ operator
+    _CalcOperator operator() {
+        final var nameBytes = new byte[_CalcOperator.NAME_BYTES];
+        buffer.get(INDEX_OPERATOR, nameBytes);
+        return _CalcOperator.valueOf(nameBytes);
+    }
+
+    _CalcMessage operator(final _CalcOperator operator) {
+        Objects.requireNonNull(operator, "operator is null");
+        buffer.limit(INDEX_OPERAND1).put(INDEX_OPERATOR, operator.toBytes());
+        return this;
+    }
+
+    // ------------------------------------------------------------------------------------ operand1
+    byte operand1() {
+        return buffer.get(INDEX_OPERAND1);
+    }
+
+    _CalcMessage operand1(final byte operand1) {
+        buffer.limit(INDEX_OPERAND2).put(INDEX_OPERAND1, operand1);
+        return this;
+    }
+
+    // ------------------------------------------------------------------------------------ operand2
+    byte operand2() {
+        return buffer.get(INDEX_OPERAND2);
+    }
+
+    _CalcMessage operand2(final byte operand2) {
+        buffer.limit(INDEX_RESULT).put(INDEX_OPERAND2, operand2);
+        return this;
+    }
+
+    // -------------------------------------------------------------------------------------- result
+    byte result() {
+        return buffer.get(INDEX_RESULT);
+    }
+
+    _CalcMessage result(final byte result) {
+        buffer.limit(LENGTH).put(INDEX_RESULT, result);
+        return this;
+    }
+
+    // ------------------------------------------------------------------------------------- logging
+    void log() {
+        log.debug("{}({}, {}) = {}",
+                  operator(),
+                  String.format("%1$+d", operand1()),
+                  String.format("%1$+d", operand2()),
+                  String.format("%1$+3d", result())
+        );
+    }
+
+    // -------------------------------------------------------------------------------------- buffer
+    byte[] array() {
+        return buffer.array();
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    private final ByteBuffer buffer;
 }
