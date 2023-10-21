@@ -51,7 +51,7 @@ final class _CalcMessage {
     // ---------------------------------------------------------------------------------------------
     static final int LENGTH_REQUEST = LIMIT_OPERAND2;
 
-    static final int LENGTH_RESPONSE = LIMIT_RESULT;
+    static final int LENGTH_RESPONSE = LENGTH_RESULT;
 
     private static final int LENGTH = LENGTH_REQUEST + LENGTH_RESPONSE;
 
@@ -106,6 +106,14 @@ final class _CalcMessage {
     private _CalcMessage() {
         super();
         this.buffer = ByteBuffer.allocate(LENGTH);
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + '{'
+               + "message=" + buffer
+               + ",address=" + address +
+               +'}';
     }
 
     // ------------------------------------------------------------------------------------ blocking

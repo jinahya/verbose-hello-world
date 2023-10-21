@@ -30,38 +30,37 @@ import java.nio.channels.Selector;
 class CalcUdp2Client {
 
     public static void main(final String... args) throws Exception {
-        try (var selector = Selector.open();
-             var client = DatagramChannel.open()) {
-            client.configureBlocking(false);
+        try (var selector = Selector.open()) {
             for (var c = 0; c < _CalcConstants.TOTAL_REQUESTS; c++) {
-                final var clientKey = client.register(
-                        selector,
-                        SelectionKey.OP_WRITE,
-                        _CalcMessage.newInstanceForClients()
-                );
-            }
-            while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
-                if (selector.select(_CalcConstants.CLIENT_SELECT_TIMEOUT) == 0) {
-                    continue;
-                }
-                for (final var i = selector.selectedKeys().iterator(); i.hasNext(); ) {
-                    final var selectedKey = i.next();
-                    i.remove();
-                    if (selectedKey.isWritable()) {
-                        final var channel = (DatagramChannel) selectedKey.channel();
-                        assert channel == client;
-                        final var attachment = (_CalcMessage) selectedKey.attachment();
-                        attachment.sendRequest(client);
-                        selectedKey.interestOpsAnd(~SelectionKey.OP_WRITE);
-                        selectedKey.interestOpsOr(SelectionKey.OP_READ);
-                    }
-                    if (selectedKey.isReadable()) {
-                        final var channel = (DatagramChannel) selectedKey.channel();
-                        assert channel == client;
-                        final var attachment = (_CalcMessage) selectedKey.attachment();
-                        attachment.receiveResult(client).log();
-                        selectedKey.interestOpsAnd(~SelectionKey.OP_READ);
-                        selectedKey.cancel();
+                try (var client = DatagramChannel.open()) {
+                    client.configureBlocking(false);
+                    final var clientKey = client.register(
+                            selector,
+                            SelectionKey.OP_WRITE,
+                            _CalcMessage.newInstanceForClients()
+                    );
+                    while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
+                        if (selector.select(_CalcConstants.CLIENT_SELECT_TIMEOUT) == 0) {
+                            continue;
+                        }
+                        for (final var i = selector.selectedKeys().iterator(); i.hasNext(); ) {
+                            final var selectedKey = i.next();
+                            i.remove();
+                            if (selectedKey.isWritable()) {
+                                final var channel = (DatagramChannel) selectedKey.channel();
+                                final var attachment = (_CalcMessage) selectedKey.attachment();
+                                attachment.sendRequest(channel);
+                                selectedKey.interestOpsAnd(~SelectionKey.OP_WRITE);
+                                selectedKey.interestOpsOr(SelectionKey.OP_READ);
+                            }
+                            if (selectedKey.isReadable()) {
+                                final var channel = (DatagramChannel) selectedKey.channel();
+                                final var attachment = (_CalcMessage) selectedKey.attachment();
+                                attachment.receiveResult(channel).log();
+                                selectedKey.interestOpsAnd(~SelectionKey.OP_READ);
+                                selectedKey.cancel();
+                            }
+                        }
                     }
                 }
             }
