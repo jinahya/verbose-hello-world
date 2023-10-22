@@ -55,7 +55,7 @@ public abstract class _Rfc86_Attachment implements Closeable {
      * @throws NullPointerException     when the {@code printer} is {@code null}.
      */
     protected _Rfc86_Attachment(final int bytes, final String algorithm,
-                                Function<? super byte[], ? extends CharSequence> printer) {
+                                final Function<? super byte[], ? extends CharSequence> printer) {
         super();
         this.bytes = bytes;
         buffer = _Rfc86_Utils.newBuffer();
