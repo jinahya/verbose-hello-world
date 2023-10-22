@@ -59,7 +59,7 @@ class CalcUdp2Server {
             );
             // ------------------------------------------------------------------------------ select
             while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
-                if (selector.select(_CalcConstants.SERVER_SELECT_TIMEOUT_MILLIS) == 0) {
+                if (selector.select(_CalcConstants.SELECT_TIMEOUT_MILLIS) == 0) {
                     continue;
                 }
                 for (final var i = selector.selectedKeys().iterator(); i.hasNext(); ) {

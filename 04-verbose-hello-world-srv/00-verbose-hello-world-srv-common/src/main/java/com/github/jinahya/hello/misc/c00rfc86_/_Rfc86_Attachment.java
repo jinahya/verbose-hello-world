@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.misc;
+package com.github.jinahya.hello.misc.c00rfc86_;
 
 /*-
  * #%L
@@ -127,10 +127,11 @@ public abstract class _Rfc86_Attachment implements Closeable {
      *
      * @param bytes new value for the {@code bytes} property; must be not negative.
      */
-    private void setBytes(final int bytes) {
+    void setBytes(final int bytes) {
         if (bytes < 0) {
             throw new IllegalArgumentException("bytes(" + bytes + ") < 0");
         }
+        this.bytes = bytes;
     }
 
     /**
@@ -154,7 +155,7 @@ public abstract class _Rfc86_Attachment implements Closeable {
      *
      * @param delta the value to be added to current value of the {@code bytes} property; must be
      *              greater than or equal to zero.
-     * @return update value of the {@code bytes} property.
+     * @return updated value of the {@code bytes} property.
      * @throws IllegalArgumentException when {@code delta} is negative or greater than current value
      *                                  of the {@code bytes} property.
      */
@@ -170,6 +171,10 @@ public abstract class _Rfc86_Attachment implements Closeable {
     }
 
     // -------------------------------------------------------------------------------------- buffer
+    protected boolean hasRemaining() {
+        return buffer.hasRemaining();
+    }
+
     protected ByteBuffer getBuffer(final UnaryOperator<ByteBuffer> operator) {
         if (operator == null) {
             return buffer;
@@ -222,7 +227,7 @@ public abstract class _Rfc86_Attachment implements Closeable {
     // ---------------------------------------------------------------------------------------------
     private final AtomicBoolean closed = new AtomicBoolean();
 
-    private int bytes; // bytes to send or received
+    private int bytes; // number of bytes to send or received so far
 
     protected final ByteBuffer buffer;
 

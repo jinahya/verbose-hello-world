@@ -80,6 +80,6 @@ class CalcTcp5Client {
     }
 
     public static void main(final String... args) throws IOException {
-        sub(_CalcUtils.newChannelGroupForServers());
+        sub(_CalcUtils.newChannelGroupForServer());
     }
 }

@@ -20,7 +20,7 @@ class CalcTcp1Client {
                 try (var client = new Socket()) {
                     client.connect(_CalcConstants.ADDR, _CalcConstants.CONNECT_TIMEOUT_MILLIS);
                     client.setSoTimeout((int) _CalcConstants.READ_TIMEOUT_MILLIS);
-                    _CalcMessage.newInstanceForClients()
+                    _CalcMessage.newInstanceForClient()
                             .sendRequest(client.getOutputStream())
                             .receiveResult(client.getInputStream())
                             .log();
@@ -33,11 +33,11 @@ class CalcTcp1Client {
     }
 
     public static void main(final String... args) {
-        final var executor = _CalcUtils.newExecutorForClients();
+        final var executor = _CalcUtils.newExecutorForClient();
         sub(executor).forEach(f -> {
             try {
-                f.get(_CalcConstants.CLIENT_REQUEST_TIMEOUT,
-                      _CalcConstants.CLIENT_REQUEST_TIMEOUT_UNIT);
+                f.get(_CalcConstants.CLIENT_PROGRAM_TIMEOUT,
+                      _CalcConstants.CLIENT_PROGRAM_TIMEOUT_UNIT);
             } catch (final InterruptedException ie) {
                 log.error("interrupted while getting the result", ie);
                 Thread.currentThread().interrupt();

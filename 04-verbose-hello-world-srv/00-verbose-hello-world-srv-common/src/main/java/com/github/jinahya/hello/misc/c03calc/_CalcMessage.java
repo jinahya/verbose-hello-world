@@ -18,8 +18,6 @@ import java.nio.channels.WritableByteChannel;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.IntBinaryOperator;
-import java.util.function.IntFunction;
 
 @Slf4j
 @SuppressWarnings({
@@ -30,13 +28,14 @@ final class _CalcMessage {
     // ------------------------------------------------------------------------------------ operator
     private static final int INDEX_OPERATOR = 0;
 
-    private static final int LIMIT_OPERATOR = INDEX_OPERATOR + _CalcOperator.NAME_BYTES;
+    private static final int LIMIT_OPERATOR = INDEX_OPERATOR + _CalcOperator.BYTES;
 
-    // ------------------------------------------------------------------------------------ operands
+    // ------------------------------------------------------------------------------------ operand1
     private static final int INDEX_OPERAND1 = LIMIT_OPERATOR;
 
     private static final int LIMIT_OPERAND1 = INDEX_OPERAND1 + Byte.BYTES;
 
+    // ------------------------------------------------------------------------------------ operand2
     private static final int INDEX_OPERAND2 = LIMIT_OPERAND1;
 
     private static final int LIMIT_OPERAND2 = INDEX_OPERAND2 + Byte.BYTES;
@@ -44,14 +43,12 @@ final class _CalcMessage {
     // -------------------------------------------------------------------------------------- result
     private static final int INDEX_RESULT = LIMIT_OPERAND2;
 
-    private static final int LENGTH_RESULT = Byte.BYTES;
-
-    private static final int LIMIT_RESULT = INDEX_RESULT + LENGTH_RESULT;
+    private static final int LIMIT_RESULT = INDEX_RESULT + Byte.BYTES;
 
     // ---------------------------------------------------------------------------------------------
     static final int LENGTH_REQUEST = LIMIT_OPERAND2;
 
-    static final int LENGTH_RESPONSE = LENGTH_RESULT;
+    static final int LENGTH_RESPONSE = LIMIT_RESULT;
 
     private static final int LENGTH = LENGTH_REQUEST + LENGTH_RESPONSE;
 
@@ -88,17 +85,17 @@ final class _CalcMessage {
 //    }
 
     // ---------------------------------------------------------------------------------------------
-    static _CalcMessage newInstanceForServers() {
-        return new _CalcMessage()
-                .readyToReceiveRequest();
-    }
-
-    static _CalcMessage newInstanceForClients() {
+    static _CalcMessage newInstanceForClient() {
         return new _CalcMessage()
                 .operator(randomOperator())
                 .operand1(randomOperand())
                 .operand2(randomOperand())
                 .readyToSendRequest();
+    }
+
+    static _CalcMessage newInstanceForServer() {
+        return new _CalcMessage()
+                .readyToReceiveRequest();
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -116,7 +113,7 @@ final class _CalcMessage {
                +'}';
     }
 
-    // ------------------------------------------------------------------------------------ blocking
+    // -------------------------------------------------------------------------------- tcp/blocking
     _CalcMessage sendRequest(final OutputStream stream) throws IOException {
         Objects.requireNonNull(stream, "stream is null");
         stream.write(buffer.array(), 0, LENGTH_REQUEST);
@@ -147,29 +144,31 @@ final class _CalcMessage {
         return this;
     }
 
-    // -------------------------------------------------------------------------------- non-blocking
-    _CalcMessage send(final WritableByteChannel channel) throws IOException {
+    // ---------------------------------------------------------------------------- tcp/non-blocking
+    _CalcMessage write(final WritableByteChannel channel) throws IOException {
         Objects.requireNonNull(channel, "channel is null");
         if (!buffer.hasRemaining()) {
             throw new IllegalStateException("buffer doesn't have remaining");
         }
-        channel.write(buffer);
+        final int w = channel.write(buffer);
+        assert w >= 0;
         return this;
     }
 
-    _CalcMessage receive(final ReadableByteChannel channel) throws IOException {
+    _CalcMessage read(final ReadableByteChannel channel) throws IOException {
         Objects.requireNonNull(channel, "channel is null");
         if (!buffer.hasRemaining()) {
             throw new IllegalStateException("buffer doesn't have remaining");
         }
         final var r = channel.read(buffer);
+        assert r >= -1;
         if (r == -1) {
             throw new EOFException("unexpected eof");
         }
         return this;
     }
 
-    // -------------------------------------------------------------------------------- asynchronous
+    // ---------------------------------------------------------------------------- tcp/asynchronous
     <A> void write(final AsynchronousSocketChannel channel, final A attachment,
                    final CompletionHandler<Integer, ? super A> handler) {
         channel.write(
@@ -192,7 +191,7 @@ final class _CalcMessage {
         );
     }
 
-    // ---------------------------------------------------------------------------------- udp/socket
+    // -------------------------------------------------------------------------------- udp/blocking
     _CalcMessage sendRequest(final DatagramSocket socket) throws IOException {
         Objects.requireNonNull(socket, "socket is null");
         socket.send(new DatagramPacket(buffer.array(), LENGTH_REQUEST, _CalcConstants.ADDR));
@@ -201,7 +200,9 @@ final class _CalcMessage {
 
     _CalcMessage receiveResult(final DatagramSocket socket) throws IOException {
         Objects.requireNonNull(socket, "socket is null");
-        socket.receive(new DatagramPacket(buffer.array(), LENGTH_REQUEST, LENGTH_RESPONSE));
+        final var packet = new DatagramPacket(buffer.array(), LENGTH_REQUEST, LENGTH_RESPONSE);
+        socket.receive(packet);
+        address = packet.getSocketAddress();
         return this;
     }
 
@@ -220,10 +221,9 @@ final class _CalcMessage {
         return this;
     }
 
-    // --------------------------------------------------------------------------------- udp/channel
+    // ---------------------------------------------------------------------------- udp/non-blocking
     _CalcMessage sendRequest(final DatagramChannel channel) throws IOException {
         Objects.requireNonNull(channel, "channel is null");
-        readyToSendRequest();
         final var w = channel.send(buffer, _CalcConstants.ADDR);
         assert w == LENGTH_REQUEST;
         return this;
@@ -231,26 +231,26 @@ final class _CalcMessage {
 
     _CalcMessage receiveResult(final DatagramChannel channel) throws IOException {
         Objects.requireNonNull(channel, "channel is null");
-        readyToReceiveResult();
         address = channel.receive(buffer);
         return this;
     }
 
     _CalcMessage receiveRequest(final DatagramChannel channel) throws IOException {
         Objects.requireNonNull(channel, "channel is null");
-        readyToReceiveRequest();
         address = channel.receive(buffer);
         return this;
     }
 
     _CalcMessage sendResult(final DatagramChannel channel) throws IOException {
         Objects.requireNonNull(channel, "channel is null");
-        assert address != null;
-        readyToSendResult();
+        if (address == null) {
+            throw new IllegalStateException("address is currently not set");
+        }
         final var w = channel.send(buffer, address);
-        assert w == LENGTH_RESULT;
+        assert w == LENGTH_RESPONSE;
         return this;
     }
+
     // ---------------------------------------------------------------------------------------------
 
     /**
@@ -266,47 +266,35 @@ final class _CalcMessage {
 
     // ------------------------------------------------------------------------------------ operator
     _CalcOperator operator() {
-        final var nameBytes = new byte[_CalcOperator.NAME_BYTES];
-        buffer.get(INDEX_OPERATOR, nameBytes);
+        final var nameBytes = new byte[_CalcOperator.BYTES];
+        buffer.limit(LIMIT_OPERATOR).get(INDEX_OPERATOR, nameBytes);
         return _CalcOperator.valueOf(nameBytes);
     }
 
     _CalcMessage operator(final _CalcOperator operator) {
         Objects.requireNonNull(operator, "operator is null");
-        buffer.limit(INDEX_OPERAND1).put(INDEX_OPERATOR, operator.toBytes());
+        buffer.limit(LIMIT_OPERATOR).put(INDEX_OPERATOR, operator.bytes());
         return this;
     }
 
-    // ------------------------------------------------------------------------------------ operands
-    int operands(final IntBinaryOperator operator) {
-        Objects.requireNonNull(operator, "operator is null");
-        return operator.applyAsInt(operand1(), operand2());
-    }
-
-    <R> R operands(final IntFunction<? extends IntFunction<? extends R>> function) {
-        Objects.requireNonNull(function, "function is null");
-        return function.apply(operand1()).apply(operand2());
-    }
-
-    _CalcMessage operands(final byte operand1, final byte operand2) {
-        return operand1(operand1).operand2(operand2);
-    }
-
+    // ------------------------------------------------------------------------------------ operand1
     byte operand1() {
-        return buffer.get(INDEX_OPERAND1);
+        return buffer.limit(LIMIT_OPERAND1).get(INDEX_OPERAND1);
     }
 
     _CalcMessage operand1(final byte operand1) {
-        buffer.limit(INDEX_OPERAND2).put(INDEX_OPERAND1, operand1);
+        buffer.limit(LIMIT_OPERAND1).put(INDEX_OPERAND1, operand1);
         return this;
     }
 
+    // ------------------------------------------------------------------------------------ operand2
+
     byte operand2() {
-        return buffer.limit(INDEX_RESULT).get(INDEX_OPERAND2);
+        return buffer.limit(LIMIT_OPERAND2).get(INDEX_OPERAND2);
     }
 
     _CalcMessage operand2(final byte operand2) {
-        buffer.limit(INDEX_RESULT).put(INDEX_OPERAND2, operand2);
+        buffer.limit(LIMIT_OPERAND2).put(INDEX_OPERAND2, operand2);
         return this;
     }
 
@@ -367,5 +355,5 @@ final class _CalcMessage {
     // ---------------------------------------------------------------------------------------------
     private final ByteBuffer buffer;
 
-    private transient SocketAddress address;
+    private SocketAddress address;
 }

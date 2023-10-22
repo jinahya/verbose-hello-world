@@ -20,32 +20,43 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
-import com.github.jinahya.hello.misc._Rfc86_Constants;
-import com.github.jinahya.hello.misc._Rfc86_Utils;
+import com.github.jinahya.hello.misc._TcpUtils;
+import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
+import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.StandardSocketOptions;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
+@SuppressWarnings({
+        "java:S127"
+})
 class Rfc863Tcp1Server {
 
-    public static void main(final String... args) throws Exception {
+    public static void main(final String... args) throws IOException {
         try (var server = new ServerSocket()) {
+            // ------------------------------------------------------------------------------- REUSE
+            if (ThreadLocalRandom.current().nextBoolean()) {
+                server.setReuseAddress(true);
+            } else {
+                server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
+            }
             // -------------------------------------------------------------------------------- BIND
             server.bind(_Rfc863Constants.ADDR, 1);
-            log.info("bound to {}", server.getLocalSocketAddress());
+            _TcpUtils.logBound(server);
             // ------------------------------------------------------------------------------ ACCEPT
-            server.setSoTimeout((int) _Rfc86_Constants.ACCEPT_TIMEOUT_IN_MILLIS);
+            server.setSoTimeout((int) _Rfc86_Constants.ACCEPT_TIMEOUT_MILLIS);
             try (var client = server.accept()) {
                 _Rfc86_Utils.logAccepted(client);
                 // ------------------------------------------------------------------------- RECEIVE
-                client.setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_IN_MILLIS);
+                client.setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_MILLIS);
                 final var digest = _Rfc863Utils.newDigest();
                 var bytes = 0L; // number of bytes read so far
                 final var array = _Rfc86_Utils.newArray();
-                assert array.length > 0;
-                int r; // number of bytes read
-                for (; ; bytes += r) {
+                for (int r; ; bytes += r) {
                     // ------------------------------------------------------------------------ read
                     r = client.getInputStream().read(array);
                     if (r == -1) {

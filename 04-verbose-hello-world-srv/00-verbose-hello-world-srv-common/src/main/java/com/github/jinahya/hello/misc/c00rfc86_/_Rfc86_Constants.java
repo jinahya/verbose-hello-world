@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.misc;
+package com.github.jinahya.hello.misc.c00rfc86_;
 
 /*-
  * #%L
@@ -40,50 +40,54 @@ public abstract class _Rfc86_Constants {
 
     // ------------------------------------------------------------------------------ ACCEPT_TIMEOUT
 
-    public static final long ACCEPT_TIMEOUT = 32L;
+    public static final long ACCEPT_TIMEOUT = 16L;
 
     public static final TimeUnit ACCEPT_TIMEOUT_UNIT = TIMEOUT_UNIT;
 
-    public static final long ACCEPT_TIMEOUT_IN_MILLIS =
-            ACCEPT_TIMEOUT_UNIT.toMillis(ACCEPT_TIMEOUT);
+    public static final long ACCEPT_TIMEOUT_MILLIS = ACCEPT_TIMEOUT_UNIT.toMillis(ACCEPT_TIMEOUT);
 
     // ----------------------------------------------------------------------------- CONNECT_TIMEOUT
     public static final long CONNECT_TIMEOUT = 32L;
 
     public static final TimeUnit CONNECT_TIMEOUT_UNIT = TimeUnit.MINUTES;
 
-    public static final long CONNECT_TIMEOUT_IN_MILLIS =
+    public static final long CONNECT_TIMEOUT_MILLIS =
             CONNECT_TIMEOUT_UNIT.toMillis(CONNECT_TIMEOUT);
 
     // -------------------------------------------------------------------------------- READ_TIMEOUT
-    public static final long READ_TIMEOUT = 64L;
+    public static final long READ_TIMEOUT = 1L;
 
     public static final TimeUnit READ_TIMEOUT_UNIT = TimeUnit.SECONDS;
 
-    public static final long READ_TIMEOUT_IN_MILLIS = READ_TIMEOUT_UNIT.toMillis(READ_TIMEOUT);
+    public static final long READ_TIMEOUT_MILLIS = READ_TIMEOUT_UNIT.toMillis(READ_TIMEOUT);
 
     // ------------------------------------------------------------------------------- WRITE_TIMEOUT
-    public static final long WRITE_TIMEOUT = 64L;
+    public static final long WRITE_TIMEOUT = 1L;
 
     public static final TimeUnit WRITE_TIMEOUT_UNIT = TimeUnit.SECONDS;
 
-    public static final long WRITE_TIMEOUT_IN_MILLIS = WRITE_TIMEOUT_UNIT.toMillis(WRITE_TIMEOUT);
+    public static final long WRITE_TIMEOUT_MILLIS = WRITE_TIMEOUT_UNIT.toMillis(WRITE_TIMEOUT);
+
+    // ------------------------------------------------------------------------------ SELECT_TIMEOUT
+    public static final long SELECT_TIMEOUT = 1L;
+
+    public static final TimeUnit SELECT_TIMEOUT_UNIT = TimeUnit.SECONDS;
+
+    public static final long SELECT_TIMEOUT_MILLIS = SELECT_TIMEOUT_UNIT.toMillis(SELECT_TIMEOUT);
 
     // ------------------------------------------------------------------------------ SERVER_TIMEOUT
     public static final long SERVER_TIMEOUT = 60L;
 
     public static final TimeUnit SERVER_TIMEOUT_UNIT = TimeUnit.SECONDS;
 
-    public static final long SERVER_TIMEOUT_IN_MILLIS =
-            SERVER_TIMEOUT_UNIT.toMillis(SERVER_TIMEOUT);
+    public static final long SERVER_TIMEOUT_MILLIS = SERVER_TIMEOUT_UNIT.toMillis(SERVER_TIMEOUT);
 
     // ------------------------------------------------------------------------------ CLIENT_TIMEOUT
     public static final long CLIENT_TIMEOUT = 60L;
 
     public static final TimeUnit CLIENT_TIMEOUT_UNIT = TimeUnit.SECONDS;
 
-    public static final long CLIENT_TIMEOUT_IN_MILLIS =
-            CLIENT_TIMEOUT_UNIT.toMillis(CLIENT_TIMEOUT);
+    public static final long CLIENT_TIMEOUT_MILLIS = CLIENT_TIMEOUT_UNIT.toMillis(CLIENT_TIMEOUT);
 
     // ---------------------------------------------------------------------------------------------
 

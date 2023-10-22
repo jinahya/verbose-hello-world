@@ -20,11 +20,13 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
-import com.github.jinahya.hello.misc._Rfc86_Constants;
-import com.github.jinahya.hello.misc._Rfc86_Utils;
+import com.github.jinahya.hello.misc._TcpUtils;
+import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
+import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils;
 import com.github.jinahya.hello.util.ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
 
+import java.net.StandardSocketOptions;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.ThreadLocalRandom;
@@ -35,12 +37,14 @@ class Rfc863Tcp2Server {
     public static void main(final String... args) throws Exception {
         try (var server = ServerSocketChannel.open()) {
             assert server.isBlocking();
+            // ------------------------------------------------------------------------------- REUSE
+            server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
             // -------------------------------------------------------------------------------- BIND
             server.bind(_Rfc863Constants.ADDR, 1);
-            log.info("bound to {}", server.getLocalAddress());
+            _TcpUtils.logBound(server);
             // ------------------------------------------------------------------------------ ACCEPT
             final SocketChannel client;
-            server.socket().setSoTimeout((int) _Rfc86_Constants.ACCEPT_TIMEOUT_IN_MILLIS);
+            server.socket().setSoTimeout((int) _Rfc86_Constants.ACCEPT_TIMEOUT_MILLIS);
             if (ThreadLocalRandom.current().nextBoolean()) {
                 final var socket = server.socket().accept();
                 assert socket != null;
@@ -53,7 +57,7 @@ class Rfc863Tcp2Server {
             assert client.isBlocking();
             // ----------------------------------------------------------------------------- RECEIVE
             try (client) {
-                client.socket().setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_IN_MILLIS);
+                client.socket().setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_MILLIS);
                 final var digest = _Rfc863Utils.newDigest();
                 int bytes = 0;
                 final var buffer = _Rfc86_Utils.newBuffer();

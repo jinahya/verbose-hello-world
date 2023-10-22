@@ -20,11 +20,12 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
-import com.github.jinahya.hello.misc._Rfc86_Constants;
-import com.github.jinahya.hello.misc._Rfc86_Utils;
-import com.github.jinahya.hello.util.LoggingUtils;
+import com.github.jinahya.hello.misc._TcpUtils;
+import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
+import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -36,18 +37,17 @@ import static com.github.jinahya.hello.misc.c01rfc863._Rfc863Constants.HOST;
 @Slf4j
 class Rfc863Tcp3Client {
 
-    public static void main(final String... args) throws Exception {
-        if (args.length > 0) {
-            LoggingUtils.setLevelForAllLoggers(args[0]);
-        }
+    public static void main(final String... args) throws IOException {
         try (var selector = Selector.open();
              var client = SocketChannel.open()) {
+            // -------------------------------------------------------------------------------- BIND
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(HOST, 0));
                 log.info("(optionally) bound to {}", client.getLocalAddress());
             }
+            // --------------------------------------------------------------------------- CONFIGURE
             client.configureBlocking(false);
-            // ------------------------------------------------------------------------- CONNECT/TRY
+            // -------------------------------------------------------------------- CONNECT/REGISTER
             final SelectionKey clientKey;
             if (client.connect(_Rfc863Constants.ADDR)) {
                 log.info("(immediately) connected to {}, through {}", client.getRemoteAddress(),
@@ -59,23 +59,24 @@ class Rfc863Tcp3Client {
             }
             // -------------------------------------------------------------------------------- SEND
             while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
-                if (selector.select(_Rfc86_Constants.CLIENT_TIMEOUT_IN_MILLIS) == 0) {
+                if (selector.select(_Rfc86_Constants.CLIENT_TIMEOUT_MILLIS) == 0) {
                     clientKey.cancel();
                     continue;
                 }
-                for (final var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
+                for (final var i = selector.selectedKeys().iterator(); i.hasNext(); ) {
                     final var selectedKey = i.next();
+                    i.remove();
                     // -------------------------------------------------------------- connect/finish
                     if (selectedKey.isConnectable()) {
                         assert selectedKey == clientKey;
                         final var channel = (SocketChannel) selectedKey.channel();
                         assert channel == client;
                         if (channel.finishConnect()) {
-                            _Rfc86_Utils.logConnected(channel);
+                            _TcpUtils.logConnected(channel);
                             selectedKey.interestOpsAnd(~SelectionKey.OP_CONNECT);
                             selectedKey.attach(new Rfc863Tcp3ClientAttachment(selectedKey));
                             selectedKey.interestOpsOr(SelectionKey.OP_WRITE);
-                            assert !selectedKey.isWritable();
+                            assert !selectedKey.isWritable(); // @@?
                         }
                     }
                     // ----------------------------------------------------------------------- write
@@ -84,9 +85,9 @@ class Rfc863Tcp3Client {
                                 (Rfc863Tcp3ClientAttachment) selectedKey.attachment();
                         assert attachment != null;
                         final var w = attachment.write();
-                        assert w >= 0;
-                        assert w > 0 || !attachment.isClosed();
-                        assert w > 0 || !selectedKey.isValid();
+//                        assert w >= 0;
+//                        assert w > 0 || !attachment.isClosed();
+//                        assert w > 0 || !selectedKey.isValid();
                     }
                 }
             }

@@ -33,20 +33,20 @@ import java.util.concurrent.Executors;
 })
 final class _CalcUtils {
 
-    static ExecutorService newExecutorForClients() {
+    static ExecutorService newExecutorForClient() {
         return Executors.newFixedThreadPool(_CalcConstants.CLIENT_THREADS);
     }
 
-    static ExecutorService newExecutorForServers() {
+    static ExecutorService newExecutorForServer() {
         return Executors.newFixedThreadPool(_CalcConstants.SERVER_THREADS);
     }
 
-    static AsynchronousChannelGroup newAsynchronousChannelGroupForClients() throws IOException {
-        return AsynchronousChannelGroup.withThreadPool(newExecutorForClients());
+    static AsynchronousChannelGroup newAsynchronousChannelGroupForClient() throws IOException {
+        return AsynchronousChannelGroup.withThreadPool(newExecutorForClient());
     }
 
-    static AsynchronousChannelGroup newChannelGroupForServers() throws IOException {
-        return AsynchronousChannelGroup.withThreadPool(newExecutorForServers());
+    static AsynchronousChannelGroup newChannelGroupForServer() throws IOException {
+        return AsynchronousChannelGroup.withThreadPool(newExecutorForServer());
     }
 
     // ---------------------------------------------------------------------------------------------

@@ -20,6 +20,8 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.IOException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
@@ -31,11 +33,19 @@ import java.util.concurrent.ThreadLocalRandom;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@Slf4j
 final class Rfc863Tcp3ClientAttachment extends _Rfc863Attachment.Client {
 
     Rfc863Tcp3ClientAttachment(final SelectionKey clientKey) {
         super();
         this.clientKey = Objects.requireNonNull(clientKey, "clientKey is null");
+    }
+
+    @Override
+    public void close() throws IOException {
+        clientKey.channel().close();
+        assert !clientKey.isValid();
+        super.close();
     }
 
     int write() throws IOException {
@@ -49,11 +59,10 @@ final class Rfc863Tcp3ClientAttachment extends _Rfc863Attachment.Client {
             ThreadLocalRandom.current().nextBytes(buffer.array());
             buffer.clear().limit(Math.min(buffer.limit(), getBytes()));
         }
+        assert buffer.hasRemaining();
         final int w = channel.write(buffer);
         assert w >= 0;
         if (decreaseBytes(updateDigest(w)) == 0) { // no more bytes to send
-            clientKey.cancel();
-            assert !clientKey.isValid();
             close();
         }
         return w;

@@ -20,11 +20,10 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
-import com.github.jinahya.hello.misc._Rfc86_Constants;
-import com.github.jinahya.hello.misc._Rfc86_Utils;
+import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
+import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.net.StandardSocketOptions;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.ThreadLocalRandom;
@@ -52,7 +51,7 @@ class Rfc862Tcp2Server {
             assert client.isBlocking();
             // ------------------------------------------------------------------------ RECEIVE/SEND
             try (client) {
-                client.socket().setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_IN_MILLIS);
+                client.socket().setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_MILLIS);
                 final var digest = _Rfc862Utils.newDigest();
                 final var buffer = _Rfc86_Utils.newBuffer();
                 assert buffer.hasArray();

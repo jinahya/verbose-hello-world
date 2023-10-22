@@ -20,8 +20,8 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
-import com.github.jinahya.hello.misc._Rfc86_Constants;
-import com.github.jinahya.hello.misc._Rfc86_Utils;
+import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
+import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils;
 import com.github.jinahya.hello.util.ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
 
@@ -45,7 +45,7 @@ class Rfc862Tcp2Client {
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.socket().connect(
                         _Rfc862Constants.ADDR,                           // <endpoint>
-                        (int) _Rfc86_Constants.CONNECT_TIMEOUT_IN_MILLIS // <timeout>
+                        (int) _Rfc86_Constants.CONNECT_TIMEOUT_MILLIS // <timeout>
                 );
                 _Rfc86_Utils.logConnected(client.socket());
             } else {

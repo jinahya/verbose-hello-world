@@ -20,7 +20,7 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
-import com.github.jinahya.hello.misc._Rfc86_Constants;
+import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
 import com.github.jinahya.hello.util.ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,7 +34,7 @@ class Rfc863Udp1Server {
         try (var server = new DatagramSocket(null)) {
             server.bind(_Rfc863Constants.ADDR);
             log.info("bound to {}", server.getLocalSocketAddress());
-            server.setSoTimeout((int) _Rfc86_Constants.ACCEPT_TIMEOUT_IN_MILLIS);
+            server.setSoTimeout((int) _Rfc86_Constants.ACCEPT_TIMEOUT_MILLIS);
             // -------------------------------------------------------------------------------------
             final var array = new byte[server.getReceiveBufferSize()];
             final var packet = new DatagramPacket(array, array.length);

@@ -37,10 +37,10 @@ class CalcUdp2Client {
                     final var clientKey = client.register(
                             selector,
                             SelectionKey.OP_WRITE,
-                            _CalcMessage.newInstanceForClients()
+                            _CalcMessage.newInstanceForClient()
                     );
                     while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
-                        if (selector.select(_CalcConstants.CLIENT_SELECT_TIMEOUT) == 0) {
+                        if (selector.select(_CalcConstants.SELECT_TIMEOUT) == 0) {
                             continue;
                         }
                         for (final var i = selector.selectedKeys().iterator(); i.hasNext(); ) {
@@ -51,6 +51,7 @@ class CalcUdp2Client {
                                 final var attachment = (_CalcMessage) selectedKey.attachment();
                                 attachment.sendRequest(channel);
                                 selectedKey.interestOpsAnd(~SelectionKey.OP_WRITE);
+                                attachment.readyToReceiveResult();
                                 selectedKey.interestOpsOr(SelectionKey.OP_READ);
                             }
                             if (selectedKey.isReadable()) {

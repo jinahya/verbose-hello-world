@@ -22,7 +22,7 @@ abstract class CalcTcp5Attachment extends _Attachment {
      */
     static CalcTcp5Attachment newInstanceForClient(final AsynchronousSocketChannel client,
                                                    final CountDownLatch latch) {
-        return new CalcTcp5Attachment(client, _CalcMessage.newInstanceForClients()) {
+        return new CalcTcp5Attachment(client, _CalcMessage.newInstanceForClient()) {
             @Override
             public void close() throws IOException {
                 latch.countDown();
@@ -38,7 +38,7 @@ abstract class CalcTcp5Attachment extends _Attachment {
      * @return a new instance.
      */
     static CalcTcp5Attachment newInstanceForServer(final AsynchronousSocketChannel client) {
-        return new CalcTcp5Attachment(client, _CalcMessage.newInstanceForServers()) {
+        return new CalcTcp5Attachment(client, _CalcMessage.newInstanceForServer()) {
         };
     }
 

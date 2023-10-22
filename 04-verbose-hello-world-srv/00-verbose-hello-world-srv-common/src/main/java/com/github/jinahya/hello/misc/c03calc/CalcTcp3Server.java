@@ -33,7 +33,7 @@ class CalcTcp3Server {
         final var executor = Executors.newFixedThreadPool(_CalcConstants.SERVER_THREADS << 1);
         while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
             try {
-                if (selector.select(_CalcConstants.SERVER_SELECT_TIMEOUT_MILLIS) == 0) {
+                if (selector.select(_CalcConstants.SELECT_TIMEOUT_MILLIS) == 0) {
                     continue;
                 }
             } catch (final IOException ioe) {
@@ -56,7 +56,7 @@ class CalcTcp3Server {
                         client.configureBlocking(false).register(
                                 selector,
                                 SelectionKey.OP_READ,
-                                _CalcMessage.newInstanceForServers()
+                                _CalcMessage.newInstanceForServer()
                         );
                     } catch (final IOException ioe) {
                         log.error("failed to configure/register", ioe);
@@ -67,7 +67,7 @@ class CalcTcp3Server {
                     final var channel = (SocketChannel) selectedKey.channel();
                     final var attachment = (_CalcMessage) selectedKey.attachment();
                     try {
-                        if (!attachment.receive(channel).hasRemaining()) {
+                        if (!attachment.read(channel).hasRemaining()) {
                             selectedKey.interestOpsAnd(~SelectionKey.OP_READ);
                             attachment.apply().readyToSendResult();
                             selectedKey.interestOpsOr(SelectionKey.OP_WRITE);
@@ -82,7 +82,7 @@ class CalcTcp3Server {
                     final var channel = (SocketChannel) selectedKey.channel();
                     final var attachment = (_CalcMessage) selectedKey.attachment();
                     try {
-                        if (!attachment.send(channel).hasRemaining()) {
+                        if (!attachment.write(channel).hasRemaining()) {
                             selectedKey.interestOpsAnd(~SelectionKey.OP_WRITE);
                             close(selectedKey);
                         }

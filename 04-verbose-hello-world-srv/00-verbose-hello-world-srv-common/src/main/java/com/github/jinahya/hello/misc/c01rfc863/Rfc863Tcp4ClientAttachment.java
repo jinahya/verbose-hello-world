@@ -20,7 +20,7 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
-import com.github.jinahya.hello.misc._Rfc86_Constants;
+import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
 
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;

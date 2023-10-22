@@ -35,7 +35,7 @@ class CalcTcp3Client {
                         clientKey = client.register(
                                 selector,                                                  // <sel>
                                 SelectionKey.OP_WRITE,                                     // <ops>
-                                _CalcMessage.newInstanceForClients() // <att>
+                                _CalcMessage.newInstanceForClient() // <att>
                         );
                     } else {
                         clientKey = client.register(
@@ -54,7 +54,7 @@ class CalcTcp3Client {
         }
         while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
             try {
-                if (selector.select(_CalcConstants.CLIENT_SELECT_TIMEOUT_MILLIS) == 0) {
+                if (selector.select(_CalcConstants.SELECT_TIMEOUT_MILLIS) == 0) {
                     continue;
                 }
             } catch (final IOException ioe) {
@@ -65,7 +65,6 @@ class CalcTcp3Client {
                 i.remove();
                 // ------------------------------------------------------------------ connect/finish
                 if (selectedKey.isConnectable()) {
-//                    log.debug("connectable");
                     final var channel = (SocketChannel) selectedKey.channel();
                     try {
                         if (!channel.finishConnect()) {
@@ -77,7 +76,7 @@ class CalcTcp3Client {
                         continue;
                     }
                     selectedKey.interestOpsAnd(~SelectionKey.OP_CONNECT);
-                    selectedKey.attach(_CalcMessage.newInstanceForClients());
+                    selectedKey.attach(_CalcMessage.newInstanceForClient());
                     selectedKey.interestOps(SelectionKey.OP_WRITE);
                 }
                 // --------------------------------------------------------------------------- write
@@ -85,7 +84,7 @@ class CalcTcp3Client {
                     final var channel = (SocketChannel) selectedKey.channel();
                     final var attachment = (_CalcMessage) selectedKey.attachment();
                     try {
-                        if (!attachment.send(channel).hasRemaining()) {
+                        if (!attachment.write(channel).hasRemaining()) {
                             selectedKey.interestOpsAnd(~SelectionKey.OP_WRITE);
                             attachment.readyToReceiveResult();
                             selectedKey.interestOpsOr(SelectionKey.OP_READ);
@@ -101,7 +100,7 @@ class CalcTcp3Client {
                     final var channel = (SocketChannel) selectedKey.channel();
                     final var attachment = (_CalcMessage) selectedKey.attachment();
                     try {
-                        if (!attachment.receive(channel).hasRemaining()) {
+                        if (!attachment.read(channel).hasRemaining()) {
                             selectedKey.interestOpsAnd(~SelectionKey.OP_READ);
                             attachment.log();
                             close(selectedKey);

@@ -55,5 +55,8 @@ See [dockerhub/maven](https://hub.docker.com/_/maven) for available tags.
   * [(aio) AsynchronousCloseException not notified to completion handler when channel group shutdown](https://bugs.openjdk.org/browse/JDK-7056546)
 * stackoverflow.com
   * [Multi module POM - creating a site that works](https://stackoverflow.com/q/10848715/330457)
+  * [How do SO_REUSEADDR and SO_REUSEPORT differ?](https://stackoverflow.com/q/14388706/330457)
 * github.com
-  * [Add AbstractStringAssert#extracting(Charset)](https://github.com/assertj/assertj/issues/3229) (assertj/assertj) 
+  * [Add AbstractStringAssert#extracting(Charset)](https://github.com/assertj/assertj/issues/3229) (assertj/assertj)
+* geeksforgeeks.org
+  * [Difference Between SO_REUSEADDR and SO_REUSEPORT](https://www.geeksforgeeks.org/difference-between-so_reuseaddr-and-so_reuseport/)

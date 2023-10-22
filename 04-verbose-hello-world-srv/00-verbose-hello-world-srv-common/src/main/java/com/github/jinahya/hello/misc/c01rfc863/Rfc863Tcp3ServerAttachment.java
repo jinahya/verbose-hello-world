@@ -50,10 +50,10 @@ final class Rfc863Tcp3ServerAttachment extends _Rfc863Attachment.Server {
             buffer.clear();
         }
         final int r = channel.read(buffer);
+        assert r >= -1;
         if (r == -1) {
             close();
         } else {
-            assert r >= 0;
             increaseBytes(updateDigest(r));
         }
         return r;

@@ -50,25 +50,24 @@ enum _CalcOperator implements IntBinaryOperator {
     };
 
     // ---------------------------------------------------------------------------------------------
-    static final int NAME_LENGTH = 3;
+    static final int LENGTH = 3;
 
-    static final int NAME_BYTES = NAME_LENGTH;
+    static final int BYTES = LENGTH;
 
-    static final Charset NAME_CHARSET = StandardCharsets.US_ASCII;
+    static final Charset CHARSET = StandardCharsets.US_ASCII;
 
-    static _CalcOperator valueOf(final byte[] nameBytes) {
-        if (Objects.requireNonNull(nameBytes, "nameBytes is null").length != NAME_BYTES) {
-            throw new IllegalArgumentException(
-                    "nameBytes.length(" + nameBytes.length + ") != " + NAME_BYTES);
+    static _CalcOperator valueOf(final byte[] bytes) {
+        if (Objects.requireNonNull(bytes, "bytes is null").length != BYTES) {
+            throw new IllegalArgumentException("bytes.length(" + bytes.length + ") != " + BYTES);
         }
-        return valueOf(new String(nameBytes, NAME_CHARSET));
+        return valueOf(new String(bytes, CHARSET));
     }
 
     _CalcOperator() {
         // empty
     }
 
-    byte[] toBytes() {
-        return name().getBytes(NAME_CHARSET);
+    byte[] bytes() {
+        return name().getBytes(CHARSET);
     }
 }

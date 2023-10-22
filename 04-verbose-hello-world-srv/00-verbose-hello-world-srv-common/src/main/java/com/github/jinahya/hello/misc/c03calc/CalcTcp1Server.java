@@ -36,7 +36,7 @@ class CalcTcp1Server {
 
     private static void sub(final ServerSocket server) {
         Objects.requireNonNull(server, "server is null");
-        final var executor = _CalcUtils.newExecutorForServers();
+        final var executor = _CalcUtils.newExecutorForServer();
         while (!server.isClosed()) {
             final Socket client;
             try {
@@ -50,7 +50,7 @@ class CalcTcp1Server {
             executor.submit(() -> {
                 try (client) {
                     client.setSoTimeout((int) _CalcConstants.READ_TIMEOUT_MILLIS);
-                    _CalcMessage.newInstanceForServers()
+                    _CalcMessage.newInstanceForServer()
                             .receiveRequest(client.getInputStream())
                             .apply()
                             .sendResult(client.getOutputStream());

@@ -18,15 +18,15 @@ class _CalcOperatorTest {
         @ParameterizedTest
         void _IsEqualToNameLength_NameLength(final _CalcOperator value) {
             assertThat(value.name())
-                    .hasSize(_CalcOperator.NAME_LENGTH);
+                    .hasSize(_CalcOperator.LENGTH);
         }
 
         @DisplayName("value.name().bytes(\"US_ASCII\").length == NAME_BYTES")
         @EnumSource(_CalcOperator.class)
         @ParameterizedTest
         void _IsEqualToNameBytes_NameBytesLength(final _CalcOperator value) {
-            assertThat(value.name().getBytes(_CalcOperator.NAME_CHARSET))
-                    .hasSize(_CalcOperator.NAME_BYTES);
+            assertThat(value.name().getBytes(_CalcOperator.CHARSET))
+                    .hasSize(_CalcOperator.BYTES);
         }
     }
 }

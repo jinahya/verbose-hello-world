@@ -36,18 +36,12 @@ class CalcUdp1Server {
         try (var server = new DatagramSocket(null)) {
             server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
             server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
-            // -------------------------------------------------------------------------------- bind
             server.bind(_CalcConstants.ADDR);
             _UdpUtils.logBound(server);
-            // ------------------------------------------------------- close-server-when-reads-quit!
-            JavaLangUtils.readLinesAndCloseWhenTests(
-                    HelloWorldServerUtils::isQuit,
-                    server
-            );
-            // ------------------------------------------------------------------------ receive/send
+            JavaLangUtils.readLinesAndCloseWhenTests(HelloWorldServerUtils::isQuit, server);
             while (!server.isClosed()) {
                 try {
-                    _CalcMessage.newInstanceForServers()
+                    _CalcMessage.newInstanceForServer()
                             .receiveRequest(server)
                             .apply()
                             .sendResult(server);

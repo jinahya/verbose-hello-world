@@ -75,7 +75,7 @@ class CalcTcp5Server {
     }
 
     public static void main(final String... args) throws IOException {
-        final var group = _CalcUtils.newChannelGroupForServers();
+        final var group = _CalcUtils.newChannelGroupForServer();
         try (var server = AsynchronousServerSocketChannel.open(group)) {
             // ------------------------------------------------------------------------------- reuse
             server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);

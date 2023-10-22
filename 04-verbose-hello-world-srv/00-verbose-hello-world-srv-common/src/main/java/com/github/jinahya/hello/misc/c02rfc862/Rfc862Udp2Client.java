@@ -20,7 +20,7 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
-import com.github.jinahya.hello.misc._Rfc86_Constants;
+import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
@@ -48,7 +48,7 @@ class Rfc862Udp2Client {
             client.configureBlocking(false);
             var clientKey = client.register(selector, SelectionKey.OP_WRITE);
             while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
-                if (selector.select(_Rfc86_Constants.ACCEPT_TIMEOUT_IN_MILLIS) == 0) {
+                if (selector.select(_Rfc86_Constants.ACCEPT_TIMEOUT_MILLIS) == 0) {
                     break;
                 }
                 for (final var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {

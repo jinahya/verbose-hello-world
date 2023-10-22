@@ -36,7 +36,7 @@ final class CalcUdp2ServerAttachment {
 
     void receiveRequest(final DatagramChannel channel) throws IOException {
         messages.add(
-                _CalcMessage.newInstanceForServers()
+                _CalcMessage.newInstanceForServer()
                         .receiveRequest(channel)
                         .apply()
                         .readyToSendResult()
@@ -55,5 +55,5 @@ final class CalcUdp2ServerAttachment {
         return messages.isEmpty();
     }
 
-    private List<_CalcMessage> messages = new ArrayList<>();
+    private final List<_CalcMessage> messages = new ArrayList<>();
 }

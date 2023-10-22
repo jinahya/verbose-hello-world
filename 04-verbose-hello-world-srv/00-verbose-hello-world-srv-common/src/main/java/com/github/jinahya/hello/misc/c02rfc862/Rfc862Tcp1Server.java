@@ -20,11 +20,10 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
-import com.github.jinahya.hello.misc._Rfc86_Constants;
-import com.github.jinahya.hello.misc._Rfc86_Utils;
+import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
+import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.xml.validation.SchemaFactoryLoader;
 import java.net.ServerSocket;
 
 @Slf4j
@@ -36,11 +35,11 @@ class Rfc862Tcp1Server {
             server.bind(_Rfc862Constants.ADDR, 1);
             log.info("bound to {}", server.getLocalSocketAddress());
             // ------------------------------------------------------------------------------ ACCEPT
-            server.setSoTimeout((int) _Rfc86_Constants.ACCEPT_TIMEOUT_IN_MILLIS);
+            server.setSoTimeout((int) _Rfc86_Constants.ACCEPT_TIMEOUT_MILLIS);
             try (var client = server.accept()) {
                 _Rfc86_Utils.logAccepted(client);
                 // -------------------------------------------------------------------- RECEIVE/SEND
-                client.setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_IN_MILLIS);
+                client.setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_MILLIS);
                 final var digest = _Rfc862Utils.newDigest();
                 var bytes = 0; // number of bytes read/written so far
                 final var array = _Rfc86_Utils.newArray();

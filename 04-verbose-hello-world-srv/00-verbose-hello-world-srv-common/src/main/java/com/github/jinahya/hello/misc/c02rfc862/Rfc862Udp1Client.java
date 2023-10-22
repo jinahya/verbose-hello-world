@@ -20,7 +20,7 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
-import com.github.jinahya.hello.misc._Rfc86_Constants;
+import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
@@ -50,7 +50,7 @@ class Rfc862Udp1Client {
             _Rfc862Utils.logClientBytes(packet.getLength());
             client.send(packet);
             _Rfc862Utils.logDigest(array, 0, packet.getLength());
-            client.setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_IN_MILLIS);
+            client.setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_MILLIS);
             client.receive(packet);
             log.debug("{} byte(s) received from {}", packet.getLength(), packet.getSocketAddress());
             if (connect) {

@@ -20,7 +20,7 @@ package com.github.jinahya.hello.misc.c03calc;
  * #L%
  */
 
-import com.github.jinahya.hello.misc._Rfc86_Constants;
+import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -40,34 +40,6 @@ final class _CalcConstants extends _Rfc86_Constants {
 
     static final int SERVER_BACKLOG = SERVER_THREADS >> 1;
 
-    private static final long SERVER_ACCEPT_TIMEOUT_DURATION = 8L;
-
-    private static final TimeUnit SERVER_ACCEPT_TIMEOUT_UNIT = TimeUnit.SECONDS;
-
-    static final long SERVER_ACCEPT_TIMEOUT_MILLIS =
-            SERVER_ACCEPT_TIMEOUT_UNIT.toMillis(SERVER_ACCEPT_TIMEOUT_DURATION);
-
-    private static final long SERVER_READ_TIMEOUT_DURATION = 1L;
-
-    private static final TimeUnit SERVER_READ_TIMEOUT_UNIT = TimeUnit.SECONDS;
-
-    static final long SERVER_READ_TIMEOUT_MILLIS =
-            SERVER_READ_TIMEOUT_UNIT.toMillis(SERVER_READ_TIMEOUT_DURATION);
-
-    private static final long SERVER_WRITE_TIMEOUT = 1L;
-
-    private static final TimeUnit SERVER_WRITE_TIMEOUT_UNIT = TimeUnit.SECONDS;
-
-    static final long SERVER_WRITE_TIMEOUT_MILLIS =
-            SERVER_WRITE_TIMEOUT_UNIT.toMillis(SERVER_WRITE_TIMEOUT);
-
-    static final long SERVER_SELECT_TIMEOUT = 8L;
-
-    static final TimeUnit SERVER_SELECT_TIMEOUT_UNIT = TimeUnit.SECONDS;
-
-    static final long SERVER_SELECT_TIMEOUT_MILLIS =
-            SERVER_SELECT_TIMEOUT_UNIT.toMillis(SERVER_SELECT_TIMEOUT);
-
     static final long SERVER_PROGRAM_TIMEOUT = 60L;
 
     static final TimeUnit SERVER_PROGRAM_TIMEOUT_UNIT = TimeUnit.SECONDS;
@@ -80,17 +52,19 @@ final class _CalcConstants extends _Rfc86_Constants {
 
     static final int CLIENT_THREADS = 32;
 
+    static final long CLIENT_PROGRAM_TIMEOUT = 8L;
+
+    static final TimeUnit CLIENT_PROGRAM_TIMEOUT_UNIT = TimeUnit.SECONDS;
+
+    static final long CLIENT_PROGRAM_TIMEOUT_MILLIS = CLIENT_PROGRAM_TIMEOUT_UNIT.toMillis(
+            CLIENT_PROGRAM_TIMEOUT);
+
+    // ---------------------------------------------------------------------------------------------
     static final long CONNECT_TIMEOUT = 8L;
 
     static final TimeUnit CONNECT_TIMEOUT_UNIT = TimeUnit.SECONDS;
 
     static final int CONNECT_TIMEOUT_MILLIS = (int) CONNECT_TIMEOUT_UNIT.toMillis(CONNECT_TIMEOUT);
-
-    static final long ACCEPT_TIMEOUT = 4L;
-
-    static final TimeUnit ACCEPT_TIMEOUT_UNIT = TimeUnit.SECONDS;
-
-    static final int ACCEPT_TIMEOUT_MILLIS = (int) ACCEPT_TIMEOUT_UNIT.toMillis(ACCEPT_TIMEOUT);
 
     static final long READ_TIMEOUT = 2L;
 
@@ -98,32 +72,17 @@ final class _CalcConstants extends _Rfc86_Constants {
 
     static final long READ_TIMEOUT_MILLIS = READ_TIMEOUT_UNIT.toMillis(READ_TIMEOUT);
 
-    static final long WRITE_TIMEOUT = 2L;
+    static final long WRITE_TIMEOUT = 1L;
 
     static final TimeUnit WRITE_TIMEOUT_UNIT = TimeUnit.SECONDS;
 
     static final long WRITE_TIMEOUT_MILLIS = WRITE_TIMEOUT_UNIT.toMillis(WRITE_TIMEOUT);
 
-    static final long CLIENT_SELECT_TIMEOUT = 8L;
+    static final long SELECT_TIMEOUT = 8L;
 
-    static final TimeUnit CLIENT_SELECT_TIMEOUT_UNIT = TimeUnit.SECONDS;
+    static final TimeUnit SELECT_TIMEOUT_UNIT = TimeUnit.SECONDS;
 
-    static final long CLIENT_SELECT_TIMEOUT_MILLIS =
-            CLIENT_SELECT_TIMEOUT_UNIT.toMillis(CLIENT_SELECT_TIMEOUT);
-
-    static final long CLIENT_REQUEST_TIMEOUT = 2L;
-
-    static final TimeUnit CLIENT_REQUEST_TIMEOUT_UNIT = TimeUnit.SECONDS;
-
-    static final long CLIENT_REQUEST_TIMEOUT_MILLIS = CLIENT_REQUEST_TIMEOUT_UNIT.toMillis(
-            CLIENT_REQUEST_TIMEOUT);
-
-    static final long CLIENT_PROGRAM_TIMEOUT = 8L;
-
-    static final TimeUnit CLIENT_PROGRAM_TIMEOUT_UNIT = TimeUnit.SECONDS;
-
-    static final long CLIENT_PROGRAM_TIMEOUT_MILLIS = CLIENT_PROGRAM_TIMEOUT_UNIT.toMillis(
-            CLIENT_PROGRAM_TIMEOUT);
+    static final long SELECT_TIMEOUT_MILLIS = SELECT_TIMEOUT_UNIT.toMillis(SELECT_TIMEOUT);
 
     // ---------------------------------------------------------------------------------------------
     private _CalcConstants() {

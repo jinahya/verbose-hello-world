@@ -20,7 +20,7 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
-import com.github.jinahya.hello.misc._Rfc86_Constants;
+import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.EOFException;
@@ -28,8 +28,8 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static com.github.jinahya.hello.misc._Rfc86_Utils.logConnected;
-import static com.github.jinahya.hello.misc._Rfc86_Utils.randomBytes;
+import static com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils.logConnected;
+import static com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils.randomBytes;
 import static com.github.jinahya.hello.misc.c02rfc862._Rfc862Utils.logClientBytes;
 import static com.github.jinahya.hello.misc.c02rfc862._Rfc862Utils.newDigest;
 
@@ -44,9 +44,9 @@ class Rfc862Tcp0Client {
                 log.info("(optionally) bound to {}", client.getLocalSocketAddress());
             }
             // ----------------------------------------------------------------------------- CONNECT
-            client.connect(_Rfc862Constants.ADDR, (int) _Rfc86_Constants.CONNECT_TIMEOUT_IN_MILLIS);
+            client.connect(_Rfc862Constants.ADDR, (int) _Rfc86_Constants.CONNECT_TIMEOUT_MILLIS);
             logConnected(client);
-            client.setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_IN_MILLIS);
+            client.setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_MILLIS);
             // ------------------------------------------------------------------------ SEND/RECEIVE
             final var digest = newDigest();
             var bytes = logClientBytes(randomBytes()); // bytes to send/receive

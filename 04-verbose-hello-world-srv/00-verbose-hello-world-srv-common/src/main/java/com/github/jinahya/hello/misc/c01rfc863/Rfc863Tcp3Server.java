@@ -20,10 +20,13 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
-import com.github.jinahya.hello.misc._Rfc86_Constants;
-import com.github.jinahya.hello.misc._Rfc86_Utils;
+import com.github.jinahya.hello.misc._TcpUtils;
+import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
+import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
+import java.net.StandardSocketOptions;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
@@ -32,21 +35,25 @@ import java.nio.channels.SocketChannel;
 @Slf4j
 class Rfc863Tcp3Server {
 
-    public static void main(final String... args) throws Exception {
+    public static void main(final String... args) throws IOException {
         try (var selector = Selector.open();
              var server = ServerSocketChannel.open()) {
+            // ------------------------------------------------------------------------------- REUSE
+            server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
+            // -------------------------------------------------------------------------------- BIND
             server.bind(_Rfc863Constants.ADDR, 1);
-            log.info("bound to {}", server.getLocalAddress());
+            _TcpUtils.logBound(server);
             // ------------------------------------------------------------------ CONFIGURE/REGISTER
             server.configureBlocking(false);
             final var serverKey = server.register(selector, SelectionKey.OP_ACCEPT);
             // ----------------------------------------------------------------------------- RECEIVE
             while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
-                if (selector.select(_Rfc86_Constants.ACCEPT_TIMEOUT_IN_MILLIS) == 0) {
-                    break;
+                if (selector.select(_Rfc86_Constants.ACCEPT_TIMEOUT_MILLIS) == 0) {
+                    continue;
                 }
-                for (final var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
+                for (final var i = selector.selectedKeys().iterator(); i.hasNext(); ) {
                     final var selectedKey = i.next();
+                    i.remove();
                     // ---------------------------------------------------------------------- accept
                     if (selectedKey.isAcceptable()) {
                         assert selectedKey == serverKey;

@@ -31,7 +31,7 @@ class CalcUdp1Client {
     public static void main(final String... args) throws IOException {
         try (var client = new DatagramSocket(null)) {
             for (var c = 0; c < _CalcConstants.TOTAL_REQUESTS; c++) {
-                _CalcMessage.newInstanceForClients()
+                _CalcMessage.newInstanceForClient()
                         .sendRequest(client)
                         .receiveResult(client)
                         .log();
