@@ -26,26 +26,39 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 final class Rfc863Tcp4ServerAttachment extends _Rfc863Attachment.Server {
 
+    /**
+     * Creates a new instance with specified client.
+     *
+     * @param client the client.
+     */
     Rfc863Tcp4ServerAttachment(final AsynchronousSocketChannel client) {
         super();
         this.client = Objects.requireNonNull(client, "client is null");
     }
 
+    // --------------------------------------------------------------------------- java.io.Closeable
     @Override
     public void close() throws IOException {
         client.close();
         super.close();
     }
 
+    // -------------------------------------------------------------------------------------- client
+
     /**
-     * Reads a sequence of bytes, and returns a number of bytes read.
+     * Reads a sequence of bytes, and returns the number of bytes read.
      *
      * @return the number of bytes read.
-     * @throws Exception if any thrown.
+     * @throws ExecutionException   if failed to read.
+     * @throws InterruptedException when interrupted while getting the result of the read
+     *                              operation.
+     * @throws TimeoutException     when timed out while getting the result of the read operation.
      * @see #getBufferForReading()
      * @see AsynchronousSocketChannel#read(ByteBuffer)
      * @see _Rfc86_Constants#READ_TIMEOUT
@@ -53,9 +66,11 @@ final class Rfc863Tcp4ServerAttachment extends _Rfc863Attachment.Server {
      * @see java.util.concurrent.Future#get(long, TimeUnit)
      * @see Rfc863Tcp4ClientAttachment#write()
      */
-    int read() throws Exception {
+    int read() throws ExecutionException, InterruptedException, TimeoutException {
         assert !isClosed();
-        final var buffer = getBufferForReading();
+        if (!buffer.hasRemaining()) {
+            buffer.clear();
+        }
         final var r = client.read(buffer).get(_Rfc86_Constants.READ_TIMEOUT,
                                               _Rfc86_Constants.READ_TIMEOUT_UNIT);
         assert r >= -1;
@@ -66,5 +81,6 @@ final class Rfc863Tcp4ServerAttachment extends _Rfc863Attachment.Server {
         return r;
     }
 
+    // ---------------------------------------------------------------------------------------------
     private final AsynchronousSocketChannel client;
 }

@@ -54,13 +54,14 @@ class Rfc863Tcp0Server {
                 client.setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_MILLIS);
                 final var digest = _Rfc863Utils.newDigest();
                 var bytes = 0L; // number of bytes read so far
-                for (int b; ; ) {
+                for (int b; ; bytes++) {
                     // ------------------------------------------------------------------------ read
                     b = client.getInputStream().read();
                     if (b == -1) {
                         break;
                     }
-                    bytes++;
+                    assert b >= 0 && b < 256;
+                    assert (b & 0xFF) == b;
                     // ---------------------------------------------------------------------- digest
                     digest.update((byte) b);
                 }

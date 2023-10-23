@@ -138,7 +138,11 @@ final class _CalcMessage {
      */
     _CalcMessage sendRequest(final OutputStream stream) throws IOException {
         Objects.requireNonNull(stream, "stream is null");
-        stream.write(buffer.array(), 0, LENGTH_REQUEST);
+        stream.write(
+                buffer.array(), // <b>
+                0,              // <off>
+                LENGTH_REQUEST  // <len>
+        );
         stream.flush();
         return this;
     }
@@ -152,7 +156,12 @@ final class _CalcMessage {
      */
     _CalcMessage receiveResult(final InputStream stream) throws IOException {
         Objects.requireNonNull(stream, "stream is null");
-        if (stream.readNBytes(buffer.array(), LENGTH_REQUEST, LENGTH_RESPONSE) < LENGTH_RESPONSE) {
+        final var r = stream.readNBytes(
+                buffer.array(), // <b>
+                LENGTH_REQUEST, // <off>
+                LENGTH_RESPONSE // <len>
+        );
+        if (r < LENGTH_RESPONSE) {
             throw new EOFException("unexpected eof");
         }
         return this;
@@ -168,7 +177,12 @@ final class _CalcMessage {
      */
     _CalcMessage receiveRequest(final InputStream stream) throws IOException {
         Objects.requireNonNull(stream, "stream is null");
-        if (stream.readNBytes(buffer.array(), 0, LENGTH_REQUEST) < LENGTH_REQUEST) {
+        final var r = stream.readNBytes(
+                buffer.array(), // <b>
+                0,              // <off>
+                LENGTH_REQUEST  // <len>
+        );
+        if (r < LENGTH_REQUEST) {
             throw new EOFException("unexpected eof");
         }
         return this;
@@ -183,7 +197,11 @@ final class _CalcMessage {
      */
     _CalcMessage sendResult(final OutputStream stream) throws IOException {
         Objects.requireNonNull(stream, "stream is null");
-        stream.write(buffer.array(), LENGTH_REQUEST, LENGTH_RESPONSE);
+        stream.write(
+                buffer.array(), // <b>
+                LENGTH_REQUEST, // <off>
+                LENGTH_RESPONSE // <len>
+        );
         stream.flush();
         return this;
     }

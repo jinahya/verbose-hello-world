@@ -20,10 +20,12 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
+import com.github.jinahya.hello.misc._TcpUtils;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils;
 import lombok.extern.slf4j.Slf4j;
 
+import java.net.StandardSocketOptions;
 import java.nio.channels.AsynchronousServerSocketChannel;
 
 @Slf4j
@@ -31,14 +33,23 @@ class Rfc863Tcp4Server {
 
     public static void main(final String... args) throws Exception {
         try (var server = AsynchronousServerSocketChannel.open()) {
+            // ------------------------------------------------------------------------------- REUSE
+            server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
+            // -------------------------------------------------------------------------------- BIND
             server.bind(_Rfc863Constants.ADDR);
-            log.info("bound to {}", server.getLocalAddress());
+            _TcpUtils.logBound(server);
+            // ----------------------------------------------------------------------------- RECEIVE
+            // ------------------------------------------------------------------------------ accept
             try (var client = server.accept().get(_Rfc86_Constants.ACCEPT_TIMEOUT,
                                                   _Rfc86_Constants.ACCEPT_TIMEOUT_UNIT)) {
                 _Rfc86_Utils.logAccepted(client);
                 try (var attachment = new Rfc863Tcp4ServerAttachment(client)) {
-                    while ((attachment.read()) != -1) {
-                        // does nothing
+                    // ------------------------------------------------------------------------ read
+                    for (int r; ; ) {
+                        r = attachment.read();
+                        if (r != -1) {
+                            break;
+                        }
                     }
                 }
             }

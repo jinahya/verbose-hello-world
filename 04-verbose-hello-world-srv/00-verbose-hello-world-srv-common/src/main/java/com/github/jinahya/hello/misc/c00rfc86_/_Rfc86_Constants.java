@@ -40,14 +40,14 @@ public abstract class _Rfc86_Constants {
 
     // ------------------------------------------------------------------------------ ACCEPT_TIMEOUT
 
-    public static final long ACCEPT_TIMEOUT = 16L;
+    public static final long ACCEPT_TIMEOUT = 32L;
 
     public static final TimeUnit ACCEPT_TIMEOUT_UNIT = TIMEOUT_UNIT;
 
     public static final long ACCEPT_TIMEOUT_MILLIS = ACCEPT_TIMEOUT_UNIT.toMillis(ACCEPT_TIMEOUT);
 
     // ----------------------------------------------------------------------------- CONNECT_TIMEOUT
-    public static final long CONNECT_TIMEOUT = 32L;
+    public static final long CONNECT_TIMEOUT = 2L;
 
     public static final TimeUnit CONNECT_TIMEOUT_UNIT = TimeUnit.MINUTES;
 

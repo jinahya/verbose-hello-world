@@ -32,6 +32,9 @@ import java.nio.channels.SocketChannel;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
+@SuppressWarnings({
+        "java:S127"
+})
 class Rfc863Tcp2Server {
 
     public static void main(final String... args) throws Exception {
@@ -66,12 +69,11 @@ class Rfc863Tcp2Server {
                 assert slice.hasArray();
                 assert slice.array() == buffer.array();
                 for (int r; ; bytes += r) {
-                    // ------------------------------------------------------------------------- prepare
+                    // ------------------------------------------------------------------------ read
                     if (!buffer.hasRemaining()) {
                         buffer.clear();
                     }
                     assert buffer.hasRemaining();
-                    // ---------------------------------------------------------------------------- read
                     if (ThreadLocalRandom.current().nextBoolean()) {
                         r = client.socket().getInputStream().read(
                                 buffer.array(),                           // <b>
@@ -87,8 +89,11 @@ class Rfc863Tcp2Server {
                     if (r == -1) {
                         break;
                     }
-                    // -------------------------------------------------------------------------- digest
-                    digest.update(slice.position(buffer.position() - r).limit(buffer.position()));
+                    // ---------------------------------------------------------------------- digest
+                    digest.update(
+                            slice.position(buffer.position() - r)
+                                    .limit(buffer.position())
+                    );
                 }
                 _Rfc863Utils.logServerBytes(bytes);
                 _Rfc863Utils.logDigest(digest);
