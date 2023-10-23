@@ -16,7 +16,7 @@ class CalcTcp3Client {
             channel.close();
             assert !key.isValid();
         } catch (final IOException ioe) {
-            log.debug("failed to close {}", channel, ioe);
+            log.error("failed to close {}", channel, ioe);
             key.cancel();
         }
         assert !key.isValid();
@@ -24,7 +24,7 @@ class CalcTcp3Client {
 
     private static void sub(final Selector selector) {
         for (var c = 0; c < _CalcConstants.TOTAL_REQUESTS; c++) {
-            // ------------------------------------------------------------------------- connect/try
+            // ----------------------------------------------------------------------------- CONNECT
             try {
                 final var client = SocketChannel.open();
                 client.configureBlocking(false);
@@ -33,8 +33,8 @@ class CalcTcp3Client {
                     final var connectedImmediately = client.connect(_CalcConstants.ADDR);
                     if (connectedImmediately) {
                         clientKey = client.register(
-                                selector,                                                  // <sel>
-                                SelectionKey.OP_WRITE,                                     // <ops>
+                                selector,                           // <sel>
+                                SelectionKey.OP_WRITE,              // <ops>
                                 _CalcMessage.newInstanceForClient() // <att>
                         );
                     } else {
@@ -52,7 +52,9 @@ class CalcTcp3Client {
                 log.error("failed to open/close", ioe);
             }
         }
+        // ---------------------------------------------------------------------------- RECEIVE/SEND
         while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
+            // ------------------------------------------------------------------------------ select
             try {
                 if (selector.select(_CalcConstants.SELECT_TIMEOUT_MILLIS) == 0) {
                     continue;
@@ -60,6 +62,7 @@ class CalcTcp3Client {
             } catch (final IOException ioe) {
                 log.error("failed to select", ioe);
             }
+            // ------------------------------------------------------------------------------ handle
             for (final var i = selector.selectedKeys().iterator(); i.hasNext(); ) {
                 final var selectedKey = i.next();
                 i.remove();

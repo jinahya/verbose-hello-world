@@ -18,6 +18,7 @@ import java.nio.channels.WritableByteChannel;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Function;
 
 @Slf4j
 @SuppressWarnings({
@@ -52,7 +53,7 @@ final class _CalcMessage {
 
     private static final int LENGTH = LENGTH_REQUEST + LENGTH_RESPONSE;
 
-    // ---------------------------------------------------------------------------- operator/operand
+    // ------------------------------------------------------------------------------------ operator
     private static final List<_CalcOperator> OPERATORS = List.of(_CalcOperator.values());
 
     static {
@@ -85,6 +86,13 @@ final class _CalcMessage {
 //    }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Creates a new instance whose {@code operator}, {@code operand1}, and {@code operand2} are
+     * initialized with random values, and is ready to be sent to a server.
+     *
+     * @return a new instance with {@code operator}, {@code operand1}, and {@code operand2}.
+     */
     static _CalcMessage newInstanceForClient() {
         return new _CalcMessage()
                 .operator(randomOperator())
@@ -93,6 +101,11 @@ final class _CalcMessage {
                 .readyToSendRequest();
     }
 
+    /**
+     * Creates a new instance ready to be received from a client.
+     *
+     * @return a new instance.
+     */
     static _CalcMessage newInstanceForServer() {
         return new _CalcMessage()
                 .readyToReceiveRequest();
@@ -114,6 +127,15 @@ final class _CalcMessage {
     }
 
     // -------------------------------------------------------------------------------- tcp/blocking
+
+    /**
+     * Writes  {@code operator}, {@code operand1}, and {@code operand2} to specified output stream,
+     * and flushes the stream.
+     *
+     * @param stream the output stream.
+     * @return this message.
+     * @throws IOException if an I/O error occurs.
+     */
     _CalcMessage sendRequest(final OutputStream stream) throws IOException {
         Objects.requireNonNull(stream, "stream is null");
         stream.write(buffer.array(), 0, LENGTH_REQUEST);
@@ -121,6 +143,13 @@ final class _CalcMessage {
         return this;
     }
 
+    /**
+     * Reads  {@code result} from specified input stream.
+     *
+     * @param stream the input stream.
+     * @return this message.
+     * @throws IOException if an I/O error occurs.
+     */
     _CalcMessage receiveResult(final InputStream stream) throws IOException {
         Objects.requireNonNull(stream, "stream is null");
         if (stream.readNBytes(buffer.array(), LENGTH_REQUEST, LENGTH_RESPONSE) < LENGTH_RESPONSE) {
@@ -129,6 +158,14 @@ final class _CalcMessage {
         return this;
     }
 
+    /**
+     * Reads  {@code operator}, {@code operand1}, and {@code operand2} from specified input stream,
+     * and flushes the stream.
+     *
+     * @param stream the input stream.
+     * @return this message.
+     * @throws IOException if an I/O error occurs.
+     */
     _CalcMessage receiveRequest(final InputStream stream) throws IOException {
         Objects.requireNonNull(stream, "stream is null");
         if (stream.readNBytes(buffer.array(), 0, LENGTH_REQUEST) < LENGTH_REQUEST) {
@@ -137,6 +174,13 @@ final class _CalcMessage {
         return this;
     }
 
+    /**
+     * Writes  {@code result} to specified output stream, and flushes the stream.
+     *
+     * @param stream the output stream.
+     * @return this message.
+     * @throws IOException if an I/O error occurs.
+     */
     _CalcMessage sendResult(final OutputStream stream) throws IOException {
         Objects.requireNonNull(stream, "stream is null");
         stream.write(buffer.array(), LENGTH_REQUEST, LENGTH_RESPONSE);
@@ -319,7 +363,23 @@ final class _CalcMessage {
         return this;
     }
 
+    // ---------------------------------------------------------------------------------------------
+    <R> R debug(
+            final Function<? super ByteBuffer,
+                    ? extends Function<? super SocketAddress,
+                            ? extends R>> function) {
+        return Objects.requireNonNull(function, "function is null")
+                .apply(buffer)
+                .apply(address);
+    }
+
     // -------------------------------------------------------------------------------------- buffer
+
+    /**
+     * Tells whether the {@code buffer} {@link ByteBuffer#hasRemaining() has remaining}.
+     *
+     * @return the result of {@code buffer.hasRemaining()}.
+     */
     boolean hasRemaining() {
         return buffer.hasRemaining();
     }
@@ -351,6 +411,8 @@ final class _CalcMessage {
     _CalcMessage readyToSendResult() {
         return readyToReceiveResult();
     }
+
+    // ------------------------------------------------------------------------------------- address
 
     // ---------------------------------------------------------------------------------------------
     private final ByteBuffer buffer;

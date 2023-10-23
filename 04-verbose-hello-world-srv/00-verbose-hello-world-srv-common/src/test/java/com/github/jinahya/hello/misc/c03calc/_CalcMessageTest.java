@@ -9,7 +9,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class _CalcMessageTest {
 
-    @DisplayName("newInstanceForClients()")
+    @DisplayName("newInstanceForClient()")
     @Nested
     class InstanceForClientsTest {
 
@@ -18,13 +18,18 @@ class _CalcMessageTest {
             assertThat(_CalcMessage.newInstanceForClient())
                     .isNotNull()
                     .satisfies(i -> {
+                        i.debug(b -> a -> {
+                            assertThat(b.position()).isZero();
+                            assertThat(b.remaining()).isEqualTo(_CalcMessage.LENGTH_REQUEST);
+                            return null;
+                        });
                         assertThat(i.operator()).isNotNull();
                         assertThat(i.result()).isZero();
                     });
         }
     }
 
-    @DisplayName("newInstanceForServers()")
+    @DisplayName("newInstanceForServer()")
     @Nested
     class InstanceForServersTest {
 
@@ -33,6 +38,11 @@ class _CalcMessageTest {
             assertThat(_CalcMessage.newInstanceForServer())
                     .isNotNull()
                     .satisfies(i -> {
+                        i.debug(b -> a -> {
+                            assertThat(b.position()).isZero();
+                            assertThat(b.remaining()).isEqualTo(_CalcMessage.LENGTH_REQUEST);
+                            return null;
+                        });
                         assertThatThrownBy(i::operator)
                                 .isInstanceOf(IllegalArgumentException.class);
                         assertThat(i.operand1()).isZero();

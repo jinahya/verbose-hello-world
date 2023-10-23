@@ -35,6 +35,7 @@ import java.util.Objects;
 @Slf4j
 public final class _UdpUtils {
 
+    // ---------------------------------------------------------------------------------------- BIND
     public static <T extends DatagramSocket> T logBound(final T socket) {
         Objects.requireNonNull(socket, "socket is null");
         log.debug("bound to {}", socket.getLocalSocketAddress());
@@ -47,6 +48,7 @@ public final class _UdpUtils {
         return channel;
     }
 
+    // ------------------------------------------------------------------------------------- CONNECT
     public static <T extends DatagramSocket> T logConnected(final T socket) {
         Objects.requireNonNull(socket, "socket is null");
         log.debug("connected to {}", socket.getRemoteSocketAddress());
