@@ -369,16 +369,16 @@ final class _CalcMessage {
                     ? extends Function<? super SocketAddress,
                             ? extends R>> function) {
         return Objects.requireNonNull(function, "function is null")
-                .apply(buffer)
+                .apply(buffer.asReadOnlyBuffer())
                 .apply(address);
     }
 
     // -------------------------------------------------------------------------------------- buffer
 
     /**
-     * Tells whether the {@code buffer} {@link ByteBuffer#hasRemaining() has remaining}.
+     * Returns the value of {@code buffer.hasRemaining()}.
      *
-     * @return the result of {@code buffer.hasRemaining()}.
+     * @return the value of {@code buffer.hasRemaining()}.
      */
     boolean hasRemaining() {
         return buffer.hasRemaining();
@@ -390,7 +390,7 @@ final class _CalcMessage {
     }
 
     /**
-     * Gets this message ready to be received from server.
+     * Gets this message ready to receive the {@code result} from the server.
      *
      * @return this message.
      */
@@ -404,7 +404,7 @@ final class _CalcMessage {
     }
 
     /**
-     * Gets this message ready to be sent to client.
+     * Gets this message ready to be sent the {@code result} to the client.
      *
      * @return this message.
      */

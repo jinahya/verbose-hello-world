@@ -26,6 +26,9 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 
+@SuppressWarnings({
+        "java:S101" // class _Calc...
+})
 final class _CalcConstants extends _Rfc86_Constants {
 
     // ------------------------------------------------------------------------------------- NETWORK
@@ -38,7 +41,7 @@ final class _CalcConstants extends _Rfc86_Constants {
     // -------------------------------------------------------------------------------------- SERVER
     static final int SERVER_THREADS = 64;
 
-    static final int SERVER_BACKLOG = SERVER_THREADS >> 1;
+    static final int SERVER_BACKLOG = SERVER_THREADS << 1;
 
     static final long SERVER_PROGRAM_TIMEOUT = 60L;
 
@@ -60,13 +63,13 @@ final class _CalcConstants extends _Rfc86_Constants {
             CLIENT_PROGRAM_TIMEOUT);
 
     // ---------------------------------------------------------------------------------------------
-    static final long CONNECT_TIMEOUT = 8L;
+    static final long CONNECT_TIMEOUT = 1L;
 
     static final TimeUnit CONNECT_TIMEOUT_UNIT = TimeUnit.SECONDS;
 
     static final int CONNECT_TIMEOUT_MILLIS = (int) CONNECT_TIMEOUT_UNIT.toMillis(CONNECT_TIMEOUT);
 
-    static final long READ_TIMEOUT = 2L;
+    static final long READ_TIMEOUT = 1L;
 
     static final TimeUnit READ_TIMEOUT_UNIT = TimeUnit.SECONDS;
 
