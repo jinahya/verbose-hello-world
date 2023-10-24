@@ -83,11 +83,12 @@ public abstract class _Rfc86_Constants {
     public static final long SERVER_TIMEOUT_MILLIS = SERVER_TIMEOUT_UNIT.toMillis(SERVER_TIMEOUT);
 
     // ------------------------------------------------------------------------------ CLIENT_TIMEOUT
-    public static final long CLIENT_TIMEOUT = 60L;
+    public static final long CLIENT_PROGRAM_TIMEOUT = 60L;
 
-    public static final TimeUnit CLIENT_TIMEOUT_UNIT = TimeUnit.SECONDS;
+    public static final TimeUnit CLIENT_PROGRAM_TIMEOUT_UNIT = TimeUnit.SECONDS;
 
-    public static final long CLIENT_TIMEOUT_MILLIS = CLIENT_TIMEOUT_UNIT.toMillis(CLIENT_TIMEOUT);
+    public static final long CLIENT_PROGRAM_TIMEOUT_MILLIS =
+            CLIENT_PROGRAM_TIMEOUT_UNIT.toMillis(CLIENT_PROGRAM_TIMEOUT);
 
     // ---------------------------------------------------------------------------------------------
 

@@ -40,33 +40,39 @@ class Rfc863Tcp3Client {
     public static void main(final String... args) throws IOException {
         try (var selector = Selector.open();
              var client = SocketChannel.open()) {
-            // -------------------------------------------------------------------------------- BIND
+            // -------------------------------------------------------------------------------- bind
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(HOST, 0));
                 log.info("(optionally) bound to {}", client.getLocalAddress());
             }
-            // --------------------------------------------------------------------------- CONFIGURE
+            // -------------------------------------------------------------- configure non-blocking
             client.configureBlocking(false);
-            // -------------------------------------------------------------------- CONNECT/REGISTER
+            // --------------------------------------------------------------- connect(try)/register
             final SelectionKey clientKey;
             if (client.connect(_Rfc863Constants.ADDR)) {
-                log.info("(immediately) connected to {}, through {}", client.getRemoteAddress(),
-                         client.getLocalAddress());
+                _Rfc86_Utils.logConnected(client);
                 clientKey = client.register(selector, SelectionKey.OP_WRITE);
-                clientKey.attach(new Rfc863Tcp3ClientAttachment(clientKey));
             } else {
                 clientKey = client.register(selector, SelectionKey.OP_CONNECT);
             }
-            // -------------------------------------------------------------------------------- SEND
+            // ----------------------------------------------------------------------------- prepare
+            var bytes = _Rfc863Utils.logClientBytes(_Rfc86_Utils.randomBytes());
+            final var digest = _Rfc863Utils.newDigest();
+            final var buffer = _Rfc86_Utils.newBuffer();
+            ThreadLocalRandom.current().nextBytes(buffer.array());
+            buffer.limit(Math.min(buffer.limit(), bytes));
+            final var slice = buffer.slice();
+            assert slice.hasArray();
+            assert slice.array() == buffer.array();
+            // ------------------------------------------------------------------------------ select
             while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
-                if (selector.select(_Rfc86_Constants.CLIENT_TIMEOUT_MILLIS) == 0) {
-                    clientKey.cancel();
-                    continue;
+                if (selector.select(_Rfc86_Constants.CLIENT_PROGRAM_TIMEOUT_MILLIS) == 0) {
+                    break;
                 }
                 for (final var i = selector.selectedKeys().iterator(); i.hasNext(); ) {
                     final var selectedKey = i.next();
                     i.remove();
-                    // -------------------------------------------------------------- connect/finish
+                    // ------------------------------------------------------------- connect(finish)
                     if (selectedKey.isConnectable()) {
                         assert selectedKey == clientKey;
                         final var channel = (SocketChannel) selectedKey.channel();
@@ -74,20 +80,28 @@ class Rfc863Tcp3Client {
                         if (channel.finishConnect()) {
                             _TcpUtils.logConnected(channel);
                             selectedKey.interestOpsAnd(~SelectionKey.OP_CONNECT);
-                            selectedKey.attach(new Rfc863Tcp3ClientAttachment(selectedKey));
                             selectedKey.interestOpsOr(SelectionKey.OP_WRITE);
                             assert !selectedKey.isWritable(); // @@?
                         }
                     }
                     // ----------------------------------------------------------------------- write
                     if (selectedKey.isWritable()) {
-                        final var attachment =
-                                (Rfc863Tcp3ClientAttachment) selectedKey.attachment();
-                        assert attachment != null;
-                        final var w = attachment.write();
-//                        assert w >= 0;
-//                        assert w > 0 || !attachment.isClosed();
-//                        assert w > 0 || !selectedKey.isValid();
+                        if (!buffer.hasRemaining()) {
+                            ThreadLocalRandom.current().nextBytes(buffer.array());
+                            buffer.clear().limit(Math.min(buffer.limit(), bytes));
+                        }
+                        final var w = client.write(buffer);
+                        assert w >= 0;
+                        digest.update(
+                                slice.position(buffer.position() - w)
+                                        .limit(buffer.position())
+                        );
+                        if ((bytes -= w) == 0) {
+                            _Rfc863Utils.logDigest(digest);
+                            selectedKey.interestOpsAnd(~SelectionKey.OP_WRITE);
+                            selectedKey.cancel();
+                            assert !selectedKey.isValid();
+                        }
                     }
                 }
             }

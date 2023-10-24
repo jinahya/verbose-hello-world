@@ -38,18 +38,25 @@ class Rfc863Tcp3Server {
     public static void main(final String... args) throws IOException {
         try (var selector = Selector.open();
              var server = ServerSocketChannel.open()) {
-            // ------------------------------------------------------------------------------- REUSE
+            // ------------------------------------------------------------------------------- reuse
             server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
-            // -------------------------------------------------------------------------------- BIND
+            // -------------------------------------------------------------------------------- bind
             server.bind(_Rfc863Constants.ADDR, 1);
             _TcpUtils.logBound(server);
-            // ------------------------------------------------------------------ CONFIGURE/REGISTER
+            // ----------------------------------------------------- configure-non-blocking/register
             server.configureBlocking(false);
             final var serverKey = server.register(selector, SelectionKey.OP_ACCEPT);
-            // ----------------------------------------------------------------------------- RECEIVE
+            // ----------------------------------------------------------------------------- prepare
+            final var digest = _Rfc863Utils.newDigest();
+            var bytes = 0L;
+            final var buffer = _Rfc86_Utils.newBuffer();
+            final var slice = buffer.slice();
+            assert slice.hasArray();
+            assert slice.array() == buffer.array();
+            // ------------------------------------------------------------------------------ select
             while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
                 if (selector.select(_Rfc86_Constants.ACCEPT_TIMEOUT_MILLIS) == 0) {
-                    continue;
+                    break;
                 }
                 for (final var i = selector.selectedKeys().iterator(); i.hasNext(); ) {
                     final var selectedKey = i.next();
@@ -63,23 +70,34 @@ class Rfc863Tcp3Server {
                         selectedKey.interestOpsAnd(~SelectionKey.OP_ACCEPT);
                         selectedKey.cancel();
                         assert !selectedKey.isValid();
+                        // ----------------------------------------- configure-non-blocking/register
                         client.configureBlocking(false);
                         final var clientKey = client.register(selector, SelectionKey.OP_READ);
-                        clientKey.attach(new Rfc863Tcp3ServerAttachment(clientKey));
+                        assert !clientKey.isReadable(); // @@?
                         continue; // why?
                     }
                     // ------------------------------------------------------------------------ read
                     if (selectedKey.isReadable()) {
                         final var channel = (SocketChannel) selectedKey.channel();
                         assert channel != null;
-                        final var attachment =
-                                (Rfc863Tcp3ServerAttachment) selectedKey.attachment();
-                        assert attachment != null;
-                        final var r = attachment.read();
-                        assert r >= -1;
-                        assert r != -1 || attachment.isClosed();
-                        assert r != -1 || !serverKey.isValid();
-                        assert r != -1 || !channel.isOpen();
+                        if (!buffer.hasRemaining()) {
+                            buffer.clear();
+                        }
+                        final var r = channel.read(buffer);
+                        assert r >= -1; // -1, 0, 1, 2, 3, ...
+                        if (r == -1) {
+                            _Rfc863Utils.logServerBytes(bytes);
+                            _Rfc863Utils.logDigest(digest);
+                            selectedKey.interestOpsAnd(~SelectionKey.OP_READ);
+                            channel.close();
+                            assert !selectedKey.isValid();
+                            continue;
+                        }
+                        bytes += r;
+                        digest.update(
+                                slice.position(buffer.position() - r)
+                                        .limit(buffer.position())
+                        );
                     }
                 }
             }

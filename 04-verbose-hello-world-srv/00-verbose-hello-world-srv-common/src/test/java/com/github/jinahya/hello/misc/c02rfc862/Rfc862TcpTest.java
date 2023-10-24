@@ -86,7 +86,7 @@ class Rfc862TcpTest {
                 throw new RuntimeException(e);
             }
         });
-        client.get(_Rfc86_Constants.CLIENT_TIMEOUT, _Rfc86_Constants.CLIENT_TIMEOUT_UNIT);
+        client.get(_Rfc86_Constants.CLIENT_PROGRAM_TIMEOUT, _Rfc86_Constants.CLIENT_PROGRAM_TIMEOUT_UNIT);
         server.get(_Rfc86_Constants.SERVER_TIMEOUT, _Rfc86_Constants.SERVER_TIMEOUT_UNIT);
         executor.shutdown();
     }
