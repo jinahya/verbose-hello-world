@@ -20,6 +20,7 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
+import com.github.jinahya.hello.misc._UdpUtils;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
 import com.github.jinahya.hello.util.ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
@@ -36,27 +37,26 @@ class Rfc863Udp2Client {
 
     public static void main(final String... args) throws Exception {
         try (var client = DatagramChannel.open()) {
+            assert client.isBlocking();
+            // -------------------------------------------------------------------------------- bind
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc86_Constants.HOST, 0));
-                log.info("(optionally) bound to {}", client.getLocalAddress());
+                _UdpUtils.logBound(client);
             }
+            // ----------------------------------------------------------------------------- connect
             final var connect = ThreadLocalRandom.current().nextBoolean();
             if (connect) {
                 client.connect(_Rfc863Constants.ADDR);
-                log.info("(optionally) connected to {}, through {}", client.getRemoteAddress(),
-                         client.getLocalAddress());
+                _UdpUtils.logConnected(client);
             }
-            assert client.isBlocking();
-            // -------------------------------------------------------------------------------------
+            // -------------------------------------------------------------------------------- send
             final var buffer = ByteBuffer.allocate(
                     ThreadLocalRandom.current().nextInt(
                             client.getOption(StandardSocketOptions.SO_SNDBUF) + 1
                     )
             );
             ThreadLocalRandom.current().nextBytes(buffer.array());
-            ThreadLocalRandom.current().nextBytes(buffer.array());
             _Rfc863Utils.logClientBytes(buffer.remaining());
-            // -------------------------------------------------------------------------------------
             if (ThreadLocalRandom.current().nextBoolean()) {
                 final var packet = new DatagramPacket(
                         buffer.array(),                           // <buf>
@@ -68,12 +68,17 @@ class Rfc863Udp2Client {
                 assert packet.getLength() == buffer.remaining();
                 buffer.position(buffer.position() + packet.getLength());
             } else {
-                final var w = client.send(buffer, _Rfc863Constants.ADDR);
-                assert w == buffer.position();
+                if (connect && ThreadLocalRandom.current().nextBoolean()) {
+                    final var w = client.write(buffer);
+                    assert w == buffer.position();
+                } else {
+                    final var w = client.send(buffer, _Rfc863Constants.ADDR);
+                    assert w == buffer.position();
+                }
             }
             assert !buffer.hasRemaining();
-            // -------------------------------------------------------------------------------------
             _Rfc863Utils.logDigest(buffer.flip());
+            // -------------------------------------------------------------------------- disconnect
             if (connect) {
                 client.disconnect();
             }

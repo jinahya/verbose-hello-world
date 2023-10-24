@@ -20,29 +20,31 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
+import com.github.jinahya.hello.misc._UdpUtils;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
 import com.github.jinahya.hello.util.ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 
 @Slf4j
 class Rfc863Udp1Server {
 
-    public static void main(final String... args) throws Exception {
+    public static void main(final String... args) throws IOException {
         try (var server = new DatagramSocket(null)) {
+            // -------------------------------------------------------------------------------- bind
             server.bind(_Rfc863Constants.ADDR);
-            log.info("bound to {}", server.getLocalSocketAddress());
+            _UdpUtils.logBound(server);
+            // --------------------------------------------------------------------------- configure
             server.setSoTimeout((int) _Rfc86_Constants.ACCEPT_TIMEOUT_MILLIS);
-            // -------------------------------------------------------------------------------------
+            // ----------------------------------------------------------------------------- receive
             final var array = new byte[server.getReceiveBufferSize()];
             final var packet = new DatagramPacket(array, array.length);
             server.receive(packet);
-            log.debug("{} byte(s) received from {}", packet.getLength(), packet.getSocketAddress());
+            _Rfc863Utils.logServerBytes(packet);
             assert packet.getLength() <= array.length;
-            // -------------------------------------------------------------------------------------
-            _Rfc863Utils.logServerBytes(packet.getLength());
             _Rfc863Utils.logDigest(packet.getData(), 0, packet.getLength());
         }
     }

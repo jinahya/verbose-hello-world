@@ -41,7 +41,8 @@ class Rfc862Tcp5Client {
             }
             new Rfc862Tcp5ClientAttachment(group, client).connect();
             final var terminated = group.awaitTermination(
-                    _Rfc86_Constants.CLIENT_PROGRAM_TIMEOUT, _Rfc86_Constants.CLIENT_PROGRAM_TIMEOUT_UNIT
+                    _Rfc86_Constants.CLIENT_PROGRAM_TIMEOUT,
+                    _Rfc86_Constants.CLIENT_PROGRAM_TIMEOUT_UNIT
             );
             assert terminated : "channel group hasn't been terminated!";
         }

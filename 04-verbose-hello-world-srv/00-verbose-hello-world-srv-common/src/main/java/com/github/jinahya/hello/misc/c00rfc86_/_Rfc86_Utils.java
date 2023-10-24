@@ -115,6 +115,33 @@ public final class _Rfc86_Utils {
         }
     }
 
+    /**
+     * Updates specified message digest with specified number of preceding bytes of specified
+     * buffer.
+     *
+     * @param digest the message digest to update.
+     * @param buffer the byte buffer whose bytes are updated to the {@code digest}.
+     * @param bytes  the number of bytes preceding the {@code buffer}'s current {@code position} to
+     *               be updated to the {@code digest}.
+     */
+    public static void updateDigest(final MessageDigest digest, final ByteBuffer buffer,
+                                    final int bytes) {
+        Objects.requireNonNull(digest, "digest is null");
+        Objects.requireNonNull(buffer, "buffer is null");
+        if (bytes < 0) {
+            throw new IllegalArgumentException("bytes(" + bytes + ") < 0");
+        }
+        if (bytes > buffer.position()) {
+            throw new IllegalArgumentException(
+                    "bytes(" + bytes + ") > buffer.position(" + buffer.position() + ")");
+        }
+        final var position = buffer.position();
+        final var limit = buffer.limit();
+        buffer.position(position - bytes).limit(position);
+        digest.update(buffer);
+        buffer.position(position).limit(limit);
+    }
+
     public static void logDigest(final MessageDigest digest,
                                  final Function<? super byte[], ? extends CharSequence> printer) {
         Objects.requireNonNull(digest, "digest is null");

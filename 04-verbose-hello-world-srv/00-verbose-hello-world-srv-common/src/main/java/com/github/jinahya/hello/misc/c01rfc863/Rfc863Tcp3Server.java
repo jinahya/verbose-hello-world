@@ -50,9 +50,6 @@ class Rfc863Tcp3Server {
             final var digest = _Rfc863Utils.newDigest();
             var bytes = 0L;
             final var buffer = _Rfc86_Utils.newBuffer();
-            final var slice = buffer.slice();
-            assert slice.hasArray();
-            assert slice.array() == buffer.array();
             // ------------------------------------------------------------------------------ select
             while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
                 if (selector.select(_Rfc86_Constants.ACCEPT_TIMEOUT_MILLIS) == 0) {
@@ -94,10 +91,7 @@ class Rfc863Tcp3Server {
                             continue;
                         }
                         bytes += r;
-                        digest.update(
-                                slice.position(buffer.position() - r)
-                                        .limit(buffer.position())
-                        );
+                        _Rfc86_Utils.updateDigest(digest, buffer, r);
                     }
                 }
             }

@@ -20,6 +20,7 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
+import com.github.jinahya.hello.misc._UdpUtils;
 import com.github.jinahya.hello.util.ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,14 +35,15 @@ class Rfc863Udp2Server {
 
     public static void main(final String... args) throws Exception {
         try (var server = DatagramChannel.open()) {
-            server.bind(_Rfc863Constants.ADDR);
-            log.info("bound to {}", server.getLocalAddress());
             assert server.isBlocking();
-            // -------------------------------------------------------------------------------------
-            final var soRcvBug = server.getOption(StandardSocketOptions.SO_RCVBUF);
-            final var buffer = ByteBuffer.allocate(soRcvBug);
+            // -------------------------------------------------------------------------------- bind
+            server.bind(_Rfc863Constants.ADDR);
+            _UdpUtils.logBound(server);
+            // ----------------------------------------------------------------------------- receive
+            final var buffer = ByteBuffer.allocate(
+                    server.getOption(StandardSocketOptions.SO_RCVBUF)
+            );
             assert buffer.hasArray();
-            // -------------------------------------------------------------------------------------
             if (ThreadLocalRandom.current().nextBoolean()) {
                 final var packet = new DatagramPacket(
                         buffer.array(),                           // <buf>
@@ -49,15 +51,12 @@ class Rfc863Udp2Server {
                         buffer.remaining()                        // <length>
                 );
                 server.socket().receive(packet);
-                log.debug("{} byte(s) received from {}", packet.getLength(),
-                          packet.getSocketAddress());
+                _Rfc863Utils.logServerBytes(packet);
                 buffer.position(buffer.position() + packet.getLength());
             } else {
                 final var address = server.receive(buffer);
-                log.debug("{} byte(s) received from {}", buffer.position(), address);
+                _Rfc863Utils.logServerBytes(buffer, address);
             }
-            // -------------------------------------------------------------------------------------
-            _Rfc863Utils.logServerBytes(buffer.position());
             _Rfc863Utils.logDigest(buffer.flip());
         }
     }

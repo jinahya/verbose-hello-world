@@ -38,31 +38,29 @@ class Rfc863Tcp1Server {
 
     public static void main(final String... args) throws IOException {
         try (var server = new ServerSocket()) {
-            // ------------------------------------------------------------------------------- REUSE
+            // -------------------------------------------------------------------------------- bind
             if (ThreadLocalRandom.current().nextBoolean()) {
                 server.setReuseAddress(true);
             } else {
                 server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
             }
-            // -------------------------------------------------------------------------------- BIND
             server.bind(_Rfc863Constants.ADDR, 1);
             _TcpUtils.logBound(server);
-            // ------------------------------------------------------------------------------ ACCEPT
+            // ------------------------------------------------------------------------------ accept
             server.setSoTimeout((int) _Rfc86_Constants.ACCEPT_TIMEOUT_MILLIS);
             try (var client = server.accept()) {
                 _Rfc86_Utils.logAccepted(client);
-                // ------------------------------------------------------------------------- RECEIVE
                 client.setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_MILLIS);
+                // ------------------------------------------------------------------------- prepare
                 final var digest = _Rfc863Utils.newDigest();
-                var bytes = 0L; // number of bytes read so far
+                var bytes = 0L;
                 final var array = _Rfc86_Utils.newArray();
+                // ---------------------------------------------------------------------------- read
                 for (int r; ; bytes += r) {
-                    // ------------------------------------------------------------------------ read
                     r = client.getInputStream().read(array);
                     if (r == -1) {
                         break;
                     }
-                    // ---------------------------------------------------------------------- digest
                     digest.update(array, 0, r);
                 }
                 _Rfc863Utils.logServerBytes(bytes);

@@ -37,20 +37,20 @@ class Rfc863Tcp1Client {
 
     public static void main(final String... args) throws IOException {
         try (var client = new Socket()) {
-            // -------------------------------------------------------------------------------- BIND
+            // -------------------------------------------------------------------------------- bind
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc86_Constants.HOST, 0));
                 log.info("(optionally) bound to {}", client.getLocalSocketAddress());
             }
-            // ----------------------------------------------------------------------------- CONNECT
+            // ----------------------------------------------------------------------------- connect
             client.connect(_Rfc863Constants.ADDR, (int) _Rfc86_Constants.CONNECT_TIMEOUT_MILLIS);
             _Rfc86_Utils.logConnected(client);
-            // -------------------------------------------------------------------------------- SEND
+            // ----------------------------------------------------------------------------- prepare
             final var digest = _Rfc863Utils.newDigest();
             var bytes = _Rfc863Utils.logClientBytes(_Rfc86_Utils.randomBytes());
             final var array = _Rfc86_Utils.newArray();
+            // ------------------------------------------------------------------------------- write
             for (int w; bytes > 0; bytes -= w) {
-                // --------------------------------------------------------------------------- write
                 ThreadLocalRandom.current().nextBytes(array);
                 w = Math.min(array.length, bytes);
                 client.getOutputStream().write(
@@ -59,7 +59,6 @@ class Rfc863Tcp1Client {
                         w      // <len>
                 );
                 client.getOutputStream().flush();
-                // -------------------------------------------------------------------------- digest
                 digest.update(array, 0, w);
             }
             _Rfc863Utils.logDigest(digest);

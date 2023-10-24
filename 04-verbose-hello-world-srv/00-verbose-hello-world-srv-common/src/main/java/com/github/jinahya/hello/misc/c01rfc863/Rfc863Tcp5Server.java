@@ -77,7 +77,6 @@ class Rfc863Tcp5Server {
                             final var digest = _Rfc863Utils.newDigest();
                             final var bytes = new long[1];
                             final var buffer = _Rfc86_Utils.newBuffer();
-                            final var slice = buffer.slice();
                             // ---------------------------------------------------------------- read
                             result.<Void>read(
                                     buffer,                             // <dst>
@@ -93,11 +92,8 @@ class Rfc863Tcp5Server {
                                                 closeAndCountDown(result, latch);
                                                 return;
                                             }
+                                            _Rfc86_Utils.updateDigest(digest, buffer, r);
                                             bytes[0] += r;
-                                            digest.update(
-                                                    slice.position(buffer.position() - r)
-                                                            .limit(buffer.position())
-                                            );
                                             // ------------------------------------------------ read
                                             if (!buffer.hasRemaining()) {
                                                 buffer.clear();

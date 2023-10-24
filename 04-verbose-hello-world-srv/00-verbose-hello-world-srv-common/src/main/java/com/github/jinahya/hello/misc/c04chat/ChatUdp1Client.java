@@ -21,8 +21,8 @@ package com.github.jinahya.hello.misc.c04chat;
  */
 
 import com.github.jinahya.hello.HelloWorldServerConstants;
-import com.github.jinahya.hello.util.HelloWorldServerUtils;
 import com.github.jinahya.hello.misc.c04chat._ChatMessage.OfArray;
+import com.github.jinahya.hello.util.HelloWorldServerUtils;
 import com.github.jinahya.hello.util.JavaLangUtils;
 import lombok.extern.slf4j.Slf4j;
 

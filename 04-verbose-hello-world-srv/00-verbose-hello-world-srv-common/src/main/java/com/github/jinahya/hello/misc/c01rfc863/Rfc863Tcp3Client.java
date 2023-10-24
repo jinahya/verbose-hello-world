@@ -61,9 +61,6 @@ class Rfc863Tcp3Client {
             final var buffer = _Rfc86_Utils.newBuffer();
             ThreadLocalRandom.current().nextBytes(buffer.array());
             buffer.limit(Math.min(buffer.limit(), bytes));
-            final var slice = buffer.slice();
-            assert slice.hasArray();
-            assert slice.array() == buffer.array();
             // ------------------------------------------------------------------------------ select
             while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
                 if (selector.select(_Rfc86_Constants.CLIENT_PROGRAM_TIMEOUT_MILLIS) == 0) {
@@ -92,10 +89,7 @@ class Rfc863Tcp3Client {
                         }
                         final var w = client.write(buffer);
                         assert w >= 0;
-                        digest.update(
-                                slice.position(buffer.position() - w)
-                                        .limit(buffer.position())
-                        );
+                        _Rfc86_Utils.updateDigest(digest, buffer, w);
                         if ((bytes -= w) == 0) {
                             _Rfc863Utils.logDigest(digest);
                             selectedKey.interestOpsAnd(~SelectionKey.OP_WRITE);

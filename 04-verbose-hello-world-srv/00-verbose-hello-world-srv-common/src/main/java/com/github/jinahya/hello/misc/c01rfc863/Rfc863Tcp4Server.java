@@ -33,25 +33,32 @@ class Rfc863Tcp4Server {
 
     public static void main(final String... args) throws Exception {
         try (var server = AsynchronousServerSocketChannel.open()) {
-            // ------------------------------------------------------------------------------- REUSE
+            // -------------------------------------------------------------------------------- bind
             server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
-            // -------------------------------------------------------------------------------- BIND
-            server.bind(_Rfc863Constants.ADDR);
+            server.bind(_Rfc863Constants.ADDR, 1);
             _TcpUtils.logBound(server);
-            // ----------------------------------------------------------------------------- RECEIVE
             // ------------------------------------------------------------------------------ accept
             try (var client = server.accept().get(_Rfc86_Constants.ACCEPT_TIMEOUT,
                                                   _Rfc86_Constants.ACCEPT_TIMEOUT_UNIT)) {
                 _Rfc86_Utils.logAccepted(client);
-                try (var attachment = new Rfc863Tcp4ServerAttachment(client)) {
-                    // ------------------------------------------------------------------------ read
-                    for (int r; ; ) {
-                        r = attachment.read();
-                        if (r != -1) {
-                            break;
-                        }
+                // ------------------------------------------------------------------------- prepare
+                final var digest = _Rfc863Utils.newDigest();
+                var bytes = 0L;
+                final var buffer = _Rfc86_Utils.newBuffer();
+                // ---------------------------------------------------------------------------- read
+                for (int r; ; bytes += r) {
+                    if (!buffer.hasRemaining()) {
+                        buffer.clear();
                     }
+                    r = client.read(buffer)
+                            .get(_Rfc86_Constants.READ_TIMEOUT, _Rfc86_Constants.READ_TIMEOUT_UNIT);
+                    if (r == -1) {
+                        break;
+                    }
+                    _Rfc86_Utils.updateDigest(digest, buffer, r);
                 }
+                _Rfc863Utils.logServerBytes(bytes);
+                _Rfc863Utils.logDigest(digest);
             }
         }
     }

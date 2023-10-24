@@ -54,9 +54,6 @@ class Rfc863Tcp4Client {
             final var buffer = _Rfc86_Utils.newBuffer();
             ThreadLocalRandom.current().nextBytes(buffer.array());
             buffer.limit(Math.min(buffer.limit(), bytes));
-            final var slice = buffer.slice();
-            assert slice.hasArray();
-            assert slice.array() == buffer.array();
             // ------------------------------------------------------------------------------- write
             for (int w; bytes > 0; bytes -= w) {
                 if (!buffer.hasRemaining()) {
@@ -66,11 +63,9 @@ class Rfc863Tcp4Client {
                 assert buffer.hasRemaining();
                 w = client.write(buffer)
                         .get(_Rfc86_Constants.WRITE_TIMEOUT, _Rfc86_Constants.WRITE_TIMEOUT_UNIT);
-                digest.update(
-                        slice.position(buffer.position() - w)
-                                .limit(buffer.position())
-                );
+                _Rfc86_Utils.updateDigest(digest, buffer, w);
             }
+            // -------------------------------------------------------------------------------------
             _Rfc863Utils.logDigest(digest);
         }
     }

@@ -20,6 +20,7 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
+import com.github.jinahya.hello.misc._UdpUtils;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
 import com.github.jinahya.hello.util.ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
@@ -36,18 +37,21 @@ class Rfc863Udp3Server {
     public static void main(final String... args) throws Exception {
         try (var selector = Selector.open();
              var server = DatagramChannel.open()) {
+            // -------------------------------------------------------------------------------- bind
             server.bind(_Rfc863Constants.ADDR);
-            log.info("bound to {}", server.getLocalAddress());
-            // -------------------------------------------------------------------------------------
+            _UdpUtils.logBound(server);
+            // ------------------------------------------------------------------ configure/register
             server.configureBlocking(false);
             final var serverKey = server.register(selector, SelectionKey.OP_READ);
-            // -------------------------------------------------------------------------------------
+            // ------------------------------------------------------------------------------ select
             while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
                 if (selector.select(_Rfc86_Constants.ACCEPT_TIMEOUT_MILLIS) == 0) {
                     break;
                 }
-                for (final var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
+                for (final var i = selector.selectedKeys().iterator(); i.hasNext(); ) {
                     final var selectedKey = i.next();
+                    i.remove();
+                    // --------------------------------------------------------------------- receive
                     if (selectedKey.isReadable()) {
                         final var channel = (DatagramChannel) selectedKey.channel();
                         assert channel == server;
@@ -57,8 +61,7 @@ class Rfc863Udp3Server {
                         );
                         final var address = channel.receive(buffer);
                         assert address != null;
-                        log.debug("{} byte(s) received from {}", buffer.position(), address);
-                        _Rfc863Utils.logServerBytes(buffer.position());
+                        _Rfc863Utils.logServerBytes(buffer, address);
                         _Rfc863Utils.logDigest(buffer.flip());
                         selectedKey.cancel();
                         assert !selectedKey.isValid();

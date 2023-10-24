@@ -20,6 +20,7 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
+import com.github.jinahya.hello.misc._UdpUtils;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
 import com.github.jinahya.hello.util.ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
@@ -34,28 +35,28 @@ class Rfc863Udp1Client {
 
     public static void main(final String... args) throws Exception {
         try (var client = new DatagramSocket(null)) {
+            // -------------------------------------------------------------------------------- bind
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc86_Constants.HOST, 0));
-                log.info("(optionally) bound to {}", client.getLocalSocketAddress());
+                _UdpUtils.logBound(client);
             }
+            // ----------------------------------------------------------------------------- connect
             final var connect = ThreadLocalRandom.current().nextBoolean();
             if (connect) {
                 client.connect(_Rfc863Constants.ADDR);
-                log.info("(optionally) connected to {}, through {}",
-                         client.getRemoteSocketAddress(), client.getLocalSocketAddress());
+                _UdpUtils.logConnected(client);
             }
-            // -------------------------------------------------------------------------------------
+            // -------------------------------------------------------------------------------- send
             final var array = new byte[
                     ThreadLocalRandom.current().nextInt(client.getSendBufferSize() + 1)
                     ];
             ThreadLocalRandom.current().nextBytes(array);
             _Rfc863Utils.logClientBytes(array.length);
-            // -------------------------------------------------------------------------------------
             final var packet = new DatagramPacket(array, array.length, _Rfc863Constants.ADDR);
-            client.send(packet);
             assert packet.getLength() == array.length;
-            // -------------------------------------------------------------------------------------
+            client.send(packet);
             _Rfc863Utils.logDigest(array, 0, packet.getLength());
+            // -------------------------------------------------------------------------- disconnect
             if (connect) {
                 client.disconnect();
             }

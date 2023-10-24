@@ -40,12 +40,11 @@ class Rfc863Tcp2Server {
     public static void main(final String... args) throws Exception {
         try (var server = ServerSocketChannel.open()) {
             assert server.isBlocking();
-            // ------------------------------------------------------------------------------- REUSE
+            // -------------------------------------------------------------------------------- bind
             server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
-            // -------------------------------------------------------------------------------- BIND
             server.bind(_Rfc863Constants.ADDR, 1);
             _TcpUtils.logBound(server);
-            // ------------------------------------------------------------------------------ ACCEPT
+            // ------------------------------------------------------------------------------ accept
             final SocketChannel client;
             server.socket().setSoTimeout((int) _Rfc86_Constants.ACCEPT_TIMEOUT_MILLIS);
             if (ThreadLocalRandom.current().nextBoolean()) {
@@ -58,18 +57,15 @@ class Rfc863Tcp2Server {
             assert client != null;
             _Rfc86_Utils.logAccepted(client);
             assert client.isBlocking();
-            // ----------------------------------------------------------------------------- RECEIVE
             try (client) {
-                client.socket().setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_MILLIS);
+                // ------------------------------------------------------------------------- prepare
                 final var digest = _Rfc863Utils.newDigest();
                 int bytes = 0;
                 final var buffer = _Rfc86_Utils.newBuffer();
                 assert buffer.hasArray();
-                final var slice = buffer.slice();
-                assert slice.hasArray();
-                assert slice.array() == buffer.array();
+                // ---------------------------------------------------------------------------- read
+                client.socket().setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_MILLIS);
                 for (int r; ; bytes += r) {
-                    // ------------------------------------------------------------------------ read
                     if (!buffer.hasRemaining()) {
                         buffer.clear();
                     }
@@ -89,11 +85,7 @@ class Rfc863Tcp2Server {
                     if (r == -1) {
                         break;
                     }
-                    // ---------------------------------------------------------------------- digest
-                    digest.update(
-                            slice.position(buffer.position() - r)
-                                    .limit(buffer.position())
-                    );
+                    _Rfc86_Utils.updateDigest(digest, buffer, r);
                 }
                 _Rfc863Utils.logServerBytes(bytes);
                 _Rfc863Utils.logDigest(digest);

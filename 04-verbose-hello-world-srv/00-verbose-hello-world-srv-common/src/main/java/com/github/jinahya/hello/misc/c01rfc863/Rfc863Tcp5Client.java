@@ -58,7 +58,6 @@ class Rfc863Tcp5Client {
                             };
                             final var digest = _Rfc863Utils.newDigest();
                             final var buffer = _Rfc86_Utils.newBuffer();
-                            final var slice = buffer.slice();
                             ThreadLocalRandom.current().nextBytes(buffer.array());
                             buffer.limit(Math.min(buffer.limit(), bytes[0]));
                             client.<Void>write(
@@ -69,10 +68,7 @@ class Rfc863Tcp5Client {
                                     new CompletionHandler<>() {          // <handler>
                                         @Override
                                         public void completed(final Integer result, final Void a) {
-                                            digest.update(
-                                                    slice.position(buffer.position() - result)
-                                                            .limit(buffer.position())
-                                            );
+                                            _Rfc86_Utils.updateDigest(digest, buffer, result);
                                             if ((bytes[0] -= result) == 0) {
                                                 logDigest(digest);
                                                 latch.countDown();

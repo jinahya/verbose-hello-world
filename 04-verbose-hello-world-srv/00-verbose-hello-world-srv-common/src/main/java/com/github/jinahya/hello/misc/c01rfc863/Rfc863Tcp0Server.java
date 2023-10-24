@@ -62,7 +62,6 @@ class Rfc863Tcp0Server {
                     }
                     assert b >= 0 && b < 256;
                     assert (b & 0xFF) == b;
-                    // ---------------------------------------------------------------------- digest
                     digest.update((byte) b);
                 }
                 _Rfc863Utils.logServerBytes(bytes);

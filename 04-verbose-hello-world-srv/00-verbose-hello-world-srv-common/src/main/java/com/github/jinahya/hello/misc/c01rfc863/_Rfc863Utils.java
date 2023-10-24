@@ -23,8 +23,11 @@ package com.github.jinahya.hello.misc.c01rfc863;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils;
 import lombok.extern.slf4j.Slf4j;
 
+import java.net.DatagramPacket;
+import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
+import java.util.Objects;
 
 @Slf4j
 final class _Rfc863Utils {
@@ -53,6 +56,20 @@ final class _Rfc863Utils {
         }
         log.info("{} bytes received (and discarded)", bytes);
         return bytes;
+    }
+
+    private static void logServerBytes(final int bytes, final SocketAddress address) {
+        log.info("{} bytes received from {}, (and discarded)", bytes, address);
+    }
+
+    static void logServerBytes(final ByteBuffer buffer, final SocketAddress address) {
+        Objects.requireNonNull(buffer, "buffer is null");
+        logServerBytes(buffer.position(), address);
+    }
+
+    static void logServerBytes(final DatagramPacket packet) {
+        Objects.requireNonNull(packet, "packet is null");
+        logServerBytes(packet.getLength(), packet.getSocketAddress());
     }
 
     /**
