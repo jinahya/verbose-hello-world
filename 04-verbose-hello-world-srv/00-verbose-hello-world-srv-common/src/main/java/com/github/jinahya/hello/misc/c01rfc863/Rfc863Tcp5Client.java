@@ -54,7 +54,7 @@ class Rfc863Tcp5Client {
                         public void completed(final Void result, final Void attachment) {
                             _TcpUtils.logConnectedUnchecked(client);
                             final var bytes = new int[] {
-                                    _Rfc863Utils.logClientBytes(_Rfc86_Utils.randomBytes())
+                                    _Rfc863Utils.logClientBytes(_Rfc86_Utils.newRandomBytes())
                             };
                             final var digest = _Rfc863Utils.newDigest();
                             final var buffer = _Rfc86_Utils.newBuffer();

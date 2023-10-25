@@ -37,7 +37,7 @@ abstract class _Rfc863Attachment extends _Rfc86_Attachment {
     abstract static class Client extends _Rfc863Attachment {
 
         Client() {
-            super(_Rfc86_Utils.randomBytes());
+            super(_Rfc86_Utils.newRandomBytes());
             _Rfc863Utils.logClientBytes(getBytes());
             buffer.position(buffer.limit());
         }

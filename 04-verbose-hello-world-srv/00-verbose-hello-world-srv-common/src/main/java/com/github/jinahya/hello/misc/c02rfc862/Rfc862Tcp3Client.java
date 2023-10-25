@@ -64,7 +64,7 @@ class Rfc862Tcp3Client {
             }
             // ----------------------------------------------------------------------------- prepare
             final var digest = _Rfc862Utils.newDigest();
-            var bytes = _Rfc86_Utils.randomBytes();
+            var bytes = _Rfc86_Utils.newRandomBytes();
             assert bytes >= 0;
             final var buffer = _Rfc86_Utils.newBuffer();
             buffer.position(buffer.limit()); // for what?

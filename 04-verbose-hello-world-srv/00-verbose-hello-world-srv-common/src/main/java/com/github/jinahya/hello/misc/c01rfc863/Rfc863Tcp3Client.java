@@ -57,7 +57,7 @@ class Rfc863Tcp3Client {
                 clientKey = client.register(selector, SelectionKey.OP_CONNECT);
             }
             // ----------------------------------------------------------------------------- prepare
-            var bytes = _Rfc863Utils.logClientBytes(_Rfc86_Utils.randomBytes());
+            var bytes = _Rfc863Utils.logClientBytes(_Rfc86_Utils.newRandomBytes());
             final var digest = _Rfc863Utils.newDigest();
             final var buffer = _Rfc86_Utils.newBuffer();
             ThreadLocalRandom.current().nextBytes(buffer.array());

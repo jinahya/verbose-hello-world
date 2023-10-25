@@ -20,13 +20,16 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
-import com.github.jinahya.hello.util._TcpUtils;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
+import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils;
+import com.github.jinahya.hello.util.JavaSecurityUtils;
+import com.github.jinahya.hello.util._TcpUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
 
 @Slf4j
 class Rfc862Tcp3Server {
@@ -43,12 +46,19 @@ class Rfc862Tcp3Server {
                     selector,              // <sel>
                     SelectionKey.OP_ACCEPT // <ops>
             );
+            // ----------------------------------------------------------------------------- prepare
+            final var digest = _Rfc862Utils.newDigest();
+            var bytes = _Rfc86_Utils.newRandomBytes();
+            assert bytes >= 0;
+            final var buffer = _Rfc86_Utils.newBuffer();
             // ---------------------------------------------------------------------- select-in-loop
             while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
+                log.debug("in while...: {}", selector.keys());
                 if (selector.select(_Rfc86_Constants.ACCEPT_TIMEOUT_MILLIS) == 0) {
                     break;
                 }
                 for (var i = selector.selectedKeys().iterator(); i.hasNext(); ) {
+                    log.debug("in loop...");
                     final var selectedKey = i.next();
                     i.remove();
                     // ---------------------------------------------------------------------- accept
@@ -67,30 +77,51 @@ class Rfc862Tcp3Server {
                                 selector,            // <sel>
                                 SelectionKey.OP_READ // <ops>
                         );
-                        clientKey.attach(new Rfc862Tcp3ServerAttachment(clientKey));
                         continue; // why?
                     }
                     // ------------------------------------------------------------------------ read
                     if (selectedKey.isReadable()) {
-                        final var attachment =
-                                (Rfc862Tcp3ServerAttachment) selectedKey.attachment();
-                        assert attachment != null;
-                        final var r = attachment.read();
+                        log.debug("readable...");
+                        final var channel = (SocketChannel) selectedKey.channel();
+                        if (!buffer.hasRemaining()) {
+                            buffer.clear();
+                        }
+                        final var r = channel.read(buffer);
+                        log.debug("r: {}", r);
                         assert r >= -1;
-                        assert r != -1 || (selectedKey.interestOps() & SelectionKey.OP_READ) == 0;
+                        if (r == -1) {
+                            selectedKey.interestOpsAnd(~SelectionKey.OP_READ);
+                        } else {
+                            bytes += r;
+                            if (buffer.position() > 0) {
+                                selectedKey.interestOpsOr(SelectionKey.OP_WRITE);
+                            }
+                        }
                     }
                     // ----------------------------------------------------------------------- write
                     if (selectedKey.isWritable()) {
-                        final var attachment =
-                                (Rfc862Tcp3ServerAttachment) selectedKey.attachment();
-                        assert attachment != null;
-                        final var w = attachment.write();
+                        log.debug("writable...");
+                        final var channel = (SocketChannel) selectedKey.channel();
+                        buffer.flip();
+                        final int w = channel.write(buffer);
+                        log.debug("w: {}", w);
                         assert w >= 0;
-                        assert selectedKey.isValid() || !selectedKey.channel().isOpen();
-                        assert selectedKey.isValid() || attachment.isClosed();
+                        JavaSecurityUtils.updateDigest(digest, buffer, w);
+                        buffer.compact();
+                        if (buffer.position() == 0) {
+                            selectedKey.interestOpsAnd(~SelectionKey.OP_WRITE);
+                            if ((selectedKey.interestOps() & SelectionKey.OP_READ) == 0) {
+                                log.debug("no read either, closing...");
+                                channel.close();
+                                assert !selectedKey.isValid();
+                                continue;
+                            }
+                        }
                     }
                 }
             }
+            _Rfc862Utils.logServerBytes(bytes);
+            _Rfc862Utils.logDigest(digest);
         }
     }
 

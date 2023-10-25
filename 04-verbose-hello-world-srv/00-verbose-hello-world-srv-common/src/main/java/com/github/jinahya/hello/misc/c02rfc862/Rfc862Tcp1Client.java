@@ -46,7 +46,7 @@ class Rfc862Tcp1Client {
             client.setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_MILLIS);
             // ----------------------------------------------------------------------------- prepare
             final var digest = _Rfc862Utils.newDigest();
-            var bytes = _Rfc86_Utils.randomBytes();
+            var bytes = _Rfc86_Utils.newRandomBytes();
             _Rfc862Utils.logClientBytes(bytes);
             final var array = _Rfc86_Utils.newArray();
             // -------------------------------------------------------------------------------- loop

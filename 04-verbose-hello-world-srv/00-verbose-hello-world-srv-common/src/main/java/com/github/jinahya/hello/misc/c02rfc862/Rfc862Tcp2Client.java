@@ -61,7 +61,7 @@ class Rfc862Tcp2Client {
             final var digest = _Rfc862Utils.newDigest();
             final var buffer = _Rfc86_Utils.newBuffer();
             assert buffer.hasArray();
-            var bytes = _Rfc86_Utils.randomBytes();
+            var bytes = _Rfc86_Utils.newRandomBytes();
             _Rfc862Utils.logClientBytes(bytes);
             for (int w, r; bytes > 0; bytes -= w) {
                 // --------------------------------------------------------------------------- write

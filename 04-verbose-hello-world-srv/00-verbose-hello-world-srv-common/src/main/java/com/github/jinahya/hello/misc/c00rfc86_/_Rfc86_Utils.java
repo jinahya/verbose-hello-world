@@ -88,7 +88,7 @@ public final class _Rfc86_Utils {
      *
      * @return a new {@code int} between {@code 0}(inclusive) and {@code 65536}(exclusive).
      */
-    public static int randomBytes() {
+    public static int newRandomBytes() {
         return ThreadLocalRandom.current().nextInt(65536);
     }
 

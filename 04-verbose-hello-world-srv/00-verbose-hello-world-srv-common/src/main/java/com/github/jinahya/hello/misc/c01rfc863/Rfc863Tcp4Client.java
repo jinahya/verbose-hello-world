@@ -50,7 +50,7 @@ class Rfc863Tcp4Client {
                     .get(_Rfc86_Constants.CONNECT_TIMEOUT, _Rfc86_Constants.CONNECT_TIMEOUT_UNIT);
             _TcpUtils.logConnected(client);
             // ----------------------------------------------------------------------------- prepare
-            var bytes = _Rfc863Utils.logClientBytes(_Rfc86_Utils.randomBytes());
+            var bytes = _Rfc863Utils.logClientBytes(_Rfc86_Utils.newRandomBytes());
             final var digest = _Rfc863Utils.newDigest();
             final var buffer = _Rfc86_Utils.newBuffer();
             ThreadLocalRandom.current().nextBytes(buffer.array());

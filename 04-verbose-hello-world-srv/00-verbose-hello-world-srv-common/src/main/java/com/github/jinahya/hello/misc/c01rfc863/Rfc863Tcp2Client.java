@@ -64,7 +64,7 @@ class Rfc863Tcp2Client {
             final var digest = _Rfc863Utils.newDigest();
             final var buffer = _Rfc86_Utils.newBuffer();
             assert buffer.hasArray();
-            var bytes = _Rfc863Utils.logClientBytes(_Rfc86_Utils.randomBytes());
+            var bytes = _Rfc863Utils.logClientBytes(_Rfc86_Utils.newRandomBytes());
             // ------------------------------------------------------------------------------- write
             for (int w; bytes > 0; bytes -= w) {
                 if (!buffer.hasRemaining()) {

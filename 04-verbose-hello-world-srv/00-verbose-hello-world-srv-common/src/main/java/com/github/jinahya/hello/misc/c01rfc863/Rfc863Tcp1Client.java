@@ -48,7 +48,7 @@ class Rfc863Tcp1Client {
             _TcpUtils.logConnected(client);
             // ----------------------------------------------------------------------------- prepare
             final var digest = _Rfc863Utils.newDigest();
-            var bytes = _Rfc863Utils.logClientBytes(_Rfc86_Utils.randomBytes());
+            var bytes = _Rfc863Utils.logClientBytes(_Rfc86_Utils.newRandomBytes());
             final var array = _Rfc86_Utils.newArray();
             // ------------------------------------------------------------------------------- write
             for (int w; bytes > 0; bytes -= w) {
