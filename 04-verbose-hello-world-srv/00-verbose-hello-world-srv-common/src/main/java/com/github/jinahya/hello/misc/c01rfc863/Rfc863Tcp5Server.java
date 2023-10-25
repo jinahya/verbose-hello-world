@@ -22,6 +22,8 @@ package com.github.jinahya.hello.misc.c01rfc863;
 
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils;
+import com.github.jinahya.hello.util.JavaSecurityUtils;
+import com.github.jinahya.hello.util._TcpUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -32,10 +34,9 @@ import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.concurrent.CountDownLatch;
 
-import static com.github.jinahya.hello.misc._TcpUtils.logAccepted;
-import static com.github.jinahya.hello.misc._TcpUtils.logBound;
 import static com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants.ACCEPT_TIMEOUT;
 import static com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants.ACCEPT_TIMEOUT_UNIT;
+import static com.github.jinahya.hello.util._TcpUtils.logBound;
 
 @Slf4j
 class Rfc863Tcp5Server {
@@ -73,7 +74,7 @@ class Rfc863Tcp5Server {
                         @Override // @formatter:off
                         public void completed(final AsynchronousSocketChannel result,
                                               final Void a) {
-                            logAccepted(result);
+                            _TcpUtils.logAcceptedUnchecked(result);
                             final var digest = _Rfc863Utils.newDigest();
                             final var bytes = new long[1];
                             final var buffer = _Rfc86_Utils.newBuffer();
@@ -92,7 +93,7 @@ class Rfc863Tcp5Server {
                                                 closeAndCountDown(result, latch);
                                                 return;
                                             }
-                                            _Rfc86_Utils.updateDigest(digest, buffer, r);
+                                            JavaSecurityUtils.updateDigest(digest, buffer, r);
                                             bytes[0] += r;
                                             // ------------------------------------------------ read
                                             if (!buffer.hasRemaining()) {

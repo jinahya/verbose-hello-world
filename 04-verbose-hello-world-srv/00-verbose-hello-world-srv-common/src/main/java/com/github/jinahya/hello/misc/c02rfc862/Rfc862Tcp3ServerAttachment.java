@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.Objects;
-import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
 final class Rfc862Tcp3ServerAttachment extends _Rfc862Attachment.Server {
@@ -49,14 +48,14 @@ final class Rfc862Tcp3ServerAttachment extends _Rfc862Attachment.Server {
         assert clientKey.isReadable();
         final var channel = (SocketChannel) clientKey.channel();
         final var r = channel.read(buffer);
+        assert r >= -1;
         if (r == -1) {
             clientKey.interestOpsAnd(~SelectionKey.OP_READ);
         } else {
-            assert r >= 0;
+            increaseBytes(r);
             if (buffer.position() > 0) {
                 clientKey.interestOpsOr(SelectionKey.OP_WRITE);
             }
-            increaseBytes(r);
         }
         return r;
     }
@@ -66,18 +65,14 @@ final class Rfc862Tcp3ServerAttachment extends _Rfc862Attachment.Server {
         assert clientKey.isValid();
         assert clientKey.isWritable();
         final var channel = (SocketChannel) clientKey.channel();
-        buffer.flip();
+        buffer.flip(); // limit -> position, position -> zero
         final var w = channel.write(buffer);
         updateDigest(w);
         buffer.compact();
-        if (buffer.position() == 0 && (clientKey.interestOps() & SelectionKey.OP_READ) == 0) {
-            if (ThreadLocalRandom.current().nextBoolean()) {
-                clientKey.interestOpsAnd(~SelectionKey.OP_WRITE);
-                clientKey.cancel();
-                assert !clientKey.isValid();
-            }
+        if (buffer.position() == 0 &&
+            (clientKey.interestOps() & SelectionKey.OP_READ) != SelectionKey.OP_READ) {
+            clientKey.interestOpsAnd(~SelectionKey.OP_WRITE);
             close();
-            assert !clientKey.isValid();
         }
         return w;
     }

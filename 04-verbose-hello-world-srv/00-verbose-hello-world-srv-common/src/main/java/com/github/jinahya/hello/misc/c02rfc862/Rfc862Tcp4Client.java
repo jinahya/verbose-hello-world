@@ -20,37 +20,53 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
+import com.github.jinahya.hello.util._TcpUtils;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
-import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.AsynchronousSocketChannel;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeoutException;
 
 @Slf4j
 class Rfc862Tcp4Client {
 
-    public static void main(final String... args) throws Exception {
+    public static void main(final String... args)
+            throws IOException, ExecutionException, InterruptedException, TimeoutException {
         try (var client = AsynchronousSocketChannel.open()) {
-            // --------------------------------------------------------------------- BIND/optionally
+            // -------------------------------------------------------------------------------- bind
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc86_Constants.HOST, 0));
-                log.info("(optionally) bound to {}", client.getLocalAddress());
+                _TcpUtils.logBound(client);
             }
-            // ----------------------------------------------------------------------------- CONNECT
+            // ----------------------------------------------------------------------------- connect
             client.connect(_Rfc862Constants.ADDR).get(_Rfc86_Constants.CONNECT_TIMEOUT,
                                                       _Rfc86_Constants.CONNECT_TIMEOUT_UNIT);
-            _Rfc86_Utils.logConnected(client);
-            // ------------------------------------------------------------------------ SEND/RECEIVE
+            _TcpUtils.logConnected(client);
+            // ------------------------------------------------------------------------ send/receive
             try (var attachment = new Rfc862Tcp4ClientAttachment(client)) {
-                int r;
-                while (attachment.write() > 0) {
+                for (int w, r; ; ) {
+                    // ----------------------------------------------------------------------- write
+                    w = attachment.write();
+                    assert w >= 0;
+                    if (w == 0) {
+                        break;
+                    }
+                    // ------------------------------------------------------------------------ read
                     r = attachment.read();
                     assert r >= 0;
                 }
+                // ----------------------------------------------------------------- shutdown-output
                 client.shutdownOutput();
-                while ((r = attachment.read()) != -1) {
+                // ----------------------------------------------------------------- read-to-the-end
+                for (int r; ; ) {
+                    r = attachment.read();
+                    if (r == -1) {
+                        break;
+                    }
                     assert r >= 0;
                 }
             }

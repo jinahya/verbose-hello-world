@@ -20,10 +20,11 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
-import com.github.jinahya.hello.misc._TcpUtils;
+import com.github.jinahya.hello.util._TcpUtils;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils;
 import com.github.jinahya.hello.util.ExcludeFromCoverage_PrivateConstructor_Obviously;
+import com.github.jinahya.hello.util.JavaSecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -85,7 +86,7 @@ class Rfc863Tcp2Client {
                 }
                 assert w > 0; // why?
                 assert !buffer.hasRemaining(); // why?
-                _Rfc86_Utils.updateDigest(digest, buffer, w);
+                JavaSecurityUtils.updateDigest(digest, buffer, w);
             }
             _Rfc863Utils.logDigest(digest);
         }

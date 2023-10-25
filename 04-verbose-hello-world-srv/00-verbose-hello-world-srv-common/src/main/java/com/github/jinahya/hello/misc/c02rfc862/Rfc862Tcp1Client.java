@@ -20,6 +20,7 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
+import com.github.jinahya.hello.util._TcpUtils;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils;
 import lombok.extern.slf4j.Slf4j;
@@ -34,22 +35,22 @@ class Rfc862Tcp1Client {
 
     public static void main(final String... args) throws Exception {
         try (var client = new Socket()) {
-            // -------------------------------------------------------------------------------- BIND
+            // -------------------------------------------------------------------------------- bind
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc86_Constants.HOST, 0));
                 log.info("(optionally) bound to {}", client.getLocalSocketAddress());
             }
-            // ----------------------------------------------------------------------------- CONNECT
+            // ----------------------------------------------------------------------------- connect
             client.connect(_Rfc862Constants.ADDR, (int) _Rfc86_Constants.CONNECT_TIMEOUT_MILLIS);
-            _Rfc86_Utils.logConnected(client);
-            // ------------------------------------------------------------------------ SEND/RECEIVE
+            _TcpUtils.logConnected(client);
             client.setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_MILLIS);
+            // ----------------------------------------------------------------------------- prepare
             final var digest = _Rfc862Utils.newDigest();
-            var bytes = _Rfc862Utils.logClientBytes(_Rfc86_Utils.randomBytes());
+            var bytes = _Rfc86_Utils.randomBytes();
+            _Rfc862Utils.logClientBytes(bytes);
             final var array = _Rfc86_Utils.newArray();
-            int l; // number of bytes to write
-            int r; // number of bytes read
-            for (; bytes > 0; bytes -= l) {
+            // -------------------------------------------------------------------------------- loop
+            for (int l, r; bytes > 0; bytes -= l) {
                 // --------------------------------------------------------------------------- write
                 ThreadLocalRandom.current().nextBytes(array);
                 l = Math.min(array.length, bytes);
@@ -59,11 +60,26 @@ class Rfc862Tcp1Client {
                         l      // <len>
                 );
                 client.getOutputStream().flush();
-                // -------------------------------------------------------------------------- digest
                 digest.update(array, 0, l);
                 // ---------------------------------------------------------------------------- read
-                if (client.getInputStream().readNBytes(array, 0, l) < l) {
+                r = client.getInputStream().read(
+                        array, // <b>
+                        0,     // <off>
+                        l      // <len>
+                );
+                if (r == -1) {
                     throw new EOFException("unexpected eof");
+                }
+            }
+            // --------------------------------------------------------------------- shutdown-output
+            client.shutdownOutput();
+            // --------------------------------------------------------------------- read-to-the-end
+            for (int r; ; ) {
+                r = client.getInputStream().read(
+                        array // <b>
+                );
+                if (r == -1) {
+                    break;
                 }
             }
             _Rfc862Utils.logDigest(digest);

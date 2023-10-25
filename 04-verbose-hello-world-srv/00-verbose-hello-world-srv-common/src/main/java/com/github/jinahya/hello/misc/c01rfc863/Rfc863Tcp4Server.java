@@ -20,9 +20,10 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
-import com.github.jinahya.hello.misc._TcpUtils;
+import com.github.jinahya.hello.util._TcpUtils;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils;
+import com.github.jinahya.hello.util.JavaSecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.StandardSocketOptions;
@@ -40,7 +41,7 @@ class Rfc863Tcp4Server {
             // ------------------------------------------------------------------------------ accept
             try (var client = server.accept().get(_Rfc86_Constants.ACCEPT_TIMEOUT,
                                                   _Rfc86_Constants.ACCEPT_TIMEOUT_UNIT)) {
-                _Rfc86_Utils.logAccepted(client);
+                _TcpUtils.logAccepted(client);
                 // ------------------------------------------------------------------------- prepare
                 final var digest = _Rfc863Utils.newDigest();
                 var bytes = 0L;
@@ -55,7 +56,7 @@ class Rfc863Tcp4Server {
                     if (r == -1) {
                         break;
                     }
-                    _Rfc86_Utils.updateDigest(digest, buffer, r);
+                    JavaSecurityUtils.updateDigest(digest, buffer, r);
                 }
                 _Rfc863Utils.logServerBytes(bytes);
                 _Rfc863Utils.logDigest(digest);

@@ -21,7 +21,7 @@ package com.github.jinahya.hello.misc.c02rfc862;
  */
 
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
-import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils;
+import com.github.jinahya.hello.util._TcpUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.EOFException;
@@ -58,7 +58,7 @@ final class Rfc862Tcp5ClientAttachment extends _Rfc862Attachment.Client {
                     @Override
                     public void completed(final Void result,
                                           final Rfc862Tcp5ClientAttachment attachment) {
-                        _Rfc86_Utils.logConnected(client);
+                        _TcpUtils.logConnectedUnchecked(client);
                         write();
                     }
                     @Override

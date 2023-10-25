@@ -20,9 +20,8 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
-import com.github.jinahya.hello.misc._TcpUtils;
+import com.github.jinahya.hello.util._TcpUtils;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
-import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.ServerSocket;
@@ -49,7 +48,7 @@ class Rfc863Tcp0Server {
             // ------------------------------------------------------------------------------ ACCEPT
             server.setSoTimeout((int) _Rfc86_Constants.ACCEPT_TIMEOUT_MILLIS);
             try (var client = server.accept()) {
-                _Rfc86_Utils.logAccepted(client);
+                _TcpUtils.logAccepted(client);
                 // ---------------------------------------------------------------------------- READ
                 client.setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_MILLIS);
                 final var digest = _Rfc863Utils.newDigest();

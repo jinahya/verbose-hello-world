@@ -20,43 +20,41 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
+import com.github.jinahya.hello.util._TcpUtils;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
+import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.EOFException;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils.logConnected;
-import static com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils.randomBytes;
-import static com.github.jinahya.hello.misc.c02rfc862._Rfc862Utils.logClientBytes;
-import static com.github.jinahya.hello.misc.c02rfc862._Rfc862Utils.newDigest;
-
 @Slf4j
 class Rfc862Tcp0Client {
 
-    public static void main(final String... args) throws Exception {
+    public static void main(final String... args) throws IOException {
         try (var client = new Socket()) {
-            // -------------------------------------------------------------------------------- BIND
+            // -------------------------------------------------------------------------------- bind
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc86_Constants.HOST, 0));
-                log.info("(optionally) bound to {}", client.getLocalSocketAddress());
+                _TcpUtils.logBound(client);
             }
-            // ----------------------------------------------------------------------------- CONNECT
+            // ------------------------------------------------------------------- connect/configure
             client.connect(_Rfc862Constants.ADDR, (int) _Rfc86_Constants.CONNECT_TIMEOUT_MILLIS);
-            logConnected(client);
+            _TcpUtils.logConnected(client);
             client.setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_MILLIS);
-            // ------------------------------------------------------------------------ SEND/RECEIVE
-            final var digest = newDigest();
-            var bytes = logClientBytes(randomBytes()); // bytes to send/receive
-            int b; // byte to write/read
-            for (; bytes > 0; bytes--) {
+            // ----------------------------------------------------------------------------- prepare
+            final var digest = _Rfc862Utils.newDigest();
+            var bytes = _Rfc86_Utils.randomBytes();
+            _Rfc862Utils.logClientBytes(bytes);
+            // -------------------------------------------------------------------------------- loop
+            for (int b; bytes > 0; bytes--) {
                 // --------------------------------------------------------------------------- write
-                b = ThreadLocalRandom.current().nextInt(256); // [0..256)
+                b = ThreadLocalRandom.current().nextInt();
                 client.getOutputStream().write(b);
                 client.getOutputStream().flush();
-                // -------------------------------------------------------------------------- digest
                 digest.update((byte) b);
                 // ---------------------------------------------------------------------------- read
                 b = client.getInputStream().read();

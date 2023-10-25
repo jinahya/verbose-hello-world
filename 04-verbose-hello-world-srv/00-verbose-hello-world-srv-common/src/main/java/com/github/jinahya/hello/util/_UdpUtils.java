@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.misc;
+package com.github.jinahya.hello.util;
 
 /*-
  * #%L
@@ -22,9 +22,11 @@ package com.github.jinahya.hello.misc;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.net.DatagramSocket;
 import java.nio.channels.DatagramChannel;
 import java.util.Objects;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Utilities for for {@link com.github.jinahya.hello.misc.c01rfc863} package and
@@ -33,39 +35,51 @@ import java.util.Objects;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
+@SuppressWarnings({
+        "java:S101" // class _Udp...
+})
 public final class _UdpUtils {
 
-    // ---------------------------------------------------------------------------------------- BIND
+    private static final String LOG_FORMAT_BOUND = "bound to {}";
+
+    private static final String LOG_FORMAT_CONNECTED = "connected to {}";
+
+    // --------------------------------------------------------------------------------------- bound
     public static <T extends DatagramSocket> T logBound(final T socket) {
         Objects.requireNonNull(socket, "socket is null");
-        log.debug("bound to {}", socket.getLocalSocketAddress());
+        log.debug(LOG_FORMAT_BOUND, socket.getLocalSocketAddress());
         return socket;
     }
 
-    public static <T extends DatagramChannel> T logBound(final T channel) {
+    @SuppressWarnings({"unchecked"})
+    public static <T extends DatagramChannel> T logBound(final T channel) throws IOException {
         Objects.requireNonNull(channel, "channel is null");
-        logBound(channel.socket());
+        if (ThreadLocalRandom.current().nextBoolean()) {
+            return (T) logBound(channel.socket()).getChannel();
+        }
+        log.debug(LOG_FORMAT_BOUND, channel.getLocalAddress());
         return channel;
     }
 
-    // ------------------------------------------------------------------------------------- CONNECT
+    // ----------------------------------------------------------------------------------- connected
     public static <T extends DatagramSocket> T logConnected(final T socket) {
         Objects.requireNonNull(socket, "socket is null");
-        log.debug("connected to {}", socket.getRemoteSocketAddress());
+        log.debug(LOG_FORMAT_CONNECTED, socket.getRemoteSocketAddress());
         return socket;
     }
 
-    public static <T extends DatagramChannel> T logConnected(final T channel) {
+    @SuppressWarnings({"unchecked"})
+    public static <T extends DatagramChannel> T logConnected(final T channel) throws IOException {
         Objects.requireNonNull(channel, "channel is null");
-        logConnected(channel.socket());
+        if (ThreadLocalRandom.current().nextBoolean()) {
+            return (T) logConnected(channel.socket()).getChannel();
+        }
+        log.debug(LOG_FORMAT_CONNECTED, channel.getLocalAddress());
         return channel;
     }
 
     // ---------------------------------------------------------------------------------------------
 
-    /**
-     * Creates a new instance.
-     */
     private _UdpUtils() {
         throw new AssertionError("instantiation is not allowed");
     }

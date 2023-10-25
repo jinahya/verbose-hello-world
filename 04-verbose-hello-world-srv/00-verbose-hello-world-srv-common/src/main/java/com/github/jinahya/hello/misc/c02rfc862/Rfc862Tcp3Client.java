@@ -22,8 +22,11 @@ package com.github.jinahya.hello.misc.c02rfc862;
 
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils;
+import com.github.jinahya.hello.util.JavaSecurityUtils;
+import com.github.jinahya.hello.util._TcpUtils;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.EOFException;
 import java.net.InetSocketAddress;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -36,62 +39,90 @@ class Rfc862Tcp3Client {
     public static void main(final String... args) throws Exception {
         try (var selector = Selector.open();
              var client = SocketChannel.open()) {
-            // -------------------------------------------------------------- CONFIGURE/NON-BLOCKING
+            // -------------------------------------------------------------- configure-non-blocking
             client.configureBlocking(false);
-            // -------------------------------------------------------------------------------- BIND
+            // -------------------------------------------------------------------------------- bind
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc86_Constants.HOST, 0));
-                log.info("(optionally) bound to {}", client.getLocalAddress());
+                _TcpUtils.logBound(client);
             }
-            // ------------------------------------------------------------------------- CONNECT/TRY
+            // ---------------------------------------------------------------------- try-to-connect
             final SelectionKey clientKey;
             assert !client.isConnected();
             if (client.connect(_Rfc862Constants.ADDR)) {
                 assert client.isConnected();
-                log.info("(immediately) connected to {}, through {}", client.getRemoteAddress(),
-                         client.getLocalAddress());
-                clientKey = client.register(selector, SelectionKey.OP_WRITE | SelectionKey.OP_READ);
-                clientKey.attach(new Rfc862Tcp3ClientAttachment(clientKey));
+                _TcpUtils.logConnected(client);
+                clientKey = client.register(
+                        selector,                                    // <sel>
+                        SelectionKey.OP_WRITE | SelectionKey.OP_READ // <ops>
+                );
             } else {
-                clientKey = client.register(selector, SelectionKey.OP_CONNECT);
+                clientKey = client.register(
+                        selector,               // <sel>
+                        SelectionKey.OP_CONNECT // <ops>
+                );
             }
-            // ---------------------------------------------------------------- CONNECT/SEND/RECEIVE
+            // ----------------------------------------------------------------------------- prepare
+            final var digest = _Rfc862Utils.newDigest();
+            var bytes = _Rfc86_Utils.randomBytes();
+            assert bytes >= 0;
+            final var buffer = _Rfc86_Utils.newBuffer();
+            buffer.position(buffer.limit()); // for what?
+            // ---------------------------------------------------------------------- select-in-loop
             while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
-                if (selector.select(_Rfc86_Constants.CONNECT_TIMEOUT_MILLIS) == 0) {
+                if (selector.select(_Rfc86_Constants.CLIENT_PROGRAM_TIMEOUT_MILLIS) == 0) {
                     break;
                 }
-                for (var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
+                for (var i = selector.selectedKeys().iterator(); i.hasNext(); ) {
                     final var selectedKey = i.next();
-                    // -------------------------------------------------------------- connect/finish
+                    i.remove();
+                    // ----------------------------------------------------------- finish-connecting
                     if (selectedKey.isConnectable()) {
                         assert selectedKey == clientKey;
                         final var channel = (SocketChannel) selectedKey.channel();
                         assert channel == client;
                         if (channel.finishConnect()) {
-                            _Rfc86_Utils.logConnected(channel);
+                            _TcpUtils.logConnected(channel);
                             selectedKey.interestOpsAnd(~SelectionKey.OP_CONNECT);
-                            assert selectedKey.attachment() == null;
-                            selectedKey.attach(new Rfc862Tcp3ClientAttachment(selectedKey));
                             selectedKey.interestOpsOr(SelectionKey.OP_WRITE | SelectionKey.OP_READ);
                         }
                     }
                     // ----------------------------------------------------------------------- write
                     if (selectedKey.isWritable()) {
-                        final var attachment =
-                                (Rfc862Tcp3ClientAttachment) selectedKey.attachment();
-                        assert attachment != null;
-                        final var w = attachment.write();
-                        assert w > 0;
+                        final var channel = (SocketChannel) selectedKey.channel();
+                        assert channel == client;
+                        if (!buffer.hasRemaining()) {
+                            ThreadLocalRandom.current().nextBytes(buffer.array());
+                            buffer.clear().limit(Math.min(buffer.limit(), bytes));
+                        }
+                        assert buffer.hasRemaining() || bytes == 0;
+                        final var w = channel.write(buffer);
+                        JavaSecurityUtils.updateDigest(digest, buffer, w);
+                        bytes -= w;
+                        if (bytes == 0) {
+                            _Rfc862Utils.logDigest(digest);
+                            channel.shutdownOutput();
+                            selectedKey.interestOpsAnd(~SelectionKey.OP_WRITE);
+                        }
                     }
                     // ------------------------------------------------------------------------ read
                     if (selectedKey.isReadable()) {
-                        final var attachment =
-                                (Rfc862Tcp3ClientAttachment) selectedKey.attachment();
-                        assert attachment != null;
-                        final var r = attachment.read();
+                        final var channel = (SocketChannel) selectedKey.channel();
+                        assert channel == client;
+                        final var limit = buffer.limit();
+                        buffer.flip(); // limit -> position, position -> zero;
+                        final int r = channel.read(buffer);
                         assert r >= -1;
-                        assert r == -1 || !attachment.isClosed();
-                        assert r == -1 || selectedKey.isValid();
+                        if (r == -1) {
+                            if (bytes > 0) {
+                                throw new EOFException("unexpected eof");
+                            }
+                            selectedKey.interestOpsAnd(~SelectionKey.OP_READ);
+                            selectedKey.cancel();
+                            assert !selectedKey.isValid();
+                            continue;
+                        }
+                        buffer.position(buffer.limit()).limit(limit);
                     }
                 }
             }

@@ -26,10 +26,17 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 @Slf4j
 class Rfc862Tcp4ServerAttachment extends _Rfc862Attachment.Server {
 
+    /**
+     * Creates a new instance with specified asynchronous socket channel.
+     *
+     * @param client the asynchronous socket channel.
+     */
     Rfc862Tcp4ServerAttachment(final AsynchronousSocketChannel client) {
         super();
         this.client = Objects.requireNonNull(client, "client is null");
@@ -43,7 +50,7 @@ class Rfc862Tcp4ServerAttachment extends _Rfc862Attachment.Server {
     }
 
     // -------------------------------------------------------------------------------------- client
-    int read() throws Exception {
+    int read() throws ExecutionException, InterruptedException, TimeoutException {
         final var r = client.read(buffer)
                 .get(_Rfc86_Constants.READ_TIMEOUT, _Rfc86_Constants.READ_TIMEOUT_UNIT);
         if (r != -1) {
@@ -52,7 +59,7 @@ class Rfc862Tcp4ServerAttachment extends _Rfc862Attachment.Server {
         return r;
     }
 
-    int write() throws Exception {
+    int write() throws ExecutionException, InterruptedException, TimeoutException {
         buffer.flip();
         final var w = client.write(buffer)
                 .get(_Rfc86_Constants.WRITE_TIMEOUT, _Rfc86_Constants.WRITE_TIMEOUT_UNIT);

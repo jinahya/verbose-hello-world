@@ -20,6 +20,7 @@ package com.github.jinahya.hello.misc.c00rfc86_;
  * #L%
  */
 
+import com.github.jinahya.hello.util.JavaSecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Closeable;
@@ -210,10 +211,7 @@ public abstract class _Rfc86_Attachment implements Closeable {
                     "bytes(" + bytes + ") > buffer.position(" + buffer.position() + ")"
             );
         }
-        digest.update(
-                slice.position(buffer.position() - bytes)
-                        .limit(buffer.position())
-        );
+        JavaSecurityUtils.updateDigest(digest, buffer, bytes);
         return bytes;
     }
 

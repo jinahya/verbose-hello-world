@@ -21,7 +21,7 @@ package com.github.jinahya.hello.misc.c02rfc862;
  */
 
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
-import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils;
+import com.github.jinahya.hello.util._TcpUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -56,7 +56,7 @@ final class Rfc862Tcp5ServerAttachment extends _Rfc862Attachment.Server {
                     public void completed(final AsynchronousSocketChannel result,
                                           final Rfc862Tcp5ServerAttachment attachment) {
                         client = result;
-                        _Rfc86_Utils.logAccepted(client);
+                        _TcpUtils.logAcceptedUnchecked(client);
                         read();
                     }
                     @Override

@@ -20,9 +20,10 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
-import com.github.jinahya.hello.misc._TcpUtils;
+import com.github.jinahya.hello.util._TcpUtils;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils;
+import com.github.jinahya.hello.util.JavaSecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -63,7 +64,8 @@ class Rfc863Tcp3Server {
                         assert selectedKey == serverKey;
                         final var channel = (ServerSocketChannel) selectedKey.channel();
                         assert channel == server;
-                        final var client = _Rfc86_Utils.logAccepted(channel.accept());
+                        final var client = channel.accept();
+                        _TcpUtils.logAccepted(client);
                         selectedKey.interestOpsAnd(~SelectionKey.OP_ACCEPT);
                         selectedKey.cancel();
                         assert !selectedKey.isValid();
@@ -91,7 +93,7 @@ class Rfc863Tcp3Server {
                             continue;
                         }
                         bytes += r;
-                        _Rfc86_Utils.updateDigest(digest, buffer, r);
+                        JavaSecurityUtils.updateDigest(digest, buffer, r);
                     }
                 }
             }

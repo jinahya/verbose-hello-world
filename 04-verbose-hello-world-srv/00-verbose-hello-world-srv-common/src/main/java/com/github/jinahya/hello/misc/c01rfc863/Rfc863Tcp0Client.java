@@ -20,6 +20,7 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
+import com.github.jinahya.hello.util._TcpUtils;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +45,7 @@ class Rfc863Tcp0Client {
             }
             // ----------------------------------------------------------------------------- CONNECT
             client.connect(_Rfc863Constants.ADDR, (int) _Rfc86_Constants.CONNECT_TIMEOUT_MILLIS);
-            _Rfc86_Utils.logConnected(client);
+            _TcpUtils.logConnected(client);
             // -------------------------------------------------------------------------------- SEND
             final var digest = _Rfc863Utils.newDigest();
             var bytes = _Rfc863Utils.logClientBytes(_Rfc86_Utils.randomBytes());

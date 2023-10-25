@@ -20,8 +20,10 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
+import com.github.jinahya.hello.util._TcpUtils;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils;
+import com.github.jinahya.hello.util.JavaSecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.channels.ServerSocketChannel;
@@ -33,11 +35,11 @@ class Rfc862Tcp2Server {
 
     public static void main(final String... args) throws Exception {
         try (var server = ServerSocketChannel.open()) {
-            assert server.isBlocking();
-            // -------------------------------------------------------------------------------- BIND
+            assert server.isBlocking(); // ----------------------------------------------------- !!!
+            // -------------------------------------------------------------------------------- bind
             server.bind(_Rfc862Constants.ADDR, 1);
-            log.info("bound to {}", server.getLocalAddress());
-            // ------------------------------------------------------------------------------ ACCEPT
+            _TcpUtils.logBound(server);
+            // -------------------------------------------------------------------- accept/configure
             final SocketChannel client;
             if (ThreadLocalRandom.current().nextBoolean()) {
                 final var socket = server.socket().accept();
@@ -46,24 +48,18 @@ class Rfc862Tcp2Server {
             } else {
                 client = server.accept();
             }
-            assert client != null;
-            _Rfc86_Utils.logAccepted(client);
-            assert client.isBlocking();
-            // ------------------------------------------------------------------------ RECEIVE/SEND
+            _TcpUtils.logAccepted(client);
+            assert client.isBlocking(); // ----------------------------------------------------- !!!
+            client.socket().setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_MILLIS);
             try (client) {
-                client.socket().setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_MILLIS);
+                // ------------------------------------------------------------------------- prepare
                 final var digest = _Rfc862Utils.newDigest();
                 final var buffer = _Rfc86_Utils.newBuffer();
                 assert buffer.hasArray();
-                final var slice = buffer.slice();
-                assert slice.hasArray();
-                assert slice.array() == buffer.array();
-                var bytes = 0; // number of bytes read so far
-                int r; // number of bytes read
-                int w; // number of bytes written
-                while (true) {
+                var bytes = 0L;
+                for (int r, w; ; bytes += r) {
                     // ------------------------------------------------------------------------ read
-                    final var hasRemaining = buffer.hasRemaining();
+                    assert buffer.hasRemaining(); // why?
                     if (ThreadLocalRandom.current().nextBoolean()) {
                         r = client.socket().getInputStream().read(
                                 buffer.array(),                           // <b>
@@ -76,15 +72,14 @@ class Rfc862Tcp2Server {
                     } else {
                         r = client.read(buffer);
                     }
+                    assert r >= -1; // -1, 0, 1, 2, ...
                     if (r == -1) {
-                        client.shutdownInput(); // not required
                         break;
                     }
-                    assert r > 0 || !hasRemaining;
-                    bytes += r;
+                    assert r > 0; // why?
                     // ----------------------------------------------------------------------- write
                     buffer.flip(); // limit -> position, position -> zero
-                    assert buffer.hasRemaining();
+                    assert buffer.hasRemaining(); // why?
                     if (ThreadLocalRandom.current().nextBoolean()) {
                         w = buffer.remaining();
                         client.socket().getOutputStream().write(
@@ -99,35 +94,23 @@ class Rfc862Tcp2Server {
                     }
                     assert w > 0; // why?
                     assert !buffer.hasRemaining(); // why?
-                    digest.update(slice.position(0).limit(buffer.position()));
+                    JavaSecurityUtils.updateDigest(digest, buffer, w);
                     buffer.compact();
-                    assert buffer.position() == 0;
+                    assert buffer.position() == 0; // why?
                     assert buffer.limit() == buffer.capacity();
-                } // end-of-while
-                // ------------------------------------------------------------------ write remained
-                assert buffer.position() == 0;
-                buffer.flip();
-                assert !buffer.hasRemaining();
-                while (buffer.hasRemaining()) {
-                    if (ThreadLocalRandom.current().nextBoolean()) {
-                        w = buffer.remaining();
-                        client.socket().getOutputStream().write(
-                                buffer.array(),                           // <b>
-                                buffer.arrayOffset() + buffer.position(), // <off>
-                                buffer.remaining()                        // <len>
-                        );
-                        client.socket().getOutputStream().flush();
-                        buffer.position(buffer.position() + w);
-                    } else {
-                        w = client.write(buffer);
-                    }
                 }
-                client.shutdownOutput(); // not required
+                // ------------------------------------------------------------------ write-remained
+                buffer.flip();
+                assert !buffer.hasRemaining(); // why?
+                while (buffer.hasRemaining()) {
+                    client.write(buffer);
+                }
+                // ------------------------------------------------------------------------- logging
                 _Rfc862Utils.logServerBytes(bytes);
                 _Rfc862Utils.logDigest(digest);
-            } // try-with-client
-        } // try-with-server
-    } // main
+            }
+        }
+    }
 
     private Rfc862Tcp2Server() {
         throw new AssertionError("instantiation is not allowed");

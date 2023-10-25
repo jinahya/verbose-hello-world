@@ -20,8 +20,6 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import com.github.jinahya.hello.misc.Rfc768Constants;
-import com.github.jinahya.hello.misc.Rfc791Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 

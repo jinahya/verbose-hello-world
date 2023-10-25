@@ -20,9 +20,10 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
-import com.github.jinahya.hello.misc._TcpUtils;
+import com.github.jinahya.hello.util._TcpUtils;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils;
+import com.github.jinahya.hello.util.JavaSecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -50,7 +51,7 @@ class Rfc863Tcp3Client {
             // --------------------------------------------------------------- connect(try)/register
             final SelectionKey clientKey;
             if (client.connect(_Rfc863Constants.ADDR)) {
-                _Rfc86_Utils.logConnected(client);
+                _TcpUtils.logConnected(client);
                 clientKey = client.register(selector, SelectionKey.OP_WRITE);
             } else {
                 clientKey = client.register(selector, SelectionKey.OP_CONNECT);
@@ -89,7 +90,7 @@ class Rfc863Tcp3Client {
                         }
                         final var w = client.write(buffer);
                         assert w >= 0;
-                        _Rfc86_Utils.updateDigest(digest, buffer, w);
+                        JavaSecurityUtils.updateDigest(digest, buffer, w);
                         if ((bytes -= w) == 0) {
                             _Rfc863Utils.logDigest(digest);
                             selectedKey.interestOpsAnd(~SelectionKey.OP_WRITE);

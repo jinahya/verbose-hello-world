@@ -20,9 +20,10 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
-import com.github.jinahya.hello.misc._TcpUtils;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils;
+import com.github.jinahya.hello.util.JavaSecurityUtils;
+import com.github.jinahya.hello.util._TcpUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
@@ -31,7 +32,6 @@ import java.nio.channels.CompletionHandler;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static com.github.jinahya.hello.misc._TcpUtils.logConnected;
 import static com.github.jinahya.hello.misc.c01rfc863._Rfc863Utils.logDigest;
 
 @Slf4j
@@ -52,7 +52,7 @@ class Rfc863Tcp5Client {
                     new CompletionHandler<>() { // <handler>
                         @Override // @formatter:on
                         public void completed(final Void result, final Void attachment) {
-                            logConnected(client);
+                            _TcpUtils.logConnectedUnchecked(client);
                             final var bytes = new int[] {
                                     _Rfc863Utils.logClientBytes(_Rfc86_Utils.randomBytes())
                             };
@@ -68,7 +68,7 @@ class Rfc863Tcp5Client {
                                     new CompletionHandler<>() {          // <handler>
                                         @Override
                                         public void completed(final Integer result, final Void a) {
-                                            _Rfc86_Utils.updateDigest(digest, buffer, result);
+                                            JavaSecurityUtils.updateDigest(digest, buffer, result);
                                             if ((bytes[0] -= result) == 0) {
                                                 logDigest(digest);
                                                 latch.countDown();

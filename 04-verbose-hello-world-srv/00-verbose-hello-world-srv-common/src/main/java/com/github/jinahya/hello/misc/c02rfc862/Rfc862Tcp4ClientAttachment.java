@@ -26,7 +26,9 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.EOFException;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeoutException;
 
 @Slf4j
 final class Rfc862Tcp4ClientAttachment extends _Rfc862Attachment.Client {
@@ -37,7 +39,7 @@ final class Rfc862Tcp4ClientAttachment extends _Rfc862Attachment.Client {
     }
 
     // -------------------------------------------------------------------------------------- client
-    int write() throws Exception {
+    int write() throws ExecutionException, InterruptedException, TimeoutException {
         assert client.isOpen();
         if (!buffer.hasRemaining()) {
             ThreadLocalRandom.current().nextBytes(buffer.array());
@@ -53,7 +55,7 @@ final class Rfc862Tcp4ClientAttachment extends _Rfc862Attachment.Client {
         return w;
     }
 
-    int read() throws Exception {
+    int read() throws ExecutionException, InterruptedException, TimeoutException, EOFException {
         assert client.isOpen();
         buffer.flip(); // limit -> position, position -> zero
         final var r = client.read(buffer)

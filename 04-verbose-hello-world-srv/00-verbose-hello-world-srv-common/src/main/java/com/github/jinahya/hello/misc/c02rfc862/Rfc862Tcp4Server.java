@@ -20,34 +20,49 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
+import com.github.jinahya.hello.util._TcpUtils;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
-import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.nio.channels.AsynchronousServerSocketChannel;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 @Slf4j
 class Rfc862Tcp4Server {
 
-    public static void main(final String... args) throws Exception {
+    public static void main(final String... args)
+            throws IOException, ExecutionException, InterruptedException, TimeoutException {
+        // ------------------------------------------------------------------------------------ open
         try (var server = AsynchronousServerSocketChannel.open()) {
+            // -------------------------------------------------------------------------------- bind
             server.bind(_Rfc862Constants.ADDR);
-            log.info("bound to {}", server.getLocalAddress());
-            // ------------------------------------------------------------------------------ ACCEPT
+            _TcpUtils.logBound(server);
+            // ------------------------------------------------------------------------------ accept
             try (var client = server.accept().get(_Rfc86_Constants.ACCEPT_TIMEOUT,
                                                   _Rfc86_Constants.ACCEPT_TIMEOUT_UNIT)) {
-                _Rfc86_Utils.logAccepted(client);
-                // -------------------------------------------------------------------- RECEIVE/SEND
+                _TcpUtils.logAccepted(client);
+                // -------------------------------------------------------------------- receive/send
                 try (var attachment = new Rfc862Tcp4ServerAttachment(client)) {
                     // ------------------------------------------------------------------------ read
-                    for (int r; (r = attachment.read()) != -1; ) {
-                        assert r >= 0;
+                    for (int r, w; ; ) {
+                        r = attachment.read();
+                        assert r >= -1;
+                        if (r == -1) {
+                            break;
+                        }
                         // ------------------------------------------------------------------- write
-                        final var w = attachment.write();
+                        w = attachment.write();
                         assert w >= 0;
                     }
-                    while (attachment.write() > 0) {
-                        // do nothing
+                    // ------------------------------------------------------------ write-to-the-end
+                    for (int w; ; ) {
+                        w = attachment.write();
+                        assert w >= 0;
+                        if (w == 0) {
+                            break;
+                        }
                     }
                 }
             }

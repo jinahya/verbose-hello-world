@@ -20,7 +20,7 @@ package com.github.jinahya.hello.misc.c03calc;
  * #L%
  */
 
-import com.github.jinahya.hello.misc._Attachment;
+import com.github.jinahya.hello.util._Attachment;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
