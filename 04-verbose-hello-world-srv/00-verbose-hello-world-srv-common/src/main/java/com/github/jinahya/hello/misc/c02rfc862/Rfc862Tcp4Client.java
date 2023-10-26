@@ -20,10 +20,13 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
-import com.github.jinahya.hello.util._TcpUtils;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
+import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils;
+import com.github.jinahya.hello.util.JavaSecurityUtils;
+import com.github.jinahya.hello.util._TcpUtils;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.AsynchronousSocketChannel;
@@ -32,42 +35,69 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeoutException;
 
 @Slf4j
+@SuppressWarnings({
+        "java:S127" // loop counter assigned in the loop body
+})
 class Rfc862Tcp4Client {
 
     public static void main(final String... args)
             throws IOException, ExecutionException, InterruptedException, TimeoutException {
+        // ------------------------------------------------------------------------------------ open
         try (var client = AsynchronousSocketChannel.open()) {
-            // -------------------------------------------------------------------------------- bind
+            // ---------------------------------------------------------------------- bind(optional)
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc86_Constants.HOST, 0));
                 _TcpUtils.logBound(client);
             }
             // ----------------------------------------------------------------------------- connect
-            client.connect(_Rfc862Constants.ADDR).get(_Rfc86_Constants.CONNECT_TIMEOUT,
-                                                      _Rfc86_Constants.CONNECT_TIMEOUT_UNIT);
+            client.connect(_Rfc862Constants.ADDR)
+                    .get(_Rfc86_Constants.CONNECT_TIMEOUT, _Rfc86_Constants.CONNECT_TIMEOUT_UNIT);
             _TcpUtils.logConnected(client);
+            // ----------------------------------------------------------------------------- prepare
+            final var digest = _Rfc862Utils.newDigest();
+            var bytes = _Rfc86_Utils.newRandomBytes();
+            assert bytes >= 0;
+            _Rfc862Utils.logClientBytes(bytes);
+            final var buffer = _Rfc86_Utils.newBuffer();
+            assert buffer.hasArray();
+            buffer.position(buffer.limit()); // for what?
+            assert !buffer.hasRemaining();
             // ------------------------------------------------------------------------ send/receive
-            try (var attachment = new Rfc862Tcp4ClientAttachment(client)) {
-                for (int w, r; ; ) {
-                    // ----------------------------------------------------------------------- write
-                    w = attachment.write();
-                    assert w >= 0;
-                    if (w == 0) {
-                        break;
-                    }
-                    // ------------------------------------------------------------------------ read
-                    r = attachment.read();
-                    assert r >= 0;
+            for (int w, r; bytes > 0; bytes -= w) {
+                // --------------------------------------------------------------------------- write
+                if (!buffer.hasRemaining()) {
+                    ThreadLocalRandom.current().nextBytes(buffer.array());
+                    buffer.clear().limit(Math.min(buffer.limit(), bytes));
                 }
-                // ----------------------------------------------------------------- shutdown-output
-                client.shutdownOutput();
-                // ----------------------------------------------------------------- read-to-the-end
-                for (int r; ; ) {
-                    r = attachment.read();
-                    if (r == -1) {
-                        break;
-                    }
-                    assert r >= 0;
+                assert buffer.hasRemaining();
+                w = client.write(buffer)
+                        .get(_Rfc86_Constants.WRITE_TIMEOUT, _Rfc86_Constants.WRITE_TIMEOUT_UNIT);
+                assert w > 0; // why?
+                JavaSecurityUtils.updateDigest(digest, buffer, w);
+                // ---------------------------------------------------------------------------- read
+                final var limit = buffer.limit();
+                buffer.flip();
+                assert buffer.hasRemaining(); // why?
+                r = client.read(buffer)
+                        .get(_Rfc86_Constants.READ_TIMEOUT, _Rfc86_Constants.READ_TIMEOUT_UNIT);
+                assert r >= -1;
+                if (r == -1) {
+                    throw new EOFException("unexpected eof");
+                }
+                assert r > 0; // why?
+                buffer.position(buffer.limit()).limit(limit);
+            }
+            _Rfc862Utils.logDigest(digest);
+            // --------------------------------------------------------------------- shutdown-output
+            client.shutdownOutput();
+            // --------------------------------------------------------------------- read-to-the-end
+            for (int r; ; ) {
+                buffer.clear();
+                r = client.read(buffer)
+                        .get(_Rfc86_Constants.READ_TIMEOUT, _Rfc86_Constants.READ_TIMEOUT_UNIT);
+                assert r >= -1;
+                if (r == -1) {
+                    break;
                 }
             }
         }

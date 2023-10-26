@@ -53,12 +53,10 @@ class Rfc862Tcp3Server {
             final var buffer = _Rfc86_Utils.newBuffer();
             // ---------------------------------------------------------------------- select-in-loop
             while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
-                log.debug("in while...: {}", selector.keys());
                 if (selector.select(_Rfc86_Constants.ACCEPT_TIMEOUT_MILLIS) == 0) {
                     break;
                 }
                 for (var i = selector.selectedKeys().iterator(); i.hasNext(); ) {
-                    log.debug("in loop...");
                     final var selectedKey = i.next();
                     i.remove();
                     // ---------------------------------------------------------------------- accept
@@ -81,38 +79,31 @@ class Rfc862Tcp3Server {
                     }
                     // ------------------------------------------------------------------------ read
                     if (selectedKey.isReadable()) {
-                        log.debug("readable...");
                         final var channel = (SocketChannel) selectedKey.channel();
                         if (!buffer.hasRemaining()) {
                             buffer.clear();
                         }
                         final var r = channel.read(buffer);
-                        log.debug("r: {}", r);
                         assert r >= -1;
                         if (r == -1) {
                             selectedKey.interestOpsAnd(~SelectionKey.OP_READ);
-                        } else {
-                            bytes += r;
-                            if (buffer.position() > 0) {
-                                selectedKey.interestOpsOr(SelectionKey.OP_WRITE);
-                            }
                         }
+                        bytes += r;
+                        selectedKey.interestOpsOr(SelectionKey.OP_WRITE);
                     }
                     // ----------------------------------------------------------------------- write
                     if (selectedKey.isWritable()) {
-                        log.debug("writable...");
                         final var channel = (SocketChannel) selectedKey.channel();
                         buffer.flip();
                         final int w = channel.write(buffer);
-                        log.debug("w: {}", w);
                         assert w >= 0;
                         JavaSecurityUtils.updateDigest(digest, buffer, w);
                         buffer.compact();
                         if (buffer.position() == 0) {
                             selectedKey.interestOpsAnd(~SelectionKey.OP_WRITE);
                             if ((selectedKey.interestOps() & SelectionKey.OP_READ) == 0) {
-                                log.debug("no read either, closing...");
                                 channel.close();
+                                log.debug("channel closed");
                                 assert !selectedKey.isValid();
                                 continue;
                             }

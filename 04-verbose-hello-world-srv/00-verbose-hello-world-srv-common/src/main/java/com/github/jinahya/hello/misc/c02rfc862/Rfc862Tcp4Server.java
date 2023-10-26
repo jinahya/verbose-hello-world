@@ -20,8 +20,10 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
-import com.github.jinahya.hello.util._TcpUtils;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
+import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils;
+import com.github.jinahya.hello.util.JavaSecurityUtils;
+import com.github.jinahya.hello.util._TcpUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -43,28 +45,47 @@ class Rfc862Tcp4Server {
             try (var client = server.accept().get(_Rfc86_Constants.ACCEPT_TIMEOUT,
                                                   _Rfc86_Constants.ACCEPT_TIMEOUT_UNIT)) {
                 _TcpUtils.logAccepted(client);
+                // ------------------------------------------------------------------------- prepare
+                final var digest = _Rfc862Utils.newDigest();
+                var bytes = 0L;
+                final var buffer = _Rfc86_Utils.newBuffer();
+                assert buffer.capacity() > 0;
                 // -------------------------------------------------------------------- receive/send
-                try (var attachment = new Rfc862Tcp4ServerAttachment(client)) {
+                for (int r, w; ; bytes += r) {
                     // ------------------------------------------------------------------------ read
-                    for (int r, w; ; ) {
-                        r = attachment.read();
-                        assert r >= -1;
-                        if (r == -1) {
-                            break;
-                        }
-                        // ------------------------------------------------------------------- write
-                        w = attachment.write();
-                        assert w >= 0;
+                    if (!buffer.hasRemaining()) {
+                        buffer.clear();
                     }
-                    // ------------------------------------------------------------ write-to-the-end
-                    for (int w; ; ) {
-                        w = attachment.write();
-                        assert w >= 0;
-                        if (w == 0) {
-                            break;
-                        }
+                    assert buffer.hasRemaining();
+                    r = client.read(buffer)
+                            .get(_Rfc86_Constants.READ_TIMEOUT, _Rfc86_Constants.READ_TIMEOUT_UNIT);
+                    assert r >= -1;
+                    if (r == -1) {
+                        break;
                     }
+                    assert r > 0; // why?
+                    // ----------------------------------------------------------------------- write
+                    buffer.flip();
+                    assert buffer.hasRemaining(); // why?
+                    w = client.write(buffer)
+                            .get(_Rfc86_Constants.WRITE_TIMEOUT,
+                                 _Rfc86_Constants.WRITE_TIMEOUT_UNIT);
+                    assert w > 0; // why?
+                    JavaSecurityUtils.updateDigest(digest, buffer, w);
+                    buffer.compact();
                 }
+                // ---------------------------------------------------------------- write-to-the-end
+                buffer.flip();
+                for (int w; buffer.hasRemaining(); ) {
+                    w = client.write(buffer)
+                            .get(_Rfc86_Constants.WRITE_TIMEOUT,
+                                 _Rfc86_Constants.WRITE_TIMEOUT_UNIT);
+                    assert w > 0; // why?
+                    JavaSecurityUtils.updateDigest(digest, buffer, w);
+                }
+                // ------------------------------------------------------------------------- logging
+                _Rfc862Utils.logServerBytes(bytes);
+                _Rfc862Utils.logDigest(digest);
             }
         }
     }

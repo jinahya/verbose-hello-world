@@ -41,7 +41,7 @@ class Rfc863Tcp1Client {
             // -------------------------------------------------------------------------------- bind
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc86_Constants.HOST, 0));
-                log.info("(optionally) bound to {}", client.getLocalSocketAddress());
+                _TcpUtils.logBound(client);
             }
             // ----------------------------------------------------------------------------- connect
             client.connect(_Rfc863Constants.ADDR, (int) _Rfc86_Constants.CONNECT_TIMEOUT_MILLIS);

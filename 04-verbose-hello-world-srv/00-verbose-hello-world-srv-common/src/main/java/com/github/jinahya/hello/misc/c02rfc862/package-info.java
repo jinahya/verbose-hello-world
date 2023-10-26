@@ -2,8 +2,8 @@
  * Defines clients and servers implement the <a href="https://www.rfc-editor.org/rfc/rfc862">Echo
  * Protocol (RFC-862)</a>.
  *
- * @see <a href="https://www.rfc-editor.org/rfc/rfc862">Echo Protocol
- * (RFC-862)</a>
+ * @see <a href="https://www.rfc-editor.org/rfc/rfc862">Echo Protocol (RFC-862)</a>
+ * @see com.github.jinahya.hello.misc.c01rfc863
  */
 
 package com.github.jinahya.hello.misc.c02rfc862;

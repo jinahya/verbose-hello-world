@@ -54,7 +54,7 @@ public final class _TcpUtils {
     // --------------------------------------------------------------------------------------- bound
     public static <T extends ServerSocket> T logBound(final T server) {
         Objects.requireNonNull(server, "server is null");
-        log.debug(LOG_FORMAT_BOUND, server.getLocalSocketAddress());
+        log.info(LOG_FORMAT_BOUND, server.getLocalSocketAddress());
         return server;
     }
 
@@ -64,14 +64,14 @@ public final class _TcpUtils {
         if (ThreadLocalRandom.current().nextBoolean()) {
             return (T) logBound(server.socket()).getChannel();
         }
-        log.debug(LOG_FORMAT_BOUND, server.getLocalAddress());
+        log.info(LOG_FORMAT_BOUND, server.getLocalAddress());
         return server;
     }
 
     public static <T extends AsynchronousServerSocketChannel> T logBound(final T server)
             throws IOException {
         Objects.requireNonNull(server, "server is null");
-        log.debug(LOG_FORMAT_BOUND, server.getLocalAddress());
+        log.info(LOG_FORMAT_BOUND, server.getLocalAddress());
         return server;
     }
 
@@ -80,7 +80,7 @@ public final class _TcpUtils {
         if (!client.isBound()) {
             throw new IllegalArgumentException("not bound: " + client);
         }
-        log.debug(LOG_FORMAT_BOUND, client.getLocalSocketAddress());
+        log.info(LOG_FORMAT_BOUND, client.getLocalSocketAddress());
         return client;
     }
 
@@ -90,21 +90,22 @@ public final class _TcpUtils {
         if (ThreadLocalRandom.current().nextBoolean()) {
             return (T) logBound(channel.socket()).getChannel();
         }
-        log.debug(LOG_FORMAT_BOUND, channel.getLocalAddress());
+        log.info(LOG_FORMAT_BOUND, channel.getLocalAddress());
         return channel;
     }
 
     public static <T extends AsynchronousSocketChannel> T logBound(final T channel)
             throws IOException {
         Objects.requireNonNull(channel, "channel is null");
-        log.debug(LOG_FORMAT_BOUND, channel.getLocalAddress());
+        log.info(LOG_FORMAT_BOUND, channel.getLocalAddress());
         return channel;
     }
 
+    // ------------------------------------------------------------------------------------ accepted
     public static <T extends Socket> T logAccepted(final T client) {
         Objects.requireNonNull(client, "client is null");
-        log.debug(LOG_FORMAT_ACCEPTED, client.getRemoteSocketAddress(),
-                  client.getLocalSocketAddress());
+        log.info(LOG_FORMAT_ACCEPTED, client.getRemoteSocketAddress(),
+                 client.getLocalSocketAddress());
         return client;
     }
 
@@ -114,14 +115,14 @@ public final class _TcpUtils {
         if (ThreadLocalRandom.current().nextBoolean()) {
             return (T) logAccepted(client.socket()).getChannel();
         }
-        log.debug(LOG_FORMAT_ACCEPTED, client.getRemoteAddress(), client.getLocalAddress());
+        log.info(LOG_FORMAT_ACCEPTED, client.getRemoteAddress(), client.getLocalAddress());
         return client;
     }
 
     public static <T extends AsynchronousSocketChannel> T logAccepted(final T client)
             throws IOException {
         Objects.requireNonNull(client, "client is null");
-        log.debug(LOG_FORMAT_ACCEPTED, client.getRemoteAddress(), client.getLocalAddress());
+        log.info(LOG_FORMAT_ACCEPTED, client.getRemoteAddress(), client.getLocalAddress());
         return client;
     }
 
@@ -136,8 +137,8 @@ public final class _TcpUtils {
     // ----------------------------------------------------------------------------------- connected
     public static <T extends Socket> T logConnected(final T client) {
         Objects.requireNonNull(client, "client is null");
-        log.debug(LOG_FORMAT_CONNECTED, client.getRemoteSocketAddress(),
-                  client.getLocalSocketAddress());
+        log.info(LOG_FORMAT_CONNECTED, client.getRemoteSocketAddress(),
+                 client.getLocalSocketAddress());
         return client;
     }
 
@@ -147,14 +148,14 @@ public final class _TcpUtils {
         if (ThreadLocalRandom.current().nextBoolean()) {
             return (T) logConnected(client.socket()).getChannel();
         }
-        log.debug(LOG_FORMAT_CONNECTED, client.getRemoteAddress(), client.getLocalAddress());
+        log.info(LOG_FORMAT_CONNECTED, client.getRemoteAddress(), client.getLocalAddress());
         return client;
     }
 
     public static <T extends AsynchronousSocketChannel> T logConnected(final T client)
             throws IOException {
         Objects.requireNonNull(client, "client is null");
-        log.debug(LOG_FORMAT_CONNECTED, client.getRemoteAddress(), client.getLocalAddress());
+        log.info(LOG_FORMAT_CONNECTED, client.getRemoteAddress(), client.getLocalAddress());
         return client;
     }
 

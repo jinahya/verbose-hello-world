@@ -66,6 +66,7 @@ class Rfc862Tcp3Client {
             final var digest = _Rfc862Utils.newDigest();
             var bytes = _Rfc86_Utils.newRandomBytes();
             assert bytes >= 0;
+            _Rfc862Utils.logClientBytes(bytes);
             final var buffer = _Rfc86_Utils.newBuffer();
             buffer.position(buffer.limit()); // for what?
             // ---------------------------------------------------------------------- select-in-loop

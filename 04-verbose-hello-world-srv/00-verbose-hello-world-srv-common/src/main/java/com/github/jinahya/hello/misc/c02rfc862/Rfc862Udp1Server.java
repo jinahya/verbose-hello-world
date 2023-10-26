@@ -21,6 +21,7 @@ package com.github.jinahya.hello.misc.c02rfc862;
  */
 
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
+import com.github.jinahya.hello.util._UdpUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
@@ -30,16 +31,23 @@ import java.net.DatagramSocket;
 class Rfc862Udp1Server {
 
     public static void main(final String... args) throws Exception {
+        // ---------------------------------------------------------------------------------- create
         try (var server = new DatagramSocket(null)) {
+            // -------------------------------------------------------------------------------- bind
             server.bind(_Rfc862Constants.ADDR);
-            log.info("bound to {}", server.getLocalSocketAddress());
+            _UdpUtils.logBound(server);
+            // --------------------------------------------------------------------------- configure
             server.setSoTimeout((int) _Rfc86_Constants.ACCEPT_TIMEOUT_MILLIS);
+            // ----------------------------------------------------------------------------- prepare
             final var array = new byte[server.getReceiveBufferSize()];
             final var packet = new DatagramPacket(array, array.length);
+            // ----------------------------------------------------------------------------- receive
             server.receive(packet);
-            log.debug("{} byte(s) received from {}", packet.getLength(), packet.getSocketAddress());
+            _UdpUtils.logReceived(packet);
+            // -------------------------------------------------------------------------------- send
             server.send(packet);
-            _Rfc862Utils.logServerBytes(packet.getLength());
+            _UdpUtils.logSent(packet);
+            // -------------------------------------------------------------------------------------
             _Rfc862Utils.logDigest(array, 0, packet.getLength());
         }
     }

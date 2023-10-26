@@ -21,6 +21,7 @@ package com.github.jinahya.hello.misc.c02rfc862;
  */
 
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
+import com.github.jinahya.hello.util._UdpUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
@@ -32,27 +33,35 @@ import java.util.concurrent.ThreadLocalRandom;
 class Rfc862Udp1Client {
 
     public static void main(final String... args) throws Exception {
+        // ---------------------------------------------------------------------------------- create
         try (var client = new DatagramSocket(null)) {
+            // ---------------------------------------------------------------------- bind(optional)
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc86_Constants.HOST, 0));
-                log.info("(optionally) bound to {}", client.getLocalSocketAddress());
+                _UdpUtils.logBound(client);
             }
+            // --------------------------------------------------------------------------- configure
+            client.setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_MILLIS);
+            // ------------------------------------------------------------------- connect(optional)
             final var connect = ThreadLocalRandom.current().nextBoolean();
             if (connect) {
                 client.connect(_Rfc862Constants.ADDR);
-                log.info("(optionally) connected to {}, through {}",
-                         client.getRemoteSocketAddress(), client.getLocalSocketAddress());
+                _UdpUtils.logConnected(client);
             }
-            final var length = ThreadLocalRandom.current().nextInt(client.getSendBufferSize());
-            final var array = new byte[length];
+            // ----------------------------------------------------------------------------- prepare
+            final var array = new byte[
+                    ThreadLocalRandom.current().nextInt(client.getSendBufferSize() + 1)
+                    ];
             ThreadLocalRandom.current().nextBytes(array);
             final var packet = new DatagramPacket(array, array.length, _Rfc862Constants.ADDR);
             _Rfc862Utils.logClientBytes(packet.getLength());
+            // -------------------------------------------------------------------------------- send
             client.send(packet);
             _Rfc862Utils.logDigest(array, 0, packet.getLength());
-            client.setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_MILLIS);
+            // ----------------------------------------------------------------------------- receive
             client.receive(packet);
-            log.debug("{} byte(s) received from {}", packet.getLength(), packet.getSocketAddress());
+            _UdpUtils.logReceived(packet);
+            // -------------------------------------------------------------------------- disconnect
             if (connect) {
                 client.disconnect();
             }

@@ -112,7 +112,7 @@ class CalcTcpTest {
                        _Rfc86_Constants.CLIENT_PROGRAM_TIMEOUT_UNIT);
             pos.write(HelloWorldServerConstants.QUIT_AND_ENTER.getBytes(StandardCharsets.US_ASCII));
             pos.flush();
-            server.get(_Rfc86_Constants.SERVER_TIMEOUT, _Rfc86_Constants.SERVER_TIMEOUT_UNIT);
+            server.get(_Rfc86_Constants.SERVER_PROGRAM_TIMEOUT, _Rfc86_Constants.SERVER_PROGRAM_TIMEOUT_UNIT);
             executor.shutdown();
             final var terminated = executor.awaitTermination(8L, TimeUnit.SECONDS);
             assert terminated : "executor hasn't been terminated";

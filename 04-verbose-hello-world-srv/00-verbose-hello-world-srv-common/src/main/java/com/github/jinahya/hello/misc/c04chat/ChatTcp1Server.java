@@ -22,6 +22,7 @@ package com.github.jinahya.hello.misc.c04chat;
 
 import com.github.jinahya.hello.util.HelloWorldServerUtils;
 import com.github.jinahya.hello.util.JavaLangUtils;
+import com.github.jinahya.hello.util._TcpUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -130,7 +131,7 @@ class ChatTcp1Server {
         try (var server = new ServerSocket() /* IOException */) {
             server.bind(new InetSocketAddress(InetAddress.getByName("::"),
                                               _ChatConstants.PORT));
-            log.info("bound on {}", server.getLocalSocketAddress());
+            _TcpUtils.logBound(server);
             JavaLangUtils.readLinesAndCallWhenTests(
                     HelloWorldServerUtils::isQuit, // <predicate>
                     () -> {                        // <callable>
@@ -144,9 +145,7 @@ class ChatTcp1Server {
             while (!server.isClosed()) {
                 try {
                     var client = server.accept(); // IOException
-                    log.info("accepted from {} through {}",
-                             client.getRemoteSocketAddress(),
-                             client.getLocalSocketAddress());
+                    _TcpUtils.logAccepted(client);
                     clients.add(client);
                     futures.add(executor.submit(new Receiver(client, queue)));
                 } catch (IOException ioe) {

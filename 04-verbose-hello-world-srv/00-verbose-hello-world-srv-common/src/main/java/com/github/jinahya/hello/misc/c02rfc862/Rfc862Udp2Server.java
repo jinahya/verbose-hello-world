@@ -21,8 +21,13 @@ package com.github.jinahya.hello.misc.c02rfc862;
  */
 
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
+import com.github.jinahya.hello.util.JavaSecurityUtils;
+import com.github.jinahya.hello.util._UdpUtils;
 import lombok.extern.slf4j.Slf4j;
 
+import java.net.SocketAddress;
+import java.net.StandardSocketOptions;
+import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -31,37 +36,56 @@ import java.nio.channels.Selector;
 class Rfc862Udp2Server {
 
     public static void main(final String... args) throws Exception {
+        // ------------------------------------------------------------------------------------ open
         try (var selector = Selector.open();
              var server = DatagramChannel.open()) {
+            // -------------------------------------------------------------------------------- bind
             server.bind(_Rfc862Constants.ADDR);
-            log.info("bound to {}", server.getLocalAddress());
+            _UdpUtils.logBound(server);
+            // ------------------------------------------------------------------ configure/register
             server.configureBlocking(false);
             server.register(selector, SelectionKey.OP_READ);
+            // ----------------------------------------------------------------------------- prepare
+            final var digest = _Rfc862Utils.newDigest();
+            final var buffer = ByteBuffer.allocate(
+                    server.getOption(StandardSocketOptions.SO_RCVBUF)
+            );
+            // ---------------------------------------------------------------------- select-in-loop
             while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
-                if (selector.select(_Rfc86_Constants.READ_TIMEOUT_MILLIS) == 0) {
+                if (selector.select(_Rfc86_Constants.ACCEPT_TIMEOUT_MILLIS) == 0) {
                     break;
                 }
-                for (final var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
+                for (final var i = selector.selectedKeys().iterator(); i.hasNext(); ) {
                     final var selectedKey = i.next();
+                    i.remove();
+                    // --------------------------------------------------------------------- receive
                     if (selectedKey.isReadable()) {
                         final var channel = (DatagramChannel) selectedKey.channel();
                         assert channel == server;
-                        final var attachment = new Rfc862Udp2ServerAttachment(selectedKey);
-                        selectedKey.attach(attachment);
-                        final var address = attachment.receive();
+                        final var address = channel.receive(buffer);
                         assert address != null;
-                        assert selectedKey.isValid();
-                        final var interestOps = selectedKey.interestOps();
-                        assert (interestOps & SelectionKey.OP_READ) == 0;
-                        assert (interestOps & SelectionKey.OP_WRITE) == SelectionKey.OP_WRITE;
+                        selectedKey.attach(address);
+                        selectedKey.interestOpsAnd(~SelectionKey.OP_READ);
+                        buffer.flip();
+                        selectedKey.interestOpsOr(SelectionKey.OP_WRITE);
                     }
+                    // ------------------------------------------------------------------------ send
                     if (selectedKey.isWritable()) {
-                        final var attachment = (Rfc862Udp2ServerAttachment) selectedKey.attachment();
-                        final var s = attachment.send();
+                        final var channel = (DatagramChannel) selectedKey.channel();
+                        assert channel == server;
+                        final var attachment = (SocketAddress) selectedKey.attachment();
+                        assert attachment != null;
+                        final int w = channel.send(buffer, attachment);
+                        assert w >= 0;
+                        assert !buffer.hasRemaining();
+                        JavaSecurityUtils.updateDigest(digest, buffer, w);
+                        selectedKey.interestOpsAnd(~SelectionKey.OP_WRITE);
+                        selectedKey.cancel();
                         assert !selectedKey.isValid();
                     }
                 }
             }
+            _Rfc862Utils.logDigest(digest);
         }
     }
 

@@ -30,35 +30,33 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 
 /**
- * Utilities for for {@link com.github.jinahya.hello.misc.c01rfc863} package and
+ * Shared utilities for for {@link com.github.jinahya.hello.misc.c01rfc863} package and
  * {@link com.github.jinahya.hello.misc.c02rfc862} package.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
+@SuppressWarnings({
+        "java:S101" // class _Rfc86_...
+})
 public final class _Rfc86_Utils {
 
     // -------------------------------------------------------------------------------- array/buffer
+    private static final int MIN_ARRAY_LENGTH = 1;
 
-    /**
-     * Returns a new array of bytes whose length is between {@code 1} and {@code 8192}, both
-     * inclusive.
-     *
-     * @return a new array of bytes.
-     */
+    private static final int MAX_ARRAY_LENGTH = 8192;
+
     private static byte[] array() {
-        var array = new byte[ThreadLocalRandom.current().nextInt(8192) + 1];
-        if (false && ThreadLocalRandom.current().nextBoolean()) {
-            array = new byte[1];
-        }
-        return array;
+        return new byte[
+                ThreadLocalRandom.current().nextInt(MIN_ARRAY_LENGTH, MAX_ARRAY_LENGTH + 1)
+                ];
     }
 
     /**
-     * Returns a new array of bytes whose length is between {@code 1} and {@code 1024}, both
-     * inclusive.
+     * Returns a new array of bytes whose length is between {@value #MIN_ARRAY_LENGTH} and
+     * {@value #MAX_ARRAY_LENGTH}, both inclusive.
      *
-     * @return a new non-empty array of bytes.
+     * @return a new array of bytes.
      */
     public static byte[] newArray() {
         final var array = array();
@@ -67,10 +65,10 @@ public final class _Rfc86_Utils {
     }
 
     /**
-     * Returns a new byte buffer {@link ByteBuffer#wrap(byte[]) wraps} a result of
+     * Returns a new byte buffer {@link ByteBuffer#wrap(byte[]) wraps} the result of
      * {@link #newArray()}.
      *
-     * @return a new byte buffer {@link ByteBuffer#wrap(byte[]) wraps} a result of
+     * @return a new byte buffer {@link ByteBuffer#wrap(byte[]) wraps} the result of
      * {@link #newArray()}.
      * @see #newArray()
      */
@@ -78,33 +76,38 @@ public final class _Rfc86_Utils {
         final var buffer = ByteBuffer.wrap(array());
         log.debug("buffer.capacity: {}", buffer.capacity());
         assert buffer.arrayOffset() == 0;
+        assert buffer.capacity() >= MIN_ARRAY_LENGTH;
+        assert buffer.capacity() <= MAX_ARRAY_LENGTH;
         return buffer;
     }
 
     // --------------------------------------------------------------------------------------- bytes
+    private static final int BOUND_RANDOM_BYTES = 65536;
 
     /**
-     * Returns a new {@code int} between {@code 0}(inclusive) and {@code 65536}(exclusive).
+     * Returns a new {@code int} between {@code 0}(inclusive) and
+     * {@value #BOUND_RANDOM_BYTES}(exclusive).
      *
-     * @return a new {@code int} between {@code 0}(inclusive) and {@code 65536}(exclusive).
+     * @return a new {@code int} between {@code 0}(inclusive) and
+     * {@value #BOUND_RANDOM_BYTES}(exclusive).
      */
     public static int newRandomBytes() {
-        return ThreadLocalRandom.current().nextInt(65536);
+        return ThreadLocalRandom.current().nextInt(BOUND_RANDOM_BYTES);
     }
 
     // -------------------------------------------------------------------------------------- digest
 
     /**
-     * Returns a new message digest of specified algorithm.
+     * Returns a new message digest object that implements the specified digest algorithm..
      *
-     * @return the algorithm.
+     * @return the name of the algorithm.
      */
     public static MessageDigest newDigest(final String algorithm) {
         Objects.requireNonNull(algorithm, "algorithm is null");
         try {
             return MessageDigest.getInstance(algorithm);
         } catch (final NoSuchAlgorithmException nsae) {
-            throw new IllegalArgumentException("unknown algorithm: " + algorithm, nsae);
+            throw new IllegalArgumentException("algorithm is unknown: " + algorithm, nsae);
         }
     }
 
@@ -119,14 +122,20 @@ public final class _Rfc86_Utils {
                                  final int length,
                                  final Function<? super byte[], ? extends CharSequence> printer) {
         final var digest = newDigest(algorithm);
-        digest.update(array, offset, length);
+        digest.update(
+                array,  // <input>
+                offset, // <offset>
+                length  // <len>
+        );
         logDigest(digest, printer);
     }
 
     public static void logDigest(final String algorithm, final ByteBuffer buffer,
                                  final Function<? super byte[], ? extends CharSequence> printer) {
         final var digest = newDigest(algorithm);
-        digest.update(buffer);
+        digest.update(
+                buffer // input
+        );
         logDigest(digest, printer);
     }
 
