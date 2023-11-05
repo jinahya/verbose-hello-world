@@ -21,6 +21,7 @@ package com.github.jinahya.hello.misc.c00rfc86_;
  */
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -33,7 +34,27 @@ public abstract class _Rfc86_Constants {
 
     // -------------------------------------------------------------------------- HOST / PORT / ADDR
 
-    public static final InetAddress HOST = InetAddress.getLoopbackAddress();
+    public static final InetAddress HOST_IPv4;
+
+    static {
+        try {
+            HOST_IPv4 = InetAddress.getByName("127.0.0.1");
+        } catch (final UnknownHostException uhe) {
+            throw new RuntimeException(uhe);
+        }
+    }
+
+    public static final InetAddress HOST_IPv6;
+
+    static {
+        try {
+            HOST_IPv6 = InetAddress.getByName("::1");
+        } catch (final UnknownHostException uhe) {
+            throw new RuntimeException(uhe);
+        }
+    }
+
+    public static final InetAddress HOST = HOST_IPv4;
 
     // ------------------------------------------------------------------------------------- TIMEOUT
     private static final TimeUnit TIMEOUT_UNIT = TimeUnit.SECONDS;
