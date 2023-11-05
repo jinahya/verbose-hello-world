@@ -22,6 +22,7 @@ package com.github.jinahya.hello.misc.c01rfc863;
 
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils;
+import com.github.jinahya.hello.util.ExcludeFromCoverage_PrivateConstructor_Obviously;
 import com.github.jinahya.hello.util.JavaSecurityUtils;
 import com.github.jinahya.hello.util._TcpUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -33,8 +34,6 @@ import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static com.github.jinahya.hello.misc.c01rfc863._Rfc863Constants.HOST;
-
 @Slf4j
 class Rfc863Tcp3Client {
 
@@ -43,7 +42,7 @@ class Rfc863Tcp3Client {
              var client = SocketChannel.open()) {
             // -------------------------------------------------------------------------------- bind
             if (ThreadLocalRandom.current().nextBoolean()) {
-                client.bind(new InetSocketAddress(HOST, 0));
+                client.bind(new InetSocketAddress(_Rfc863Constants.ADDR.getAddress(), 0));
                 _TcpUtils.logBound(client);
             }
             // -------------------------------------------------------------- configure non-blocking
@@ -103,6 +102,7 @@ class Rfc863Tcp3Client {
         }
     }
 
+    @ExcludeFromCoverage_PrivateConstructor_Obviously
     private Rfc863Tcp3Client() {
         throw new AssertionError("instantiation is not allowed");
     }

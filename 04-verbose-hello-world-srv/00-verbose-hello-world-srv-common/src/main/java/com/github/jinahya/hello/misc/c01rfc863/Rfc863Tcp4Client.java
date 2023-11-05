@@ -20,17 +20,16 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
-import com.github.jinahya.hello.util._TcpUtils;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils;
+import com.github.jinahya.hello.util.ExcludeFromCoverage_PrivateConstructor_Obviously;
 import com.github.jinahya.hello.util.JavaSecurityUtils;
+import com.github.jinahya.hello.util._TcpUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.util.concurrent.ThreadLocalRandom;
-
-import static com.github.jinahya.hello.misc.c01rfc863._Rfc863Constants.HOST;
 
 @Slf4j
 @SuppressWarnings({
@@ -42,7 +41,7 @@ class Rfc863Tcp4Client {
         try (var client = AsynchronousSocketChannel.open()) {
             // -------------------------------------------------------------------------------- bind
             if (ThreadLocalRandom.current().nextBoolean()) {
-                client.bind(new InetSocketAddress(HOST, 0));
+                client.bind(new InetSocketAddress(_Rfc863Constants.ADDR.getAddress(), 0));
                 _TcpUtils.logBound(client);
             }
             // ----------------------------------------------------------------------------- connect
@@ -71,6 +70,7 @@ class Rfc863Tcp4Client {
         }
     }
 
+    @ExcludeFromCoverage_PrivateConstructor_Obviously
     private Rfc863Tcp4Client() {
         throw new AssertionError("instantiation is not allowed");
     }

@@ -20,9 +20,8 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
-import com.github.jinahya.hello.util._UdpUtils;
-import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
 import com.github.jinahya.hello.util.ExcludeFromCoverage_PrivateConstructor_Obviously;
+import com.github.jinahya.hello.util._UdpUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
@@ -37,7 +36,7 @@ class Rfc863Udp1Client {
         try (var client = new DatagramSocket(null)) {
             // -------------------------------------------------------------------------------- bind
             if (ThreadLocalRandom.current().nextBoolean()) {
-                client.bind(new InetSocketAddress(_Rfc86_Constants.HOST, 0));
+                client.bind(new InetSocketAddress(_Rfc863Constants.ADDR.getAddress(), 0));
                 _UdpUtils.logBound(client);
             }
             // ----------------------------------------------------------------------------- connect

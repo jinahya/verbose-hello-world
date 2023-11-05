@@ -22,6 +22,8 @@ package com.github.jinahya.hello.misc.c01rfc863;
 
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils;
+import com.github.jinahya.hello.util.ExcludeFromCoverage_FailingCase;
+import com.github.jinahya.hello.util.ExcludeFromCoverage_PrivateConstructor_Obviously;
 import com.github.jinahya.hello.util.JavaSecurityUtils;
 import com.github.jinahya.hello.util._TcpUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +43,7 @@ class Rfc863Tcp5Client {
         try (var client = AsynchronousSocketChannel.open()) {
             // -------------------------------------------------------------------------------- BIND
             if (ThreadLocalRandom.current().nextBoolean()) {
-                client.bind(new InetSocketAddress(_Rfc86_Constants.HOST, 0));
+                client.bind(new InetSocketAddress(_Rfc863Constants.ADDR.getAddress(), 0));
                 _TcpUtils.logBound(client);
             }
             final var latch = new CountDownLatch(1);
@@ -50,7 +52,7 @@ class Rfc863Tcp5Client {
                     _Rfc863Constants.ADDR,      // <remote>
                     null,                       // <attachment>
                     new CompletionHandler<>() { // <handler>
-                        @Override // @formatter:on
+                        @Override // @formatter:off
                         public void completed(final Void result, final Void attachment) {
                             _TcpUtils.logConnectedUnchecked(client);
                             final var bytes = new int[] {
@@ -88,7 +90,7 @@ class Rfc863Tcp5Client {
                                                     this                                // <handler>
                                             );
                                         }
-
+                                        @ExcludeFromCoverage_FailingCase
                                         @Override
                                         public void failed(final Throwable exc, final Void a) {
                                             log.error("failed to write", exc);
@@ -97,7 +99,7 @@ class Rfc863Tcp5Client {
                                     }
                             );
                         }
-
+                        @ExcludeFromCoverage_FailingCase
                         @Override
                         public void failed(final Throwable exc, final Void attachment) {
                             log.error("failed to connect", exc);
@@ -111,6 +113,7 @@ class Rfc863Tcp5Client {
         }
     }
 
+    @ExcludeFromCoverage_PrivateConstructor_Obviously
     private Rfc863Tcp5Client() {
         throw new AssertionError("instantiation is not allowed");
     }

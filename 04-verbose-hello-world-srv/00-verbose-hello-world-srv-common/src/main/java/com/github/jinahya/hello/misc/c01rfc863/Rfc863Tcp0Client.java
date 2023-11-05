@@ -22,6 +22,7 @@ package com.github.jinahya.hello.misc.c01rfc863;
 
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils;
+import com.github.jinahya.hello.util.ExcludeFromCoverage_PrivateConstructor_Obviously;
 import com.github.jinahya.hello.util._TcpUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -38,15 +39,15 @@ class Rfc863Tcp0Client {
 
     public static void main(final String... args) throws IOException {
         try (var client = new Socket()) {
-            // -------------------------------------------------------------------------------- BIND
+            // -------------------------------------------------------------------------------- bind
             if (ThreadLocalRandom.current().nextBoolean()) {
-                client.bind(new InetSocketAddress(_Rfc86_Constants.HOST, 0));
+                client.bind(new InetSocketAddress(_Rfc863Constants.ADDR.getAddress(), 0));
                 _TcpUtils.logBound(client);
             }
-            // ----------------------------------------------------------------------------- CONNECT
+            // ----------------------------------------------------------------------------- connect
             client.connect(_Rfc863Constants.ADDR, (int) _Rfc86_Constants.CONNECT_TIMEOUT_MILLIS);
             _TcpUtils.logConnected(client);
-            // -------------------------------------------------------------------------------- SEND
+            // ----------------------------------------------------------------------------- prepare
             final var digest = _Rfc863Utils.newDigest();
             var bytes = _Rfc863Utils.logClientBytes(_Rfc86_Utils.newRandomBytes());
             for (int b; bytes > 0; bytes--) {
@@ -54,13 +55,13 @@ class Rfc863Tcp0Client {
                 b = ThreadLocalRandom.current().nextInt(256); // [0..256)
                 client.getOutputStream().write(b);
                 client.getOutputStream().flush();
-                // -------------------------------------------------------------------------- digest
                 digest.update((byte) b);
             }
             _Rfc863Utils.logDigest(digest);
         }
     }
 
+    @ExcludeFromCoverage_PrivateConstructor_Obviously
     private Rfc863Tcp0Client() {
         throw new AssertionError("instantiation is not allowed");
     }

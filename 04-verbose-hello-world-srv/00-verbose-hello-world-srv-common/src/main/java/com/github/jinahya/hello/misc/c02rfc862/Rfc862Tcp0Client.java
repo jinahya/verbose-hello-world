@@ -20,9 +20,9 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
-import com.github.jinahya.hello.util._TcpUtils;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils;
+import com.github.jinahya.hello.util._TcpUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.EOFException;
@@ -38,7 +38,7 @@ class Rfc862Tcp0Client {
         try (var client = new Socket()) {
             // -------------------------------------------------------------------------------- bind
             if (ThreadLocalRandom.current().nextBoolean()) {
-                client.bind(new InetSocketAddress(_Rfc86_Constants.HOST, 0));
+                client.bind(new InetSocketAddress(_Rfc862Constants.ADDR.getAddress(), 0));
                 _TcpUtils.logBound(client);
             }
             // ------------------------------------------------------------------- connect/configure

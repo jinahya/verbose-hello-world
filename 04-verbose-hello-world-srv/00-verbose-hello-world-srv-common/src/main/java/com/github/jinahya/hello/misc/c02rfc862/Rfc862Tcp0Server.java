@@ -20,13 +20,16 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
-import com.github.jinahya.hello.util._TcpUtils;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
+import com.github.jinahya.hello.util._TcpUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.ServerSocket;
 
 @Slf4j
+@SuppressWarnings({
+        "java:S127" // assign loop counter within body
+})
 class Rfc862Tcp0Server {
 
     public static void main(final String... args) throws Exception {
@@ -34,10 +37,12 @@ class Rfc862Tcp0Server {
             // -------------------------------------------------------------------------------- bind
             server.bind(_Rfc862Constants.ADDR, 1);
             _TcpUtils.logBound(server);
-            // -------------------------------------------------------------------- accept/configure
+            // --------------------------------------------------------------------------- configure
             server.setSoTimeout((int) _Rfc86_Constants.ACCEPT_TIMEOUT_MILLIS);
+            // ------------------------------------------------------------------------------ accept
             try (var client = server.accept()) {
                 _TcpUtils.logAccepted(client);
+                // ----------------------------------------------------------------------- configure
                 client.setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_MILLIS);
                 // ------------------------------------------------------------------------- prepare
                 final var digest = _Rfc862Utils.newDigest();

@@ -40,10 +40,11 @@ class Rfc863Tcp2Client {
 
     public static void main(final String... args) throws IOException {
         try (var client = SocketChannel.open()) {
+            // ---------------------------------------------------------------------------- blocking
             assert client.isBlocking();
             // -------------------------------------------------------------------------------- bind
             if (ThreadLocalRandom.current().nextBoolean()) {
-                client.bind(new InetSocketAddress(_Rfc86_Constants.HOST, 0));
+                client.bind(new InetSocketAddress(_Rfc863Constants.ADDR.getAddress(), 0));
                 _TcpUtils.logBound(client);
             }
             // ----------------------------------------------------------------------------- connect

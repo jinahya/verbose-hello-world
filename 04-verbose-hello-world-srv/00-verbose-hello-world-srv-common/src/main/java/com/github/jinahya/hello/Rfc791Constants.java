@@ -20,6 +20,8 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import com.github.jinahya.hello.util.ExcludeFromCoverage_PrivateConstructor_Obviously;
+
 /**
  * .
  *
@@ -92,6 +94,7 @@ public final class Rfc791Constants {
 
     public static final int MAX_HEADER_BYTES = MAX_HEADER_SIZE >> 3;
 
+    @ExcludeFromCoverage_PrivateConstructor_Obviously
     private Rfc791Constants() {
         throw new AssertionError("instantiation is not allowed");
     }

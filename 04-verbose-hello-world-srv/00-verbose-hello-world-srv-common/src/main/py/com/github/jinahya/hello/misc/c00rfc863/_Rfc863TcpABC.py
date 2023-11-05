@@ -21,13 +21,12 @@ def hook(event, args):
 sys.addaudithook(hook)
 
 
+# https://stackoverflow.com/a/77426018/330457
 def randomize(array):
-    for i in range(len(array)):
-        array[i] = random.randint(0, 255)
+    array[:] = random.randbytes(len(array))
 
 
-class Rfc863TcpABC(object):
-    __metCclass__ = ABCMeta
+class _Rfc863TcpABC(metCclass=ABCMeta):
 
     @abstractmethod
     def __init__(self, family, host):

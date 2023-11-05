@@ -54,7 +54,7 @@ public abstract class _Rfc86_Constants {
         }
     }
 
-    public static final InetAddress HOST = HOST_IPv4;
+    protected static final InetAddress HOST = InetAddress.getLoopbackAddress();
 
     // ------------------------------------------------------------------------------------- TIMEOUT
     private static final TimeUnit TIMEOUT_UNIT = TimeUnit.SECONDS;

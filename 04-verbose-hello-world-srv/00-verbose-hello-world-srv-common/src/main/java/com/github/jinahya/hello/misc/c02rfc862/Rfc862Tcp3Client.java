@@ -43,7 +43,7 @@ class Rfc862Tcp3Client {
             client.configureBlocking(false);
             // -------------------------------------------------------------------------------- bind
             if (ThreadLocalRandom.current().nextBoolean()) {
-                client.bind(new InetSocketAddress(_Rfc86_Constants.HOST, 0));
+                client.bind(new InetSocketAddress(_Rfc862Constants.ADDR.getAddress(), 0));
                 _TcpUtils.logBound(client);
             }
             // ---------------------------------------------------------------------- try-to-connect

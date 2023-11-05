@@ -46,17 +46,30 @@ See [dockerhub/maven](https://hub.docker.com/_/maven) for available tags.
 
 ## Links
 
-* doc.oracle.com
-  * [Networking IPv6 User Guide](https://docs.oracle.com/javase/8/docs/technotes/guides/net/ipv6_guide/)
-  * [Java Cryptography Architecture / Standard Algorithm Name Documentation for JDK 8](https://docs.oracle.com/javase/8/docs/technotes/guides/security/StandardNames.html) (javase/8)
-  * [Java Security Standard Algorithm Names](https://docs.oracle.com/en/java/javase/11/docs/specs/security/standard-names.html) (javase/11)
-  * [Java Security Standard Algorithm Names](https://docs.oracle.com/en/java/javase/17/docs/specs/security/standard-names.html) (javase/17)
-* JDK Bug System
-  * [(aio) AsynchronousCloseException not notified to completion handler when channel group shutdown](https://bugs.openjdk.org/browse/JDK-7056546)
-* stackoverflow.com
-  * [Multi module POM - creating a site that works](https://stackoverflow.com/q/10848715/330457)
-  * [How do SO_REUSEADDR and SO_REUSEPORT differ?](https://stackoverflow.com/q/14388706/330457)
-* github.com
-  * [Add AbstractStringAssert#extracting(Charset)](https://github.com/assertj/assertj/issues/3229) (assertj/assertj)
-* geeksforgeeks.org
-  * [Difference Between SO_REUSEADDR and SO_REUSEPORT](https://www.geeksforgeeks.org/difference-between-so_reuseaddr-and-so_reuseport/)
+### Java
+
+#### doc.oracle.com
+* [Networking IPv6 User Guide](https://docs.oracle.com/javase/8/docs/technotes/guides/net/ipv6_guide/)
+* [Java Cryptography Architecture / Standard Algorithm Name Documentation for JDK 8](https://docs.oracle.com/javase/8/docs/technotes/guides/security/StandardNames.html) (javase/8)
+* [Java Security Standard Algorithm Names](https://docs.oracle.com/en/java/javase/11/docs/specs/security/standard-names.html) (javase/11)
+* [Java Security Standard Algorithm Names](https://docs.oracle.com/en/java/javase/17/docs/specs/security/standard-names.html) (javase/17)
+#### JDK Bug System
+* [(aio) AsynchronousCloseException not notified to completion handler when channel group shutdown](https://bugs.openjdk.org/browse/JDK-7056546)
+
+#### stackoverflow.com
+* [Multi module POM - creating a site that works](https://stackoverflow.com/q/10848715/330457)
+* [How do SO_REUSEADDR and SO_REUSEPORT differ?](https://stackoverflow.com/q/14388706/330457)
+
+#### github.com
+* [Add AbstractStringAssert#extracting(Charset)](https://github.com/assertj/assertj/issues/3229) (assertj/assertj)
+
+#### geeksforgeeks.org
+* [Difference Between SO_REUSEADDR and SO_REUSEPORT](https://www.geeksforgeeks.org/difference-between-so_reuseaddr-and-so_reuseport/)
+
+#### ibm.com
+* [Example: Accepting connections from both IPv6 and IPv4 clients](https://www.ibm.com/docs/en/i/7.1?topic=sscaaiic-example-accepting-connections-from-both-ipv6-ipv4-clients) 
+
+### Python
+ 
+#### pymotw.com
+  * [abc — Abstract Base Classes](https://pymotw.com/3/abc/)

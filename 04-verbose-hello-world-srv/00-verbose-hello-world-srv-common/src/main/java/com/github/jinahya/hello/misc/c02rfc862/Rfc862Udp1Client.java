@@ -37,7 +37,7 @@ class Rfc862Udp1Client {
         try (var client = new DatagramSocket(null)) {
             // ---------------------------------------------------------------------- bind(optional)
             if (ThreadLocalRandom.current().nextBoolean()) {
-                client.bind(new InetSocketAddress(_Rfc86_Constants.HOST, 0));
+                client.bind(new InetSocketAddress(_Rfc862Constants.ADDR.getAddress(), 0));
                 _UdpUtils.logBound(client);
             }
             // --------------------------------------------------------------------------- configure

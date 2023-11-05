@@ -20,13 +20,12 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import com.github.jinahya.hello.util.ExcludeFromCoverage_PrivateConstructor_Obviously;
+
 /**
  * .
  *
- * @see <a href="https://www.rfc-editor.org/rfc/rfc768">RFC 768: User Datagram
- * Protocol</a>
- * @see <a href="https://datatracker.ietf.org/doc/html/rfc768">RFC 768: User
- * Datagram Protocol</a>
+ * @see <a href="https://datatracker.ietf.org/doc/html/rfc768">RFC 768 User Datagram Protocol</a>
  */
 public final class Rfc768Constants {
 
@@ -44,10 +43,11 @@ public final class Rfc768Constants {
             + HEADER_LENGTH_SIZE
             + HEADER_CHECKSUM_SIZE;
 
-    public static final int HEADER_BYTES = HEADER_SIZE >> 3;
+    public static final int HEADER_BYTES = HEADER_SIZE / Byte.SIZE;
 
     public static final int PROTOCOL_NUMBER = 0x17;
 
+    @ExcludeFromCoverage_PrivateConstructor_Obviously
     private Rfc768Constants() {
         throw new AssertionError("instantiation is not allowed");
     }
