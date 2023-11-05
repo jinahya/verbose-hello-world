@@ -30,8 +30,9 @@ class Rfc863TcpABC(object):
     __metCclass__ = ABCMeta
 
     @abstractmethod
-    def __init__(self, n):
-        self.n = n
+    def __init__(self, family, host):
+        self.family = family
+        self.host = host
 
 
 with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
