@@ -6,8 +6,8 @@ import socket
 import sys
 from contextlib import closing
 
-# IPv4 = True
-IPv4 = False
+IPv4 = True
+# IPv4 = False
 FAMILY = socket.AF_INET if IPv4 else socket.AF_INET6
 HOST = '127.0.0.1' if IPv4 else "::1"
 PORT = 50009
