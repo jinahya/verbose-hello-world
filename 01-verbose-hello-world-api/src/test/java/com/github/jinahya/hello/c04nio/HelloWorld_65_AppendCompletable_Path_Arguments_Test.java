@@ -48,10 +48,10 @@ class HelloWorld_65_AppendCompletable_Path_Arguments_Test extends _HelloWorldTes
     @DisplayName("(null)NullPointerException")
     @Test
     void _ThrowNullPointerException_PathIsNull() {
-        // ----------------------------------------------------------------------------------- GIVEN
+        // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var path = (Path) null;
-        // ------------------------------------------------------------------------------- WHEN/THEN
+        // ------------------------------------------------------------------------------- when/then
         assertThrows(
                 NullPointerException.class,
                 () -> service.appendCompletable(path)

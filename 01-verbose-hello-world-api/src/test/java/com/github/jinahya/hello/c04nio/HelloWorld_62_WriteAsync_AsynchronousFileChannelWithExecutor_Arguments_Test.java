@@ -55,12 +55,12 @@ class HelloWorld_62_WriteAsync_AsynchronousFileChannelWithExecutor_Arguments_Tes
     @DisplayName("(null, , )NullPointerException")
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
-        // ----------------------------------------------------------------------------------- GIVEN
+        // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var channel = (AsynchronousFileChannel) null;
         var position = current().nextLong() & Long.MAX_VALUE;
         var executor = mock(Executor.class);
-        // ------------------------------------------------------------------------------- WHEN/THEN
+        // ------------------------------------------------------------------------------- when/then
         assertThrows(
                 NullPointerException.class,
                 () -> service.writeAsync(channel, position, executor)
@@ -76,12 +76,12 @@ class HelloWorld_62_WriteAsync_AsynchronousFileChannelWithExecutor_Arguments_Tes
     @DisplayName("(, < 0L, )IllegalArgumentException")
     @Test
     void _ThrowIllegalArgumentException_PositionIsNegative() {
-        // ----------------------------------------------------------------------------------- GIVEN
+        // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var channel = mock(AsynchronousFileChannel.class);
         var position = current().nextLong() | Long.MIN_VALUE;
         var executor = (Executor) null;
-        // ------------------------------------------------------------------------------- WHEN/THEN
+        // ------------------------------------------------------------------------------- when/then
         assertThrows(
                 IllegalArgumentException.class,
                 () -> service.writeAsync(channel, position, executor)
@@ -97,12 +97,12 @@ class HelloWorld_62_WriteAsync_AsynchronousFileChannelWithExecutor_Arguments_Tes
     @DisplayName("(, null)NullPointerException")
     @Test
     void _ThrowNullPointerException_ExecutorIsNull() {
-        // ----------------------------------------------------------------------------------- GIVEN
+        // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var channel = mock(AsynchronousFileChannel.class);
         var position = current().nextLong() & Long.MAX_VALUE;
         var executor = (Executor) null;
-        // ------------------------------------------------------------------------------- WHEN/THEN
+        // ------------------------------------------------------------------------------- when/then
         assertThrows(
                 NullPointerException.class,
                 () -> service.writeAsync(channel, position, executor)

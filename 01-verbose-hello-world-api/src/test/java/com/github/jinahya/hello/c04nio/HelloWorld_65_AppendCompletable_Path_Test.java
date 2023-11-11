@@ -101,7 +101,7 @@ class HelloWorld_65_AppendCompletable_Path_Test extends _HelloWorldTest {
 
     @Test
     void __() throws IOException {
-        // ----------------------------------------------------------------------------------- GIVEN
+        // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var path = mock(Path.class);
         var channel = mock(AsynchronousFileChannel.class);
@@ -110,9 +110,9 @@ class HelloWorld_65_AppendCompletable_Path_Test extends _HelloWorldTest {
         given(channel.size()).willReturn(size);
         try (var mockedStatic = mockStatic(AsynchronousFileChannel.class)) {
             mockedStatic.when(() -> open(same(path), any(OpenOption[].class))).thenReturn(channel);
-            // -------------------------------------------------------------------------------- WHEN
+            // -------------------------------------------------------------------------------- when
             var result = service.appendCompletable(path).join();
-            // -------------------------------------------------------------------------------- THEN
+            // -------------------------------------------------------------------------------- then
             var optionsCaptor = forClass(OpenOption[].class);
             mockedStatic.verify(() -> open(same(path), optionsCaptor.capture()), times(1));
             var options = new ArrayList<>(asList(optionsCaptor.getValue()));
@@ -136,7 +136,7 @@ class HelloWorld_65_AppendCompletable_Path_Test extends _HelloWorldTest {
     @畵蛇添足
     @Test
     void __(@TempDir Path tempDir) throws IOException {
-        // ----------------------------------------------------------------------------------- GIVEN
+        // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var path = createTempFile(tempDir, null, null);
         if (current().nextBoolean()) {
@@ -150,9 +150,9 @@ class HelloWorld_65_AppendCompletable_Path_Test extends _HelloWorldTest {
             }
         }
         var size = size(path);
-        // ------------------------------------------------------------------------------------ WHEN
+        // ------------------------------------------------------------------------------------ when
         service.appendCompletable(path).join();
-        // ------------------------------------------------------------------------------------ THEN
+        // ------------------------------------------------------------------------------------ then
         assertEquals(size + BYTES, size(path));
     }
 }

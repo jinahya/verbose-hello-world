@@ -7,15 +7,14 @@ import socket
 import sys
 from contextlib import closing
 
-HOST = '127.0.0.1'
+IPv4 = True
+FAMILY = socket.AF_INET if IPv4 else socket.AF_INET6
+HOST = '127.0.0.1' if IPv4 else "::1"
 PORT = 50009
 
 
 def hook(event, args):
-    if event == 'socket.bind':
-        print(f'audit: {event} with args={args}')
-    if event == 'socket.connect':
-        print(f'audit: {event} with args={args}')
+    print(f'\t[audit]: {event} with args={args}')
 
 
 sys.addaudithook(hook)

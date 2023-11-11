@@ -48,10 +48,10 @@ class HelloWorld_07_Print_Chars_Arguments_Test extends _HelloWorldTest {
     @DisplayName("(null)NullPointerException")
     @Test
     void _ThrowNullPointerException_CharsIsNull() {
-        // ----------------------------------------------------------------------------------- GIVEN
+        // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var chars = (char[]) null;
-        // ------------------------------------------------------------------------------- WHEN/THEN
+        // ------------------------------------------------------------------------------- when/then
         assertThrows(
                 NullPointerException.class,
                 () -> service.print(chars)
@@ -66,10 +66,10 @@ class HelloWorld_07_Print_Chars_Arguments_Test extends _HelloWorldTest {
     @DisplayName("(.length<12)ArrayIndexOutOfBoundsException")
     @Test
     void _ThrowArrayIndexOutOfBoundsException_CharsLengthIsLessThan12() {
-        // ----------------------------------------------------------------------------------- GIVEN
+        // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var chars = new char[current().nextInt(BYTES)];
-        // ------------------------------------------------------------------------------- WHEN/THEN
+        // ------------------------------------------------------------------------------- when/then
         assertThrows(
                 ArrayIndexOutOfBoundsException.class,
                 () -> service.print(chars)

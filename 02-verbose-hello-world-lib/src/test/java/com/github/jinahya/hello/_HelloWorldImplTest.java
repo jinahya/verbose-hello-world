@@ -20,27 +20,22 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import com.google.inject.BindingAnnotation;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.ElementType.PARAMETER;
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
 /**
- * An injection qualifier for {@link HelloWorldDemo}.
+ * A class for testing {@link HelloWorldImpl} class.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@BindingAnnotation
-@_QualifiedDemo
-@Retention(RUNTIME)
-@Target({FIELD, METHOD, PARAMETER, TYPE, ANNOTATION_TYPE})
-@interface BindingQualifiedDemo {
+class _HelloWorldImplTest
+        extends __HelloWorldTest {
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@inheritDoc}
+     * @implNote This implementation returns a new instance of {@link HelloWorldImpl} class.
+     */
+    @Override
+    HelloWorld service() {
+        return new HelloWorldImpl();
+    }
 }

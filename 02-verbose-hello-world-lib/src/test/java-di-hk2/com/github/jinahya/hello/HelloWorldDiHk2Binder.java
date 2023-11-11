@@ -25,9 +25,6 @@ import org.glassfish.hk2.utilities.binding.AbstractBinder;
 
 import java.io.Serial;
 
-import static com.github.jinahya.hello.HelloWorldDiTest._NAMED_DEMO;
-import static com.github.jinahya.hello.HelloWorldDiTest._NAMED_IMPL;
-
 /**
  * A binder for injecting {@link HelloWorld} instances.
  *
@@ -55,12 +52,12 @@ class HelloWorldDiHk2Binder
     @Override
     protected void configure() {
         bind(HelloWorldDemo.class)
-                .named(_NAMED_DEMO)
+                .named(HelloWorldDiConstants._NAME_DEMO)
                 .to(HelloWorld.class);
         bind(HelloWorldImpl.class)
-                .named(_NAMED_IMPL)
+                .named(HelloWorldDiConstants._NAME_IMPL)
                 .to(HelloWorld.class);
-        bind(HelloWorldImpl.class)
+        bind(HelloWorldDemo.class)
                 .qualifiedBy(new QualifiedDemo_())
                 .to(HelloWorld.class);
         bind(HelloWorldImpl.class)

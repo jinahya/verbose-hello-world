@@ -24,22 +24,21 @@ import jakarta.inject.Named;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static com.github.jinahya.hello.HelloWorldDiTest._NAMED_DEMO;
-import static com.github.jinahya.hello.HelloWorldDiTest._NAMED_IMPL;
-
 /**
  * A configuration for providing {@link HelloWorld} beans.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Configuration
 class HelloWorldDiSpringConfiguration {
 
-    @Named(_NAMED_DEMO)
+    @Named(HelloWorldDiConstants._NAME_DEMO)
     @Bean
     HelloWorld namedDemo() {
         return new HelloWorldDemo();
     }
 
-    @Named(_NAMED_IMPL)
+    @Named(HelloWorldDiConstants._NAME_IMPL)
     @Bean
     HelloWorld namedImpl() {
         return new HelloWorldImpl();

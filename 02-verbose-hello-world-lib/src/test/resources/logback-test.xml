@@ -18,16 +18,16 @@
   #L%
   -->
 <configuration>
-  <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
       <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
     </encoder>
   </appender>
-  <root level="debug">
-    <appender-ref ref="console"/>
+  <root level="DEBUG">
+    <appender-ref ref="CONSOLE"/>
   </root>
-  <logger name="org.apache.webbeans" level="warn">
-  </logger>
-  <logger name="org.jboss.weld" level="warn">
-  </logger>
+  <logger name="org.apache.webbeans" level="WARN"/>
+  <logger name="org.jboss.logging" level="WARN"/>
+  <logger name="org.jboss.weld" level="WARN"/>
+  <logger name="org.springframework" level="WARN"/>
 </configuration>

@@ -65,12 +65,12 @@ class HelloWorld_01_Write_OutputStream_Test extends _HelloWorldTest {
     @DisplayName("(stream) -> stream.write(set(array))")
     @Test
     void __() throws IOException {
-        // ----------------------------------------------------------------------------------- GIVEN
+        // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var stream = mock(OutputStream.class);
-        // ------------------------------------------------------------------------------------ WHEN
+        // ------------------------------------------------------------------------------------ when
         var result = service.write(stream);
-        // ------------------------------------------------------------------------------------ THEN
+        // ------------------------------------------------------------------------------------ then
         // TODO: Verify, service.set(array[12]) invoked, once
         // TODO: Verify, stream.write(array) invoked, once
         // TODO: Assert, result is same as stream

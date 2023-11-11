@@ -51,10 +51,10 @@ class HelloWorld_54_WriteCompletable_AsynchronousByteChannel_Arguments_Test
     @DisplayName("(null)NullPointerException")
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
-        // ----------------------------------------------------------------------------------- GIVEN
+        // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var channel = (AsynchronousByteChannel) null;
-        // ------------------------------------------------------------------------------- WHEN/THEN
+        // ------------------------------------------------------------------------------- when/then
         assertThrows(
                 NullPointerException.class,
                 () -> service.writeCompletable(channel)

@@ -33,7 +33,7 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * An injection qualifier for {@link HelloWorldImpl}.
+ * An injection qualifier for {@link HelloWorldDemo}.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -41,6 +41,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @_QualifiedDemo
 @Retention(RUNTIME)
 @Target({FIELD, METHOD, PARAMETER, TYPE, ANNOTATION_TYPE})
-@interface BindingQualifiedImpl {
+@interface _BindingQualifiedDemo {
 
 }

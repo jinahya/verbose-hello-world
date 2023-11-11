@@ -21,20 +21,21 @@ package com.github.jinahya.hello;
  */
 
 /**
- * A class for testing {@link HelloWorldImpl} class.
+ * A class for testing {@link HelloWorldDemo} class.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-class HelloWorldImplTest extends HelloWorldTest {
+class _HelloWorldDemoTest
+        extends __HelloWorldTest {
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc} The {@code helloWorld()} method of {@code HelloWorldDemoTest} class returns a
+     * new instance of {@link HelloWorldDemo} class.
      *
      * @return {@inheritDoc}
-     * @implNote This implementation returns a new instance of {@link HelloWorldImpl} class.
      */
     @Override
-    HelloWorld serviceInstance() {
-        return new HelloWorldImpl();
+    HelloWorld service() {
+        return new HelloWorldDemo();
     }
 }

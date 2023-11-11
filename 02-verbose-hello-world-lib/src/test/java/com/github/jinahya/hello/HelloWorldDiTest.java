@@ -22,28 +22,28 @@ package com.github.jinahya.hello;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import static java.util.concurrent.ThreadLocalRandom.current;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * An abstract class for testing {@link HelloWorld} implementations using Dependency Injection.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-abstract class HelloWorldDiTest extends HelloWorldTest {
+//@NoArgsConstructor(access = AccessLevel.PACKAGE)
+abstract class HelloWorldDiTest
+        extends __HelloWorldTest {
 
-    /**
-     * An injection qualifier for {@link HelloWorldDemo}.
-     */
-    static final String _NAMED_DEMO = "demo";
-
-    /**
-     * An injection qualifier for {@link HelloWorldImpl}.
-     */
-    static final String _NAMED_IMPL = "impl";
-
+    // ---------------------------------------------------------------------------------------------
     @Override
-    HelloWorld serviceInstance() {
+    HelloWorld service() {
+        assertThat(namedDemo).isInstanceOf(HelloWorldDemo.class);
+        assertThat(namedImpl).isInstanceOf(HelloWorldImpl.class);
+        assertThat(qualifiedDemo).isInstanceOf(HelloWorldDemo.class);
+        assertThat(qualifiedImpl).isInstanceOf(HelloWorldImpl.class);
         return switch (current().nextInt(4)) {
             case 0 -> namedDemo;
             case 1 -> namedImpl;
@@ -52,11 +52,12 @@ abstract class HelloWorldDiTest extends HelloWorldTest {
         };
     }
 
-    @Named(_NAMED_DEMO)
+    // ---------------------------------------------------------------------------------------------
+    @Named(HelloWorldDiConstants._NAME_DEMO)
     @Inject
     HelloWorld namedDemo;
 
-    @Named(_NAMED_IMPL)
+    @Named(HelloWorldDiConstants._NAME_IMPL)
     @Inject
     HelloWorld namedImpl;
 

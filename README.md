@@ -1,32 +1,24 @@
 # verbose-hello-world
 
-A fairly verbose project for `hello, world`.
+A fairly verbose modules just for generating`hello, world`.
 
 ## Modules
 
-```
-verbose-hello-world                    the parent module
-|-- verbose-hello-world-api            defines the HelloWorld interface
-|-- verbose-hello-world-lib            implements the HelloWorld interface
-`-- verbose-hello-world-app            a seond level parent for apps
-    |-- verbose-hello-world-app1
-    |-- verbose-hello-world-app2
-    |-- verbose-hello-world-app3
-    |-- verbose-hello-world-srv1
-    |-- verbose-hello-world-srv2
-    |-- verbose-hello-world-srv3
-    `-- verbose-hello-world-srv4
-```
-
-| artifact id                    | description                           |
-|--------------------------------|---------------------------------------|
-| `verbose-hello-world`          | the parent module                     |
-| `+- verbose-hello-world-api`   | defines the `HelloWorld` interface    |
-| `+- verbose-hello-world-lib`   | implements the `HelloWorld` interface |
-| `+- verbose-hello-world-app`   | a second level parent module for apps |
-| `+-- verbose-hello-world-app1` | a second level parent module for apps |
-| `+-- verbose-hello-world-app2` | a second level parent module for apps |
-| `+-- verbose-hello-world-app3` | a second level parent module for apps |
+| module                                 | description                           |
+|----------------------------------------|---------------------------------------|
+| `01-verbose-hello-world-api`           | Defines the `HelloWorld` interface    |
+| `02-verbose-hello-world-lib`           | Implements the `HelloWorld` interface |
+| `03-verbose-hello-world-app`           |                                       |
+| `\- 01-verbose-hello-world-app1`       |                                       |
+| `\- 02-verbose-hello-world-app2`       |                                       |
+| `\- 03-verbose-hello-world-app3`       |                                       |
+| `\- 04-verbose-hello-world-app4`       |                                       |
+| `04-verbose-hello-world-srv`           |                                       |
+| `\- 00-verbose-hello-world-srv-common` |                                       |
+| `\- 01-verbose-hello-world-srv1`       |                                       |
+| `\- 02-verbose-hello-world-srv2`       |                                       |
+| `\- 03-verbose-hello-world-srv3`       |                                       |
+| `\- 04-verbose-hello-world-srv4`       |                                       |
 
 ## Miscellaneous
 
@@ -48,28 +40,49 @@ See [dockerhub/maven](https://hub.docker.com/_/maven) for available tags.
 
 ### Java
 
+#### bugs.openjdk.org
+
+* [(aio) AsynchronousCloseException not notified to completion handler when channel group shutdown](https://bugs.openjdk.org/browse/JDK-7056546)
+
 #### doc.oracle.com
+
 * [Networking IPv6 User Guide](https://docs.oracle.com/javase/8/docs/technotes/guides/net/ipv6_guide/)
 * [Java Cryptography Architecture / Standard Algorithm Name Documentation for JDK 8](https://docs.oracle.com/javase/8/docs/technotes/guides/security/StandardNames.html) (javase/8)
 * [Java Security Standard Algorithm Names](https://docs.oracle.com/en/java/javase/11/docs/specs/security/standard-names.html) (javase/11)
 * [Java Security Standard Algorithm Names](https://docs.oracle.com/en/java/javase/17/docs/specs/security/standard-names.html) (javase/17)
-#### JDK Bug System
-* [(aio) AsynchronousCloseException not notified to completion handler when channel group shutdown](https://bugs.openjdk.org/browse/JDK-7056546)
-
-#### stackoverflow.com
-* [Multi module POM - creating a site that works](https://stackoverflow.com/q/10848715/330457)
-* [How do SO_REUSEADDR and SO_REUSEPORT differ?](https://stackoverflow.com/q/14388706/330457)
-
-#### github.com
-* [Add AbstractStringAssert#extracting(Charset)](https://github.com/assertj/assertj/issues/3229) (assertj/assertj)
 
 #### geeksforgeeks.org
+
 * [Difference Between SO_REUSEADDR and SO_REUSEPORT](https://www.geeksforgeeks.org/difference-between-so_reuseaddr-and-so_reuseport/)
 
+#### github.com/assertj
+
+* [Add AbstractStringAssert#extracting(Charset)](https://github.com/assertj/assertj/issues/3229) (assertj/assertj)
+
+#### github.com/junit-team
+
+* [TestInstanceFactory on enclosing class is not called for @Nested test class](https://github.com/junit-team/junit5/issues/1567) (junit-team/junit5)
+
+#### github.com/weld
+
+* [Weld JUnit 5 (Jupiter) Extensions](https://github.com/weld/weld-testing/blob/master/junit5/README.md#weldjunit5autoextension)
+
 #### ibm.com
-* [Example: Accepting connections from both IPv6 and IPv4 clients](https://www.ibm.com/docs/en/i/7.1?topic=sscaaiic-example-accepting-connections-from-both-ipv6-ipv4-clients) 
+
+* [Example: Accepting connections from both IPv6 and IPv4 clients](https://www.ibm.com/docs/en/i/7.1?topic=sscaaiic-example-accepting-connections-from-both-ipv6-ipv4-clients)
+
+#### openwebbeans.apache.org
+
+* [OpenWebBeans JUnit 5](https://openwebbeans.apache.org/openwebbeans-junit5.html)
+
+#### stackoverflow.com
+
+* [Multi module POM - creating a site that works](https://stackoverflow.com/q/10848715/330457)
+* [How do SO_REUSEADDR and SO_REUSEPORT differ?](https://stackoverflow.com/q/14388706/330457)
+* [JUL to SLF4J Bridge](https://stackoverflow.com/q/9117030/330457)
 
 ### Python
- 
+
 #### pymotw.com
-  * [abc — Abstract Base Classes](https://pymotw.com/3/abc/)
+
+* [abc — Abstract Base Classes](https://pymotw.com/3/abc/)

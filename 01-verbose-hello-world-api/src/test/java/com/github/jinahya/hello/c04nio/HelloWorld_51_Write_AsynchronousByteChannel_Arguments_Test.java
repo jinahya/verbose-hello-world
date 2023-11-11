@@ -48,10 +48,10 @@ class HelloWorld_51_Write_AsynchronousByteChannel_Arguments_Test extends _HelloW
     @DisplayName("write(null)NullPointerException")
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
-        // ----------------------------------------------------------------------------------- GIVEN
+        // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var channel = (AsynchronousByteChannel) null;
-        // ------------------------------------------------------------------------------- WHEN/THEN
+        // ------------------------------------------------------------------------------- when/then
         assertThrows(
                 NullPointerException.class,
                 () -> service.write(channel)

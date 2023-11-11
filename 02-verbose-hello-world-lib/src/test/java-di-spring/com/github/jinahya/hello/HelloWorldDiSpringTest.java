@@ -20,16 +20,23 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-class HelloWorldDiSpringTest extends HelloWorldDiTest {
+@Slf4j
+class HelloWorldDiSpringTest
+        extends HelloWorldDiTest {
 
     @BeforeEach
-    void _beforeEach() {
-        var context = new AnnotationConfigApplicationContext(
-                HelloWorldDiSpringConfiguration.class);
-        var factory = context.getAutowireCapableBeanFactory();
-        factory.autowireBean(this);
+    private void autowireBean() {
+        final var applicationContext = new AnnotationConfigApplicationContext(
+                HelloWorldDiSpringConfiguration.class
+        );
+        log.debug("applicationContext: {}", applicationContext);
+        final var beanFactory = applicationContext.getAutowireCapableBeanFactory();
+        log.debug("beanFactory: {}", beanFactory);
+        beanFactory.autowireBean(this);
+        log.debug("autowired");
     }
 }

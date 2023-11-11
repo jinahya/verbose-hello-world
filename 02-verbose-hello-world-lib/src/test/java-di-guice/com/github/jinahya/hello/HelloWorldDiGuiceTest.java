@@ -20,7 +20,11 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import jakarta.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 import static com.google.inject.Guice.createInjector;
 
@@ -30,11 +34,30 @@ import static com.google.inject.Guice.createInjector;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see <a href="https://github.com/google/guice">Guice</a>
  */
-class HelloWorldDiGuiceTest extends HelloWorldDiTest {
+@Slf4j
+class HelloWorldDiGuiceTest
+        extends HelloWorldDiTest {
 
     @BeforeEach
     void _beforeEach() {
-        var injector = createInjector(new HelloWorldDiGuiceModule());
+        final var injector = createInjector(new HelloWorldDiGuiceModule());
         injector.injectMembers(this);
     }
+
+    @Override
+    HelloWorld service() {
+        return switch (ThreadLocalRandom.current().nextInt(6)) {
+            case 4 -> bindingQualifiedDemo;
+            case 5 -> bindingQualifiedImpl;
+            default -> super.service();
+        };
+    }
+
+    @_BindingQualifiedDemo
+    @Inject
+    private HelloWorld bindingQualifiedDemo;
+
+    @_BindingQualifiedImpl
+    @Inject
+    private HelloWorld bindingQualifiedImpl;
 }

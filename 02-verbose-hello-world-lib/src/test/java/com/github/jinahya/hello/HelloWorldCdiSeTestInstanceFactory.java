@@ -33,17 +33,20 @@ import org.junit.jupiter.api.extension.TestInstantiationException;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorldCdiSeTestInstanceFactory implements TestInstanceFactory {
+class HelloWorldCdiSeTestInstanceFactory
+        implements TestInstanceFactory {
 
     @Override
-    public Object createTestInstance(
-            TestInstanceFactoryContext testInstanceFactoryContext,
-            ExtensionContext extensionContext)
+    public Object createTestInstance(final TestInstanceFactoryContext factoryContext,
+                                     final ExtensionContext extensionContext)
             throws TestInstantiationException {
-        var testClass = testInstanceFactoryContext.getTestClass();
-        var seContainerInitializer = SeContainerInitializer.newInstance()
+        final var testClass = factoryContext.getTestClass();
+        log.debug("testClass: {}", testClass);
+        final var containerInitializer = SeContainerInitializer.newInstance()
                 .addBeanClasses(HelloWorldCdiFactory.class, testClass);
-        try (var container = seContainerInitializer.initialize()) {
+        log.debug("containerInitializer: {}", containerInitializer);
+        try (var container = containerInitializer.initialize()) {
+            log.debug("container: {}", container);
             return container.select(testClass).get();
         }
     }

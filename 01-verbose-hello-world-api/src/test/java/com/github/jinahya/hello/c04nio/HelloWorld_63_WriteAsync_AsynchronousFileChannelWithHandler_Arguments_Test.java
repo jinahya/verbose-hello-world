@@ -56,13 +56,13 @@ class HelloWorld_63_WriteAsync_AsynchronousFileChannelWithHandler_Arguments_Test
     @Test
     @SuppressWarnings({"unchecked"})
     void _ThrowNullPointerException_ChannelIsNull() {
-        // ----------------------------------------------------------------------------------- GIVEN
+        // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var channel = (AsynchronousFileChannel) null;
         var position = 0L;
         var handler = mock(CompletionHandler.class);
         var attachment = (Object) null;
-        // ------------------------------------------------------------------------------- WHEN/THEN
+        // ------------------------------------------------------------------------------- when/then
         assertThrows(
                 NullPointerException.class,
                 () -> service.writeAsync(channel, position, handler, attachment)
@@ -79,13 +79,13 @@ class HelloWorld_63_WriteAsync_AsynchronousFileChannelWithHandler_Arguments_Test
     @Test
     @SuppressWarnings({"unchecked"})
     void _ThrowIllegalArgumentException_PositionIsNegative() {
-        // ----------------------------------------------------------------------------------- GIVEN
+        // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var channel = mock(AsynchronousFileChannel.class);
         var position = current().nextLong() | Long.MIN_VALUE;
         var handler = mock(CompletionHandler.class);
         var attachment = (Object) null;
-        // ------------------------------------------------------------------------------- WHEN/THEN
+        // ------------------------------------------------------------------------------- when/then
         assertThrows(
                 IllegalArgumentException.class,
                 () -> service.writeAsync(channel, position, handler, attachment)
@@ -101,13 +101,13 @@ class HelloWorld_63_WriteAsync_AsynchronousFileChannelWithHandler_Arguments_Test
     @DisplayName("(, , null, )NullPointerException")
     @Test
     void _ThrowNullPointerException_HandlerIsNull() {
-        // ----------------------------------------------------------------------------------- GIVEN
+        // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var channel = mock(AsynchronousFileChannel.class);
         var position = 0L;
         var handler = (CompletionHandler<AsynchronousFileChannel, Object>) null;
         var attachment = (Object) null;
-        // ------------------------------------------------------------------------------- WHEN/THEN
+        // ------------------------------------------------------------------------------- when/then
         assertThrows(
                 NullPointerException.class,
                 () -> service.writeAsync(channel, position, handler, attachment)

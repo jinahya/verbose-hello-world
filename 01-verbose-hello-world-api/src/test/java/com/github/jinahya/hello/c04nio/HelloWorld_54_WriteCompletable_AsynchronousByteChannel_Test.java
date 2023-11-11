@@ -96,12 +96,12 @@ class HelloWorld_54_WriteCompletable_AsynchronousByteChannel_Test extends _Hello
     @DisplayName("(channel)completed<channel>")
     @Test
     void _Completed_() throws Exception {
-        // ----------------------------------------------------------------------------------- GIVEN
+        // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var channel = _stub_ToComplete(mock(AsynchronousByteChannel.class));
-        // ------------------------------------------------------------------------------------ WHEN
+        // ------------------------------------------------------------------------------------ when
         var future = service.writeCompletable(channel);
-        // ------------------------------------------------------------------------------------ THEN
+        // ------------------------------------------------------------------------------------ then
         // TODO: Get the result of the <future> with a timeout.
         // TODO: Verify, service.writeAsync(same(chanel), notNull(), any()) invoked, once.
         // TODO: Assert, result is same as channel.
@@ -118,13 +118,13 @@ class HelloWorld_54_WriteCompletable_AsynchronousByteChannel_Test extends _Hello
     @DisplayName("(channel)completedExceptionally")
     @Test
     void _CompletedExceptionally_() {
-        // ----------------------------------------------------------------------------------- GIVEN
+        // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var channel = mock(AsynchronousByteChannel.class);
         var exc = _stub_ToFail(channel, mock(Throwable.class));
-        // ------------------------------------------------------------------------------------ WHEN
+        // ------------------------------------------------------------------------------------ when
         var future = service.writeCompletable(channel);
-        // ------------------------------------------------------------------------------------ THEN
+        // ------------------------------------------------------------------------------------ then
         // TODO: Join the result of the <future> handling to return what has been thrown
         // TODO: Assert, the thrown is same as <exc>
     }

@@ -62,12 +62,12 @@ class HelloWorld_09_Append_Appendable_Test extends _HelloWorldTest {
             "(appendable)appendable <- print(char[12]).forEach(appendable::append")
     @Test
     void __() throws IOException {
-        // ----------------------------------------------------------------------------------- GIVEN
+        // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var appendable = mock(Appendable.class);
-        // ------------------------------------------------------------------------------------ WHEN
+        // ------------------------------------------------------------------------------------ when
         var result = service.append(appendable);
-        // ------------------------------------------------------------------------------------ THEN
+        // ------------------------------------------------------------------------------------ then
         verify(service, times(1)).print(charsCaptor().capture());
         var chars = charsCaptor().getValue();
         assertNotNull(chars);

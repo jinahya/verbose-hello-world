@@ -73,15 +73,15 @@ class HelloWorld_61_Write_AsynchronousFileChannel_Test extends _HelloWorldTest {
             "(channel, position) -> put(buffer[12]) -> channel.write(buffer)+")
     @Test
     void _PutBufferWriteBufferToChannel_() throws InterruptedException, ExecutionException {
-        // ----------------------------------------------------------------------------------- GIVEN
+        // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var channel = mock(AsynchronousFileChannel.class);
         var writtenSoFar = new LongAdder();
         _stub_ToWriteSome(channel, writtenSoFar);
         var position = current().nextLong(MAX_VALUE - BYTES);
-        // ------------------------------------------------------------------------------------ WHEN
+        // ------------------------------------------------------------------------------------ when
         var result = service.write(channel, position);
-        // ------------------------------------------------------------------------------------ THEN
+        // ------------------------------------------------------------------------------------ then
         verify(service, times(1)).put(bufferCaptor().capture()); // ---------------------- <1>
         var buffer = bufferCaptor().getValue();
         verify(channel, atLeastOnce()).write(same(buffer), positionCaptor().capture()); // <2>

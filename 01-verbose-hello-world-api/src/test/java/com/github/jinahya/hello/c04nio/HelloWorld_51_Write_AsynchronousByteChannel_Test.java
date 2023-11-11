@@ -68,7 +68,7 @@ class HelloWorld_51_Write_AsynchronousByteChannel_Test extends _HelloWorldTest {
     @DisplayName("(channel) -> put(buffer[12]) -> channel.write(buffer)+")
     @Test
     void __() throws InterruptedException, ExecutionException {
-        // ----------------------------------------------------------------------------------- GIVEN
+        // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var channel = mock(AsynchronousByteChannel.class);
         var writtenSoFar = new LongAdder();
@@ -85,9 +85,9 @@ class HelloWorld_51_Write_AsynchronousByteChannel_Test extends _HelloWorldTest {
                     });
                     return future;
                 });
-        // ------------------------------------------------------------------------------------ WHEN
+        // ------------------------------------------------------------------------------------ when
         var result = service.write(channel);
-        // ------------------------------------------------------------------------------------ THEN
+        // ------------------------------------------------------------------------------------ then
         verify(service, times(1)).put(bufferCaptor().capture());
         var buffer = bufferCaptor().getValue();
         assertEquals(BYTES, buffer.capacity());

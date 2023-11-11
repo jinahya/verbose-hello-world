@@ -67,7 +67,7 @@ class HelloWorld_02_Append_File_Test extends _HelloWorldTest {
     @DisplayName("(file) -> write(new FileOutputStream(file, true))")
     @Test
     void _InvokeWriteWithFileOutputStreamWithAppendingMode_() throws IOException {
-        // ----------------------------------------------------------------------------------- GIVEN
+        // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var file = mock(File.class);
         MockInitializer<FileOutputStream> initializer = (m, c) -> {
@@ -82,7 +82,7 @@ class HelloWorld_02_Append_File_Test extends _HelloWorldTest {
 //            doNothing().when(m).write(any(byte[].class));
         };
         try (var construction = mockConstruction(FileOutputStream.class, initializer)) {
-            // -------------------------------------------------------------------------------- WHEN
+            // -------------------------------------------------------------------------------- when
             var result = service.append(file);
             // ---------------------------------------------------------------------------------THEN
             var constructed = construction.constructed();
@@ -104,16 +104,16 @@ class HelloWorld_02_Append_File_Test extends _HelloWorldTest {
     @DisplayName("(file) -> 12 bytes are appended to the file")
     @Test
     void _12BytesAppended_(@TempDir File tempDir) throws IOException {
-        // ----------------------------------------------------------------------------------- GIVEN
+        // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var file = createTempFile("tmp", null, tempDir);
         if (current().nextBoolean()) {
             // TODO: (Optional) Write some bytes to the file
         }
         var length = file.length();
-        // ------------------------------------------------------------------------------------ WHEN
+        // ------------------------------------------------------------------------------------ when
         var result = service.append(file);
-        // ------------------------------------------------------------------------------------ THEN
+        // ------------------------------------------------------------------------------------ then
         // TODO: Assert, 12 bytes are appended to the end of the file.
         assertSame(file, result);
     }

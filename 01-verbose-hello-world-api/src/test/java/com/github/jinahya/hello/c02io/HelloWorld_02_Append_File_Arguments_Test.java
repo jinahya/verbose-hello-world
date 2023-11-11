@@ -48,10 +48,10 @@ class HelloWorld_02_Append_File_Arguments_Test extends _HelloWorldTest {
     @DisplayName("(null)NullPointerException")
     @Test
     void _ThrowNullPointerException_FileIsNull() {
-        // ----------------------------------------------------------------------------------- GIVEN
+        // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var file = (File) null;
-        // ------------------------------------------------------------------------------- WHEN/THEN
+        // ------------------------------------------------------------------------------- when/then
         assertThrows(
                 NullPointerException.class,
                 () -> service.append(file)

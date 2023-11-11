@@ -26,8 +26,6 @@ import jakarta.enterprise.inject.spi.InjectionPoint;
 import jakarta.inject.Named;
 import lombok.extern.slf4j.Slf4j;
 
-import static com.github.jinahya.hello.HelloWorldDiTest._NAMED_DEMO;
-import static com.github.jinahya.hello.HelloWorldDiTest._NAMED_IMPL;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -39,107 +37,103 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class HelloWorldCdiFactory {
 
     /**
-     * Produces an instance of {@link HelloWorld} for specified injection point annotated with
-     * {@link Named} whose {@link Named#value() value} equals to
-     * {@link HelloWorldDiTest#_NAMED_DEMO}.
+     * Produces an instance of {@link HelloWorld} qualified by
+     * {@link HelloWorldDiConstants#_NAME_DEMO}.
      *
      * @param injectionPoint the injection point to be injected
      * @return an instance of {@link HelloWorld}.
      */
-    @Named(_NAMED_DEMO)
+    @Named(HelloWorldDiConstants._NAME_DEMO)
     @Produces
-    HelloWorld produceNamedDemo(InjectionPoint injectionPoint) {
-        var bean = new HelloWorldDemo();
+    HelloWorld produceNamedDemo(final InjectionPoint injectionPoint) {
+        final var bean = new HelloWorldDemo();
         log.debug("producing {} for {}", bean, injectionPoint);
         return bean;
     }
 
     /**
-     * Disposes specified {@link HelloWorld} instance produced for those injection points which each
-     * annotated with {@link Named} whose {@link Named#value() value} equals to
-     * {@link HelloWorldDiTest#_NAMED_DEMO}.
+     * Disposes specified {@link HelloWorld} instance qualified by
+     * {@link HelloWorldDiConstants#_NAME_IMPL}.
      *
      * @param bean the {@link HelloWorld} instance to dispose
      */
-    void disposeNamedDemo(@Named(_NAMED_DEMO) @Disposes HelloWorld bean) {
+    void disposeNamedDemo(
+            @Named(HelloWorldDiConstants._NAME_DEMO) @Disposes final HelloWorld bean) {
         log.debug("disposing {}", bean);
         assertTrue(bean instanceof HelloWorldDemo);
     }
 
     /**
-     * Produces an instance of {@link HelloWorld} for specified injection point {@link Named named}
-     * with {@link HelloWorldDiTest#_NAMED_IMPL}.
+     * Produces an instance of {@link HelloWorld} qualified by
+     * {@link HelloWorldDiConstants#_NAME_IMPL}.
      *
      * @param injectionPoint the injection point to be injected.
      * @return an instance of {@link HelloWorldImpl}
      */
-    @Named(_NAMED_IMPL)
+    @Named(HelloWorldDiConstants._NAME_IMPL)
     @Produces
-    HelloWorld produceNamedImpl(InjectionPoint injectionPoint) {
-        var bean = new HelloWorldImpl();
+    HelloWorld produceNamedImpl(final InjectionPoint injectionPoint) {
+        final var bean = new HelloWorldImpl();
         log.debug("producing {} for {}", bean, injectionPoint);
         return bean;
     }
 
     /**
-     * Disposes specified {@link HelloWorld} instance produced for injection points
-     * {@link Named named} with {@link HelloWorldDiTest#_NAMED_IMPL}.
+     * Disposes specified {@link HelloWorld} instance qualified by
+     * {@link HelloWorldDiConstants#_NAME_IMPL}.
      *
      * @param bean the {@link HelloWorld} instance to dispose.
      */
-    void disposeNamedImpl(@Named(_NAMED_IMPL) @Disposes HelloWorld bean) {
+    void disposeNamedImpl(
+            @Named(HelloWorldDiConstants._NAME_IMPL) @Disposes final HelloWorld bean) {
         log.debug("disposing {}", bean);
         assertTrue(bean instanceof HelloWorldImpl);
     }
 
     /**
-     * Produces an instance of {@link HelloWorld} for specified injection point annotated with
-     * {@link _QualifiedDemo}.
+     * Produces an instance of {@link HelloWorld} qualified by {@link _QualifiedDemo}.
      *
      * @param injectionPoint the injection point
      * @return an instance of {@link HelloWorld}
      */
-    @Produces
     @_QualifiedDemo
-    HelloWorld produceQualifiedDemo(InjectionPoint injectionPoint) {
-        var bean = new HelloWorldDemo();
+    @Produces
+    HelloWorld produceQualifiedDemo(final InjectionPoint injectionPoint) {
+        final var bean = new HelloWorldDemo();
         log.debug("producing {} for {}", bean, injectionPoint);
         return bean;
     }
 
     /**
-     * Disposes specified {@link HelloWorld} instance produced for those injection points which each
-     * annotated with {@link _QualifiedDemo}.
+     * Disposes specified {@link HelloWorld} instance qualified by {@link _QualifiedDemo}.
      *
      * @param bean the {@link HelloWorld} instance to dispose
      */
-    void disposeQualifiedDemo(@Disposes @_QualifiedDemo HelloWorld bean) {
+    void disposeQualifiedDemo(@_QualifiedDemo @Disposes final HelloWorld bean) {
         log.debug("disposing {}", bean);
         assertTrue(bean instanceof HelloWorldDemo);
     }
 
     /**
-     * Produces an instance of {@link HelloWorld} for specified injection point annotated with
-     * {@link _QualifiedImpl}
+     * Produces an instance of {@link HelloWorld} qualified by {@link _QualifiedImpl}.
      *
      * @param injectionPoint the injection point
      * @return an instance of {@link HelloWorld}
      */
-    @Produces
     @_QualifiedImpl
-    HelloWorld produceQualifiedImpl(InjectionPoint injectionPoint) {
-        var bean = new HelloWorldImpl();
+    @Produces
+    HelloWorld produceQualifiedImpl(final InjectionPoint injectionPoint) {
+        final var bean = new HelloWorldImpl();
         log.debug("producing {} for {}", bean, injectionPoint);
         return bean;
     }
 
     /**
-     * Disposes specified {@link HelloWorld} instance produced for those injection points which each
-     * annotated with {@link _QualifiedImpl}.
+     * Disposes specified {@link HelloWorld} instance qualified by {@link _QualifiedImpl}.
      *
      * @param bean the {@link HelloWorld} instance to dispose
      */
-    void disposeQualifiedImpl(@Disposes @_QualifiedImpl HelloWorld bean) {
+    void disposeQualifiedImpl(@_QualifiedImpl @Disposes final HelloWorld bean) {
         log.debug("disposing {}", bean);
         assertTrue(bean instanceof HelloWorldImpl);
     }

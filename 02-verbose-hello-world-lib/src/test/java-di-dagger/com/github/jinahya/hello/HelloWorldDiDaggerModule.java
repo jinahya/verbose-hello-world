@@ -24,19 +24,16 @@ import dagger.Module;
 import dagger.Provides;
 import jakarta.inject.Named;
 
-import static com.github.jinahya.hello.HelloWorldDiTest._NAMED_DEMO;
-import static com.github.jinahya.hello.HelloWorldDiTest._NAMED_IMPL;
-
 @Module
 class HelloWorldDiDaggerModule {
 
-    @Named(_NAMED_DEMO)
+    @Named(HelloWorldDiConstants._NAME_DEMO)
     @Provides
     static HelloWorld provideNamedDemo() {
         return new HelloWorldDemo();
     }
 
-    @Named(_NAMED_IMPL)
+    @Named(HelloWorldDiConstants._NAME_IMPL)
     @Provides
     static HelloWorld provideNamedImpl() {
         return new HelloWorldImpl();

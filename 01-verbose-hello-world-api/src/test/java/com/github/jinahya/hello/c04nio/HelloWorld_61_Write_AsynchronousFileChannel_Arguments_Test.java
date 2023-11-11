@@ -52,11 +52,11 @@ class HelloWorld_61_Write_AsynchronousFileChannel_Arguments_Test extends _HelloW
     @DisplayName("write(null, )NullPointerException")
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
-        // ----------------------------------------------------------------------------------- GIVEN
+        // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         AsynchronousFileChannel channel = null;
         var position = 0L;
-        // ------------------------------------------------------------------------------- WHEN/THEN
+        // ------------------------------------------------------------------------------- when/then
         assertThrows(
                 NullPointerException.class,
                 () -> service.write(channel, position)
@@ -71,11 +71,11 @@ class HelloWorld_61_Write_AsynchronousFileChannel_Arguments_Test extends _HelloW
     @DisplayName("write(, negative)IllegalArgumentException")
     @Test
     void _ThrowIllegalArgumentException_PositionIsNegative() {
-        // ----------------------------------------------------------------------------------- GIVEN
+        // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var channel = mock(AsynchronousFileChannel.class);
         var position = current().nextLong() | Long.MIN_VALUE;
-        // ------------------------------------------------------------------------------- WHEN/THEN
+        // ------------------------------------------------------------------------------- when/then
         assertThrows(
                 IllegalArgumentException.class,
                 () -> service.write(channel, position)

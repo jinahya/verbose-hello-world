@@ -48,10 +48,10 @@ class HelloWorld_41_Append_Path_Arguments_Test extends _HelloWorldTest {
     @DisplayName("(null)NullPointerException")
     @Test
     void _ThrowNullPointerException_PathIsNull() {
-        // ----------------------------------------------------------------------------------- GIVEN
+        // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var path = (Path) null;
-        // ------------------------------------------------------------------------------- WHEN/THEN
+        // ------------------------------------------------------------------------------- when/then
         assertThrows(
                 NullPointerException.class,
                 () -> service.append(path)

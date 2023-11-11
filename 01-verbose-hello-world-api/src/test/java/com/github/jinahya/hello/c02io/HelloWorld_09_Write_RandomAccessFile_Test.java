@@ -69,12 +69,12 @@ class HelloWorld_09_Write_RandomAccessFile_Test extends _HelloWorldTest {
     @DisplayName("(file) -> file.write(set(array[12]))")
     @Test
     void _InvokeSetArrayWriteArrayToFile_() throws IOException {
-        // ----------------------------------------------------------------------------------- GIVEN
+        // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var file = mock(RandomAccessFile.class);
-        // ------------------------------------------------------------------------------------ WHEN
+        // ------------------------------------------------------------------------------------ when
         var result = service.write(file);
-        // ------------------------------------------------------------------------------------ THEN
+        // ------------------------------------------------------------------------------------ then
         verify(service, times(1)).set(arrayCaptor().capture());
         var array = arrayCaptor().getValue();
         assertNotNull(array);
@@ -96,17 +96,17 @@ class HelloWorld_09_Write_RandomAccessFile_Test extends _HelloWorldTest {
     @Test
     @畵蛇添足
     void _Write12Bytes_(@TempDir File tempDir) throws IOException {
-        // ----------------------------------------------------------------------------------- GIVEN
+        // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var tmp = createTempFile("tmp", null, tempDir);
         var pos = current().nextLong(1024);
-        // ------------------------------------------------------------------------------------ WHEN
+        // ------------------------------------------------------------------------------------ when
         try (var file = new RandomAccessFile(tmp, "rw")) {
             file.seek(pos);
             var result = service.write(file);
             file.getFD().sync();
         }
-        // ------------------------------------------------------------------------------------ THEN
+        // ------------------------------------------------------------------------------------ then
         assertEquals(pos + BYTES, tmp.length());
     }
 }

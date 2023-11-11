@@ -27,12 +27,19 @@ import java.nio.charset.StandardCharsets;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-public class HelloWorldDemo implements HelloWorld {
+public class HelloWorldDemo
+        implements HelloWorld {
 
     @Override
-    public byte[] set(byte[] array, int index) {
-        var source = "hello, world".getBytes(StandardCharsets.US_ASCII);
-        System.arraycopy(source, 0, array, index, source.length);
+    public byte[] set(final byte[] array, final int index) {
+        final var source = "hello, world".getBytes(StandardCharsets.US_ASCII);
+        System.arraycopy(
+                source,
+                0,
+                array,
+                index,
+                source.length
+        );
         return array;
     }
 }

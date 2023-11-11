@@ -74,7 +74,7 @@ class HelloWorld_33_Write_WritableByteChannel_Test extends _HelloWorldTest {
     @DisplayName("(channel) -> channel.write(put(buffer[12]))+")
     @Test
     void __() throws IOException {
-        // ----------------------------------------------------------------------------------- GIVEN
+        // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var channel = mock(WritableByteChannel.class);               // <1>
         var writtenSoFar = new LongAdder();                          // <2>
@@ -86,9 +86,9 @@ class HelloWorld_33_Write_WritableByteChannel_Test extends _HelloWorldTest {
                     writtenSoFar.add(written);
                     return written;
                 });
-        // ------------------------------------------------------------------------------------ WHEN
+        // ------------------------------------------------------------------------------------ when
         var result = service.write(channel);
-        // ------------------------------------------------------------------------------------ THEN
+        // ------------------------------------------------------------------------------------ then
         verify(service, times(1)).put(bufferCaptor().capture());
         var buffer = bufferCaptor().getValue();
         assertNotNull(buffer);

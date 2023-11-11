@@ -60,12 +60,12 @@ class HelloWorld_05_Write_Writer_Test extends _HelloWorldTest {
     @DisplayName("(writer)append(writer)")
     @Test
     void __() throws IOException {
-        // ----------------------------------------------------------------------------------- GIVEN
+        // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var writer = mock(Writer.class);
-        // ------------------------------------------------------------------------------------ WHEN
+        // ------------------------------------------------------------------------------------ when
         var result = service.write(writer);
-        // ------------------------------------------------------------------------------------ THEN
+        // ------------------------------------------------------------------------------------ then
         verify(service, times(1)).append(writer);
         assertSame(writer, result);
     }

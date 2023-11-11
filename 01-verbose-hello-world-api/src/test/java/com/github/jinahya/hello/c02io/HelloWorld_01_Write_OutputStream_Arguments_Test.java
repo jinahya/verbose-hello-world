@@ -47,10 +47,10 @@ class HelloWorld_01_Write_OutputStream_Arguments_Test extends _HelloWorldTest {
     @DisplayName("(null)NullPointerException")
     @Test
     void _ThrowNullPointerException_StreamIsNull() {
-        // ----------------------------------------------------------------------------------- GIVEN
+        // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var stream = (OutputStream) null;
-        // ------------------------------------------------------------------------------- WHEN/THEN
+        // ------------------------------------------------------------------------------- when/then
         Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.write(stream)

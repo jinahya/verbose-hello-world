@@ -22,8 +22,6 @@ package com.github.jinahya.hello;
 
 import com.google.inject.AbstractModule;
 
-import static com.github.jinahya.hello.HelloWorldDiTest._NAMED_DEMO;
-import static com.github.jinahya.hello.HelloWorldDiTest._NAMED_IMPL;
 import static com.google.inject.name.Names.named;
 
 /**
@@ -31,27 +29,31 @@ import static com.google.inject.name.Names.named;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-class HelloWorldDiGuiceModule extends AbstractModule {
+class HelloWorldDiGuiceModule
+        extends AbstractModule {
 
     @Override
     protected void configure() {
+        // -----------------------------------------------------------------------------------------
         bind(HelloWorld.class)
-                .annotatedWith(named(_NAMED_DEMO))
+                .annotatedWith(named(HelloWorldDiConstants._NAME_DEMO))
                 .to(HelloWorldDemo.class);
         bind(HelloWorld.class)
-                .annotatedWith(named(_NAMED_IMPL))
+                .annotatedWith(named(HelloWorldDiConstants._NAME_IMPL))
                 .to(HelloWorldImpl.class);
+        // -----------------------------------------------------------------------------------------
         bind((HelloWorld.class))
                 .annotatedWith(_QualifiedDemo.class)
                 .to(HelloWorldDemo.class);
         bind((HelloWorld.class))
                 .annotatedWith(_QualifiedImpl.class)
                 .to(HelloWorldImpl.class);
+        // -----------------------------------------------------------------------------------------
         bind((HelloWorld.class))
-                .annotatedWith(BindingQualifiedDemo.class)
+                .annotatedWith(_BindingQualifiedDemo.class)
                 .to(HelloWorldDemo.class);
         bind((HelloWorld.class))
-                .annotatedWith(BindingQualifiedImpl.class)
+                .annotatedWith(_BindingQualifiedImpl.class)
                 .to(HelloWorldImpl.class);
     }
 }

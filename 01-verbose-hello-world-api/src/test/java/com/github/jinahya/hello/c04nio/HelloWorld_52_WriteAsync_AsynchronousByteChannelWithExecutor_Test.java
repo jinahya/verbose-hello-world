@@ -69,16 +69,16 @@ class HelloWorld_52_WriteAsync_AsynchronousByteChannelWithExecutor_Test extends 
     @DisplayName("(channel) -> put(buffer[12]) -> channel.write(buffer)+")
     @Test
     void __() throws InterruptedException, ExecutionException {
-        // ----------------------------------------------------------------------------------- GIVEN
+        // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var channel = mock(AsynchronousByteChannel.class);
         var writtenSoFar = new LongAdder();
         _stub_ToWriteSome(channel, writtenSoFar);
         var executor = newSingleThreadExecutor();
-        // ------------------------------------------------------------------------------------ WHEN
+        // ------------------------------------------------------------------------------------ when
         var future = service.writeAsync(channel, executor);
         var result = future.get();
-        // ------------------------------------------------------------------------------------ THEN
+        // ------------------------------------------------------------------------------------ then
         verify(service, times(1)).put(bufferCaptor().capture());
         var buffer = bufferCaptor().getValue();
         assertNotNull(buffer);

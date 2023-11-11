@@ -70,7 +70,7 @@ class HelloWorld_63_WriteAsync_AsynchronousFileChannelWithHandler_Test extends _
     @Test
     @SuppressWarnings({"unchecked"})
     void _Completed_() {
-        // ----------------------------------------------------------------------------------- GIVEN
+        // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var channel = mock(AsynchronousFileChannel.class);
         var writtenSoFar = new LongAdder();
@@ -78,9 +78,9 @@ class HelloWorld_63_WriteAsync_AsynchronousFileChannelWithHandler_Test extends _
         var position = 0L;
         var handler = mock(CompletionHandler.class);
         var attachment = current().nextBoolean() ? null : new Object();
-        // ------------------------------------------------------------------------------------ WHEN
+        // ------------------------------------------------------------------------------------ when
         service.writeAsync(channel, position, handler, attachment);
-        // ------------------------------------------------------------------------------------ THEN
+        // ------------------------------------------------------------------------------------ then
         verify(handler, timeout(SECONDS.toMillis(8L)).times(1)).completed(channel, attachment);
         assertEquals(BYTES, writtenSoFar.intValue());
     }
@@ -96,16 +96,16 @@ class HelloWorld_63_WriteAsync_AsynchronousFileChannelWithHandler_Test extends _
     @Test
     @SuppressWarnings({"unchecked"})
     void _Failed_() {
-        // ----------------------------------------------------------------------------------- GIVEN
+        // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var channel = mock(AsynchronousFileChannel.class);
         var exc = _stub_ToFail(channel, mock(Throwable.class));
         var position = current().nextLong(MAX_VALUE - BYTES);
         var handler = mock(CompletionHandler.class);
         var attachment = current().nextBoolean() ? null : new Object();
-        // ------------------------------------------------------------------------------------ WHEN
+        // ------------------------------------------------------------------------------------ when
         service.writeAsync(channel, position, handler, attachment);
-        // ------------------------------------------------------------------------------------ THEN
+        // ------------------------------------------------------------------------------------ then
         verify(handler, timeout(SECONDS.toMillis(8L)).times(1)).failed(same(exc), same(attachment));
     }
 }

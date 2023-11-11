@@ -80,7 +80,7 @@ class HelloWorld_62_WriteAsync_AsynchronousFileChannelWithExecutor_Test extends 
     @DisplayName("(channel, position, executor) -> channel.write(buffer, >= position)+")
     @Test
     void __() throws InterruptedException, ExecutionException {
-        // ----------------------------------------------------------------------------------- GIVEN
+        // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var channel = _stub_ToWriteSome(mock(AsynchronousFileChannel.class), new LongAdder());
         var position = current().nextLong(0, Long.MAX_VALUE - BYTES);
@@ -90,10 +90,10 @@ class HelloWorld_62_WriteAsync_AsynchronousFileChannelWithExecutor_Test extends 
             new Thread(command).start();
             return null;
         }).given(executor).execute(notNull());
-        // ------------------------------------------------------------------------------------ WHEN
+        // ------------------------------------------------------------------------------------ when
         var future = service.writeAsync(channel, position, executor);
         var result = future.get();
-        // ------------------------------------------------------------------------------------ THEN
+        // ------------------------------------------------------------------------------------ then
         verify(service, times(1)).write(channel, position);
         assertSame(channel, result);
     }

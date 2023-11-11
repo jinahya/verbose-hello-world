@@ -74,16 +74,16 @@ class HelloWorld_53_WriteAsync_AsynchronousByteChannelWithHandler_Test extends _
     @Test
     @SuppressWarnings({"unchecked"})
     void _Completed_() {
-        // ----------------------------------------------------------------------------------- GIVEN
+        // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var channel = mock(AsynchronousByteChannel.class);
         var writtenSoFar = new LongAdder();
         _stub_ToComplete(channel, writtenSoFar);
         CompletionHandler<AsynchronousByteChannel, Object> handler = mock(CompletionHandler.class);
         var attachment = current().nextBoolean() ? null : new Object();
-        // ------------------------------------------------------------------------------------ WHEN
+        // ------------------------------------------------------------------------------------ when
         service.writeAsync(channel, handler, attachment);
-        // ------------------------------------------------------------------------------------ THEN
+        // ------------------------------------------------------------------------------------ then
         verify(service, times(1)).put(bufferCaptor().capture());
         var buffer = bufferCaptor().getValue();
         assertNotNull(buffer);
@@ -104,16 +104,16 @@ class HelloWorld_53_WriteAsync_AsynchronousByteChannelWithHandler_Test extends _
     @Test
     @SuppressWarnings({"unchecked"})
     void _Failed_() {
-        // ----------------------------------------------------------------------------------- GIVEN
+        // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var channel = mock(AsynchronousByteChannel.class);
         var exc = mock(Throwable.class);
         _stub_ToFail(channel, exc);
         CompletionHandler<AsynchronousByteChannel, Object> handler = mock(CompletionHandler.class);
         var attachment = current().nextBoolean() ? null : new Object();
-        // ------------------------------------------------------------------------------------ WHEN
+        // ------------------------------------------------------------------------------------ when
         service.writeAsync(channel, handler, attachment);
-        // ------------------------------------------------------------------------------------ THEN
+        // ------------------------------------------------------------------------------------ then
         // TODO: Verify, handler.failed(exc, attachment) invoked, once within some time.
     }
 }

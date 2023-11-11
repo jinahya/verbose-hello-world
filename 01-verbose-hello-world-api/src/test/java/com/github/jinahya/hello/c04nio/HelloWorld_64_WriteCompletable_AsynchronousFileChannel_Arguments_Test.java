@@ -55,11 +55,11 @@ class HelloWorld_64_WriteCompletable_AsynchronousFileChannel_Arguments_Test
     @DisplayName("(null, )NullPointerException")
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
-        // ----------------------------------------------------------------------------------- GIVEN
+        // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var channel = (AsynchronousFileChannel) null;
         var position = 0L;
-        // ------------------------------------------------------------------------------- WHEN/THEN
+        // ------------------------------------------------------------------------------- when/then
         assertThrows(
                 NullPointerException.class,
                 () -> service.writeCompletable(channel, position)
@@ -75,11 +75,11 @@ class HelloWorld_64_WriteCompletable_AsynchronousFileChannel_Arguments_Test
     @DisplayName("(, < 0L)IllegalArgumentException")
     @Test
     void _ThrowIllegalArgumentException_PositionIsNegative() {
-        // ----------------------------------------------------------------------------------- GIVEN
+        // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var channel = mock(AsynchronousFileChannel.class);
         var position = current().nextLong() | MIN_VALUE;
-        // ------------------------------------------------------------------------------- WHEN/THEN
+        // ------------------------------------------------------------------------------- when/then
         assertThrows(
                 IllegalArgumentException.class,
                 () -> service.writeCompletable(channel, position)

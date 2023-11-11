@@ -20,21 +20,19 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-/**
- * A class for testing {@link HelloWorldDemo} class.
- *
- * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- */
-class HelloWorldDemoTest extends HelloWorldTest {
+final class HelloWorldDiConstants {
 
     /**
-     * {@inheritDoc} The {@code helloWorld()} method of {@code HelloWorldDemoTest} class returns a
-     * new instance of {@link HelloWorldDemo} class.
-     *
-     * @return {@inheritDoc}
+     * An injection qualifier for {@link HelloWorldDemo}.
      */
-    @Override
-    HelloWorld serviceInstance() {
-        return new HelloWorldDemo();
+    static final String _NAME_DEMO = "demo";
+
+    /**
+     * An injection qualifier for {@link HelloWorldImpl}.
+     */
+    static final String _NAME_IMPL = "impl";
+
+    private HelloWorldDiConstants() {
+        throw new AssertionError("instantiation is not allowed");
     }
 }

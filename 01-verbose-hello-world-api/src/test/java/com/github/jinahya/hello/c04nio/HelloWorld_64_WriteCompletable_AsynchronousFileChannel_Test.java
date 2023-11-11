@@ -100,15 +100,15 @@ class HelloWorld_64_WriteCompletable_AsynchronousFileChannel_Test extends _Hello
     @DisplayName("(channel, position)completed<channel>")
     @Test
     void _Completed_() throws CancellationException, CompletionException {
-        // ----------------------------------------------------------------------------------- GIVEN
+        // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var channel = mock(AsynchronousFileChannel.class);
         var writtenSoFar = new LongAdder();
         _stub_ToComplete(channel, writtenSoFar);
         var position = current().nextLong(MAX_VALUE - BYTES);
-        // ------------------------------------------------------------------------------------ WHEN
+        // ------------------------------------------------------------------------------------ when
         var future = service.writeCompletable(channel, position);
-        // ------------------------------------------------------------------------------------ THEN
+        // ------------------------------------------------------------------------------------ then
         assertNotNull(future);
         var result = future.handle((r, t) -> {
             assert r != null;
@@ -126,14 +126,14 @@ class HelloWorld_64_WriteCompletable_AsynchronousFileChannel_Test extends _Hello
     @DisplayName("(channel, position)completedExceptionally")
     @Test
     void _CompletedExceptionally_() {
-        // ----------------------------------------------------------------------------------- GIVEN
+        // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var channel = mock(AsynchronousFileChannel.class);
         var exc = _stub_ToFail(channel, mock(Throwable.class));
         var position = current().nextLong(MAX_VALUE - BYTES);
-        // ------------------------------------------------------------------------------------ WHEN
+        // ------------------------------------------------------------------------------------ when
         var future = service.writeCompletable(channel, position);
-        // ------------------------------------------------------------------------------------ THEN
+        // ------------------------------------------------------------------------------------ then
         assertNotNull(future);
         assertThrows(CompletionException.class, future::join);
     }

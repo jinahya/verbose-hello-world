@@ -61,13 +61,13 @@ class HelloWorld_21_Send_Socket_Test extends _HelloWorldTest {
     @DisplayName("(socket) -> write(socket.outputStream)")
     @Test
     void _InvokeWriteStreamWithSocketOutputStream_() throws IOException {
-        // ----------------------------------------------------------------------------------- GIVEN
+        // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var socket = mock(Socket.class);                                     // <1>
         when(socket.getOutputStream()).thenReturn(mock(OutputStream.class)); // <3>
-        // ------------------------------------------------------------------------------------ WHEN
+        // ------------------------------------------------------------------------------------ when
         var result = service.send(socket);                                   // <4>
-        // ------------------------------------------------------------------------------------ THEN
+        // ------------------------------------------------------------------------------------ then
         // TODO: Verify, once, service.write(socket.getOutputStream) invoked.
         assertSame(socket, result);
     }

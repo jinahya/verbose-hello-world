@@ -22,11 +22,12 @@ package com.github.jinahya.hello;
 
 import org.junit.jupiter.api.BeforeEach;
 
-class HelloWorldDiDaggerTest extends HelloWorldDiTest {
+class HelloWorldDiDaggerTest
+        extends HelloWorldDiTest {
 
     @BeforeEach
-    void _beforeEach() {
-        var injector = DaggerHelloWorldDiDaggerComponent.create();
+    void injectMembers() {
+        final var injector = DaggerHelloWorldDiDaggerComponent.create();
         injector.injectMembers(this);
     }
 }

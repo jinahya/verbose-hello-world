@@ -20,9 +20,15 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+//@org.jboss.weld.junit5.auto.AddBeanClasses({HelloWorldCdiFactory.class})
+//@org.jboss.weld.junit5.auto.EnableAutoWeld
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorldCdiSeWeldTest extends HelloWorldCdiSeTest {
+class HelloWorldCdiSeWeldTest
+        extends HelloWorldCdiSeTest {
 
 }

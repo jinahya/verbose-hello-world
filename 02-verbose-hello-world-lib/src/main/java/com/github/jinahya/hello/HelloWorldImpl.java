@@ -27,14 +27,14 @@ import java.util.Objects;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-public class HelloWorldImpl implements HelloWorld {
+public class HelloWorldImpl
+        implements HelloWorld {
 
     @Override
-    public byte[] set(byte[] array, int index) {
+    public byte[] set(final byte[] array, final int index) {
         Objects.requireNonNull(array, "array is null");
         if (index < 0) {
-            throw new ArrayIndexOutOfBoundsException(
-                    "index(" + index + ") < 0");
+            throw new ArrayIndexOutOfBoundsException("index(" + index + ") < 0");
         }
         if (index + BYTES > array.length) {
             throw new ArrayIndexOutOfBoundsException(

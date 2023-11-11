@@ -20,17 +20,19 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import java.util.ServiceLoader;
+
 /**
  * A class for testing {@link HelloWorldImpl} using Service Provider Interface.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-class HelloWorldSpiTest extends HelloWorldTest {
+class HelloWorldSpiTest
+        extends __HelloWorldTest {
 
     @Override
-    HelloWorld serviceInstance() {
-        // TODO: Replace with the following statement!
-        // return java.util.ServiceLoader.load(HelloWorld.class).iterator().next();
-        return new HelloWorldDemo();
+    HelloWorld service() {
+        // TODO: Switch implementation in /META-INF/services/com.github.jinahya.hello.HelloWorld
+        return ServiceLoader.load(HelloWorld.class).iterator().next();
     }
 }

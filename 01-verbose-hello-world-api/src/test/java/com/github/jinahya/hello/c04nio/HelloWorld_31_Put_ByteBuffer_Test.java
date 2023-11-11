@@ -65,7 +65,7 @@ class HelloWorld_31_Put_ByteBuffer_Test extends _HelloWorldTest {
             "(buffer.hasArray()) -> set(buffer.array, buffer.arrayOffset + buffer.position)")
     @Test
     void __BufferHasBackingArray() {
-        // ----------------------------------------------------------------------------------- GIVEN
+        // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         ByteBuffer buffer;
         {
@@ -82,9 +82,9 @@ class HelloWorld_31_Put_ByteBuffer_Test extends _HelloWorldTest {
         print(buffer);
         assert buffer.remaining() >= BYTES;
         var position = buffer.position();
-        // ------------------------------------------------------------------------------------ WHEN
+        // ------------------------------------------------------------------------------------ when
         var result = service.put(buffer);
-        // ------------------------------------------------------------------------------------ THEN
+        // ------------------------------------------------------------------------------------ then
         // TODO: Verify, once, set(buffer.array, buffer.arrayOffset + buffer.position) invoked
         // TODO: Assert, buffer.position is equal to (position + 12).
         assertSame(buffer, result);
@@ -99,7 +99,7 @@ class HelloWorld_31_Put_ByteBuffer_Test extends _HelloWorldTest {
     @DisplayName("(!buffer.hasArray()) -> buffer.put(set(array[12]))")
     @Test
     void __BufferDoesNotHaveBackingArray() {
-        // ----------------------------------------------------------------------------------- GIVEN
+        // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var buffer = spy(allocateDirect(BYTES + (BYTES << 1))); // BYTES * 3
         buffer.position(current().nextInt(BYTES));
@@ -108,9 +108,9 @@ class HelloWorld_31_Put_ByteBuffer_Test extends _HelloWorldTest {
         print(buffer);
         var position = buffer.position();
         assumeFalse(buffer.hasArray(), "a direct buffer hase a backing array, aborting...");
-        // ------------------------------------------------------------------------------------ WHEN
+        // ------------------------------------------------------------------------------------ when
         var result = service.put(buffer);
-        // ------------------------------------------------------------------------------------ THEN
+        // ------------------------------------------------------------------------------------ then
         // TODO: Verify, once, set(array[12]) invoked
         // TODO: Verify, once, buffer.put(array) invoked
         assertSame(result, buffer);

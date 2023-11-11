@@ -51,10 +51,10 @@ class HelloWorld_31_Put_ByteBuffer_Arguments_Test extends _HelloWorldTest {
     @DisplayName("(null)NullPointerException")
     @Test
     void _ThrowNullPointerException_BufferIsNull() {
-        // ----------------------------------------------------------------------------------- GIVEN
+        // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var buffer = (ByteBuffer) null;
-        // ------------------------------------------------------------------------------- WHEN/THEN
+        // ------------------------------------------------------------------------------- when/then
         assertThrows(
                 NullPointerException.class,
                 () -> service.put(buffer)
@@ -69,14 +69,14 @@ class HelloWorld_31_Put_ByteBuffer_Arguments_Test extends _HelloWorldTest {
     @DisplayName("(buffer.remaining < 12)BufferOverflowException")
     @Test
     void _ThrowBufferOverflowException_BufferRemainingIsLessThan12() {
-        // ----------------------------------------------------------------------------------- GIVEN
+        // ----------------------------------------------------------------------------------- given
         final var service = serviceInstance();
         final ByteBuffer buffer;
         {
             final var capacity = ThreadLocalRandom.current().nextInt(HelloWorld.BYTES);
             buffer = ByteBuffer.allocate(capacity);
         }
-        // ------------------------------------------------------------------------------- WHEN/THEN
+        // ------------------------------------------------------------------------------- when/then
         assertThatCode(() -> service.put(buffer))
                 .isInstanceOf(BufferOverflowException.class);
     }

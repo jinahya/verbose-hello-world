@@ -20,22 +20,27 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import org.junit.jupiter.api.BeforeEach;
+import com.google.inject.BindingAnnotation;
 
-import static org.glassfish.hk2.utilities.ServiceLocatorUtilities.bind;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * An extended {@link HelloWorldDiTest} which uses {@link HelloWorldDiHk2Binder} as a binder.
+ * An injection qualifier for {@link HelloWorldImpl}.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-class HelloWorldDiHk2Test
-        extends HelloWorldDiTest {
+@BindingAnnotation
+@_QualifiedDemo
+@Retention(RUNTIME)
+@Target({FIELD, METHOD, PARAMETER, TYPE, ANNOTATION_TYPE})
+@interface _BindingQualifiedImpl {
 
-    @BeforeEach
-    void inject() {
-        final var hk2Binder = new HelloWorldDiHk2Binder();
-        final var serviceLocator = bind(hk2Binder);
-        serviceLocator.inject(this);
-    }
 }

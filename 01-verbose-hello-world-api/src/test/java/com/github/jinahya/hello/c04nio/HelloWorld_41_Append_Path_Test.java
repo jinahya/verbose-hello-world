@@ -77,7 +77,7 @@ class HelloWorld_41_Append_Path_Test extends _HelloWorldTest {
             "(path) -> write(FileChannel.open(path, CREATE, WRITE, APPEND))")
     @Test
     void __() throws IOException {
-        // ----------------------------------------------------------------------------------- GIVEN
+        // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var path = mock(Path.class);
         var channel = _stub_ToWriteSome(mock(FileChannel.class), null);
@@ -85,9 +85,9 @@ class HelloWorld_41_Append_Path_Test extends _HelloWorldTest {
             mockedStatic
                     .when(() -> open(same(path), any(OpenOption[].class)))
                     .thenReturn(channel);
-            // -------------------------------------------------------------------------------- WHEN
+            // -------------------------------------------------------------------------------- when
             var result = service.append(path);
-            // -------------------------------------------------------------------------------- THEN
+            // -------------------------------------------------------------------------------- then
             // TODO: Verify, FileChannel.open(path, options) invoked, once.
             // TODO: Assert, options contains only WRITE, CREATE, and APPEND.
             // TODO: Verify, write(channel) invoked, once.
@@ -110,7 +110,7 @@ class HelloWorld_41_Append_Path_Test extends _HelloWorldTest {
     @Test
     @畵蛇添足
     void __(@TempDir Path tempDir) throws IOException {
-        // ----------------------------------------------------------------------------------- GIVEN
+        // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var path = createTempFile(tempDir, null, null);
         if (current().nextBoolean()) {
@@ -125,9 +125,9 @@ class HelloWorld_41_Append_Path_Test extends _HelloWorldTest {
         }
         var size = size(path);
         log.debug("path.size before: {}", size);
-        // ------------------------------------------------------------------------------------ WHEN
+        // ------------------------------------------------------------------------------------ when
         var result = service.append(path);
-        // ------------------------------------------------------------------------------------ THEN
+        // ------------------------------------------------------------------------------------ then
         log.debug("path.size after: {}", size(path));
         assertEquals(size + BYTES, size(path));
     }
