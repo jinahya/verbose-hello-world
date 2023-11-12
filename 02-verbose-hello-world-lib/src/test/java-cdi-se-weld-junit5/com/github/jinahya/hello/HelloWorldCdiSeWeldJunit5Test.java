@@ -20,13 +20,17 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import org.jboss.weld.junit5.WeldJunit5Extension;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jboss.weld.junit5.auto.AddBeanClasses;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.jboss.weld.junit5.auto.EnableAutoWeld;
 
 @AddBeanClasses({HelloWorldCdiFactory.class})
-@ExtendWith({WeldJunit5Extension.class})
-class HelloWorldWeldJunit5Test
+@EnableAutoWeld
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
+@Slf4j
+class HelloWorldCdiSeWeldJunit5Test
         extends HelloWorldDiTest {
 
 }

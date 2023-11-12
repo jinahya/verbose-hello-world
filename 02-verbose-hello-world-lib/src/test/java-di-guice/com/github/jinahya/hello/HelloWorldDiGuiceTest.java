@@ -21,6 +21,8 @@ package com.github.jinahya.hello;
  */
 
 import jakarta.inject.Inject;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -34,6 +36,7 @@ import static com.google.inject.Guice.createInjector;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see <a href="https://github.com/google/guice">Guice</a>
  */
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorldDiGuiceTest
         extends HelloWorldDiTest {
@@ -41,7 +44,9 @@ class HelloWorldDiGuiceTest
     @BeforeEach
     void _beforeEach() {
         final var injector = createInjector(new HelloWorldDiGuiceModule());
+        log.debug("injector: {}", injector);
         injector.injectMembers(this);
+        log.debug("members injected: {}", this);
     }
 
     @Override

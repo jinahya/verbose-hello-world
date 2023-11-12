@@ -20,6 +20,9 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.glassfish.hk2.api.AnnotationLiteral;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 
@@ -30,10 +33,12 @@ import java.io.Serial;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
+@Slf4j
 class HelloWorldDiHk2Binder
         extends AbstractBinder {
 
-    private static class QualifiedDemo_
+    private static class _QualifiedDemo_
             extends AnnotationLiteral<_QualifiedDemo>
             implements _QualifiedDemo {
 
@@ -41,7 +46,7 @@ class HelloWorldDiHk2Binder
         private static final long serialVersionUID = 8947668889394516822L;
     }
 
-    private static class QualifiedImpl_
+    private static class _QualifiedImpl_
             extends AnnotationLiteral<_QualifiedImpl>
             implements _QualifiedImpl {
 
@@ -58,10 +63,10 @@ class HelloWorldDiHk2Binder
                 .named(HelloWorldDiConstants._NAME_IMPL)
                 .to(HelloWorld.class);
         bind(HelloWorldDemo.class)
-                .qualifiedBy(new QualifiedDemo_())
+                .qualifiedBy(new _QualifiedDemo_())
                 .to(HelloWorld.class);
         bind(HelloWorldImpl.class)
-                .qualifiedBy(new QualifiedImpl_())
+                .qualifiedBy(new _QualifiedImpl_())
                 .to(HelloWorld.class);
     }
 }

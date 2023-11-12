@@ -20,10 +20,13 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorldDiSpringTest
         extends HelloWorldDiTest {
@@ -37,6 +40,6 @@ class HelloWorldDiSpringTest
         final var beanFactory = applicationContext.getAutowireCapableBeanFactory();
         log.debug("beanFactory: {}", beanFactory);
         beanFactory.autowireBean(this);
-        log.debug("autowired");
+        log.debug("autowired: {}", this);
     }
 }

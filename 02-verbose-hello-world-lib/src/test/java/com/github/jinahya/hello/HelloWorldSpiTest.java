@@ -20,6 +20,10 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.ServiceLoader;
 
 /**
@@ -27,6 +31,8 @@ import java.util.ServiceLoader;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
+@Slf4j
 class HelloWorldSpiTest
         extends __HelloWorldTest {
 

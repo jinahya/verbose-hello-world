@@ -21,6 +21,9 @@ package com.github.jinahya.hello;
  */
 
 import com.google.inject.AbstractModule;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import static com.google.inject.name.Names.named;
 
@@ -29,6 +32,8 @@ import static com.google.inject.name.Names.named;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
+@Slf4j
 class HelloWorldDiGuiceModule
         extends AbstractModule {
 

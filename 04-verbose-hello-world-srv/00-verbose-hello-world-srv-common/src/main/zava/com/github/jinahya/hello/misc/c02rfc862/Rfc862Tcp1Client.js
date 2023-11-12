@@ -6,11 +6,17 @@ const assert = require('node:assert');
 const crypto = require('node:crypto');
 const net = require('node:net');
 
+const IPv4 = true;
+const HOST = IPv4 ? '127.0.0.1' : '::1';
+if (IPv4) assert(net.isIPv4(HOST)); else assert(net.isIPv6(HOST));
+const PORT = 50007;
+
+
 function main() {
     const client = new net.Socket();
     client.on('connect', function () {
         console.log('connected to %s:%d/%s', client.remoteAddress, client.remotePort, client.remoteFamily);
-        const hash = crypto.createHash('sha1');
+        const hash = crypto.createHash('sha256');
         let bytes = Math.floor(Math.random() * 65536);
         console.log('sending %d byte(s)', bytes);
         const length = Math.floor(Math.random() * 8192) + 1;
@@ -28,23 +34,23 @@ function main() {
             bytes -= array.length;
         }
         client.end();
-        client.destroy();
-        console.log('digest: %s', hash.digest('hex'));
+        console.log('digest: %s', hash.digest('base64'));
+    });
+    client.on('data', function (data) {
+    });
+    client.on('drain', function () {
     });
     client.on('error', function (error) {
         console.log('error: %s', error);
     });
     client.on('end', function () {
+        client.destroy();
     });
     client.on('close', function () {
     });
-    const ipv4 = true;
-    const host = ipv4 ? '127.0.0.1' : '::1';
-    const port = 50009;
-    if (ipv4) assert(net.isIPv4(host)); else assert(net.isIPv6(host));
     client.connect({
-        host: host,
-        port: port
+        host: HOST,
+        port: PORT
     });
 }
 

@@ -20,6 +20,9 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 
 import static org.glassfish.hk2.utilities.ServiceLocatorUtilities.bind;
@@ -29,13 +32,18 @@ import static org.glassfish.hk2.utilities.ServiceLocatorUtilities.bind;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
+@Slf4j
 class HelloWorldDiHk2Test
         extends HelloWorldDiTest {
 
     @BeforeEach
     void inject() {
         final var hk2Binder = new HelloWorldDiHk2Binder();
+        log.debug("hk2Binder: {}", hk2Binder);
         final var serviceLocator = bind(hk2Binder);
+        log.debug("serviceLocator: {}", serviceLocator);
         serviceLocator.inject(this);
+        log.debug("injected: {}", this);
     }
 }

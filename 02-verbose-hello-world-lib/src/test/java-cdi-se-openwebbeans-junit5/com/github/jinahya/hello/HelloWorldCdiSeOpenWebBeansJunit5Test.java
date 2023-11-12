@@ -20,44 +20,35 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import jakarta.inject.Named;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.apache.openwebbeans.junit5.Cdi;
+import org.junit.jupiter.api.BeforeAll;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 /**
- * A configuration for providing {@link HelloWorld} beans.
+ * A class extends {@link HelloWorldCdiSeTest} for Apache OpenWebBeans.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ * @see <a href="<a href="https://openwebbeans.apache.org/">Apache OpenWebBeans</a>
+ * @see <a href="https://openwebbeans.apache.org/owbsetup_se.html">OpenWebBeans and JavaSE</a>
  */
-@Configuration
+@Cdi(classes = {HelloWorldCdiFactory.class})
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorldDiSpringConfiguration {
+class HelloWorldCdiSeOpenWebBeansJunit5Test
+        extends HelloWorldCdiSeTest {
 
-    @Named(HelloWorldDiConstants._NAME_DEMO)
-    @Bean
-    HelloWorld namedDemo() {
-        return new HelloWorldDemo();
-    }
-
-    @Named(HelloWorldDiConstants._NAME_IMPL)
-    @Bean
-    HelloWorld namedImpl() {
-        return new HelloWorldImpl();
-    }
-
-    @_QualifiedDemo
-    @Bean
-    HelloWorld qualifiedDemo() {
-        return new HelloWorldDemo();
-    }
-
-    @_QualifiedImpl
-    @Bean
-    HelloWorld qualifiedImpl() {
-        return new HelloWorldImpl();
+    /**
+     * Removes handlers from the root logger and installs SLF4J bridge handler.
+     *
+     * @see SLF4JBridgeHandler#removeHandlersForRootLogger()
+     * @see SLF4JBridgeHandler#install()
+     */
+    @BeforeAll
+    static void _beforeAll() {
+        SLF4JBridgeHandler.removeHandlersForRootLogger();
+        SLF4JBridgeHandler.install();
     }
 }

@@ -22,9 +22,7 @@ package com.github.jinahya.hello;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.junit.jupiter.api.extension.ExtendWith;
 
-@ExtendWith({HelloWorldCdiSeTestInstanceFactory.class})
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 abstract class HelloWorldCdiSeTest
         extends HelloWorldDiTest {

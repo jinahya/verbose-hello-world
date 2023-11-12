@@ -24,6 +24,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,7 +34,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-//@NoArgsConstructor(access = AccessLevel.PACKAGE)
+@ToString
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 abstract class HelloWorldDiTest
         extends __HelloWorldTest {
 

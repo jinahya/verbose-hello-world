@@ -23,9 +23,9 @@ package com.github.jinahya.hello;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-//@org.jboss.weld.junit5.auto.AddBeanClasses({HelloWorldCdiFactory.class})
-//@org.jboss.weld.junit5.auto.EnableAutoWeld
+@ExtendWith({HelloWorldCdiSeTestInstanceFactory.class})
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorldCdiSeWeldTest

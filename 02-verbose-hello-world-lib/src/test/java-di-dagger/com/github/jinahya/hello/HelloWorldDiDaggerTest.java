@@ -20,14 +20,21 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
+@Slf4j
 class HelloWorldDiDaggerTest
         extends HelloWorldDiTest {
 
     @BeforeEach
     void injectMembers() {
         final var injector = DaggerHelloWorldDiDaggerComponent.create();
+        log.debug("injector: {}", injector);
         injector.injectMembers(this);
+        log.debug("members injected: {}", this);
     }
 }

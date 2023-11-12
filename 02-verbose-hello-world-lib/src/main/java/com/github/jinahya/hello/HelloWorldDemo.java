@@ -32,13 +32,13 @@ public class HelloWorldDemo
 
     @Override
     public byte[] set(final byte[] array, final int index) {
-        final var source = "hello, world".getBytes(StandardCharsets.US_ASCII);
+        final var src = "hello, world".getBytes(StandardCharsets.US_ASCII);
         System.arraycopy(
-                source,
+                src,
                 0,
                 array,
                 index,
-                source.length
+                src.length
         );
         return array;
     }

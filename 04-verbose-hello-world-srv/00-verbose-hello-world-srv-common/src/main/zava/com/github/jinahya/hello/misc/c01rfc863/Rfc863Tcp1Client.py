@@ -27,7 +27,7 @@ def randomize(array):
 
 with closing(socket.socket(FAMILY, socket.SOCK_STREAM)) as s:
     # -------------------------------------------------------------------- bind
-    if bool(random.getrandbits(1)):
+    if random.choice([True, False]):
         s.bind((HOST, 0))
         print(f'(optionally) bound to {s.getsockname()}')
     # ----------------------------------------------------------------- connect
@@ -40,7 +40,7 @@ with closing(socket.socket(FAMILY, socket.SOCK_STREAM)) as s:
     hash = hashlib.sha1()
     while bytes > 0:
         # random.shuffle(array)
-        randomize(array);
+        randomize(array)
         if bytes < len(array):
             array = array[0:bytes]
         # ---------------------------------------------------------------- send

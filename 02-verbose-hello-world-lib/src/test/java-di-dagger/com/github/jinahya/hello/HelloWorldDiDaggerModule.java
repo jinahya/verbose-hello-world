@@ -23,8 +23,13 @@ package com.github.jinahya.hello;
 import dagger.Module;
 import dagger.Provides;
 import jakarta.inject.Named;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Module
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
+@Slf4j
 class HelloWorldDiDaggerModule {
 
     @Named(HelloWorldDiConstants._NAME_DEMO)

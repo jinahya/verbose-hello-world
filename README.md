@@ -83,6 +83,12 @@ See [dockerhub/maven](https://hub.docker.com/_/maven) for available tags.
 
 ### Python
 
+#### docs.python.org
+
+* [`base64` — Base16, Base32, Base64, Base85 Data Encodings](https://docs.python.org/3/library/base64.html)
+
+* [`hashlib` — Secure hashes and message digests](https://docs.python.org/3/library/hashlib.html)
+
 #### pymotw.com
 
 * [abc — Abstract Base Classes](https://pymotw.com/3/abc/)
