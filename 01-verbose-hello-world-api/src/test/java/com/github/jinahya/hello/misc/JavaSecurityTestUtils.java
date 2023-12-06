@@ -37,7 +37,7 @@ import java.util.stream.Stream;
  */
 @DisplayName("java.security")
 @Slf4j
-final class JavaSecurityTest {
+final class JavaSecurityTestUtils {
 
     static {
         Security.addProvider(new BouncyCastleProvider());
@@ -47,7 +47,7 @@ final class JavaSecurityTest {
         return Stream.of(Security.getProviders());
     }
 
-    private JavaSecurityTest() {
+    private JavaSecurityTestUtils() {
         throw new AssertionError("instantiation is not allowed");
     }
 }
