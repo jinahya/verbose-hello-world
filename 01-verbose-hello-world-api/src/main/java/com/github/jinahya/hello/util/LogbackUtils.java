@@ -68,17 +68,20 @@ final class LogbackUtils {
         }
     }
 
-    private static Object toLogbackLevel_(final String name) throws ReflectiveOperationException {
+    private static Object toLogbackLevel_(final String name)
+            throws ReflectiveOperationException {
         Objects.requireNonNull(name, "name is null");
         return LEVEL_CLASS__TO_LEVEL_.invoke(null, name);
     }
 
-    static Object toLogbackLevel(final Level level) throws ReflectiveOperationException {
+    static Object toLogbackLevel(final Level level)
+            throws ReflectiveOperationException {
         Objects.requireNonNull(level, "level is null");
         return toLogbackLevel_(level.name());
     }
 
-    static Object getLevel_(final Object logger) throws ReflectiveOperationException {
+    static Object getLevel_(final Object logger)
+            throws ReflectiveOperationException {
         return LOGGER__GET_LEVEL_.invoke(logger);
     }
 

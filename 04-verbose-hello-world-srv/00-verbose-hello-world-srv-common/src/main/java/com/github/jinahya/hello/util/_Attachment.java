@@ -55,7 +55,8 @@ public abstract class _Attachment
      * @throws IllegalStateException if this attachment has been already closed.
      */
     @Override
-    public void close() throws IOException {
+    public void close()
+            throws IOException {
         if (closed.getAndSet(true)) {
             throw new IllegalStateException("already closed");
         }

@@ -41,11 +41,13 @@ final class _CalcUtils {
         return Executors.newFixedThreadPool(_CalcConstants.SERVER_THREADS);
     }
 
-    static AsynchronousChannelGroup newAsynchronousChannelGroupForClient() throws IOException {
+    static AsynchronousChannelGroup newAsynchronousChannelGroupForClient()
+            throws IOException {
         return AsynchronousChannelGroup.withThreadPool(newExecutorForClient());
     }
 
-    static AsynchronousChannelGroup newChannelGroupForServer() throws IOException {
+    static AsynchronousChannelGroup newChannelGroupForServer()
+            throws IOException {
         return AsynchronousChannelGroup.withThreadPool(newExecutorForServer());
     }
 

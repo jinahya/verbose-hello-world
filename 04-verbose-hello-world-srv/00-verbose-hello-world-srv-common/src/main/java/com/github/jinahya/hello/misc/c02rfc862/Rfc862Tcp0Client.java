@@ -34,7 +34,8 @@ import java.util.concurrent.ThreadLocalRandom;
 @Slf4j
 class Rfc862Tcp0Client {
 
-    public static void main(final String... args) throws IOException {
+    public static void main(final String... args)
+            throws IOException {
         try (var client = new Socket()) {
             // -------------------------------------------------------------------------------- bind
             if (ThreadLocalRandom.current().nextBoolean()) {

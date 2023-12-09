@@ -101,7 +101,8 @@ class HelloWorld_65_AppendCompletable_Path_Test
     }
 
     @Test
-    void __() throws IOException {
+    void __()
+            throws IOException {
         // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var path = mock(Path.class);
@@ -136,7 +137,8 @@ class HelloWorld_65_AppendCompletable_Path_Test
      */
     @畵蛇添足
     @Test
-    void __(@TempDir Path tempDir) throws IOException {
+    void __(@TempDir Path tempDir)
+            throws IOException {
         // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var path = createTempFile(tempDir, null, null);

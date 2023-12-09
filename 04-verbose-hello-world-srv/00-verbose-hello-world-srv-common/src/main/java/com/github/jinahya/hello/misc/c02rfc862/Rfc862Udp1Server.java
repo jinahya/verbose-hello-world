@@ -30,7 +30,8 @@ import java.net.DatagramSocket;
 @Slf4j
 class Rfc862Udp1Server {
 
-    public static void main(final String... args) throws Exception {
+    public static void main(final String... args)
+            throws Exception {
         // ---------------------------------------------------------------------------------- create
         try (var server = new DatagramSocket(null)) {
             // -------------------------------------------------------------------------------- bind

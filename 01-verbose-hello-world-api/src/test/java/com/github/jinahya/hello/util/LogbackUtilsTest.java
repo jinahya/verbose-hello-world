@@ -38,7 +38,8 @@ class LogbackUtilsTest {
 
         @EnumSource(Level.class)
         @ParameterizedTest
-        void __(final Level slf4jLevel) throws ReflectiveOperationException {
+        void __(final Level slf4jLevel)
+                throws ReflectiveOperationException {
             final var logbackLevel = LogbackUtils.toLogbackLevel(slf4jLevel);
             assertThat(logbackLevel)
                     .isNotNull()
@@ -52,7 +53,8 @@ class LogbackUtilsTest {
 
         @EnumSource(Level.class)
         @ParameterizedTest
-        void __(final Level slf4jLevel) throws ReflectiveOperationException {
+        void __(final Level slf4jLevel)
+                throws ReflectiveOperationException {
             LogbackUtils.setLevel(log, slf4jLevel);
             assertThat(LogbackUtils.getLevel_(log))
                     .isInstanceOf(LogbackUtils.LEVEL_CLASS);

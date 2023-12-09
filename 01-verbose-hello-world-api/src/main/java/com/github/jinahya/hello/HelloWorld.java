@@ -223,7 +223,8 @@ public interface HelloWorld {
      * @see #print(char[])
      * @see Appendable#append(char)
      */
-    default <T extends Appendable> T append(T appendable) throws IOException {
+    default <T extends Appendable> T append(T appendable)
+            throws IOException {
         if (appendable == null) {
             throw new NullPointerException("appendable is null");
         }
@@ -249,7 +250,8 @@ public interface HelloWorld {
      * @see #set(byte[])
      * @see OutputStream#write(byte[])
      */
-    default <T extends OutputStream> T write(T stream) throws IOException {
+    default <T extends OutputStream> T write(T stream)
+            throws IOException {
         if (stream == null) {
             throw new NullPointerException("stream is null");
         }
@@ -278,7 +280,8 @@ public interface HelloWorld {
      * @see #print(char[])
      * @see Writer#write(char[])
      */
-    default <T extends Writer> T write(T writer) throws IOException {
+    default <T extends Writer> T write(T writer)
+            throws IOException {
         if (writer == null) {
             throw new NullPointerException("writer is null");
         }
@@ -300,7 +303,8 @@ public interface HelloWorld {
      * @see java.io.FileOutputStream#FileOutputStream(File, boolean)
      * @see #write(OutputStream)
      */
-    default <T extends File> T append(T file) throws IOException {
+    default <T extends File> T append(T file)
+            throws IOException {
         if (file == null) {
             throw new NullPointerException("file is null");
         }
@@ -326,7 +330,8 @@ public interface HelloWorld {
      * @see #set(byte[])
      * @see DataOutput#write(byte[])
      */
-    default <T extends DataOutput> T write(T data) throws IOException {
+    default <T extends DataOutput> T write(T data)
+            throws IOException {
         if (data == null) {
             throw new NullPointerException("data is null");
         }
@@ -352,7 +357,8 @@ public interface HelloWorld {
      * @see #set(byte[])
      * @see RandomAccessFile#write(byte[])
      */
-    default <T extends RandomAccessFile> T write(T file) throws IOException {
+    default <T extends RandomAccessFile> T write(T file)
+            throws IOException {
         if (file == null) {
             throw new NullPointerException("file is null");
         }
@@ -374,7 +380,8 @@ public interface HelloWorld {
      * @see Socket#getOutputStream()
      * @see #write(OutputStream)
      */
-    default <T extends Socket> T send(T socket) throws IOException {
+    default <T extends Socket> T send(T socket)
+            throws IOException {
         if (socket == null) {
             throw new NullPointerException("socket is null");
         }
@@ -462,7 +469,8 @@ public interface HelloWorld {
      * @see ByteBuffer#hasRemaining()
      * @see WritableByteChannel#write(ByteBuffer)
      */
-    default <T extends WritableByteChannel> T write(T channel) throws IOException {
+    default <T extends WritableByteChannel> T write(T channel)
+            throws IOException {
         Objects.requireNonNull(channel, "channel is null");
         var buffer = ByteBuffer.allocate(BYTES);
         put(buffer);
@@ -493,7 +501,8 @@ public interface HelloWorld {
      * @see #write(WritableByteChannel)
      * @see FileChannel#force(boolean)
      */
-    default <T extends Path> T append(T path) throws IOException {
+    default <T extends Path> T append(T path)
+            throws IOException {
         Objects.requireNonNull(path, "path is null");
         // TODO: Open a file channel from the path as an appending mode.
         // TODO: Invoke write(channel) method with it.
@@ -780,7 +789,8 @@ public interface HelloWorld {
     @SuppressWarnings({
             "java:S2095" // no try-with-resources
     })
-    default <T extends Path> CompletableFuture<T> appendCompletable(T path) throws IOException {
+    default <T extends Path> CompletableFuture<T> appendCompletable(T path)
+            throws IOException {
         Objects.requireNonNull(path, "path is null");
         var channel = AsynchronousFileChannel.open(
                 path, StandardOpenOption.CREATE, StandardOpenOption.WRITE);

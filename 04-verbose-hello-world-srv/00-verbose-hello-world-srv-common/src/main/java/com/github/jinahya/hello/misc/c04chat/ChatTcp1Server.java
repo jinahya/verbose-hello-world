@@ -122,7 +122,8 @@ class ChatTcp1Server {
         }
     }
 
-    public static void main(String... args) throws Exception {
+    public static void main(String... args)
+            throws Exception {
         var executor = Executors.newCachedThreadPool();
         var futures = new ArrayList<Future<?>>();
         var clients = Collections.synchronizedList(new ArrayList<Socket>());

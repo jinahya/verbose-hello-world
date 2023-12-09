@@ -31,7 +31,8 @@ import java.util.Optional;
 @Slf4j
 class HelloWorldTcp0Client {
 
-    public static void main(String... args) throws Exception {
+    public static void main(String... args)
+            throws Exception {
         InetAddress host;
         try {
             host = InetAddress.getByName(args[0]);

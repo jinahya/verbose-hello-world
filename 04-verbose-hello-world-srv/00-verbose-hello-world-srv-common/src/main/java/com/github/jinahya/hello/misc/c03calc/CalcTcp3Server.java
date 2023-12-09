@@ -124,7 +124,8 @@ class CalcTcp3Server {
         }
     }
 
-    public static void main(final String... args) throws IOException {
+    public static void main(final String... args)
+            throws IOException {
         try (var selector = Selector.open();
              var server = ServerSocketChannel.open()) {
             server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);

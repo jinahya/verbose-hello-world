@@ -151,7 +151,8 @@ class ChatTcp3Server {
     };
     // @formatter:on
 
-    public static void main(String... args) throws Exception {
+    public static void main(String... args)
+            throws Exception {
         var group = AsynchronousChannelGroup.withThreadPool(
                 Executors.newCachedThreadPool());
         try (var server = AsynchronousServerSocketChannel.open();

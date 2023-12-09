@@ -54,7 +54,8 @@ class HelloWorld_02_Append_File_Test
         extends _HelloWorldTest {
 
     @BeforeEach
-    void _beforeEach() throws IOException {
+    void _beforeEach()
+            throws IOException {
         _stub_WriteStream_ToWrite12BytesAndReturnTheStream();
     }
 
@@ -67,7 +68,8 @@ class HelloWorld_02_Append_File_Test
      */
     @DisplayName("(file) -> write(new FileOutputStream(file, true))")
     @Test
-    void _InvokeWriteWithFileOutputStreamWithAppendingMode_() throws IOException {
+    void _InvokeWriteWithFileOutputStreamWithAppendingMode_()
+            throws IOException {
         // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var file = mock(File.class);
@@ -104,7 +106,8 @@ class HelloWorld_02_Append_File_Test
      */
     @DisplayName("(file) -> 12 bytes are appended to the file")
     @Test
-    void _12BytesAppended_(@TempDir File tempDir) throws IOException {
+    void _12BytesAppended_(@TempDir File tempDir)
+            throws IOException {
         // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var file = createTempFile("tmp", null, tempDir);

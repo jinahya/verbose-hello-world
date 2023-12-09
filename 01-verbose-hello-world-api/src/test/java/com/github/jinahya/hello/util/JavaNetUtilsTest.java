@@ -20,7 +20,8 @@ class JavaNetUtilsTest {
 
         @DisplayName("loopbackAddresses")
         @Test
-        void __() throws SocketException {
+        void __()
+                throws SocketException {
             JavaNetUtils.acceptInetAddresses(
                     ni -> {
                         return true;
@@ -41,7 +42,8 @@ class JavaNetUtilsTest {
 
         @DisplayName("loopbackAddresses")
         @Test
-        void __() throws SocketException {
+        void __()
+                throws SocketException {
             JavaNetUtils.loopbackAddressStream(ni -> true).forEach(la -> {
                 log.debug("loopbackAddress: {}, {}", la, la.getClass());
                 assertThat(la.isLoopbackAddress()).isTrue();
@@ -50,7 +52,8 @@ class JavaNetUtilsTest {
 
         @DisplayName("loopbackAddressesIPv4")
         @Test
-        void __ipv4() throws SocketException {
+        void __ipv4()
+                throws SocketException {
             JavaNetUtils.loopbackAddressStreamIPv4(ni -> true).forEach(la -> {
                 log.debug("loopbackAddressIPv4: {}, {}", la, la.getClass());
                 assertThat(la.isLoopbackAddress()).isTrue();
@@ -60,7 +63,8 @@ class JavaNetUtilsTest {
 
         @DisplayName("loopbackAddressesIPv6")
         @Test
-        void __ipv6() throws SocketException {
+        void __ipv6()
+                throws SocketException {
             JavaNetUtils.loopbackAddressStreamIPv6(ni -> true).forEach(la -> {
                 log.debug("loopbackAddressIPv6: {}, {}", la, la.getClass());
                 assertThat(la.isLoopbackAddress()).isTrue();
@@ -78,7 +82,8 @@ class JavaNetUtilsTest {
         class ApplyFirstLoopbackAddressIPv4Test {
 
             @Test
-            void __() throws SocketException {
+            void __()
+                    throws SocketException {
                 JavaNetUtils.applyFirstLoopbackAddressIPv4(ia -> {
                     assertThat(ia).isInstanceOf(Inet4Address.class);
                     return null;
@@ -91,7 +96,8 @@ class JavaNetUtilsTest {
         class ApplyFirstLoopbackAddressIPv6Test {
 
             @Test
-            void __() throws SocketException {
+            void __()
+                    throws SocketException {
                 JavaNetUtils.applyFirstLoopbackAddressIPv6(ia -> {
                     assertThat(ia).isInstanceOf(Inet6Address.class);
                     return null;

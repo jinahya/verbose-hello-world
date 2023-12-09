@@ -42,7 +42,8 @@ import java.util.concurrent.ThreadLocalRandom;
 @Slf4j
 public final class JavaNioFileUtils {
 
-    public static Path fillRandom(final Path path, int bytes, long position) throws IOException {
+    public static Path fillRandom(final Path path, int bytes, long position)
+            throws IOException {
         Objects.requireNonNull(path, "path is null");
         if (position < 0L) {
             throw new IllegalArgumentException("position(" + position + ") < 0L");
@@ -66,7 +67,8 @@ public final class JavaNioFileUtils {
         return path;
     }
 
-    public static Path hexl(final Path path, final OpenOption... options) throws IOException {
+    public static Path hexl(final Path path, final OpenOption... options)
+            throws IOException {
         if (!Files.isRegularFile(Objects.requireNonNull(path, "path is null"))) {
             throw new IllegalArgumentException("not a regular file: " + path);
         }

@@ -39,7 +39,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class StopWatchTest {
 
     @Test
-    void __() throws Exception {
+    void __()
+            throws Exception {
         var count = 128;
         var futures = new ArrayList<Future<?>>(count);
         final var executor = Executors.newFixedThreadPool(count);

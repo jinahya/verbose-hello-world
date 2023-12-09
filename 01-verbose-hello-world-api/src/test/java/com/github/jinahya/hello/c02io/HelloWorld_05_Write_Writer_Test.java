@@ -60,7 +60,8 @@ class HelloWorld_05_Write_Writer_Test
      */
     @DisplayName("(writer)append(writer)")
     @Test
-    void __() throws IOException {
+    void __()
+            throws IOException {
         // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var writer = mock(Writer.class);

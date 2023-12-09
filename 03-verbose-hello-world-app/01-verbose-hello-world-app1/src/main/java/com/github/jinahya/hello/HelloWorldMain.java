@@ -41,7 +41,8 @@ class HelloWorldMain {
      * @see HelloWorld#write(OutputStream)
      * @see System#lineSeparator()
      */
-    public static void main(String... args) throws IOException {
+    public static void main(String... args)
+            throws IOException {
         // TODO: Create a instance of HelloWorldImpl
         // TODO: Print the 'hello, world' to System.out using the instance
         // TODO: Print the System.lineSeparator() to System.out

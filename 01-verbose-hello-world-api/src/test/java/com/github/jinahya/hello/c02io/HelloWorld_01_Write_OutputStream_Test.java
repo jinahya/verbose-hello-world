@@ -65,7 +65,8 @@ class HelloWorld_01_Write_OutputStream_Test
      */
     @DisplayName("(stream) -> stream.write(set(array))")
     @Test
-    void __() throws IOException {
+    void __()
+            throws IOException {
         // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var stream = mock(OutputStream.class);

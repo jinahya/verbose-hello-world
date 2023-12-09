@@ -59,7 +59,8 @@ public final class _TcpUtils {
     }
 
     @SuppressWarnings({"unchecked"})
-    public static <T extends ServerSocketChannel> T logBound(final T server) throws IOException {
+    public static <T extends ServerSocketChannel> T logBound(final T server)
+            throws IOException {
         Objects.requireNonNull(server, "server is null");
         if (ThreadLocalRandom.current().nextBoolean()) {
             return (T) logBound(server.socket()).getChannel();
@@ -85,7 +86,8 @@ public final class _TcpUtils {
     }
 
     @SuppressWarnings({"unchecked"})
-    public static <T extends SocketChannel> T logBound(final T channel) throws IOException {
+    public static <T extends SocketChannel> T logBound(final T channel)
+            throws IOException {
         Objects.requireNonNull(channel, "channel is null");
         if (ThreadLocalRandom.current().nextBoolean()) {
             return (T) logBound(channel.socket()).getChannel();
@@ -110,7 +112,8 @@ public final class _TcpUtils {
     }
 
     @SuppressWarnings({"unchecked"})
-    public static <T extends SocketChannel> T logAccepted(final T client) throws IOException {
+    public static <T extends SocketChannel> T logAccepted(final T client)
+            throws IOException {
         Objects.requireNonNull(client, "client is null");
         if (ThreadLocalRandom.current().nextBoolean()) {
             return (T) logAccepted(client.socket()).getChannel();
@@ -143,7 +146,8 @@ public final class _TcpUtils {
     }
 
     @SuppressWarnings({"unchecked"})
-    public static <T extends SocketChannel> T logConnected(final T client) throws IOException {
+    public static <T extends SocketChannel> T logConnected(final T client)
+            throws IOException {
         Objects.requireNonNull(client, "client is null");
         if (ThreadLocalRandom.current().nextBoolean()) {
             return (T) logConnected(client.socket()).getChannel();

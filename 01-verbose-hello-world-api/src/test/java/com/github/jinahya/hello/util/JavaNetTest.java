@@ -13,7 +13,8 @@ import java.net.Socket;
 class JavaNetTest {
 
     @Test
-    void __() throws IOException {
+    void __()
+            throws IOException {
         final var addrIPv4 = InetAddress.getByName("127.0.0.1");
         log.debug("addrIPv4: {} {}", addrIPv4, addrIPv4.getClass());
         final var addrIPv6 = InetAddress.getByName("::1");

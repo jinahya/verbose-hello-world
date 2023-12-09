@@ -63,7 +63,8 @@ class HelloWorld_41_Append_Path_Test
         extends _HelloWorldTest {
 
     @BeforeEach
-    void _beforeEach() throws IOException {
+    void _beforeEach()
+            throws IOException {
         willAnswer(i -> {
             var channel = i.getArgument(0, WritableByteChannel.class);
             for (var src = allocate(BYTES); src.hasRemaining(); ) {
@@ -77,7 +78,8 @@ class HelloWorld_41_Append_Path_Test
     @DisplayName(
             "(path) -> write(FileChannel.open(path, CREATE, WRITE, APPEND))")
     @Test
-    void __() throws IOException {
+    void __()
+            throws IOException {
         // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var path = mock(Path.class);
@@ -110,7 +112,8 @@ class HelloWorld_41_Append_Path_Test
     @DisplayName("(path) -> 12 bytes are appended")
     @Test
     @畵蛇添足
-    void __(@TempDir Path tempDir) throws IOException {
+    void __(@TempDir Path tempDir)
+            throws IOException {
         // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var path = createTempFile(tempDir, null, null);

@@ -38,7 +38,8 @@ import java.util.concurrent.ThreadLocalRandom;
 })
 class Rfc863Tcp2Server {
 
-    public static void main(final String... args) throws Exception {
+    public static void main(final String... args)
+            throws Exception {
         try (var server = ServerSocketChannel.open()) {
             assert server.isBlocking();
             // -------------------------------------------------------------------------------- bind

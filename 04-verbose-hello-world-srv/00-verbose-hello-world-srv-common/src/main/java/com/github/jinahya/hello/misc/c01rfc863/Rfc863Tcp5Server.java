@@ -60,7 +60,8 @@ class Rfc863Tcp5Server {
         }
     }
 
-    public static void main(final String... args) throws Exception {
+    public static void main(final String... args)
+            throws Exception {
         try (var server = AsynchronousServerSocketChannel.open()) {
             // ------------------------------------------------------------------------------- REUSE
             server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);

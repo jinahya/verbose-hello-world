@@ -77,7 +77,8 @@ class CalcTcpTest {
     @DisplayName("one2one")
     @MethodSource({"getClassesArgumentsList"})
     @ParameterizedTest
-    void __(final Class<?> serverClass, final Class<?> clientClass) throws Exception {
+    void __(final Class<?> serverClass, final Class<?> clientClass)
+            throws Exception {
         log.debug("server: {}", serverClass.getSimpleName());
         log.debug("client: {}", clientClass.getSimpleName());
         serverClass.getClassLoader().setDefaultAssertionStatus(true);
@@ -125,7 +126,8 @@ class CalcTcpTest {
     @DisplayName("one2many")
     @MethodSource({"serverClasses"})
     @ParameterizedTest
-    void __(final Class<?> serverClass) throws Exception {
+    void __(final Class<?> serverClass)
+            throws Exception {
         log.debug("server: {}", serverClass.getSimpleName());
         serverClass.getClassLoader().setDefaultAssertionStatus(true);
         final var executor = Executors.newFixedThreadPool(CLIENT_CLASSES.size() + 1);

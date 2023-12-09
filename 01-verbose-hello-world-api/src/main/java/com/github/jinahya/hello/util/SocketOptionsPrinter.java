@@ -79,7 +79,8 @@ class SocketOptionsPrinter {
         print(clazz, () -> clazz.cast(initializer.call()));
     }
 
-    public static void main(String... args) throws Exception {
+    public static void main(String... args)
+            throws Exception {
         for (final Map.Entry<Class<?>, Callable<?>> pair : CLASSES_AND_INITIALIZERS.entrySet()) {
             printHelper(pair.getKey().asSubclass(Closeable.class), pair.getValue());
         }

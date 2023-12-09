@@ -35,7 +35,8 @@ import java.util.concurrent.ThreadLocalRandom;
 @Slf4j
 class Rfc862Tcp2Client {
 
-    public static void main(final String... args) throws Exception {
+    public static void main(final String... args)
+            throws Exception {
         try (var client = SocketChannel.open()) {
             assert client.isBlocking(); // ----------------------------------------------------- !!!
             // -------------------------------------------------------------------------------- bind

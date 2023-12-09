@@ -32,7 +32,8 @@ import java.net.DatagramSocket;
 @Slf4j
 class Rfc863Udp1Server {
 
-    public static void main(final String... args) throws IOException {
+    public static void main(final String... args)
+            throws IOException {
         try (var server = new DatagramSocket(null)) {
             // -------------------------------------------------------------------------------- bind
             server.bind(_Rfc863Constants.ADDR);

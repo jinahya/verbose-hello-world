@@ -49,7 +49,8 @@ abstract class _AbstractViewer {
         System.setProperty("apple.laf.useScreenMenuBar", "true");
     }
 
-    static boolean init(final String[] args, final Class<?> alternative) throws Exception {
+    static boolean init(final String[] args, final Class<?> alternative)
+            throws Exception {
         if (GraphicsEnvironment.isHeadless()) {
             if (alternative != null) {
                 alternative.getMethod("main", String[].class).invoke(null, (Object) args);

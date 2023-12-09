@@ -99,7 +99,8 @@ class HelloWorldServerUdp
     }
 
     @Override
-    protected void closeInternal() throws IOException {
+    protected void closeInternal()
+            throws IOException {
         if (server != null && server.isOpen()) {
             server.close();
             log.debug("[S] server closed");

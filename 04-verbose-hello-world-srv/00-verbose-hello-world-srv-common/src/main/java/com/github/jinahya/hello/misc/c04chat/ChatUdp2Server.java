@@ -43,7 +43,8 @@ class ChatUdp2Server {
 
     static final Duration DURATION_TO_KEEP_ADDRESSES = ChatUdp1Server.DURATION_TO_KEEP_ADDRESSES;
 
-    public static void main(String... args) throws Exception {
+    public static void main(String... args)
+            throws Exception {
         try (var selector = Selector.open();
              var server = DatagramChannel.open()) {
             log.debug("[S]: SO_RCVBUF: {}",

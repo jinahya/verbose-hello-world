@@ -40,7 +40,8 @@ public class HelloWorldMain {
      * @param args an array of command line arguments
      * @throws IOException if an I/O error occurs.
      */
-    public static void main(String... args) throws IOException {
+    public static void main(String... args)
+            throws IOException {
         var injector = Guice.createInjector(new HelloWorldModule());
         // TODO: Create a new instance of this class
         // TODO: Inject values to the instance using the injector

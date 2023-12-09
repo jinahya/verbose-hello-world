@@ -38,7 +38,8 @@ import java.util.concurrent.ThreadLocalRandom;
 @Slf4j
 class Rfc862Udp2Client {
 
-    public static void main(final String... args) throws IOException {
+    public static void main(final String... args)
+            throws IOException {
         // ------------------------------------------------------------------------------------ open
         try (var selector = Selector.open();
              var client = DatagramChannel.open()) {

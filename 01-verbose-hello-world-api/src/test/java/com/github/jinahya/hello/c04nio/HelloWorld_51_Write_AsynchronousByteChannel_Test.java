@@ -68,7 +68,8 @@ class HelloWorld_51_Write_AsynchronousByteChannel_Test
      */
     @DisplayName("(channel) -> put(buffer[12]) -> channel.write(buffer)+")
     @Test
-    void __() throws InterruptedException, ExecutionException {
+    void __()
+            throws InterruptedException, ExecutionException {
         // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var channel = mock(AsynchronousByteChannel.class);

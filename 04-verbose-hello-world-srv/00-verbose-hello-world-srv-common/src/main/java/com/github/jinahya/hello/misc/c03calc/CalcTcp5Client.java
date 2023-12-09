@@ -81,7 +81,8 @@ class CalcTcp5Client {
     @SuppressWarnings({
             "java:S2095" // use try-with-resources fo CalcTcp5Attachment
     })
-    private static void sub(final AsynchronousChannelGroup group) throws IOException {
+    private static void sub(final AsynchronousChannelGroup group)
+            throws IOException {
         final var latch = new CountDownLatch(_CalcConstants.TOTAL_REQUESTS);
         for (var c = 0; c < _CalcConstants.TOTAL_REQUESTS; c++) {
             CalcTcp5Attachment
@@ -99,7 +100,8 @@ class CalcTcp5Client {
         group.shutdown();
     }
 
-    public static void main(final String... args) throws IOException {
+    public static void main(final String... args)
+            throws IOException {
         sub(_CalcUtils.newChannelGroupForServer());
     }
 }

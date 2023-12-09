@@ -41,7 +41,8 @@ class HelloWorldServerTcp1
         implements HelloWorldServer {
 
     @Override
-    public synchronized void open(SocketAddress endpoint, Path dir) throws IOException {
+    public synchronized void open(SocketAddress endpoint, Path dir)
+            throws IOException {
         Objects.requireNonNull(endpoint, "endpoint is null");
         if (dir != null && !Files.isDirectory(dir)) {
             throw new IllegalArgumentException("not a directory: " + dir);
@@ -86,7 +87,8 @@ class HelloWorldServerTcp1
     }
 
     @Override
-    public synchronized void close() throws IOException {
+    public synchronized void close()
+            throws IOException {
         if (server != null && !server.isClosed()) {
             server.close();
             log.debug("[S] server closed");

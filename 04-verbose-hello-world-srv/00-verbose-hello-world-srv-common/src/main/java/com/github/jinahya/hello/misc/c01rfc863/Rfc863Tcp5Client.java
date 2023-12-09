@@ -39,7 +39,8 @@ import static com.github.jinahya.hello.misc.c01rfc863._Rfc863Utils.logDigest;
 @Slf4j
 class Rfc863Tcp5Client {
 
-    public static void main(final String... args) throws Exception {
+    public static void main(final String... args)
+            throws Exception {
         try (var client = AsynchronousSocketChannel.open()) {
             // -------------------------------------------------------------------------------- BIND
             if (ThreadLocalRandom.current().nextBoolean()) {

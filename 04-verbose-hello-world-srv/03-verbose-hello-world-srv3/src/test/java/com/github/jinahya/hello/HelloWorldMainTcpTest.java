@@ -32,7 +32,8 @@ import java.util.concurrent.ExecutionException;
 class HelloWorldMainTcpTest {
 
     @Test
-    void main__() throws IOException, InterruptedException, ExecutionException {
+    void main__()
+            throws IOException, InterruptedException, ExecutionException {
         HelloWorldServerUtils.submitAndWriteQuit(() -> {
             var host = InetAddress.getLoopbackAddress();
             HelloWorldMainTcp.main("0", host.getHostAddress());

@@ -100,7 +100,8 @@ class HelloWorld_64_WriteCompletable_AsynchronousFileChannel_Test
      */
     @DisplayName("(channel, position)completed<channel>")
     @Test
-    void _Completed_() throws CancellationException, CompletionException {
+    void _Completed_()
+            throws CancellationException, CompletionException {
         // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var channel = mock(AsynchronousFileChannel.class);

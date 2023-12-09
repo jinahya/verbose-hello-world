@@ -20,9 +20,16 @@ package com.github.jinahya.hello.util;
  * #L%
  */
 
+import java.io.IOException;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.channels.FileChannel;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.Objects;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.IntFunction;
@@ -175,6 +182,39 @@ public final class JavaNioUtils {
         );
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
+    public static Path writeSome(final Path path)
+            throws IOException {
+        if (!Files.isRegularFile(Objects.requireNonNull(path, "path is null"))) {
+            throw new IllegalArgumentException("not a regular path: " + path);
+        }
+        try (var channel = FileChannel.open(path, StandardOpenOption.WRITE)) {
+            final var buffer = ByteBuffer.allocate(1024);
+            assert buffer.position() == 0;
+            assert buffer.limit() == buffer.capacity();
+            assert buffer.order() == ByteOrder.BIG_ENDIAN;
+            assert buffer.hasArray();
+            assert buffer.arrayOffset() == 0;
+            for (var bytes = ThreadLocalRandom.current().nextInt(8192); bytes > 0; ) {
+                ThreadLocalRandom.current().nextBytes(buffer.clear().array());
+                buffer.limit(Math.min(buffer.remaining(), bytes));
+                bytes -= channel.write(buffer);
+            }
+            channel.force(false);
+        }
+        return path;
+    }
+
+    public static Path createTempFileInAndWriteSome(final Path dir)
+            throws IOException {
+        if (!Files.isDirectory(Objects.requireNonNull(dir, "dir is null"))) {
+            throw new IllegalArgumentException("not a directory: " + dir);
+        }
+        final var path = Files.createTempFile(dir, null, null);
+        return writeSome(path);
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
     private JavaNioUtils() {
         throw new AssertionError("instantiation is not allowed");
     }

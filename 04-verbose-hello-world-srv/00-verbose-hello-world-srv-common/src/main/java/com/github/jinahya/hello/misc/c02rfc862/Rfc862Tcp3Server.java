@@ -34,7 +34,8 @@ import java.nio.channels.SocketChannel;
 @Slf4j
 class Rfc862Tcp3Server {
 
-    public static void main(final String... args) throws Exception {
+    public static void main(final String... args)
+            throws Exception {
         try (var selector = Selector.open();
              var server = ServerSocketChannel.open()) {
             // -------------------------------------------------------------------------------- bind

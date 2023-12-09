@@ -156,7 +156,8 @@ final class _CalcMessage {
      * @return this message.
      * @throws IOException if an I/O error occurs.
      */
-    _CalcMessage sendRequest(final OutputStream stream) throws IOException {
+    _CalcMessage sendRequest(final OutputStream stream)
+            throws IOException {
         Objects.requireNonNull(stream, "stream is null");
         stream.write(
                 buffer.array(), // <b>
@@ -174,7 +175,8 @@ final class _CalcMessage {
      * @return this message.
      * @throws IOException if an I/O error occurs.
      */
-    _CalcMessage receiveResult(final InputStream stream) throws IOException {
+    _CalcMessage receiveResult(final InputStream stream)
+            throws IOException {
         Objects.requireNonNull(stream, "stream is null");
         final var r = stream.readNBytes(
                 buffer.array(), // <b>
@@ -195,7 +197,8 @@ final class _CalcMessage {
      * @return this message.
      * @throws IOException if an I/O error occurs.
      */
-    _CalcMessage receiveRequest(final InputStream stream) throws IOException {
+    _CalcMessage receiveRequest(final InputStream stream)
+            throws IOException {
         Objects.requireNonNull(stream, "stream is null");
         final var r = stream.readNBytes(
                 buffer.array(), // <b>
@@ -215,7 +218,8 @@ final class _CalcMessage {
      * @return this message.
      * @throws IOException if an I/O error occurs.
      */
-    _CalcMessage sendResult(final OutputStream stream) throws IOException {
+    _CalcMessage sendResult(final OutputStream stream)
+            throws IOException {
         Objects.requireNonNull(stream, "stream is null");
         stream.write(
                 buffer.array(), // <b>
@@ -227,7 +231,8 @@ final class _CalcMessage {
     }
 
     // ---------------------------------------------------------------------------- tcp/non-blocking
-    _CalcMessage write(final WritableByteChannel channel) throws IOException {
+    _CalcMessage write(final WritableByteChannel channel)
+            throws IOException {
         Objects.requireNonNull(channel, "channel is null");
         if (!buffer.hasRemaining()) {
             throw new IllegalStateException("buffer doesn't have remaining");
@@ -237,7 +242,8 @@ final class _CalcMessage {
         return this;
     }
 
-    _CalcMessage read(final ReadableByteChannel channel) throws IOException {
+    _CalcMessage read(final ReadableByteChannel channel)
+            throws IOException {
         Objects.requireNonNull(channel, "channel is null");
         if (!buffer.hasRemaining()) {
             throw new IllegalStateException("buffer doesn't have remaining");
@@ -274,13 +280,15 @@ final class _CalcMessage {
     }
 
     // -------------------------------------------------------------------------------- udp/blocking
-    _CalcMessage sendRequest(final DatagramSocket socket) throws IOException {
+    _CalcMessage sendRequest(final DatagramSocket socket)
+            throws IOException {
         Objects.requireNonNull(socket, "socket is null");
         socket.send(new DatagramPacket(buffer.array(), LENGTH_REQUEST, _CalcConstants.ADDR));
         return this;
     }
 
-    _CalcMessage receiveResult(final DatagramSocket socket) throws IOException {
+    _CalcMessage receiveResult(final DatagramSocket socket)
+            throws IOException {
         Objects.requireNonNull(socket, "socket is null");
         final var packet = new DatagramPacket(buffer.array(), LENGTH_REQUEST, LENGTH_RESPONSE);
         socket.receive(packet);
@@ -288,7 +296,8 @@ final class _CalcMessage {
         return this;
     }
 
-    _CalcMessage receiveRequest(final DatagramSocket socket) throws IOException {
+    _CalcMessage receiveRequest(final DatagramSocket socket)
+            throws IOException {
         Objects.requireNonNull(socket, "socket is null");
         final var packet = new DatagramPacket(buffer.array(), 0, LENGTH_REQUEST);
         socket.receive(packet);
@@ -296,7 +305,8 @@ final class _CalcMessage {
         return this;
     }
 
-    _CalcMessage sendResult(final DatagramSocket socket) throws IOException {
+    _CalcMessage sendResult(final DatagramSocket socket)
+            throws IOException {
         Objects.requireNonNull(socket, "socket is null");
         assert address != null;
         socket.send(new DatagramPacket(buffer.array(), LENGTH_REQUEST, LENGTH_RESPONSE, address));
@@ -304,26 +314,30 @@ final class _CalcMessage {
     }
 
     // ---------------------------------------------------------------------------- udp/non-blocking
-    _CalcMessage sendRequest(final DatagramChannel channel) throws IOException {
+    _CalcMessage sendRequest(final DatagramChannel channel)
+            throws IOException {
         Objects.requireNonNull(channel, "channel is null");
         final var w = channel.send(buffer, _CalcConstants.ADDR);
         assert w == LENGTH_REQUEST;
         return this;
     }
 
-    _CalcMessage receiveResult(final DatagramChannel channel) throws IOException {
+    _CalcMessage receiveResult(final DatagramChannel channel)
+            throws IOException {
         Objects.requireNonNull(channel, "channel is null");
         address = channel.receive(buffer);
         return this;
     }
 
-    _CalcMessage receiveRequest(final DatagramChannel channel) throws IOException {
+    _CalcMessage receiveRequest(final DatagramChannel channel)
+            throws IOException {
         Objects.requireNonNull(channel, "channel is null");
         address = channel.receive(buffer);
         return this;
     }
 
-    _CalcMessage sendResult(final DatagramChannel channel) throws IOException {
+    _CalcMessage sendResult(final DatagramChannel channel)
+            throws IOException {
         Objects.requireNonNull(channel, "channel is null");
         if (address == null) {
             throw new IllegalStateException("address is currently not set");

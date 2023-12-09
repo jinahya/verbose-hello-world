@@ -36,7 +36,8 @@ import java.util.concurrent.ThreadLocalRandom;
 @Slf4j
 class Rfc863Udp3Client {
 
-    public static void main(final String... args) throws Exception {
+    public static void main(final String... args)
+            throws Exception {
         try (var selector = Selector.open();
              var client = DatagramChannel.open()) {
             // -------------------------------------------------------------------------------- bind

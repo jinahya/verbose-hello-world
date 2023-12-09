@@ -47,7 +47,8 @@ class SocketOptionsViewer
         System.setProperty("apple.awt.application.name", NAME);
     }
 
-    public static void main(final String... args) throws Exception {
+    public static void main(final String... args)
+            throws Exception {
         if (!init(args, SocketOptionsPrinter.class)) {
             return;
         }

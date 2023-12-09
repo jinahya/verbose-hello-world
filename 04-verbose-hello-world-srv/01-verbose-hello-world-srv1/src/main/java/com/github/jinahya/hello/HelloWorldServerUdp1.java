@@ -97,7 +97,8 @@ class HelloWorldServerUdp1
     }
 
     @Override
-    public synchronized void close() throws IOException {
+    public synchronized void close()
+            throws IOException {
         if (socket != null && !socket.isClosed()) {
             socket.close();
             log.debug("[S] server closed");

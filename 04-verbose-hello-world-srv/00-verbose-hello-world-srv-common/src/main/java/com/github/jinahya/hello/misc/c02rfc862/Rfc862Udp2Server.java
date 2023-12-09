@@ -35,7 +35,8 @@ import java.nio.channels.Selector;
 @Slf4j
 class Rfc862Udp2Server {
 
-    public static void main(final String... args) throws Exception {
+    public static void main(final String... args)
+            throws Exception {
         // ------------------------------------------------------------------------------------ open
         try (var selector = Selector.open();
              var server = DatagramChannel.open()) {

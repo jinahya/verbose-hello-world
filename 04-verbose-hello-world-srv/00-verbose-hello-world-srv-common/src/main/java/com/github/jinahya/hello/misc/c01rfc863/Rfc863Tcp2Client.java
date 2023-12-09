@@ -38,7 +38,8 @@ import java.util.concurrent.ThreadLocalRandom;
 })
 class Rfc863Tcp2Client {
 
-    public static void main(final String... args) throws IOException {
+    public static void main(final String... args)
+            throws IOException {
         try (var client = SocketChannel.open()) {
             // ---------------------------------------------------------------------------- blocking
             assert client.isBlocking();

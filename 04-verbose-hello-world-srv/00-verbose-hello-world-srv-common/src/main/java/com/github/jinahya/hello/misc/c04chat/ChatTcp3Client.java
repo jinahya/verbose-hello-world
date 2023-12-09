@@ -104,7 +104,8 @@ class ChatTcp3Client {
     };
     // @formatter:on
 
-    public static void main(String... args) throws Exception {
+    public static void main(String... args)
+            throws Exception {
         InetAddress addr;
         try {
             addr = InetAddress.getByName(args[0]);

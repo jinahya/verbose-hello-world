@@ -36,7 +36,8 @@ import java.util.concurrent.ThreadLocalRandom;
 @Slf4j
 class Rfc862Tcp3Client {
 
-    public static void main(final String... args) throws Exception {
+    public static void main(final String... args)
+            throws Exception {
         try (var selector = Selector.open();
              var client = SocketChannel.open()) {
             // -------------------------------------------------------------- configure-non-blocking

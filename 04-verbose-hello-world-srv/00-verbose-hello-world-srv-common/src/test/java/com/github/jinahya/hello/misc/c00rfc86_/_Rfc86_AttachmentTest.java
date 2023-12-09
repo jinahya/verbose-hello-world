@@ -38,7 +38,8 @@ public abstract class _Rfc86_AttachmentTest<T extends _Rfc86_Attachment> {
     }
 
     @Test
-    void decreaseBytes__() throws IOException {
+    void decreaseBytes__()
+            throws IOException {
         applyNewInstance(
                 i -> {
                     final var bytes = ThreadLocalRandom.current().nextInt() >>> 24;
@@ -53,7 +54,8 @@ public abstract class _Rfc86_AttachmentTest<T extends _Rfc86_Attachment> {
     }
 
     @Test
-    void increaseBytes__() throws IOException {
+    void increaseBytes__()
+            throws IOException {
         applyNewInstance(
                 i -> {
                     final var bytes = i.getBytes();

@@ -61,7 +61,8 @@ public final class _UdpUtils {
     }
 
     @SuppressWarnings({"unchecked"})
-    public static <T extends DatagramChannel> T logBound(final T channel) throws IOException {
+    public static <T extends DatagramChannel> T logBound(final T channel)
+            throws IOException {
         Objects.requireNonNull(channel, "channel is null");
         if (ThreadLocalRandom.current().nextBoolean()) {
             return (T) logBound(channel.socket()).getChannel();
@@ -78,7 +79,8 @@ public final class _UdpUtils {
     }
 
     @SuppressWarnings({"unchecked"})
-    public static <T extends DatagramChannel> T logConnected(final T channel) throws IOException {
+    public static <T extends DatagramChannel> T logConnected(final T channel)
+            throws IOException {
         Objects.requireNonNull(channel, "channel is null");
         if (ThreadLocalRandom.current().nextBoolean()) {
             return (T) logConnected(channel.socket()).getChannel();

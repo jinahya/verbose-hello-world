@@ -33,14 +33,16 @@ import java.util.Objects;
 @Slf4j
 final class Rfc862Udp2ServerAttachment {
 
-    Rfc862Udp2ServerAttachment(final SelectionKey key) throws IOException {
+    Rfc862Udp2ServerAttachment(final SelectionKey key)
+            throws IOException {
         super();
         this.key = Objects.requireNonNull(key, "clientKey is null");
         this.channel = (DatagramChannel) this.key.channel();
         buffer = ByteBuffer.allocate(this.channel.getOption(StandardSocketOptions.SO_RCVBUF));
     }
 
-    SocketAddress receive() throws IOException {
+    SocketAddress receive()
+            throws IOException {
         assert key.isValid();
         assert key.isReadable();
         address = channel.receive(buffer);
@@ -51,7 +53,8 @@ final class Rfc862Udp2ServerAttachment {
         return address;
     }
 
-    int send() throws IOException {
+    int send()
+            throws IOException {
         assert key.isValid();
         assert key.isWritable();
         buffer.flip();

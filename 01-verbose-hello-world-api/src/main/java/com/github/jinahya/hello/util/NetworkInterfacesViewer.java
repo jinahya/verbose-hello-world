@@ -79,7 +79,8 @@ class NetworkInterfacesViewer
         }
     }
 
-    public static void main(final String... args) throws Exception {
+    public static void main(final String... args)
+            throws Exception {
         if (!init(args, NetworkInterfacesPrinter.class)) {
             return;
         }

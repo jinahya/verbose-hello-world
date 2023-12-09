@@ -64,7 +64,8 @@ abstract class _Rfc862Attachment
         }
 
         @Override
-        public void close() throws IOException {
+        public void close()
+                throws IOException {
             _Rfc862Utils.logServerBytes(getBytes());
             super.close();
         }
@@ -92,7 +93,8 @@ abstract class _Rfc862Attachment
     // --------------------------------------------------------------------------- java.io.Closeable
 
     @Override
-    public void close() throws IOException {
+    public void close()
+            throws IOException {
         logDigest();
         super.close();
     }

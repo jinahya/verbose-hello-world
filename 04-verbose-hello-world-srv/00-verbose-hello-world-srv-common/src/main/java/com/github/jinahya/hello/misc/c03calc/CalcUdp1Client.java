@@ -28,7 +28,8 @@ import java.net.DatagramSocket;
 @Slf4j
 class CalcUdp1Client {
 
-    public static void main(final String... args) throws IOException {
+    public static void main(final String... args)
+            throws IOException {
         try (var client = new DatagramSocket(null)) {
             for (var c = 0; c < _CalcConstants.TOTAL_REQUESTS; c++) {
                 _CalcMessage.newInstanceForClient()

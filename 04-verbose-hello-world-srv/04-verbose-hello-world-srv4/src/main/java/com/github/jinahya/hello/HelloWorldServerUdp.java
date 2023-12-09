@@ -47,7 +47,8 @@ import static java.nio.channels.SelectionKey.OP_WRITE;
 class HelloWorldServerUdp
         extends AbstractHelloWorldServer {
 
-    private void handle(Set<SelectionKey> keys) throws IOException {
+    private void handle(Set<SelectionKey> keys)
+            throws IOException {
         for (var key : keys) {
             var channel = (DatagramChannel) key.channel();
             if (key.isReadable()) {
@@ -77,7 +78,8 @@ class HelloWorldServerUdp
     }
 
     @Override
-    protected void openInternal(SocketAddress endpoint, Path dir) throws IOException {
+    protected void openInternal(SocketAddress endpoint, Path dir)
+            throws IOException {
         var server = DatagramChannel.open();
         if (endpoint instanceof InetSocketAddress &&
             ((InetSocketAddress) endpoint).getPort() > 0) {
@@ -116,7 +118,8 @@ class HelloWorldServerUdp
     }
 
     @Override
-    protected void closeInternal() throws IOException {
+    protected void closeInternal()
+            throws IOException {
         if (thread == null || !thread.isAlive()) {
             return;
         }

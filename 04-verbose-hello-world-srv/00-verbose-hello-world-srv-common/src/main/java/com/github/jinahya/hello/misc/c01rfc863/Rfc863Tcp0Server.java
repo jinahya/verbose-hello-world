@@ -35,7 +35,8 @@ import java.util.concurrent.ThreadLocalRandom;
 })
 class Rfc863Tcp0Server {
 
-    public static void main(final String... args) throws Exception {
+    public static void main(final String... args)
+            throws Exception {
         try (var server = new ServerSocket()) {
             // ------------------------------------------------------------------------------- REUSE
             if (ThreadLocalRandom.current().nextBoolean()) {

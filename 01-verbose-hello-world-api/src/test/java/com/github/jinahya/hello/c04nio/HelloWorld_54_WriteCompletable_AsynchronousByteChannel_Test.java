@@ -96,7 +96,8 @@ class HelloWorld_54_WriteCompletable_AsynchronousByteChannel_Test
      */
     @DisplayName("(channel)completed<channel>")
     @Test
-    void _Completed_() throws Exception {
+    void _Completed_()
+            throws Exception {
         // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var channel = _stub_ToComplete(mock(AsynchronousByteChannel.class));

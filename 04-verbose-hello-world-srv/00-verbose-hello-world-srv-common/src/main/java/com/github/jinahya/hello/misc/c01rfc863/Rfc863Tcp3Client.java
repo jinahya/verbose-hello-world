@@ -37,7 +37,8 @@ import java.util.concurrent.ThreadLocalRandom;
 @Slf4j
 class Rfc863Tcp3Client {
 
-    public static void main(final String... args) throws IOException {
+    public static void main(final String... args)
+            throws IOException {
         try (var selector = Selector.open();
              var client = SocketChannel.open()) {
             // -------------------------------------------------------------------------------- bind

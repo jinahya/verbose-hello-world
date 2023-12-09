@@ -62,7 +62,8 @@ class HelloWorld_09_Append_Appendable_Test
     @DisplayName(
             "(appendable)appendable <- print(char[12]).forEach(appendable::append")
     @Test
-    void __() throws IOException {
+    void __()
+            throws IOException {
         // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var appendable = mock(Appendable.class);

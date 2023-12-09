@@ -74,7 +74,8 @@ class HelloWorld_33_Write_WritableByteChannel_Test
      */
     @DisplayName("(channel) -> channel.write(put(buffer[12]))+")
     @Test
-    void __() throws IOException {
+    void __()
+            throws IOException {
         // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var channel = mock(WritableByteChannel.class);               // <1>
@@ -102,7 +103,8 @@ class HelloWorld_33_Write_WritableByteChannel_Test
     @org.junit.jupiter.api.Disabled("not implemented yet")
     // TODO: remove when implemented
     @Test
-    void _ReadByteArrayInputStream_WriteByteArrayOutputStream() throws IOException {
+    void _ReadByteArrayInputStream_WriteByteArrayOutputStream()
+            throws IOException {
         var service = serviceInstance();
         var output = new ByteArrayOutputStream(BYTES);
         var writable = service.write(newChannel(output));
@@ -118,7 +120,8 @@ class HelloWorld_33_Write_WritableByteChannel_Test
     @org.junit.jupiter.api.Disabled("not implemented yet")
     // TODO: remove when implemented
     @Test
-    void _ReadPipeSource_WritePipeSink() throws IOException, InterruptedException {
+    void _ReadPipeSource_WritePipeSink()
+            throws IOException, InterruptedException {
         var service = serviceInstance();
         var pipe = Pipe.open();
         var thread = new Thread(() -> {

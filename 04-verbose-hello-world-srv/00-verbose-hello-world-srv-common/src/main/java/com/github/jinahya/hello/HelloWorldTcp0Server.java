@@ -35,7 +35,8 @@ class HelloWorldTcp0Server {
 
     private static final int BACKLOG = 50; // default
 
-    public static void main(String... args) throws Exception {
+    public static void main(String... args)
+            throws Exception {
         InetAddress host;
         try {
             host = InetAddress.getByName(args[0]);

@@ -39,7 +39,8 @@ public class HelloWorldMain {
      * @see java.util.ServiceLoader#load(Class)
      * @see System#lineSeparator()
      */
-    public static void main(String... args) throws IOException {
+    public static void main(String... args)
+            throws IOException {
         // TODO: Load a service of HelloWorld.class
         // TODO: Print the 'hello, world' to System.out using the service
         // TODO: Print a system-specific line separator to System.out

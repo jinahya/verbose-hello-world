@@ -37,7 +37,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class HelloWorldServerTcpTest {
 
     @Test
-    void test(@TempDir Path tempDir) throws IOException, InterruptedException {
+    void test(@TempDir Path tempDir)
+            throws IOException, InterruptedException {
         var host = InetAddress.getLoopbackAddress();
         var dir = Files.createTempDirectory(tempDir, null);
         var thread = HelloWorldServerUtils.startReadingPortNumber(dir, p -> {

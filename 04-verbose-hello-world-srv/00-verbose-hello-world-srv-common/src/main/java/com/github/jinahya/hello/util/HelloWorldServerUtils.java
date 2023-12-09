@@ -131,7 +131,8 @@ public final class HelloWorldServerUtils {
      * @return a socket address to bind.
      * @throws UnknownHostException if {@code args[1]} is not known as an address.
      */
-    public static SocketAddress parseAddr(String... args) throws UnknownHostException {
+    public static SocketAddress parseAddr(String... args)
+            throws UnknownHostException {
         Objects.requireNonNull(args, "args is null");
         return parseAddr(args, (p, h) -> new InetSocketAddress(h, p));
     }
@@ -143,7 +144,8 @@ public final class HelloWorldServerUtils {
      */
     // https://stackoverflow.com/q/49520625/330457
     // https://stackoverflow.com/q/6008177/330457
-    public static void readQuitFromStandardInput() throws IOException {
+    public static void readQuitFromStandardInput()
+            throws IOException {
         var reader = new BufferedReader(new InputStreamReader(System.in));
         for (String line; (line = reader.readLine()) != null; ) {
             if (line.strip().equalsIgnoreCase("quit")) {
@@ -492,7 +494,8 @@ public final class HelloWorldServerUtils {
      * @throws InterruptedException if the current thread is interrupted while waiting
      * @see #await(CountDownLatch, long, TimeUnit)
      */
-    public static boolean await(CountDownLatch latch) throws InterruptedException {
+    public static boolean await(CountDownLatch latch)
+            throws InterruptedException {
         return await(latch, 1L, TimeUnit.MINUTES);
     }
 

@@ -38,7 +38,8 @@ class UdpTest {
             - Rfc791Constants.MIN_HEADER_BYTES;
 
     @Test
-    void __DatagramSocket() throws Exception {
+    void __DatagramSocket()
+            throws Exception {
         try (DatagramSocket socket = new DatagramSocket()) {
             var sendBufferSize = socket.getSendBufferSize();
             log.debug("sendBufferSize: {}", sendBufferSize);
@@ -50,7 +51,8 @@ class UdpTest {
     }
 
     @Test
-    void __DatagramChanel() throws Exception {
+    void __DatagramChanel()
+            throws Exception {
         try (DatagramChannel channel = DatagramChannel.open()) {
             var sendBufferSize = channel.getOption(
                     StandardSocketOptions.SO_SNDBUF);

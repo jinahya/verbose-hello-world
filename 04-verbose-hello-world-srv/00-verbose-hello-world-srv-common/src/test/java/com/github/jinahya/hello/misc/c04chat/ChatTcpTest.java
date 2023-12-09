@@ -55,7 +55,8 @@ class ChatTcpTest {
     @Disabled
     @MethodSource({"getServerClasses"})
     @ParameterizedTest
-    void __(Class<?> serverClass) throws Exception {
+    void __(Class<?> serverClass)
+            throws Exception {
         log.debug(".: {}", new File(".").getCanonicalFile());
         log.debug("server: {}", serverClass.getSimpleName());
         log.debug("server.name: {}", serverClass.getName());

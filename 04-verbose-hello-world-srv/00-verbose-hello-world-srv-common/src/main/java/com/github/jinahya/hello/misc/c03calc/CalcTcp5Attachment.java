@@ -45,7 +45,8 @@ abstract class CalcTcp5Attachment
                                                    final CountDownLatch latch) {
         return new CalcTcp5Attachment(client, _CalcMessage.newInstanceForClient()) {
             @Override
-            public void close() throws IOException {
+            public void close()
+                    throws IOException {
                 latch.countDown();
                 super.close();
             }
@@ -77,7 +78,8 @@ abstract class CalcTcp5Attachment
 
     // --------------------------------------------------------------------------- java.io.Closeable
     @Override
-    public void close() throws IOException {
+    public void close()
+            throws IOException {
         client.close();
         super.close();
     }

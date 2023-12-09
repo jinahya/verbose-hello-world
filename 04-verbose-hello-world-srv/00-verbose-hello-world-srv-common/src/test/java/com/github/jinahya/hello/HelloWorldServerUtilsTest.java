@@ -58,7 +58,8 @@ class HelloWorldServerUtilsTest {
     class PortTest {
 
         @Test
-        void writePort(@TempDir Path tempDir) throws IOException {
+        void writePort(@TempDir Path tempDir)
+                throws IOException {
             var dir = Files.createTempDirectory(tempDir, null);
             var port = ThreadLocalRandom.current().nextInt(1, 65536);
             HelloWorldServerUtils.writePortNumber(dir, port);

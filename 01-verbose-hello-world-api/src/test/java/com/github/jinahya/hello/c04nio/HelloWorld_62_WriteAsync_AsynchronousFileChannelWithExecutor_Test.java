@@ -57,7 +57,8 @@ class HelloWorld_62_WriteAsync_AsynchronousFileChannelWithExecutor_Test
         extends _HelloWorldTest {
 
     @BeforeEach
-    void _beforeEach() throws InterruptedException, ExecutionException {
+    void _beforeEach()
+            throws InterruptedException, ExecutionException {
         willAnswer(i -> {
             var channel = i.getArgument(0, AsynchronousFileChannel.class);
             var position = i.getArgument(1, Long.class);
@@ -80,7 +81,8 @@ class HelloWorld_62_WriteAsync_AsynchronousFileChannelWithExecutor_Test
      */
     @DisplayName("(channel, position, executor) -> channel.write(buffer, >= position)+")
     @Test
-    void __() throws InterruptedException, ExecutionException {
+    void __()
+            throws InterruptedException, ExecutionException {
         // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var channel = _stub_ToWriteSome(mock(AsynchronousFileChannel.class), new LongAdder());

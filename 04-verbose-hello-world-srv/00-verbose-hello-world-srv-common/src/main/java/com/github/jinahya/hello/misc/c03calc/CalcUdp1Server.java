@@ -32,7 +32,8 @@ import java.net.StandardSocketOptions;
 @Slf4j
 class CalcUdp1Server {
 
-    public static void main(final String... args) throws IOException {
+    public static void main(final String... args)
+            throws IOException {
         try (var server = new DatagramSocket(null)) {
             server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
             server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);

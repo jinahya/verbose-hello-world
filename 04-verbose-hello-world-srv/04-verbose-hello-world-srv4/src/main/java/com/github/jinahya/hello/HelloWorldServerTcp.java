@@ -63,7 +63,8 @@ class HelloWorldServerTcp
      * @param selector a selector.
      * @throws IOException if an I/O error occurs.
      */
-    private void handle(Set<SelectionKey> keys, Selector selector) throws IOException {
+    private void handle(Set<SelectionKey> keys, Selector selector)
+            throws IOException {
         requireNonNull(keys, "keys is null");
         if (keys.isEmpty()) {
             throw new IllegalArgumentException("empty keys");
@@ -91,7 +92,8 @@ class HelloWorldServerTcp
     }
 
     @Override
-    protected void openInternal(SocketAddress endpoint, Path dir) throws IOException {
+    protected void openInternal(SocketAddress endpoint, Path dir)
+            throws IOException {
         var server = ServerSocketChannel.open();
         if (endpoint instanceof InetSocketAddress
             && ((InetSocketAddress) endpoint).getPort() > 0) {
@@ -133,7 +135,8 @@ class HelloWorldServerTcp
     }
 
     @Override
-    protected void closeInternal() throws IOException {
+    protected void closeInternal()
+            throws IOException {
         if (thread != null && thread.isAlive()) {
             thread.interrupt();
             try {

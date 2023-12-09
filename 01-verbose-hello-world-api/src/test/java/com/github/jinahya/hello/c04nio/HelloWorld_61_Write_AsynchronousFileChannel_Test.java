@@ -73,7 +73,8 @@ class HelloWorld_61_Write_AsynchronousFileChannel_Test
     @DisplayName(
             "(channel, position) -> put(buffer[12]) -> channel.write(buffer)+")
     @Test
-    void _PutBufferWriteBufferToChannel_() throws InterruptedException, ExecutionException {
+    void _PutBufferWriteBufferToChannel_()
+            throws InterruptedException, ExecutionException {
         // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var channel = mock(AsynchronousFileChannel.class);

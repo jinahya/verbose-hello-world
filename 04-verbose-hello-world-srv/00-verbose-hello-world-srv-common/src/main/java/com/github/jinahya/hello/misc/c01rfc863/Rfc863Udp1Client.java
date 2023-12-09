@@ -32,7 +32,8 @@ import java.util.concurrent.ThreadLocalRandom;
 @Slf4j
 class Rfc863Udp1Client {
 
-    public static void main(final String... args) throws Exception {
+    public static void main(final String... args)
+            throws Exception {
         try (var client = new DatagramSocket(null)) {
             // -------------------------------------------------------------------------------- bind
             if (ThreadLocalRandom.current().nextBoolean()) {

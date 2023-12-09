@@ -67,7 +67,8 @@ abstract class _Rfc863Attachment
          * @throws IOException {@inheritDoc}
          */
         @Override
-        public void close() throws IOException {
+        public void close()
+                throws IOException {
             _Rfc863Utils.logServerBytes(getBytes());
             super.close();
         }
@@ -96,7 +97,8 @@ abstract class _Rfc863Attachment
      * @throws IOException {@inheritDoc}.
      */
     @Override
-    public void close() throws IOException {
+    public void close()
+            throws IOException {
         logDigest();
         super.close();
     }

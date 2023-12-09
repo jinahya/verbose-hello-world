@@ -93,7 +93,8 @@ class HelloWorldServerUdp2
     }
 
     @Override
-    protected void closeInternal() throws IOException {
+    protected void closeInternal()
+            throws IOException {
         if (socket != null && !socket.isClosed()) {
             socket.close();
             log.debug("server closed");

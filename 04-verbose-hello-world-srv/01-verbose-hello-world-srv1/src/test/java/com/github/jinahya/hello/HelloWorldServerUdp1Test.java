@@ -36,7 +36,8 @@ import java.nio.file.Path;
 class HelloWorldServerUdp1Test {
 
     @Test
-    void test(@TempDir Path tempDir) throws IOException, InterruptedException {
+    void test(@TempDir Path tempDir)
+            throws IOException, InterruptedException {
         var host = InetAddress.getLoopbackAddress();
         var dir = Files.createTempDirectory(tempDir, null);
         var thread = new Thread(() -> {

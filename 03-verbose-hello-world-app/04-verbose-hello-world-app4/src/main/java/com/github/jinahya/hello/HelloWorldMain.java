@@ -45,7 +45,8 @@ public class HelloWorldMain {
      * @param args an array of command line arguments
      * @throws IOException if an I/O error occurs.
      */
-    public static void main(String... args) throws IOException {
+    public static void main(String... args)
+            throws IOException {
         try (var container = SeContainerInitializer.newInstance()
                 .initialize()) {
             var main = CDI.current().select(HelloWorldMain.class).get();

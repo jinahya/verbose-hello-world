@@ -37,7 +37,8 @@ import java.util.concurrent.ThreadLocalRandom;
 })
 class Rfc863Tcp0Client {
 
-    public static void main(final String... args) throws IOException {
+    public static void main(final String... args)
+            throws IOException {
         try (var client = new Socket()) {
             // -------------------------------------------------------------------------------- bind
             if (ThreadLocalRandom.current().nextBoolean()) {

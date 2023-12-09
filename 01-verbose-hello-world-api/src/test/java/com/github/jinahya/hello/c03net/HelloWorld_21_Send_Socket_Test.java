@@ -47,7 +47,8 @@ class HelloWorld_21_Send_Socket_Test
         extends _HelloWorldTest {
 
     @BeforeEach
-    void _beforeEach() throws IOException {
+    void _beforeEach()
+            throws IOException {
         _stub_WriteStream_ToWrite12BytesAndReturnTheStream();
     }
 
@@ -61,7 +62,8 @@ class HelloWorld_21_Send_Socket_Test
      */
     @DisplayName("(socket) -> write(socket.outputStream)")
     @Test
-    void _InvokeWriteStreamWithSocketOutputStream_() throws IOException {
+    void _InvokeWriteStreamWithSocketOutputStream_()
+            throws IOException {
         // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var socket = mock(Socket.class);                                     // <1>

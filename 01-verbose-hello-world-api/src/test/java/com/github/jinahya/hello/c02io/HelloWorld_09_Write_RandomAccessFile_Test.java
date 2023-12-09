@@ -69,7 +69,8 @@ class HelloWorld_09_Write_RandomAccessFile_Test
      */
     @DisplayName("(file) -> file.write(set(array[12]))")
     @Test
-    void _InvokeSetArrayWriteArrayToFile_() throws IOException {
+    void _InvokeSetArrayWriteArrayToFile_()
+            throws IOException {
         // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var file = mock(RandomAccessFile.class);
@@ -96,7 +97,8 @@ class HelloWorld_09_Write_RandomAccessFile_Test
     @DisplayName("(file) -> writes 12 bytes")
     @Test
     @畵蛇添足
-    void _Write12Bytes_(@TempDir File tempDir) throws IOException {
+    void _Write12Bytes_(@TempDir File tempDir)
+            throws IOException {
         // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
         var tmp = createTempFile("tmp", null, tempDir);

@@ -88,7 +88,8 @@ class HelloWorldServerTcp2
     }
 
     @Override
-    protected void closeInternal() throws IOException {
+    protected void closeInternal()
+            throws IOException {
         if (server != null && !server.isClosed()) {
             server.close();
             log.debug("[S] server closed");

@@ -34,6 +34,7 @@
     <module>02-verbose-hello-world-lib</module>
     <module>03-verbose-hello-world-app</module>
     <module>04-verbose-hello-world-srv</module>
+    <module>05-verbose-hello-world-etc</module>
   </modules>
 
   <scm>

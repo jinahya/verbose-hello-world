@@ -29,7 +29,8 @@ import java.nio.channels.Selector;
 @Slf4j
 class CalcUdp2Client {
 
-    public static void main(final String... args) throws Exception {
+    public static void main(final String... args)
+            throws Exception {
         try (var selector = Selector.open()) {
             for (var c = 0; c < _CalcConstants.TOTAL_REQUESTS; c++) {
                 try (var client = DatagramChannel.open()) {
