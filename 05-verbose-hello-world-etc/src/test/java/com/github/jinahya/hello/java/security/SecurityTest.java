@@ -21,12 +21,14 @@ package com.github.jinahya.hello.java.security;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
-import java.security.Provider;
 import java.security.Security;
-import java.util.stream.Stream;
+import java.util.Optional;
 
 /**
  * A class for testing classes defined in {@link java.security} package.
@@ -35,26 +37,32 @@ import java.util.stream.Stream;
  * @see <a href="https://bit.ly/486gLAe">Java Security Standard Algorithm Names</a>
  * @see <a href="https://bit.ly/417yswU"><code>MesssageDigest</code> Algorithms</a>
  */
-@DisplayName("java.security")
+@DisplayName("java.security.Provider")
 @Slf4j
-public final class _SecurityTestUtils {
+class SecurityTest {
 
-    static {
-        Security.addProvider(new BouncyCastleProvider());
-        Security.addProvider(new gnu.crypto.jce.GnuCrypto());
+    @DisplayName("getProviders(filter)")
+    @Nested
+    class GetProvidersWithFilterTest {
+
+        @ValueSource(strings = {
+                "MessageDigest.MD5"
+        })
+        @ParameterizedTest
+        void __(final String filter) {
+            Optional.ofNullable(Security.getProviders(filter)).ifPresent(providers -> {
+                for (final var provider : providers) {
+                    log.debug("provider: {}", provider);
+                }
+            });
+        }
     }
 
-    /**
-     * Returns a stream of installed providers.
-     *
-     * @return a stream of installed providers.
-     * @see Security#getProviders()
-     */
-    public static Stream<Provider> providers() {
-        return Stream.of(Security.getProviders());
-    }
-
-    private _SecurityTestUtils() {
-        throw new AssertionError("instantiation is not allowed");
+    @DisplayName("getProviders()")
+    @Test
+    void getProviders__() {
+        for (final var provider : Security.getProviders()) {
+            log.debug("provider: {}", provider);
+        }
     }
 }

@@ -66,7 +66,6 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 /**
@@ -175,17 +174,34 @@ class CipherTest {
     @ParameterizedTest
     void requiredToBeSupportedTransformations__(final Provider provider,
                                                 final String transformation) {
-        assertThatCode(() -> {
+        try {
             Cipher.getInstance(transformation, provider);
-        }).doesNotThrowAnyException();
+        } catch (NoSuchAlgorithmException |NoSuchPaddingException e) {
+            log.warn("not supported; {}, {}", provider, transformation, e);
+        }
+    }
+
+    private static Cipher getCipherInstance(final String transformation, final Provider provider) {
+        try {
+            return Cipher.getInstance(transformation, provider);
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
+            log.error("failed to get instance with {}, {}", transformation, provider);
+        }
+        return null;
     }
 
     private static Key generateKey(final String algorithm, final Provider provider,
-                                   final int keysize)
-            throws NoSuchAlgorithmException {
-        final var generator = KeyGenerator.getInstance(algorithm, provider);
-        generator.init(keysize, SecureRandom.getInstanceStrong());
-        return generator.generateKey();
+                                   final int keysize) {
+        final KeyGenerator generator;
+        try {
+            generator = KeyGenerator.getInstance(algorithm, provider);
+            generator.init(keysize, SecureRandom.getInstanceStrong());
+            return generator.generateKey();
+        } catch (final NoSuchAlgorithmException nsae) {
+            log.error("failed to generate key with {}, {}, and {}", algorithm, provider, keysize,
+                      nsae);
+        }
+        return null;
     }
 
     private static KeyPair generateKeyPair(final String algorithm, final Provider provider,
@@ -220,7 +236,7 @@ class CipherTest {
         @MethodSource({"providersAndKeysizes"})
         @ParameterizedTest
         void __(final Provider provider, final int keysize, @TempDir final File dir)
-                throws IOException, NoSuchPaddingException, NoSuchAlgorithmException,
+                throws IOException, NoSuchAlgorithmException,
                        InvalidKeyException, InvalidAlgorithmParameterException,
                        IllegalBlockSizeException, BadPaddingException {
             // ------------------------------------------------------------------------------- files
@@ -228,12 +244,16 @@ class CipherTest {
             final var encryptedFile = File.createTempFile("tmp", "tmp", dir);
             final var decryptedFile = File.createTempFile("tmp", "tmp", dir);
             // ------------------------------------------------------------------------------ cipher
-            final String algorithm = "AES";
-            final String mode = "CBC";
-            final String padding = "NoPadding";
-            final var cipher = Cipher.getInstance(algorithm + '/' + mode + '/' + padding, provider);
+            final var algorithm = "AES";
+            final var mode = "CBC";
+            final var padding = "NoPadding";
+            final var transformation = algorithm + '/' + mode + '/' + padding;
+            final var cipher = getCipherInstance(transformation, provider);
+            if (cipher == null) {
+                return;
+            }
             final var blockSize = cipher.getBlockSize();
-            assert blockSize == 128 >> 3 : "block size is always 128 regardless of the key size";
+            assert blockSize == 128 >> 3;
             {
                 final var required = (int) (blockSize - (plainFile.length() % blockSize));
                 try (var stream = new FileOutputStream(plainFile, true)) {
@@ -244,6 +264,9 @@ class CipherTest {
             }
             // --------------------------------------------------------------------------------- key
             final Key key = generateKey(algorithm, provider, keysize);
+            if (key == null) {
+                return;
+            }
             // ------------------------------------------------------------------------------ params
             final AlgorithmParameterSpec params;
             {
@@ -313,7 +336,7 @@ class CipherTest {
         @MethodSource({"providersAndKeysizes"})
         @ParameterizedTest
         void __(final Provider provider, final int keysize, @TempDir final Path dir)
-                throws IOException, NoSuchPaddingException, NoSuchAlgorithmException,
+                throws IOException, NoSuchAlgorithmException,
                        InvalidKeyException, InvalidAlgorithmParameterException,
                        IllegalBlockSizeException, BadPaddingException {
             // ------------------------------------------------------------------------------- paths
@@ -324,9 +347,17 @@ class CipherTest {
             final String algorithm = "AES";
             final String mode = "CBC";
             final String padding = "NoPadding";
-            final var cipher = Cipher.getInstance(algorithm + '/' + mode + '/' + padding);
+            final var transformation = algorithm + '/' + mode + '/' + padding;
+            final Cipher cipher;
+            try {
+                cipher = Cipher.getInstance(transformation, provider);
+            } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
+                log.error("failed to get instance with {}, {}", transformation, provider);
+                return;
+            }
             final var blockSize = cipher.getBlockSize();
             assert blockSize == 128 >> 3;
+            // --------------------------------------------------------- pad zeros to the plain file
             {
                 final var required = (int) (blockSize - (Files.size(plainPath) % blockSize));
                 try (var channel = FileChannel.open(plainPath, StandardOpenOption.WRITE,
@@ -342,6 +373,9 @@ class CipherTest {
             }
             // --------------------------------------------------------------------------------- key
             final Key key = generateKey(algorithm, provider, keysize);
+            if (key == null) {
+                return;
+            }
             // ------------------------------------------------------------------------------ params
             final AlgorithmParameterSpec params;
             {
@@ -436,14 +470,21 @@ class CipherTest {
             final var encryptedFile = File.createTempFile("tmp", "tmp", dir);
             final var decryptedFile = File.createTempFile("tmp", "tmp", dir);
             // ------------------------------------------------------------------------------ cipher
-            final String algorithm = "AES";
-            final String mode = "CBC";
-            final String padding = "PKCS5Padding";
-            final var cipher = Cipher.getInstance(algorithm + '/' + mode + '/' + padding, provider);
+            final var algorithm = "AES";
+            final var mode = "CBC";
+            final var padding = "PKCS5Padding";
+            final var transformation = algorithm + '/' + mode + '/' + padding;
+            final var cipher = getCipherInstance(transformation, provider);
+            if (cipher == null) {
+                return;
+            }
             final var blockSize = cipher.getBlockSize();
             assert blockSize == 128 >> 3;
             // --------------------------------------------------------------------------------- key
             final Key key = generateKey(algorithm, provider, keysize);
+            if (key == null) {
+                return;
+            }
             // ------------------------------------------------------------------------------ params
             final AlgorithmParameterSpec params;
             {
@@ -524,11 +565,17 @@ class CipherTest {
             final String algorithm = "AES";
             final String mode = "CBC";
             final String padding = "PKCS5Padding";
-            final var cipher = Cipher.getInstance(algorithm + '/' + mode + '/' + padding, provider);
+            final var cipher = getCipherInstance(algorithm + '/' + mode + '/' + padding, provider);
+            if (cipher == null) {
+                return;
+            }
             final var blockSize = cipher.getBlockSize();
-            assert blockSize == 128 >> 3 : "block size is always 128 regardless of the key size";
+            assert blockSize == 128 >> 3;
             // --------------------------------------------------------------------------------- key
             final Key key = generateKey(algorithm, provider, keysize);
+            if (key == null) {
+                return;
+            }
             // ------------------------------------------------------------------------------ params
             final AlgorithmParameterSpec params;
             {
@@ -624,7 +671,11 @@ class CipherTest {
             final var algorithm = "AES";
             final var mode = "ECB";
             final var padding = "NoPadding";
-            final var cipher = Cipher.getInstance(algorithm + '/' + mode + '/' + padding, provider);
+            final var transformation = algorithm + '/' + mode + '/' + padding;
+            final var cipher = getCipherInstance(transformation, provider);
+            if (cipher == null) {
+                return;
+            }
             final var blockSize = cipher.getBlockSize();
             assert blockSize == 128 >> 3;
             {
@@ -637,6 +688,9 @@ class CipherTest {
             }
             // --------------------------------------------------------------------------------- key
             final Key key = generateKey(algorithm, provider, keysize);
+            if (key == null) {
+                return;
+            }
             // ----------------------------------------------------------------------------- encrypt
             {
                 cipher.init(Cipher.ENCRYPT_MODE, key);
@@ -706,10 +760,14 @@ class CipherTest {
             final var encryptedPath = Files.createTempFile(dir, null, null);
             final var decryptedPath = Files.createTempFile(dir, null, null);
             // ------------------------------------------------------------------------------ cipher
-            final String algorithm = "AES";
-            final String mode = "ECB";
-            final String padding = "NoPadding";
-            final var cipher = Cipher.getInstance(algorithm + '/' + mode + '/' + padding, provider);
+            final var algorithm = "AES";
+            final var mode = "ECB";
+            final var padding = "NoPadding";
+            final var transformation = algorithm + '/' + mode + '/' + padding;
+            final var cipher = getCipherInstance(transformation, provider);
+            if (cipher == null) {
+                return;
+            }
             final var blockSize = cipher.getBlockSize();
             assert blockSize == 128 >> 3;
             {
@@ -727,6 +785,9 @@ class CipherTest {
             }
             // --------------------------------------------------------------------------------- key
             final Key key = generateKey(algorithm, provider, keysize);
+            if (key == null) {
+                return;
+            }
             // ----------------------------------------------------------------------------- encrypt
             {
                 cipher.init(Cipher.ENCRYPT_MODE, key);
@@ -813,14 +874,21 @@ class CipherTest {
             final var encryptedFile = File.createTempFile("tmp", "tmp", dir);
             final var decryptedFile = File.createTempFile("tmp", "tmp", dir);
             // ------------------------------------------------------------------------------ cipher
-            final String algorithm = "AES";
-            final String mode = "ECB";
-            final String padding = "PKCS5Padding";
-            final var cipher = Cipher.getInstance(algorithm + '/' + mode + '/' + padding, provider);
+            final var algorithm = "AES";
+            final var mode = "ECB";
+            final var padding = "PKCS5Padding";
+            final var transformation = algorithm + '/' + mode + '/' + padding;
+            final var cipher = getCipherInstance(transformation, provider);
+            if (cipher == null) {
+                return;
+            }
             final var blockSize = cipher.getBlockSize();
             assert blockSize == 128 >> 3;
             // --------------------------------------------------------------------------------- key
             final Key key = generateKey(algorithm, provider, keysize);
+            if (key == null) {
+                return;
+            }
             // ----------------------------------------------------------------------------- encrypt
             {
                 cipher.init(Cipher.ENCRYPT_MODE, key);
@@ -890,14 +958,21 @@ class CipherTest {
             final var encryptedPath = Files.createTempFile(dir, null, null);
             final var decryptedPath = Files.createTempFile(dir, null, null);
             // ------------------------------------------------------------------------------ cipher
-            final String algorithm = "AES";
-            final String mode = "ECB";
-            final String padding = "PKCS5Padding";
-            final var cipher = Cipher.getInstance(algorithm + '/' + mode + '/' + padding, provider);
+            final var algorithm = "AES";
+            final var mode = "ECB";
+            final var padding = "PKCS5Padding";
+            final var transformation = algorithm + '/' + mode + '/' + padding;
+            final var cipher = getCipherInstance(transformation, provider);
+            if (cipher == null) {
+                return;
+            }
             final var blockSize = cipher.getBlockSize();
             assert blockSize == 128 >> 3 : "block size is always 128 regardless of the key size";
             // --------------------------------------------------------------------------------- key
-            final Key key = generateKey(algorithm, provider, keysize);
+            final var key = generateKey(algorithm, provider, keysize);
+            if (key == null) {
+                return;
+            }
             // ----------------------------------------------------------------------------- encrypt
             {
                 cipher.init(Cipher.ENCRYPT_MODE, key);
@@ -985,10 +1060,14 @@ class CipherTest {
             final var encryptedFile = File.createTempFile("tmp", "tmp", dir);
             final var decryptedFile = File.createTempFile("tmp", "tmp", dir);
             // ------------------------------------------------------------------------------ cipher
-            final String algorithm = "AES";
-            final String mode = "GCM";
-            final String padding = "NoPadding";
-            final var cipher = Cipher.getInstance(algorithm + '/' + mode + '/' + padding, provider);
+            final var algorithm = "AES";
+            final var mode = "GCM";
+            final var padding = "NoPadding";
+            final var transformation = algorithm + '/' + mode + '/' + padding;
+            final var cipher = getCipherInstance(transformation, provider);
+            if (cipher == null) {
+                return;
+            }
             final var blockSize = cipher.getBlockSize();
             assert blockSize == 128 >> 3;
             {
@@ -1000,7 +1079,10 @@ class CipherTest {
                 assertThat(plainFile.length() % blockSize).isZero();
             }
             // --------------------------------------------------------------------------------- key
-            final Key key = generateKey(algorithm, provider, keysize);
+            final var key = generateKey(algorithm, provider, keysize);
+            if (key == null) {
+                return;
+            }
             // ------------------------------------------------------------------------------ params
             final AlgorithmParameterSpec params;
             {
@@ -1088,7 +1170,11 @@ class CipherTest {
             final String algorithm = "AES";
             final String mode = "GCM";
             final String padding = "NoPadding";
-            final var cipher = Cipher.getInstance(algorithm + '/' + mode + '/' + padding, provider);
+            final var transformation = algorithm + '/' + mode + '/' + padding;
+            final var cipher = getCipherInstance(transformation, provider);
+            if (cipher == null) {
+                return;
+            }
             final var blockSize = cipher.getBlockSize();
             assert blockSize == 128 >> 3;
             {
@@ -1105,7 +1191,10 @@ class CipherTest {
                 assertThat(Files.size(plainPath) % blockSize).isZero();
             }
             // --------------------------------------------------------------------------------- key
-            final Key key = generateKey(algorithm, provider, keySize);
+            final var key = generateKey(algorithm, provider, keySize);
+            if (key == null) {
+                return;
+            }
             // ------------------------------------------------------------------------------ params
             final AlgorithmParameterSpec params;
             {

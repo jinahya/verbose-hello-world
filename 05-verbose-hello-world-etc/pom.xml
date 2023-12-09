@@ -50,6 +50,11 @@
       <artifactId>bcprov-lts8on</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.gnu</groupId>
+      <artifactId>gnu-crypto</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>

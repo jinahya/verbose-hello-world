@@ -22,6 +22,9 @@ package com.github.jinahya.hello.java.security;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import java.security.Security;
 
 /**
  * A class for testing classes defined in {@link java.security} package.
@@ -34,4 +37,13 @@ import org.junit.jupiter.api.DisplayName;
 @Slf4j
 class ProviderTest {
 
+    @Test
+    void __() {
+        for (final var provider : Security.getProviders()) {
+            log.debug("provider: {}", provider);
+            for (final var service : provider.getServices()) {
+                log.debug("\tservice.type: {}", service.getType());
+            }
+        }
+    }
 }
