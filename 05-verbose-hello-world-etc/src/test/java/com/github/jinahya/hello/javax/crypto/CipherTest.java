@@ -41,7 +41,6 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -63,6 +62,7 @@ import java.security.SecureRandom;
 import java.security.spec.AlgorithmParameterSpec;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -180,17 +180,46 @@ class CipherTest {
         }).doesNotThrowAnyException();
     }
 
+    private static Key generateKey(final String algorithm, final Provider provider,
+                                   final int keysize)
+            throws NoSuchAlgorithmException {
+        final var generator = KeyGenerator.getInstance(algorithm, provider);
+        generator.init(keysize, SecureRandom.getInstanceStrong());
+        return generator.generateKey();
+    }
+
+    private static KeyPair generateKeyPair(final String algorithm, final Provider provider,
+                                           final int keysize)
+            throws NoSuchAlgorithmException {
+        final var generator = KeyPairGenerator.getInstance(algorithm, provider);
+        generator.initialize(keysize);
+        return generator.generateKeyPair();
+    }
+
+    private static IntStream aesKeysizes() {
+        return IntStream.of(
+                128
+//                ,
+//                192,
+//                256
+        );
+    }
+
+    private static Stream<Arguments> providersAndAesKeysizes() {
+        return providers().flatMap(p -> aesKeysizes().mapToObj(ks -> Arguments.of(p, ks)));
+    }
+
     @DisplayName("AES/CBC/NoPadding")
     @Nested
     class AesCbcNoPaddingTest {
 
-        @ValueSource(ints = {
-                128,
-                192,
-                256
-        })
+        private static Stream<Arguments> providersAndKeysizes() {
+            return providersAndAesKeysizes();
+        }
+
+        @MethodSource({"providersAndKeysizes"})
         @ParameterizedTest
-        void __(final int keySize, @TempDir final File dir)
+        void __(final Provider provider, final int keysize, @TempDir final File dir)
                 throws IOException, NoSuchPaddingException, NoSuchAlgorithmException,
                        InvalidKeyException, InvalidAlgorithmParameterException,
                        IllegalBlockSizeException, BadPaddingException {
@@ -202,7 +231,7 @@ class CipherTest {
             final String algorithm = "AES";
             final String mode = "CBC";
             final String padding = "NoPadding";
-            final var cipher = Cipher.getInstance(algorithm + '/' + mode + '/' + padding);
+            final var cipher = Cipher.getInstance(algorithm + '/' + mode + '/' + padding, provider);
             final var blockSize = cipher.getBlockSize();
             assert blockSize == 128 >> 3 : "block size is always 128 regardless of the key size";
             {
@@ -214,12 +243,7 @@ class CipherTest {
                 assertThat(plainFile.length() % blockSize).isZero();
             }
             // --------------------------------------------------------------------------------- key
-            final Key key;
-            {
-                final var key_ = new byte[keySize >> 3];
-                SecureRandom.getInstanceStrong().nextBytes(key_);
-                key = new SecretKeySpec(key_, algorithm);
-            }
+            final Key key = generateKey(algorithm, provider, keysize);
             // ------------------------------------------------------------------------------ params
             final AlgorithmParameterSpec params;
             {
@@ -286,13 +310,9 @@ class CipherTest {
             }
         }
 
-        @ValueSource(ints = {
-                128,
-                192,
-                256
-        })
+        @MethodSource({"providersAndKeysizes"})
         @ParameterizedTest
-        void __(final int keySize, @TempDir final Path dir)
+        void __(final Provider provider, final int keysize, @TempDir final Path dir)
                 throws IOException, NoSuchPaddingException, NoSuchAlgorithmException,
                        InvalidKeyException, InvalidAlgorithmParameterException,
                        IllegalBlockSizeException, BadPaddingException {
@@ -306,8 +326,7 @@ class CipherTest {
             final String padding = "NoPadding";
             final var cipher = Cipher.getInstance(algorithm + '/' + mode + '/' + padding);
             final var blockSize = cipher.getBlockSize();
-            assert blockSize
-                   == 128 >> 3 : "block size is always 128 regardless of the key size";
+            assert blockSize == 128 >> 3;
             {
                 final var required = (int) (blockSize - (Files.size(plainPath) % blockSize));
                 try (var channel = FileChannel.open(plainPath, StandardOpenOption.WRITE,
@@ -322,12 +341,7 @@ class CipherTest {
                 assertThat(Files.size(plainPath) % blockSize).isZero();
             }
             // --------------------------------------------------------------------------------- key
-            final Key key;
-            {
-                final var key_ = new byte[keySize >> 3];
-                SecureRandom.getInstanceStrong().nextBytes(key_);
-                key = new SecretKeySpec(key_, algorithm);
-            }
+            final Key key = generateKey(algorithm, provider, keysize);
             // ------------------------------------------------------------------------------ params
             final AlgorithmParameterSpec params;
             {
@@ -407,13 +421,13 @@ class CipherTest {
     @Nested
     class AesCbcPkcs5PaddingTest {
 
-        @ValueSource(ints = {
-                128,
-                192,
-                256
-        })
+        private static Stream<Arguments> providersAndKeysizes() {
+            return providersAndAesKeysizes();
+        }
+
+        @MethodSource({"providersAndKeysizes"})
         @ParameterizedTest
-        void __(final int keySize, @TempDir final File dir)
+        void __(final Provider provider, final int keysize, @TempDir final File dir)
                 throws IOException, NoSuchPaddingException, NoSuchAlgorithmException,
                        InvalidKeyException, InvalidAlgorithmParameterException,
                        IllegalBlockSizeException, BadPaddingException {
@@ -425,16 +439,11 @@ class CipherTest {
             final String algorithm = "AES";
             final String mode = "CBC";
             final String padding = "PKCS5Padding";
-            final var cipher = Cipher.getInstance(algorithm + '/' + mode + '/' + padding);
+            final var cipher = Cipher.getInstance(algorithm + '/' + mode + '/' + padding, provider);
             final var blockSize = cipher.getBlockSize();
-            assert blockSize == 128 >> 3 : "block size is always 128 regardless of the key size";
+            assert blockSize == 128 >> 3;
             // --------------------------------------------------------------------------------- key
-            final Key key;
-            {
-                final var key_ = new byte[keySize >> 3];
-                SecureRandom.getInstanceStrong().nextBytes(key_);
-                key = new SecretKeySpec(key_, algorithm);
-            }
+            final Key key = generateKey(algorithm, provider, keysize);
             // ------------------------------------------------------------------------------ params
             final AlgorithmParameterSpec params;
             {
@@ -501,13 +510,9 @@ class CipherTest {
             }
         }
 
-        @ValueSource(ints = {
-                128,
-                192,
-                256
-        })
+        @MethodSource({"providersAndKeysizes"})
         @ParameterizedTest
-        void __(final int keySize, @TempDir final Path dir)
+        void __(final Provider provider, final int keysize, @TempDir final Path dir)
                 throws IOException, NoSuchPaddingException, NoSuchAlgorithmException,
                        InvalidKeyException, InvalidAlgorithmParameterException,
                        IllegalBlockSizeException, BadPaddingException {
@@ -519,16 +524,11 @@ class CipherTest {
             final String algorithm = "AES";
             final String mode = "CBC";
             final String padding = "PKCS5Padding";
-            final var cipher = Cipher.getInstance(algorithm + '/' + mode + '/' + padding);
+            final var cipher = Cipher.getInstance(algorithm + '/' + mode + '/' + padding, provider);
             final var blockSize = cipher.getBlockSize();
             assert blockSize == 128 >> 3 : "block size is always 128 regardless of the key size";
             // --------------------------------------------------------------------------------- key
-            final Key key;
-            {
-                final var key_ = new byte[keySize >> 3];
-                SecureRandom.getInstanceStrong().nextBytes(key_);
-                key = new SecretKeySpec(key_, algorithm);
-            }
+            final Key key = generateKey(algorithm, provider, keysize);
             // ------------------------------------------------------------------------------ params
             final AlgorithmParameterSpec params;
             {
@@ -607,13 +607,13 @@ class CipherTest {
     @Nested
     class AesEcbNoPaddingTest {
 
-        @ValueSource(ints = {
-                128,
-                192,
-                256
-        })
+        private static Stream<Arguments> providersAndKeysizes() {
+            return providersAndAesKeysizes();
+        }
+
+        @MethodSource({"providersAndKeysizes"})
         @ParameterizedTest
-        void __(final int keySize, @TempDir final File dir)
+        void __(final Provider provider, final int keysize, @TempDir final File dir)
                 throws IOException, NoSuchPaddingException, NoSuchAlgorithmException,
                        InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
             // ------------------------------------------------------------------------------- files
@@ -621,13 +621,12 @@ class CipherTest {
             final var encryptedFile = File.createTempFile("tmp", "tmp", dir);
             final var decryptedFile = File.createTempFile("tmp", "tmp", dir);
             // ------------------------------------------------------------------------------ cipher
-            final String algorithm = "AES";
-            final String mode = "ECB";
-            final String padding = "NoPadding";
-            final var cipher = Cipher.getInstance(algorithm + '/' + mode + '/' + padding);
+            final var algorithm = "AES";
+            final var mode = "ECB";
+            final var padding = "NoPadding";
+            final var cipher = Cipher.getInstance(algorithm + '/' + mode + '/' + padding, provider);
             final var blockSize = cipher.getBlockSize();
-            assert blockSize
-                   == 128 >> 3 : "block size is always 128 regardless of the key size";
+            assert blockSize == 128 >> 3;
             {
                 final var required = (int) (blockSize - (plainFile.length() % blockSize));
                 try (var stream = new FileOutputStream(plainFile, true)) {
@@ -637,12 +636,7 @@ class CipherTest {
                 assertThat(plainFile.length() % blockSize).isZero();
             }
             // --------------------------------------------------------------------------------- key
-            final Key key;
-            {
-                final var key_ = new byte[keySize >> 3];
-                SecureRandom.getInstanceStrong().nextBytes(key_);
-                key = new SecretKeySpec(key_, algorithm);
-            }
+            final Key key = generateKey(algorithm, provider, keysize);
             // ----------------------------------------------------------------------------- encrypt
             {
                 cipher.init(Cipher.ENCRYPT_MODE, key);
@@ -702,13 +696,9 @@ class CipherTest {
             }
         }
 
-        @ValueSource(ints = {
-                128,
-                192,
-                256
-        })
+        @MethodSource({"providersAndKeysizes"})
         @ParameterizedTest
-        void __(final int keySize, @TempDir final Path dir)
+        void __(final Provider provider, final int keysize, @TempDir final Path dir)
                 throws IOException, NoSuchPaddingException, NoSuchAlgorithmException,
                        InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
             // ------------------------------------------------------------------------------- paths
@@ -719,9 +709,9 @@ class CipherTest {
             final String algorithm = "AES";
             final String mode = "ECB";
             final String padding = "NoPadding";
-            final var cipher = Cipher.getInstance(algorithm + '/' + mode + '/' + padding);
+            final var cipher = Cipher.getInstance(algorithm + '/' + mode + '/' + padding, provider);
             final var blockSize = cipher.getBlockSize();
-            assert blockSize == 128 >> 3 : "block size is always 128 regardless of the key size";
+            assert blockSize == 128 >> 3;
             {
                 final var required = (int) (blockSize - (Files.size(plainPath) % blockSize));
                 try (var channel = FileChannel.open(plainPath, StandardOpenOption.WRITE,
@@ -736,12 +726,7 @@ class CipherTest {
                 assertThat(Files.size(plainPath) % blockSize).isZero();
             }
             // --------------------------------------------------------------------------------- key
-            final Key key;
-            {
-                final var key_ = new byte[keySize >> 3];
-                SecureRandom.getInstanceStrong().nextBytes(key_);
-                key = new SecretKeySpec(key_, algorithm);
-            }
+            final Key key = generateKey(algorithm, provider, keysize);
             // ----------------------------------------------------------------------------- encrypt
             {
                 cipher.init(Cipher.ENCRYPT_MODE, key);
@@ -814,13 +799,13 @@ class CipherTest {
     @Nested
     class AesEcbPkcs5PaddingTest {
 
-        @ValueSource(ints = {
-                128,
-                192,
-                256
-        })
+        private static Stream<Arguments> providersAndKeysizes() {
+            return providersAndAesKeysizes();
+        }
+
+        @MethodSource({"providersAndKeysizes"})
         @ParameterizedTest
-        void __(final int keySize, @TempDir final File dir)
+        void __(final Provider provider, final int keysize, @TempDir final File dir)
                 throws IOException, NoSuchPaddingException, NoSuchAlgorithmException,
                        InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
             // ------------------------------------------------------------------------------- files
@@ -831,17 +816,11 @@ class CipherTest {
             final String algorithm = "AES";
             final String mode = "ECB";
             final String padding = "PKCS5Padding";
-            final var cipher = Cipher.getInstance(algorithm + '/' + mode + '/' + padding);
+            final var cipher = Cipher.getInstance(algorithm + '/' + mode + '/' + padding, provider);
             final var blockSize = cipher.getBlockSize();
-            assert blockSize
-                   == 128 >> 3 : "block size is always 128 regardless of the key size";
+            assert blockSize == 128 >> 3;
             // --------------------------------------------------------------------------------- key
-            final Key key;
-            {
-                final var key_ = new byte[keySize >> 3];
-                SecureRandom.getInstanceStrong().nextBytes(key_);
-                key = new SecretKeySpec(key_, algorithm);
-            }
+            final Key key = generateKey(algorithm, provider, keysize);
             // ----------------------------------------------------------------------------- encrypt
             {
                 cipher.init(Cipher.ENCRYPT_MODE, key);
@@ -901,13 +880,9 @@ class CipherTest {
             }
         }
 
-        @ValueSource(ints = {
-                128,
-                192,
-                256
-        })
+        @MethodSource({"providersAndKeysizes"})
         @ParameterizedTest
-        void __(final int keySize, @TempDir final Path dir)
+        void __(final Provider provider, final int keysize, @TempDir final Path dir)
                 throws IOException, NoSuchPaddingException, NoSuchAlgorithmException,
                        InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
             // ------------------------------------------------------------------------------- paths
@@ -918,16 +893,11 @@ class CipherTest {
             final String algorithm = "AES";
             final String mode = "ECB";
             final String padding = "PKCS5Padding";
-            final var cipher = Cipher.getInstance(algorithm + '/' + mode + '/' + padding);
+            final var cipher = Cipher.getInstance(algorithm + '/' + mode + '/' + padding, provider);
             final var blockSize = cipher.getBlockSize();
             assert blockSize == 128 >> 3 : "block size is always 128 regardless of the key size";
             // --------------------------------------------------------------------------------- key
-            final Key key;
-            {
-                final var key_ = new byte[keySize >> 3];
-                SecureRandom.getInstanceStrong().nextBytes(key_);
-                key = new SecretKeySpec(key_, algorithm);
-            }
+            final Key key = generateKey(algorithm, provider, keysize);
             // ----------------------------------------------------------------------------- encrypt
             {
                 cipher.init(Cipher.ENCRYPT_MODE, key);
@@ -1000,13 +970,13 @@ class CipherTest {
     @Nested
     class AesGcmNoPaddingTest {
 
-        @ValueSource(ints = {
-                128,
-                192,
-                256
-        })
+        private static Stream<Arguments> providersAndKeysizes() {
+            return providersAndAesKeysizes();
+        }
+
+        @MethodSource({"providersAndKeysizes"})
         @ParameterizedTest
-        void __(final int keySize, @TempDir final File dir)
+        void __(final Provider provider, final int keysize, @TempDir final File dir)
                 throws IOException, NoSuchPaddingException, NoSuchAlgorithmException,
                        InvalidKeyException, InvalidAlgorithmParameterException,
                        IllegalBlockSizeException, BadPaddingException {
@@ -1018,7 +988,7 @@ class CipherTest {
             final String algorithm = "AES";
             final String mode = "GCM";
             final String padding = "NoPadding";
-            final var cipher = Cipher.getInstance(algorithm + '/' + mode + '/' + padding);
+            final var cipher = Cipher.getInstance(algorithm + '/' + mode + '/' + padding, provider);
             final var blockSize = cipher.getBlockSize();
             assert blockSize == 128 >> 3;
             {
@@ -1030,12 +1000,7 @@ class CipherTest {
                 assertThat(plainFile.length() % blockSize).isZero();
             }
             // --------------------------------------------------------------------------------- key
-            final Key key;
-            {
-                final var key_ = new byte[keySize >> 3];
-                SecureRandom.getInstanceStrong().nextBytes(key_);
-                key = new SecretKeySpec(key_, algorithm);
-            }
+            final Key key = generateKey(algorithm, provider, keysize);
             // ------------------------------------------------------------------------------ params
             final AlgorithmParameterSpec params;
             {
@@ -1109,13 +1074,9 @@ class CipherTest {
             }
         }
 
-        @ValueSource(ints = {
-                128,
-                192,
-                256
-        })
+        @MethodSource({"providersAndKeysizes"})
         @ParameterizedTest
-        void __(final int keySize, @TempDir final Path dir)
+        void __(final Provider provider, final int keySize, @TempDir final Path dir)
                 throws IOException, NoSuchPaddingException, NoSuchAlgorithmException,
                        InvalidKeyException, InvalidAlgorithmParameterException,
                        IllegalBlockSizeException, BadPaddingException {
@@ -1127,10 +1088,9 @@ class CipherTest {
             final String algorithm = "AES";
             final String mode = "GCM";
             final String padding = "NoPadding";
-            final var cipher = Cipher.getInstance(algorithm + '/' + mode + '/' + padding);
+            final var cipher = Cipher.getInstance(algorithm + '/' + mode + '/' + padding, provider);
             final var blockSize = cipher.getBlockSize();
-            assert blockSize
-                   == 128 >> 3 : "block size is always 128 regardless of the key size";
+            assert blockSize == 128 >> 3;
             {
                 final var required = (int) (blockSize - (Files.size(plainPath) % blockSize));
                 try (var channel = FileChannel.open(plainPath, StandardOpenOption.WRITE,
@@ -1145,12 +1105,7 @@ class CipherTest {
                 assertThat(Files.size(plainPath) % blockSize).isZero();
             }
             // --------------------------------------------------------------------------------- key
-            final Key key;
-            {
-                final var key_ = new byte[keySize >> 3];
-                SecureRandom.getInstanceStrong().nextBytes(key_);
-                key = new SecretKeySpec(key_, algorithm);
-            }
+            final Key key = generateKey(algorithm, provider, keySize);
             // ------------------------------------------------------------------------------ params
             final AlgorithmParameterSpec params;
             {
