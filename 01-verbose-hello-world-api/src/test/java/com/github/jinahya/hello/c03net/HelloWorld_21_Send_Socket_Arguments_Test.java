@@ -39,7 +39,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  */
 @DisplayName("send(socket) arguments")
 @Slf4j
-class HelloWorld_21_Send_Socket_Arguments_Test extends _HelloWorldTest {
+class HelloWorld_21_Send_Socket_Arguments_Test
+        extends _HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#send(Socket) send(socket)} method throws a

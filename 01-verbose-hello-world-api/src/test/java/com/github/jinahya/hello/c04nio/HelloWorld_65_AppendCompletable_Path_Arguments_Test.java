@@ -39,7 +39,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  */
 @DisplayName("appendCompletable(path) arguments")
 @Slf4j
-class HelloWorld_65_AppendCompletable_Path_Arguments_Test extends _HelloWorldTest {
+class HelloWorld_65_AppendCompletable_Path_Arguments_Test
+        extends _HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#appendCompletable(Path) appendCompletable(path)} method throws a

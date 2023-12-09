@@ -52,7 +52,8 @@ import static org.mockito.Mockito.verify;
  */
 @DisplayName("write(data)")
 @Slf4j
-class HelloWorld_07_Write_DataOutput_Test extends _HelloWorldTest {
+class HelloWorld_07_Write_DataOutput_Test
+        extends _HelloWorldTest {
 
     @BeforeEach
     void _beforeEach() {

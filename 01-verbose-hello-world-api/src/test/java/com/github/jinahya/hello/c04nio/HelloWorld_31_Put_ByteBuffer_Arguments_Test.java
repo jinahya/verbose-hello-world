@@ -42,7 +42,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  */
 @DisplayName("put(buffer) arguments")
 @Slf4j
-class HelloWorld_31_Put_ByteBuffer_Arguments_Test extends _HelloWorldTest {
+class HelloWorld_31_Put_ByteBuffer_Arguments_Test
+        extends _HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method throws a

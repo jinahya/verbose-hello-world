@@ -42,7 +42,8 @@ import static org.mockito.Mockito.mock;
  */
 @DisplayName("write(channel) arguments")
 @Slf4j
-class HelloWorld_61_Write_AsynchronousFileChannel_Arguments_Test extends _HelloWorldTest {
+class HelloWorld_61_Write_AsynchronousFileChannel_Arguments_Test
+        extends _HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(AsynchronousFileChannel, long) write(channel, position)}

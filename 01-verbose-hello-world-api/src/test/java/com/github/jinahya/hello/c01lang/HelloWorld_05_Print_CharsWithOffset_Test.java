@@ -42,7 +42,8 @@ import static org.mockito.Mockito.verify;
  */
 @DisplayName("set(array)")
 @Slf4j
-class HelloWorld_05_Print_CharsWithOffset_Test extends _HelloWorldTest {
+class HelloWorld_05_Print_CharsWithOffset_Test
+        extends _HelloWorldTest {
 
     @BeforeEach
     void _beforeEach() {

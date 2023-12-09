@@ -53,7 +53,8 @@ import static org.mockito.Mockito.verify;
  */
 @DisplayName("write(channel, position, executor)")
 @Slf4j
-class HelloWorld_62_WriteAsync_AsynchronousFileChannelWithExecutor_Test extends _HelloWorldTest {
+class HelloWorld_62_WriteAsync_AsynchronousFileChannelWithExecutor_Test
+        extends _HelloWorldTest {
 
     @BeforeEach
     void _beforeEach() throws InterruptedException, ExecutionException {

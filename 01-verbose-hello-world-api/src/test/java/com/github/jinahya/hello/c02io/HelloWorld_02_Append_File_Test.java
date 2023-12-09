@@ -50,7 +50,8 @@ import static org.mockito.Mockito.mockConstruction;
  */
 @DisplayName("append(file)")
 @Slf4j
-class HelloWorld_02_Append_File_Test extends _HelloWorldTest {
+class HelloWorld_02_Append_File_Test
+        extends _HelloWorldTest {
 
     @BeforeEach
     void _beforeEach() throws IOException {

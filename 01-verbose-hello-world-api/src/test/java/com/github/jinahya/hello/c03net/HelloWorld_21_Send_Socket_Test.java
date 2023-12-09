@@ -43,7 +43,8 @@ import static org.mockito.Mockito.when;
  */
 @DisplayName("send(socket)")
 @Slf4j
-class HelloWorld_21_Send_Socket_Test extends _HelloWorldTest {
+class HelloWorld_21_Send_Socket_Test
+        extends _HelloWorldTest {
 
     @BeforeEach
     void _beforeEach() throws IOException {

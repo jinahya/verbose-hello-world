@@ -39,7 +39,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  */
 @DisplayName("append(path) arguments")
 @Slf4j
-class HelloWorld_41_Append_Path_Arguments_Test extends _HelloWorldTest {
+class HelloWorld_41_Append_Path_Arguments_Test
+        extends _HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#append(Path) append(path)} method throws a

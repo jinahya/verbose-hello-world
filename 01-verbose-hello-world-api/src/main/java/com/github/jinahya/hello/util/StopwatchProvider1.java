@@ -30,7 +30,8 @@ import java.util.function.LongSupplier;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-enum StopwatchProvider1 implements StopwatchProvider<Void> {
+enum StopwatchProvider1
+        implements StopwatchProvider<Void> {
 
     INSTANCE() {
         @Override

@@ -29,7 +29,8 @@ import java.util.ServiceLoader;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-class HelloWorldModule extends AbstractModule {
+class HelloWorldModule
+        extends AbstractModule {
 
     @Override
     protected void configure() {

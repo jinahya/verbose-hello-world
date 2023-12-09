@@ -45,7 +45,8 @@ import static org.mockito.Mockito.verify;
  */
 @DisplayName("append(appendable)")
 @Slf4j
-class HelloWorld_09_Append_Appendable_Test extends _HelloWorldTest {
+class HelloWorld_09_Append_Appendable_Test
+        extends _HelloWorldTest {
 
     @BeforeEach
     void _beforeEach() {

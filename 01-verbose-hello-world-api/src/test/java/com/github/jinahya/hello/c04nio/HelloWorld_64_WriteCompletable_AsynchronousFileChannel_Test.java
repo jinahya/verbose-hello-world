@@ -61,7 +61,8 @@ import static org.mockito.Mockito.verify;
  */
 @DisplayName("write(channel, position)")
 @Slf4j
-class HelloWorld_64_WriteCompletable_AsynchronousFileChannel_Test extends _HelloWorldTest {
+class HelloWorld_64_WriteCompletable_AsynchronousFileChannel_Test
+        extends _HelloWorldTest {
 
     @BeforeEach
     @SuppressWarnings({"unchecked"})

@@ -44,7 +44,8 @@ import java.util.function.UnaryOperator;
 @SuppressWarnings({
         "java:S101" // _AbstractRfc86_...
 })
-public abstract class _Rfc86_Attachment implements Closeable {
+public abstract class _Rfc86_Attachment
+        implements Closeable {
 
     /**
      * Creates a new instance with specified arguments.

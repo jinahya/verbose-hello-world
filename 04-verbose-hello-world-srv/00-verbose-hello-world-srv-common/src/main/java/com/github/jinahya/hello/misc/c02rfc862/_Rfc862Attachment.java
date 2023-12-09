@@ -29,9 +29,11 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
-abstract class _Rfc862Attachment extends _Rfc86_Attachment {
+abstract class _Rfc862Attachment
+        extends _Rfc86_Attachment {
 
-    abstract static class Client extends _Rfc862Attachment {
+    abstract static class Client
+            extends _Rfc862Attachment {
 
         Client() {
             super(_Rfc862Utils.logClientBytes(_Rfc86_Utils.newRandomBytes()));
@@ -54,7 +56,8 @@ abstract class _Rfc862Attachment extends _Rfc86_Attachment {
         }
     }
 
-    abstract static class Server extends _Rfc862Attachment {
+    abstract static class Server
+            extends _Rfc862Attachment {
 
         Server() {
             super(0);

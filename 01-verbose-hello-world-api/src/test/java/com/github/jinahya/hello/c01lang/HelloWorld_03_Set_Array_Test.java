@@ -36,7 +36,8 @@ import static com.github.jinahya.hello.HelloWorld.BYTES;
  */
 @DisplayName("set(array)")
 @Slf4j
-class HelloWorld_03_Set_Array_Test extends _HelloWorldTest {
+class HelloWorld_03_Set_Array_Test
+        extends _HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#set(byte[]) set(array)} method invokes

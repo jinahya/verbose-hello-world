@@ -130,7 +130,8 @@ public class JavaBeansUtils {
         final Object value;
     }
 
-    public interface PropertyInfoHolder extends Supplier<PropertyInfo> {
+    public interface PropertyInfoHolder
+            extends Supplier<PropertyInfo> {
 
         static PropertyInfoHolder of(final PropertyInfo value) {
             Objects.requireNonNull(value, "value is null");

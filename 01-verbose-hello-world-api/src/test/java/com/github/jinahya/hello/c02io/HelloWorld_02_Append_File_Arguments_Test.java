@@ -39,7 +39,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  */
 @DisplayName("append(file) arguments")
 @Slf4j
-class HelloWorld_02_Append_File_Arguments_Test extends _HelloWorldTest {
+class HelloWorld_02_Append_File_Arguments_Test
+        extends _HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#append(File) append(file)} method throws a

@@ -32,9 +32,11 @@ import java.util.concurrent.ThreadLocalRandom;
 @SuppressWarnings({
         "java:S101" // _Rfc863...
 })
-abstract class _Rfc863Attachment extends _Rfc86_Attachment {
+abstract class _Rfc863Attachment
+        extends _Rfc86_Attachment {
 
-    abstract static class Client extends _Rfc863Attachment {
+    abstract static class Client
+            extends _Rfc863Attachment {
 
         Client() {
             super(_Rfc86_Utils.newRandomBytes());
@@ -52,7 +54,8 @@ abstract class _Rfc863Attachment extends _Rfc86_Attachment {
         }
     }
 
-    abstract static class Server extends _Rfc863Attachment {
+    abstract static class Server
+            extends _Rfc863Attachment {
 
         Server() {
             super(0);

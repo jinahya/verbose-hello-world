@@ -51,7 +51,8 @@ import static org.mockito.Mockito.verify;
  */
 @DisplayName("write(RandomAccessFile file)")
 @Slf4j
-class HelloWorld_09_Write_RandomAccessFile_Test extends _HelloWorldTest {
+class HelloWorld_09_Write_RandomAccessFile_Test
+        extends _HelloWorldTest {
 
     @BeforeEach
     void _beforeEach() {

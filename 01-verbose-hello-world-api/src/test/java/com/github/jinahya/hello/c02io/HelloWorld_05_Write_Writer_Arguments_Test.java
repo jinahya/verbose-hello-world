@@ -38,7 +38,8 @@ import java.io.Writer;
  */
 @DisplayName("write(writer) arguments")
 @Slf4j
-class HelloWorld_05_Write_Writer_Arguments_Test extends _HelloWorldTest {
+class HelloWorld_05_Write_Writer_Arguments_Test
+        extends _HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(Writer) write(writer)} method throws a

@@ -51,7 +51,8 @@ import static org.mockito.Mockito.verify;
  */
 @DisplayName("writeAsync(channel, position, handler, attachment)")
 @Slf4j
-class HelloWorld_63_WriteAsync_AsynchronousFileChannelWithHandler_Test extends _HelloWorldTest {
+class HelloWorld_63_WriteAsync_AsynchronousFileChannelWithHandler_Test
+        extends _HelloWorldTest {
 
     @BeforeEach
     void _beforeEach() {

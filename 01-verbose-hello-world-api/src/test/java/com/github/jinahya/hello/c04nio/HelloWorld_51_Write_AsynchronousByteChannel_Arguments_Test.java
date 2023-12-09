@@ -39,7 +39,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  */
 @DisplayName("write(channel) arguments")
 @Slf4j
-class HelloWorld_51_Write_AsynchronousByteChannel_Arguments_Test extends _HelloWorldTest {
+class HelloWorld_51_Write_AsynchronousByteChannel_Arguments_Test
+        extends _HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(AsynchronousByteChannel) write(channel)} method throws a

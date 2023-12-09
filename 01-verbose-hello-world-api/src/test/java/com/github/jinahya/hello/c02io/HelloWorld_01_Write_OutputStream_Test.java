@@ -47,7 +47,8 @@ import static org.mockito.Mockito.mock;
  */
 @DisplayName("write(stream)")
 @Slf4j
-class HelloWorld_01_Write_OutputStream_Test extends _HelloWorldTest {
+class HelloWorld_01_Write_OutputStream_Test
+        extends _HelloWorldTest {
 
     @BeforeEach
     void _beforeEach() {

@@ -46,7 +46,8 @@ import static java.util.Objects.requireNonNull;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorldServerTcp extends AbstractHelloWorldServer {
+class HelloWorldServerTcp
+        extends AbstractHelloWorldServer {
 
     /**
      * Creates a new instance with specified local address to bind.

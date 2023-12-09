@@ -39,7 +39,8 @@ import java.util.concurrent.Executors;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorldServerUdp extends AbstractHelloWorldServer {
+class HelloWorldServerUdp
+        extends AbstractHelloWorldServer {
 
     @Override
     protected void openInternal(SocketAddress endpoint, Path dir)

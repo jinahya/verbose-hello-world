@@ -43,7 +43,8 @@ import static org.mockito.Mockito.verify;
  */
 @DisplayName("write(writer)")
 @Slf4j
-class HelloWorld_05_Write_Writer_Test extends _HelloWorldTest {
+class HelloWorld_05_Write_Writer_Test
+        extends _HelloWorldTest {
 
     @BeforeEach
     void _beforeEach() {

@@ -57,32 +57,35 @@
     <version.asciidoctorj>3.0.0-alpha.1</version.asciidoctorj>
     <version.asciidoctorj-pdf>2.3.9</version.asciidoctorj-pdf>
     <version.com.formdev>3.2.5</version.com.formdev>
-<!--    <version.com.google.dagger>2.48.1</version.com.google.dagger>-->
+    <!--    <version.com.google.dagger>2.48.1</version.com.google.dagger>-->
     <version.com.google.dagger>2.49</version.com.google.dagger>
     <version.com.google.guava>32.1.3-jre</version.com.google.guava>
-    <version.maven-surefire>3.1.2</version.maven-surefire>
+    <version.maven-surefire>3.2.2</version.maven-surefire>
     <version.maven-failsafe>${version.maven-surefire}</version.maven-failsafe>
-    <version.maven-javadoc-plugin>3.5.0</version.maven-javadoc-plugin>
+    <version.maven-javadoc-plugin>3.6.3</version.maven-javadoc-plugin>
     <!--    <version.org.apache.openwebbeans>2.0.27</version.org.apache.openwebbeans>-->
-<!--    <version.org.apache.openwebbeans>4.0.0</version.org.apache.openwebbeans>-->
+    <!--    <version.org.apache.openwebbeans>4.0.0</version.org.apache.openwebbeans>-->
     <version.org.apache.openwebbeans>4.0.1</version.org.apache.openwebbeans>
-    <version.org.aspectj>1.9.20.1</version.org.aspectj>
+    <!--    <version.org.aspectj>1.9.20.1</version.org.aspectj>-->
+    <version.org.aspectj>1.9.21.RC1</version.org.aspectj>
     <version.org.glassfish.hk2>3.0.5</version.org.glassfish.hk2>
     <version.org.hibernate.validator>8.0.1.Final</version.org.hibernate.validator>
-    <version.org.jboss.weld>5.1.2.Final</version.org.jboss.weld> <!-- weld-junit5 -->
+    <!--    <version.org.jboss.weld>5.1.2.Final</version.org.jboss.weld> &lt;!&ndash; weld-junit5 &ndash;&gt;-->
+    <version.org.jboss.weld>6.0.0.Alpha1</version.org.jboss.weld> <!-- weld-junit5 -->
     <version.org.jboss.weld-junit>4.0.1.Final</version.org.jboss.weld-junit> <!-- weld-se-core -->
     <version.org.jboss.weld.se>${version.org.jboss.weld}</version.org.jboss.weld.se> <!-- weld-se-core -->
     <version.org.junit.jupiter>5.10.1</version.org.junit.jupiter>
-<!--    <version.org.mockito>5.7.0</version.org.mockito>-->
+    <!--    <version.org.mockito>5.7.0</version.org.mockito>-->
     <version.org.mockito>5.8.0</version.org.mockito>
     <!--    <version.org.mockito.mockito-inline>5.2.0</version.org.mockito.mockito-inline> &lt;!&ndash; https://search.maven.org/artifact/org.mockito/mockito-inline &ndash;&gt;-->
     <version.org.reactivestreams>1.0.4</version.org.reactivestreams>
     <version.org.projectlombok>1.18.30</version.org.projectlombok>
-    <version.org.slf4j>2.0.7</version.org.slf4j>
+    <!--    <version.org.slf4j>2.0.7</version.org.slf4j>-->
+    <version.org.slf4j>2.0.9</version.org.slf4j>
     <!-- https://docs.spring.io/spring-boot/docs/current/reference/html/dependency-versions.html -->
-<!--    <version.org.springframework>6.0.13</version.org.springframework>-->
+    <!--    <version.org.springframework>6.0.13</version.org.springframework>-->
     <version.org.springframework>6.1.1</version.org.springframework>
-<!--    <version.org.springframework.boot>3.1.5</version.org.springframework.boot>-->
+    <!--    <version.org.springframework.boot>3.1.5</version.org.springframework.boot>-->
     <version.org.springframework.boot>3.2.0</version.org.springframework.boot>
   </properties>
 
@@ -91,7 +94,7 @@
       <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
-        <version>1.4.11</version>
+        <version>1.4.14</version>
       </dependency>
       <dependency>
         <groupId>com.formdev</groupId>
@@ -123,7 +126,8 @@
       <dependency>
         <groupId>jakarta.enterprise</groupId>
         <artifactId>jakarta.enterprise.cdi-api</artifactId>
-        <version>4.0.1</version>
+        <!--        <version>4.0.1</version>-->
+        <version>4.1.0-M1</version>
       </dependency>
       <dependency>
         <groupId>jakarta.inject</groupId>
@@ -321,7 +325,7 @@
         <plugin>
           <groupId>com.github.spotbugs</groupId>
           <artifactId>spotbugs-maven-plugin</artifactId>
-          <version>4.7.3.6</version>
+          <version>4.8.2.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -336,12 +340,12 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-checkstyle-plugin</artifactId>
-          <version>3.3.0</version>
+          <version>3.3.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-clean-plugin</artifactId>
-          <version>3.3.1</version>
+          <version>3.3.2</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -363,12 +367,12 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-dependency-plugin</artifactId>
-          <version>3.6.0</version>
+          <version>3.6.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-enforcer-plugin</artifactId>
-          <version>3.3.0</version>
+          <version>3.4.1</version>
           <executions>
             <execution>
               <id>enforce-dependency-convergence</id>
@@ -382,6 +386,7 @@
                       <exclude>com.google.guava:guava</exclude> <!-- from dagger-compiler -->
                       <exclude>jakarta.annotation:jakarta.annotation-api</exclude> <!-- jakarta-.enterprise.cdi-api - weld-se-core -->
                       <exclude>jakarta.el:jakarta.el-api</exclude> <!-- jakarta-.enterprise.cdi-api - weld-se-core -->
+                      <exclude>jakarta.interceptor:jakarta.interceptor-api</exclude>
                       <exclude>org.jetbrains.kotlin:kotlin-stdlib</exclude>  <!-- from dagger-compiler -->
                       <exclude>org.jetbrains.kotlin:kotlin-stdlib-jdk8</exclude>  <!-- from dagger-compiler -->
                     </excludes>
@@ -457,17 +462,17 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jxr-plugin</artifactId>
-          <version>3.3.0</version>
+          <version>3.3.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-project-info-reports-plugin</artifactId>
-          <version>3.4.5</version>
+          <version>3.5.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-pmd-plugin</artifactId>
-          <version>3.21.0</version>
+          <version>3.21.2</version>
           <configuration>
             <targetJdk>${maven.compiler.target}</targetJdk>
             <skipEmptyReport>false</skipEmptyReport> <!-- https://issues.apache.org/jira/browse/MPMD-225 -->
@@ -476,12 +481,12 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-shade-plugin</artifactId>
-          <version>3.5.0</version>
+          <version>3.5.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
-          <version>4.0.0-M9</version>
+          <version>4.0.0-M12</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -501,17 +506,17 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>build-helper-maven-plugin</artifactId>
-          <version>3.4.0</version>
+          <version>3.5.0</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>exec-maven-plugin</artifactId>
-          <version>3.1.0</version>
+          <version>3.1.1</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>license-maven-plugin</artifactId>
-          <version>2.2.0</version>
+          <version>2.3.0</version>
           <configuration>
             <licenseName>apache_v2</licenseName>
           </configuration>
@@ -525,12 +530,12 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>versions-maven-plugin</artifactId>
-          <version>2.16.0</version>
+          <version>2.16.2</version>
         </plugin>
         <plugin>
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
-          <version>0.8.10</version>
+          <version>0.8.11</version>
           <executions>
             <execution>
               <id>default-prepare-agent</id>

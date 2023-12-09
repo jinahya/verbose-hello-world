@@ -44,7 +44,8 @@ import static java.nio.channels.SelectionKey.OP_WRITE;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorldServerUdp extends AbstractHelloWorldServer {
+class HelloWorldServerUdp
+        extends AbstractHelloWorldServer {
 
     private void handle(Set<SelectionKey> keys) throws IOException {
         for (var key : keys) {

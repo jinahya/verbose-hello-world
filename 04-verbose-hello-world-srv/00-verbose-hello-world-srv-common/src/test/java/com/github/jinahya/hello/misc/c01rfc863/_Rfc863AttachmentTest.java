@@ -22,7 +22,8 @@ package com.github.jinahya.hello.misc.c01rfc863;
 
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_AttachmentTest;
 
-abstract class _Rfc863AttachmentTest<T extends _Rfc863Attachment> extends _Rfc86_AttachmentTest<T> {
+abstract class _Rfc863AttachmentTest<T extends _Rfc863Attachment>
+        extends _Rfc86_AttachmentTest<T> {
 
     abstract static class ClientTest<T extends _Rfc863Attachment.Client>
             extends _Rfc863AttachmentTest<T> {

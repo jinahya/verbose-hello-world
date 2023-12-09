@@ -50,7 +50,8 @@ import static org.mockito.Mockito.when;
  */
 @DisplayName("write(channel)")
 @Slf4j
-class HelloWorld_51_Write_AsynchronousByteChannel_Test extends _HelloWorldTest {
+class HelloWorld_51_Write_AsynchronousByteChannel_Test
+        extends _HelloWorldTest {
 
     @BeforeEach
     void _beforeEach() {

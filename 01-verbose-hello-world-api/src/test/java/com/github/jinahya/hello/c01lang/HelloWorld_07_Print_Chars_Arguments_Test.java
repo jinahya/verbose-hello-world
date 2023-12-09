@@ -39,7 +39,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  */
 @DisplayName("print(chars) arguments")
 @Slf4j
-class HelloWorld_07_Print_Chars_Arguments_Test extends _HelloWorldTest {
+class HelloWorld_07_Print_Chars_Arguments_Test
+        extends _HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#print(char[]) print(chars)} method throws a

@@ -57,7 +57,8 @@ import java.util.Optional;
         "java:S1199" // nested code block
 })
 @Slf4j
-class NetworkInterfacesViewer extends _AbstractViewer {
+class NetworkInterfacesViewer
+        extends _AbstractViewer {
 
     private static final String NAME = "Network Interfaces Properties";
 

@@ -49,7 +49,8 @@ import static org.mockito.Mockito.mock;
  */
 @DisplayName("writeCompletable(channel)")
 @Slf4j
-class HelloWorld_54_WriteCompletable_AsynchronousByteChannel_Test extends _HelloWorldTest {
+class HelloWorld_54_WriteCompletable_AsynchronousByteChannel_Test
+        extends _HelloWorldTest {
 
     @BeforeEach
     @SuppressWarnings({

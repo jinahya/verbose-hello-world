@@ -53,7 +53,8 @@ import static org.mockito.Mockito.verify;
  */
 @DisplayName("write(channel, position)")
 @Slf4j
-class HelloWorld_61_Write_AsynchronousFileChannel_Test extends _HelloWorldTest {
+class HelloWorld_61_Write_AsynchronousFileChannel_Test
+        extends _HelloWorldTest {
 
     @BeforeEach
     void _beforeEach() {

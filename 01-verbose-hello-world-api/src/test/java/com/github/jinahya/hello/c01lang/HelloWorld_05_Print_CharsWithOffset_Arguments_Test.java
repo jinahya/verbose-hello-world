@@ -39,7 +39,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  */
 @DisplayName("set(chars, offset) arguments")
 @Slf4j
-class HelloWorld_05_Print_CharsWithOffset_Arguments_Test extends _HelloWorldTest {
+class HelloWorld_05_Print_CharsWithOffset_Arguments_Test
+        extends _HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#set(byte[]) print(chars)} method throws a

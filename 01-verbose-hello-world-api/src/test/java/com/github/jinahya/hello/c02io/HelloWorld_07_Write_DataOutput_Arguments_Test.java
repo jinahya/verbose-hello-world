@@ -39,7 +39,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  */
 @DisplayName("write(data) arguments")
 @Slf4j
-class HelloWorld_07_Write_DataOutput_Arguments_Test extends _HelloWorldTest {
+class HelloWorld_07_Write_DataOutput_Arguments_Test
+        extends _HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(DataOutput) write(data)} method throws a

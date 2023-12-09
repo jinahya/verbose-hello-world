@@ -59,7 +59,8 @@ import static org.mockito.Mockito.mockStatic;
  */
 @DisplayName("append(path)")
 @Slf4j
-class HelloWorld_41_Append_Path_Test extends _HelloWorldTest {
+class HelloWorld_41_Append_Path_Test
+        extends _HelloWorldTest {
 
     @BeforeEach
     void _beforeEach() throws IOException {

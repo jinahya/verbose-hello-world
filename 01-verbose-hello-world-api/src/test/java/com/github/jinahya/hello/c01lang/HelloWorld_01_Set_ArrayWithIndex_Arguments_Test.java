@@ -36,7 +36,8 @@ import org.junit.jupiter.api.DisplayName;
 @Disabled("not (gonna be) implemented yet")
 @DisplayName("set(array, index) arguments")
 @Slf4j
-class HelloWorld_01_Set_ArrayWithIndex_Arguments_Test extends _HelloWorldTest {
+class HelloWorld_01_Set_ArrayWithIndex_Arguments_Test
+        extends _HelloWorldTest {
 
     // empty; we won't implement the method in this module.
 }

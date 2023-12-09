@@ -26,7 +26,8 @@ import java.net.InetSocketAddress;
 import java.util.Base64;
 import java.util.function.Function;
 
-final class _Rfc862Constants extends _Rfc86_Constants {
+final class _Rfc862Constants
+        extends _Rfc86_Constants {
 
     private static final int RFC862_PORT = 7;
 

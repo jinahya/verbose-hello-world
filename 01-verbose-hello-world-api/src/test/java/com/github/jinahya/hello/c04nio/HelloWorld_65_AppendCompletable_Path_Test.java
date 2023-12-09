@@ -72,7 +72,8 @@ import static org.mockito.Mockito.verify;
  */
 @DisplayName("appendCompletable(path)")
 @Slf4j
-class HelloWorld_65_AppendCompletable_Path_Test extends _HelloWorldTest {
+class HelloWorld_65_AppendCompletable_Path_Test
+        extends _HelloWorldTest {
 
     @BeforeEach
     void _beforeEach() {

@@ -38,7 +38,8 @@ import java.util.Objects;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorldServerUdp1 implements HelloWorldServer {
+class HelloWorldServerUdp1
+        implements HelloWorldServer {
 
     @Override
     public synchronized void open(SocketAddress endpoint, Path dir)

@@ -38,7 +38,8 @@ import static java.util.concurrent.ThreadLocalRandom.current;
  */
 @DisplayName("set(array) arguments")
 @Slf4j
-class HelloWorld_03_Set_Array_Arguments_Test extends _HelloWorldTest {
+class HelloWorld_03_Set_Array_Arguments_Test
+        extends _HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#set(byte[]) set(array)} method throws a

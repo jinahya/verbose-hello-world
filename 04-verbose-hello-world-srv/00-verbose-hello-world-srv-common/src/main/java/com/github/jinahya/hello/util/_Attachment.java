@@ -36,7 +36,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @SuppressWarnings({
         "java:S101" // _Attachment...
 })
-public abstract class _Attachment implements Closeable {
+public abstract class _Attachment
+        implements Closeable {
 
     /**
      * Creates a new instance.

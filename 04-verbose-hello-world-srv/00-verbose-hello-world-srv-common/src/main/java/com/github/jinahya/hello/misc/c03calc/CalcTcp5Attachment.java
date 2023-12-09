@@ -30,7 +30,8 @@ import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 
 @Slf4j
-abstract class CalcTcp5Attachment extends _Attachment {
+abstract class CalcTcp5Attachment
+        extends _Attachment {
 
     /**
      * Creates a new instance, for client, with specified client.

@@ -38,7 +38,8 @@ import java.io.OutputStream;
  */
 @DisplayName("write(stream) arguments")
 @Slf4j
-class HelloWorld_01_Write_OutputStream_Arguments_Test extends _HelloWorldTest {
+class HelloWorld_01_Write_OutputStream_Arguments_Test
+        extends _HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(OutputStream) write(stream)} method throws a

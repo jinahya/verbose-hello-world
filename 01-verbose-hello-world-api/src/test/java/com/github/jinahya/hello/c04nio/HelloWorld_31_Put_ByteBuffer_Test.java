@@ -47,7 +47,8 @@ import static org.mockito.Mockito.spy;
  */
 @DisplayName("put(buffer)")
 @Slf4j
-class HelloWorld_31_Put_ByteBuffer_Test extends _HelloWorldTest {
+class HelloWorld_31_Put_ByteBuffer_Test
+        extends _HelloWorldTest {
 
     @BeforeEach
     void _beforeEach() {

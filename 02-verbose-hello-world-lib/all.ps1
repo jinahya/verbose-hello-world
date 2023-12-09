@@ -14,6 +14,6 @@ foreach ($profile in $profilesAndTests.keys)
     $test = $profilesAndTests[$profile]
     Write-Host "$profile / $test"
     $command = "mvn -f $PSScriptRoot/pom.xml -q -P$profile -Dtest=$test test"
-#    Write-Host $command
+    #    Write-Host $command
     Invoke-Expression $command
 }

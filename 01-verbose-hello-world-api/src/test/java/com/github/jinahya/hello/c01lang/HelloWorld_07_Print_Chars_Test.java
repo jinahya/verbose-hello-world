@@ -40,7 +40,8 @@ import static org.mockito.Mockito.verify;
  */
 @DisplayName("print(chars)")
 @Slf4j
-class HelloWorld_07_Print_Chars_Test extends _HelloWorldTest {
+class HelloWorld_07_Print_Chars_Test
+        extends _HelloWorldTest {
 
     @BeforeEach
     void _beforeEach() {

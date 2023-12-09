@@ -38,7 +38,8 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 class ChatTcp1Client {
 
-    private record Receiver(Socket client) implements Runnable {
+    private record Receiver(Socket client)
+            implements Runnable {
 
         private Receiver {
             Objects.requireNonNull(client, "client is null");
@@ -69,7 +70,8 @@ class ChatTcp1Client {
         }
     }
 
-    private record Sender(Socket client) implements Runnable {
+    private record Sender(Socket client)
+            implements Runnable {
 
         private Sender {
             Objects.requireNonNull(client, "client is null");
