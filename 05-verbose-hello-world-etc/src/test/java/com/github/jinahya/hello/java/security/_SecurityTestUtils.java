@@ -21,7 +21,6 @@ package com.github.jinahya.hello.java.security;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.DisplayName;
 
 import java.security.Provider;
@@ -40,8 +39,9 @@ import java.util.stream.Stream;
 public final class _SecurityTestUtils {
 
     static {
-        Security.addProvider(new BouncyCastleProvider());
-        Security.addProvider(new gnu.crypto.jce.GnuCrypto());
+//        Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+//        Security.addProvider(new gnu.crypto.jce.GnuCrypto());
+//        Security.addProvider(new org.spongycastle.jce.provider.BouncyCastleProvider());
     }
 
     /**

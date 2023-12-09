@@ -20,7 +20,6 @@ package com.github.jinahya.hello.javax.crypto;
  * #L%
  */
 
-import com.github.jinahya.hello.java.security._SecurityTestUtils;
 import com.github.jinahya.hello.util.JavaIoUtils;
 import com.github.jinahya.hello.util.JavaNioUtils;
 import com.github.jinahya.hello.util.java.security.MessageDigestUtils;
@@ -32,7 +31,6 @@ import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -57,7 +55,6 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.Provider;
 import java.security.SecureRandom;
 import java.security.spec.AlgorithmParameterSpec;
 import java.util.List;
@@ -86,11 +83,22 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 @Slf4j
 class CipherTest {
 
-    private static Stream<Provider> providers() {
-        final var type = Cipher.class.getSimpleName();
-        return _SecurityTestUtils.providers()
-                .filter(p -> p.getServices().stream().anyMatch(s -> s.getType().equals(type)));
-    }
+//    private static Stream<Provider> providers() {
+//        if (true) {
+//            final var types = Set.of(
+//                    Cipher.class.getSimpleName(),
+//                    KeyGenerator.class.getSimpleName(),
+//                    KeyPairGenerator.class.getSimpleName()
+//            );
+//            return _SecurityTestUtils.providers()
+//                    .filter(p -> p.getServices().stream()
+//                            .map(Provider.Service::getType)
+//                            .anyMatch(types::contains));
+//        }
+//        final var type = Cipher.class.getSimpleName();
+//        return _SecurityTestUtils.providers()
+//                .filter(p -> p.getServices().stream().anyMatch(s -> s.getType().equals(type)));
+//    }
 
     private static Stream<String> algorithms() {
         return Stream.of(
@@ -165,49 +173,40 @@ class CipherTest {
                 .map(a -> (String) a.get()[0]);
     }
 
-    private static Stream<Arguments> providersAndRequiredToBeSupportedTransformations() {
-        return providers()
-                .flatMap(p -> requiredToBeSupportedTransformations().map(t -> arguments(p, t)));
-    }
+//    private static Stream<Arguments> providersAndRequiredToBeSupportedTransformations() {
+//        return providers()
+//                .flatMap(p -> requiredToBeSupportedTransformations().map(t -> arguments(p, t)));
+//    }
 
-    @MethodSource({"providersAndRequiredToBeSupportedTransformations"})
+    @MethodSource({"requiredToBeSupportedTransformations"})
     @ParameterizedTest
-    void requiredToBeSupportedTransformations__(final Provider provider,
-                                                final String transformation) {
+    void requiredToBeSupportedTransformations__(final String transformation) {
         try {
-            Cipher.getInstance(transformation, provider);
-        } catch (NoSuchAlgorithmException |NoSuchPaddingException e) {
-            log.warn("not supported; {}, {}", provider, transformation, e);
-        }
-    }
-
-    private static Cipher getCipherInstance(final String transformation, final Provider provider) {
-        try {
-            return Cipher.getInstance(transformation, provider);
+            Cipher.getInstance(transformation);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
-            log.error("failed to get instance with {}, {}", transformation, provider);
+            log.warn("unable to get a cipher instance; transformation: {}", transformation, e);
         }
-        return null;
     }
 
-    private static Key generateKey(final String algorithm, final Provider provider,
-                                   final int keysize) {
-        final KeyGenerator generator;
+    private static Cipher getCipherInstance(final String transformation) {
         try {
-            generator = KeyGenerator.getInstance(algorithm, provider);
-            generator.init(keysize, SecureRandom.getInstanceStrong());
-            return generator.generateKey();
-        } catch (final NoSuchAlgorithmException nsae) {
-            log.error("failed to generate key with {}, {}, and {}", algorithm, provider, keysize,
-                      nsae);
+            return Cipher.getInstance(transformation);
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
+            log.error("failed to get cipher instance; transformation: {}", transformation, e);
         }
         return null;
     }
 
-    private static KeyPair generateKeyPair(final String algorithm, final Provider provider,
-                                           final int keysize)
+    private static Key generateKey(final String algorithm, final int keysize)
             throws NoSuchAlgorithmException {
-        final var generator = KeyPairGenerator.getInstance(algorithm, provider);
+        final KeyGenerator generator = KeyGenerator.getInstance(algorithm);
+        generator.init(keysize);
+        return generator.generateKey();
+    }
+
+    private static KeyPair generateKeyPair(final String algorithm, final int keysize)
+            throws NoSuchAlgorithmException {
+        final KeyPairGenerator generator = KeyPairGenerator.getInstance(algorithm);
         generator.initialize(keysize);
         return generator.generateKeyPair();
     }
@@ -221,24 +220,19 @@ class CipherTest {
         );
     }
 
-    private static Stream<Arguments> providersAndAesKeysizes() {
-        return providers().flatMap(p -> aesKeysizes().mapToObj(ks -> Arguments.of(p, ks)));
-    }
-
     @DisplayName("AES/CBC/NoPadding")
     @Nested
     class AesCbcNoPaddingTest {
 
-        private static Stream<Arguments> providersAndKeysizes() {
-            return providersAndAesKeysizes();
+        private static IntStream keysizes() {
+            return aesKeysizes();
         }
 
-        @MethodSource({"providersAndKeysizes"})
+        @MethodSource({"keysizes"})
         @ParameterizedTest
-        void __(final Provider provider, final int keysize, @TempDir final File dir)
-                throws IOException, NoSuchAlgorithmException,
-                       InvalidKeyException, InvalidAlgorithmParameterException,
-                       IllegalBlockSizeException, BadPaddingException {
+        void __(final int keysize, @TempDir final File dir)
+                throws IOException, NoSuchAlgorithmException, InvalidAlgorithmParameterException,
+                       InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
             // ------------------------------------------------------------------------------- files
             final var plainFile = JavaIoUtils.createTempFileInAndWriteSome(dir);
             final var encryptedFile = File.createTempFile("tmp", "tmp", dir);
@@ -248,10 +242,7 @@ class CipherTest {
             final var mode = "CBC";
             final var padding = "NoPadding";
             final var transformation = algorithm + '/' + mode + '/' + padding;
-            final var cipher = getCipherInstance(transformation, provider);
-            if (cipher == null) {
-                return;
-            }
+            final var cipher = getCipherInstance(transformation);
             final var blockSize = cipher.getBlockSize();
             assert blockSize == 128 >> 3;
             {
@@ -263,10 +254,7 @@ class CipherTest {
                 assertThat(plainFile.length() % blockSize).isZero();
             }
             // --------------------------------------------------------------------------------- key
-            final Key key = generateKey(algorithm, provider, keysize);
-            if (key == null) {
-                return;
-            }
+            final var key = generateKey(algorithm, keysize);
             // ------------------------------------------------------------------------------ params
             final AlgorithmParameterSpec params;
             {
@@ -333,28 +321,21 @@ class CipherTest {
             }
         }
 
-        @MethodSource({"providersAndKeysizes"})
+        @MethodSource({"keysizes"})
         @ParameterizedTest
-        void __(final Provider provider, final int keysize, @TempDir final Path dir)
-                throws IOException, NoSuchAlgorithmException,
-                       InvalidKeyException, InvalidAlgorithmParameterException,
-                       IllegalBlockSizeException, BadPaddingException {
+        void __(final int keysize, @TempDir final Path dir)
+                throws IOException, NoSuchAlgorithmException, InvalidAlgorithmParameterException,
+                       InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
             // ------------------------------------------------------------------------------- paths
             final var plainPath = JavaNioUtils.createTempFileInAndWriteSome(dir);
             final var encryptedPath = Files.createTempFile(dir, null, null);
             final var decryptedPath = Files.createTempFile(dir, null, null);
             // ------------------------------------------------------------------------------ cipher
-            final String algorithm = "AES";
-            final String mode = "CBC";
-            final String padding = "NoPadding";
+            final var algorithm = "AES";
+            final var mode = "CBC";
+            final var padding = "NoPadding";
             final var transformation = algorithm + '/' + mode + '/' + padding;
-            final Cipher cipher;
-            try {
-                cipher = Cipher.getInstance(transformation, provider);
-            } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
-                log.error("failed to get instance with {}, {}", transformation, provider);
-                return;
-            }
+            final var cipher = getCipherInstance(transformation);
             final var blockSize = cipher.getBlockSize();
             assert blockSize == 128 >> 3;
             // --------------------------------------------------------- pad zeros to the plain file
@@ -372,10 +353,7 @@ class CipherTest {
                 assertThat(Files.size(plainPath) % blockSize).isZero();
             }
             // --------------------------------------------------------------------------------- key
-            final Key key = generateKey(algorithm, provider, keysize);
-            if (key == null) {
-                return;
-            }
+            final var key = generateKey(algorithm, keysize);
             // ------------------------------------------------------------------------------ params
             final AlgorithmParameterSpec params;
             {
@@ -455,16 +433,15 @@ class CipherTest {
     @Nested
     class AesCbcPkcs5PaddingTest {
 
-        private static Stream<Arguments> providersAndKeysizes() {
-            return providersAndAesKeysizes();
+        private static IntStream keysizes() {
+            return aesKeysizes();
         }
 
-        @MethodSource({"providersAndKeysizes"})
+        @MethodSource({"keysizes"})
         @ParameterizedTest
-        void __(final Provider provider, final int keysize, @TempDir final File dir)
-                throws IOException, NoSuchPaddingException, NoSuchAlgorithmException,
-                       InvalidKeyException, InvalidAlgorithmParameterException,
-                       IllegalBlockSizeException, BadPaddingException {
+        void __(final int keysize, @TempDir final File dir)
+                throws IOException, NoSuchAlgorithmException, InvalidAlgorithmParameterException,
+                       InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
             // ------------------------------------------------------------------------------- files
             final var plainFile = JavaIoUtils.createTempFileInAndWriteSome(dir);
             final var encryptedFile = File.createTempFile("tmp", "tmp", dir);
@@ -474,17 +451,11 @@ class CipherTest {
             final var mode = "CBC";
             final var padding = "PKCS5Padding";
             final var transformation = algorithm + '/' + mode + '/' + padding;
-            final var cipher = getCipherInstance(transformation, provider);
-            if (cipher == null) {
-                return;
-            }
+            final var cipher = getCipherInstance(transformation);
             final var blockSize = cipher.getBlockSize();
             assert blockSize == 128 >> 3;
             // --------------------------------------------------------------------------------- key
-            final Key key = generateKey(algorithm, provider, keysize);
-            if (key == null) {
-                return;
-            }
+            final var key = generateKey(algorithm, keysize);
             // ------------------------------------------------------------------------------ params
             final AlgorithmParameterSpec params;
             {
@@ -551,31 +522,25 @@ class CipherTest {
             }
         }
 
-        @MethodSource({"providersAndKeysizes"})
+        @MethodSource({"keysizes"})
         @ParameterizedTest
-        void __(final Provider provider, final int keysize, @TempDir final Path dir)
-                throws IOException, NoSuchPaddingException, NoSuchAlgorithmException,
-                       InvalidKeyException, InvalidAlgorithmParameterException,
-                       IllegalBlockSizeException, BadPaddingException {
+        void __(final int keysize, @TempDir final Path dir)
+                throws IOException, NoSuchAlgorithmException, InvalidAlgorithmParameterException,
+                       InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
             // ------------------------------------------------------------------------------- paths
             final var plainPath = JavaNioUtils.createTempFileInAndWriteSome(dir);
             final var encryptedPath = Files.createTempFile(dir, null, null);
             final var decryptedPath = Files.createTempFile(dir, null, null);
             // ------------------------------------------------------------------------------ cipher
-            final String algorithm = "AES";
-            final String mode = "CBC";
-            final String padding = "PKCS5Padding";
-            final var cipher = getCipherInstance(algorithm + '/' + mode + '/' + padding, provider);
-            if (cipher == null) {
-                return;
-            }
+            final var algorithm = "AES";
+            final var mode = "CBC";
+            final var padding = "PKCS5Padding";
+            final var transformation = algorithm + '/' + mode + '/' + padding;
+            final var cipher = getCipherInstance(transformation);
             final var blockSize = cipher.getBlockSize();
             assert blockSize == 128 >> 3;
             // --------------------------------------------------------------------------------- key
-            final Key key = generateKey(algorithm, provider, keysize);
-            if (key == null) {
-                return;
-            }
+            final var key = generateKey(algorithm, keysize);
             // ------------------------------------------------------------------------------ params
             final AlgorithmParameterSpec params;
             {
@@ -654,15 +619,15 @@ class CipherTest {
     @Nested
     class AesEcbNoPaddingTest {
 
-        private static Stream<Arguments> providersAndKeysizes() {
-            return providersAndAesKeysizes();
+        private static IntStream keysizes() {
+            return aesKeysizes();
         }
 
-        @MethodSource({"providersAndKeysizes"})
+        @MethodSource({"keysizes"})
         @ParameterizedTest
-        void __(final Provider provider, final int keysize, @TempDir final File dir)
-                throws IOException, NoSuchPaddingException, NoSuchAlgorithmException,
-                       InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+        void __(final int keysize, @TempDir final File dir)
+                throws IOException, NoSuchAlgorithmException, InvalidKeyException,
+                       IllegalBlockSizeException, BadPaddingException {
             // ------------------------------------------------------------------------------- files
             final var plainFile = JavaIoUtils.createTempFileInAndWriteSome(dir);
             final var encryptedFile = File.createTempFile("tmp", "tmp", dir);
@@ -672,10 +637,7 @@ class CipherTest {
             final var mode = "ECB";
             final var padding = "NoPadding";
             final var transformation = algorithm + '/' + mode + '/' + padding;
-            final var cipher = getCipherInstance(transformation, provider);
-            if (cipher == null) {
-                return;
-            }
+            final var cipher = getCipherInstance(transformation);
             final var blockSize = cipher.getBlockSize();
             assert blockSize == 128 >> 3;
             {
@@ -687,10 +649,7 @@ class CipherTest {
                 assertThat(plainFile.length() % blockSize).isZero();
             }
             // --------------------------------------------------------------------------------- key
-            final Key key = generateKey(algorithm, provider, keysize);
-            if (key == null) {
-                return;
-            }
+            final var key = generateKey(algorithm, keysize);
             // ----------------------------------------------------------------------------- encrypt
             {
                 cipher.init(Cipher.ENCRYPT_MODE, key);
@@ -750,11 +709,11 @@ class CipherTest {
             }
         }
 
-        @MethodSource({"providersAndKeysizes"})
+        @MethodSource({"keysizes"})
         @ParameterizedTest
-        void __(final Provider provider, final int keysize, @TempDir final Path dir)
-                throws IOException, NoSuchPaddingException, NoSuchAlgorithmException,
-                       InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+        void __(final int keysize, @TempDir final Path dir)
+                throws IOException, NoSuchAlgorithmException, InvalidKeyException,
+                       IllegalBlockSizeException, BadPaddingException {
             // ------------------------------------------------------------------------------- paths
             final var plainPath = JavaNioUtils.createTempFileInAndWriteSome(dir);
             final var encryptedPath = Files.createTempFile(dir, null, null);
@@ -764,10 +723,7 @@ class CipherTest {
             final var mode = "ECB";
             final var padding = "NoPadding";
             final var transformation = algorithm + '/' + mode + '/' + padding;
-            final var cipher = getCipherInstance(transformation, provider);
-            if (cipher == null) {
-                return;
-            }
+            final var cipher = getCipherInstance(transformation);
             final var blockSize = cipher.getBlockSize();
             assert blockSize == 128 >> 3;
             {
@@ -784,10 +740,7 @@ class CipherTest {
                 assertThat(Files.size(plainPath) % blockSize).isZero();
             }
             // --------------------------------------------------------------------------------- key
-            final Key key = generateKey(algorithm, provider, keysize);
-            if (key == null) {
-                return;
-            }
+            final var key = generateKey(algorithm, keysize);
             // ----------------------------------------------------------------------------- encrypt
             {
                 cipher.init(Cipher.ENCRYPT_MODE, key);
@@ -860,15 +813,15 @@ class CipherTest {
     @Nested
     class AesEcbPkcs5PaddingTest {
 
-        private static Stream<Arguments> providersAndKeysizes() {
-            return providersAndAesKeysizes();
+        private static IntStream keysizes() {
+            return aesKeysizes();
         }
 
-        @MethodSource({"providersAndKeysizes"})
+        @MethodSource({"keysizes"})
         @ParameterizedTest
-        void __(final Provider provider, final int keysize, @TempDir final File dir)
-                throws IOException, NoSuchPaddingException, NoSuchAlgorithmException,
-                       InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+        void __(final int keysize, @TempDir final File dir)
+                throws IOException, NoSuchAlgorithmException, InvalidKeyException,
+                       IllegalBlockSizeException, BadPaddingException {
             // ------------------------------------------------------------------------------- files
             final var plainFile = JavaIoUtils.createTempFileInAndWriteSome(dir);
             final var encryptedFile = File.createTempFile("tmp", "tmp", dir);
@@ -878,17 +831,11 @@ class CipherTest {
             final var mode = "ECB";
             final var padding = "PKCS5Padding";
             final var transformation = algorithm + '/' + mode + '/' + padding;
-            final var cipher = getCipherInstance(transformation, provider);
-            if (cipher == null) {
-                return;
-            }
+            final var cipher = getCipherInstance(transformation);
             final var blockSize = cipher.getBlockSize();
             assert blockSize == 128 >> 3;
             // --------------------------------------------------------------------------------- key
-            final Key key = generateKey(algorithm, provider, keysize);
-            if (key == null) {
-                return;
-            }
+            final var key = generateKey(algorithm, keysize);
             // ----------------------------------------------------------------------------- encrypt
             {
                 cipher.init(Cipher.ENCRYPT_MODE, key);
@@ -948,11 +895,11 @@ class CipherTest {
             }
         }
 
-        @MethodSource({"providersAndKeysizes"})
+        @MethodSource({"keysizes"})
         @ParameterizedTest
-        void __(final Provider provider, final int keysize, @TempDir final Path dir)
-                throws IOException, NoSuchPaddingException, NoSuchAlgorithmException,
-                       InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+        void __(final int keysize, @TempDir final Path dir)
+                throws IOException, NoSuchAlgorithmException, InvalidKeyException,
+                       IllegalBlockSizeException, BadPaddingException {
             // ------------------------------------------------------------------------------- paths
             final var plainPath = JavaNioUtils.createTempFileInAndWriteSome(dir);
             final var encryptedPath = Files.createTempFile(dir, null, null);
@@ -962,17 +909,11 @@ class CipherTest {
             final var mode = "ECB";
             final var padding = "PKCS5Padding";
             final var transformation = algorithm + '/' + mode + '/' + padding;
-            final var cipher = getCipherInstance(transformation, provider);
-            if (cipher == null) {
-                return;
-            }
+            final var cipher = getCipherInstance(transformation);
             final var blockSize = cipher.getBlockSize();
             assert blockSize == 128 >> 3 : "block size is always 128 regardless of the key size";
             // --------------------------------------------------------------------------------- key
-            final var key = generateKey(algorithm, provider, keysize);
-            if (key == null) {
-                return;
-            }
+            final var key = generateKey(algorithm, keysize);
             // ----------------------------------------------------------------------------- encrypt
             {
                 cipher.init(Cipher.ENCRYPT_MODE, key);
@@ -1045,16 +986,15 @@ class CipherTest {
     @Nested
     class AesGcmNoPaddingTest {
 
-        private static Stream<Arguments> providersAndKeysizes() {
-            return providersAndAesKeysizes();
+        private static IntStream keysizes() {
+            return aesKeysizes();
         }
 
-        @MethodSource({"providersAndKeysizes"})
+        @MethodSource({"keysizes"})
         @ParameterizedTest
-        void __(final Provider provider, final int keysize, @TempDir final File dir)
-                throws IOException, NoSuchPaddingException, NoSuchAlgorithmException,
-                       InvalidKeyException, InvalidAlgorithmParameterException,
-                       IllegalBlockSizeException, BadPaddingException {
+        void __(final int keysize, @TempDir final File dir)
+                throws IOException, NoSuchAlgorithmException, InvalidAlgorithmParameterException,
+                       InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
             // ------------------------------------------------------------------------------- files
             final var plainFile = JavaIoUtils.createTempFileInAndWriteSome(dir);
             final var encryptedFile = File.createTempFile("tmp", "tmp", dir);
@@ -1064,10 +1004,7 @@ class CipherTest {
             final var mode = "GCM";
             final var padding = "NoPadding";
             final var transformation = algorithm + '/' + mode + '/' + padding;
-            final var cipher = getCipherInstance(transformation, provider);
-            if (cipher == null) {
-                return;
-            }
+            final var cipher = getCipherInstance(transformation);
             final var blockSize = cipher.getBlockSize();
             assert blockSize == 128 >> 3;
             {
@@ -1079,10 +1016,7 @@ class CipherTest {
                 assertThat(plainFile.length() % blockSize).isZero();
             }
             // --------------------------------------------------------------------------------- key
-            final var key = generateKey(algorithm, provider, keysize);
-            if (key == null) {
-                return;
-            }
+            final var key = generateKey(algorithm, keysize);
             // ------------------------------------------------------------------------------ params
             final AlgorithmParameterSpec params;
             {
@@ -1156,25 +1090,21 @@ class CipherTest {
             }
         }
 
-        @MethodSource({"providersAndKeysizes"})
+        @MethodSource({"keysizes"})
         @ParameterizedTest
-        void __(final Provider provider, final int keySize, @TempDir final Path dir)
-                throws IOException, NoSuchPaddingException, NoSuchAlgorithmException,
-                       InvalidKeyException, InvalidAlgorithmParameterException,
-                       IllegalBlockSizeException, BadPaddingException {
+        void __(final int keySize, @TempDir final Path dir)
+                throws IOException, NoSuchAlgorithmException, InvalidAlgorithmParameterException,
+                       InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
             // ------------------------------------------------------------------------------- paths
             final var plainPath = JavaNioUtils.createTempFileInAndWriteSome(dir);
             final var encryptedPath = Files.createTempFile(dir, null, null);
             final var decryptedPath = Files.createTempFile(dir, null, null);
             // ------------------------------------------------------------------------------ cipher
-            final String algorithm = "AES";
-            final String mode = "GCM";
-            final String padding = "NoPadding";
+            final var algorithm = "AES";
+            final var mode = "GCM";
+            final var padding = "NoPadding";
             final var transformation = algorithm + '/' + mode + '/' + padding;
-            final var cipher = getCipherInstance(transformation, provider);
-            if (cipher == null) {
-                return;
-            }
+            final var cipher = getCipherInstance(transformation);
             final var blockSize = cipher.getBlockSize();
             assert blockSize == 128 >> 3;
             {
@@ -1191,10 +1121,7 @@ class CipherTest {
                 assertThat(Files.size(plainPath) % blockSize).isZero();
             }
             // --------------------------------------------------------------------------------- key
-            final var key = generateKey(algorithm, provider, keySize);
-            if (key == null) {
-                return;
-            }
+            final var key = generateKey(algorithm, keySize);
             // ------------------------------------------------------------------------------ params
             final AlgorithmParameterSpec params;
             {
@@ -1277,33 +1204,38 @@ class CipherTest {
         }
     }
 
+    private static IntStream desKeysizes() {
+        return IntStream.of(
+                168
+        );
+    }
+
     // https://www.thalesdocs.com/gphsm/ptk/5.7/docs/Content/PTK-J/Ciphers/DESede.htm
     @DisplayName("DESede/CBC/NoPadding")
     @Nested
     class DesedeCbcNoPaddingTest {
 
-        @ValueSource(ints = {
-//                128,
-                168,
-//                192,
-//                256
-        })
+        private static IntStream keysizes() {
+            return desKeysizes();
+        }
+
+        @MethodSource({"keysizes"})
         @ParameterizedTest
-        void __(final int keySize, @TempDir final File dir)
-                throws IOException, NoSuchPaddingException, NoSuchAlgorithmException,
-                       InvalidKeyException, InvalidAlgorithmParameterException,
-                       IllegalBlockSizeException, BadPaddingException {
+        void __(final int keysize, @TempDir final File dir)
+                throws IOException, NoSuchAlgorithmException, InvalidAlgorithmParameterException,
+                       InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
             // ------------------------------------------------------------------------------- files
             final var plainFile = JavaIoUtils.createTempFileInAndWriteSome(dir);
             final var encryptedFile = File.createTempFile("tmp", "tmp", dir);
             final var decryptedFile = File.createTempFile("tmp", "tmp", dir);
             // ------------------------------------------------------------------------------ cipher
-            final String algorithm = "DESede";
-            final String mode = "CBC";
-            final String padding = "NoPadding";
-            final var cipher = Cipher.getInstance(algorithm + '/' + mode + '/' + padding);
+            final var algorithm = "DESede";
+            final var mode = "CBC";
+            final var padding = "NoPadding";
+            final var transformation = algorithm + '/' + mode + '/' + padding;
+            final var cipher = getCipherInstance(transformation);
             final var blockSize = cipher.getBlockSize();
-            assert blockSize == 64 >> 3 : "block size is always 64 regardless of the key size";
+            assert blockSize == 64 >> 3;
             {
                 final var required = (int) (blockSize - (plainFile.length() % blockSize));
                 try (var stream = new FileOutputStream(plainFile, true)) {
@@ -1313,12 +1245,7 @@ class CipherTest {
                 assertThat(plainFile.length() % blockSize).isZero();
             }
             // --------------------------------------------------------------------------------- key
-            final Key key;
-            {
-                final var generator = KeyGenerator.getInstance(algorithm);
-                generator.init(keySize);
-                key = generator.generateKey();
-            }
+            final var key = generateKey(algorithm, keysize);
             // ------------------------------------------------------------------------------ params
             final AlgorithmParameterSpec params;
             {
@@ -1385,26 +1312,21 @@ class CipherTest {
             }
         }
 
-        @ValueSource(ints = {
-//                128,
-                168,
-//                192,
-//                256
-        })
+        @MethodSource({"keysizes"})
         @ParameterizedTest
-        void __(final int keySize, @TempDir final Path dir)
-                throws IOException, NoSuchPaddingException, NoSuchAlgorithmException,
-                       InvalidKeyException, InvalidAlgorithmParameterException,
-                       IllegalBlockSizeException, BadPaddingException {
+        void __(final int keysize, @TempDir final Path dir)
+                throws IOException, NoSuchAlgorithmException, InvalidAlgorithmParameterException,
+                       InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
             // ------------------------------------------------------------------------------- paths
             final var plainPath = JavaNioUtils.createTempFileInAndWriteSome(dir);
             final var encryptedPath = Files.createTempFile(dir, null, null);
             final var decryptedPath = Files.createTempFile(dir, null, null);
             // ------------------------------------------------------------------------------ cipher
-            final String algorithm = "DESede";
-            final String mode = "CBC";
-            final String padding = "NoPadding";
-            final var cipher = Cipher.getInstance(algorithm + '/' + mode + '/' + padding);
+            final var algorithm = "DESede";
+            final var mode = "CBC";
+            final var padding = "NoPadding";
+            final var transformation = algorithm + '/' + mode + '/' + padding;
+            final var cipher = getCipherInstance(transformation);
             final var blockSize = cipher.getBlockSize();
             assert blockSize == 64 >> 3;
             {
@@ -1421,12 +1343,7 @@ class CipherTest {
                 assertThat(Files.size(plainPath) % blockSize).isZero();
             }
             // --------------------------------------------------------------------------------- key
-            final Key key;
-            {
-                final var generator = KeyGenerator.getInstance(algorithm);
-                generator.init(keySize);
-                key = generator.generateKey();
-            }
+            final var key = generateKey(algorithm, keysize);
             // ------------------------------------------------------------------------------ params
             final AlgorithmParameterSpec params;
             {
@@ -1507,32 +1424,29 @@ class CipherTest {
     @Nested
     class DesedeCbcPkcs5PaddingTest {
 
-        @ValueSource(ints = {
-                168
-        })
+        private static IntStream keysizes() {
+            return desKeysizes();
+        }
+
+        @MethodSource({"keysizes"})
         @ParameterizedTest
-        void __(final int keySize, @TempDir final File dir)
-                throws IOException, NoSuchPaddingException, NoSuchAlgorithmException,
-                       InvalidKeyException, InvalidAlgorithmParameterException,
-                       IllegalBlockSizeException, BadPaddingException {
+        void __(final int keysize, @TempDir final File dir)
+                throws IOException, NoSuchAlgorithmException, InvalidAlgorithmParameterException,
+                       InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
             // ------------------------------------------------------------------------------- files
             final var plainFile = JavaIoUtils.createTempFileInAndWriteSome(dir);
             final var encryptedFile = File.createTempFile("tmp", "tmp", dir);
             final var decryptedFile = File.createTempFile("tmp", "tmp", dir);
             // ------------------------------------------------------------------------------ cipher
-            final String algorithm = "DESede";
-            final String mode = "CBC";
-            final String padding = "PKCS5Padding";
-            final var cipher = Cipher.getInstance(algorithm + '/' + mode + '/' + padding);
+            final var algorithm = "DESede";
+            final var mode = "CBC";
+            final var padding = "PKCS5Padding";
+            final var transformation = algorithm + '/' + mode + '/' + padding;
+            final var cipher = getCipherInstance(transformation);
             final var blockSize = cipher.getBlockSize();
             assert blockSize == 64 >> 3 : "block size is always 64 regardless of the key size";
             // --------------------------------------------------------------------------------- key
-            final Key key;
-            {
-                final var generator = KeyGenerator.getInstance(algorithm);
-                generator.init(keySize);
-                key = generator.generateKey();
-            }
+            final var key = generateKey(algorithm, keysize);
             // ------------------------------------------------------------------------------ params
             final AlgorithmParameterSpec params;
             {
@@ -1599,32 +1513,25 @@ class CipherTest {
             }
         }
 
-        @ValueSource(ints = {
-                168
-        })
+        @MethodSource({"keysizes"})
         @ParameterizedTest
-        void __(final int keySize, @TempDir final Path dir)
-                throws IOException, NoSuchPaddingException, NoSuchAlgorithmException,
-                       InvalidKeyException, InvalidAlgorithmParameterException,
-                       IllegalBlockSizeException, BadPaddingException {
+        void __(final int keysize, @TempDir final Path dir)
+                throws IOException, NoSuchAlgorithmException, InvalidAlgorithmParameterException,
+                       InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
             // ------------------------------------------------------------------------------- paths
             final var plainPath = JavaNioUtils.createTempFileInAndWriteSome(dir);
             final var encryptedPath = Files.createTempFile(dir, null, null);
             final var decryptedPath = Files.createTempFile(dir, null, null);
             // ------------------------------------------------------------------------------ cipher
-            final String algorithm = "DESede";
-            final String mode = "CBC";
-            final String padding = "PKCS5Padding";
-            final var cipher = Cipher.getInstance(algorithm + '/' + mode + '/' + padding);
+            final var algorithm = "DESede";
+            final var mode = "CBC";
+            final var padding = "PKCS5Padding";
+            final var transformation = algorithm + '/' + mode + '/' + padding;
+            final var cipher = getCipherInstance(transformation);
             final var blockSize = cipher.getBlockSize();
             assert blockSize == 64 >> 3;
             // --------------------------------------------------------------------------------- key
-            final Key key;
-            {
-                final var generator = KeyGenerator.getInstance(algorithm);
-                generator.init(keySize);
-                key = generator.generateKey();
-            }
+            final var key = generateKey(algorithm, keysize);
             // ------------------------------------------------------------------------------ params
             final AlgorithmParameterSpec params;
             {
@@ -1705,26 +1612,25 @@ class CipherTest {
     @Nested
     class DesedeEcbNoPaddingTest {
 
-        @ValueSource(ints = {
-//                128,
-                168,
-//                192,
-//                256
-        })
+        private static IntStream keysizes() {
+            return desKeysizes();
+        }
+
+        @MethodSource({"keysizes"})
         @ParameterizedTest
-        void __(final int keySize, @TempDir final File dir)
-                throws IOException, NoSuchPaddingException, NoSuchAlgorithmException,
-                       InvalidKeyException, InvalidAlgorithmParameterException,
+        void __(final int keysize, @TempDir final File dir)
+                throws IOException, NoSuchAlgorithmException, InvalidKeyException,
                        IllegalBlockSizeException, BadPaddingException {
             // ------------------------------------------------------------------------------- files
             final var plainFile = JavaIoUtils.createTempFileInAndWriteSome(dir);
             final var encryptedFile = File.createTempFile("tmp", "tmp", dir);
             final var decryptedFile = File.createTempFile("tmp", "tmp", dir);
             // ------------------------------------------------------------------------------ cipher
-            final String algorithm = "DESede";
-            final String mode = "ECB";
-            final String padding = "NoPadding";
-            final var cipher = Cipher.getInstance(algorithm + '/' + mode + '/' + padding);
+            final var algorithm = "DESede";
+            final var mode = "ECB";
+            final var padding = "NoPadding";
+            final var transformation = algorithm + '/' + mode + '/' + padding;
+            final var cipher = getCipherInstance(transformation);
             final var blockSize = cipher.getBlockSize();
             assert blockSize == 64 >> 3 : "block size is always 64 regardless of the key size";
             {
@@ -1736,12 +1642,7 @@ class CipherTest {
                 assertThat(plainFile.length() % blockSize).isZero();
             }
             // --------------------------------------------------------------------------------- key
-            final Key key;
-            {
-                final var generator = KeyGenerator.getInstance(algorithm);
-                generator.init(keySize);
-                key = generator.generateKey();
-            }
+            final var key = generateKey(algorithm, keysize);
             // ----------------------------------------------------------------------------- encrypt
             {
                 cipher.init(Cipher.ENCRYPT_MODE, key);
@@ -1801,26 +1702,21 @@ class CipherTest {
             }
         }
 
-        @ValueSource(ints = {
-//                128,
-                168,
-//                192,
-//                256
-        })
+        @MethodSource({"keysizes"})
         @ParameterizedTest
-        void __(final int keySize, @TempDir final Path dir)
-                throws IOException, NoSuchPaddingException, NoSuchAlgorithmException,
-                       InvalidKeyException, InvalidAlgorithmParameterException,
+        void __(final int keysize, @TempDir final Path dir)
+                throws IOException, NoSuchAlgorithmException, InvalidKeyException,
                        IllegalBlockSizeException, BadPaddingException {
             // ------------------------------------------------------------------------------- paths
             final var plainPath = JavaNioUtils.createTempFileInAndWriteSome(dir);
             final var encryptedPath = Files.createTempFile(dir, null, null);
             final var decryptedPath = Files.createTempFile(dir, null, null);
             // ------------------------------------------------------------------------------ cipher
-            final String algorithm = "DESede";
-            final String mode = "ECB";
-            final String padding = "NoPadding";
-            final var cipher = Cipher.getInstance(algorithm + '/' + mode + '/' + padding);
+            final var algorithm = "DESede";
+            final var mode = "ECB";
+            final var padding = "NoPadding";
+            final var transformation = algorithm + '/' + mode + '/' + padding;
+            final var cipher = getCipherInstance(transformation);
             final var blockSize = cipher.getBlockSize();
             assert blockSize == 64 >> 3;
             {
@@ -1837,12 +1733,7 @@ class CipherTest {
                 assertThat(Files.size(plainPath) % blockSize).isZero();
             }
             // --------------------------------------------------------------------------------- key
-            final Key key;
-            {
-                final var generator = KeyGenerator.getInstance(algorithm);
-                generator.init(keySize);
-                key = generator.generateKey();
-            }
+            final var key = generateKey(algorithm, keysize);
             // ----------------------------------------------------------------------------- encrypt
             {
                 cipher.init(Cipher.ENCRYPT_MODE, key);
@@ -1916,32 +1807,29 @@ class CipherTest {
     @Nested
     class DesedeEcbPkcs5PaddingTest {
 
-        @ValueSource(ints = {
-                168
-        })
+        private static IntStream keysizes() {
+            return desKeysizes();
+        }
+
+        @MethodSource({"keysizes"})
         @ParameterizedTest
-        void __(final int keySize, @TempDir final File dir)
-                throws IOException, NoSuchPaddingException, NoSuchAlgorithmException,
-                       InvalidKeyException, InvalidAlgorithmParameterException,
+        void __(final int keysize, @TempDir final File dir)
+                throws IOException, NoSuchAlgorithmException, InvalidKeyException,
                        IllegalBlockSizeException, BadPaddingException {
             // ------------------------------------------------------------------------------- files
             final var plainFile = JavaIoUtils.createTempFileInAndWriteSome(dir);
             final var encryptedFile = File.createTempFile("tmp", "tmp", dir);
             final var decryptedFile = File.createTempFile("tmp", "tmp", dir);
             // ------------------------------------------------------------------------------ cipher
-            final String algorithm = "DESede";
-            final String mode = "ECB";
-            final String padding = "PKCS5Padding";
-            final var cipher = Cipher.getInstance(algorithm + '/' + mode + '/' + padding);
+            final var algorithm = "DESede";
+            final var mode = "ECB";
+            final var padding = "PKCS5Padding";
+            final var transformation = algorithm + '/' + mode + '/' + padding;
+            final var cipher = getCipherInstance(transformation);
             final var blockSize = cipher.getBlockSize();
             assert blockSize == 64 >> 3 : "block size is always 64 regardless of the key size";
             // --------------------------------------------------------------------------------- key
-            final Key key;
-            {
-                final var generator = KeyGenerator.getInstance(algorithm);
-                generator.init(keySize);
-                key = generator.generateKey();
-            }
+            final var key = generateKey(algorithm, keysize);
             // ----------------------------------------------------------------------------- encrypt
             {
                 cipher.init(Cipher.ENCRYPT_MODE, key);
@@ -2001,32 +1889,25 @@ class CipherTest {
             }
         }
 
-        @ValueSource(ints = {
-                168
-        })
+        @MethodSource({"keysizes"})
         @ParameterizedTest
-        void __(final int keySize, @TempDir final Path dir)
-                throws IOException, NoSuchPaddingException, NoSuchAlgorithmException,
-                       InvalidKeyException, InvalidAlgorithmParameterException,
+        void __(final int keysize, @TempDir final Path dir)
+                throws IOException, NoSuchAlgorithmException, InvalidKeyException,
                        IllegalBlockSizeException, BadPaddingException {
             // ------------------------------------------------------------------------------- paths
             final var plainPath = JavaNioUtils.createTempFileInAndWriteSome(dir);
             final var encryptedPath = Files.createTempFile(dir, null, null);
             final var decryptedPath = Files.createTempFile(dir, null, null);
             // ------------------------------------------------------------------------------ cipher
-            final String algorithm = "DESede";
-            final String mode = "ECB";
-            final String padding = "PKCS5Padding";
-            final var cipher = Cipher.getInstance(algorithm + '/' + mode + '/' + padding);
+            final var algorithm = "DESede";
+            final var mode = "ECB";
+            final var padding = "PKCS5Padding";
+            final var transformation = algorithm + '/' + mode + '/' + padding;
+            final var cipher = getCipherInstance(transformation);
             final var blockSize = cipher.getBlockSize();
             assert blockSize == 64 >> 3;
             // --------------------------------------------------------------------------------- key
-            final Key key;
-            {
-                final var generator = KeyGenerator.getInstance(algorithm);
-                generator.init(keySize);
-                key = generator.generateKey();
-            }
+            final var key = generateKey(algorithm, keysize);
             // ----------------------------------------------------------------------------- encrypt
             {
                 cipher.init(Cipher.ENCRYPT_MODE, key);
@@ -2095,34 +1976,42 @@ class CipherTest {
         }
     }
 
+    private static IntStream rsaKeysizes() {
+        return IntStream.of(
+                1024,
+                2048
+        );
+    }
+
     @DisplayName("RSA/ECB/PKCS1Padding")
     @Nested
     class RsaEcbPkcs5PaddingTest {
 
-        @ValueSource(ints = {
-                1024,
-                2048
-        })
+        private static IntStream keysizes() {
+            return rsaKeysizes();
+        }
+
+        @MethodSource({"keysizes"})
         @ParameterizedTest
         void __(final int keySize)
-                throws NoSuchPaddingException, NoSuchAlgorithmException,
-                       InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+                throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException,
+                       NoSuchAlgorithmException {
             // ------------------------------------------------------------------------------- files
             // https://mbed-tls.readthedocs.io/en/latest/kb/cryptography/rsa-encryption-maximum-data-size/#:~:text=RSA%20is%20only%20able%20to,5%20padding).
             final var plainBytes = new byte[(keySize >> 3) - 11];
             // ------------------------------------------------------------------------------ cipher
-            final String algorithm = "RSA";
-            final String mode = "ECB";
-            final String padding = "PKCS1Padding";
-            final var cipher = Cipher.getInstance(algorithm + '/' + mode + '/' + padding);
-            assert cipher.getBlockSize() == 0;
-            // ----------------------------------------------------------------------------- keyPair
-            final KeyPair keyPair;
-            {
-                final var generator = KeyPairGenerator.getInstance(algorithm);
-                generator.initialize(keySize);
-                keyPair = generator.generateKeyPair();
+            final var algorithm = "RSA";
+            final var mode = "ECB";
+            final var padding = "PKCS1Padding";
+            final var transformation = algorithm + '/' + mode + '/' + padding;
+            final var cipher = getCipherInstance(transformation);
+            try {
+                assert cipher.getBlockSize() == 0;
+            } catch (final IllegalStateException ise) {
+                // BC
             }
+            // ----------------------------------------------------------------------------- keyPair
+            final var keyPair = generateKeyPair(algorithm, keySize);
             // --------------------------------------------------------- encrypt with the public key
             final byte[] encryptedBytes;
             {
@@ -2146,30 +2035,31 @@ class CipherTest {
     @Nested
     class RsaEcbOaepwWithSha_1AndMgf1Padding {
 
-        @ValueSource(ints = {
-                1024,
-                2048
-        })
+        private static IntStream keysizes() {
+            return rsaKeysizes();
+        }
+
+        @MethodSource({"keysizes"})
         @ParameterizedTest
-        void __(final int keySize)
-                throws NoSuchPaddingException, NoSuchAlgorithmException,
-                       InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+        void __(final int keysize)
+                throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException,
+                       NoSuchAlgorithmException {
             // ------------------------------------------------------------------------------- files
             // https://mbed-tls.readthedocs.io/en/latest/kb/cryptography/rsa-encryption-maximum-data-size/#:~:text=RSA%20is%20only%20able%20to,5%20padding).
-            final var plainBytes = new byte[(keySize >> 3) - 42];
+            final var plainBytes = new byte[(keysize >> 3) - 42];
             // ------------------------------------------------------------------------------ cipher
-            final String algorithm = "RSA";
-            final String mode = "ECB";
-            final String padding = "OAEPWithSHA-1AndMGF1Padding";
-            final var cipher = Cipher.getInstance(algorithm + '/' + mode + '/' + padding);
-            assert cipher.getBlockSize() == 0;
-            // ----------------------------------------------------------------------------- keyPair
-            final KeyPair keyPair;
-            {
-                final var generator = KeyPairGenerator.getInstance(algorithm);
-                generator.initialize(keySize);
-                keyPair = generator.generateKeyPair();
+            final var algorithm = "RSA";
+            final var mode = "ECB";
+            final var padding = "OAEPWithSHA-1AndMGF1Padding";
+            final var transformation = algorithm + '/' + mode + '/' + padding;
+            final var cipher = getCipherInstance(transformation);
+            try {
+                assert cipher.getBlockSize() == 0;
+            } catch (final IllegalStateException ise) {
+                // BC
             }
+            // ----------------------------------------------------------------------------- keyPair
+            final var keyPair = generateKeyPair(algorithm, keysize);
             // --------------------------------------------------------- encrypt with the public key
             final byte[] encryptedBytes;
             {
@@ -2193,30 +2083,31 @@ class CipherTest {
     @Nested
     class RsaEcbOaepwWithSha_256AndMgf1Padding {
 
-        @ValueSource(ints = {
-                1024,
-                2048
-        })
+        private static IntStream keysizes() {
+            return rsaKeysizes();
+        }
+
+        @MethodSource({"keysizes"})
         @ParameterizedTest
-        void __(final int keySize)
-                throws NoSuchPaddingException, NoSuchAlgorithmException,
-                       InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+        void __(final int keysize)
+                throws NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException,
+                       BadPaddingException {
             // ------------------------------------------------------------------------------- files
             // https://mbed-tls.readthedocs.io/en/latest/kb/cryptography/rsa-encryption-maximum-data-size/#:~:text=RSA%20is%20only%20able%20to,5%20padding).
-            final var plainBytes = new byte[(keySize >> 3) - 66];
+            final var plainBytes = new byte[(keysize >> 3) - 66];
             // ------------------------------------------------------------------------------ cipher
-            final String algorithm = "RSA";
-            final String mode = "ECB";
-            final String padding = "OAEPWithSHA-256AndMGF1Padding";
-            final var cipher = Cipher.getInstance(algorithm + '/' + mode + '/' + padding);
-            assert cipher.getBlockSize() == 0;
-            // ----------------------------------------------------------------------------- keyPair
-            final KeyPair keyPair;
-            {
-                final var generator = KeyPairGenerator.getInstance(algorithm);
-                generator.initialize(keySize);
-                keyPair = generator.generateKeyPair();
+            final var algorithm = "RSA";
+            final var mode = "ECB";
+            final var padding = "OAEPWithSHA-256AndMGF1Padding";
+            final var transformation = algorithm + '/' + mode + '/' + padding;
+            final var cipher = getCipherInstance(transformation);
+            try {
+                assert cipher.getBlockSize() == 0;
+            } catch (final IllegalStateException ise) {
+                // BC
             }
+            // ----------------------------------------------------------------------------- keyPair
+            final var keyPair = generateKeyPair(algorithm, keysize);
             // --------------------------------------------------------- encrypt with the public key
             final byte[] encryptedBytes;
             {
