@@ -1,31 +1,30 @@
 package com.github.jinahya.hello.java.security;
 
-import com.github.jinahya.hello.util.java.io._JavaIoUtils;
-import com.github.jinahya.hello.util.java.nio.JavaNioUtils;
+import com.github.jinahya.hello.util.java.io.FileUtils;
+import com.github.jinahya.hello.util.java.nio.file.PathUtils;
 import com.github.jinahya.hello.util.java.security.MessageDigestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.Provider;
 import java.security.Security;
 import java.util.Arrays;
 import java.util.HexFormat;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 /**
@@ -42,7 +41,7 @@ class MessageDigestTest {
 
     static {
         Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
-//        Security.insertProviderAt(new gnu.crypto.jce.GnuCrypto(), 1);
+        Security.addProvider(new gnu.crypto.jce.GnuCrypto());
 //        Security.insertProviderAt(new org.spongycastle.jce.provider.BouncyCastleProvider(), 1);
     }
 
@@ -52,10 +51,8 @@ class MessageDigestTest {
 
     static Stream<Arguments> algorithmsRequiredToBeSupportedWithProviders() {
         return algorithmsRequiredToBeSupported()
-                .flatMap(a -> {
-                    return Arrays.stream(MessageDigestUtils.getProviders(a))
-                            .map(p -> Arguments.of(a, p));
-                });
+                .flatMap(a -> Arrays.stream(MessageDigestUtils.getProviders(a))
+                        .map(p -> Arguments.of(a, p)));
     }
 
     static Stream<String> algorithms() {
@@ -69,10 +66,8 @@ class MessageDigestTest {
 
     static Stream<Arguments> algorithmsWithProviders() {
         return algorithms()
-                .flatMap(a -> {
-                    return Arrays.stream(MessageDigestUtils.getProviders(a))
-                            .map(p -> Arguments.of(a, p));
-                });
+                .flatMap(a -> Arrays.stream(MessageDigestUtils.getProviders(a))
+                        .map(p -> Arguments.of(a, p)));
     }
 
     @DisplayName("getInstance(algorithm-required-to-be-supported)DoesNotThrow")
@@ -116,44 +111,41 @@ class MessageDigestTest {
     }
 
     // -----------------------------------------------------------------------------------------------------------------
-    @DisplayName("digest(algorithm-required-to-be-supported)")
-    @Test
-    void __(@TempDir final File dir)
+    @DisplayName("digest(algorithm, provider)")
+    @MethodSource({"algorithmsWithProviders"})
+    @ParameterizedTest(name = "[{index}] algorithm: {0}, provider: {1}")
+    void __(final String algorithm, final Provider provider, @TempDir final File dir)
             throws IOException, NoSuchAlgorithmException {
-        final var file = _JavaIoUtils.createTempFileInAndWriteSome(dir);
-        final var array = new byte[1024];
-        final Iterable<String> algorithms = () -> algorithmsRequiredToBeSupported().iterator();
-        for (final var algorithm : algorithms) {
-            final var instance = MessageDigest.getInstance(algorithm);
-            try (var stream = new FileInputStream(file)) {
-                for (int r; (r = stream.read(array)) != -1; ) {
-                    instance.update(array, 0, r);
-                }
-            }
-            log.debug("digest: {}, algorithm: {}, provider: {}",
-                      HexFormat.of().formatHex(instance.digest()), algorithm,
-                      instance.getProvider());
-        }
+        final var file = File.createTempFile("tmp", "tmp", dir);
+        FileUtils.writeRandomBytes(
+                file,
+                false,
+                ThreadLocalRandom.current().nextInt(8192),
+                new byte[1024]
+        );
+        final var instance = MessageDigest.getInstance(algorithm, provider);
+        assertThat(instance.getProvider()).isSameAs(provider);
+        final var digest = MessageDigestUtils.digest(instance, file, new byte[1024]);
+        log.debug("algorithm: {}, provider: {}, digest: {}", algorithm, provider,
+                  HexFormat.of().formatHex(instance.digest()));
     }
 
-    @DisplayName("digest(algorithm-required-to-be-supported)")
-    @Test
-    void __(@TempDir final Path dir)
+    @DisplayName("digest(algorithm, provider)")
+    @MethodSource({"algorithmsWithProviders"})
+    @ParameterizedTest(name = "[{index}] algorithm: {0}, provider: {1}")
+    void __(final String algorithm, final Provider provider, @TempDir final Path dir)
             throws IOException, NoSuchAlgorithmException {
-        final var path = JavaNioUtils.createTempFileInAndWriteSome(dir);
-        final var buffer = ByteBuffer.allocate(1024);
-        final Iterable<String> algorithms = () -> algorithmsRequiredToBeSupported().iterator();
-        for (final var algorithm : algorithms) {
-            final var instance = MessageDigest.getInstance(algorithm);
-            try (var channel = FileChannel.open(path, StandardOpenOption.READ)) {
-                if (channel.read(buffer.clear()) == -1) {
-                    break;
-                }
-                instance.update(buffer.flip());
-            }
-            log.debug("digest: {}, algorithm: {}, provider: {}",
-                      HexFormat.of().formatHex(instance.digest()), algorithm,
-                      instance.getProvider());
-        }
+        final var path = Files.createTempFile(dir, null, null);
+        PathUtils.writeRandomBytes(
+                path,
+                ThreadLocalRandom.current().nextInt(8192),
+                ByteBuffer.allocate(1024),
+                0L
+        );
+        final var instance = MessageDigest.getInstance(algorithm, provider);
+        assertThat(instance.getProvider()).isSameAs(provider);
+        final var digest = MessageDigestUtils.digest(instance, path, ByteBuffer.allocate(1024));
+        log.debug("algorithm: {}, provider: {}, digest: {}",
+                  algorithm, provider, HexFormat.of().formatHex(digest));
     }
 }
