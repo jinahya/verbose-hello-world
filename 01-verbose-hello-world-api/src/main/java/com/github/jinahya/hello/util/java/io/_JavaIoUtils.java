@@ -1,5 +1,6 @@
-package com.github.jinahya.hello.util;
+package com.github.jinahya.hello.util.java.io;
 
+import com.github.jinahya.hello.util.java.nio.JavaNioFileUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -9,9 +10,44 @@ import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
-public final class JavaIoUtils {
+public final class _JavaIoUtils {
 
     // ---------------------------------------------------------------------------------------- File
+
+    /**
+     * Writes specified number of random bytes to specified file using specified buffer.
+     *
+     * @param file   the file to which bytes are written.
+     * @param bytes  the number of random bytes to write.
+     * @param buffer the buffer to use.
+     * @return given {@code file}.
+     * @throws IOException if an I/O error occurs
+     */
+    @SuppressWarnings({
+            "java:S127" // assigning the loop counter from within the loop body
+    })
+    public static File writeRandomBytes(final File file, int bytes, final byte[] buffer)
+            throws IOException {
+        if (!Objects.requireNonNull(file, "file is null").isFile()) {
+            throw new IllegalArgumentException("not a normal file: " + file);
+        }
+        if (bytes < 0) {
+            throw new IllegalArgumentException("negative bytes: " + bytes);
+        }
+        if (Objects.requireNonNull(buffer, "buffer is null").length == 0) {
+            throw new IllegalArgumentException("zero-length buffer: " + Objects.toString(buffer));
+        }
+        try (var stream = new FileOutputStream(file)) {
+            while (bytes > 0) {
+                ThreadLocalRandom.current().nextBytes(buffer);
+                final var length = Math.min(buffer.length, bytes);
+                stream.write(buffer, 0, length);
+                bytes -= length; // java:S127
+            }
+            stream.flush();
+        }
+        return file;
+    }
 
     /**
      * Writes some(possibly zero) bytes to specified file, and return the file.
@@ -81,7 +117,7 @@ public final class JavaIoUtils {
         return JavaNioFileUtils.hexl(file.toPath()).toFile();
     }
 
-    private JavaIoUtils() {
+    private _JavaIoUtils() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

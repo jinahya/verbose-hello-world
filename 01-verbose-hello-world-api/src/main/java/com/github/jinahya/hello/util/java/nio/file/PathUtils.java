@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.util;
+package com.github.jinahya.hello.util.java.nio.file;
 
 /*-
  * #%L
@@ -20,6 +20,7 @@ package com.github.jinahya.hello.util;
  * #L%
  */
 
+import com.github.jinahya.hello.util.java.nio.ByteBufferUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -40,13 +41,39 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-public final class JavaNioFileUtils {
+public final class PathUtils {
+
+    @SuppressWarnings({
+            "java:S127"
+    })
+    public static Path writeRandomBytes(final Path path, int bytes, final ByteBuffer buffer,
+                                        long position)
+            throws IOException {
+        Objects.requireNonNull(path, "path is null");
+        if (Objects.requireNonNull(buffer, "buffer is null").capacity() == 0) {
+            throw new IllegalArgumentException("zero-capacity buffer: " + buffer);
+        }
+        if (position < 0L) {
+            throw new IllegalArgumentException("negative position: " + position);
+        }
+        try (var channel = FileChannel.open(path, StandardOpenOption.WRITE)) {
+            for (int w; bytes > 0; bytes -= w) {
+                ByteBufferUtils.randomized(buffer.clear(), ThreadLocalRandom.current());
+                buffer.limit(Math.min(buffer.limit(), bytes));
+                w = channel.write(buffer, position);
+                assert w >= 0;
+                position += w;
+            }
+            channel.force(false);
+        }
+        return path;
+    }
 
     public static Path fillRandom(final Path path, int bytes, long position)
             throws IOException {
         Objects.requireNonNull(path, "path is null");
         if (position < 0L) {
-            throw new IllegalArgumentException("position(" + position + ") < 0L");
+            throw new IllegalArgumentException("negative position: " + position);
         }
         try (var channel = FileChannel.open(path, StandardOpenOption.CREATE,
                                             StandardOpenOption.WRITE)) {
@@ -99,7 +126,7 @@ public final class JavaNioFileUtils {
         return path;
     }
 
-    private JavaNioFileUtils() {
+    private PathUtils() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

@@ -31,7 +31,7 @@ import java.util.Objects;
 import java.util.stream.IntStream;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
-import static com.github.jinahya.hello.util.JavaNioUtils.print;
+import static com.github.jinahya.hello.util.java.nio.JavaNioUtils.print;
 import static java.nio.ByteBuffer.allocateDirect;
 
 @Slf4j

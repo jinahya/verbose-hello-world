@@ -1,7 +1,8 @@
 package com.github.jinahya.hello.java.security;
 
-import com.github.jinahya.hello.util.JavaIoUtils;
-import com.github.jinahya.hello.util.JavaNioUtils;
+import com.github.jinahya.hello.util.java.io._JavaIoUtils;
+import com.github.jinahya.hello.util.java.nio.JavaNioUtils;
+import com.github.jinahya.hello.util.java.security.MessageDigestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,7 +27,6 @@ import java.util.HexFormat;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 /**
  * A class for testing {@link MessageDigest}.
@@ -40,14 +40,22 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 @Slf4j
 class MessageDigestTest {
 
-    static Stream<Provider> providers() {
-        final var type = MessageDigest.class.getSimpleName();
-        return _SecurityTestUtils.providers()
-                .filter(p -> p.getServices().stream().anyMatch(s -> s.getType().equals(type)));
+    static {
+        Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+//        Security.insertProviderAt(new gnu.crypto.jce.GnuCrypto(), 1);
+//        Security.insertProviderAt(new org.spongycastle.jce.provider.BouncyCastleProvider(), 1);
     }
 
     static Stream<String> algorithmsRequiredToBeSupported() {
         return Stream.of("SHA-1", "SHA-256");
+    }
+
+    static Stream<Arguments> algorithmsRequiredToBeSupportedWithProviders() {
+        return algorithmsRequiredToBeSupported()
+                .flatMap(a -> {
+                    return Arrays.stream(MessageDigestUtils.getProviders(a))
+                            .map(p -> Arguments.of(a, p));
+                });
     }
 
     static Stream<String> algorithms() {
@@ -59,79 +67,93 @@ class MessageDigestTest {
         );
     }
 
-    private static Stream<Arguments> providersAndRequiredToBeSupportedAlgorithms() {
-        return providers()
-                .flatMap(p -> algorithmsRequiredToBeSupported().map(a -> arguments(p, a)));
+    static Stream<Arguments> algorithmsWithProviders() {
+        return algorithms()
+                .flatMap(a -> {
+                    return Arrays.stream(MessageDigestUtils.getProviders(a))
+                            .map(p -> Arguments.of(a, p));
+                });
     }
 
-    private static Stream<Arguments> providersAndAlgorithms() {
-        return providers()
-                .flatMap(p -> algorithms().map(a -> arguments(p, a)));
-    }
-
-    @DisplayName("getInstance(required-to-be-supported)DoesNotThrow")
-    @MethodSource({"providersAndRequiredToBeSupportedAlgorithms"})
+    @DisplayName("getInstance(algorithm-required-to-be-supported)DoesNotThrow")
+    @MethodSource({"algorithmsRequiredToBeSupported"})
     @ParameterizedTest
-    void getInstance_DoesNotThrow_RequiredToBeSupported(final Provider provider,
-                                                        final String algorithm) {
+    void getInstance_DoesNotThrow_RequiredToBeSupported(final String algorithm) {
+        assertDoesNotThrow(() -> MessageDigest.getInstance(algorithm));
+    }
+
+    @DisplayName("getInstance(algorithm-required-to-be-supported, provider)DoesNotThrow")
+    @MethodSource({"algorithmsRequiredToBeSupportedWithProviders"})
+    @ParameterizedTest
+    void getInstance_DoesNotThrow_RequiredToBeSupported(final String algorithm,
+                                                        final Provider provider) {
         assertDoesNotThrow(() -> MessageDigest.getInstance(algorithm, provider));
     }
 
     @DisplayName("getInstance(algorithm)")
-    @MethodSource({"providersAndAlgorithms"})
+    @MethodSource({"algorithms"})
     @ParameterizedTest
-    void getInstance__(final Provider provider, final String algorithm) {
+    void getInstance__(final String algorithm) {
         try {
-            final var instance = MessageDigest.getInstance(algorithm, provider);
-            log.debug("supported; provider: {}, algorithm: {}", provider, algorithm);
+            final var instance = MessageDigest.getInstance(algorithm);
+            log.debug("supported; algorithm: {}, provider: {}", algorithm, instance.getProvider());
         } catch (final NoSuchAlgorithmException nsae) {
-            log.warn("not supported: provider: {}, algorithm: {}", provider, algorithm, nsae);
+            log.warn("not supported: algorithm: {}", algorithm, nsae);
             return;
         }
     }
 
-    @DisplayName("digest(required-to-be-supported-algorithm, provider)")
-    @Test
-    void digest__(@TempDir final File dir)
-            throws IOException, NoSuchAlgorithmException {
-        final var file = JavaIoUtils.createTempFileInAndWriteSome(dir);
-        final var array = new byte[1024];
-        final Iterable<String> algorithms = () -> algorithmsRequiredToBeSupported().iterator();
-        final Iterable<Provider> providers = () -> providers().iterator();
-        for (final var algorithm : algorithms) {
-            for (final var provider : providers) {
-                final var instance = MessageDigest.getInstance(algorithm, provider);
-                try (var stream = new FileInputStream(file)) {
-                    for (int r; (r = stream.read(array)) != -1; ) {
-                        instance.update(array, 0, r);
-                    }
-                }
-                log.debug("digest: {}, algorithm: {}, provider: {}",
-                          HexFormat.of().formatHex(instance.digest()), algorithm, provider);
-            }
+    @DisplayName("getInstance(algorithm, provider)")
+    @MethodSource({"algorithmsWithProviders"})
+    @ParameterizedTest(name = "[{index}] algorithm: {0}, provider: {1}")
+    void getInstance__(final String algorithm, final Provider provider) {
+        try {
+            final var instance = MessageDigest.getInstance(algorithm, provider);
+            log.debug("supported; algorithm: {}, provider: {}", algorithm, provider);
+        } catch (final NoSuchAlgorithmException nsae) {
+            log.warn("not supported: algorithm: {}, provider: {}", algorithm, provider, nsae);
         }
     }
 
-    @DisplayName("digest(required-to-be-supported-algorithm, provider)")
+    // -----------------------------------------------------------------------------------------------------------------
+    @DisplayName("digest(algorithm-required-to-be-supported)")
     @Test
-    void digest__(@TempDir final Path dir)
+    void __(@TempDir final File dir)
+            throws IOException, NoSuchAlgorithmException {
+        final var file = _JavaIoUtils.createTempFileInAndWriteSome(dir);
+        final var array = new byte[1024];
+        final Iterable<String> algorithms = () -> algorithmsRequiredToBeSupported().iterator();
+        for (final var algorithm : algorithms) {
+            final var instance = MessageDigest.getInstance(algorithm);
+            try (var stream = new FileInputStream(file)) {
+                for (int r; (r = stream.read(array)) != -1; ) {
+                    instance.update(array, 0, r);
+                }
+            }
+            log.debug("digest: {}, algorithm: {}, provider: {}",
+                      HexFormat.of().formatHex(instance.digest()), algorithm,
+                      instance.getProvider());
+        }
+    }
+
+    @DisplayName("digest(algorithm-required-to-be-supported)")
+    @Test
+    void __(@TempDir final Path dir)
             throws IOException, NoSuchAlgorithmException {
         final var path = JavaNioUtils.createTempFileInAndWriteSome(dir);
         final var buffer = ByteBuffer.allocate(1024);
         final Iterable<String> algorithms = () -> algorithmsRequiredToBeSupported().iterator();
-        final Iterable<Provider> providers = () -> providers().iterator();
         for (final var algorithm : algorithms) {
-            for (final var provider : providers) {
-                final var instance = MessageDigest.getInstance(algorithm, provider);
-                try (var channel = FileChannel.open(path, StandardOpenOption.READ)) {
-                    if (channel.read(buffer.clear()) == -1) {
-                        break;
-                    }
-                    instance.update(buffer.flip());
+            final var instance = MessageDigest.getInstance(algorithm);
+            try (var channel = FileChannel.open(path, StandardOpenOption.READ)) {
+                if (channel.read(buffer.clear()) == -1) {
+                    break;
                 }
-                log.debug("digest: {}, algorithm: {}, provider: {}",
-                          HexFormat.of().formatHex(instance.digest()), algorithm, provider);
+                instance.update(buffer.flip());
             }
+            log.debug("digest: {}, algorithm: {}, provider: {}",
+                      HexFormat.of().formatHex(instance.digest()), algorithm,
+                      instance.getProvider());
         }
     }
 }

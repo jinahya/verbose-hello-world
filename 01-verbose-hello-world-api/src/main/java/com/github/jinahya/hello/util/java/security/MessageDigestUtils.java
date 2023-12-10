@@ -12,10 +12,17 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
+import java.security.Provider;
+import java.security.Security;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
 public final class MessageDigestUtils {
+
+    public static Provider[] getProviders(final String algorithm) {
+        Objects.requireNonNull(algorithm, "algorithm is null");
+        return Security.getProviders(MessageDigestConstants.CRYPTO_SERVICE + '.' + algorithm);
+    }
 
     public static long update(final MessageDigest digest, final InputStream stream,
                               final byte[] buffer)

@@ -36,10 +36,10 @@ import java.util.stream.Stream;
  */
 @DisplayName("java.security")
 @Slf4j
-public final class _SecurityTestUtils {
+public final class _JavaSecurityTestUtils {
 
     static {
-//        Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+        Security.insertProviderAt(new org.bouncycastle.jce.provider.BouncyCastleProvider(), 1);
 //        Security.addProvider(new gnu.crypto.jce.GnuCrypto());
 //        Security.addProvider(new org.spongycastle.jce.provider.BouncyCastleProvider());
     }
@@ -54,7 +54,7 @@ public final class _SecurityTestUtils {
         return Stream.of(Security.getProviders());
     }
 
-    private _SecurityTestUtils() {
+    private _JavaSecurityTestUtils() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

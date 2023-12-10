@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.util;
+package com.github.jinahya.hello.util.java.nio;
 
 /*-
  * #%L

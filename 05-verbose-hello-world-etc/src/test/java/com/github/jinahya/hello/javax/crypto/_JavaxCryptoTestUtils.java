@@ -20,7 +20,7 @@ package com.github.jinahya.hello.javax.crypto;
  * #L%
  */
 
-import com.github.jinahya.hello.java.security._SecurityTestUtils;
+import com.github.jinahya.hello.java.security._JavaSecurityTestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 
@@ -37,11 +37,11 @@ import java.util.stream.Stream;
  */
 @DisplayName("javax.crypto.Cipher")
 @Slf4j
-class JavaxCryptoTest {
+class _JavaxCryptoTestUtils {
 
     static Stream<Provider> providers() {
         final var type = Cipher.class.getSimpleName();
-        return _SecurityTestUtils.providers()
+        return _JavaSecurityTestUtils.providers()
                 .filter(p -> p.getServices().stream().anyMatch(s -> s.getType().equals(type)));
     }
 }

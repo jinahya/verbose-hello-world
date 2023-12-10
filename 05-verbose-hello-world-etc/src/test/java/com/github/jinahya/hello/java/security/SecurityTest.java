@@ -41,6 +41,12 @@ import java.util.Optional;
 @Slf4j
 class SecurityTest {
 
+    static {
+        Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+//        Security.insertProviderAt(new gnu.crypto.jce.GnuCrypto(), 1);
+//        Security.insertProviderAt(new org.spongycastle.jce.provider.BouncyCastleProvider(), 1);
+    }
+
     @DisplayName("getProviders(filter)")
     @Nested
     class GetProvidersWithFilterTest {
@@ -63,6 +69,9 @@ class SecurityTest {
     void getProviders__() {
         for (final var provider : Security.getProviders()) {
             log.debug("provider: {}", provider);
+            for (final var service : provider.getServices()) {
+                log.debug("\tservice: {}", service);
+            }
         }
     }
 }

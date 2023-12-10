@@ -1,5 +1,6 @@
 package com.github.jinahya.hello.util;
 
+import com.github.jinahya.hello.util.java.io._JavaIoUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -24,8 +25,8 @@ class JavaIoUtilsTest {
         void __(@TempDir final File tempDir)
                 throws IOException {
             final var file = File.createTempFile("tmp", "tmp", tempDir);
-            JavaIoUtils.fillRandom(file, ThreadLocalRandom.current().nextInt(1024, 2048), 0L);
-            JavaIoUtils.hexl(file);
+            _JavaIoUtils.fillRandom(file, ThreadLocalRandom.current().nextInt(1024, 2048), 0L);
+            _JavaIoUtils.hexl(file);
         }
     }
 
@@ -37,12 +38,12 @@ class JavaIoUtilsTest {
         @Test
         void createTempFileInAndWriteSome_IsFile_(@TempDir final File dir)
                 throws IOException {
-            try (var mock = Mockito.mockStatic(JavaIoUtils.class, Mockito.CALLS_REAL_METHODS)) {
-                final var file = JavaIoUtils.createTempFileInAndWriteSome(dir);
+            try (var mock = Mockito.mockStatic(_JavaIoUtils.class, Mockito.CALLS_REAL_METHODS)) {
+                final var file = _JavaIoUtils.createTempFileInAndWriteSome(dir);
                 assertThat(file).isNotNull().isFile();
                 mock.verify(
                         () -> {
-                            JavaIoUtils.writeSome(argThat(f -> {
+                            _JavaIoUtils.writeSome(argThat(f -> {
                                 return (f != null && f.isFile()) &&
                                        (f.getParent() != null && f.getParentFile().equals(dir));
                             }));

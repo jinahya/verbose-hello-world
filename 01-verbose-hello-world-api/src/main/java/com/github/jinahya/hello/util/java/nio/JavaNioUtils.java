@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.util;
+package com.github.jinahya.hello.util.java.nio;
 
 /*-
  * #%L
@@ -19,6 +19,8 @@ package com.github.jinahya.hello.util;
  * limitations under the License.
  * #L%
  */
+
+import com.github.jinahya.hello.util.JavaLangUtils;
 
 import java.io.IOException;
 import java.nio.Buffer;

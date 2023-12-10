@@ -37,6 +37,12 @@ import java.security.Security;
 @Slf4j
 class ProviderTest {
 
+    static {
+        Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+//        Security.insertProviderAt(new gnu.crypto.jce.GnuCrypto(), 1);
+//        Security.insertProviderAt(new org.spongycastle.jce.provider.BouncyCastleProvider(), 1);
+    }
+
     @Test
     void __() {
         for (final var provider : Security.getProviders()) {

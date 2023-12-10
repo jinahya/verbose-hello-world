@@ -20,8 +20,10 @@ package com.github.jinahya.hello.javax.crypto;
  * #L%
  */
 
-import com.github.jinahya.hello.util.JavaIoUtils;
-import com.github.jinahya.hello.util.JavaNioUtils;
+import com.github.jinahya.hello.util.java.io.FileUtils;
+import com.github.jinahya.hello.util.java.io._JavaIoUtils;
+import com.github.jinahya.hello.util.java.nio.JavaNioUtils;
+import com.github.jinahya.hello.util.java.nio.file.PathUtils;
 import com.github.jinahya.hello.util.java.security.MessageDigestUtils;
 import com.github.jinahya.hello.util.javax.crypto.CipherUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -56,7 +58,9 @@ import java.security.KeyPairGenerator;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.security.Security;
 import java.security.spec.AlgorithmParameterSpec;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
@@ -83,22 +87,11 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 @Slf4j
 class CipherTest {
 
-//    private static Stream<Provider> providers() {
-//        if (true) {
-//            final var types = Set.of(
-//                    Cipher.class.getSimpleName(),
-//                    KeyGenerator.class.getSimpleName(),
-//                    KeyPairGenerator.class.getSimpleName()
-//            );
-//            return _SecurityTestUtils.providers()
-//                    .filter(p -> p.getServices().stream()
-//                            .map(Provider.Service::getType)
-//                            .anyMatch(types::contains));
-//        }
-//        final var type = Cipher.class.getSimpleName();
-//        return _SecurityTestUtils.providers()
-//                .filter(p -> p.getServices().stream().anyMatch(s -> s.getType().equals(type)));
-//    }
+    static {
+        Security.insertProviderAt(new org.bouncycastle.jce.provider.BouncyCastleProvider(), 1);
+//        Security.insertProviderAt(new gnu.crypto.jce.GnuCrypto(), 1);
+//        Security.insertProviderAt(new org.spongycastle.jce.provider.BouncyCastleProvider(), 1);
+    }
 
     private static Stream<String> algorithms() {
         return Stream.of(
@@ -168,19 +161,15 @@ class CipherTest {
         );
     }
 
-    private static Stream<String> requiredToBeSupportedTransformations() {
+    private static Stream<String> transformationsRequiredToBeSupported() {
         return requiredToBeSupportedTransformationsAnsKeysizss()
                 .map(a -> (String) a.get()[0]);
     }
 
-//    private static Stream<Arguments> providersAndRequiredToBeSupportedTransformations() {
-//        return providers()
-//                .flatMap(p -> requiredToBeSupportedTransformations().map(t -> arguments(p, t)));
-//    }
-
-    @MethodSource({"requiredToBeSupportedTransformations"})
+    @DisplayName("getInstance(transformation-required-to-be-supported")
+    @MethodSource({"transformationsRequiredToBeSupported"})
     @ParameterizedTest
-    void requiredToBeSupportedTransformations__(final String transformation) {
+    void getInstance_NotThrow_requiredToBeSupportedTransformations__(final String transformation) {
         try {
             Cipher.getInstance(transformation);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
@@ -188,25 +177,17 @@ class CipherTest {
         }
     }
 
-    private static Cipher getCipherInstance(final String transformation) {
-        try {
-            return Cipher.getInstance(transformation);
-        } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
-            log.error("failed to get cipher instance; transformation: {}", transformation, e);
-        }
-        return null;
-    }
-
-    private static Key generateKey(final String algorithm, final int keysize)
+    // -----------------------------------------------------------------------------------------------------------------
+    static Key generateKey(final String algorithm, final int keysize)
             throws NoSuchAlgorithmException {
-        final KeyGenerator generator = KeyGenerator.getInstance(algorithm);
+        final var generator = KeyGenerator.getInstance(algorithm);
         generator.init(keysize);
         return generator.generateKey();
     }
 
     private static KeyPair generateKeyPair(final String algorithm, final int keysize)
             throws NoSuchAlgorithmException {
-        final KeyPairGenerator generator = KeyPairGenerator.getInstance(algorithm);
+        final var generator = KeyPairGenerator.getInstance(algorithm);
         generator.initialize(keysize);
         return generator.generateKeyPair();
     }
@@ -229,12 +210,13 @@ class CipherTest {
         }
 
         @MethodSource({"keysizes"})
-        @ParameterizedTest
+        @ParameterizedTest(name = "[{index}] keysize: {0}")
         void __(final int keysize, @TempDir final File dir)
-                throws IOException, NoSuchAlgorithmException, InvalidAlgorithmParameterException,
-                       InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+                throws IOException, NoSuchPaddingException, NoSuchAlgorithmException,
+                       InvalidAlgorithmParameterException, InvalidKeyException,
+                       IllegalBlockSizeException, BadPaddingException {
             // ------------------------------------------------------------------------------- files
-            final var plainFile = JavaIoUtils.createTempFileInAndWriteSome(dir);
+            final var plainFile = File.createTempFile("tmp", "tmp", dir);
             final var encryptedFile = File.createTempFile("tmp", "tmp", dir);
             final var decryptedFile = File.createTempFile("tmp", "tmp", dir);
             // ------------------------------------------------------------------------------ cipher
@@ -242,17 +224,9 @@ class CipherTest {
             final var mode = "CBC";
             final var padding = "NoPadding";
             final var transformation = algorithm + '/' + mode + '/' + padding;
-            final var cipher = getCipherInstance(transformation);
+            final var cipher = Cipher.getInstance(transformation);
             final var blockSize = cipher.getBlockSize();
             assert blockSize == 128 >> 3;
-            {
-                final var required = (int) (blockSize - (plainFile.length() % blockSize));
-                try (var stream = new FileOutputStream(plainFile, true)) {
-                    stream.write(new byte[required]);
-                    stream.flush();
-                }
-                assertThat(plainFile.length() % blockSize).isZero();
-            }
             // --------------------------------------------------------------------------------- key
             final var key = generateKey(algorithm, keysize);
             // ------------------------------------------------------------------------------ params
@@ -264,6 +238,13 @@ class CipherTest {
             }
             // ----------------------------------------------------------------------------- encrypt
             {
+                FileUtils.writeRandomBytes(
+                        plainFile,
+                        false,
+                        ThreadLocalRandom.current().nextInt(8192) / blockSize * blockSize,
+                        new byte[1024]
+                );
+                log.debug("plainFile.length: {}", plainFile.length());
                 cipher.init(Cipher.ENCRYPT_MODE, key, params);
                 try (var input = new FileInputStream(plainFile);
                      var output = new FileOutputStream(encryptedFile)) {
@@ -293,21 +274,19 @@ class CipherTest {
                     outputStream.write(cipher.doFinal());
                     outputStream.flush();
                 }
+                log.debug("decryptedFile.length: {}", decryptedFile.length());
                 assertThat(decryptedFile).hasSize(plainFile.length());
             }
             // ------------------------------------------------------------------------------ verify
             {
                 final var digest = MessageDigest.getInstance("SHA-1");
                 final var buffer = new byte[1024];
-                final byte[] plainFileDigest;
-                {
-                    digest.reset();
-                    plainFileDigest = MessageDigestUtils.digest(
-                            digest,
-                            plainFile,
-                            buffer
-                    );
-                }
+                final var plainFileDigest = MessageDigestUtils.digest(
+                        digest,
+                        plainFile,
+                        buffer
+                );
+                log.debug("plainFile.digest: {}", HexFormat.of().formatHex(plainFileDigest));
                 final byte[] decryptedFileDigest;
                 {
                     digest.reset();
@@ -317,17 +296,20 @@ class CipherTest {
                             buffer
                     );
                 }
+                log.debug("decryptedFile.digest: {}",
+                          HexFormat.of().formatHex(decryptedFileDigest));
                 assertThat(decryptedFileDigest).isEqualTo(plainFileDigest);
             }
         }
 
         @MethodSource({"keysizes"})
-        @ParameterizedTest
+        @ParameterizedTest(name = "[{index}] keysize: {0}")
         void __(final int keysize, @TempDir final Path dir)
-                throws IOException, NoSuchAlgorithmException, InvalidAlgorithmParameterException,
-                       InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+                throws IOException, NoSuchPaddingException, NoSuchAlgorithmException,
+                       InvalidAlgorithmParameterException, InvalidKeyException,
+                       IllegalBlockSizeException, BadPaddingException {
             // ------------------------------------------------------------------------------- paths
-            final var plainPath = JavaNioUtils.createTempFileInAndWriteSome(dir);
+            final var plainPath = Files.createTempFile(dir, null, null);
             final var encryptedPath = Files.createTempFile(dir, null, null);
             final var decryptedPath = Files.createTempFile(dir, null, null);
             // ------------------------------------------------------------------------------ cipher
@@ -335,23 +317,9 @@ class CipherTest {
             final var mode = "CBC";
             final var padding = "NoPadding";
             final var transformation = algorithm + '/' + mode + '/' + padding;
-            final var cipher = getCipherInstance(transformation);
+            final var cipher = Cipher.getInstance(transformation);
             final var blockSize = cipher.getBlockSize();
             assert blockSize == 128 >> 3;
-            // --------------------------------------------------------- pad zeros to the plain file
-            {
-                final var required = (int) (blockSize - (Files.size(plainPath) % blockSize));
-                try (var channel = FileChannel.open(plainPath, StandardOpenOption.WRITE,
-                                                    StandardOpenOption.APPEND)) {
-                    for (final var buffer = ByteBuffer.allocate(required);
-                         buffer.hasRemaining(); ) {
-                        final var w = channel.write(buffer);
-                        assert w >= 0;
-                    }
-                    channel.force(false);
-                }
-                assertThat(Files.size(plainPath) % blockSize).isZero();
-            }
             // --------------------------------------------------------------------------------- key
             final var key = generateKey(algorithm, keysize);
             // ------------------------------------------------------------------------------ params
@@ -363,6 +331,13 @@ class CipherTest {
             }
             // ----------------------------------------------------------------------------- encrypt
             {
+                PathUtils.writeRandomBytes(
+                        plainPath,
+                        ThreadLocalRandom.current().nextInt(8192) / blockSize * blockSize,
+                        ByteBuffer.allocate(1024),
+                        0L
+                );
+                log.debug("plainPath.size: {}", Files.size(plainPath));
                 cipher.init(Cipher.ENCRYPT_MODE, key, params);
                 try (var readable = FileChannel.open(plainPath, StandardOpenOption.READ);
                      var writable = FileChannel.open(encryptedPath, StandardOpenOption.WRITE)) {
@@ -393,38 +368,37 @@ class CipherTest {
                             writable
                     );
                     assertThat(bytes).isEqualTo(Files.size(encryptedPath));
-                    for (final var buffer = ByteBuffer.wrap(cipher.doFinal());
-                         buffer.hasRemaining(); ) {
-                        final var w = writable.write(buffer);
+                    for (final var b = ByteBuffer.wrap(cipher.doFinal()); b.hasRemaining(); ) {
+                        final var w = writable.write(b);
                         assert w >= 0;
                     }
                     writable.force(false);
                 }
+                log.debug("decryptedPath.size: {}", Files.size(decryptedPath));
                 assertThat(decryptedPath).hasSize(Files.size(plainPath));
             }
             // ------------------------------------------------------------------------------ verify
             {
                 final var digest = MessageDigest.getInstance("SHA-1");
                 final var buffer = ByteBuffer.allocate(1024);
-                final byte[] plainFileDigest;
+                final var plainPathDigest = MessageDigestUtils.digest(
+                        digest,
+                        plainPath,
+                        buffer
+                );
+                log.debug("plainPath.digest: {}", HexFormat.of().formatHex(plainPathDigest));
+                final byte[] decryptedPathDigest;
                 {
                     digest.reset();
-                    plainFileDigest = MessageDigestUtils.digest(
-                            digest,
-                            plainPath,
-                            buffer
-                    );
-                }
-                final byte[] decryptedFileDigest;
-                {
-                    digest.reset();
-                    decryptedFileDigest = MessageDigestUtils.digest(
+                    decryptedPathDigest = MessageDigestUtils.digest(
                             digest,
                             decryptedPath,
                             buffer
                     );
                 }
-                assertThat(decryptedFileDigest).isEqualTo(plainFileDigest);
+                log.debug("decryptedPath.digest: {}",
+                          HexFormat.of().formatHex(decryptedPathDigest));
+                assertThat(decryptedPathDigest).isEqualTo(plainPathDigest);
             }
         }
     }
@@ -438,12 +412,13 @@ class CipherTest {
         }
 
         @MethodSource({"keysizes"})
-        @ParameterizedTest
+        @ParameterizedTest(name = "[{index}] keysize: {0}")
         void __(final int keysize, @TempDir final File dir)
-                throws IOException, NoSuchAlgorithmException, InvalidAlgorithmParameterException,
-                       InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+                throws IOException, NoSuchPaddingException, NoSuchAlgorithmException,
+                       InvalidAlgorithmParameterException, InvalidKeyException,
+                       IllegalBlockSizeException, BadPaddingException {
             // ------------------------------------------------------------------------------- files
-            final var plainFile = JavaIoUtils.createTempFileInAndWriteSome(dir);
+            final var plainFile = File.createTempFile("tmp", "tmp", dir);
             final var encryptedFile = File.createTempFile("tmp", "tmp", dir);
             final var decryptedFile = File.createTempFile("tmp", "tmp", dir);
             // ------------------------------------------------------------------------------ cipher
@@ -451,7 +426,7 @@ class CipherTest {
             final var mode = "CBC";
             final var padding = "PKCS5Padding";
             final var transformation = algorithm + '/' + mode + '/' + padding;
-            final var cipher = getCipherInstance(transformation);
+            final var cipher = Cipher.getInstance(transformation);
             final var blockSize = cipher.getBlockSize();
             assert blockSize == 128 >> 3;
             // --------------------------------------------------------------------------------- key
@@ -465,6 +440,13 @@ class CipherTest {
             }
             // ----------------------------------------------------------------------------- encrypt
             {
+                FileUtils.writeRandomBytes(
+                        plainFile,
+                        false,
+                        ThreadLocalRandom.current().nextInt(8192),
+                        new byte[1024]
+                );
+                log.debug("plainFile.length: {}", plainFile.length());
                 cipher.init(Cipher.ENCRYPT_MODE, key, params);
                 try (var input = new FileInputStream(plainFile);
                      var output = new FileOutputStream(encryptedFile)) {
@@ -494,21 +476,19 @@ class CipherTest {
                     outputStream.write(cipher.doFinal());
                     outputStream.flush();
                 }
+                log.debug("decryptedFile.length: {}", decryptedFile.length());
                 assertThat(decryptedFile).hasSize(plainFile.length());
             }
             // ------------------------------------------------------------------------------ verify
             {
                 final var digest = MessageDigest.getInstance("SHA-1");
                 final var buffer = new byte[1024];
-                final byte[] plainFileDigest;
-                {
-                    digest.reset();
-                    plainFileDigest = MessageDigestUtils.digest(
-                            digest,
-                            plainFile,
-                            buffer
-                    );
-                }
+                final byte[] plainFileDigest = MessageDigestUtils.digest(
+                        digest,
+                        plainFile,
+                        buffer
+                );
+                log.debug("plainFile.digest: {}", HexFormat.of().formatHex(plainFileDigest));
                 final byte[] decryptedFileDigest;
                 {
                     digest.reset();
@@ -518,17 +498,20 @@ class CipherTest {
                             buffer
                     );
                 }
+                log.debug("decryptedFile.digest: {}",
+                          HexFormat.of().formatHex(decryptedFileDigest));
                 assertThat(decryptedFileDigest).isEqualTo(plainFileDigest);
             }
         }
 
         @MethodSource({"keysizes"})
-        @ParameterizedTest
+        @ParameterizedTest(name = "[{index}] keysize: {0}")
         void __(final int keysize, @TempDir final Path dir)
-                throws IOException, NoSuchAlgorithmException, InvalidAlgorithmParameterException,
-                       InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+                throws IOException, NoSuchPaddingException, NoSuchAlgorithmException,
+                       InvalidAlgorithmParameterException, InvalidKeyException,
+                       IllegalBlockSizeException, BadPaddingException {
             // ------------------------------------------------------------------------------- paths
-            final var plainPath = JavaNioUtils.createTempFileInAndWriteSome(dir);
+            final var plainPath = Files.createTempFile(dir, null, null);
             final var encryptedPath = Files.createTempFile(dir, null, null);
             final var decryptedPath = Files.createTempFile(dir, null, null);
             // ------------------------------------------------------------------------------ cipher
@@ -536,7 +519,7 @@ class CipherTest {
             final var mode = "CBC";
             final var padding = "PKCS5Padding";
             final var transformation = algorithm + '/' + mode + '/' + padding;
-            final var cipher = getCipherInstance(transformation);
+            final var cipher = Cipher.getInstance(transformation);
             final var blockSize = cipher.getBlockSize();
             assert blockSize == 128 >> 3;
             // --------------------------------------------------------------------------------- key
@@ -550,6 +533,13 @@ class CipherTest {
             }
             // ----------------------------------------------------------------------------- encrypt
             {
+                PathUtils.writeRandomBytes(
+                        plainPath,
+                        ThreadLocalRandom.current().nextInt(8192),
+                        ByteBuffer.allocate(1024),
+                        0L
+                );
+                log.debug("plainPath.size: {}", Files.size(plainPath));
                 cipher.init(Cipher.ENCRYPT_MODE, key, params);
                 try (var readable = FileChannel.open(plainPath, StandardOpenOption.READ);
                      var writable = FileChannel.open(encryptedPath, StandardOpenOption.WRITE)) {
@@ -586,31 +576,31 @@ class CipherTest {
                     }
                     writable.force(false);
                 }
+                log.debug("decryptedPath.size: {}", Files.size(decryptedPath));
                 assertThat(decryptedPath).hasSize(Files.size(plainPath));
             }
             // ------------------------------------------------------------------------------ verify
             {
                 final var digest = MessageDigest.getInstance("SHA-1");
                 final var buffer = ByteBuffer.allocate(1024);
-                final byte[] plainFileDigest;
+                final byte[] plainPathDigest = MessageDigestUtils.digest(
+                        digest,
+                        plainPath,
+                        buffer
+                );
+                log.debug("plainPath.digest: {}", HexFormat.of().formatHex(plainPathDigest));
+                final byte[] decryptedPathDigest;
                 {
                     digest.reset();
-                    plainFileDigest = MessageDigestUtils.digest(
-                            digest,
-                            plainPath,
-                            buffer
-                    );
-                }
-                final byte[] decryptedFileDigest;
-                {
-                    digest.reset();
-                    decryptedFileDigest = MessageDigestUtils.digest(
+                    decryptedPathDigest = MessageDigestUtils.digest(
                             digest,
                             decryptedPath,
                             buffer
                     );
                 }
-                assertThat(decryptedFileDigest).isEqualTo(plainFileDigest);
+                log.debug("decryptedPath.digest: {}",
+                          HexFormat.of().formatHex(decryptedPathDigest));
+                assertThat(decryptedPathDigest).isEqualTo(plainPathDigest);
             }
         }
     }
@@ -624,12 +614,12 @@ class CipherTest {
         }
 
         @MethodSource({"keysizes"})
-        @ParameterizedTest
+        @ParameterizedTest(name = "[{index}] keysize: {0}")
         void __(final int keysize, @TempDir final File dir)
-                throws IOException, NoSuchAlgorithmException, InvalidKeyException,
-                       IllegalBlockSizeException, BadPaddingException {
+                throws IOException, NoSuchPaddingException, NoSuchAlgorithmException,
+                       InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
             // ------------------------------------------------------------------------------- files
-            final var plainFile = JavaIoUtils.createTempFileInAndWriteSome(dir);
+            final var plainFile = File.createTempFile("tmp", "tmp", dir);
             final var encryptedFile = File.createTempFile("tmp", "tmp", dir);
             final var decryptedFile = File.createTempFile("tmp", "tmp", dir);
             // ------------------------------------------------------------------------------ cipher
@@ -637,21 +627,20 @@ class CipherTest {
             final var mode = "ECB";
             final var padding = "NoPadding";
             final var transformation = algorithm + '/' + mode + '/' + padding;
-            final var cipher = getCipherInstance(transformation);
+            final var cipher = Cipher.getInstance(transformation);
             final var blockSize = cipher.getBlockSize();
             assert blockSize == 128 >> 3;
-            {
-                final var required = (int) (blockSize - (plainFile.length() % blockSize));
-                try (var stream = new FileOutputStream(plainFile, true)) {
-                    stream.write(new byte[required]);
-                    stream.flush();
-                }
-                assertThat(plainFile.length() % blockSize).isZero();
-            }
             // --------------------------------------------------------------------------------- key
             final var key = generateKey(algorithm, keysize);
             // ----------------------------------------------------------------------------- encrypt
             {
+                FileUtils.writeRandomBytes(
+                        plainFile,
+                        false,
+                        ThreadLocalRandom.current().nextInt(8192) / blockSize * blockSize,
+                        new byte[1024]
+                );
+                log.debug("plainFile.length: {}", plainFile.length());
                 cipher.init(Cipher.ENCRYPT_MODE, key);
                 try (var input = new FileInputStream(plainFile);
                      var output = new FileOutputStream(encryptedFile)) {
@@ -681,41 +670,39 @@ class CipherTest {
                     outputStream.write(cipher.doFinal());
                     outputStream.flush();
                 }
+                log.debug("decryptedFile.length: {}", decryptedFile.length());
                 assertThat(decryptedFile).hasSize(plainFile.length());
             }
             // ------------------------------------------------------------------------------ verify
             {
                 final var digest = MessageDigest.getInstance("SHA-1");
-                final var buffer = new byte[1024];
-                final byte[] plainFileDigest;
-                {
-                    digest.reset();
-                    plainFileDigest = MessageDigestUtils.digest(
-                            digest,
-                            plainFile,
-                            buffer
-                    );
-                }
+                final byte[] plainFileDigest = MessageDigestUtils.digest(
+                        digest,
+                        plainFile,
+                        new byte[1024]
+                );
+                log.debug("plainFileDigest: {}", HexFormat.of().formatHex(plainFileDigest));
                 final byte[] decryptedFileDigest;
                 {
                     digest.reset();
                     decryptedFileDigest = MessageDigestUtils.digest(
                             digest,
                             decryptedFile,
-                            buffer
+                            new byte[1024]
                     );
                 }
+                log.debug("decryptedFileDigest: {}", HexFormat.of().formatHex(decryptedFileDigest));
                 assertThat(decryptedFileDigest).isEqualTo(plainFileDigest);
             }
         }
 
         @MethodSource({"keysizes"})
-        @ParameterizedTest
+        @ParameterizedTest(name = "[{index}] keysize: {0}")
         void __(final int keysize, @TempDir final Path dir)
-                throws IOException, NoSuchAlgorithmException, InvalidKeyException,
-                       IllegalBlockSizeException, BadPaddingException {
+                throws IOException, NoSuchPaddingException, NoSuchAlgorithmException,
+                       InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
             // ------------------------------------------------------------------------------- paths
-            final var plainPath = JavaNioUtils.createTempFileInAndWriteSome(dir);
+            final var plainPath = Files.createTempFile(dir, null, null);
             final var encryptedPath = Files.createTempFile(dir, null, null);
             final var decryptedPath = Files.createTempFile(dir, null, null);
             // ------------------------------------------------------------------------------ cipher
@@ -723,26 +710,20 @@ class CipherTest {
             final var mode = "ECB";
             final var padding = "NoPadding";
             final var transformation = algorithm + '/' + mode + '/' + padding;
-            final var cipher = getCipherInstance(transformation);
+            final var cipher = Cipher.getInstance(transformation);
             final var blockSize = cipher.getBlockSize();
             assert blockSize == 128 >> 3;
-            {
-                final var required = (int) (blockSize - (Files.size(plainPath) % blockSize));
-                try (var channel = FileChannel.open(plainPath, StandardOpenOption.WRITE,
-                                                    StandardOpenOption.APPEND)) {
-                    for (final var buffer = ByteBuffer.allocate(required);
-                         buffer.hasRemaining(); ) {
-                        final var w = channel.write(buffer);
-                        assert w >= 0;
-                    }
-                    channel.force(false);
-                }
-                assertThat(Files.size(plainPath) % blockSize).isZero();
-            }
             // --------------------------------------------------------------------------------- key
             final var key = generateKey(algorithm, keysize);
             // ----------------------------------------------------------------------------- encrypt
             {
+                PathUtils.writeRandomBytes(
+                        plainPath,
+                        ThreadLocalRandom.current().nextInt(8192) / blockSize * blockSize,
+                        ByteBuffer.allocate(1024),
+                        0L
+                );
+                log.debug("plainPath.size: {}", Files.size(plainPath));
                 cipher.init(Cipher.ENCRYPT_MODE, key);
                 try (var readable = FileChannel.open(plainPath, StandardOpenOption.READ);
                      var writable = FileChannel.open(encryptedPath, StandardOpenOption.WRITE)) {
@@ -780,31 +761,29 @@ class CipherTest {
                     }
                     writable.force(false);
                 }
+                log.debug("decryptedPath.size: {}", Files.size(decryptedPath));
                 assertThat(decryptedPath).hasSize(Files.size(plainPath));
             }
             // ------------------------------------------------------------------------------ verify
             {
                 final var digest = MessageDigest.getInstance("SHA-1");
-                final var buffer = ByteBuffer.allocate(1024);
-                final byte[] plainFileDigest;
+                final byte[] plainPathDigest = MessageDigestUtils.digest(
+                        digest,
+                        plainPath,
+                        ByteBuffer.allocate(1024)
+                );
+                log.debug("plainPathDigest: {}", HexFormat.of().formatHex(plainPathDigest));
+                final byte[] decryptedPathDigest;
                 {
                     digest.reset();
-                    plainFileDigest = MessageDigestUtils.digest(
-                            digest,
-                            plainPath,
-                            buffer
-                    );
-                }
-                final byte[] decryptedFileDigest;
-                {
-                    digest.reset();
-                    decryptedFileDigest = MessageDigestUtils.digest(
+                    decryptedPathDigest = MessageDigestUtils.digest(
                             digest,
                             decryptedPath,
-                            buffer
+                            ByteBuffer.allocate(1024)
                     );
                 }
-                assertThat(decryptedFileDigest).isEqualTo(plainFileDigest);
+                log.debug("decryptedPathDigest: {}", HexFormat.of().formatHex(decryptedPathDigest));
+                assertThat(decryptedPathDigest).isEqualTo(plainPathDigest);
             }
         }
     }
@@ -818,12 +797,12 @@ class CipherTest {
         }
 
         @MethodSource({"keysizes"})
-        @ParameterizedTest
+        @ParameterizedTest(name = "[{index}] keysize: {0}")
         void __(final int keysize, @TempDir final File dir)
-                throws IOException, NoSuchAlgorithmException, InvalidKeyException,
-                       IllegalBlockSizeException, BadPaddingException {
+                throws IOException, NoSuchPaddingException, NoSuchAlgorithmException,
+                       InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
             // ------------------------------------------------------------------------------- files
-            final var plainFile = JavaIoUtils.createTempFileInAndWriteSome(dir);
+            final var plainFile = File.createTempFile("tmp", "tmp", dir);
             final var encryptedFile = File.createTempFile("tmp", "tmp", dir);
             final var decryptedFile = File.createTempFile("tmp", "tmp", dir);
             // ------------------------------------------------------------------------------ cipher
@@ -831,77 +810,73 @@ class CipherTest {
             final var mode = "ECB";
             final var padding = "PKCS5Padding";
             final var transformation = algorithm + '/' + mode + '/' + padding;
-            final var cipher = getCipherInstance(transformation);
+            final var cipher = Cipher.getInstance(transformation);
             final var blockSize = cipher.getBlockSize();
             assert blockSize == 128 >> 3;
             // --------------------------------------------------------------------------------- key
             final var key = generateKey(algorithm, keysize);
             // ----------------------------------------------------------------------------- encrypt
-            {
-                cipher.init(Cipher.ENCRYPT_MODE, key);
-                try (var input = new FileInputStream(plainFile);
-                     var output = new FileOutputStream(encryptedFile)) {
-                    final long bytes = CipherUtils.update(
-                            cipher,
-                            input,
-                            new byte[1024],
-                            output
-                    );
-                    assertThat(bytes).isEqualTo(plainFile.length());
-                    output.write(cipher.doFinal());
-                    output.flush();
-                }
+            FileUtils.writeRandomBytes(
+                    plainFile,
+                    false,
+                    ThreadLocalRandom.current().nextInt(8192),
+                    new byte[1024]
+            );
+            log.debug("plainFile.length: {}", plainFile.length());
+            cipher.init(Cipher.ENCRYPT_MODE, key);
+            try (var input = new FileInputStream(plainFile);
+                 var output = new FileOutputStream(encryptedFile)) {
+                final long bytes = CipherUtils.update(
+                        cipher,
+                        input,
+                        new byte[1024],
+                        output
+                );
+                assertThat(bytes).isEqualTo(plainFile.length());
+                output.write(cipher.doFinal());
+                output.flush();
             }
             // ----------------------------------------------------------------------------- decrypt
-            {
-                cipher.init(Cipher.DECRYPT_MODE, key);
-                try (var input = new FileInputStream(encryptedFile);
-                     var outputStream = new FileOutputStream(decryptedFile)) {
-                    final var bytes = CipherUtils.update(
-                            cipher,
-                            input,
-                            new byte[1024],
-                            outputStream
-                    );
-                    assertThat(bytes).isEqualTo(encryptedFile.length());
-                    outputStream.write(cipher.doFinal());
-                    outputStream.flush();
-                }
-                assertThat(decryptedFile).hasSize(plainFile.length());
+            cipher.init(Cipher.DECRYPT_MODE, key);
+            try (var input = new FileInputStream(encryptedFile);
+                 var outputStream = new FileOutputStream(decryptedFile)) {
+                final var bytes = CipherUtils.update(
+                        cipher,
+                        input,
+                        new byte[1024],
+                        outputStream
+                );
+                assertThat(bytes).isEqualTo(encryptedFile.length());
+                outputStream.write(cipher.doFinal());
+                outputStream.flush();
             }
+            log.debug("decryptedFile.length: {}", decryptedFile.length());
+            assertThat(decryptedFile).hasSize(plainFile.length());
             // ------------------------------------------------------------------------------ verify
-            {
-                final var digest = MessageDigest.getInstance("SHA-1");
-                final var buffer = new byte[1024];
-                final byte[] plainFileDigest;
-                {
-                    digest.reset();
-                    plainFileDigest = MessageDigestUtils.digest(
-                            digest,
-                            plainFile,
-                            buffer
-                    );
-                }
-                final byte[] decryptedFileDigest;
-                {
-                    digest.reset();
-                    decryptedFileDigest = MessageDigestUtils.digest(
-                            digest,
-                            decryptedFile,
-                            buffer
-                    );
-                }
-                assertThat(decryptedFileDigest).isEqualTo(plainFileDigest);
-            }
+            final var digest = MessageDigest.getInstance("SHA-1");
+            final var plainFileDigest = MessageDigestUtils.digest(
+                    digest,
+                    plainFile,
+                    new byte[1024]
+            );
+            log.debug("plainFileDigest: {}", HexFormat.of().formatHex(plainFileDigest));
+            digest.reset();
+            final byte[] decryptedFileDigest = MessageDigestUtils.digest(
+                    digest,
+                    decryptedFile,
+                    new byte[1024]
+            );
+            log.debug("decryptedFileDigest: {}", HexFormat.of().formatHex(decryptedFileDigest));
+            assertThat(decryptedFileDigest).isEqualTo(plainFileDigest);
         }
 
         @MethodSource({"keysizes"})
-        @ParameterizedTest
+        @ParameterizedTest(name = "[{index}] keysize: {0}")
         void __(final int keysize, @TempDir final Path dir)
-                throws IOException, NoSuchAlgorithmException, InvalidKeyException,
-                       IllegalBlockSizeException, BadPaddingException {
+                throws IOException, NoSuchPaddingException, NoSuchAlgorithmException,
+                       InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
             // ------------------------------------------------------------------------------- paths
-            final var plainPath = JavaNioUtils.createTempFileInAndWriteSome(dir);
+            final var plainPath = Files.createTempFile(dir, null, null);
             final var encryptedPath = Files.createTempFile(dir, null, null);
             final var decryptedPath = Files.createTempFile(dir, null, null);
             // ------------------------------------------------------------------------------ cipher
@@ -909,76 +884,72 @@ class CipherTest {
             final var mode = "ECB";
             final var padding = "PKCS5Padding";
             final var transformation = algorithm + '/' + mode + '/' + padding;
-            final var cipher = getCipherInstance(transformation);
+            final var cipher = Cipher.getInstance(transformation);
             final var blockSize = cipher.getBlockSize();
             assert blockSize == 128 >> 3 : "block size is always 128 regardless of the key size";
             // --------------------------------------------------------------------------------- key
             final var key = generateKey(algorithm, keysize);
             // ----------------------------------------------------------------------------- encrypt
-            {
-                cipher.init(Cipher.ENCRYPT_MODE, key);
-                try (var readable = FileChannel.open(plainPath, StandardOpenOption.READ);
-                     var writable = FileChannel.open(encryptedPath,
-                                                     StandardOpenOption.WRITE)) {
-                    final long bytes = CipherUtils.update(
-                            cipher,
-                            readable,
-                            ByteBuffer.allocate(1024),
-                            writable
-                    );
-                    assertThat(bytes).isEqualTo(Files.size(plainPath));
-                    for (var buffer = ByteBuffer.wrap(cipher.doFinal());
-                         buffer.hasRemaining(); ) {
-                        final var w = writable.write(buffer);
-                        assert w >= 0;
-                    }
-                    writable.force(false);
+            PathUtils.writeRandomBytes(
+                    plainPath,
+                    ThreadLocalRandom.current().nextInt(8192),
+                    ByteBuffer.allocate(1024),
+                    0L
+            );
+            log.debug("plainPath.size: {}", Files.size(plainPath));
+            cipher.init(Cipher.ENCRYPT_MODE, key);
+            try (var readable = FileChannel.open(plainPath, StandardOpenOption.READ);
+                 var writable = FileChannel.open(encryptedPath,
+                                                 StandardOpenOption.WRITE)) {
+                final long bytes = CipherUtils.update(
+                        cipher,
+                        readable,
+                        ByteBuffer.allocate(1024),
+                        writable
+                );
+                assertThat(bytes).isEqualTo(Files.size(plainPath));
+                for (var buffer = ByteBuffer.wrap(cipher.doFinal());
+                     buffer.hasRemaining(); ) {
+                    final var w = writable.write(buffer);
+                    assert w >= 0;
                 }
+                writable.force(false);
             }
             // ----------------------------------------------------------------------------- decrypt
-            {
-                cipher.init(Cipher.DECRYPT_MODE, key);
-                try (var readable = FileChannel.open(encryptedPath, StandardOpenOption.READ);
-                     var writable = FileChannel.open(decryptedPath, StandardOpenOption.WRITE)) {
-                    final var bytes = CipherUtils.update(
-                            cipher,
-                            readable,
-                            ByteBuffer.allocate(1024),
-                            writable
-                    );
-                    assertThat(bytes).isEqualTo(Files.size(encryptedPath));
-                    for (final var b = ByteBuffer.wrap(cipher.doFinal()); b.hasRemaining(); ) {
-                        final var w = writable.write(b);
-                        assert w >= 0;
-                    }
-                    writable.force(false);
+            cipher.init(Cipher.DECRYPT_MODE, key);
+            try (var readable = FileChannel.open(encryptedPath, StandardOpenOption.READ);
+                 var writable = FileChannel.open(decryptedPath, StandardOpenOption.WRITE)) {
+                final var bytes = CipherUtils.update(
+                        cipher,
+                        readable,
+                        ByteBuffer.allocate(1024),
+                        writable
+                );
+                assertThat(bytes).isEqualTo(Files.size(encryptedPath));
+                for (final var b = ByteBuffer.wrap(cipher.doFinal()); b.hasRemaining(); ) {
+                    final var w = writable.write(b);
+                    assert w >= 0;
                 }
-                assertThat(decryptedPath).hasSize(Files.size(plainPath));
+                writable.force(false);
             }
+            log.debug("decryptedPath.size: {}", Files.size(decryptedPath));
+            assertThat(decryptedPath).hasSize(Files.size(plainPath));
             // ------------------------------------------------------------------------------ verify
-            {
-                final var digest = MessageDigest.getInstance("SHA-1");
-                final var buffer = ByteBuffer.allocate(1024);
-                final byte[] plainFileDigest;
-                {
-                    digest.reset();
-                    plainFileDigest = MessageDigestUtils.digest(
-                            digest,
-                            plainPath,
-                            buffer
-                    );
-                }
-                final byte[] decryptedFileDigest;
-                {
-                    digest.reset();
-                    decryptedFileDigest = MessageDigestUtils.digest(
-                            digest,
-                            decryptedPath,
-                            buffer
-                    );
-                }
-                assertThat(decryptedFileDigest).isEqualTo(plainFileDigest);
-            }
+            final var digest = MessageDigest.getInstance("SHA-1");
+            final var plainFileDigest = MessageDigestUtils.digest(
+                    digest,
+                    plainPath,
+                    ByteBuffer.allocate(1024)
+            );
+            log.debug("plainPathDigest: {}", HexFormat.of().formatHex(plainFileDigest));
+            digest.reset();
+            final byte[] decryptedFileDigest = MessageDigestUtils.digest(
+                    digest,
+                    decryptedPath,
+                    ByteBuffer.allocate(1024)
+            );
+            log.debug("decryptedPathDigest: {}", HexFormat.of().formatHex(decryptedFileDigest));
+            assertThat(decryptedFileDigest).isEqualTo(plainFileDigest);
         }
     }
 
@@ -991,12 +962,13 @@ class CipherTest {
         }
 
         @MethodSource({"keysizes"})
-        @ParameterizedTest
+        @ParameterizedTest(name = "[{index}] keysize: {0}")
         void __(final int keysize, @TempDir final File dir)
-                throws IOException, NoSuchAlgorithmException, InvalidAlgorithmParameterException,
-                       InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+                throws IOException, NoSuchPaddingException, NoSuchAlgorithmException,
+                       InvalidAlgorithmParameterException, InvalidKeyException,
+                       IllegalBlockSizeException, BadPaddingException {
             // ------------------------------------------------------------------------------- files
-            final var plainFile = JavaIoUtils.createTempFileInAndWriteSome(dir);
+            final var plainFile = File.createTempFile("tmp", "tmp", dir);
             final var encryptedFile = File.createTempFile("tmp", "tmp", dir);
             final var decryptedFile = File.createTempFile("tmp", "tmp", dir);
             // ------------------------------------------------------------------------------ cipher
@@ -1004,17 +976,9 @@ class CipherTest {
             final var mode = "GCM";
             final var padding = "NoPadding";
             final var transformation = algorithm + '/' + mode + '/' + padding;
-            final var cipher = getCipherInstance(transformation);
+            final var cipher = Cipher.getInstance(transformation);
             final var blockSize = cipher.getBlockSize();
             assert blockSize == 128 >> 3;
-            {
-                final var required = (int) (blockSize - (plainFile.length() % blockSize));
-                try (var stream = new FileOutputStream(plainFile, true)) {
-                    stream.write(new byte[required]);
-                    stream.flush();
-                }
-                assertThat(plainFile.length() % blockSize).isZero();
-            }
             // --------------------------------------------------------------------------------- key
             final var key = generateKey(algorithm, keysize);
             // ------------------------------------------------------------------------------ params
@@ -1022,81 +986,78 @@ class CipherTest {
             {
                 final var tLens = new int[] {128, 120, 112, 104, 96};
                 final var tLen = tLens[ThreadLocalRandom.current().nextInt(tLens.length)];
-                final var src = new byte[blockSize];
-                ThreadLocalRandom.current().nextBytes(src);
-                params = new GCMParameterSpec(tLen, src);
+                final var iv = new byte[blockSize];
+                ThreadLocalRandom.current().nextBytes(iv);
+                params = new GCMParameterSpec(tLen, iv);
             }
             // --------------------------------------------------------------------------------- aad
-            final byte[] aad = new byte[blockSize];
+            final var aad = new byte[blockSize];
             SecureRandom.getInstanceStrong().nextBytes(aad);
             // ----------------------------------------------------------------------------- encrypt
-            {
-                cipher.init(Cipher.ENCRYPT_MODE, key, params);
-                cipher.updateAAD(aad);
-                try (var input = new FileInputStream(plainFile);
-                     var output = new FileOutputStream(encryptedFile)) {
-                    final long bytes = CipherUtils.update(
-                            cipher,
-                            input,
-                            new byte[1024],
-                            output
-                    );
-                    assertThat(bytes).isEqualTo(plainFile.length());
-                    output.write(cipher.doFinal());
-                    output.flush();
-                }
+            FileUtils.writeRandomBytes(
+                    plainFile,
+                    false,
+                    ThreadLocalRandom.current().nextInt(8192) / blockSize * blockSize,
+                    new byte[1024]
+            );
+            log.debug("plainFile.length: {}", plainFile.length());
+            cipher.init(Cipher.ENCRYPT_MODE, key, params);
+            cipher.updateAAD(aad);
+            try (var input = new FileInputStream(plainFile);
+                 var output = new FileOutputStream(encryptedFile)) {
+                final long bytes = CipherUtils.update(
+                        cipher,
+                        input,
+                        new byte[1024],
+                        output
+                );
+                assertThat(bytes).isEqualTo(plainFile.length());
+                output.write(cipher.doFinal());
+                output.flush();
             }
             // ----------------------------------------------------------------------------- decrypt
-            {
-                cipher.init(Cipher.DECRYPT_MODE, key, params);
-                cipher.updateAAD(aad);
-                try (var input = new FileInputStream(encryptedFile);
-                     var outputStream = new FileOutputStream(decryptedFile)) {
-                    final var bytes = CipherUtils.update(
-                            cipher,
-                            input,
-                            new byte[1024],
-                            outputStream
-                    );
-                    assertThat(bytes).isEqualTo(encryptedFile.length());
-                    outputStream.write(cipher.doFinal());
-                    outputStream.flush();
-                }
-                assertThat(decryptedFile).hasSize(plainFile.length());
+            cipher.init(Cipher.DECRYPT_MODE, key, params);
+            cipher.updateAAD(aad);
+            try (var input = new FileInputStream(encryptedFile);
+                 var outputStream = new FileOutputStream(decryptedFile)) {
+                final var bytes = CipherUtils.update(
+                        cipher,
+                        input,
+                        new byte[1024],
+                        outputStream
+                );
+                assertThat(bytes).isEqualTo(encryptedFile.length());
+                outputStream.write(cipher.doFinal());
+                outputStream.flush();
             }
+            log.debug("decryptedFile.length: {}", decryptedFile.length());
+            assertThat(decryptedFile).hasSize(plainFile.length());
             // ------------------------------------------------------------------------------ verify
-            {
-                final var digest = MessageDigest.getInstance("SHA-1");
-                final var buffer = new byte[1024];
-                final byte[] plainFileDigest;
-                {
-                    digest.reset();
-                    plainFileDigest = MessageDigestUtils.digest(
-                            digest,
-                            plainFile,
-                            buffer
-                    );
-                }
-                final byte[] decryptedFileDigest;
-                {
-                    digest.reset();
-                    decryptedFileDigest = MessageDigestUtils.digest(
-                            digest,
-                            decryptedFile,
-                            buffer
-                    );
-                }
-                assertThat(decryptedFileDigest).isEqualTo(plainFileDigest);
-            }
+            final var digest = MessageDigest.getInstance("SHA-1");
+            final var plainFileDigest = MessageDigestUtils.digest(
+                    digest,
+                    plainFile,
+                    new byte[1024]
+            );
+            log.debug("plainFileDigest: {}", HexFormat.of().formatHex(plainFileDigest));
+            digest.reset();
+            final var decryptedFileDigest = MessageDigestUtils.digest(
+                    digest,
+                    decryptedFile,
+                    new byte[1024]
+            );
+            log.debug("decryptedFileDigest: {}", HexFormat.of().formatHex(decryptedFileDigest));
+            assertThat(decryptedFileDigest).isEqualTo(plainFileDigest);
         }
 
         @MethodSource({"keysizes"})
-        @ParameterizedTest
+        @ParameterizedTest(name = "[{index}] keysize: {0}")
         void __(final int keySize, @TempDir final Path dir)
-                throws IOException, NoSuchAlgorithmException, InvalidAlgorithmParameterException,
-                       InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+                throws IOException, NoSuchPaddingException, NoSuchAlgorithmException,
+                       InvalidAlgorithmParameterException, InvalidKeyException,
+                       IllegalBlockSizeException, BadPaddingException {
             // ------------------------------------------------------------------------------- paths
-            final var plainPath = JavaNioUtils.createTempFileInAndWriteSome(dir);
+            final var plainPath = Files.createTempFile(dir, null, null);
             final var encryptedPath = Files.createTempFile(dir, null, null);
             final var decryptedPath = Files.createTempFile(dir, null, null);
             // ------------------------------------------------------------------------------ cipher
@@ -1104,22 +1065,9 @@ class CipherTest {
             final var mode = "GCM";
             final var padding = "NoPadding";
             final var transformation = algorithm + '/' + mode + '/' + padding;
-            final var cipher = getCipherInstance(transformation);
+            final var cipher = Cipher.getInstance(transformation);
             final var blockSize = cipher.getBlockSize();
             assert blockSize == 128 >> 3;
-            {
-                final var required = (int) (blockSize - (Files.size(plainPath) % blockSize));
-                try (var channel = FileChannel.open(plainPath, StandardOpenOption.WRITE,
-                                                    StandardOpenOption.APPEND)) {
-                    for (final var buffer = ByteBuffer.allocate(required);
-                         buffer.hasRemaining(); ) {
-                        final var w = channel.write(buffer);
-                        assert w >= 0;
-                    }
-                    channel.force(false);
-                }
-                assertThat(Files.size(plainPath) % blockSize).isZero();
-            }
             // --------------------------------------------------------------------------------- key
             final var key = generateKey(algorithm, keySize);
             // ------------------------------------------------------------------------------ params
@@ -1127,80 +1075,76 @@ class CipherTest {
             {
                 final var tLens = new int[] {128, 120, 112, 104, 96};
                 final var tLen = tLens[ThreadLocalRandom.current().nextInt(tLens.length)];
-                final var src = new byte[blockSize];
-                ThreadLocalRandom.current().nextBytes(src);
-                params = new GCMParameterSpec(tLen, src);
+                final var iv = new byte[blockSize];
+                ThreadLocalRandom.current().nextBytes(iv);
+                params = new GCMParameterSpec(tLen, iv);
             }
             // --------------------------------------------------------------------------------- aad
-            final byte[] aad = new byte[blockSize];
+            final var aad = new byte[blockSize];
             SecureRandom.getInstanceStrong().nextBytes(aad);
             // ----------------------------------------------------------------------------- encrypt
-            {
-                cipher.init(Cipher.ENCRYPT_MODE, key, params);
-                cipher.updateAAD(aad);
-                try (var readable = FileChannel.open(plainPath, StandardOpenOption.READ);
-                     var writable = FileChannel.open(encryptedPath, StandardOpenOption.WRITE)) {
-                    final long bytes = CipherUtils.update(
-                            cipher,
-                            readable,
-                            ByteBuffer.allocate(1024),
-                            writable
-                    );
-                    assertThat(bytes).isEqualTo(Files.size(plainPath));
-                    for (var buffer = ByteBuffer.wrap(cipher.doFinal());
-                         buffer.hasRemaining(); ) {
-                        final var w = writable.write(buffer);
-                        assert w >= 0;
-                    }
-                    writable.force(false);
+            PathUtils.writeRandomBytes(
+                    plainPath,
+                    ThreadLocalRandom.current().nextInt(8192) / blockSize * blockSize,
+                    ByteBuffer.allocate(1024),
+                    0L
+            );
+            log.debug("palinPath.size: {}", Files.size(plainPath));
+            cipher.init(Cipher.ENCRYPT_MODE, key, params);
+            cipher.updateAAD(aad);
+            try (var readable = FileChannel.open(plainPath, StandardOpenOption.READ);
+                 var writable = FileChannel.open(encryptedPath, StandardOpenOption.WRITE)) {
+                final long bytes = CipherUtils.update(
+                        cipher,
+                        readable,
+                        ByteBuffer.allocate(1024),
+                        writable
+                );
+                assertThat(bytes).isEqualTo(Files.size(plainPath));
+                for (var buffer = ByteBuffer.wrap(cipher.doFinal());
+                     buffer.hasRemaining(); ) {
+                    final var w = writable.write(buffer);
+                    assert w >= 0;
                 }
+                writable.force(false);
             }
             // ----------------------------------------------------------------------------- decrypt
-            {
-                cipher.init(Cipher.DECRYPT_MODE, key, params);
-                cipher.updateAAD(aad);
-                try (var readable = FileChannel.open(encryptedPath, StandardOpenOption.READ);
-                     var writable = FileChannel.open(decryptedPath, StandardOpenOption.WRITE)) {
-                    final var bytes = CipherUtils.update(
-                            cipher,
-                            readable,
-                            ByteBuffer.allocate(1024),
-                            writable
-                    );
-                    assertThat(bytes).isEqualTo(Files.size(encryptedPath));
-                    for (final var buffer = ByteBuffer.wrap(cipher.doFinal());
-                         buffer.hasRemaining(); ) {
-                        final var w = writable.write(buffer);
-                        assert w >= 0;
-                    }
-                    writable.force(false);
+            cipher.init(Cipher.DECRYPT_MODE, key, params);
+            cipher.updateAAD(aad);
+            try (var readable = FileChannel.open(encryptedPath, StandardOpenOption.READ);
+                 var writable = FileChannel.open(decryptedPath, StandardOpenOption.WRITE)) {
+                final var bytes = CipherUtils.update(
+                        cipher,
+                        readable,
+                        ByteBuffer.allocate(1024),
+                        writable
+                );
+                assertThat(bytes).isEqualTo(Files.size(encryptedPath));
+                for (final var buffer = ByteBuffer.wrap(cipher.doFinal());
+                     buffer.hasRemaining(); ) {
+                    final var w = writable.write(buffer);
+                    assert w >= 0;
                 }
-                assertThat(decryptedPath).hasSize(Files.size(plainPath));
+                writable.force(false);
             }
+            log.debug("decryptedPath.size: {}", Files.size(decryptedPath));
+            assertThat(decryptedPath).hasSize(Files.size(plainPath));
             // ------------------------------------------------------------------------------ verify
-            {
-                final var digest = MessageDigest.getInstance("SHA-1");
-                final var buffer = ByteBuffer.allocate(1024);
-                final byte[] plainFileDigest;
-                {
-                    digest.reset();
-                    plainFileDigest = MessageDigestUtils.digest(
-                            digest,
-                            plainPath,
-                            buffer
-                    );
-                }
-                final byte[] decryptedFileDigest;
-                {
-                    digest.reset();
-                    decryptedFileDigest = MessageDigestUtils.digest(
-                            digest,
-                            decryptedPath,
-                            buffer
-                    );
-                }
-                assertThat(decryptedFileDigest).isEqualTo(plainFileDigest);
-            }
+            final var digest = MessageDigest.getInstance("SHA-1");
+            final var plainFileDigest = MessageDigestUtils.digest(
+                    digest,
+                    plainPath,
+                    ByteBuffer.allocate(1024)
+            );
+            log.debug("plainPathDigest: {}", HexFormat.of().formatHex(plainFileDigest));
+            digest.reset();
+            final var decryptedFileDigest = MessageDigestUtils.digest(
+                    digest,
+                    decryptedPath,
+                    ByteBuffer.allocate(1024)
+            );
+            log.debug("decryptedPathDigest: {}", HexFormat.of().formatHex(decryptedFileDigest));
+            assertThat(decryptedFileDigest).isEqualTo(plainFileDigest);
         }
     }
 
@@ -1220,12 +1164,13 @@ class CipherTest {
         }
 
         @MethodSource({"keysizes"})
-        @ParameterizedTest
+        @ParameterizedTest(name = "[{index}] keysize: {0}")
         void __(final int keysize, @TempDir final File dir)
-                throws IOException, NoSuchAlgorithmException, InvalidAlgorithmParameterException,
-                       InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+                throws IOException, NoSuchPaddingException, NoSuchAlgorithmException,
+                       InvalidAlgorithmParameterException, InvalidKeyException,
+                       IllegalBlockSizeException, BadPaddingException {
             // ------------------------------------------------------------------------------- files
-            final var plainFile = JavaIoUtils.createTempFileInAndWriteSome(dir);
+            final var plainFile = _JavaIoUtils.createTempFileInAndWriteSome(dir);
             final var encryptedFile = File.createTempFile("tmp", "tmp", dir);
             final var decryptedFile = File.createTempFile("tmp", "tmp", dir);
             // ------------------------------------------------------------------------------ cipher
@@ -1233,7 +1178,7 @@ class CipherTest {
             final var mode = "CBC";
             final var padding = "NoPadding";
             final var transformation = algorithm + '/' + mode + '/' + padding;
-            final var cipher = getCipherInstance(transformation);
+            final var cipher = Cipher.getInstance(transformation);
             final var blockSize = cipher.getBlockSize();
             assert blockSize == 64 >> 3;
             {
@@ -1290,15 +1235,11 @@ class CipherTest {
             {
                 final var digest = MessageDigest.getInstance("SHA-1");
                 final var buffer = new byte[1024];
-                final byte[] plainFileDigest;
-                {
-                    digest.reset();
-                    plainFileDigest = MessageDigestUtils.digest(
-                            digest,
-                            plainFile,
-                            buffer
-                    );
-                }
+                final byte[] plainFileDigest = MessageDigestUtils.digest(
+                        digest,
+                        plainFile,
+                        buffer
+                );
                 final byte[] decryptedFileDigest;
                 {
                     digest.reset();
@@ -1313,10 +1254,11 @@ class CipherTest {
         }
 
         @MethodSource({"keysizes"})
-        @ParameterizedTest
+        @ParameterizedTest(name = "[{index}] keysize: {0}")
         void __(final int keysize, @TempDir final Path dir)
-                throws IOException, NoSuchAlgorithmException, InvalidAlgorithmParameterException,
-                       InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+                throws IOException, NoSuchPaddingException, NoSuchAlgorithmException,
+                       InvalidAlgorithmParameterException, InvalidKeyException,
+                       IllegalBlockSizeException, BadPaddingException {
             // ------------------------------------------------------------------------------- paths
             final var plainPath = JavaNioUtils.createTempFileInAndWriteSome(dir);
             final var encryptedPath = Files.createTempFile(dir, null, null);
@@ -1326,7 +1268,7 @@ class CipherTest {
             final var mode = "CBC";
             final var padding = "NoPadding";
             final var transformation = algorithm + '/' + mode + '/' + padding;
-            final var cipher = getCipherInstance(transformation);
+            final var cipher = Cipher.getInstance(transformation);
             final var blockSize = cipher.getBlockSize();
             assert blockSize == 64 >> 3;
             {
@@ -1396,15 +1338,11 @@ class CipherTest {
             {
                 final var digest = MessageDigest.getInstance("SHA-1");
                 final var buffer = ByteBuffer.allocate(1024);
-                final byte[] plainFileDigest;
-                {
-                    digest.reset();
-                    plainFileDigest = MessageDigestUtils.digest(
-                            digest,
-                            plainPath,
-                            buffer
-                    );
-                }
+                final byte[] plainFileDigest = MessageDigestUtils.digest(
+                        digest,
+                        plainPath,
+                        buffer
+                );
                 final byte[] decryptedFileDigest;
                 {
                     digest.reset();
@@ -1429,12 +1367,13 @@ class CipherTest {
         }
 
         @MethodSource({"keysizes"})
-        @ParameterizedTest
+        @ParameterizedTest(name = "[{index}] keysize: {0}")
         void __(final int keysize, @TempDir final File dir)
-                throws IOException, NoSuchAlgorithmException, InvalidAlgorithmParameterException,
-                       InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+                throws IOException, NoSuchPaddingException, NoSuchAlgorithmException,
+                       InvalidAlgorithmParameterException, InvalidKeyException,
+                       IllegalBlockSizeException, BadPaddingException {
             // ------------------------------------------------------------------------------- files
-            final var plainFile = JavaIoUtils.createTempFileInAndWriteSome(dir);
+            final var plainFile = _JavaIoUtils.createTempFileInAndWriteSome(dir);
             final var encryptedFile = File.createTempFile("tmp", "tmp", dir);
             final var decryptedFile = File.createTempFile("tmp", "tmp", dir);
             // ------------------------------------------------------------------------------ cipher
@@ -1442,7 +1381,7 @@ class CipherTest {
             final var mode = "CBC";
             final var padding = "PKCS5Padding";
             final var transformation = algorithm + '/' + mode + '/' + padding;
-            final var cipher = getCipherInstance(transformation);
+            final var cipher = Cipher.getInstance(transformation);
             final var blockSize = cipher.getBlockSize();
             assert blockSize == 64 >> 3 : "block size is always 64 regardless of the key size";
             // --------------------------------------------------------------------------------- key
@@ -1491,15 +1430,11 @@ class CipherTest {
             {
                 final var digest = MessageDigest.getInstance("SHA-1");
                 final var buffer = new byte[1024];
-                final byte[] plainFileDigest;
-                {
-                    digest.reset();
-                    plainFileDigest = MessageDigestUtils.digest(
-                            digest,
-                            plainFile,
-                            buffer
-                    );
-                }
+                final byte[] plainFileDigest = MessageDigestUtils.digest(
+                        digest,
+                        plainFile,
+                        buffer
+                );
                 final byte[] decryptedFileDigest;
                 {
                     digest.reset();
@@ -1514,10 +1449,11 @@ class CipherTest {
         }
 
         @MethodSource({"keysizes"})
-        @ParameterizedTest
+        @ParameterizedTest(name = "[{index}] keysize: {0}")
         void __(final int keysize, @TempDir final Path dir)
-                throws IOException, NoSuchAlgorithmException, InvalidAlgorithmParameterException,
-                       InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+                throws IOException, NoSuchPaddingException, NoSuchAlgorithmException,
+                       InvalidAlgorithmParameterException, InvalidKeyException,
+                       IllegalBlockSizeException, BadPaddingException {
             // ------------------------------------------------------------------------------- paths
             final var plainPath = JavaNioUtils.createTempFileInAndWriteSome(dir);
             final var encryptedPath = Files.createTempFile(dir, null, null);
@@ -1527,7 +1463,7 @@ class CipherTest {
             final var mode = "CBC";
             final var padding = "PKCS5Padding";
             final var transformation = algorithm + '/' + mode + '/' + padding;
-            final var cipher = getCipherInstance(transformation);
+            final var cipher = Cipher.getInstance(transformation);
             final var blockSize = cipher.getBlockSize();
             assert blockSize == 64 >> 3;
             // --------------------------------------------------------------------------------- key
@@ -1584,15 +1520,11 @@ class CipherTest {
             {
                 final var digest = MessageDigest.getInstance("SHA-1");
                 final var buffer = ByteBuffer.allocate(1024);
-                final byte[] plainFileDigest;
-                {
-                    digest.reset();
-                    plainFileDigest = MessageDigestUtils.digest(
-                            digest,
-                            plainPath,
-                            buffer
-                    );
-                }
+                final byte[] plainFileDigest = MessageDigestUtils.digest(
+                        digest,
+                        plainPath,
+                        buffer
+                );
                 final byte[] decryptedFileDigest;
                 {
                     digest.reset();
@@ -1617,12 +1549,12 @@ class CipherTest {
         }
 
         @MethodSource({"keysizes"})
-        @ParameterizedTest
+        @ParameterizedTest(name = "[{index}] keysize: {0}")
         void __(final int keysize, @TempDir final File dir)
-                throws IOException, NoSuchAlgorithmException, InvalidKeyException,
-                       IllegalBlockSizeException, BadPaddingException {
+                throws IOException, NoSuchPaddingException, NoSuchAlgorithmException,
+                       InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
             // ------------------------------------------------------------------------------- files
-            final var plainFile = JavaIoUtils.createTempFileInAndWriteSome(dir);
+            final var plainFile = _JavaIoUtils.createTempFileInAndWriteSome(dir);
             final var encryptedFile = File.createTempFile("tmp", "tmp", dir);
             final var decryptedFile = File.createTempFile("tmp", "tmp", dir);
             // ------------------------------------------------------------------------------ cipher
@@ -1630,7 +1562,7 @@ class CipherTest {
             final var mode = "ECB";
             final var padding = "NoPadding";
             final var transformation = algorithm + '/' + mode + '/' + padding;
-            final var cipher = getCipherInstance(transformation);
+            final var cipher = Cipher.getInstance(transformation);
             final var blockSize = cipher.getBlockSize();
             assert blockSize == 64 >> 3 : "block size is always 64 regardless of the key size";
             {
@@ -1680,15 +1612,11 @@ class CipherTest {
             {
                 final var digest = MessageDigest.getInstance("SHA-1");
                 final var buffer = new byte[1024];
-                final byte[] plainFileDigest;
-                {
-                    digest.reset();
-                    plainFileDigest = MessageDigestUtils.digest(
-                            digest,
-                            plainFile,
-                            buffer
-                    );
-                }
+                final byte[] plainFileDigest = MessageDigestUtils.digest(
+                        digest,
+                        plainFile,
+                        buffer
+                );
                 final byte[] decryptedFileDigest;
                 {
                     digest.reset();
@@ -1703,10 +1631,10 @@ class CipherTest {
         }
 
         @MethodSource({"keysizes"})
-        @ParameterizedTest
+        @ParameterizedTest(name = "[{index}] keysize: {0}")
         void __(final int keysize, @TempDir final Path dir)
-                throws IOException, NoSuchAlgorithmException, InvalidKeyException,
-                       IllegalBlockSizeException, BadPaddingException {
+                throws IOException, NoSuchPaddingException, NoSuchAlgorithmException,
+                       InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
             // ------------------------------------------------------------------------------- paths
             final var plainPath = JavaNioUtils.createTempFileInAndWriteSome(dir);
             final var encryptedPath = Files.createTempFile(dir, null, null);
@@ -1716,7 +1644,7 @@ class CipherTest {
             final var mode = "ECB";
             final var padding = "NoPadding";
             final var transformation = algorithm + '/' + mode + '/' + padding;
-            final var cipher = getCipherInstance(transformation);
+            final var cipher = Cipher.getInstance(transformation);
             final var blockSize = cipher.getBlockSize();
             assert blockSize == 64 >> 3;
             {
@@ -1779,15 +1707,11 @@ class CipherTest {
             {
                 final var digest = MessageDigest.getInstance("SHA-1");
                 final var buffer = ByteBuffer.allocate(1024);
-                final byte[] plainFileDigest;
-                {
-                    digest.reset();
-                    plainFileDigest = MessageDigestUtils.digest(
-                            digest,
-                            plainPath,
-                            buffer
-                    );
-                }
+                final byte[] plainFileDigest = MessageDigestUtils.digest(
+                        digest,
+                        plainPath,
+                        buffer
+                );
                 final byte[] decryptedFileDigest;
                 {
                     digest.reset();
@@ -1812,12 +1736,12 @@ class CipherTest {
         }
 
         @MethodSource({"keysizes"})
-        @ParameterizedTest
+        @ParameterizedTest(name = "[{index}] keysize: {0}")
         void __(final int keysize, @TempDir final File dir)
-                throws IOException, NoSuchAlgorithmException, InvalidKeyException,
-                       IllegalBlockSizeException, BadPaddingException {
+                throws IOException, NoSuchPaddingException, NoSuchAlgorithmException,
+                       InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
             // ------------------------------------------------------------------------------- files
-            final var plainFile = JavaIoUtils.createTempFileInAndWriteSome(dir);
+            final var plainFile = _JavaIoUtils.createTempFileInAndWriteSome(dir);
             final var encryptedFile = File.createTempFile("tmp", "tmp", dir);
             final var decryptedFile = File.createTempFile("tmp", "tmp", dir);
             // ------------------------------------------------------------------------------ cipher
@@ -1825,7 +1749,7 @@ class CipherTest {
             final var mode = "ECB";
             final var padding = "PKCS5Padding";
             final var transformation = algorithm + '/' + mode + '/' + padding;
-            final var cipher = getCipherInstance(transformation);
+            final var cipher = Cipher.getInstance(transformation);
             final var blockSize = cipher.getBlockSize();
             assert blockSize == 64 >> 3 : "block size is always 64 regardless of the key size";
             // --------------------------------------------------------------------------------- key
@@ -1867,15 +1791,11 @@ class CipherTest {
             {
                 final var digest = MessageDigest.getInstance("SHA-1");
                 final var buffer = new byte[1024];
-                final byte[] plainFileDigest;
-                {
-                    digest.reset();
-                    plainFileDigest = MessageDigestUtils.digest(
-                            digest,
-                            plainFile,
-                            buffer
-                    );
-                }
+                final byte[] plainFileDigest = MessageDigestUtils.digest(
+                        digest,
+                        plainFile,
+                        buffer
+                );
                 final byte[] decryptedFileDigest;
                 {
                     digest.reset();
@@ -1890,12 +1810,12 @@ class CipherTest {
         }
 
         @MethodSource({"keysizes"})
-        @ParameterizedTest
+        @ParameterizedTest(name = "[{index}] keysize: {0}")
         void __(final int keysize, @TempDir final Path dir)
-                throws IOException, NoSuchAlgorithmException, InvalidKeyException,
-                       IllegalBlockSizeException, BadPaddingException {
+                throws IOException, NoSuchPaddingException, NoSuchAlgorithmException,
+                       InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
             // ------------------------------------------------------------------------------- paths
-            final var plainPath = JavaNioUtils.createTempFileInAndWriteSome(dir);
+            final var plainPath = Files.createTempFile(dir, null, null);
             final var encryptedPath = Files.createTempFile(dir, null, null);
             final var decryptedPath = Files.createTempFile(dir, null, null);
             // ------------------------------------------------------------------------------ cipher
@@ -1903,13 +1823,20 @@ class CipherTest {
             final var mode = "ECB";
             final var padding = "PKCS5Padding";
             final var transformation = algorithm + '/' + mode + '/' + padding;
-            final var cipher = getCipherInstance(transformation);
+            final var cipher = Cipher.getInstance(transformation);
             final var blockSize = cipher.getBlockSize();
             assert blockSize == 64 >> 3;
             // --------------------------------------------------------------------------------- key
             final var key = generateKey(algorithm, keysize);
             // ----------------------------------------------------------------------------- encrypt
             {
+                PathUtils.writeRandomBytes(
+                        plainPath,
+                        ThreadLocalRandom.current().nextInt(8192),
+                        ByteBuffer.allocate(1024),
+                        0L
+                );
+                log.debug("plainPath.size: {}", Files.size(plainPath));
                 cipher.init(Cipher.ENCRYPT_MODE, key);
                 try (var readable = FileChannel.open(plainPath, StandardOpenOption.READ);
                      var writable = FileChannel.open(encryptedPath, StandardOpenOption.WRITE)) {
@@ -1947,21 +1874,19 @@ class CipherTest {
                     }
                     writable.force(false);
                 }
+                log.debug("decryptedPath.size: {}", Files.size(decryptedPath));
                 assertThat(decryptedPath).hasSize(Files.size(plainPath));
             }
             // ------------------------------------------------------------------------------ verify
             {
                 final var digest = MessageDigest.getInstance("SHA-1");
                 final var buffer = ByteBuffer.allocate(1024);
-                final byte[] plainFileDigest;
-                {
-                    digest.reset();
-                    plainFileDigest = MessageDigestUtils.digest(
-                            digest,
-                            plainPath,
-                            buffer
-                    );
-                }
+                final byte[] plainPathDigest = MessageDigestUtils.digest(
+                        digest,
+                        plainPath,
+                        buffer
+                );
+                log.debug("plainPathDigest: {}", HexFormat.of().formatHex(plainPathDigest));
                 final byte[] decryptedFileDigest;
                 {
                     digest.reset();
@@ -1971,7 +1896,8 @@ class CipherTest {
                             buffer
                     );
                 }
-                assertThat(decryptedFileDigest).isEqualTo(plainFileDigest);
+                log.debug("decryptedPathDigest: {}", HexFormat.of().formatHex(decryptedFileDigest));
+                assertThat(decryptedFileDigest).isEqualTo(plainPathDigest);
             }
         }
     }
@@ -1992,10 +1918,10 @@ class CipherTest {
         }
 
         @MethodSource({"keysizes"})
-        @ParameterizedTest
+        @ParameterizedTest(name = "[{index}] keysize: {0}")
         void __(final int keySize)
-                throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException,
-                       NoSuchAlgorithmException {
+                throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException,
+                       IllegalBlockSizeException, BadPaddingException {
             // ------------------------------------------------------------------------------- files
             // https://mbed-tls.readthedocs.io/en/latest/kb/cryptography/rsa-encryption-maximum-data-size/#:~:text=RSA%20is%20only%20able%20to,5%20padding).
             final var plainBytes = new byte[(keySize >> 3) - 11];
@@ -2004,7 +1930,7 @@ class CipherTest {
             final var mode = "ECB";
             final var padding = "PKCS1Padding";
             final var transformation = algorithm + '/' + mode + '/' + padding;
-            final var cipher = getCipherInstance(transformation);
+            final var cipher = Cipher.getInstance(transformation);
             try {
                 assert cipher.getBlockSize() == 0;
             } catch (final IllegalStateException ise) {
@@ -2026,7 +1952,9 @@ class CipherTest {
             }
             // ------------------------------------------------------------------------------ verify
             {
-                assertThat(decryptedBytes).isEqualTo(plainBytes);
+                assertThat(decryptedBytes)
+                        .as("decryptedBytes")
+                        .isEqualTo(plainBytes);
             }
         }
     }
@@ -2040,10 +1968,10 @@ class CipherTest {
         }
 
         @MethodSource({"keysizes"})
-        @ParameterizedTest
+        @ParameterizedTest(name = "[{index}] keysize: {0}")
         void __(final int keysize)
-                throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException,
-                       NoSuchAlgorithmException {
+                throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException,
+                       IllegalBlockSizeException, BadPaddingException {
             // ------------------------------------------------------------------------------- files
             // https://mbed-tls.readthedocs.io/en/latest/kb/cryptography/rsa-encryption-maximum-data-size/#:~:text=RSA%20is%20only%20able%20to,5%20padding).
             final var plainBytes = new byte[(keysize >> 3) - 42];
@@ -2052,7 +1980,7 @@ class CipherTest {
             final var mode = "ECB";
             final var padding = "OAEPWithSHA-1AndMGF1Padding";
             final var transformation = algorithm + '/' + mode + '/' + padding;
-            final var cipher = getCipherInstance(transformation);
+            final var cipher = Cipher.getInstance(transformation);
             try {
                 assert cipher.getBlockSize() == 0;
             } catch (final IllegalStateException ise) {
@@ -2074,7 +2002,9 @@ class CipherTest {
             }
             // ------------------------------------------------------------------------------ verify
             {
-                assertThat(decryptedBytes).isEqualTo(plainBytes);
+                assertThat(decryptedBytes)
+                        .as("decryptedBytes")
+                        .isEqualTo(plainBytes);
             }
         }
     }
@@ -2088,10 +2018,10 @@ class CipherTest {
         }
 
         @MethodSource({"keysizes"})
-        @ParameterizedTest
+        @ParameterizedTest(name = "[{index}] keysize: {0}")
         void __(final int keysize)
-                throws NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException,
-                       BadPaddingException {
+                throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException,
+                       IllegalBlockSizeException, BadPaddingException {
             // ------------------------------------------------------------------------------- files
             // https://mbed-tls.readthedocs.io/en/latest/kb/cryptography/rsa-encryption-maximum-data-size/#:~:text=RSA%20is%20only%20able%20to,5%20padding).
             final var plainBytes = new byte[(keysize >> 3) - 66];
@@ -2100,7 +2030,7 @@ class CipherTest {
             final var mode = "ECB";
             final var padding = "OAEPWithSHA-256AndMGF1Padding";
             final var transformation = algorithm + '/' + mode + '/' + padding;
-            final var cipher = getCipherInstance(transformation);
+            final var cipher = Cipher.getInstance(transformation);
             try {
                 assert cipher.getBlockSize() == 0;
             } catch (final IllegalStateException ise) {
@@ -2122,7 +2052,9 @@ class CipherTest {
             }
             // ------------------------------------------------------------------------------ verify
             {
-                assertThat(decryptedBytes).isEqualTo(plainBytes);
+                assertThat(decryptedBytes)
+                        .as("decryptedBytes")
+                        .isEqualTo(plainBytes);
             }
         }
     }

@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 import java.nio.ByteBuffer;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
-import static com.github.jinahya.hello.util.JavaNioUtils.print;
+import static com.github.jinahya.hello.util.java.nio.JavaNioUtils.print;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteBuffer.allocateDirect;
 import static java.nio.ByteBuffer.wrap;
