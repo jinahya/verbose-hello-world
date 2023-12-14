@@ -279,23 +279,18 @@ class CipherTest {
             }
             // ------------------------------------------------------------------------------ verify
             {
-                final var digest = MessageDigest.getInstance("SHA-1");
                 final var buffer = new byte[1024];
-                final var plainFileDigest = MessageDigestUtils.digest(
-                        digest,
+                final var plainFileDigest = MessageDigestUtils.getDigest(
+                        algorithm,
                         plainFile,
                         buffer
                 );
                 log.debug("plainFile.digest: {}", HexFormat.of().formatHex(plainFileDigest));
-                final byte[] decryptedFileDigest;
-                {
-                    digest.reset();
-                    decryptedFileDigest = MessageDigestUtils.digest(
-                            digest,
-                            decryptedFile,
-                            buffer
-                    );
-                }
+                final byte[] decryptedFileDigest = MessageDigestUtils.getDigest(
+                        algorithm,
+                        decryptedFile,
+                        buffer
+                );
                 log.debug("decryptedFile.digest: {}",
                           HexFormat.of().formatHex(decryptedFileDigest));
                 assertThat(decryptedFileDigest).isEqualTo(plainFileDigest);
@@ -348,9 +343,8 @@ class CipherTest {
                             writable
                     );
                     assertThat(bytes).isEqualTo(Files.size(plainPath));
-                    for (var buffer = ByteBuffer.wrap(cipher.doFinal());
-                         buffer.hasRemaining(); ) {
-                        final var w = writable.write(buffer);
+                    for (var b = ByteBuffer.wrap(cipher.doFinal()); b.hasRemaining(); ) {
+                        final var w = writable.write(b);
                         assert w >= 0;
                     }
                     writable.force(false);
@@ -379,23 +373,18 @@ class CipherTest {
             }
             // ------------------------------------------------------------------------------ verify
             {
-                final var digest = MessageDigest.getInstance("SHA-1");
                 final var buffer = ByteBuffer.allocate(1024);
-                final var plainPathDigest = MessageDigestUtils.digest(
-                        digest,
+                final var plainPathDigest = MessageDigestUtils.getDigest(
+                        algorithm,
                         plainPath,
                         buffer
                 );
                 log.debug("plainPath.digest: {}", HexFormat.of().formatHex(plainPathDigest));
-                final byte[] decryptedPathDigest;
-                {
-                    digest.reset();
-                    decryptedPathDigest = MessageDigestUtils.digest(
-                            digest,
-                            decryptedPath,
-                            buffer
-                    );
-                }
+                final var decryptedPathDigest = MessageDigestUtils.getDigest(
+                        algorithm,
+                        decryptedPath,
+                        buffer
+                );
                 log.debug("decryptedPath.digest: {}",
                           HexFormat.of().formatHex(decryptedPathDigest));
                 assertThat(decryptedPathDigest).isEqualTo(plainPathDigest);
@@ -483,21 +472,17 @@ class CipherTest {
             {
                 final var digest = MessageDigest.getInstance("SHA-1");
                 final var buffer = new byte[1024];
-                final byte[] plainFileDigest = MessageDigestUtils.digest(
-                        digest,
+                final var plainFileDigest = MessageDigestUtils.getDigest(
+                        algorithm,
                         plainFile,
                         buffer
                 );
                 log.debug("plainFile.digest: {}", HexFormat.of().formatHex(plainFileDigest));
-                final byte[] decryptedFileDigest;
-                {
-                    digest.reset();
-                    decryptedFileDigest = MessageDigestUtils.digest(
-                            digest,
-                            decryptedFile,
-                            buffer
-                    );
-                }
+                final var decryptedFileDigest = MessageDigestUtils.getDigest(
+                        algorithm,
+                        decryptedFile,
+                        buffer
+                );
                 log.debug("decryptedFile.digest: {}",
                           HexFormat.of().formatHex(decryptedFileDigest));
                 assertThat(decryptedFileDigest).isEqualTo(plainFileDigest);
@@ -581,23 +566,18 @@ class CipherTest {
             }
             // ------------------------------------------------------------------------------ verify
             {
-                final var digest = MessageDigest.getInstance("SHA-1");
                 final var buffer = ByteBuffer.allocate(1024);
-                final byte[] plainPathDigest = MessageDigestUtils.digest(
-                        digest,
+                final var plainPathDigest = MessageDigestUtils.getDigest(
+                        algorithm,
                         plainPath,
                         buffer
                 );
                 log.debug("plainPath.digest: {}", HexFormat.of().formatHex(plainPathDigest));
-                final byte[] decryptedPathDigest;
-                {
-                    digest.reset();
-                    decryptedPathDigest = MessageDigestUtils.digest(
-                            digest,
-                            decryptedPath,
-                            buffer
-                    );
-                }
+                final var decryptedPathDigest = MessageDigestUtils.getDigest(
+                        algorithm,
+                        decryptedPath,
+                        buffer
+                );
                 log.debug("decryptedPath.digest: {}",
                           HexFormat.of().formatHex(decryptedPathDigest));
                 assertThat(decryptedPathDigest).isEqualTo(plainPathDigest);
@@ -675,22 +655,17 @@ class CipherTest {
             }
             // ------------------------------------------------------------------------------ verify
             {
-                final var digest = MessageDigest.getInstance("SHA-1");
-                final byte[] plainFileDigest = MessageDigestUtils.digest(
-                        digest,
+                final byte[] plainFileDigest = MessageDigestUtils.getDigest(
+                        algorithm,
                         plainFile,
                         new byte[1024]
                 );
                 log.debug("plainFileDigest: {}", HexFormat.of().formatHex(plainFileDigest));
-                final byte[] decryptedFileDigest;
-                {
-                    digest.reset();
-                    decryptedFileDigest = MessageDigestUtils.digest(
-                            digest,
-                            decryptedFile,
-                            new byte[1024]
-                    );
-                }
+                final byte[] decryptedFileDigest = MessageDigestUtils.getDigest(
+                        algorithm,
+                        decryptedFile,
+                        new byte[1024]
+                );
                 log.debug("decryptedFileDigest: {}", HexFormat.of().formatHex(decryptedFileDigest));
                 assertThat(decryptedFileDigest).isEqualTo(plainFileDigest);
             }
@@ -767,21 +742,17 @@ class CipherTest {
             // ------------------------------------------------------------------------------ verify
             {
                 final var digest = MessageDigest.getInstance("SHA-1");
-                final byte[] plainPathDigest = MessageDigestUtils.digest(
-                        digest,
+                final var plainPathDigest = MessageDigestUtils.getDigest(
+                        algorithm,
                         plainPath,
                         ByteBuffer.allocate(1024)
                 );
                 log.debug("plainPathDigest: {}", HexFormat.of().formatHex(plainPathDigest));
-                final byte[] decryptedPathDigest;
-                {
-                    digest.reset();
-                    decryptedPathDigest = MessageDigestUtils.digest(
-                            digest,
-                            decryptedPath,
-                            ByteBuffer.allocate(1024)
-                    );
-                }
+                final var decryptedPathDigest = MessageDigestUtils.getDigest(
+                        algorithm,
+                        decryptedPath,
+                        ByteBuffer.allocate(1024)
+                );
                 log.debug("decryptedPathDigest: {}", HexFormat.of().formatHex(decryptedPathDigest));
                 assertThat(decryptedPathDigest).isEqualTo(plainPathDigest);
             }
@@ -853,16 +824,14 @@ class CipherTest {
             log.debug("decryptedFile.length: {}", decryptedFile.length());
             assertThat(decryptedFile).hasSize(plainFile.length());
             // ------------------------------------------------------------------------------ verify
-            final var digest = MessageDigest.getInstance("SHA-1");
-            final var plainFileDigest = MessageDigestUtils.digest(
-                    digest,
+            final var plainFileDigest = MessageDigestUtils.getDigest(
+                    algorithm,
                     plainFile,
                     new byte[1024]
             );
             log.debug("plainFileDigest: {}", HexFormat.of().formatHex(plainFileDigest));
-            digest.reset();
-            final byte[] decryptedFileDigest = MessageDigestUtils.digest(
-                    digest,
+            final var decryptedFileDigest = MessageDigestUtils.getDigest(
+                    algorithm,
                     decryptedFile,
                     new byte[1024]
             );
@@ -935,16 +904,14 @@ class CipherTest {
             log.debug("decryptedPath.size: {}", Files.size(decryptedPath));
             assertThat(decryptedPath).hasSize(Files.size(plainPath));
             // ------------------------------------------------------------------------------ verify
-            final var digest = MessageDigest.getInstance("SHA-1");
-            final var plainFileDigest = MessageDigestUtils.digest(
-                    digest,
+            final var plainFileDigest = MessageDigestUtils.getDigest(
+                    algorithm,
                     plainPath,
                     ByteBuffer.allocate(1024)
             );
             log.debug("plainPathDigest: {}", HexFormat.of().formatHex(plainFileDigest));
-            digest.reset();
-            final byte[] decryptedFileDigest = MessageDigestUtils.digest(
-                    digest,
+            final var decryptedFileDigest = MessageDigestUtils.getDigest(
+                    algorithm,
                     decryptedPath,
                     ByteBuffer.allocate(1024)
             );
@@ -1033,16 +1000,14 @@ class CipherTest {
             log.debug("decryptedFile.length: {}", decryptedFile.length());
             assertThat(decryptedFile).hasSize(plainFile.length());
             // ------------------------------------------------------------------------------ verify
-            final var digest = MessageDigest.getInstance("SHA-1");
-            final var plainFileDigest = MessageDigestUtils.digest(
-                    digest,
+            final var plainFileDigest = MessageDigestUtils.getDigest(
+                    algorithm,
                     plainFile,
                     new byte[1024]
             );
             log.debug("plainFileDigest: {}", HexFormat.of().formatHex(plainFileDigest));
-            digest.reset();
-            final var decryptedFileDigest = MessageDigestUtils.digest(
-                    digest,
+            final var decryptedFileDigest = MessageDigestUtils.getDigest(
+                    algorithm,
                     decryptedFile,
                     new byte[1024]
             );
@@ -1130,16 +1095,14 @@ class CipherTest {
             log.debug("decryptedPath.size: {}", Files.size(decryptedPath));
             assertThat(decryptedPath).hasSize(Files.size(plainPath));
             // ------------------------------------------------------------------------------ verify
-            final var digest = MessageDigest.getInstance("SHA-1");
-            final var plainFileDigest = MessageDigestUtils.digest(
-                    digest,
+            final var plainFileDigest = MessageDigestUtils.getDigest(
+                    algorithm,
                     plainPath,
                     ByteBuffer.allocate(1024)
             );
             log.debug("plainPathDigest: {}", HexFormat.of().formatHex(plainFileDigest));
-            digest.reset();
-            final var decryptedFileDigest = MessageDigestUtils.digest(
-                    digest,
+            final var decryptedFileDigest = MessageDigestUtils.getDigest(
+                    algorithm,
                     decryptedPath,
                     ByteBuffer.allocate(1024)
             );
@@ -1233,22 +1196,16 @@ class CipherTest {
             }
             // ------------------------------------------------------------------------------ verify
             {
-                final var digest = MessageDigest.getInstance("SHA-1");
-                final var buffer = new byte[1024];
-                final byte[] plainFileDigest = MessageDigestUtils.digest(
-                        digest,
+                final var plainFileDigest = MessageDigestUtils.getDigest(
+                        algorithm,
                         plainFile,
-                        buffer
+                        new byte[1024]
                 );
-                final byte[] decryptedFileDigest;
-                {
-                    digest.reset();
-                    decryptedFileDigest = MessageDigestUtils.digest(
-                            digest,
-                            decryptedFile,
-                            buffer
-                    );
-                }
+                final var decryptedFileDigest = MessageDigestUtils.getDigest(
+                        algorithm,
+                        decryptedFile,
+                        new byte[1024]
+                );
                 assertThat(decryptedFileDigest).isEqualTo(plainFileDigest);
             }
         }
@@ -1336,22 +1293,16 @@ class CipherTest {
             }
             // ------------------------------------------------------------------------------ verify
             {
-                final var digest = MessageDigest.getInstance("SHA-1");
-                final var buffer = ByteBuffer.allocate(1024);
-                final byte[] plainFileDigest = MessageDigestUtils.digest(
-                        digest,
+                final var plainFileDigest = MessageDigestUtils.getDigest(
+                        algorithm,
                         plainPath,
-                        buffer
+                        ByteBuffer.allocate(1024)
                 );
-                final byte[] decryptedFileDigest;
-                {
-                    digest.reset();
-                    decryptedFileDigest = MessageDigestUtils.digest(
-                            digest,
-                            decryptedPath,
-                            buffer
-                    );
-                }
+                final var decryptedFileDigest = MessageDigestUtils.getDigest(
+                        algorithm,
+                        decryptedPath,
+                        ByteBuffer.allocate(1024)
+                );
                 assertThat(decryptedFileDigest).isEqualTo(plainFileDigest);
             }
         }
@@ -1428,22 +1379,16 @@ class CipherTest {
             }
             // ------------------------------------------------------------------------------ verify
             {
-                final var digest = MessageDigest.getInstance("SHA-1");
-                final var buffer = new byte[1024];
-                final byte[] plainFileDigest = MessageDigestUtils.digest(
-                        digest,
+                final var plainFileDigest = MessageDigestUtils.getDigest(
+                        algorithm,
                         plainFile,
-                        buffer
+                        new byte[1024]
                 );
-                final byte[] decryptedFileDigest;
-                {
-                    digest.reset();
-                    decryptedFileDigest = MessageDigestUtils.digest(
-                            digest,
-                            decryptedFile,
-                            buffer
-                    );
-                }
+                final var decryptedFileDigest = MessageDigestUtils.getDigest(
+                        algorithm,
+                        decryptedFile,
+                        new byte[1024]
+                );
                 assertThat(decryptedFileDigest).isEqualTo(plainFileDigest);
             }
         }
@@ -1518,22 +1463,16 @@ class CipherTest {
             }
             // ------------------------------------------------------------------------------ verify
             {
-                final var digest = MessageDigest.getInstance("SHA-1");
-                final var buffer = ByteBuffer.allocate(1024);
-                final byte[] plainFileDigest = MessageDigestUtils.digest(
-                        digest,
+                final var plainFileDigest = MessageDigestUtils.getDigest(
+                        algorithm,
                         plainPath,
-                        buffer
+                        ByteBuffer.allocate(1024)
                 );
-                final byte[] decryptedFileDigest;
-                {
-                    digest.reset();
-                    decryptedFileDigest = MessageDigestUtils.digest(
-                            digest,
-                            decryptedPath,
-                            buffer
-                    );
-                }
+                final byte[] decryptedFileDigest = MessageDigestUtils.getDigest(
+                        algorithm,
+                        decryptedPath,
+                        ByteBuffer.allocate(1024)
+                );
                 assertThat(decryptedFileDigest).isEqualTo(plainFileDigest);
             }
         }
@@ -1610,22 +1549,16 @@ class CipherTest {
             }
             // ------------------------------------------------------------------------------ verify
             {
-                final var digest = MessageDigest.getInstance("SHA-1");
-                final var buffer = new byte[1024];
-                final byte[] plainFileDigest = MessageDigestUtils.digest(
-                        digest,
+                final var plainFileDigest = MessageDigestUtils.getDigest(
+                        algorithm,
                         plainFile,
-                        buffer
+                        new byte[1024]
                 );
-                final byte[] decryptedFileDigest;
-                {
-                    digest.reset();
-                    decryptedFileDigest = MessageDigestUtils.digest(
-                            digest,
-                            decryptedFile,
-                            buffer
-                    );
-                }
+                final var decryptedFileDigest = MessageDigestUtils.getDigest(
+                        algorithm,
+                        decryptedFile,
+                        new byte[1024]
+                );
                 assertThat(decryptedFileDigest).isEqualTo(plainFileDigest);
             }
         }
@@ -1705,22 +1638,16 @@ class CipherTest {
             }
             // ------------------------------------------------------------------------------ verify
             {
-                final var digest = MessageDigest.getInstance("SHA-1");
-                final var buffer = ByteBuffer.allocate(1024);
-                final byte[] plainFileDigest = MessageDigestUtils.digest(
-                        digest,
+                final var plainFileDigest = MessageDigestUtils.getDigest(
+                        algorithm,
                         plainPath,
-                        buffer
+                        ByteBuffer.allocate(1024)
                 );
-                final byte[] decryptedFileDigest;
-                {
-                    digest.reset();
-                    decryptedFileDigest = MessageDigestUtils.digest(
-                            digest,
-                            decryptedPath,
-                            buffer
-                    );
-                }
+                final var decryptedFileDigest = MessageDigestUtils.getDigest(
+                        algorithm,
+                        decryptedPath,
+                        ByteBuffer.allocate(1024)
+                );
                 assertThat(decryptedFileDigest).isEqualTo(plainFileDigest);
             }
         }
@@ -1789,22 +1716,16 @@ class CipherTest {
             }
             // ------------------------------------------------------------------------------ verify
             {
-                final var digest = MessageDigest.getInstance("SHA-1");
-                final var buffer = new byte[1024];
-                final byte[] plainFileDigest = MessageDigestUtils.digest(
-                        digest,
+                final var plainFileDigest = MessageDigestUtils.getDigest(
+                        algorithm,
                         plainFile,
-                        buffer
+                        new byte[1024]
                 );
-                final byte[] decryptedFileDigest;
-                {
-                    digest.reset();
-                    decryptedFileDigest = MessageDigestUtils.digest(
-                            digest,
-                            decryptedFile,
-                            buffer
-                    );
-                }
+                final var decryptedFileDigest = MessageDigestUtils.getDigest(
+                        algorithm,
+                        decryptedFile,
+                        new byte[1024]
+                );
                 assertThat(decryptedFileDigest).isEqualTo(plainFileDigest);
             }
         }
@@ -1881,21 +1802,17 @@ class CipherTest {
             {
                 final var digest = MessageDigest.getInstance("SHA-1");
                 final var buffer = ByteBuffer.allocate(1024);
-                final byte[] plainPathDigest = MessageDigestUtils.digest(
-                        digest,
+                final var plainPathDigest = MessageDigestUtils.getDigest(
+                        algorithm,
                         plainPath,
-                        buffer
+                        ByteBuffer.allocate(1024)
                 );
                 log.debug("plainPathDigest: {}", HexFormat.of().formatHex(plainPathDigest));
-                final byte[] decryptedFileDigest;
-                {
-                    digest.reset();
-                    decryptedFileDigest = MessageDigestUtils.digest(
-                            digest,
-                            decryptedPath,
-                            buffer
-                    );
-                }
+                final var decryptedFileDigest = MessageDigestUtils.getDigest(
+                        algorithm,
+                        decryptedPath,
+                        ByteBuffer.allocate(1024)
+                );
                 log.debug("decryptedPathDigest: {}", HexFormat.of().formatHex(decryptedFileDigest));
                 assertThat(decryptedFileDigest).isEqualTo(plainPathDigest);
             }

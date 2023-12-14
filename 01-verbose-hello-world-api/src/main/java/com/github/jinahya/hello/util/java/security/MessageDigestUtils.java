@@ -12,6 +12,7 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.Provider;
 import java.security.Security;
 import java.util.Objects;
@@ -24,6 +25,7 @@ public final class MessageDigestUtils {
         return Security.getProviders(MessageDigestConstants.CRYPTO_SERVICE + '.' + algorithm);
     }
 
+    // ---------------------------------------------------------------------------------------------
     public static long update(final MessageDigest digest, final InputStream stream,
                               final byte[] buffer)
             throws IOException {
@@ -40,23 +42,32 @@ public final class MessageDigestUtils {
         return count;
     }
 
-    public static long update(final MessageDigest digest, final File file, final byte[] buffer)
-            throws IOException {
-        if (Objects.requireNonNull(buffer, "buffer is null").length == 0) {
-            throw new IllegalArgumentException("zero-length buffer: " + Objects.toString(buffer));
-        }
+//    public static long update(final MessageDigest digest, final File file, final byte[] buffer)
+//            throws IOException {
+//        if (Objects.requireNonNull(buffer, "buffer is null").length == 0) {
+//            throw new IllegalArgumentException("zero-length buffer: " + Objects.toString(buffer));
+//        }
+//        try (var stream = new FileInputStream(file)) {
+//            return update(digest, stream, buffer);
+//        }
+//    }
+
+//    public static byte[] getDigest(final MessageDigest digest, final File file, final byte[] buffer)
+//            throws IOException {
+//        final var bytes = update(digest, file, buffer);
+//        return digest.digest();
+//    }
+
+    public static byte[] getDigest(final String algorithm, final File file, final byte[] buffer)
+            throws NoSuchAlgorithmException, IOException {
+        final var digest = MessageDigest.getInstance(algorithm);
         try (var stream = new FileInputStream(file)) {
-            return update(digest, stream, buffer);
+            final var bytes = update(digest, stream, buffer);
+            return digest.digest();
         }
     }
 
-    public static byte[] digest(final MessageDigest digest, final File file, final byte[] buffer)
-            throws IOException {
-        final var bytes = update(digest, file, buffer);
-        assert bytes == file.length();
-        return digest.digest();
-    }
-
+    // ---------------------------------------------------------------------------------------------
     public static long update(final MessageDigest digest, final ReadableByteChannel channel,
                               final ByteBuffer buffer)
             throws IOException {
@@ -72,28 +83,36 @@ public final class MessageDigestUtils {
         return count;
     }
 
-    public static long update(final MessageDigest digest, final Path path, final ByteBuffer buffer)
-            throws IOException {
-        Objects.requireNonNull(digest, "digest is null");
-        if (!Files.isRegularFile(Objects.requireNonNull(path, "path is null"))) {
-            throw new IllegalArgumentException("not a regular file: " + path);
-        }
-        if (Objects.requireNonNull(buffer, "buffer is null").capacity() == 0) {
-            throw new IllegalArgumentException("zero-capacity buffer: " + buffer);
-        }
-        try (var channel = FileChannel.open(path)) {
-            return update(digest, channel, buffer);
-        }
-    }
+//    public static long update(final MessageDigest digest, final Path path, final ByteBuffer buffer)
+//            throws IOException {
+//        Objects.requireNonNull(digest, "digest is null");
+//        if (!Files.isRegularFile(Objects.requireNonNull(path, "path is null"))) {
+//            throw new IllegalArgumentException("not a regular file: " + path);
+//        }
+//        if (Objects.requireNonNull(buffer, "buffer is null").capacity() == 0) {
+//            throw new IllegalArgumentException("zero-capacity buffer: " + buffer);
+//        }
+//        try (var channel = FileChannel.open(path)) {
+//            return update(digest, channel, buffer);
+//        }
+//    }
 
-    public static byte[] digest(final MessageDigest digest, final Path path,
-                                final ByteBuffer buffer)
-            throws IOException {
+//    public static byte[] getDigest(final MessageDigest digest, final Path path,
+//                                   final ByteBuffer buffer)
+//            throws IOException {
+//        try (var channel = FileChannel.open(path)) {
+//            final var bytes = update(digest, channel, buffer);
+//        }
+//        return digest.digest();
+//    }
+
+    public static byte[] getDigest(final String algorithm, final Path path, final ByteBuffer buffer)
+            throws NoSuchAlgorithmException, IOException {
+        final var digest = MessageDigest.getInstance(algorithm);
         try (var channel = FileChannel.open(path)) {
             final var bytes = update(digest, channel, buffer);
-            assert bytes == Files.size(path);
+            return digest.digest();
         }
-        return digest.digest();
     }
 
     // ------------------------------------------------------------------------------- MessageDigest

@@ -125,7 +125,7 @@ class MessageDigestTest {
         );
         final var instance = MessageDigest.getInstance(algorithm, provider);
         assertThat(instance.getProvider()).isSameAs(provider);
-        final var digest = MessageDigestUtils.digest(instance, file, new byte[1024]);
+        final var digest = MessageDigestUtils.getDigest(algorithm, file, new byte[1024]);
         log.debug("algorithm: {}, provider: {}, digest: {}", algorithm, provider,
                   HexFormat.of().formatHex(instance.digest()));
     }
@@ -144,7 +144,7 @@ class MessageDigestTest {
         );
         final var instance = MessageDigest.getInstance(algorithm, provider);
         assertThat(instance.getProvider()).isSameAs(provider);
-        final var digest = MessageDigestUtils.digest(instance, path, ByteBuffer.allocate(1024));
+        final var digest = MessageDigestUtils.getDigest(algorithm, path, ByteBuffer.allocate(1024));
         log.debug("algorithm: {}, provider: {}, digest: {}",
                   algorithm, provider, HexFormat.of().formatHex(digest));
     }

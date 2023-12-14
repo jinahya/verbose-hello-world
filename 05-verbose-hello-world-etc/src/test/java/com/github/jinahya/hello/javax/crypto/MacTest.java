@@ -37,8 +37,8 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 class MacTest {
 
     static {
-        Security.insertProviderAt(new org.bouncycastle.jce.provider.BouncyCastleProvider(), 1);
-//        Security.insertProviderAt(new gnu.crypto.jce.GnuCrypto(), 1);
+//        Security.insertProviderAt(new org.bouncycastle.jce.provider.BouncyCastleProvider(), 1);
+        Security.insertProviderAt(new gnu.crypto.jce.GnuCrypto(), 1);
 //        Security.insertProviderAt(new org.spongycastle.jce.provider.BouncyCastleProvider(), 1);
     }
 
@@ -165,6 +165,7 @@ class MacTest {
             // --------------------------------------------------------------------------------- mac
             final var algorithm = "HmacSHA1";
             final var mac = Mac.getInstance(algorithm);
+            log.debug("provider: {}", mac.getProvider());
             // --------------------------------------------------------------------------------- key
             final var key = SecretKeySpecUtils.newAesKey(keysize);
             // -------------------------------------------------------------------------------- mac1
@@ -208,6 +209,7 @@ class MacTest {
             // --------------------------------------------------------------------------------- mac
             final var algorithm = "HmacSHA256";
             final var mac = Mac.getInstance(algorithm);
+            log.debug("provider: {}", mac.getProvider());
             // --------------------------------------------------------------------------------- key
             final var key = SecretKeySpecUtils.newAesKey(keysize);
             // -------------------------------------------------------------------------------- mac1
