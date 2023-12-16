@@ -62,7 +62,7 @@ class CipherTest {
 //        Security.insertProviderAt(new org.spongycastle.jce.provider.BouncyCastleProvider(), 1);
     }
 
-    private static Stream<String> algorithms() {
+    static Stream<String> algorithms() {
         return Stream.of(
                 "AES",
                 "AESWrap",
@@ -83,7 +83,7 @@ class CipherTest {
         );
     }
 
-    private static Stream<String> modes() {
+    static Stream<String> modes() {
         return Stream.of(
                 "NONE",
                 "CBC",
@@ -100,7 +100,7 @@ class CipherTest {
         );
     }
 
-    private static Stream<String> paddings() {
+    static Stream<String> paddings() {
         return Stream.of(
                 "NoPadding",
                 "ISO10126Padding",
