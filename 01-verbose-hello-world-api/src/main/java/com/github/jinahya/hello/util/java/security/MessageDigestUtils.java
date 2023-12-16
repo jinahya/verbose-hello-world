@@ -1,6 +1,6 @@
 package com.github.jinahya.hello.util.java.security;
 
-import com.github.jinahya.hello.util.ExcludeFromCoverage_PrivateConstructor_Obviously;
+import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,7 +9,6 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -149,7 +148,7 @@ public final class MessageDigestUtils {
     }
 
     // ---------------------------------------------------------------------------------------------
-    @ExcludeFromCoverage_PrivateConstructor_Obviously
+    @_ExcludeFromCoverage_PrivateConstructor_Obviously
     private MessageDigestUtils() {
         throw new AssertionError("instantiation is not allowed");
     }

@@ -22,8 +22,8 @@ package com.github.jinahya.hello.misc.c01rfc863;
 
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils;
-import com.github.jinahya.hello.util.ExcludeFromCoverage_FailingCase;
-import com.github.jinahya.hello.util.ExcludeFromCoverage_PrivateConstructor_Obviously;
+import com.github.jinahya.hello.util._ExcludeFromCoverage_FailingCase;
+import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 import com.github.jinahya.hello.util.JavaSecurityUtils;
 import com.github.jinahya.hello.util._TcpUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -110,7 +110,7 @@ class Rfc863Tcp5Server {
                                                     this                                // <handler>
                                             );
                                         }
-                                        @ExcludeFromCoverage_FailingCase
+                                        @_ExcludeFromCoverage_FailingCase
                                         @Override
                                         public void failed(final Throwable exc, final Void a) {
                                             log.error("failed to read", exc);
@@ -119,7 +119,7 @@ class Rfc863Tcp5Server {
                                     }
                             );
                         }
-                        @ExcludeFromCoverage_FailingCase
+                        @_ExcludeFromCoverage_FailingCase
                         @Override
                         public void failed(final Throwable exc, final Void attachment) {
                             log.error("failed to accept", exc);
@@ -131,7 +131,7 @@ class Rfc863Tcp5Server {
         }
     }
 
-    @ExcludeFromCoverage_PrivateConstructor_Obviously
+    @_ExcludeFromCoverage_PrivateConstructor_Obviously
     private Rfc863Tcp5Server() {
         throw new AssertionError("instantiation is not allowed");
     }

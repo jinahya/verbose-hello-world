@@ -1,11 +1,10 @@
 package com.github.jinahya.hello.util.java.security;
 
-import com.github.jinahya.hello.util.ExcludeFromCoverage_PrivateConstructor_Obviously;
+import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 
 import java.security.Provider;
 import java.security.Security;
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -33,7 +32,7 @@ public class ProviderUtils {
 //        Objects.requireNonNull(cls, "cls is null");
 //    }
 
-    @ExcludeFromCoverage_PrivateConstructor_Obviously
+    @_ExcludeFromCoverage_PrivateConstructor_Obviously
     private ProviderUtils() {
         throw new AssertionError("instantiation is not allowed");
     }

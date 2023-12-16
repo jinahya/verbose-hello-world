@@ -1,6 +1,6 @@
 package com.github.jinahya.hello.util.javax.crypto;
 
-import com.github.jinahya.hello.util.ExcludeFromCoverage_PrivateConstructor_Obviously;
+import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.crypto.Cipher;
@@ -112,7 +112,7 @@ public final class CipherUtils {
         );
     }
 
-    @ExcludeFromCoverage_PrivateConstructor_Obviously
+    @_ExcludeFromCoverage_PrivateConstructor_Obviously
     private CipherUtils() {
         throw new AssertionError("instantiation is not allowed");
     }

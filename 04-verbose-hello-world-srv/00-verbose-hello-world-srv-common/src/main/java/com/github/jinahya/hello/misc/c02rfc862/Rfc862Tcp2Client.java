@@ -22,7 +22,7 @@ package com.github.jinahya.hello.misc.c02rfc862;
 
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils;
-import com.github.jinahya.hello.util.ExcludeFromCoverage_PrivateConstructor_Obviously;
+import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 import com.github.jinahya.hello.util.JavaSecurityUtils;
 import com.github.jinahya.hello.util._TcpUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -135,7 +135,7 @@ class Rfc862Tcp2Client {
         }
     }
 
-    @ExcludeFromCoverage_PrivateConstructor_Obviously
+    @_ExcludeFromCoverage_PrivateConstructor_Obviously
     private Rfc862Tcp2Client() {
         throw new AssertionError("instantiation is not allowed");
     }

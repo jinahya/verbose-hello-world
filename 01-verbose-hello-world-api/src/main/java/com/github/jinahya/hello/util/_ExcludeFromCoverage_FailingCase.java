@@ -27,6 +27,6 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.CLASS)
 @Target({ElementType.METHOD})
-public @interface ExcludeFromCoverage_FailingCase {
+public @interface _ExcludeFromCoverage_FailingCase {
 
 }

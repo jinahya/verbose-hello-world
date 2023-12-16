@@ -20,7 +20,7 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import com.github.jinahya.hello.util.ExcludeFromCoverage_PrivateConstructor_Obviously;
+import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 
 /**
  * .
@@ -47,7 +47,7 @@ public final class Rfc768Constants {
 
     public static final int PROTOCOL_NUMBER = 0x17;
 
-    @ExcludeFromCoverage_PrivateConstructor_Obviously
+    @_ExcludeFromCoverage_PrivateConstructor_Obviously
     private Rfc768Constants() {
         throw new AssertionError("instantiation is not allowed");
     }

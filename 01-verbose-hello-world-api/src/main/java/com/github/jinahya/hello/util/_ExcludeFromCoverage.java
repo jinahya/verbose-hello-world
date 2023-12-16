@@ -27,7 +27,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.CLASS)
 @Target({ElementType.TYPE, ElementType.CONSTRUCTOR, ElementType.METHOD})
-public @interface ExcludeFromCoverage {
+public @interface _ExcludeFromCoverage {
 
     String value();
 }

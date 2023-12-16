@@ -1,6 +1,6 @@
 package com.github.jinahya.hello.util.javax.crypto;
 
-import com.github.jinahya.hello.util.ExcludeFromCoverage_PrivateConstructor_Obviously;
+import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 
 import javax.crypto.Mac;
 import java.io.File;
@@ -71,7 +71,7 @@ public final class MacUtils {
     }
 
     // ---------------------------------------------------------------------------------------------
-    @ExcludeFromCoverage_PrivateConstructor_Obviously
+    @_ExcludeFromCoverage_PrivateConstructor_Obviously
     private MacUtils() {
         throw new AssertionError("instantiation is not allowed");
     }

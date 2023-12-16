@@ -20,7 +20,7 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import com.github.jinahya.hello.util.ExcludeFromCoverage_PrivateConstructor_Obviously;
+import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 
 /**
  * .
@@ -66,7 +66,7 @@ public final class Rfc793Constants {
 
     public static final int HEADER_URGENT_POINTER_BYTES = Short.BYTES;
 
-    @ExcludeFromCoverage_PrivateConstructor_Obviously
+    @_ExcludeFromCoverage_PrivateConstructor_Obviously
     private Rfc793Constants() {
         throw new AssertionError("instantiation is not allowed");
     }

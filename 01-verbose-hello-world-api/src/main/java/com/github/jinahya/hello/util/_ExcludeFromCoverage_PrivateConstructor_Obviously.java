@@ -27,6 +27,6 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.CLASS)
 @Target({ElementType.CONSTRUCTOR})
-public @interface ExcludeFromCoverage_PrivateConstructor_Obviously {
+public @interface _ExcludeFromCoverage_PrivateConstructor_Obviously {
 
 }
