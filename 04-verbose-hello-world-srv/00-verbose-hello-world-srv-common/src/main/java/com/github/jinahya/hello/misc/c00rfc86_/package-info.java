@@ -1,8 +1,3 @@
-/**
- * Defines shared constants and utilities for  {@link com.github.jinahya.hello.misc.c01rfc863}
- * package and {@link com.github.jinahya.hello.misc.c02rfc862} package.
- *
- * @author Jin Kwon &lt;
 /*-
  * #%L
  * verbose-hello-world-srv-common
@@ -12,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,7 +17,11 @@
  * limitations under the License.
  * #L%
  */
-onacit_at_gmail.com&gt;
+/**
+ * Defines shared constants and utilities for {@link com.github.jinahya.hello.misc.c01rfc863}
+ * package and {@link com.github.jinahya.hello.misc.c02rfc862} package.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see com.github.jinahya.hello.misc.c01rfc863
  * @see com.github.jinahya.hello.misc.c02rfc862
  */

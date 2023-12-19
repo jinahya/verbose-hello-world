@@ -42,7 +42,7 @@ public class HelloWorldMain {
      */
     public static void main(String... args)
             throws IOException {
-        var injector = Guice.createInjector(new HelloWorldModule());
+        final var injector = Guice.createInjector(new HelloWorldModule());
         // TODO: Create a new instance of this class
         // TODO: Inject values to the instance using the injector
         // TODO: Print the 'hello, world' to System.out using instance.helloWorld

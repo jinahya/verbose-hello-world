@@ -20,8 +20,6 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import com.google.inject.AbstractModule;
-
 import java.util.ServiceLoader;
 
 /**
@@ -30,13 +28,12 @@ import java.util.ServiceLoader;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 class HelloWorldModule
-        extends AbstractModule {
+        extends com.google.inject.AbstractModule {
 
     @Override
     protected void configure() {
-        bind(HelloWorld.class)
-                .toProvider(
-                        () -> ServiceLoader.load(HelloWorld.class).iterator()
-                                .next());
+        final com.google.inject.Provider<HelloWorld> provider =
+                () -> ServiceLoader.load(HelloWorld.class).iterator().next();
+        bind(HelloWorld.class).toProvider(provider);
     }
 }
