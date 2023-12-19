@@ -51,14 +51,13 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 /**
  * @see <a
  * href="https://docs.oracle.com/en/java/javase/21/docs/specs/security/standard-names.html#mac-algorithms"><code>Mac</code>
- * Algorithm</code></a>
+ * Algorithm</a>
  */
 @Slf4j
 class MacTest {
 
     static {
 //        Security.insertProviderAt(new org.bouncycastle.jce.provider.BouncyCastleProvider(), 1);
-        Security.insertProviderAt(new gnu.crypto.jce.GnuCrypto(), 1);
 //        Security.insertProviderAt(new org.spongycastle.jce.provider.BouncyCastleProvider(), 1);
     }
 

@@ -50,7 +50,7 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
  * Algorithm modes</a>
  * @see <a
  * href="https://docs.oracle.com/en/java/javase/21/docs/specs/security/standard-names.html#cipher-algorithm-paddings"><code>Cihper</code>
- * Algorithm Paddings</code></a>
+ * Algorithm Paddings</a>
  */
 @DisplayName("javax.crypto.Cipher")
 @Slf4j
@@ -58,7 +58,6 @@ class CipherTest {
 
     static {
 //        Security.insertProviderAt(new org.bouncycastle.jce.provider.BouncyCastleProvider(), 1);
-//        Security.insertProviderAt(new gnu.crypto.jce.GnuCrypto(), 1);
 //        Security.insertProviderAt(new org.spongycastle.jce.provider.BouncyCastleProvider(), 1);
     }
 

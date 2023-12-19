@@ -25,7 +25,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Retention(RetentionPolicy.CLASS)
+//@Retention(RetentionPolicy.CLASS)
+@Retention(RetentionPolicy.RUNTIME) // javadoc
 @Target({ElementType.METHOD})
 public @interface _ExcludeFromCoverage_FailingCase {
 

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -121,11 +122,11 @@
         <artifactId>guice</artifactId>
         <version>7.0.0</version>
       </dependency>
-<!--      <dependency>-->
-<!--        <groupId>com.madgag.spongycastle</groupId>-->
-<!--        <artifactId>prov</artifactId>-->
-<!--        <version>1.58.0.0</version>-->
-<!--      </dependency>-->
+      <!--      <dependency>-->
+      <!--        <groupId>com.madgag.spongycastle</groupId>-->
+      <!--        <artifactId>prov</artifactId>-->
+      <!--        <version>1.58.0.0</version>-->
+      <!--      </dependency>-->
       <dependency>
         <groupId>jakarta.enterprise</groupId>
         <artifactId>jakarta.enterprise.cdi-api</artifactId>
@@ -193,11 +194,6 @@
         <groupId>org.glassfish.hk2</groupId>
         <artifactId>hk2</artifactId>
         <version>${version.org.glassfish.hk2}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.gnu</groupId>
-        <artifactId>gnu-crypto</artifactId>
-        <version>2.0.1</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.weld</groupId>
@@ -411,7 +407,7 @@
               <configuration>
                 <rules>
                   <requireMavenVersion>
-                    <version>[3.2.5,)</version>
+                    <version>[3.6.3,)</version>
                   </requireMavenVersion>
                 </rules>
               </configuration>
@@ -495,12 +491,16 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
-          <version>4.0.0-M12</version>
+          <version>4.0.0-M13</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
           <version>${version.maven-surefire}</version>
+          <!--          <configuration>-->
+          <!--            <forkNode>pertest</forkNode>-->
+          <!--            <reuseForks>false</reuseForks>-->
+          <!--          </configuration>-->
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>

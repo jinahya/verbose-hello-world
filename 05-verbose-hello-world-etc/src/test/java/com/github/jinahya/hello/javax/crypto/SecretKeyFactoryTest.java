@@ -36,7 +36,6 @@ class SecretKeyFactoryTest {
 
     static {
 //        Security.insertProviderAt(new org.bouncycastle.jce.provider.BouncyCastleProvider(), 1);
-//        Security.insertProviderAt(new gnu.crypto.jce.GnuCrypto(), 1);
 //        Security.insertProviderAt(new org.spongycastle.jce.provider.BouncyCastleProvider(), 1);
     }
 

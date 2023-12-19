@@ -45,7 +45,7 @@ import java.util.stream.Stream;
  * Algorithm modes</a>
  * @see <a
  * href="https://docs.oracle.com/en/java/javase/21/docs/specs/security/standard-names.html#cipher-algorithm-paddings"><code>Cihper</code>
- * Algorithm Paddings</code></a>
+ * Algorithm Paddings</a>
  */
 @DisplayName("javax.crypto.Cipher")
 @Slf4j

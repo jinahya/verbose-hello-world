@@ -40,7 +40,6 @@ public final class _JavaSecurityTestUtils {
 
     static {
         Security.insertProviderAt(new org.bouncycastle.jce.provider.BouncyCastleProvider(), 1);
-//        Security.addProvider(new gnu.crypto.jce.GnuCrypto());
 //        Security.addProvider(new org.spongycastle.jce.provider.BouncyCastleProvider());
     }
 

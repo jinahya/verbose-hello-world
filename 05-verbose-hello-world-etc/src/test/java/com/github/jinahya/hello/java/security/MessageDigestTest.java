@@ -61,7 +61,6 @@ class MessageDigestTest {
 
     static {
         Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
-        Security.addProvider(new gnu.crypto.jce.GnuCrypto());
 //        Security.insertProviderAt(new org.spongycastle.jce.provider.BouncyCastleProvider(), 1);
     }
 
