@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class HelloWorldCdiFactory {
 
     /**
-     * Produces an instance of {@link HelloWorld} qualified by
+     * Produces an instance of {@link HelloWorld} qualified with
      * {@link HelloWorldDiConstants#_NAME_DEMO}.
      *
      * @param injectionPoint the injection point to be injected
@@ -52,7 +52,7 @@ class HelloWorldCdiFactory {
     }
 
     /**
-     * Disposes specified {@link HelloWorld} instance qualified by
+     * Disposes specified {@link HelloWorld} instance qualified with
      * {@link HelloWorldDiConstants#_NAME_IMPL}.
      *
      * @param bean the {@link HelloWorld} instance to dispose
@@ -63,8 +63,10 @@ class HelloWorldCdiFactory {
         assertTrue(bean instanceof HelloWorldDemo);
     }
 
+    // ---------------------------------------------------------------------------------------------
+
     /**
-     * Produces an instance of {@link HelloWorld} qualified by
+     * Produces an instance of {@link HelloWorld} qualified with
      * {@link HelloWorldDiConstants#_NAME_IMPL}.
      *
      * @param injectionPoint the injection point to be injected.
@@ -79,7 +81,7 @@ class HelloWorldCdiFactory {
     }
 
     /**
-     * Disposes specified {@link HelloWorld} instance qualified by
+     * Disposes specified {@link HelloWorld} instance qualified with
      * {@link HelloWorldDiConstants#_NAME_IMPL}.
      *
      * @param bean the {@link HelloWorld} instance to dispose.
@@ -90,8 +92,10 @@ class HelloWorldCdiFactory {
         assertTrue(bean instanceof HelloWorldImpl);
     }
 
+    // ---------------------------------------------------------------------------------------------
+
     /**
-     * Produces an instance of {@link HelloWorld} qualified by {@link _QualifiedDemo}.
+     * Produces an instance of {@link HelloWorld} qualified with {@link _QualifiedDemo}.
      *
      * @param injectionPoint the injection point
      * @return an instance of {@link HelloWorld}
@@ -105,7 +109,7 @@ class HelloWorldCdiFactory {
     }
 
     /**
-     * Disposes specified {@link HelloWorld} instance qualified by {@link _QualifiedDemo}.
+     * Disposes specified {@link HelloWorld} instance qualified with {@link _QualifiedDemo}.
      *
      * @param bean the {@link HelloWorld} instance to dispose
      */
@@ -114,8 +118,10 @@ class HelloWorldCdiFactory {
         assertTrue(bean instanceof HelloWorldDemo);
     }
 
+    // ---------------------------------------------------------------------------------------------
+
     /**
-     * Produces an instance of {@link HelloWorld} qualified by {@link _QualifiedImpl}.
+     * Produces an instance of {@link HelloWorld} qualified with {@link _QualifiedImpl}.
      *
      * @param injectionPoint the injection point
      * @return an instance of {@link HelloWorld}
@@ -129,7 +135,7 @@ class HelloWorldCdiFactory {
     }
 
     /**
-     * Disposes specified {@link HelloWorld} instance qualified by {@link _QualifiedImpl}.
+     * Disposes specified {@link HelloWorld} instance qualified with {@link _QualifiedImpl}.
      *
      * @param bean the {@link HelloWorld} instance to dispose
      */

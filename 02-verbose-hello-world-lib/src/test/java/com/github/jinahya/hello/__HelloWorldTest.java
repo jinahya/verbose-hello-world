@@ -56,7 +56,7 @@ abstract class __HelloWorldTest {
      */
     @DisplayName("set(null, )NullPointerException")
     @Test
-    void set_ThrowNullPointerException_ArrayIsNull() {
+    void _ThrowNullPointerException_ArrayIsNull() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         log.debug("service: {}", service);
@@ -96,7 +96,7 @@ abstract class __HelloWorldTest {
      */
     @DisplayName("set(, greater than array.length - 12)IndexOutOfBoundsException")
     @Test
-    void set_ThrowsIndexOutOfBoundsException_SpaceIsNotEnough() {
+    void _ThrowsIndexOutOfBoundsException_SpaceIsNotEnough() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         log.debug("service: {}", service);
@@ -119,9 +119,9 @@ abstract class __HelloWorldTest {
      * {@code byte[12]}, and {@code 0}, sets "{@code hello, world}" bytes on specified array
      * starting at specified index.
      */
-    @DisplayName("set(byte[12], 0)sets 'hello, world' bytes on array starting at 0")
+    @DisplayName("set(array, 0)")
     @Test
-    void set_SetHelloWorldBytesOnArrayStartingAtIndex_120() {
+    void _SetHelloWorldBytesOnArrayStartingAtIndex_120() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         log.debug("service: {}", service);
@@ -150,9 +150,9 @@ abstract class __HelloWorldTest {
      * Asserts {@link HelloWorld#set(byte[], int) set(array, index)} method sets
      * "{@code hello, world}" bytes on specified array starting at specified index.
      */
-    @DisplayName("set(array, index)sets 'hello, world' bytes on array starting at index")
+    @DisplayName("set(array, index)")
     @Test
-    void set_SetHelloWorldBytesOnArrayStartingAtIndex_() {
+    void _SetHelloWorldBytesOnArrayStartingAtIndex_() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         log.debug("service: {}", service);
@@ -169,7 +169,7 @@ abstract class __HelloWorldTest {
         // ------------------------------------------------------------------------------------ then
         assertSame(array, result);
         final var expected = "hello, world";
-        final var actual = new String(array, index, HelloWorld.BYTES, StandardCharsets.US_ASCII);
+        final var actual = new String(result, index, HelloWorld.BYTES, StandardCharsets.US_ASCII);
         if (!(service instanceof HelloWorldDemo)) return; // TODO: remove this line!
         assertEquals(expected, actual);
     }
