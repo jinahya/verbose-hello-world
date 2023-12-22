@@ -33,7 +33,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.LongAdder;
 
-import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -92,7 +91,7 @@ class HelloWorld_51_Write_AsynchronousByteChannel_Test
         // ------------------------------------------------------------------------------------ then
         verify(service, times(1)).put(bufferCaptor().capture());
         var buffer = bufferCaptor().getValue();
-        assertEquals(BYTES, buffer.capacity());
+        assertEquals(HelloWorld.BYTES, buffer.capacity());
         // TODO: Verify, channel.write(buffer), invoked, at least once
         // TODO: Assert, writtenSoFat.intValue() is equal to BYTES
         // TODO: Assert, result is same as channel
