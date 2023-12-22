@@ -60,16 +60,15 @@ class JavaNetTest {
         // -----------------------------------------------------------------------------------------
         {
             final var serverIPv6 = new Thread(() -> {
-                try {
-                    try (var server = new ServerSocket()) {
-                        server.bind(new InetSocketAddress(addrIPv6, port));
-                        log.debug("bound to {}", server.getLocalSocketAddress());
-                        try (var client = server.accept()) {
-                            log.debug("accepted from {}", client.getRemoteSocketAddress());
-                        }
+                final var endpoint = new InetSocketAddress(addrIPv6, port);
+                try (var server = new ServerSocket()) {
+                    server.bind(endpoint);
+                    log.debug("bound to {}", server.getLocalSocketAddress());
+                    try (var client = server.accept()) {
+                        log.debug("accepted from {}", client.getRemoteSocketAddress());
                     }
                 } catch (final IOException ioe) {
-                    throw new RuntimeException(ioe);
+                    log.error("failed to connect to {}", endpoint, ioe);
                 }
             });
             serverIPv6.start();
@@ -77,13 +76,12 @@ class JavaNetTest {
         // -----------------------------------------------------------------------------------------
         {
             final var clientIPv4 = new Thread(() -> {
-                try {
-                    try (var client = new Socket()) {
-                        client.connect(new InetSocketAddress(addrIPv4, port));
-                        log.debug("connected to {}", client.getRemoteSocketAddress());
-                    }
+                final var endpoint = new InetSocketAddress(addrIPv4, port);
+                try (var client = new Socket()) {
+                    client.connect(endpoint);
+                    log.debug("connected to {}", client.getRemoteSocketAddress());
                 } catch (final IOException ioe) {
-                    throw new RuntimeException(ioe);
+                    log.error("failed to connect to {}", endpoint, ioe);
                 }
             });
             clientIPv4.start();
