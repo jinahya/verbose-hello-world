@@ -131,8 +131,8 @@ class ChatTcp1Client {
         } catch (ArrayIndexOutOfBoundsException aioobe) {
             addr = InetAddress.getLoopbackAddress();
         }
-        var executor = Executors.newFixedThreadPool(2);
-        try (var client = new Socket()) {
+        try (var executor = Executors.newFixedThreadPool(2);
+             var client = new Socket()) {
             client.connect(new InetSocketAddress(addr, _ChatConstants.PORT));
             _TcpUtils.logConnected(client);
             executor.submit(new Sender(client));
