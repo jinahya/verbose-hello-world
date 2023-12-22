@@ -71,7 +71,8 @@ class Rfc863UdpTest {
                 serverClass.getMethod("main", String[].class)
                         .invoke(null, new Object[] {new String[0]});
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException(
+                        "failed to find/invoke the main method of " + serverClass, e);
             }
         });
         await().pollDelay(Duration.ofMillis(100L)).untilAsserted(() -> assertTrue(true));
@@ -80,7 +81,8 @@ class Rfc863UdpTest {
                 clientClass.getMethod("main", String[].class)
                         .invoke(null, new Object[] {new String[0]});
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException(
+                        "failed to find/invoke the main method of " + clientClass, e);
             }
         });
         client.get();

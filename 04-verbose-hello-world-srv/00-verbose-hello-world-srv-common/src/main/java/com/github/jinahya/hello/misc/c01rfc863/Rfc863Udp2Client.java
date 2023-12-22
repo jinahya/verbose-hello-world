@@ -52,7 +52,8 @@ class Rfc863Udp2Client {
             // -------------------------------------------------------------------------------- send
             final var buffer = ByteBuffer.allocate(
                     ThreadLocalRandom.current().nextInt(
-                            client.getOption(StandardSocketOptions.SO_SNDBUF) + 1
+//                            client.getOption(StandardSocketOptions.SO_SNDBUF) + 1
+                            (client.getOption(StandardSocketOptions.SO_SNDBUF) >> 1) + 1
                     )
             );
             ThreadLocalRandom.current().nextBytes(buffer.array());
