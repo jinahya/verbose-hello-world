@@ -130,7 +130,7 @@ public interface HelloWorld {
      * @throws NullPointerException           if {@code array} is {@code null}.
      * @throws ArrayIndexOutOfBoundsException if {@code array.length} is less than {@link #BYTES}.
      * @implSpec The default implementation invokes {@link #set(byte[], int) set(array, index)}
-     * method with {@code array} and {@code 0}, and returns the {@code array}.
+     * method with {@code array} and {@code 0}, and returns the result.
      * @see #set(byte[], int)
      */
     default byte[] set(byte[] array) {
@@ -157,8 +157,8 @@ public interface HelloWorld {
      *                                        is less than or equal to ({@code offset} +
      *                                        {@value #BYTES}).
      * @implSpec The default implementation invokes {@link #set(byte[]) set(array)} method with an
-     * array of {@value #BYTES} bytes, and copies each element in returned array into {@code chars}
-     * starting at {@code offset}.
+     * array of {@value #BYTES} bytes, copies each element in returned array into {@code chars}
+     * starting at {@code offset}, and returns the {@code chars}.
      * @see #set(byte[])
      */
     default char[] print(char[] chars, int offset) {
@@ -173,7 +173,9 @@ public interface HelloWorld {
                     "offset(" + offset + ") + " + BYTES + " > chars.length(" + chars.length + ")"
             );
         }
-        for (var b : set(new byte[BYTES])) {
+        final var array = new byte[BYTES];
+        set(array);
+        for (final var b : array) {
             chars[offset++] = (char) b;
         }
         return chars;
@@ -195,7 +197,7 @@ public interface HelloWorld {
      * @throws NullPointerException           if {@code chars} is {@code null}.
      * @throws ArrayIndexOutOfBoundsException if {@code chars.length} is less than {@link #BYTES}.
      * @implSpec The default implementation invokes {@link #print(char[], int) set(chars, offset)}
-     * method with {@code chars} and {@code 0}, and returns the {@code chars}.
+     * method with {@code chars} and {@code 0}, and returns the result.
      * @see #print(char[], int)
      */
     default char[] print(char[] chars) {
@@ -207,7 +209,8 @@ public interface HelloWorld {
                     "chars.length(" + chars.length + ") < " + BYTES
             );
         }
-        return print(chars, 0);
+        print(chars, 0);
+        return chars;
     }
 
     /**
@@ -217,7 +220,7 @@ public interface HelloWorld {
      * @return given {@code appendable}.
      * @throws NullPointerException if {@code appendable} is {@code null}.
      * @implSpec The default implementation invokes {@link #print(char[]) print(chars)} method with
-     * an array of {@value #BYTES} characters, appends each character in returned array to
+     * an array of {@value #BYTES} characters, appends each character in the array to
      * {@code appendable} using {@link Appendable#append(char)} method, and returns the
      * {@code appendable}.
      * @see #print(char[])
@@ -228,7 +231,9 @@ public interface HelloWorld {
         if (appendable == null) {
             throw new NullPointerException("appendable is null");
         }
-        for (var c : print(new char[BYTES])) {
+        final var chars = new char[BYTES];
+        print(chars);
+        for (var c : chars) {
             appendable.append(c);
         }
         return appendable;
@@ -270,12 +275,8 @@ public interface HelloWorld {
      * @throws NullPointerException if {@code writer} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @apiNote This method does not {@link Writer#flush() flush} the {@code writer}.
-     * @implSpec The default implementation invokes {@link #append(Appendable) append(appendable)},
-     * and returns the result.
-     * @implNote Subclasses may override the default implementation to invoke
-     * {@link #print(char[]) print(chars)} method with an array of {@value #BYTES} chars, writes
-     * result to {@code writer} by invoking {@link Writer#write(char[])} method on {@code writer}
-     * with the result, and returns the {@code writer}.
+     * @implSpec The default implementation invokes {@link #append(Appendable) append(appendable)}
+     * with {@code writer}, and returns the {@code writer}.
      * @see #append(Appendable)
      * @see #print(char[])
      * @see Writer#write(char[])
@@ -285,7 +286,8 @@ public interface HelloWorld {
         if (writer == null) {
             throw new NullPointerException("writer is null");
         }
-        return append(writer);
+        append(writer);
+        return writer;
     }
 
     /**
@@ -296,10 +298,11 @@ public interface HelloWorld {
      * @return given {@code file}.
      * @throws NullPointerException if {@code file} is {@code null}.
      * @throws IOException          if an I/O error occurs.
-     * @implSpec The default implementation creates a new {@link FileOutputStream} with {@code file}
-     * and {@code true}, invokes the {@link #write(OutputStream) write(stream)} method with it,
+     * @implSpec The default implementation creates a new {@link FileOutputStream} with
+     * {@code file}, as an {@link FileOutputStream#FileOutputStream(File, boolean) appending mode},
+     * invokes the {@link #write(OutputStream) write(stream)} method with it,
      * {@link OutputStream#flush() flushes} and {@link OutputStream#close() closes} the stream, and
-     * returns the {@code file}.
+     * returns {@code file}.
      * @see java.io.FileOutputStream#FileOutputStream(File, boolean)
      * @see #write(OutputStream)
      */
@@ -308,7 +311,7 @@ public interface HelloWorld {
         if (file == null) {
             throw new NullPointerException("file is null");
         }
-        // TODO: Create a new FileOutputStream with file in appending mode.
+        // TODO: Create a new FileOutputStream with file, in appending mode.
         // TODO: Invoke write(stream) method with it.
         // TODO: Flush the stream.
         // TODO: Close the stream.
@@ -324,9 +327,9 @@ public interface HelloWorld {
      * @throws NullPointerException if {@code data} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @implSpec The default implementation invokes {@link #set(byte[])} method with an array of
-     * {@value #BYTES} bytes, writes the array to specified data output by invoking
-     * {@link DataOutput#write(byte[])} method on {@code data} with the {@code array}, and returns
-     * the {@code data}.
+     * {@value #BYTES} bytes, writes the array to {@code data} by invoking
+     * {@link DataOutput#write(byte[])} method on {@code data} with the array, and returns
+     * {@code data}.
      * @see #set(byte[])
      * @see DataOutput#write(byte[])
      */
@@ -337,7 +340,7 @@ public interface HelloWorld {
         }
         var array = new byte[BYTES];
         set(array);
-        // TODO: Implement!
+        // TODO: Write array to data!
         return data;
     }
 
@@ -362,8 +365,9 @@ public interface HelloWorld {
         if (file == null) {
             throw new NullPointerException("file is null");
         }
-        var array = set(new byte[BYTES]);
-        // TODO: Implement!
+        final var array = new byte[BYTES];
+        set(array);
+        // TODO: Write array to file!
         return file;
     }
 
@@ -376,7 +380,7 @@ public interface HelloWorld {
      * @throws NullPointerException if {@code socket} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @implSpec The default implementation invokes {@link #write(OutputStream)} method with
-     * {@link Socket#getOutputStream() socket.outputStream}, and returns the {@code socket}.
+     * {@link Socket#getOutputStream() socket.outputStream}, and returns {@code socket}.
      * @see Socket#getOutputStream()
      * @see #write(OutputStream)
      */

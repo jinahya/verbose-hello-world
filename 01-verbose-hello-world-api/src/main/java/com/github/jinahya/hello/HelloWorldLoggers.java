@@ -20,6 +20,7 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,8 +39,8 @@ final class HelloWorldLoggers {
     /**
      * A map of classes and {@link Logger}s.
      */
-    private static final Map<Class<?>, Logger> LOGS
-            = Collections.synchronizedMap(new WeakHashMap<>());
+    private static final Map<Class<?>, Logger> LOGS = Collections.synchronizedMap(
+            new WeakHashMap<>());
 
     /**
      * Returns a logger for specified class.
@@ -69,9 +70,7 @@ final class HelloWorldLoggers {
         return LOGGERS.computeIfAbsent(clazz, k -> System.getLogger(k.getName()));
     }
 
-    /**
-     * A private constructor which always throws an {@link AssertionError}.
-     */
+    @_ExcludeFromCoverage_PrivateConstructor_Obviously
     private HelloWorldLoggers() {
         throw new AssertionError("instantiation is not allowed");
     }
