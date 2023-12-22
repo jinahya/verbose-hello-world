@@ -27,7 +27,6 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import static java.util.concurrent.ThreadLocalRandom.current;
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * An abstract class for testing {@link HelloWorld} implementations using Dependency Injection.
@@ -42,10 +41,10 @@ abstract class HelloWorldDiTest
     // ---------------------------------------------------------------------------------------------
     @Override
     HelloWorld service() {
-        assertThat(namedDemo).isInstanceOf(HelloWorldDemo.class);
-        assertThat(namedImpl).isInstanceOf(HelloWorldImpl.class);
-        assertThat(qualifiedDemo).isInstanceOf(HelloWorldDemo.class);
-        assertThat(qualifiedImpl).isInstanceOf(HelloWorldImpl.class);
+        assert namedDemo instanceof HelloWorldDemo;
+        assert namedImpl instanceof HelloWorldImpl;
+        assert qualifiedDemo instanceof HelloWorldDemo;
+        assert qualifiedImpl instanceof HelloWorldImpl;
         return switch (current().nextInt(4)) {
             case 0 -> namedDemo;
             case 1 -> namedImpl;

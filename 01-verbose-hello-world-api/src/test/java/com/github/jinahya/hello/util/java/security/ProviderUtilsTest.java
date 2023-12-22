@@ -21,9 +21,8 @@ package com.github.jinahya.hello.util.java.security;
  */
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 class ProviderUtilsTest {
@@ -37,7 +36,7 @@ class ProviderUtilsTest {
             log.debug("\ttype: {}", s.getType());
             log.debug("\talgorithm: {}", s.getAlgorithm());
         });
-        assertThat(set).isNotEmpty();
+        Assertions.assertFalse(set.isEmpty());
     }
 
     @Test
@@ -46,6 +45,6 @@ class ProviderUtilsTest {
         set.forEach(t -> {
             log.debug("service.type: {}", t);
         });
-        assertThat(set).isNotEmpty();
+        Assertions.assertFalse(set.isEmpty());
     }
 }

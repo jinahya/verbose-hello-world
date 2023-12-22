@@ -34,7 +34,6 @@
     <module>02-verbose-hello-world-lib</module>
     <module>03-verbose-hello-world-app</module>
     <module>04-verbose-hello-world-srv</module>
-    <module>05-verbose-hello-world-etc</module>
   </modules>
 
   <scm>
@@ -170,13 +169,13 @@
         <artifactId>aspectjtools</artifactId>
         <version>${version.org.aspectj}</version>
       </dependency>
-      <dependency>
-        <groupId>org.assertj</groupId>
-        <artifactId>assertj-bom</artifactId>
-        <version>3.24.2</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
+      <!--      <dependency>-->
+      <!--        <groupId>org.assertj</groupId>-->
+      <!--        <artifactId>assertj-bom</artifactId>-->
+      <!--        <version>3.24.2</version>-->
+      <!--        <type>pom</type>-->
+      <!--        <scope>import</scope>-->
+      <!--      </dependency>-->
       <dependency>
         <groupId>org.bouncycastle</groupId>
         <artifactId>bcprov-lts8on</artifactId>
@@ -264,11 +263,11 @@
       <artifactId>logback-classic</artifactId>
       <scope>runtime</scope>
     </dependency>
-    <dependency>
-      <groupId>org.assertj</groupId>
-      <artifactId>assertj-core</artifactId>
-      <scope>test</scope>
-    </dependency>
+    <!--    <dependency>-->
+    <!--      <groupId>org.assertj</groupId>-->
+    <!--      <artifactId>assertj-core</artifactId>-->
+    <!--      <scope>test</scope>-->
+    <!--    </dependency>-->
     <dependency>
       <groupId>org.awaitility</groupId>
       <artifactId>awaitility</artifactId>

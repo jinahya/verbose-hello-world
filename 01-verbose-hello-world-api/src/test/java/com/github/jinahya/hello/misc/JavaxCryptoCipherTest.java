@@ -31,7 +31,7 @@ import java.security.Provider;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 /**
@@ -140,8 +140,8 @@ class JavaxCryptoCipherTest {
     @ParameterizedTest
     void requiredToBeSupportedTransformations__(final Provider provider,
                                                 final String transformation) {
-        assertThatCode(() -> {
+        assertDoesNotThrow(() -> {
             Cipher.getInstance(transformation, provider);
-        }).doesNotThrowAnyException();
+        });
     }
 }

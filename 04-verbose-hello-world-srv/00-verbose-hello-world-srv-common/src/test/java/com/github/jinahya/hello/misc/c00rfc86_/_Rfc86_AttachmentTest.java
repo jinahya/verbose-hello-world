@@ -20,6 +20,7 @@ package com.github.jinahya.hello.misc.c00rfc86_;
  * #L%
  */
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -27,8 +28,6 @@ import java.io.UncheckedIOException;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public abstract class _Rfc86_AttachmentTest<T extends _Rfc86_Attachment> {
 
@@ -46,7 +45,7 @@ public abstract class _Rfc86_AttachmentTest<T extends _Rfc86_Attachment> {
                     i.setBytes(bytes);
                     final var delta = ThreadLocalRandom.current().nextInt(bytes);
                     i.decreaseBytes(delta);
-                    assertThat(i.getBytes()).isEqualTo(bytes - delta);
+                    Assertions.assertEquals(bytes - delta, i.getBytes());
                     return null;
                 },
                 false
@@ -61,7 +60,7 @@ public abstract class _Rfc86_AttachmentTest<T extends _Rfc86_Attachment> {
                     final var bytes = i.getBytes();
                     final var delta = ThreadLocalRandom.current().nextInt() >>> 24;
                     i.increaseBytes(delta);
-                    assertThat(i.getBytes()).isEqualTo(bytes + delta);
+                    Assertions.assertEquals(bytes + delta, i.getBytes());
                     return null;
                 },
                 false

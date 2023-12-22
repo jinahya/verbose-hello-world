@@ -20,12 +20,10 @@ package com.github.jinahya.hello.misc.c03calc;
  * #L%
  */
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class _CalcMessageTest {
 
@@ -35,17 +33,15 @@ class _CalcMessageTest {
 
         @Test
         void __() {
-            assertThat(_CalcMessage.newInstanceForClient())
-                    .isNotNull()
-                    .satisfies(i -> {
-                        i.debug(b -> a -> {
-                            assertThat(b.position()).isZero();
-                            assertThat(b.remaining()).isEqualTo(_CalcMessage.LENGTH_REQUEST);
-                            return null;
-                        });
-                        assertThat(i.operator()).isNotNull();
-                        assertThat(i.result()).isZero();
-                    });
+            final var instance = _CalcMessage.newInstanceForClient();
+            Assertions.assertNotNull(instance);
+            instance.debug(b -> a -> {
+                Assertions.assertEquals(0, b.position());
+                Assertions.assertEquals(_CalcMessage.LENGTH_REQUEST, b.remaining());
+                return null;
+            });
+            Assertions.assertNotNull(instance.operator());
+            Assertions.assertNotNull(instance.result());
         }
     }
 
@@ -55,20 +51,17 @@ class _CalcMessageTest {
 
         @Test
         void __() {
-            assertThat(_CalcMessage.newInstanceForServer())
-                    .isNotNull()
-                    .satisfies(i -> {
-                        i.debug(b -> a -> {
-                            assertThat(b.position()).isZero();
-                            assertThat(b.remaining()).isEqualTo(_CalcMessage.LENGTH_REQUEST);
-                            return null;
-                        });
-                        assertThatThrownBy(i::operator)
-                                .isInstanceOf(IllegalArgumentException.class);
-                        assertThat(i.operand1()).isZero();
-                        assertThat(i.operand2()).isZero();
-                        assertThat(i.result()).isZero();
-                    });
+            final var instance = _CalcMessage.newInstanceForServer();
+            Assertions.assertNotNull(instance);
+            instance.debug(b -> a -> {
+                Assertions.assertEquals(0, b.position());
+                Assertions.assertEquals(_CalcMessage.LENGTH_REQUEST, b.remaining());
+                return null;
+            });
+            Assertions.assertThrows(IllegalArgumentException.class, () -> instance.operator());
+            Assertions.assertEquals(0, instance.operand1());
+            Assertions.assertEquals(0, instance.operand2());
+            Assertions.assertEquals(0, instance.result());
         }
     }
 }

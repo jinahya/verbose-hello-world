@@ -21,6 +21,7 @@ package com.github.jinahya.hello.util;
  */
 
 import com.github.jinahya.hello.util.java.io._JavaIoUtils;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -31,7 +32,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.times;
 
@@ -60,7 +60,8 @@ class JavaIoUtilsTest {
                 throws IOException {
             try (var mock = Mockito.mockStatic(_JavaIoUtils.class, Mockito.CALLS_REAL_METHODS)) {
                 final var file = _JavaIoUtils.createTempFileInAndWriteSome(dir);
-                assertThat(file).isNotNull().isFile();
+                Assertions.assertNotNull(file);
+                Assertions.assertTrue(file.isFile());
                 mock.verify(
                         () -> {
                             _JavaIoUtils.writeSome(argThat(f -> {

@@ -22,6 +22,7 @@ package com.github.jinahya.hello.util;
 
 import com.google.common.primitives.Primitives;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -35,9 +36,9 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import static com.github.jinahya.hello.util.JavaLangUtils.PRIMITIVE_CLASSES;
 import static com.github.jinahya.hello.util.JavaLangUtils.WRAPPER_CLASSES;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
@@ -90,9 +91,9 @@ class JavaLangUtilsTest {
             void _GreaterThanOrEqualTo_Self() {
                 final var value = ThreadLocalRandom.current().nextInt();
                 final var against = value;
-                assertThatCode(
+                assertDoesNotThrow(
                         () -> JavaLangUtils.Ints.requireGreaterThanOrEqualTo(value, against)
-                ).doesNotThrowAnyException();
+                );
             }
 
             @DisplayName("(value, value - 1)")
@@ -101,9 +102,9 @@ class JavaLangUtilsTest {
                 final var value = ThreadLocalRandom.current().nextInt() >> 1;
                 assert value != Integer.MIN_VALUE;
                 final var against = value - 1;
-                assertThatCode(
+                assertDoesNotThrow(
                         () -> JavaLangUtils.Ints.requireGreaterThanOrEqualTo(value, against)
-                ).doesNotThrowAnyException();
+                );
             }
 
             @DisplayName("(value, value - 1)IllegalArgumentException")
@@ -112,9 +113,10 @@ class JavaLangUtilsTest {
                 final var value = ThreadLocalRandom.current().nextInt() << 1;
                 assert value != Integer.MAX_VALUE;
                 final var against = value + 1;
-                assertThatThrownBy(
+                Assertions.assertThrows(
+                        IllegalArgumentException.class,
                         () -> JavaLangUtils.Ints.requireGreaterThanOrEqualTo(value, against)
-                ).isInstanceOf(IllegalArgumentException.class);
+                );
             }
         }
 
@@ -127,9 +129,10 @@ class JavaLangUtilsTest {
             void _NotGreaterThan_Self() {
                 final var value = ThreadLocalRandom.current().nextInt();
                 final var against = value;
-                assertThatThrownBy(
+                assertThrows(
+                        IllegalArgumentException.class,
                         () -> JavaLangUtils.Ints.requireGreaterThan(value, against)
-                ).isInstanceOf(IllegalArgumentException.class);
+                );
             }
 
             @DisplayName("(value, value - 1)")
@@ -138,9 +141,9 @@ class JavaLangUtilsTest {
                 final var value = ThreadLocalRandom.current().nextInt() >> 1;
                 assert value != Integer.MIN_VALUE;
                 final var against = value - 1;
-                assertThatCode(
+                assertDoesNotThrow(
                         () -> JavaLangUtils.Ints.requireGreaterThan(value, against)
-                ).doesNotThrowAnyException();
+                );
             }
 
             @DisplayName("(value, value + 1)IllegalArgumentException")
@@ -149,9 +152,10 @@ class JavaLangUtilsTest {
                 final var value = ThreadLocalRandom.current().nextInt() << 1;
                 assert value != Integer.MAX_VALUE;
                 final var against = value + 1;
-                assertThatThrownBy(
+                assertThrows(
+                        IllegalArgumentException.class,
                         () -> JavaLangUtils.Ints.requireGreaterThan(value, against)
-                ).isInstanceOf(IllegalArgumentException.class);
+                );
             }
         }
     }

@@ -34,7 +34,8 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.times;
 
@@ -63,7 +64,8 @@ class JavaNioFileUtilsTest {
                 throws IOException {
             try (var mock = Mockito.mockStatic(JavaNioUtils.class, Mockito.CALLS_REAL_METHODS)) {
                 final var path = JavaNioUtils.createTempFileInAndWriteSome(dir);
-                assertThat(path).isNotNull().isRegularFile();
+                assertNotNull(path);
+                assertTrue(Files.isRegularFile(path));
                 mock.verify(
                         () -> {
                             JavaNioUtils.writeSome(argThat(p -> {

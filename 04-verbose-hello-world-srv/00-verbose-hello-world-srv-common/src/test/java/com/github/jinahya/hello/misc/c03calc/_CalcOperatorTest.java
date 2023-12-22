@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class _CalcOperatorTest {
 
@@ -37,16 +37,14 @@ class _CalcOperatorTest {
         @EnumSource(_CalcOperator.class)
         @ParameterizedTest
         void _IsEqualToNameLength_NameLength(final _CalcOperator value) {
-            assertThat(value.name())
-                    .hasSize(_CalcOperator.LENGTH);
+            assertEquals(_CalcOperator.LENGTH, value.name().length());
         }
 
         @DisplayName("value.name().bytes(\"US_ASCII\").length == NAME_BYTES")
         @EnumSource(_CalcOperator.class)
         @ParameterizedTest
         void _IsEqualToNameBytes_NameBytesLength(final _CalcOperator value) {
-            assertThat(value.name().getBytes(_CalcOperator.CHARSET))
-                    .hasSize(_CalcOperator.BYTES);
+            assertEquals(_CalcOperator.BYTES, value.name().getBytes(_CalcOperator.CHARSET).length);
         }
     }
 }

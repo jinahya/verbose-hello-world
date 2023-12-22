@@ -27,7 +27,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.slf4j.event.Level;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @Slf4j
 class LogbackUtilsTest {
@@ -41,9 +42,8 @@ class LogbackUtilsTest {
         void __(final Level slf4jLevel)
                 throws ReflectiveOperationException {
             final var logbackLevel = LogbackUtils.toLogbackLevel(slf4jLevel);
-            assertThat(logbackLevel)
-                    .isNotNull()
-                    .isInstanceOf(LogbackUtils.LEVEL_CLASS);
+            assertNotNull(logbackLevel);
+            assertInstanceOf(LogbackUtils.LEVEL_CLASS, logbackLevel);
         }
     }
 
@@ -56,8 +56,7 @@ class LogbackUtilsTest {
         void __(final Level slf4jLevel)
                 throws ReflectiveOperationException {
             LogbackUtils.setLevel(log, slf4jLevel);
-            assertThat(LogbackUtils.getLevel_(log))
-                    .isInstanceOf(LogbackUtils.LEVEL_CLASS);
+            assertInstanceOf(LogbackUtils.LEVEL_CLASS, LogbackUtils.getLevel_(log));
         }
     }
 }

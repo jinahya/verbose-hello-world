@@ -23,13 +23,13 @@ package com.github.jinahya.hello;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -132,18 +132,18 @@ abstract class __HelloWorldTest {
         // ------------------------------------------------------------------------------------ then
         assertSame(array, result);
         if (!(service instanceof HelloWorldDemo)) return; // TODO: remove this line!
-        assertThat(array[0x0]).isEqualTo((byte) 0x68); // 'h'
-        assertThat(array[001]).isEqualTo((byte) 0x65); // 'e'
-        assertThat(array[002]).isEqualTo((byte) 0x6C); // 'l'
-        assertThat(array[0x3]).isEqualTo((byte) 0x6C); // 'l'
-        assertThat(array[0x4]).isEqualTo((byte) 0x6F); // 'o'
-        assertThat(array[0x5]).isEqualTo((byte) 0x2C); // ','
-        assertThat(array[0x6]).isEqualTo((byte) 0x20); // ' '
-        assertThat(array[0x7]).isEqualTo((byte) 0x77); // 'w'
-        assertThat(array[010]).isEqualTo((byte) 0x6F); // 'o'
-        assertThat(array[011]).isEqualTo((byte) 0x72); // 'r'
-        assertThat(array[0xA]).isEqualTo((byte) 0x6C); // 'l'
-        assertThat(array[013]).isEqualTo((byte) 0x64); // 'd'
+        Assertions.assertEquals((byte) 0x68, array[0x0]); // 'h'
+        Assertions.assertEquals((byte) 0x65, array[001]); // 'e'
+        Assertions.assertEquals((byte) 0x6C, array[002]); // 'l'
+        Assertions.assertEquals((byte) 0x6C, array[0x3]); // 'l'
+        Assertions.assertEquals((byte) 0x6F, array[0x4]); // 'o'
+        Assertions.assertEquals((byte) 0x2C, array[0x5]); // ','
+        Assertions.assertEquals((byte) 0x20, array[0x6]); // ' '
+        Assertions.assertEquals((byte) 0x77, array[0x7]); // 'w'
+        Assertions.assertEquals((byte) 0x6F, array[010]); // 'o'
+        Assertions.assertEquals((byte) 0x72, array[011]); // 'r'
+        Assertions.assertEquals((byte) 0x6C, array[0xA]); // 'l'
+        Assertions.assertEquals((byte) 0x64, array[013]); // 'd'
     }
 
     /**

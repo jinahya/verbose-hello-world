@@ -30,7 +30,6 @@ import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
@@ -78,7 +77,6 @@ class HelloWorld_31_Put_ByteBuffer_Arguments_Test
             buffer = ByteBuffer.allocate(capacity);
         }
         // ------------------------------------------------------------------------------- when/then
-        assertThatCode(() -> service.put(buffer))
-                .isInstanceOf(BufferOverflowException.class);
+        assertThrows(BufferOverflowException.class, () -> service.put(buffer));
     }
 }
