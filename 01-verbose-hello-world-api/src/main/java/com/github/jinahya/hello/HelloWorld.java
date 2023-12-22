@@ -476,7 +476,7 @@ public interface HelloWorld {
     default <T extends WritableByteChannel> T write(T channel)
             throws IOException {
         Objects.requireNonNull(channel, "channel is null");
-        var buffer = ByteBuffer.allocate(BYTES);
+        final var buffer = ByteBuffer.allocate(BYTES);
         put(buffer);
         buffer.flip();
         // TODO: Invoke channel.write(buffer), continuously, while buffer.hasRemaining()
@@ -525,19 +525,22 @@ public interface HelloWorld {
      * @throws ExecutionException   if failed to execute.
      * @implSpec The default implementation invokes {@link #put(ByteBuffer) put(buffer)} method with
      * a byte buffer of {@value #BYTES} bytes, flips it, and writes the buffer to the
-     * {@code channel} by, continuously while the {@code buffer}
-     * {@link ByteBuffer#hasRemaining() has remaining}, invoking
-     * {@link AsynchronousByteChannel#write(ByteBuffer)} method with the {@code buffer}.
+     * {@code channel} by, while the {@code buffer} {@link ByteBuffer#hasRemaining() has remaining},
+     * continuously invoking {@link AsynchronousByteChannel#write(ByteBuffer)} method with the
+     * {@code buffer}.
      * @see #put(ByteBuffer)
+     * @see AsynchronousByteChannel#write(ByteBuffer)
      */
     default <T extends AsynchronousByteChannel> T write(T channel)
             throws InterruptedException, ExecutionException {
         Objects.requireNonNull(channel, "channel is null");
-        var buffer = put(ByteBuffer.allocate(BYTES)).flip();
+        final var buffer = ByteBuffer.allocate(BYTES);
+        put(buffer);
+        buffer.flip();
         while (buffer.hasRemaining()) {
-            // TODO: Invoke channel.write(buffer) which returns a <future> of Integer.
-            // TODO: Get the result of the <future>.
-            break;
+            // TODO: Invoke channel.write(buffer) which returns a Future<Integer>
+            // TODO: Get the result of the future
+            break; // TODO: remove!
         }
         return channel;
     }
@@ -551,16 +554,53 @@ public interface HelloWorld {
      * @param executor the executor.
      * @return a future of given {@code channel} that will, some time in the future, write the
      * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to {@code channel}.
+     * @see Executor#execute(Runnable)
      * @see #put(ByteBuffer)
      * @see AsynchronousByteChannel#write(ByteBuffer)
      */
-    default <T extends AsynchronousByteChannel> Future<T> writeAsync(T channel, Executor executor) {
+    default <T extends AsynchronousByteChannel> Future<T> writeAsync(
+            final T channel, final Executor executor) {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(executor, "executor is null");
-        Callable<T> callable = () -> write(channel);
-        var command = new FutureTask<>(callable);
+        final Callable<T> callable = () -> write(channel);
+        final var command = new FutureTask<>(callable);
         executor.execute(command); // as Runnable
         return command;            // as Future<T>
+    }
+
+    default <C extends AsynchronousByteChannel> void writeAsync(
+            final C channel, final CompletionHandler<? super Integer, ? super Void> handler) {
+        Objects.requireNonNull(channel, "channel is null");
+        Objects.requireNonNull(handler, "handler is null");
+        final var buffer = ByteBuffer.allocate(BYTES);
+        put(buffer);
+        buffer.flip();
+        channel.<Void>write(
+                buffer,                     // <src>
+                null,                       // <attachment>
+                new CompletionHandler<>() { // <handler>
+                    @Override // @formatter:off
+                    public void completed(final Integer result, final Void attachment) {
+                        if (!buffer.hasRemaining()) {
+                            handler.completed(
+                                    buffer.position(), // <result>
+                                    null               // <attachment>
+                            );
+                            return;
+                        }
+                        handler.completed(result, null);
+                        channel.write(
+                                buffer, // <src>
+                                null,   // <attachment>
+                                this    // <handler>
+                        );
+                    }
+                    @Override
+                    public void failed(final Throwable exc, final Void attachment) {
+                        handler.failed(exc, null);
+                    } // @formatter:on
+                }
+        );
     }
 
     /**
@@ -574,11 +614,13 @@ public interface HelloWorld {
      * @see AsynchronousByteChannel#write(ByteBuffer, Object, CompletionHandler)
      */
     default <C extends AsynchronousByteChannel, A> void writeAsync(
-            C channel, CompletionHandler<? super C, ? super A> handler,
-            A attachment) {
+            final C channel, final CompletionHandler<? super C, ? super A> handler,
+            final A attachment) {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(handler, "handler is null");
-        var buffer = put(ByteBuffer.allocate(BYTES)).flip();
+        final var buffer = ByteBuffer.allocate(BYTES);
+        put(buffer);
+        buffer.flip();
         // TODO: Invoke channel.write(buffer, attachment, a-handler)
     }
 

@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_31_Put_ByteBuffer_Test
+ * @see HelloWorld_01_Put_ByteBuffer_Test
  */
 @DisplayName("put(buffer) arguments")
 @Slf4j
