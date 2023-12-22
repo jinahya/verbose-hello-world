@@ -26,36 +26,36 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.nio.file.Path;
+import java.nio.channels.WritableByteChannel;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
- * A class for testing {@link HelloWorld#appendCompletable(Path) appendCompletable(path)} method
- * regarding arguments verification.
+ * A class for testing {@link HelloWorld#write(WritableByteChannel) write(channel)} method regarding
+ * argument verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_65_AppendCompletable_Path_Test
+ * @see HelloWorld_02_Write_WritableByteChannel_Test
  */
-@DisplayName("appendCompletable(path) arguments")
+@DisplayName("write(channel) arguments")
 @Slf4j
-class HelloWorld_65_AppendCompletable_Path_Arguments_Test
+class HelloWorld_01_Write_WritableByteChannel_Arguments_Test
         extends _HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#appendCompletable(Path) appendCompletable(path)} method throws a
-     * {@link NullPointerException} when the {@code path} argument is {@code null}.
+     * Asserts {@link HelloWorld#write(WritableByteChannel) write(channel)} method throws a
+     * {@link NullPointerException} when {@code channel} argument is {@code null}.
      */
     @DisplayName("(null)NullPointerException")
     @Test
-    void _ThrowNullPointerException_PathIsNull() {
+    void _ThrowNullPointerException_ChannelIsNull() {
         // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
-        var path = (Path) null;
+        var channel = (WritableByteChannel) null;
         // ------------------------------------------------------------------------------- when/then
         assertThrows(
                 NullPointerException.class,
-                () -> service.appendCompletable(path)
+                () -> service.write(channel)
         );
     }
 }

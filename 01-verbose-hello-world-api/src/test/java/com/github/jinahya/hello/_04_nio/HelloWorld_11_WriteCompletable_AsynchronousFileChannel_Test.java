@@ -57,11 +57,11 @@ import static org.mockito.Mockito.verify;
  * position)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_64_WriteCompletable_AsynchronousFileChannel_Arguments_Test
+ * @see HelloWorld_11_WriteCompletable_AsynchronousFileChannel_Arguments_Test
  */
 @DisplayName("write(channel, position)")
 @Slf4j
-class HelloWorld_64_WriteCompletable_AsynchronousFileChannel_Test
+class HelloWorld_11_WriteCompletable_AsynchronousFileChannel_Test
         extends _HelloWorldTest {
 
     @BeforeEach

@@ -45,11 +45,11 @@ import static org.mockito.Mockito.mock;
  * {@link HelloWorld#writeCompletable(AsynchronousByteChannel) writeCompletable(channel)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_54_WriteCompletable_AsynchronousByteChannel_Arguments_Test
+ * @see HelloWorld_07_WriteCompletable_AsynchronousByteChannel_Arguments_Test
  */
 @DisplayName("writeCompletable(channel)")
 @Slf4j
-class HelloWorld_54_WriteCompletable_AsynchronousByteChannel_Test
+class HelloWorld_07_WriteCompletable_AsynchronousByteChannel_Test
         extends _HelloWorldTest {
 
     @BeforeEach

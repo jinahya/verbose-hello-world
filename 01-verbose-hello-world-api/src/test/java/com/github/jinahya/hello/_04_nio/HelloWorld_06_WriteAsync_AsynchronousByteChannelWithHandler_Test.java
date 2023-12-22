@@ -46,11 +46,11 @@ import static org.mockito.Mockito.verify;
  * writeAsync(channel, handler, attachment)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_53_WriteAsync_AsynchronousByteChannelWithHandler_Arguments_Test
+ * @see HelloWorld_06_WriteAsync_AsynchronousByteChannelWithHandler_Arguments_Test
  */
 @DisplayName("write(channel, handler, attachment)")
 @Slf4j
-class HelloWorld_53_WriteAsync_AsynchronousByteChannelWithHandler_Test
+class HelloWorld_06_WriteAsync_AsynchronousByteChannelWithHandler_Test
         extends _HelloWorldTest {
 
     @BeforeEach

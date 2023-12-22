@@ -27,30 +27,29 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.LongAdder;
 
-import static com.github.jinahya.hello.HelloWorld.BYTES;
-import static java.util.concurrent.Executors.newSingleThreadExecutor;
+import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
- * A class for testing
- * {@link HelloWorld#writeAsync(AsynchronousByteChannel, Executor) writeAsync(channel,executor)}
- * method.
+ * A class for testing {@link HelloWorld#write(AsynchronousByteChannel) write(channel)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_52_WriteAsync_AsynchronousByteChannelWithExecutor_Arguments_Test
+ * @see HelloWorld_04_Write_AsynchronousByteChannel_Arguments_Test
  */
-@DisplayName("write(channel, executor)")
+@DisplayName("write(channel)")
 @Slf4j
-class HelloWorld_52_WriteAsync_AsynchronousByteChannelWithExecutor_Test
+class HelloWorld_04_Write_AsynchronousByteChannel_Test
         extends _HelloWorldTest {
 
     @BeforeEach
@@ -59,10 +58,9 @@ class HelloWorld_52_WriteAsync_AsynchronousByteChannelWithExecutor_Test
     }
 
     /**
-     * Asserts
-     * {@link HelloWorld#writeAsync(AsynchronousByteChannel, Executor) write(channel, executor)}
-     * method returns a future of {@code channel}, and asserts {@value HelloWorld#BYTES} bytes has
-     * been written to the {@code channel}.
+     * Asserts {@link HelloWorld#write(AsynchronousByteChannel) write(channel)} method invokes
+     * {@link HelloWorld#put(ByteBuffer) put(buffer)} method with a buffer of
+     * {@value HelloWorld#BYTES} bytes, and writes the buffer to specified {@code channel}.
      *
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
@@ -76,16 +74,26 @@ class HelloWorld_52_WriteAsync_AsynchronousByteChannelWithExecutor_Test
         var channel = mock(AsynchronousByteChannel.class);
         var writtenSoFar = new LongAdder();
         _stub_ToWriteSome(channel, writtenSoFar);
-        var executor = newSingleThreadExecutor();
+        when(channel.write(argThat(s -> s != null && s.hasRemaining())))
+                .thenAnswer(w -> {
+                    var future = mock(Future.class);
+                    when(future.get()).thenAnswer(g -> {
+                        var src = w.getArgument(0, ByteBuffer.class);
+                        var written = current().nextInt(1, src.remaining() + 1);
+                        src.position(src.position() + written);
+                        writtenSoFar.add(written);
+                        return written;
+                    });
+                    return future;
+                });
         // ------------------------------------------------------------------------------------ when
-        var future = service.writeAsync(channel, executor);
-        var result = future.get();
+        var result = service.write(channel);
         // ------------------------------------------------------------------------------------ then
         verify(service, times(1)).put(bufferCaptor().capture());
         var buffer = bufferCaptor().getValue();
-        assertNotNull(buffer);
-        assertEquals(BYTES, buffer.capacity());
-        // TODO: Verify, at least once, channel.write(buffer) invoked.
+        assertEquals(HelloWorld.BYTES, buffer.capacity());
+        // TODO: Verify, channel.write(buffer), invoked, at least once
+        // TODO: Assert, writtenSoFat.intValue() is equal to BYTES
         // TODO: Assert, result is same as channel
     }
 }

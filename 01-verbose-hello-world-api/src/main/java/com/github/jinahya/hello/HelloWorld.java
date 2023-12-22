@@ -558,8 +558,8 @@ public interface HelloWorld {
      * @see #put(ByteBuffer)
      * @see AsynchronousByteChannel#write(ByteBuffer)
      */
-    default <T extends AsynchronousByteChannel> Future<T> writeAsync(
-            final T channel, final Executor executor) {
+    default <T extends AsynchronousByteChannel>
+    Future<T> writeAsync(final T channel, final Executor executor) {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(executor, "executor is null");
         final Callable<T> callable = () -> write(channel);
@@ -568,27 +568,81 @@ public interface HelloWorld {
         return command;            // as Future<T>
     }
 
-    default <C extends AsynchronousByteChannel> void writeAsync(
-            final C channel, final CompletionHandler<? super Integer, ? super Void> handler) {
+//    /**
+//     * Writes, asynchronously, the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>
+//     * to specified channel, and notifies a completion (or a failure) to specified handler.
+//     *
+//     * @param <C>     channel type parameter
+//     * @param channel the channel to which bytes are written.
+//     * @param handler the completion handler.
+//     * @see AsynchronousByteChannel#write(ByteBuffer, Object, CompletionHandler)
+//     */
+//    default <C extends AsynchronousByteChannel> void writeAsync(
+//            final C channel, final CompletionHandler<? super Integer, ? super Void> handler) {
+//        Objects.requireNonNull(channel, "channel is null");
+//        Objects.requireNonNull(handler, "handler is null");
+//        final var buffer = ByteBuffer.allocate(BYTES);
+//        put(buffer);
+//        buffer.flip();
+//        channel.<Void>write(
+//                buffer,                     // <src>
+//                null,                       // <attachment>
+//                new CompletionHandler<>() { // <handler>
+//                    @Override // @formatter:off
+//                    public void completed(final Integer result, final Void attachment) {
+//                        if (!buffer.hasRemaining()) {
+//                            handler.completed(
+//                                    buffer.position(), // <result>
+//                                    null               // <attachment>
+//                            );
+//                            return;
+//                        }
+//                        channel.write(
+//                                buffer, // <src>
+//                                null,   // <attachment>
+//                                this    // <handler>
+//                        );
+//                    }
+//                    @Override
+//                    public void failed(final Throwable exc, final Void attachment) {
+//                        handler.failed(exc, null);
+//                    } // @formatter:on
+//                }
+//        );
+//    }
+
+    /**
+     * Writes, asynchronously, the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>
+     * to specified channel, and notifies a completion (or a failure) to specified handler with
+     * specified attachment.
+     *
+     * @param <C>        channel type parameter
+     * @param channel    the channel to which bytes are written.
+     * @param handler    the completion handler.
+     * @param attachment the attachment for the {@code handler}; may be {@code null}.
+     * @see AsynchronousByteChannel#write(ByteBuffer, Object, CompletionHandler)
+     */
+    default <C extends AsynchronousByteChannel, A>
+    void writeAsync(final C channel, final CompletionHandler<? super C, ? super A> handler,
+                    final A attachment) {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(handler, "handler is null");
         final var buffer = ByteBuffer.allocate(BYTES);
         put(buffer);
         buffer.flip();
-        channel.<Void>write(
+        channel.write(
                 buffer,                     // <src>
-                null,                       // <attachment>
+                attachment,                 // <attachment>
                 new CompletionHandler<>() { // <handler>
                     @Override // @formatter:off
-                    public void completed(final Integer result, final Void attachment) {
+                    public void completed(final Integer result, final A attachment) {
                         if (!buffer.hasRemaining()) {
                             handler.completed(
-                                    buffer.position(), // <result>
-                                    null               // <attachment>
+                                    channel, // <result>
+                                    attachment         // <attachment>
                             );
                             return;
                         }
-                        handler.completed(result, null);
                         channel.write(
                                 buffer, // <src>
                                 null,   // <attachment>
@@ -596,32 +650,11 @@ public interface HelloWorld {
                         );
                     }
                     @Override
-                    public void failed(final Throwable exc, final Void attachment) {
+                    public void failed(final Throwable exc, final A attachment) {
                         handler.failed(exc, null);
                     } // @formatter:on
                 }
         );
-    }
-
-    /**
-     * Writes, asynchronously, the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>
-     * to specified channel, and handles completion on specified handler with specified attachment.
-     *
-     * @param <C>        channel type parameter
-     * @param channel    the channel to which bytes are written.
-     * @param handler    the completion handler.
-     * @param attachment the attachment; may be {@code null}.
-     * @see AsynchronousByteChannel#write(ByteBuffer, Object, CompletionHandler)
-     */
-    default <C extends AsynchronousByteChannel, A> void writeAsync(
-            final C channel, final CompletionHandler<? super C, ? super A> handler,
-            final A attachment) {
-        Objects.requireNonNull(channel, "channel is null");
-        Objects.requireNonNull(handler, "handler is null");
-        final var buffer = ByteBuffer.allocate(BYTES);
-        put(buffer);
-        buffer.flip();
-        // TODO: Invoke channel.write(buffer, attachment, a-handler)
     }
 
     /**
@@ -630,12 +663,12 @@ public interface HelloWorld {
      *
      * @param <T>     channel type parameter
      * @param channel the channel to which bytes are written.
-     * @return a completable future.
+     * @return a completable future of {@code channel}.
      */
-    default <T extends AsynchronousByteChannel> CompletableFuture<T> writeCompletable(
-            T channel) {
+    default <T extends AsynchronousByteChannel>
+    CompletableFuture<T> writeCompletable(final T channel) {
         Objects.requireNonNull(channel, "channel is null");
-        var future = new CompletableFuture<T>();
+        final var future = new CompletableFuture<T>();
         // TODO: Invoke, writeAsync(channel, a-handler, null)
         return future;
     }
@@ -691,15 +724,17 @@ public interface HelloWorld {
      * @see #put(ByteBuffer)
      * @see AsynchronousFileChannel#write(ByteBuffer, long)
      */
-    default <T extends AsynchronousFileChannel> T write(T channel, long position)
+    default <T extends AsynchronousFileChannel> T write(final T channel, long position)
             throws InterruptedException, ExecutionException {
         Objects.requireNonNull(channel, "channel is null");
         if (position < 0L) {
-            throw new IllegalArgumentException("position(" + position + ") < 0L");
+            throw new IllegalArgumentException("position(" + position + ") is negative");
         }
-        var buffer = put(ByteBuffer.allocate(BYTES)).flip();
+        final var buffer = ByteBuffer.allocate(BYTES);
+        put(buffer);
+        buffer.flip();
         while (buffer.hasRemaining()) {
-            var future = channel.write(buffer, position);
+            final var future = channel.write(buffer, position);
             position += future.get();
         }
         return channel;
@@ -719,23 +754,24 @@ public interface HelloWorld {
      * {@code channel}, and {@code position}.
      * @see #write(AsynchronousFileChannel, long)
      */
-    default <T extends AsynchronousFileChannel> Future<T> writeAsync(T channel, long position,
-                                                                     Executor executor) {
+    default <T extends AsynchronousFileChannel>
+    Future<T> writeAsync(final T channel, final long position, final Executor executor) {
         Objects.requireNonNull(channel, "channel is null");
         if (position < 0L) {
-            throw new IllegalArgumentException("position(" + position + ") < 0L");
+            throw new IllegalArgumentException("position(" + position + ") is negative");
         }
         Objects.requireNonNull(executor, "executor is null");
-        FutureTask<T> command = new FutureTask<>(() -> write(channel, position));
+        final var command = new FutureTask<T>(() -> write(channel, position));
         executor.execute(command); // Runnable  <- RunnableFuture<V> <- FutureTask<V>
         return command;            // Future<V> <- RunnableFuture<V> <- FutureTask<V>
     }
 
     /**
      * Writes, asynchronously, the <a href="hello-world-bytes">hello-world-bytes</a> to specified
-     * channel, starting at specified position, and handles a completion on specified handler.
+     * channel, starting at specified position, and notifies a completion (or a failure) to
+     * specified handler.
      *
-     * @param <T>        channel type parameter
+     * @param <C>        channel type parameter
      * @param <A>        attachment type parameter
      * @param channel    the file channel to which bytes are written.
      * @param position   the file position at which the transfer is to begin; must be non-negative.
@@ -748,37 +784,38 @@ public interface HelloWorld {
     @SuppressWarnings({
             "java:S117" // attachment_
     })
-    default <T extends AsynchronousFileChannel, A> void writeAsync(
-            T channel, long position, CompletionHandler<? super T, ? super A> handler,
-            A attachment) {
+    default <C extends AsynchronousFileChannel, A> void writeAsync(
+            final C channel, final long position,
+            final CompletionHandler<? super C, ? super A> handler, final A attachment) {
         Objects.requireNonNull(channel, "channel is null");
         if (position < 0L) {
-            throw new IllegalArgumentException("position(" + position + ") < 0L");
+            throw new IllegalArgumentException("position(" + position + ") is negative");
         }
         Objects.requireNonNull(handler, "handler is null");
-        var buffer = put(ByteBuffer.allocate(BYTES)).flip();
-        var accumulator = new LongAccumulator(Long::sum, position);
+        final var buffer = ByteBuffer.allocate(BYTES);
+        put(buffer);
+        buffer.flip();
         channel.write(
-                buffer,                     // <src>
-                accumulator.get(),          // <position>
-                accumulator,                // <attachment> <1>
-                new CompletionHandler<>() { // <handler>
+                buffer,                                   // <src>
+                position,                                 // <position>
+                new LongAccumulator(Long::sum, position), // <attachment> <1>
+                new CompletionHandler<>() {               // <handler>
                     @Override // @formatter:off
-                    public void completed(Integer result, LongAccumulator attachment_) {
+                    public void completed(final Integer result, final LongAccumulator accumulator) {
                         if (!buffer.hasRemaining()) {
                             handler.completed(channel, attachment);
                             return;
                         }
-                        attachment_.accumulate(result);
+                        accumulator.accumulate(result);
                         channel.write(
                                 buffer,            // <src>
-                                attachment_.get(), // <position>          <3>
-                                attachment_,       // <attachment>        <4>
+                                accumulator.get(), // <position>          <3>
+                                accumulator,       // <attachment>        <4>
                                 this               // <handler>
                         );
                     }
                     @Override
-                    public void failed(Throwable exc, LongAccumulator attachment_) {
+                    public void failed(final Throwable exc, final LongAccumulator accumulator) {
                         handler.failed(exc, attachment);
                     } // @formatter:on
                 }
@@ -793,32 +830,33 @@ public interface HelloWorld {
      * @param channel  the channel to which bytes are written.
      * @param position the starting position to which the bytes are transferred; must be
      *                 non-negative.
-     * @param <T>      channel type parameter
+     * @param <C>      channel type parameter
      * @return a completable future of {@code channel}.
      * @throws NullPointerException     when {@code channel} is {@code null}.
      * @throws IllegalArgumentException when {@code position} is negative.
      */
-    default <T extends AsynchronousFileChannel> CompletableFuture<T> writeCompletable(
-            T channel, long position) {
+    default <C extends AsynchronousFileChannel>
+    CompletableFuture<C> writeCompletable(final C channel, final long position) {
         Objects.requireNonNull(channel, "channel is null");
         if (position < 0L) {
-            throw new IllegalArgumentException("position(" + position + ") < 0L");
+            throw new IllegalArgumentException("position(" + position + ") is negative");
         }
-        var future = new CompletableFuture<T>();
+        final var future = new CompletableFuture<C>();
+        final var handler = new CompletionHandler<C, Object>() {
+            @Override // @formatter:off
+            public void completed(final C result, final Object attachment) {
+                future.complete(result);
+            }
+            @Override
+            public void failed(final Throwable exc, final Object attachment) {
+                future.completeExceptionally(exc);
+            } // @formatter:on
+        };
         writeAsync(
-                channel,                    // <channel>
-                position,                   // <position>
-                new CompletionHandler<>() { // <handler>
-                    @Override // @formatter:off
-                    public void completed(T result, Object attachment) {
-                        future.complete(result);
-                    }
-                    @Override
-                    public void failed(Throwable exc, Object attachment) {
-                        future.completeExceptionally(exc);
-                    } // @formatter:on
-                },
-                null                        // <attachment>
+                channel,  // <channel>
+                position, // <position>
+                handler,  // <handler>
+                null      // <attachment>
         );
         return future;
     }
@@ -828,27 +866,33 @@ public interface HelloWorld {
      * href="#hello-world-bytes">hello-world-bytes</a> to the end of specified path.
      *
      * @param path the path to the file to which bytes are appended.
-     * @param <T>  path type parameter
+     * @param <P>  path type parameter
      * @return a completable future of {@code path}.
-     * @throws NullPointerException when {@code channel} is {@code null}.
+     * @throws NullPointerException when {@code path} is {@code null}.
      */
     @SuppressWarnings({
             "java:S2095" // no try-with-resources
     })
-    default <T extends Path> CompletableFuture<T> appendCompletable(T path)
+    default <P extends Path> CompletableFuture<P> appendCompletable(final P path)
             throws IOException {
         Objects.requireNonNull(path, "path is null");
-        var channel = AsynchronousFileChannel.open(
-                path, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+        final var channel = AsynchronousFileChannel.open(
+                path,
+                StandardOpenOption.CREATE,
+                StandardOpenOption.WRITE
+        );
         return writeCompletable(channel, channel.size())
-                .thenApply(c -> {
+                .whenComplete((r, e) -> {
+                    assert r == null || r == channel;
                     try {
-                        c.force(true);
-                        c.close();
-                    } catch (IOException ioe) {
-                        throw new UncheckedIOException(
-                                "unable to force/close " + c, ioe);
+                        channel.force(true);
+                        channel.close();
+                    } catch (final IOException ioe) {
+                        throw new UncheckedIOException("unable to force/close " + channel, ioe);
                     }
+                })
+                .thenApply(c -> {
+                    assert !c.isOpen();
                     return path;
                 });
     }

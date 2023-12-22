@@ -39,11 +39,11 @@ import static org.mockito.Mockito.mock;
  * position, executor)} method regarding arguments verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_62_WriteAsync_AsynchronousFileChannelWithExecutor_Test
+ * @see HelloWorld_09_WriteAsync_AsynchronousFileChannelWithExecutor_Test
  */
 @DisplayName("write(channel, position, executor) arguments")
 @Slf4j
-class HelloWorld_62_WriteAsync_AsynchronousFileChannelWithExecutor_Arguments_Test
+class HelloWorld_09_WriteAsync_AsynchronousFileChannelWithExecutor_Arguments_Test
         extends _HelloWorldTest {
 
     /**

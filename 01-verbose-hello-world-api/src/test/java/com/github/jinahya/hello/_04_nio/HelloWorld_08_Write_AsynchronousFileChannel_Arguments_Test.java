@@ -38,11 +38,11 @@ import static org.mockito.Mockito.mock;
  * arguments verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_61_Write_AsynchronousFileChannel_Test
+ * @see HelloWorld_08_Write_AsynchronousFileChannel_Test
  */
 @DisplayName("write(channel) arguments")
 @Slf4j
-class HelloWorld_61_Write_AsynchronousFileChannel_Arguments_Test
+class HelloWorld_08_Write_AsynchronousFileChannel_Arguments_Test
         extends _HelloWorldTest {
 
     /**

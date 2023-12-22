@@ -53,11 +53,11 @@ import static org.mockito.Mockito.when;
  * A class for testing {@link HelloWorld#write(WritableByteChannel) write(channel)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_33_Write_WritableByteChannel_Arguments_Test
+ * @see HelloWorld_01_Write_WritableByteChannel_Arguments_Test
  */
 @DisplayName("write(channel)")
 @Slf4j
-class HelloWorld_33_Write_WritableByteChannel_Test
+class HelloWorld_02_Write_WritableByteChannel_Test
         extends _HelloWorldTest {
 
     @BeforeEach

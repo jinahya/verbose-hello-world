@@ -26,32 +26,32 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.nio.channels.WritableByteChannel;
+import java.nio.channels.AsynchronousByteChannel;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
- * A class for testing {@link HelloWorld#write(WritableByteChannel) write(channel)} method regarding
- * argument verification.
+ * A class for testing {@link HelloWorld#write(AsynchronousByteChannel) write(channel)} method
+ * regarding arguments verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_33_Write_WritableByteChannel_Test
+ * @see HelloWorld_04_Write_AsynchronousByteChannel_Test
  */
 @DisplayName("write(channel) arguments")
 @Slf4j
-class HelloWorld_33_Write_WritableByteChannel_Arguments_Test
+class HelloWorld_04_Write_AsynchronousByteChannel_Arguments_Test
         extends _HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#write(WritableByteChannel) write(channel)} method throws a
-     * {@link NullPointerException} when {@code channel} argument is {@code null}.
+     * Asserts {@link HelloWorld#write(AsynchronousByteChannel) write(channel)} method throws a
+     * {@link NullPointerException} when the {@code channel} argument is {@code null}.
      */
-    @DisplayName("(null)NullPointerException")
+    @DisplayName("write(null)NullPointerException")
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
         // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
-        var channel = (WritableByteChannel) null;
+        var channel = (AsynchronousByteChannel) null;
         // ------------------------------------------------------------------------------- when/then
         assertThrows(
                 NullPointerException.class,

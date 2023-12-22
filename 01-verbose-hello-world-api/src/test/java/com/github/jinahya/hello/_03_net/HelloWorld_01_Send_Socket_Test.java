@@ -39,11 +39,11 @@ import static org.mockito.Mockito.when;
  * A class for testing {@link HelloWorld#send(Socket) send(socket)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_21_Send_Socket_Arguments_Test
+ * @see HelloWorld_01_Send_Socket_Arguments_Test
  */
 @DisplayName("send(socket)")
 @Slf4j
-class HelloWorld_21_Send_Socket_Test
+class HelloWorld_01_Send_Socket_Test
         extends _HelloWorldTest {
 
     @BeforeEach

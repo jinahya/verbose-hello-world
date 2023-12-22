@@ -28,7 +28,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
 import org.mockito.Mockito;
 import org.mockito.Spy;
@@ -49,6 +48,7 @@ import java.util.concurrent.atomic.LongAdder;
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.ThreadLocalRandom.current;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.longThat;
@@ -155,25 +155,24 @@ public abstract class _HelloWorldTest {
         }).given(channel).write(
                 argThat(b -> b != null && b.hasRemaining()),
                 longThat(v -> v >= 0L),
-                ArgumentMatchers.any(),
+                any(),
                 notNull()
         );
         return exc;
     }
 
     @SuppressWarnings({"unchecked"})
-    protected static void _stub_ToComplete(AsynchronousFileChannel channel,
-                                           LongAdder adder) {
-        if (!mockingDetails(
-                requireNonNull(channel, "channel is null")).isMock()) {
+    protected static void _stub_ToComplete(final AsynchronousFileChannel channel,
+                                           final LongAdder adder) {
+        if (!mockingDetails(requireNonNull(channel, "channel is null")).isMock()) {
             throw new IllegalArgumentException("not a mock: " + channel);
         }
         willAnswer(i -> {
-            var src = i.getArgument(0, ByteBuffer.class);
-            var position = i.getArgument(1, Long.class);
-            var attachment = i.getArgument(2);
-            var handler = i.getArgument(3, CompletionHandler.class);
-            var written = current().nextInt(1, src.remaining() + 1);
+            final var src = i.getArgument(0, ByteBuffer.class);
+            final var position = i.getArgument(1, Long.class);
+            final var attachment = i.getArgument(2);
+            final var handler = i.getArgument(3, CompletionHandler.class);
+            final var written = current().nextInt(1, src.remaining() + 1);
             src.position(src.position() + written);
             if (adder != null) {
                 adder.add(written);
@@ -181,10 +180,10 @@ public abstract class _HelloWorldTest {
             handler.completed(written, attachment);
             return null;
         }).given(channel).write(
-                argThat(b -> b != null && b.hasRemaining()),
-                longThat(v -> v >= 0L),
-                ArgumentMatchers.any(),
-                notNull()
+                argThat(s -> s != null && s.hasRemaining()),
+                longThat(p -> p >= 0L),
+                notNull(),
+                any()
         );
     }
 
@@ -207,7 +206,7 @@ public abstract class _HelloWorldTest {
             return null;
         }).given(channel).write(
                 argThat(b -> b != null && b.hasRemaining()), // <src>
-                ArgumentMatchers.any(),
+                any(),
                 // <attachment>
                 notNull()                                    // <handler>
         );
@@ -239,7 +238,7 @@ public abstract class _HelloWorldTest {
             return null;
         }).given(channel).write(
                 argThat(b -> b != null && b.hasRemaining()), // <src>
-                ArgumentMatchers.any(),
+                any(),
                 // <attachment>
                 notNull()                                    // <handler>
         );
@@ -309,7 +308,7 @@ public abstract class _HelloWorldTest {
     protected void _stub_SetArray_ToReturnTheArray() {
         Mockito.doAnswer(i -> i.getArgument(0))
                 .when(serviceInstance)
-                .set(ArgumentMatchers.any(byte[].class));
+                .set(any(byte[].class));
     }
 
     /**
@@ -318,7 +317,7 @@ public abstract class _HelloWorldTest {
      */
     @BeforeEach
     void _stub_SetArrayWithIndex_ToReturnTheArray() {
-        when(serviceInstance.set(ArgumentMatchers.any(byte[].class),
+        when(serviceInstance.set(any(byte[].class),
                                  anyInt()))  // <1>
                 .thenAnswer(i -> i.getArgument(0)); // <2>
     }
@@ -330,7 +329,7 @@ public abstract class _HelloWorldTest {
     protected void _stub_PrintChars_ToReturnTheChars() {
         Mockito.doAnswer(i -> i.getArgument(0))
                 .when(serviceInstance)
-                .print(ArgumentMatchers.any(char[].class));
+                .print(any(char[].class));
     }
 
     /**
@@ -340,7 +339,7 @@ public abstract class _HelloWorldTest {
     protected void _stub_PrintCharsWithOffset_ToReturnTheChars() {
         Mockito.doAnswer(i -> i.getArgument(0))            // <1>
                 .when(serviceInstance)             // <2>
-                .print(ArgumentMatchers.any(char[].class), anyInt()); // <1>
+                .print(any(char[].class), anyInt()); // <1>
     }
 
     @Spy

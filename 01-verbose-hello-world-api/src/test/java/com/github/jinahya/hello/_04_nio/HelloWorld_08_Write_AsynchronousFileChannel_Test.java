@@ -28,28 +28,32 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.nio.ByteBuffer;
-import java.nio.channels.AsynchronousByteChannel;
+import java.nio.channels.AsynchronousFileChannel;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.concurrent.atomic.LongAdder;
 
+import static com.github.jinahya.hello.HelloWorld.BYTES;
+import static java.lang.Long.MAX_VALUE;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.argThat;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
- * A class for testing {@link HelloWorld#write(AsynchronousByteChannel) write(channel)} method.
+ * A class for testing
+ * {@link HelloWorld#write(AsynchronousFileChannel, long) write(channel, position)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_51_Write_AsynchronousByteChannel_Arguments_Test
+ * @see HelloWorld_08_Write_AsynchronousFileChannel_Arguments_Test
  */
-@DisplayName("write(channel)")
+@DisplayName("write(channel, position)")
 @Slf4j
-class HelloWorld_51_Write_AsynchronousByteChannel_Test
+class HelloWorld_08_Write_AsynchronousFileChannel_Test
         extends _HelloWorldTest {
 
     @BeforeEach
@@ -58,42 +62,40 @@ class HelloWorld_51_Write_AsynchronousByteChannel_Test
     }
 
     /**
-     * Asserts {@link HelloWorld#write(AsynchronousByteChannel) write(channel)} method invokes
-     * {@link HelloWorld#put(ByteBuffer) put(buffer)} method with a buffer of
-     * {@value HelloWorld#BYTES} bytes, and writes the buffer to specified {@code channel}.
+     * Asserts {@link HelloWorld#write(AsynchronousFileChannel, long) write(channel, position)}
+     * method invokes {@link HelloWorld#put(ByteBuffer) put(buffer)} method with a buffer of
+     * {@value HelloWorld#BYTES} bytes, and writes the buffer to specified {@code channel} starting
+     * at {@code position}.
      *
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
      */
-    @DisplayName("(channel) -> put(buffer[12]) -> channel.write(buffer)+")
+    @DisplayName(
+            "(channel, position) -> put(buffer[12]) -> channel.write(buffer)+")
     @Test
-    void __()
+    void _PutBufferWriteBufferToChannel_()
             throws InterruptedException, ExecutionException {
         // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
-        var channel = mock(AsynchronousByteChannel.class);
+        var channel = mock(AsynchronousFileChannel.class);
         var writtenSoFar = new LongAdder();
         _stub_ToWriteSome(channel, writtenSoFar);
-        when(channel.write(argThat(s -> s != null && s.hasRemaining())))
-                .thenAnswer(w -> {
-                    var future = mock(Future.class);
-                    when(future.get()).thenAnswer(g -> {
-                        var src = w.getArgument(0, ByteBuffer.class);
-                        var written = current().nextInt(1, src.remaining() + 1);
-                        src.position(src.position() + written);
-                        writtenSoFar.add(written);
-                        return written;
-                    });
-                    return future;
-                });
+        var position = current().nextLong(MAX_VALUE - BYTES);
         // ------------------------------------------------------------------------------------ when
-        var result = service.write(channel);
+        var result = service.write(channel, position);
         // ------------------------------------------------------------------------------------ then
-        verify(service, times(1)).put(bufferCaptor().capture());
+        verify(service, times(1)).put(bufferCaptor().capture()); // ---------------------- <1>
         var buffer = bufferCaptor().getValue();
-        assertEquals(HelloWorld.BYTES, buffer.capacity());
-        // TODO: Verify, channel.write(buffer), invoked, at least once
-        // TODO: Assert, writtenSoFat.intValue() is equal to BYTES
-        // TODO: Assert, result is same as channel
+        verify(channel, atLeastOnce()).write(same(buffer), positionCaptor().capture()); // <2>
+        var positionArguments = positionCaptor().getAllValues(); // -----------------------<3>
+        assertEquals(position, positionArguments.get(0)); // ----------------------------- <4>
+        var lastPosition = positionArguments.stream().reduce((p1, p2) -> { // ------------ <5>
+            assertTrue(p2 >= p1);
+            return p2;
+        });
+        assertTrue(lastPosition.isPresent());
+        assertTrue(lastPosition.get() < position + BYTES);
+        assertEquals(BYTES, writtenSoFar.intValue()); // --------------------------------- <6>
+        assertSame(channel, result);
     }
 }

@@ -29,12 +29,11 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.CompletionHandler;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.LongAdder;
 
-import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.lang.Long.MAX_VALUE;
 import static java.util.concurrent.ThreadLocalRandom.current;
-import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
@@ -47,11 +46,11 @@ import static org.mockito.Mockito.verify;
  * write(channel, position, handler, attachment)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_63_WriteAsync_AsynchronousFileChannelWithHandler_Arguments_Test
+ * @see HelloWorld_10_WriteAsync_AsynchronousFileChannelWithHandler_Arguments_Test
  */
 @DisplayName("writeAsync(channel, position, handler, attachment)")
 @Slf4j
-class HelloWorld_63_WriteAsync_AsynchronousFileChannelWithHandler_Test
+class HelloWorld_10_WriteAsync_AsynchronousFileChannelWithHandler_Test
         extends _HelloWorldTest {
 
     @BeforeEach
@@ -72,18 +71,19 @@ class HelloWorld_63_WriteAsync_AsynchronousFileChannelWithHandler_Test
     @SuppressWarnings({"unchecked"})
     void _Completed_() {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
-        var channel = mock(AsynchronousFileChannel.class);
-        var writtenSoFar = new LongAdder();
+        final var service = serviceInstance();
+        final var channel = mock(AsynchronousFileChannel.class);
+        final var writtenSoFar = new LongAdder();
         _stub_ToComplete(channel, writtenSoFar);
-        var position = 0L;
-        var handler = mock(CompletionHandler.class);
-        var attachment = current().nextBoolean() ? null : new Object();
+        final var position = 0L;
+        final var handler = mock(CompletionHandler.class);
+        final var attachment = current().nextBoolean() ? null : new Object();
         // ------------------------------------------------------------------------------------ when
         service.writeAsync(channel, position, handler, attachment);
         // ------------------------------------------------------------------------------------ then
-        verify(handler, timeout(SECONDS.toMillis(8L)).times(1)).completed(channel, attachment);
-        assertEquals(BYTES, writtenSoFar.intValue());
+        verify(handler, timeout(TimeUnit.SECONDS.toMillis(8L)).times(1))
+                .completed(channel, attachment);
+        assertEquals(HelloWorld.BYTES, writtenSoFar.intValue());
     }
 
     /**
@@ -101,12 +101,13 @@ class HelloWorld_63_WriteAsync_AsynchronousFileChannelWithHandler_Test
         var service = serviceInstance();
         var channel = mock(AsynchronousFileChannel.class);
         var exc = _stub_ToFail(channel, mock(Throwable.class));
-        var position = current().nextLong(MAX_VALUE - BYTES);
+        var position = current().nextLong(MAX_VALUE - HelloWorld.BYTES);
         var handler = mock(CompletionHandler.class);
         var attachment = current().nextBoolean() ? null : new Object();
         // ------------------------------------------------------------------------------------ when
         service.writeAsync(channel, position, handler, attachment);
         // ------------------------------------------------------------------------------------ then
-        verify(handler, timeout(SECONDS.toMillis(8L)).times(1)).failed(same(exc), same(attachment));
+        verify(handler, timeout(TimeUnit.SECONDS.toMillis(8L)).times(1)).failed(same(exc),
+                                                                                same(attachment));
     }
 }

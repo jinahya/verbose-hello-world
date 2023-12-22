@@ -26,29 +26,30 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.nio.channels.AsynchronousByteChannel;
-import java.util.concurrent.Executor;
+import java.nio.channels.AsynchronousFileChannel;
 
+import static java.lang.Long.MIN_VALUE;
+import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
 /**
  * A class for testing
- * {@link HelloWorld#writeAsync(AsynchronousByteChannel, Executor) writeAsync(channel, executor)}
- * method regarding arguments verification.
+ * {@link HelloWorld#writeCompletable(AsynchronousFileChannel, long) writeCompletable(channel,
+ * position)} method regarding arguments verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_52_WriteAsync_AsynchronousByteChannelWithExecutor_Test
+ * @see HelloWorld_11_WriteCompletable_AsynchronousFileChannel_Test
  */
-@DisplayName("write(channel, executor) arguments")
+@DisplayName("write(channel, position) arguments")
 @Slf4j
-class HelloWorld_52_WriteAsync_AsynchronousByteChannelWithExecutor_Arguments_Test
+class HelloWorld_11_WriteCompletable_AsynchronousFileChannel_Arguments_Test
         extends _HelloWorldTest {
 
     /**
      * Asserts
-     * {@link HelloWorld#writeAsync(AsynchronousByteChannel, Executor) write(channel, executor)}
-     * method throws a {@link NullPointerException} when the {@code channel} argument is
+     * {@link HelloWorld#writeCompletable(AsynchronousFileChannel, long) writeCompletable(channel,
+     * position)} method throws a {@link NullPointerException} when the {@code channel} argument is
      * {@code null}.
      */
     @DisplayName("(null, )NullPointerException")
@@ -56,32 +57,32 @@ class HelloWorld_52_WriteAsync_AsynchronousByteChannelWithExecutor_Arguments_Tes
     void _ThrowNullPointerException_ChannelIsNull() {
         // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
-        var channel = (AsynchronousByteChannel) null;
-        var executor = mock(Executor.class);
+        var channel = (AsynchronousFileChannel) null;
+        var position = 0L;
         // ------------------------------------------------------------------------------- when/then
         assertThrows(
                 NullPointerException.class,
-                () -> service.writeAsync(channel, executor)
+                () -> service.writeCompletable(channel, position)
         );
     }
 
     /**
      * Asserts
-     * {@link HelloWorld#writeAsync(AsynchronousByteChannel, Executor) write(channel, executor)}
-     * method throws a {@link NullPointerException} when the {@code executor} argument is
-     * {@code null}.
+     * {@link HelloWorld#writeCompletable(AsynchronousFileChannel, long) writeCompletable(channel,
+     * position)} method throws an {@link IllegalArgumentException} when the {@code position}
+     * argument is negative.
      */
-    @DisplayName("(, null)NullPointerException")
+    @DisplayName("(, < 0L)IllegalArgumentException")
     @Test
-    void _ThrowNullPointerException_ExecutorIsNull() {
+    void _ThrowIllegalArgumentException_PositionIsNegative() {
         // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
-        var channel = mock(AsynchronousByteChannel.class);
-        var executor = (Executor) null;
+        var channel = mock(AsynchronousFileChannel.class);
+        var position = current().nextLong() | MIN_VALUE;
         // ------------------------------------------------------------------------------- when/then
         assertThrows(
-                NullPointerException.class,
-                () -> service.writeAsync(channel, executor)
+                IllegalArgumentException.class,
+                () -> service.writeCompletable(channel, position)
         );
     }
 }

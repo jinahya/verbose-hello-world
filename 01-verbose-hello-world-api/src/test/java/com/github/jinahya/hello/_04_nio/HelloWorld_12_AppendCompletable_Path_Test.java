@@ -68,11 +68,11 @@ import static org.mockito.Mockito.verify;
  * A class for testing {@link HelloWorld#appendCompletable(Path) appendCompletable(path)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_65_AppendCompletable_Path_Arguments_Test
+ * @see HelloWorld_12_AppendCompletable_Path_Arguments_Test
  */
 @DisplayName("appendCompletable(path)")
 @Slf4j
-class HelloWorld_65_AppendCompletable_Path_Test
+class HelloWorld_12_AppendCompletable_Path_Test
         extends _HelloWorldTest {
 
     @BeforeEach

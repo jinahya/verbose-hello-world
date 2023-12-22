@@ -49,11 +49,11 @@ import static org.mockito.Mockito.verify;
  * position, executor)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_52_WriteAsync_AsynchronousByteChannelWithExecutor_Arguments_Test
+ * @see HelloWorld_09_WriteAsync_AsynchronousFileChannelWithExecutor_Arguments_Test
  */
 @DisplayName("write(channel, position, executor)")
 @Slf4j
-class HelloWorld_62_WriteAsync_AsynchronousFileChannelWithExecutor_Test
+class HelloWorld_09_WriteAsync_AsynchronousFileChannelWithExecutor_Test
         extends _HelloWorldTest {
 
     @BeforeEach

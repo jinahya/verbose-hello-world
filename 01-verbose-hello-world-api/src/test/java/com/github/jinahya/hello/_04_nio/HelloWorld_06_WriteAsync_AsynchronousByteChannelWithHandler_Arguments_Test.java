@@ -38,11 +38,11 @@ import static org.mockito.Mockito.mock;
  * hanldler, attachment)} method regarding arguments verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_53_WriteAsync_AsynchronousByteChannelWithHandler_Test
+ * @see HelloWorld_06_WriteAsync_AsynchronousByteChannelWithHandler_Test
  */
 @DisplayName("write(channel, handler, attachment) arguments")
 @Slf4j
-class HelloWorld_53_WriteAsync_AsynchronousByteChannelWithHandler_Arguments_Test
+class HelloWorld_06_WriteAsync_AsynchronousByteChannelWithHandler_Arguments_Test
         extends _HelloWorldTest {
 
     /**
@@ -76,13 +76,14 @@ class HelloWorld_53_WriteAsync_AsynchronousByteChannelWithHandler_Arguments_Test
     @Test
     void _ThrowNullPointerException_HandlerIsNull() {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
-        var channel = mock(AsynchronousByteChannel.class);
-        CompletionHandler<AsynchronousByteChannel, Object> handler = null;
+        final var service = serviceInstance();
+        final var channel = mock(AsynchronousByteChannel.class);
+        final CompletionHandler<AsynchronousByteChannel, Object> handler = null;
+        final var attachment = (Void) null;
         // ------------------------------------------------------------------------------- when/then
         assertThrows(
                 NullPointerException.class,
-                () -> service.writeAsync(channel, handler, null)
+                () -> service.writeAsync(channel, handler, attachment)
         );
     }
 }

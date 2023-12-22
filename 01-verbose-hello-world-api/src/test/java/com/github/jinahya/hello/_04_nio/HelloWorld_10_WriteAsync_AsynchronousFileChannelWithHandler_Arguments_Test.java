@@ -39,11 +39,11 @@ import static org.mockito.Mockito.mock;
  * write(channel, position, hanldler, attachment)} method regarding arguments verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_63_WriteAsync_AsynchronousFileChannelWithHandler_Test
+ * @see HelloWorld_10_WriteAsync_AsynchronousFileChannelWithHandler_Test
  */
 @DisplayName("write(channel, position, handler, attachment) arguments")
 @Slf4j
-class HelloWorld_63_WriteAsync_AsynchronousFileChannelWithHandler_Arguments_Test
+class HelloWorld_10_WriteAsync_AsynchronousFileChannelWithHandler_Arguments_Test
         extends _HelloWorldTest {
 
     /**

@@ -26,38 +26,36 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.nio.channels.AsynchronousByteChannel;
+import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
- * A class for testing
- * {@link HelloWorld#writeCompletable(AsynchronousByteChannel) writeCompletable(channel)} method
+ * A class for testing {@link HelloWorld#appendCompletable(Path) appendCompletable(path)} method
  * regarding arguments verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_54_WriteCompletable_AsynchronousByteChannel_Test
+ * @see HelloWorld_12_AppendCompletable_Path_Test
  */
-@DisplayName("writeCompletable(channel) arguments")
+@DisplayName("appendCompletable(path) arguments")
 @Slf4j
-class HelloWorld_54_WriteCompletable_AsynchronousByteChannel_Arguments_Test
+class HelloWorld_12_AppendCompletable_Path_Arguments_Test
         extends _HelloWorldTest {
 
     /**
-     * Asserts
-     * {@link HelloWorld#writeCompletable(AsynchronousByteChannel) writeCompletable(channel)} method
-     * throws a {@link NullPointerException} when the {@code channel} argument is {@code null}.
+     * Asserts {@link HelloWorld#appendCompletable(Path) appendCompletable(path)} method throws a
+     * {@link NullPointerException} when the {@code path} argument is {@code null}.
      */
     @DisplayName("(null)NullPointerException")
     @Test
-    void _ThrowNullPointerException_ChannelIsNull() {
+    void _ThrowNullPointerException_PathIsNull() {
         // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
-        var channel = (AsynchronousByteChannel) null;
+        var path = (Path) null;
         // ------------------------------------------------------------------------------- when/then
         assertThrows(
                 NullPointerException.class,
-                () -> service.writeCompletable(channel)
+                () -> service.appendCompletable(path)
         );
     }
 }

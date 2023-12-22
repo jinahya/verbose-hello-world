@@ -1,4 +1,4 @@
-package com.github.jinahya.hello._04_nio;
+package com.github.jinahya.hello._03_net;
 
 /*-
  * #%L
@@ -26,36 +26,36 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.nio.file.Path;
+import java.net.Socket;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
- * A class for testing {@link HelloWorld#append(Path) append(path)} method regarding arguments
+ * A class for testing {@link HelloWorld#send(Socket) send(socket)} method regarding arguments
  * verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_41_Append_Path_Test
+ * @see HelloWorld_01_Send_Socket_Test
  */
-@DisplayName("append(path) arguments")
+@DisplayName("send(socket) arguments")
 @Slf4j
-class HelloWorld_41_Append_Path_Arguments_Test
+class HelloWorld_01_Send_Socket_Arguments_Test
         extends _HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#append(Path) append(path)} method throws a
-     * {@link NullPointerException} when the {@code path} argument is {@code null}.
+     * Asserts {@link HelloWorld#send(Socket) send(socket)} method throws a
+     * {@link NullPointerException} when the {@code socket} argument is {@code null}.
      */
     @DisplayName("(null)NullPointerException")
     @Test
-    void _ThrowNullPointerException_PathIsNull() {
+    void _ThrowNullPointerException_SocketIsNull() {
         // ----------------------------------------------------------------------------------- given
         var service = serviceInstance();
-        var path = (Path) null;
+        Socket socket = null;
         // ------------------------------------------------------------------------------- when/then
         assertThrows(
                 NullPointerException.class,
-                () -> service.append(path)
+                () -> service.send(socket)
         );
     }
 }

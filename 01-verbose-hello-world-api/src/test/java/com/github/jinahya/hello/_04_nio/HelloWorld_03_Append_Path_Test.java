@@ -55,11 +55,11 @@ import static org.mockito.Mockito.mockStatic;
  * A class for testing {@link HelloWorld#append(Path) append(path)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_41_Append_Path_Arguments_Test
+ * @see HelloWorld_03_Append_Path_Arguments_Test
  */
 @DisplayName("append(path)")
 @Slf4j
-class HelloWorld_41_Append_Path_Test
+class HelloWorld_03_Append_Path_Test
         extends _HelloWorldTest {
 
     @BeforeEach
