@@ -33,72 +33,86 @@ import java.net.Socket;
 class JavaNetTest {
 
     @Test
-    void __()
-            throws IOException {
-        final var addrIPv4 = InetAddress.getByName("127.0.0.1");
-        log.debug("addrIPv4: {} {}", addrIPv4, addrIPv4.getClass());
-        final var addrIPv6 = InetAddress.getByName("::1");
-        log.debug("addrIPv6: {} {}", addrIPv6, addrIPv6.getClass());
-        final var port = 63000;
-        // -----------------------------------------------------------------------------------------
-        {
-            final var serverIPv4 = new Thread(() -> {
-                try {
-                    try (var server = new ServerSocket()) {
-                        server.bind(new InetSocketAddress(addrIPv4, port));
-                        log.debug("bound to {}", server.getLocalSocketAddress());
-                        try (var client = server.accept()) {
-                            log.debug("accepted from {}", client.getRemoteSocketAddress());
-                        }
-                    }
-                } catch (final IOException ioe) {
-                    throw new RuntimeException(ioe);
-                }
-            });
-            serverIPv4.start();
+    void __IPv4() {
+        final var host = "127.0.0.1";
+        final InetAddress addr;
+        try {
+            addr = InetAddress.getByName(host);
+        } catch (final IOException ioe) {
+            log.error("failed to get address by {}", host, ioe);
+            return;
         }
+        log.debug("addr: {} {}", addr, addr.getClass());
+        final var port = 63004;
         // -----------------------------------------------------------------------------------------
-        {
-            final var serverIPv6 = new Thread(() -> {
-                final var endpoint = new InetSocketAddress(addrIPv6, port);
+        final var serverThread = new Thread(() -> {
+            final var endpoint = new InetSocketAddress(addr, port);
+            try {
                 try (var server = new ServerSocket()) {
                     server.bind(endpoint);
                     log.debug("bound to {}", server.getLocalSocketAddress());
                     try (var client = server.accept()) {
                         log.debug("accepted from {}", client.getRemoteSocketAddress());
                     }
-                } catch (final IOException ioe) {
-                    log.error("failed to connect to {}", endpoint, ioe);
                 }
-            });
-            serverIPv6.start();
-        }
+            } catch (final IOException ioe) {
+                throw new RuntimeException(ioe);
+            }
+        });
+        serverThread.start();
         // -----------------------------------------------------------------------------------------
-        {
-            final var clientIPv4 = new Thread(() -> {
-                final var endpoint = new InetSocketAddress(addrIPv4, port);
-                try (var client = new Socket()) {
-                    client.connect(endpoint);
-                    log.debug("connected to {}", client.getRemoteSocketAddress());
-                } catch (final IOException ioe) {
-                    log.error("failed to connect to {}", endpoint, ioe);
-                }
-            });
-            clientIPv4.start();
+        final var clientThread = new Thread(() -> {
+            final var endpoint = new InetSocketAddress(addr, port);
+            try (var client = new Socket()) {
+                client.connect(endpoint);
+                log.debug("connected to {}", client.getRemoteSocketAddress());
+            } catch (final IOException ioe) {
+                throw new RuntimeException(ioe);
+            }
+        });
+        clientThread.start();
+    }
+
+    @Test
+    void __IPv6()
+            throws IOException {
+        final var host = "::1";
+        final InetAddress addr;
+        try {
+            addr = InetAddress.getByName(host);
+        } catch (final IOException ioe) {
+            log.error("failed to get address by {}", host, ioe);
+            return;
         }
+        log.debug("addr: {} {}", addr, addr.getClass());
+        final var port = 63006;
         // -----------------------------------------------------------------------------------------
-        {
-            final var clientIPv6 = new Thread(() -> {
-                try {
-                    try (var client = new Socket()) {
-                        client.connect(new InetSocketAddress(addrIPv6, port));
-                        log.debug("connected to {}", client.getRemoteSocketAddress());
+        final var serverThread = new Thread(() -> {
+            final var endpoint = new InetSocketAddress(addr, port);
+            try {
+                try (var server = new ServerSocket()) {
+                    server.bind(endpoint);
+                    log.debug("bound to {}", server.getLocalSocketAddress());
+                    try (var client = server.accept()) {
+                        log.debug("accepted from {}", client.getRemoteSocketAddress());
                     }
-                } catch (final IOException ioe) {
-                    throw new RuntimeException(ioe);
                 }
-            });
-            clientIPv6.start();
-        }
+            } catch (final IOException ioe) {
+                throw new RuntimeException(ioe);
+            }
+        });
+        serverThread.start();
+        // -----------------------------------------------------------------------------------------
+        final var clientThread = new Thread(() -> {
+            try {
+                try (var client = new Socket()) {
+                    client.connect(new InetSocketAddress(addr, port));
+                    log.debug("connected to {}", client.getRemoteSocketAddress());
+                }
+            } catch (final IOException ioe) {
+                throw new RuntimeException(ioe);
+            }
+        });
+        clientThread.start();
     }
 }
