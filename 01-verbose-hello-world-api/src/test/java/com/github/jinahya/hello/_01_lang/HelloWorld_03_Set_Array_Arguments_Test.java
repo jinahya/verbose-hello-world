@@ -38,6 +38,9 @@ import static java.util.concurrent.ThreadLocalRandom.current;
  */
 @DisplayName("set(array) arguments")
 @Slf4j
+@SuppressWarnings({
+        "java:S101"
+})
 class HelloWorld_03_Set_Array_Arguments_Test
         extends _HelloWorldTest {
 

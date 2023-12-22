@@ -36,6 +36,10 @@ import org.junit.jupiter.api.DisplayName;
 @Disabled("not (gonna be) implemented yet")
 @DisplayName("set(array, index) arguments")
 @Slf4j
+@SuppressWarnings({
+        "java:S101",
+        "java:S2187"
+})
 class HelloWorld_01_Set_ArrayWithIndex_Arguments_Test
         extends _HelloWorldTest {
 
