@@ -27,7 +27,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -40,7 +39,7 @@ import static org.mockito.Mockito.verify;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_07_Print_Chars_Arguments_Test
  */
-@DisplayName("set(array)")
+@DisplayName("set(chars)")
 @Slf4j
 class HelloWorld_05_Print_CharsWithOffset_Test
         extends _HelloWorldTest {
@@ -58,15 +57,15 @@ class HelloWorld_05_Print_CharsWithOffset_Test
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
-        var chars = new char[BYTES];
+        final var service = serviceInstance();
+        final var chars = new char[HelloWorld.BYTES];
         // ------------------------------------------------------------------------------------ when
-        var result = service.print(chars);
+        final var result = service.print(chars);
         // ------------------------------------------------------------------------------------ then
         verify(service, times(1)).set(arrayCaptor().capture());
-        var array = arrayCaptor().getValue();
+        final var array = arrayCaptor().getValue();
         assertNotNull(array);
-        assertEquals(BYTES, array.length);
+        assertEquals(HelloWorld.BYTES, array.length);
         assertSame(chars, result);
     }
 }

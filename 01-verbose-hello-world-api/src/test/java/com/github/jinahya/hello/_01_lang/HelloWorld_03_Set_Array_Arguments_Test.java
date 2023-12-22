@@ -26,8 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static com.github.jinahya.hello.HelloWorld.BYTES;
-import static java.util.concurrent.ThreadLocalRandom.current;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * A class for testing {@link HelloWorld#set(byte[]) set(array)} method regarding arguments
@@ -48,12 +47,12 @@ class HelloWorld_03_Set_Array_Arguments_Test
      * Asserts {@link HelloWorld#set(byte[]) set(array)} method throws a
      * {@link NullPointerException} when the {@code array} argument is {@code null}.
      */
-    @DisplayName("(null, )NullPointerException")
+    @DisplayName("[array == null] -> NullPointerException")
     @Test
     void _ThrowNullPointerException_ArrayIsNull() {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
-        var array = (byte[]) null;
+        final var service = serviceInstance();
+        final var array = (byte[]) null;
         // ------------------------------------------------------------------------------- when/then
         // TODO: Assert service.set(array) throws a NullPointerException.
     }
@@ -63,12 +62,12 @@ class HelloWorld_03_Set_Array_Arguments_Test
      * {@link ArrayIndexOutOfBoundsException} when {@code array.length} is less than
      * {@value HelloWorld#BYTES}.
      */
-    @DisplayName("(array, .length < 12)ArrayIndexOutOfBoundsException")
+    @DisplayName("[array.length < 12] -> ArrayIndexOutOfBoundsException")
     @Test
     void _ThrowArrayIndexOutOfBoundsException_ArrayLengthIsLessThan12() {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
-        var array = new byte[current().nextInt(BYTES)];
+        final var service = serviceInstance();
+        final var array = new byte[ThreadLocalRandom.current().nextInt(HelloWorld.BYTES)];
         // ------------------------------------------------------------------------------- when/then
         // TODO: Assert service.set(array) throws an IndexOutOfBoundsException.
     }

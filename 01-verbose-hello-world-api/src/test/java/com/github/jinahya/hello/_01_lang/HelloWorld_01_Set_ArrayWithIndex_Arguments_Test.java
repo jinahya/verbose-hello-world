@@ -22,8 +22,9 @@ package com.github.jinahya.hello._01_lang;
 
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello._HelloWorldTest;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 
 /**
@@ -33,8 +34,8 @@ import org.junit.jupiter.api.DisplayName;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_01_Set_ArrayWithIndex_Test
  */
-@Disabled("not (gonna be) implemented yet")
 @DisplayName("set(array, index) arguments")
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({
         "java:S101",

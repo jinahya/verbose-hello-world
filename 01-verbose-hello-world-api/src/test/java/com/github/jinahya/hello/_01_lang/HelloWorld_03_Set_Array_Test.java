@@ -26,8 +26,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static com.github.jinahya.hello.HelloWorld.BYTES;
-
 /**
  * A class for unit-testing {@link HelloWorld#set(byte[])} method.
  *
@@ -36,6 +34,9 @@ import static com.github.jinahya.hello.HelloWorld.BYTES;
  */
 @DisplayName("set(array)")
 @Slf4j
+@SuppressWarnings({
+        "java:S101"
+})
 class HelloWorld_03_Set_Array_Test
         extends _HelloWorldTest {
 
@@ -44,13 +45,14 @@ class HelloWorld_03_Set_Array_Test
      * {@link HelloWorld#set(byte[], int) set(array, index)} method with given {@code array} and
      * {@code 0}.
      */
+    @DisplayName("-> set(array, 0)")
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
-        var array = new byte[BYTES];
+        final var service = serviceInstance();
+        final var array = new byte[HelloWorld.BYTES];
         // ------------------------------------------------------------------------------------ when
-        var result = service.set(array);
+        final var result = service.set(array);
         // ------------------------------------------------------------------------------------ then
         // TODO: Verify service.set(array, 0) invoked, once
         // TODO: Assert result is same as array

@@ -39,6 +39,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  */
 @DisplayName("print(chars) arguments")
 @Slf4j
+@SuppressWarnings({
+        "java:S101"
+})
 class HelloWorld_07_Print_Chars_Arguments_Test
         extends _HelloWorldTest {
 
@@ -46,12 +49,12 @@ class HelloWorld_07_Print_Chars_Arguments_Test
      * Asserts {@link HelloWorld#print(char[]) print(chars)} method throws a
      * {@link NullPointerException} when the {@code chars} argument is {@code null}.
      */
-    @DisplayName("(null)NullPointerException")
+    @DisplayName("[chars == null] -> NullPointerException")
     @Test
     void _ThrowNullPointerException_CharsIsNull() {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
-        var chars = (char[]) null;
+        final var service = serviceInstance();
+        final var chars = (char[]) null;
         // ------------------------------------------------------------------------------- when/then
         assertThrows(
                 NullPointerException.class,
@@ -64,12 +67,12 @@ class HelloWorld_07_Print_Chars_Arguments_Test
      * {@link ArrayIndexOutOfBoundsException} when {@code chars.length} is less than
      * {@value HelloWorld#BYTES}.
      */
-    @DisplayName("(.length<12)ArrayIndexOutOfBoundsException")
+    @DisplayName("[chars.length < 12] -> ArrayIndexOutOfBoundsException")
     @Test
     void _ThrowArrayIndexOutOfBoundsException_CharsLengthIsLessThan12() {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
-        var chars = new char[current().nextInt(BYTES)];
+        final var service = serviceInstance();
+        final var chars = new char[current().nextInt(BYTES)];
         // ------------------------------------------------------------------------------- when/then
         assertThrows(
                 ArrayIndexOutOfBoundsException.class,

@@ -53,14 +53,14 @@ class HelloWorld_07_Print_Chars_Test
      * {@link HelloWorld#print(char[], int) set(chars, offset)} method with given {@code chars} and
      * {@code 0}.
      */
-    @DisplayName(("(chars)set(chars, 0)"))
+    @DisplayName(("-> set(chars, 0)"))
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
-        var chars = new char[BYTES];
+        final var service = serviceInstance();
+        final var chars = new char[BYTES];
         // ------------------------------------------------------------------------------------ when
-        var result = service.print(chars);
+        final var result = service.print(chars);
         // ------------------------------------------------------------------------------------ then
         verify(service, times(1)).print(chars, 0);
         assertSame(chars, result);

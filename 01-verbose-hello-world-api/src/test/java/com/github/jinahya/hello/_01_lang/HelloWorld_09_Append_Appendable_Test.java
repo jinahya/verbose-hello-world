@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import static com.github.jinahya.hello.HelloWorld.BYTES;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.anyChar;
@@ -45,6 +45,9 @@ import static org.mockito.Mockito.verify;
  */
 @DisplayName("append(appendable)")
 @Slf4j
+@SuppressWarnings({
+        "java:S101"
+})
 class HelloWorld_09_Append_Appendable_Test
         extends _HelloWorldTest {
 
@@ -59,22 +62,21 @@ class HelloWorld_09_Append_Appendable_Test
      * {@value HelloWorld#BYTES} characters, appends each character in resulting array to
      * {@code appendable}, and returns the {@code appendable}.
      */
-    @DisplayName(
-            "(appendable)appendable <- print(char[12]).forEach(appendable::append")
+    @DisplayName("-> print(char[12]) -> appendable.append(each-char)")
     @Test
     void __()
             throws IOException {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
-        var appendable = mock(Appendable.class);
+        final var service = serviceInstance();
+        final var appendable = mock(Appendable.class);
         // ------------------------------------------------------------------------------------ when
-        var result = service.append(appendable);
+        final var result = service.append(appendable);
         // ------------------------------------------------------------------------------------ then
         verify(service, times(1)).print(charsCaptor().capture());
-        var chars = charsCaptor().getValue();
+        final var chars = charsCaptor().getValue();
         assertNotNull(chars);
-        assertSame(BYTES, chars.length);
-        verify(appendable, times(BYTES)).append(anyChar());
+        assertEquals(HelloWorld.BYTES, chars.length);
+        verify(appendable, times(chars.length)).append(anyChar());
         assertSame(appendable, result);
     }
 }
