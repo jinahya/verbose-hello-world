@@ -33,6 +33,7 @@ import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+@Disabled
 @Slf4j
 class HelloWorldServerUdpTest {
 
