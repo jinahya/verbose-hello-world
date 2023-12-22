@@ -48,7 +48,8 @@ class Rfc863Udp1Client {
             }
             // -------------------------------------------------------------------------------- send
             final var array = new byte[
-                    ThreadLocalRandom.current().nextInt(client.getSendBufferSize() + 1)
+//                    ThreadLocalRandom.current().nextInt(client.getSendBufferSize() + 1)
+                    ThreadLocalRandom.current().nextInt((client.getSendBufferSize() >> 1) + 1)
                     ];
             ThreadLocalRandom.current().nextBytes(array);
             _Rfc863Utils.logClientBytes(array.length);

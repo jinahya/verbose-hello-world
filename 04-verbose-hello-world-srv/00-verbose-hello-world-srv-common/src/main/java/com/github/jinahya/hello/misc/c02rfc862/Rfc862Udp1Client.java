@@ -51,7 +51,8 @@ class Rfc862Udp1Client {
             }
             // ----------------------------------------------------------------------------- prepare
             final var array = new byte[
-                    ThreadLocalRandom.current().nextInt(client.getSendBufferSize() + 1)
+//                    ThreadLocalRandom.current().nextInt(client.getSendBufferSize() + 1)
+                    ThreadLocalRandom.current().nextInt((client.getSendBufferSize() >> 1) + 1)
                     ];
             ThreadLocalRandom.current().nextBytes(array);
             final var packet = new DatagramPacket(array, array.length, _Rfc862Constants.ADDR);
