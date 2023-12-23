@@ -22,6 +22,7 @@ package com.github.jinahya.hello._04_nio;
 
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello._HelloWorldTest;
+import com.github.jinahya.hello._HelloWorldTestHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -65,32 +66,19 @@ class HelloWorld_04_Write_AsynchronousByteChannel_Test
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
      */
-    @DisplayName("(channel) -> put(buffer[12]) -> channel.write(buffer)+")
+    @DisplayName("-> put(buffer[12]) -> channel.write(buffer)+")
     @Test
-    void __()
-            throws InterruptedException, ExecutionException {
+    void __() throws InterruptedException, ExecutionException {
         // ----------------------------------------------------------------------------------- given
-        var service = service();
-        var channel = mock(AsynchronousByteChannel.class);
-        var writtenSoFar = new LongAdder();
-        _stub_ToWriteSome(channel, writtenSoFar);
-        when(channel.write(argThat(s -> s != null && s.hasRemaining())))
-                .thenAnswer(w -> {
-                    var future = mock(Future.class);
-                    when(future.get()).thenAnswer(g -> {
-                        var src = w.getArgument(0, ByteBuffer.class);
-                        var written = current().nextInt(1, src.remaining() + 1);
-                        src.position(src.position() + written);
-                        writtenSoFar.add(written);
-                        return written;
-                    });
-                    return future;
-                });
+        final var service = service();
+        final var channel = mock(AsynchronousByteChannel.class);
+        final var writtenSoFar = new LongAdder();
+        _HelloWorldTestHelper.stub_WriteBuffer_ToWriteSome(channel, writtenSoFar);
         // ------------------------------------------------------------------------------------ when
-        var result = service.write(channel);
+        final var result = service.write(channel);
         // ------------------------------------------------------------------------------------ then
         verify(service, times(1)).put(bufferCaptor().capture());
-        var buffer = bufferCaptor().getValue();
+        final var buffer = bufferCaptor().getValue();
         assertEquals(HelloWorld.BYTES, buffer.capacity());
         // TODO: Verify, channel.write(buffer), invoked, at least once
         // TODO: Assert, writtenSoFat.intValue() is equal to BYTES

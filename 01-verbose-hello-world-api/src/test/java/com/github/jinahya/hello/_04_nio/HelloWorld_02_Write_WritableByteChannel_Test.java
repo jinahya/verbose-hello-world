@@ -28,18 +28,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
-import java.nio.channels.Pipe;
 import java.nio.channels.WritableByteChannel;
 import java.util.concurrent.atomic.LongAdder;
 
-import static java.nio.ByteBuffer.allocate;
-import static java.nio.channels.Channels.newChannel;
-import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -51,7 +44,7 @@ import static org.mockito.Mockito.verify;
  * A class for testing {@link HelloWorld#write(WritableByteChannel) write(channel)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_01_Write_WritableByteChannel_Arguments_Test
+ * @see HelloWorld_02_Write_WritableByteChannel_Arguments_Test
  */
 @DisplayName("write(channel)")
 @Slf4j
@@ -89,43 +82,5 @@ class HelloWorld_02_Write_WritableByteChannel_Test
         // TODO: Assert, buffer has no remaining.
         // TODO: Assert, writtenSoFar.intValue() is equal to HelloWorld.BYTES.
         assertSame(channel, result);
-    }
-
-    @org.junit.jupiter.api.Disabled("not implemented yet")
-    // TODO: remove when implemented
-    @Test
-    void _ReadByteArrayInputStream_WriteByteArrayOutputStream()
-            throws IOException {
-        var service = service();
-        var output = new ByteArrayOutputStream(HelloWorld.BYTES);
-        var writable = service.write(newChannel(output));
-        service.write(writable);
-        var input = new ByteArrayInputStream(output.toByteArray());
-        var readable = newChannel(input);
-        var buffer = allocate(HelloWorld.BYTES);
-        while (buffer.hasRemaining()) {
-            readable.read(buffer);
-        }
-    }
-
-    @org.junit.jupiter.api.Disabled("not implemented yet")
-    // TODO: remove when implemented
-    @Test
-    void _ReadPipeSource_WritePipeSink()
-            throws IOException, InterruptedException {
-        var service = service();
-        var pipe = Pipe.open();
-        var thread = new Thread(() -> {
-            try {
-                service.write(pipe.sink());
-            } catch (final IOException ioe) {
-                throw new UncheckedIOException("failed to write", ioe);
-            }
-        });
-        thread.start();
-        for (var buffer = ByteBuffer.allocate(HelloWorld.BYTES); buffer.hasRemaining(); ) {
-            pipe.source().read(buffer);
-        }
-        thread.join(SECONDS.toMillis(1L));
     }
 }

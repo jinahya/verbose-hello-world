@@ -37,6 +37,7 @@ import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.channels.WritableByteChannel;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.LongAdder;
@@ -99,6 +100,31 @@ public final class _HelloWorldTestHelper {
                 writtenSoFar.add(written);
             }
             return written;
+        });
+        return channel;
+    }
+
+    /**
+     * Stubs specified channel whose {@link WritableByteChannel#write(ByteBuffer) write(src)} method
+     * increases the {@code src}'s position by random value.
+     *
+     * @param channel      the channel whose {@link WritableByteChannel#write(ByteBuffer)} method
+     *                     are stubbed.
+     * @param writtenSoFar an adder for accumulating written bytes; may be {@code null}.
+     * @param <C>          channel type parameter
+     * @return given {@code channel}.
+     */
+    public static <C extends AsynchronousByteChannel> C stub_WriteBuffer_ToWriteSome(
+            final C channel, final LongAdder writtenSoFar) {
+        requireMock(channel);
+        given(channel.write(argThat(b -> b != null && b.hasRemaining()))).willAnswer(i -> {
+            final var src = i.getArgument(0, ByteBuffer.class);
+            final var written = ThreadLocalRandom.current().nextInt(1, src.remaining() + 1);
+            src.position(src.position() + written);
+            if (writtenSoFar != null) {
+                writtenSoFar.add(written);
+            }
+            return CompletableFuture.completedFuture(written);
         });
         return channel;
     }

@@ -22,6 +22,8 @@ package com.github.jinahya.hello._04_nio;
 
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello._HelloWorldTest;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,20 +40,23 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * @see HelloWorld_03_Append_Path_Test
  */
 @DisplayName("append(path) arguments")
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_03_Append_Path_Arguments_Test
-        extends _HelloWorldTest {
+@SuppressWarnings({
+        "java:S101"
+})
+class HelloWorld_03_Append_Path_Arguments_Test extends _HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#append(Path) append(path)} method throws a
      * {@link NullPointerException} when the {@code path} argument is {@code null}.
      */
-    @DisplayName("(null)NullPointerException")
+    @DisplayName("[path == null] -> NullPointerException")
     @Test
     void _ThrowNullPointerException_PathIsNull() {
         // ----------------------------------------------------------------------------------- given
-        var service = service();
-        var path = (Path) null;
+        final var service = service();
+        final var path = (Path) null;
         // ------------------------------------------------------------------------------- when/then
         assertThrows(
                 NullPointerException.class,

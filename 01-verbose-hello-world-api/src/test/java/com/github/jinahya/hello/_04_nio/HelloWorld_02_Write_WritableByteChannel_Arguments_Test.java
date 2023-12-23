@@ -39,7 +39,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  */
 @DisplayName("write(channel) arguments")
 @Slf4j
-class HelloWorld_01_Write_WritableByteChannel_Arguments_Test
+class HelloWorld_02_Write_WritableByteChannel_Arguments_Test
         extends _HelloWorldTest {
 
     /**
