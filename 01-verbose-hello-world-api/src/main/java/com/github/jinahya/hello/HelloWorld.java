@@ -338,7 +338,7 @@ public interface HelloWorld {
         if (data == null) {
             throw new NullPointerException("data is null");
         }
-        var array = new byte[BYTES];
+        final var array = new byte[BYTES];
         set(array);
         // TODO: Write array to data!
         return data;
@@ -389,7 +389,7 @@ public interface HelloWorld {
         if (socket == null) {
             throw new NullPointerException("socket is null");
         }
-        // TODO: Invoke write(stream) with socket.outputStream.
+        // TODO: Invoke write(socket.getOutputStream())
         return socket;
     }
 
