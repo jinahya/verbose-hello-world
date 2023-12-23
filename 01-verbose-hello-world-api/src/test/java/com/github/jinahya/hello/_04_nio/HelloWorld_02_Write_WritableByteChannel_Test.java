@@ -22,6 +22,7 @@ package com.github.jinahya.hello._04_nio;
 
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello._HelloWorldTest;
+import com.github.jinahya.hello._HelloWorldTestHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -36,18 +37,15 @@ import java.nio.channels.Pipe;
 import java.nio.channels.WritableByteChannel;
 import java.util.concurrent.atomic.LongAdder;
 
-import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.channels.Channels.newChannel;
-import static java.util.concurrent.ThreadLocalRandom.current;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.argThat;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * A class for testing {@link HelloWorld#write(WritableByteChannel) write(channel)} method.
@@ -72,32 +70,25 @@ class HelloWorld_02_Write_WritableByteChannel_Test
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("(channel) -> channel.write(put(buffer[12]))+")
+    @DisplayName("-> put(buffer[12]) -> channel.write(buffer)+")
     @Test
-    void __()
-            throws IOException {
+    void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
-        var service = service();
-        var channel = mock(WritableByteChannel.class);               // <1>
-        var writtenSoFar = new LongAdder();                          // <2>
-        when(channel.write(argThat(b -> b != null && b.hasRemaining())))
-                .thenAnswer(i -> { // <3>
-                    var src = i.getArgument(0, ByteBuffer.class);
-                    var written = current().nextInt(1, src.remaining() + 1);
-                    src.position(src.position() + written);
-                    writtenSoFar.add(written);
-                    return written;
-                });
+        final var service = service();
+        final var channel = mock(WritableByteChannel.class);                       // <1>
+        final var writtenSoFar = new LongAdder();                                  // <2>
+        _HelloWorldTestHelper.stub_WriteBuffer_ToWriteSome(channel, writtenSoFar); // <3>
         // ------------------------------------------------------------------------------------ when
-        var result = service.write(channel);
+        final var result = service.write(channel);
         // ------------------------------------------------------------------------------------ then
-        verify(service, times(1)).put(bufferCaptor().capture());
-        var buffer = bufferCaptor().getValue();
-        assertNotNull(buffer);
-        assertEquals(BYTES, buffer.capacity());
+        verify(service, times(1)).put(bufferCaptor().capture()); // <1>
+        final var buffer = bufferCaptor().getValue();            // <2>
+        assertNotNull(buffer);                                   // <3>
+        assertEquals(HelloWorld.BYTES, buffer.capacity());       // <4>
         // TODO: Verify, channel.write(buffer) invoked, at least once.
-        // TODO: Assert, writtenSoFar.intValue() is equal to BYTES.
-        assertEquals(channel, result);
+        // TODO: Assert, buffer has no remaining.
+        // TODO: Assert, writtenSoFar.intValue() is equal to HelloWorld.BYTES.
+        assertSame(channel, result);
     }
 
     @org.junit.jupiter.api.Disabled("not implemented yet")
@@ -106,12 +97,12 @@ class HelloWorld_02_Write_WritableByteChannel_Test
     void _ReadByteArrayInputStream_WriteByteArrayOutputStream()
             throws IOException {
         var service = service();
-        var output = new ByteArrayOutputStream(BYTES);
+        var output = new ByteArrayOutputStream(HelloWorld.BYTES);
         var writable = service.write(newChannel(output));
         service.write(writable);
         var input = new ByteArrayInputStream(output.toByteArray());
         var readable = newChannel(input);
-        var buffer = allocate(BYTES);
+        var buffer = allocate(HelloWorld.BYTES);
         while (buffer.hasRemaining()) {
             readable.read(buffer);
         }
@@ -132,7 +123,7 @@ class HelloWorld_02_Write_WritableByteChannel_Test
             }
         });
         thread.start();
-        for (var buffer = ByteBuffer.allocate(BYTES); buffer.hasRemaining(); ) {
+        for (var buffer = ByteBuffer.allocate(HelloWorld.BYTES); buffer.hasRemaining(); ) {
             pipe.source().read(buffer);
         }
         thread.join(SECONDS.toMillis(1L));

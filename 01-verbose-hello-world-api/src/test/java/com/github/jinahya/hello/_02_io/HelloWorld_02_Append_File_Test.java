@@ -54,8 +54,7 @@ class HelloWorld_02_Append_File_Test
         extends _HelloWorldTest {
 
     @BeforeEach
-    void _beforeEach()
-            throws IOException {
+    void _beforeEach() throws IOException {
         _stub_WriteStream_ToWrite12BytesAndReturnTheStream();
     }
 

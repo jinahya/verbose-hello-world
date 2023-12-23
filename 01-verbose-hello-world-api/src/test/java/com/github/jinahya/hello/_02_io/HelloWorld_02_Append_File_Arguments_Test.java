@@ -46,12 +46,12 @@ class HelloWorld_02_Append_File_Arguments_Test
      * Asserts {@link HelloWorld#append(File) append(file)} method throws a
      * {@link NullPointerException} when the {@code file} argument is {@code null}.
      */
-    @DisplayName("(null)NullPointerException")
+    @DisplayName("[file == null] -> NullPointerException")
     @Test
     void _ThrowNullPointerException_FileIsNull() {
         // ----------------------------------------------------------------------------------- given
-        var service = service();
-        var file = (File) null;
+        final var service = service();
+        final var file = (File) null;
         // ------------------------------------------------------------------------------- when/then
         assertThrows(
                 NullPointerException.class,

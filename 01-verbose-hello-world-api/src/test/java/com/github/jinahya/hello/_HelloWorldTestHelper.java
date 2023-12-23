@@ -22,18 +22,12 @@ package com.github.jinahya.hello;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Spy;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -44,10 +38,10 @@ import java.nio.channels.CompletionHandler;
 import java.nio.channels.WritableByteChannel;
 import java.util.Objects;
 import java.util.concurrent.Future;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.LongAdder;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
-import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -60,31 +54,49 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockingDetails;
 import static org.mockito.Mockito.when;
 
-/**
- * An abstract class for testing methods defined in {@link HelloWorld} interface.
- *
- * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- */
-@MockitoSettings(strictness = Strictness.LENIENT)
-@ExtendWith({MockitoExtension.class})
-@TestInstance(TestInstance.Lifecycle.PER_METHOD) // default, implicitly.
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Slf4j
-public abstract class _HelloWorldTest {
+@SuppressWarnings({
+        "java:S101"
+})
+public final class _HelloWorldTestHelper {
 
-    protected static <C extends WritableByteChannel> C _stub_ToWriteSome(final C channel,
-                                                                         final LongAdder adder)
-            throws IOException {
-        Objects.requireNonNull(channel, "channel is null");
-        if (!mockingDetails(channel).isMock()) {
-            throw new IllegalArgumentException("channel is not a mock: " + channel);
+    private static <T> T requireMock(final T object) {
+        Objects.requireNonNull(object, "object is null");
+        if (!mockingDetails(object).isMock()) {
+            throw new IllegalArgumentException("not a mock: " + object);
         }
+        return object;
+    }
+
+    private static <T> T requireSpy(final T object) {
+        Objects.requireNonNull(object, "object is null");
+        if (!mockingDetails(object).isSpy()) {
+            throw new IllegalArgumentException("not a spy: " + object);
+        }
+        return object;
+    }
+
+    /**
+     * Stubs specified channel whose {@link WritableByteChannel#write(ByteBuffer) write(src)} method
+     * increases the {@code src}'s position by random value.
+     *
+     * @param channel      the channel whose {@link WritableByteChannel#write(ByteBuffer)} method
+     *                     are stubbed.
+     * @param writtenSoFar an adder for accumulating written bytes; may be {@code null}.
+     * @param <C>          channel type parameter
+     * @return given {@code channel}.
+     * @throws IOException if an I/O error occurs.
+     */
+    public static <C extends WritableByteChannel> C stub_WriteBuffer_ToWriteSome(
+            final C channel, final LongAdder writtenSoFar)
+            throws IOException {
+        requireMock(channel);
         given(channel.write(argThat(b -> b != null && b.hasRemaining()))).willAnswer(i -> {
             final var src = i.getArgument(0, ByteBuffer.class);
-            final var written = current().nextInt(1, src.remaining() + 1);
+            final var written = ThreadLocalRandom.current().nextInt(1, src.remaining() + 1);
             src.position(src.position() + written);
-            if (adder != null) {
-                adder.add(written);
+            if (writtenSoFar != null) {
+                writtenSoFar.add(written);
             }
             return written;
         });
@@ -117,7 +129,7 @@ public abstract class _HelloWorldTest {
             when(future.get()).thenAnswer(g -> { // invocation of future.get
                 var src = w.getArgument(0, ByteBuffer.class);
                 var position = w.getArgument(1, Long.class);
-                var written = current().nextInt(1, src.remaining() + 1);
+                var written = ThreadLocalRandom.current().nextInt(1, src.remaining() + 1);
                 src.position(src.position() + written);
                 adder.add(written);
                 return written;
@@ -175,7 +187,7 @@ public abstract class _HelloWorldTest {
             final var position = i.getArgument(1, Long.class);
             final var attachment = i.getArgument(2);
             final var handler = i.getArgument(3, CompletionHandler.class);
-            final var written = current().nextInt(1, src.remaining() + 1);
+            final var written = ThreadLocalRandom.current().nextInt(1, src.remaining() + 1);
             src.position(src.position() + written);
             if (adder != null) {
                 adder.add(written);
@@ -234,7 +246,7 @@ public abstract class _HelloWorldTest {
             var src = i.getArgument(0, ByteBuffer.class);
             var attachment = i.getArgument(1);
             var handler = i.getArgument(2, CompletionHandler.class);
-            var written = current().nextInt(1, src.remaining() + 1);
+            var written = ThreadLocalRandom.current().nextInt(1, src.remaining() + 1);
             src.position(src.position() + written);
             adder.add(written);
             handler.completed(written, attachment);
@@ -259,7 +271,7 @@ public abstract class _HelloWorldTest {
             final var future = mock(Future.class);
             given(future.get()).willAnswer(g -> {
                 final var src = w.getArgument(0, ByteBuffer.class);
-                final var written = current().nextInt(1, src.remaining() + 1);
+                final var written = ThreadLocalRandom.current().nextInt(1, src.remaining() + 1);
                 src.position(src.position() + written);
                 adder.add(written);
                 return written;
@@ -434,4 +446,10 @@ public abstract class _HelloWorldTest {
     @Accessors(fluent = true)
     @Getter(AccessLevel.PROTECTED)
     private ArgumentCaptor<Long> positionCaptor;
+
+    // ---------------------------------------------------------------------------------------------
+
+    private _HelloWorldTestHelper() {
+        throw new AssertionError("instantiation is not allowed");
+    }
 }
