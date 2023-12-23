@@ -22,6 +22,7 @@ package com.github.jinahya.hello;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,17 +43,18 @@ import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.channels.WritableByteChannel;
+import java.util.Objects;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.LongAdder;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
-import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.longThat;
 import static org.mockito.ArgumentMatchers.notNull;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockingDetails;
@@ -66,25 +68,26 @@ import static org.mockito.Mockito.when;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith({MockitoExtension.class})
 @TestInstance(TestInstance.Lifecycle.PER_METHOD) // default, implicitly.
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Slf4j
 public abstract class _HelloWorldTest {
 
-    protected static <T extends WritableByteChannel> T _stub_ToWriteSome(
-            T channel, LongAdder adder)
+    protected static <C extends WritableByteChannel> C _stub_ToWriteSome(final C channel,
+                                                                         final LongAdder adder)
             throws IOException {
-        if (!mockingDetails(
-                requireNonNull(channel, "channel is null")).isMock()) {
-            throw new IllegalArgumentException("not a mock: " + channel);
+        Objects.requireNonNull(channel, "channel is null");
+        if (!mockingDetails(channel).isMock()) {
+            throw new IllegalArgumentException("channel is not a mock: " + channel);
         }
-        willAnswer(i -> {
-            var src = i.getArgument(0, ByteBuffer.class);
-            var written = current().nextInt(1, src.remaining() + 1);
+        given(channel.write(argThat(b -> b != null && b.hasRemaining()))).willAnswer(i -> {
+            final var src = i.getArgument(0, ByteBuffer.class);
+            final var written = current().nextInt(1, src.remaining() + 1);
             src.position(src.position() + written);
             if (adder != null) {
                 adder.add(written);
             }
             return written;
-        }).given(channel).write(argThat(b -> b != null && b.hasRemaining()));
+        });
         return channel;
     }
 
@@ -105,10 +108,10 @@ public abstract class _HelloWorldTest {
             T channel,
             LongAdder adder) {
         if (!mockingDetails(
-                requireNonNull(channel, "channel is null")).isMock()) {
+                Objects.requireNonNull(channel, "channel is null")).isMock()) {
             throw new IllegalArgumentException("not a mock: " + channel);
         }
-        requireNonNull(adder, "adder is null");
+        Objects.requireNonNull(adder, "adder is null");
         willAnswer(w -> { // invocation of channel.write
             var future = mock(Future.class);
             when(future.get()).thenAnswer(g -> { // invocation of future.get
@@ -141,10 +144,10 @@ public abstract class _HelloWorldTest {
             AsynchronousFileChannel channel,
             final T exc) {
         if (!mockingDetails(
-                requireNonNull(channel, "channel is null")).isMock()) {
+                Objects.requireNonNull(channel, "channel is null")).isMock()) {
             throw new IllegalArgumentException("not a mock: " + channel);
         }
-        requireNonNull(exc, "exc is null");
+        Objects.requireNonNull(exc, "exc is null");
         willAnswer(i -> {
             var src = i.getArgument(0, ByteBuffer.class);
             var position = i.getArgument(1, Long.class);
@@ -164,7 +167,7 @@ public abstract class _HelloWorldTest {
     @SuppressWarnings({"unchecked"})
     protected static void _stub_ToComplete(final AsynchronousFileChannel channel,
                                            final LongAdder adder) {
-        if (!mockingDetails(requireNonNull(channel, "channel is null")).isMock()) {
+        if (!mockingDetails(Objects.requireNonNull(channel, "channel is null")).isMock()) {
             throw new IllegalArgumentException("not a mock: " + channel);
         }
         willAnswer(i -> {
@@ -195,7 +198,7 @@ public abstract class _HelloWorldTest {
     protected static <T extends Throwable> T _stub_ToFail(
             AsynchronousByteChannel channel, T exc) {
         if (!mockingDetails(
-                requireNonNull(channel, "channel is null")).isMock()) {
+                Objects.requireNonNull(channel, "channel is null")).isMock()) {
             throw new IllegalArgumentException("not a mock: " + channel);
         }
         willAnswer(i -> {
@@ -223,10 +226,10 @@ public abstract class _HelloWorldTest {
             T channel,
             LongAdder adder) {
         if (!mockingDetails(
-                requireNonNull(channel, "channel is null")).isMock()) {
+                Objects.requireNonNull(channel, "channel is null")).isMock()) {
             throw new IllegalArgumentException("not a mock: " + channel);
         }
-        requireNonNull(adder, "adder is null");
+        Objects.requireNonNull(adder, "adder is null");
         willAnswer(i -> {
             var src = i.getArgument(0, ByteBuffer.class);
             var attachment = i.getArgument(1);
@@ -245,32 +248,27 @@ public abstract class _HelloWorldTest {
         return channel;
     }
 
-    protected static void _stub_ToWriteSome(AsynchronousByteChannel channel,
-                                            LongAdder adder) {
-        if (!mockingDetails(
-                requireNonNull(channel, "channel is null")).isMock()) {
-            throw new IllegalArgumentException("not a mock: " + channel);
+    protected static void _stub_ToWriteSome(final AsynchronousByteChannel channel,
+                                            final LongAdder adder) {
+        Objects.requireNonNull(channel, "channel is null");
+        if (!mockingDetails(channel).isMock()) {
+            throw new IllegalArgumentException("channel is not a mock: " + channel);
         }
-        requireNonNull(adder, "adder is null");
-        willAnswer(w -> {
-            var future = mock(Future.class);
-            when(future.get()).thenAnswer(g -> {
-                var src = w.getArgument(0, ByteBuffer.class);
-                var written = current().nextInt(1, src.remaining() + 1);
+        Objects.requireNonNull(adder, "adder is null");
+        given(channel.write(argThat(b -> b != null && b.hasRemaining()))).willAnswer(w -> {
+            final var future = mock(Future.class);
+            given(future.get()).willAnswer(g -> {
+                final var src = w.getArgument(0, ByteBuffer.class);
+                final var written = current().nextInt(1, src.remaining() + 1);
                 src.position(src.position() + written);
                 adder.add(written);
                 return written;
             });
             return future;
-        }).given(channel).write(argThat(b -> b != null && b.hasRemaining()));
+        });
     }
 
-    /**
-     * Creates a new instance for testing specified class.
-     */
-    protected _HelloWorldTest() {
-        super();
-    }
+    // ---------------------------------------------------------------------------------------------
 
     /**
      * Stubs {@code serviceInstance()}'s {@link HelloWorld#put(ByteBuffer) put(buffer[12])} method

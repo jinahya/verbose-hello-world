@@ -37,7 +37,6 @@ import java.nio.file.Path;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.nio.ByteBuffer.allocate;
-import static java.nio.channels.FileChannel.open;
 import static java.nio.file.Files.createTempFile;
 import static java.nio.file.Files.size;
 import static java.nio.file.StandardOpenOption.WRITE;
@@ -59,6 +58,9 @@ import static org.mockito.Mockito.mockStatic;
  */
 @DisplayName("append(path)")
 @Slf4j
+@SuppressWarnings({
+        "java:S101"
+})
 class HelloWorld_03_Append_Path_Test
         extends _HelloWorldTest {
 
@@ -75,21 +77,18 @@ class HelloWorld_03_Append_Path_Test
         }).given(serviceInstance()).write(notNull(WritableByteChannel.class));
     }
 
-    @DisplayName(
-            "(path) -> write(FileChannel.open(path, CREATE, WRITE, APPEND))")
+    @DisplayName("-> write(FileChannel.open(path, CREATE, WRITE, APPEND))")
     @Test
-    void __()
-            throws IOException {
+    void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
-        var path = mock(Path.class);
-        var channel = _stub_ToWriteSome(mock(FileChannel.class), null);
-        try (var mockedStatic = mockStatic(FileChannel.class)) {
-            mockedStatic
-                    .when(() -> open(same(path), any(OpenOption[].class)))
+        final var service = serviceInstance();
+        final var path = mock(Path.class);
+        final var channel = _stub_ToWriteSome(mock(FileChannel.class), null);
+        try (var mock = mockStatic(FileChannel.class)) {
+            mock.when(() -> FileChannel.open(same(path), any(OpenOption[].class)))
                     .thenReturn(channel);
             // -------------------------------------------------------------------------------- when
-            var result = service.append(path);
+            final var result = service.append(path);
             // -------------------------------------------------------------------------------- then
             // TODO: Verify, FileChannel.open(path, options) invoked, once.
             // TODO: Assert, options contains only WRITE, CREATE, and APPEND.
@@ -119,7 +118,7 @@ class HelloWorld_03_Append_Path_Test
         var path = createTempFile(tempDir, null, null);
         if (current().nextBoolean()) {
             // write some bytes to the path
-            try (var channel = open(path, WRITE)) {
+            try (var channel = FileChannel.open(path, WRITE)) {
                 var buffer = allocate(current().nextInt(1024));
                 while (buffer.hasRemaining()) {
                     var written = channel.write(buffer);
