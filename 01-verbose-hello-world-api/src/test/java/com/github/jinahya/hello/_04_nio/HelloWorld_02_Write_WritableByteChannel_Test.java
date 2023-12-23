@@ -22,7 +22,7 @@ package com.github.jinahya.hello._04_nio;
 
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello._HelloWorldTest;
-import com.github.jinahya.hello._HelloWorldTestHelper;
+import com.github.jinahya.hello._HelloWorldTestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -70,7 +70,7 @@ class HelloWorld_02_Write_WritableByteChannel_Test
         final var service = service();
         final var channel = mock(WritableByteChannel.class);                       // <1>
         final var writtenSoFar = new LongAdder();                                  // <2>
-        _HelloWorldTestHelper.stub_WriteBuffer_ToWriteSome(channel, writtenSoFar); // <3>
+        _HelloWorldTestUtils.writeBuffer_willWriteSome(channel, writtenSoFar); // <3>
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(channel);
         // ------------------------------------------------------------------------------------ then

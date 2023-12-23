@@ -43,6 +43,7 @@ import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.channels.WritableByteChannel;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.LongAdder;
 
@@ -279,16 +280,26 @@ public abstract class _HelloWorldTest {
             var buffer = i.getArgument(0, ByteBuffer.class);
             buffer.position(buffer.limit());
             return buffer;
-        }).given(service).put(
-                argThat(b -> b != null && b.capacity() == BYTES
-                             && b.remaining() == BYTES)
-        );
+        })
+                .given(service)
+                .put(argThat(b -> b != null && b.capacity() == BYTES && b.remaining() == BYTES));
+    }
+
+    protected final void writeAsynchronousByteChannel_willWrite12Bytes()
+            throws ExecutionException, InterruptedException {
+        given(service.write(notNull(AsynchronousByteChannel.class))).willAnswer(i -> {
+            final var channel = i.getArgument(0, AsynchronousByteChannel.class);
+            for (final var b = ByteBuffer.allocate(12); b.hasRemaining(); ) {
+                final var w = channel.write(b).get();
+                assert w >= 0;
+            }
+            return channel;
+        });
     }
 
     /**
-     * Stubs {@code serviceInstance}'s {@link HelloWorld#write(OutputStream) write(stream)} method
-     * to write {@value HelloWorld#BYTES} bytes to the {@code stream}, and return the
-     * {@code stream}.
+     * Stubs {@code service}'s {@link HelloWorld#write(OutputStream) write(stream)} method to write
+     * {@value HelloWorld#BYTES} bytes to the {@code stream}, and return the {@code stream}.
      */
     protected final void _stub_WriteStream_ToWrite12BytesAndReturnTheStream() throws IOException {
         willAnswer(i -> {

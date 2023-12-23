@@ -27,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.Mockito;
 import org.mockito.Spy;
 
 import java.io.IOException;
@@ -37,7 +38,6 @@ import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.channels.WritableByteChannel;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.LongAdder;
@@ -59,7 +59,7 @@ import static org.mockito.Mockito.when;
 @SuppressWarnings({
         "java:S101"
 })
-public final class _HelloWorldTestHelper {
+public final class _HelloWorldTestUtils {
 
     private static <T> T requireMock(final T object) {
         Objects.requireNonNull(object, "object is null");
@@ -88,7 +88,7 @@ public final class _HelloWorldTestHelper {
      * @return given {@code channel}.
      * @throws IOException if an I/O error occurs.
      */
-    public static <C extends WritableByteChannel> C stub_WriteBuffer_ToWriteSome(
+    public static <C extends WritableByteChannel> C writeBuffer_willWriteSome(
             final C channel, final LongAdder writtenSoFar)
             throws IOException {
         requireMock(channel);
@@ -111,11 +111,10 @@ public final class _HelloWorldTestHelper {
      * @param channel      the channel whose {@link WritableByteChannel#write(ByteBuffer)} method
      *                     are stubbed.
      * @param writtenSoFar an adder for accumulating written bytes; may be {@code null}.
-     * @param <C>          channel type parameter
      * @return given {@code channel}.
      */
-    public static <C extends AsynchronousByteChannel> C writeBuffer_WillWriteSome(
-            final C channel, final LongAdder writtenSoFar) {
+    public static void writeBuffer_willWriteSome(final AsynchronousByteChannel channel,
+                                                 final LongAdder writtenSoFar) {
         requireMock(channel);
         given(channel.write(argThat(b -> b != null && b.hasRemaining()))).willAnswer(i -> {
             final var src = i.getArgument(0, ByteBuffer.class);
@@ -130,7 +129,31 @@ public final class _HelloWorldTestHelper {
             });
             return future;
         });
-        return channel;
+    }
+
+    @SuppressWarnings({
+            "unchecked"
+    })
+    public static void writeWithHandler_willWriteSome(final AsynchronousByteChannel channel,
+                                                      final LongAdder writtenSoFar) {
+        requireMock(channel);
+        Mockito.doAnswer(i -> {
+                    final var src = i.getArgument(0, ByteBuffer.class);
+                    final var attachment = i.getArgument(1);
+                    final var handler = i.getArgument(2, CompletionHandler.class);
+                    new Thread(() -> {
+                        final var written =
+                                ThreadLocalRandom.current().nextInt(1, src.remaining() + 1);
+                        src.position(src.position() + written);
+                        if (writtenSoFar != null) {
+                            writtenSoFar.add(written);
+                        }
+                        handler.completed(written, attachment);
+                    }).start();
+                    return null;
+                })
+                .when(channel)
+                .write(argThat(b -> b != null && b.hasRemaining()), any(), notNull());
     }
 
     /**
@@ -479,7 +502,7 @@ public final class _HelloWorldTestHelper {
 
     // ---------------------------------------------------------------------------------------------
 
-    private _HelloWorldTestHelper() {
+    private _HelloWorldTestUtils() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

@@ -168,7 +168,7 @@ public interface HelloWorld {
             throw new NullPointerException("chars is null");
         }
         if (index < 0) {
-            throw new IllegalArgumentException("index(" + index + ") is negative");
+            throw new ArrayIndexOutOfBoundsException("index(" + index + ") is negative");
         }
         if (index + BYTES > chars.length) {
             throw new ArrayIndexOutOfBoundsException(
@@ -555,8 +555,8 @@ public interface HelloWorld {
      * @see #put(ByteBuffer)
      * @see AsynchronousByteChannel#write(ByteBuffer)
      */
-    default <T extends AsynchronousByteChannel>
-    Future<T> writeAsync(final T channel, final Executor executor) {
+    default <T extends AsynchronousByteChannel> Future<T> writeAsync(final T channel,
+                                                                     final Executor executor) {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(executor, "executor is null");
         final Callable<T> callable = () -> write(channel);
@@ -619,9 +619,9 @@ public interface HelloWorld {
      * @param attachment the attachment for the {@code handler}; may be {@code null}.
      * @see AsynchronousByteChannel#write(ByteBuffer, Object, CompletionHandler)
      */
-    default <C extends AsynchronousByteChannel, A>
-    void writeAsync(final C channel, final CompletionHandler<? super C, ? super A> handler,
-                    final A attachment) {
+    default <C extends AsynchronousByteChannel, A> void writeAsync(
+            final C channel, final CompletionHandler<? super C, ? super A> handler,
+            final A attachment) {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(handler, "handler is null");
         final var buffer = ByteBuffer.allocate(BYTES);

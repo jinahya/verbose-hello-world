@@ -22,6 +22,8 @@ package com.github.jinahya.hello._04_nio;
 
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello._HelloWorldTest;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -49,9 +51,12 @@ import static org.mockito.Mockito.verify;
  * @see HelloWorld_06_WriteAsync_AsynchronousByteChannelWithHandler_Arguments_Test
  */
 @DisplayName("write(channel, handler, attachment)")
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_06_WriteAsync_AsynchronousByteChannelWithHandler_Test
-        extends _HelloWorldTest {
+@SuppressWarnings({
+        "java:S101"
+})
+class HelloWorld_06_WriteAsync_AsynchronousByteChannelWithHandler_Test extends _HelloWorldTest {
 
     @BeforeEach
     void _beforeEach() {
@@ -76,9 +81,9 @@ class HelloWorld_06_WriteAsync_AsynchronousByteChannelWithHandler_Test
     @SuppressWarnings({"unchecked"})
     void _Completed_() {
         // ----------------------------------------------------------------------------------- given
-        var service = service();
-        var channel = mock(AsynchronousByteChannel.class);
-        var writtenSoFar = new LongAdder();
+        final var service = service();
+        final var channel = mock(AsynchronousByteChannel.class);
+        final var writtenSoFar = new LongAdder();
         _stub_ToComplete(channel, writtenSoFar);
         CompletionHandler<AsynchronousByteChannel, Object> handler = mock(CompletionHandler.class);
         var attachment = current().nextBoolean() ? null : new Object();
