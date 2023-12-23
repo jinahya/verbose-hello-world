@@ -41,9 +41,9 @@ class HelloWorld_03_Set_Array_Test
         extends _HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#set(byte[]) set(array)} method invokes
+     * Verifies that {@link HelloWorld#set(byte[]) set(array)} method invokes
      * {@link HelloWorld#set(byte[], int) set(array, index)} method with given {@code array} and
-     * {@code 0}.
+     * @code 0}, and returns the {@code array}.
      */
     @DisplayName("-> set(array, 0)")
     @Test

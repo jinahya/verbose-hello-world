@@ -133,8 +133,10 @@ public interface HelloWorld {
      * method with {@code array} and {@code 0}, and returns the result.
      * @see #set(byte[], int)
      */
-    default byte[] set(byte[] array) {
-        // TODO: set 'hello, world' bytes on array.
+    default byte[] set(final byte[] array) {
+        // TODO: Throw a NullPointerException when array is null
+        // TODO: Throw a ArrayIndexOutOfBoundsException when array.length is less than BYTES
+        // TODO: Invoke set(array, 0);
         return null;
     }
 
