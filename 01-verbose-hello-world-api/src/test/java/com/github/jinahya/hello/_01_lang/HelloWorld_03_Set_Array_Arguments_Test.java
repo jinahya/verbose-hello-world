@@ -22,6 +22,8 @@ package com.github.jinahya.hello._01_lang;
 
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello._HelloWorldTest;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,6 +38,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * @see HelloWorld_03_Set_Array_Test
  */
 @DisplayName("set(array) arguments")
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({
         "java:S101"

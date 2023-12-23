@@ -25,6 +25,7 @@ package com.github.jinahya.hello;
  *
  * @author Jin Kwon &lt;onacit_at_wemakeprice.com&gt;
  * @see <a href="https://zh.wiktionary.org/wiki/%E7%94%BB%E8%9B%87%E6%B7%BB%E8%B6%B3">画蛇添足</a>
+ * @see <a href="https://en.wiktionary.org/wiki/%EC%82%AC%EC%A1%B1">사족</a>
  */
 public @interface 畵蛇添足 {
 
