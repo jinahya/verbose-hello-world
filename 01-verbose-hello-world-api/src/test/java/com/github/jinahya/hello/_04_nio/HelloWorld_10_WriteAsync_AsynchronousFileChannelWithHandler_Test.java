@@ -55,7 +55,7 @@ class HelloWorld_10_WriteAsync_AsynchronousFileChannelWithHandler_Test
 
     @BeforeEach
     void _beforeEach() {
-        _stub_PutBuffer_ToReturnTheBuffer_AsItsPositionIncreasedBy12();
+        putBuffer_WillReturnTheBuffer_AsItsPositionIncreasedBy12();
     }
 
     /**

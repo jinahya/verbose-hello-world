@@ -23,6 +23,8 @@ package com.github.jinahya.hello._04_nio;
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello._HelloWorldTest;
 import com.github.jinahya.hello._HelloWorldTestHelper;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -31,16 +33,12 @@ import org.junit.jupiter.api.Test;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.concurrent.atomic.LongAdder;
 
-import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * A class for testing {@link HelloWorld#write(AsynchronousByteChannel) write(channel)} method.
@@ -49,13 +47,16 @@ import static org.mockito.Mockito.when;
  * @see HelloWorld_04_Write_AsynchronousByteChannel_Arguments_Test
  */
 @DisplayName("write(channel)")
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_04_Write_AsynchronousByteChannel_Test
-        extends _HelloWorldTest {
+@SuppressWarnings({
+        "java:S101"
+})
+class HelloWorld_04_Write_AsynchronousByteChannel_Test extends _HelloWorldTest {
 
     @BeforeEach
-    void _beforeEach() {
-        _stub_PutBuffer_ToReturnTheBuffer_AsItsPositionIncreasedBy12();
+    void beforeEach() {
+        putBuffer_WillReturnTheBuffer_AsItsPositionIncreasedBy12();
     }
 
     /**
@@ -73,7 +74,7 @@ class HelloWorld_04_Write_AsynchronousByteChannel_Test
         final var service = service();
         final var channel = mock(AsynchronousByteChannel.class);
         final var writtenSoFar = new LongAdder();
-        _HelloWorldTestHelper.stub_WriteBuffer_ToWriteSome(channel, writtenSoFar);
+        _HelloWorldTestHelper.writeBuffer_WillWriteSome(channel, writtenSoFar);
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(channel);
         // ------------------------------------------------------------------------------------ then

@@ -114,7 +114,7 @@ public final class _HelloWorldTestHelper {
      * @param <C>          channel type parameter
      * @return given {@code channel}.
      */
-    public static <C extends AsynchronousByteChannel> C stub_WriteBuffer_ToWriteSome(
+    public static <C extends AsynchronousByteChannel> C writeBuffer_WillWriteSome(
             final C channel, final LongAdder writtenSoFar) {
         requireMock(channel);
         given(channel.write(argThat(b -> b != null && b.hasRemaining()))).willAnswer(i -> {

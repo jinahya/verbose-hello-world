@@ -274,7 +274,7 @@ public abstract class _HelloWorldTest {
      * Stubs {@code serviceInstance()}'s {@link HelloWorld#put(ByteBuffer) put(buffer[12])} method
      * to return given {@code buffer} as its position increased by {@value HelloWorld#BYTES}.
      */
-    protected void _stub_PutBuffer_ToReturnTheBuffer_AsItsPositionIncreasedBy12() {
+    protected final void putBuffer_WillReturnTheBuffer_AsItsPositionIncreasedBy12() {
         willAnswer(i -> {
             var buffer = i.getArgument(0, ByteBuffer.class);
             buffer.position(buffer.limit());

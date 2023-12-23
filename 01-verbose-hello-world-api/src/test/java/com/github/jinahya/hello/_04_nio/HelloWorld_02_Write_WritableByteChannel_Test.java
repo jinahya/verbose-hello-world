@@ -53,7 +53,7 @@ class HelloWorld_02_Write_WritableByteChannel_Test
 
     @BeforeEach
     void _beforeEach() {
-        _stub_PutBuffer_ToReturnTheBuffer_AsItsPositionIncreasedBy12();
+        putBuffer_WillReturnTheBuffer_AsItsPositionIncreasedBy12();
     }
 
     /**
