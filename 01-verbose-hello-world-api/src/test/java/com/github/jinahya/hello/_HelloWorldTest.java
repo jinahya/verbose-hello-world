@@ -30,7 +30,6 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -56,6 +55,7 @@ import static org.mockito.ArgumentMatchers.longThat;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willAnswer;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockingDetails;
 import static org.mockito.Mockito.when;
@@ -279,7 +279,7 @@ public abstract class _HelloWorldTest {
             var buffer = i.getArgument(0, ByteBuffer.class);
             buffer.position(buffer.limit());
             return buffer;
-        }).given(serviceInstance).put(
+        }).given(service).put(
                 argThat(b -> b != null && b.capacity() == BYTES
                              && b.remaining() == BYTES)
         );
@@ -296,17 +296,7 @@ public abstract class _HelloWorldTest {
             var stream = i.getArgument(0, OutputStream.class);
             stream.write(new byte[BYTES]);
             return stream;
-        }).given(serviceInstance).write(notNull(OutputStream.class));
-    }
-
-    /**
-     * Stubs {@code serviceInstance}'s {@link HelloWorld#set(byte[]) set(array)} method to just
-     * return the {@code array}.
-     */
-    protected void _stub_SetArray_ToReturnTheArray() {
-        Mockito.doAnswer(i -> i.getArgument(0))
-                .when(serviceInstance)
-                .set(any(byte[].class));
+        }).given(service).write(notNull(OutputStream.class));
     }
 
     /**
@@ -315,9 +305,19 @@ public abstract class _HelloWorldTest {
      */
     @BeforeEach
     void _stub_SetArrayWithIndex_ToReturnTheArray() {
-        when(serviceInstance.set(any(byte[].class),
-                                 anyInt()))  // <1>
+        when(service.set(any(byte[].class),
+                         anyInt()))  // <1>
                 .thenAnswer(i -> i.getArgument(0)); // <2>
+    }
+
+    /**
+     * Stubs {@code serviceInstance}'s {@link HelloWorld#set(byte[]) set(array)} method to just
+     * return the {@code array}.
+     */
+    protected final void _stub_SetArray_ToReturnTheArray() {
+        doAnswer(i -> i.getArgument(0))
+                .when(service)
+                .set(notNull(byte[].class));
     }
 
     /**
@@ -325,25 +325,29 @@ public abstract class _HelloWorldTest {
      * return the {@code chars}.
      */
     protected void _stub_PrintChars_ToReturnTheChars() {
-        Mockito.doAnswer(i -> i.getArgument(0))
-                .when(serviceInstance)
+        doAnswer(i -> i.getArgument(0))
+                .when(service)
                 .print(any(char[].class));
     }
 
     /**
-     * Stubs {@code serviceInstance}'s {@link HelloWorld#print(char[], int) print(chars, offset)}
-     * method to just return the {@code chars} argument.
+     * Stubs {@code service}'s {@link HelloWorld#print(char[], int) print(chars, index)} method to
+     * just return the {@code chars} argument.
      */
-    protected void _stub_PrintCharsWithOffset_ToReturnTheChars() {
-        Mockito.doAnswer(i -> i.getArgument(0))            // <1>
-                .when(serviceInstance)             // <2>
-                .print(any(char[].class), anyInt()); // <1>
+    protected final void _stub_PrintCharsWithIndex_ToReturnTheChars() {
+        doAnswer(i -> i.getArgument(0))              // <1>
+                .when(service)                       // <2>
+                .print(any(char[].class), anyInt()); // <3>
     }
+
+    // ---------------------------------------------------------------------------------------------
 
     @Spy
     @Accessors(fluent = true)
     @Getter(AccessLevel.PROTECTED)
-    private HelloWorld serviceInstance;
+    private HelloWorld service;
+
+    // ---------------------------------------------------------------------------------------------
 
     /**
      * A captor for capturing the {@code array} argument.

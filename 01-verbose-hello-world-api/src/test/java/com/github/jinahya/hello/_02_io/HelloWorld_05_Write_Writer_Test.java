@@ -63,7 +63,7 @@ class HelloWorld_05_Write_Writer_Test
     void __()
             throws IOException {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
+        var service = service();
         var writer = mock(Writer.class);
         // ------------------------------------------------------------------------------------ when
         var result = service.write(writer);

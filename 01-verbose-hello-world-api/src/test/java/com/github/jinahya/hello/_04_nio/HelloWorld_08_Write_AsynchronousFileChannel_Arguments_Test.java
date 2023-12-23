@@ -54,7 +54,7 @@ class HelloWorld_08_Write_AsynchronousFileChannel_Arguments_Test
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
+        var service = service();
         AsynchronousFileChannel channel = null;
         var position = 0L;
         // ------------------------------------------------------------------------------- when/then
@@ -73,7 +73,7 @@ class HelloWorld_08_Write_AsynchronousFileChannel_Arguments_Test
     @Test
     void _ThrowIllegalArgumentException_PositionIsNegative() {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
+        var service = service();
         var channel = mock(AsynchronousFileChannel.class);
         var position = current().nextLong() | Long.MIN_VALUE;
         // ------------------------------------------------------------------------------- when/then

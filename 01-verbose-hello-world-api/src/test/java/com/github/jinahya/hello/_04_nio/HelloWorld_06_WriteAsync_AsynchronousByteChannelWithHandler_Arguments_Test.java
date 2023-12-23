@@ -56,7 +56,7 @@ class HelloWorld_06_WriteAsync_AsynchronousByteChannelWithHandler_Arguments_Test
     @SuppressWarnings({"unchecked"})
     void _ThrowNullPointerException_ChannelIsNull() {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
+        var service = service();
         var channel = (AsynchronousByteChannel) null;
         var handler = mock(CompletionHandler.class);
         // ------------------------------------------------------------------------------- when/then
@@ -76,7 +76,7 @@ class HelloWorld_06_WriteAsync_AsynchronousByteChannelWithHandler_Arguments_Test
     @Test
     void _ThrowNullPointerException_HandlerIsNull() {
         // ----------------------------------------------------------------------------------- given
-        final var service = serviceInstance();
+        final var service = service();
         final var channel = mock(AsynchronousByteChannel.class);
         final CompletionHandler<AsynchronousByteChannel, Object> handler = null;
         final var attachment = (Void) null;

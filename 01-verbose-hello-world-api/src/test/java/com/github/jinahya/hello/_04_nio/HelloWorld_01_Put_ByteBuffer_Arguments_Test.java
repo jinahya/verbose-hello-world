@@ -55,7 +55,7 @@ class HelloWorld_01_Put_ByteBuffer_Arguments_Test
     @Test
     void _ThrowNullPointerException_BufferIsNull() {
         // ----------------------------------------------------------------------------------- given
-        final var service = serviceInstance();
+        final var service = service();
         final var buffer = (ByteBuffer) null;
         // ------------------------------------------------------------------------------- when/then
         assertThrows(
@@ -73,7 +73,7 @@ class HelloWorld_01_Put_ByteBuffer_Arguments_Test
     @Test
     void _ThrowBufferOverflowException_BufferRemainingIsLessThan12() {
         // ----------------------------------------------------------------------------------- given
-        final var service = serviceInstance();
+        final var service = service();
         final ByteBuffer buffer;
         {
             final var capacity = ThreadLocalRandom.current().nextInt(HelloWorld.BYTES);

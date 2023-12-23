@@ -57,7 +57,7 @@ class HelloWorld_10_WriteAsync_AsynchronousFileChannelWithHandler_Arguments_Test
     @SuppressWarnings({"unchecked"})
     void _ThrowNullPointerException_ChannelIsNull() {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
+        var service = service();
         var channel = (AsynchronousFileChannel) null;
         var position = 0L;
         var handler = mock(CompletionHandler.class);
@@ -80,7 +80,7 @@ class HelloWorld_10_WriteAsync_AsynchronousFileChannelWithHandler_Arguments_Test
     @SuppressWarnings({"unchecked"})
     void _ThrowIllegalArgumentException_PositionIsNegative() {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
+        var service = service();
         var channel = mock(AsynchronousFileChannel.class);
         var position = current().nextLong() | Long.MIN_VALUE;
         var handler = mock(CompletionHandler.class);
@@ -102,7 +102,7 @@ class HelloWorld_10_WriteAsync_AsynchronousFileChannelWithHandler_Arguments_Test
     @Test
     void _ThrowNullPointerException_HandlerIsNull() {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
+        var service = service();
         var channel = mock(AsynchronousFileChannel.class);
         var position = 0L;
         var handler = (CompletionHandler<AsynchronousFileChannel, Object>) null;

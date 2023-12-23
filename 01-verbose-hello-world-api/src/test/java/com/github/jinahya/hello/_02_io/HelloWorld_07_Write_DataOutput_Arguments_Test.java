@@ -50,7 +50,7 @@ class HelloWorld_07_Write_DataOutput_Arguments_Test
     @Test
     void _ThrowNullPointerException_DataIsNull() {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
+        var service = service();
         var data = (DataOutput) null;
         // ------------------------------------------------------------------------------- when/then
         assertThrows(

@@ -50,7 +50,7 @@ class HelloWorld_09_Write_RandomAccessFile_Arguments_Test
     @Test
     void _ThrowNullPointerException_FileIsNull() {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
+        var service = service();
         var file = (RandomAccessFile) null;
         // ------------------------------------------------------------------------------- when/then
         assertThrows(

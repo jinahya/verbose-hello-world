@@ -96,7 +96,7 @@ class HelloWorld_12_AppendCompletable_Path_Test
                 } // @formatter:on
             });
             return future;
-        }).given(serviceInstance())
+        }).given(service())
                 .writeCompletable(notNull(), longThat(v -> v >= 0L));
     }
 
@@ -104,7 +104,7 @@ class HelloWorld_12_AppendCompletable_Path_Test
     void __()
             throws IOException {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
+        var service = service();
         var path = mock(Path.class);
         var channel = mock(AsynchronousFileChannel.class);
         _stub_ToComplete(channel, null);
@@ -140,7 +140,7 @@ class HelloWorld_12_AppendCompletable_Path_Test
     void __(@TempDir Path tempDir)
             throws IOException {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
+        var service = service();
         var path = createTempFile(tempDir, null, null);
         if (current().nextBoolean()) {
             log.debug("lastModifiedTime: {}", getLastModifiedTime(path));

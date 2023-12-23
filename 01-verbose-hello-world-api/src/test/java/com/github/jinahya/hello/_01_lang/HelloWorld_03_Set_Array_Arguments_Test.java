@@ -54,7 +54,7 @@ class HelloWorld_03_Set_Array_Arguments_Test
     @Test
     void _ThrowNullPointerException_ArrayIsNull() {
         // ----------------------------------------------------------------------------------- given
-        final var service = serviceInstance();
+        final var service = service();
         final var array = (byte[]) null;
         // ------------------------------------------------------------------------------- when/then
         // TODO: Assert service.set(array) throws a NullPointerException.
@@ -69,7 +69,7 @@ class HelloWorld_03_Set_Array_Arguments_Test
     @Test
     void _ThrowArrayIndexOutOfBoundsException_ArrayLengthIsLessThan12() {
         // ----------------------------------------------------------------------------------- given
-        final var service = serviceInstance();
+        final var service = service();
         final var array = new byte[ThreadLocalRandom.current().nextInt(HelloWorld.BYTES)];
         // ------------------------------------------------------------------------------- when/then
         // TODO: Assert service.set(array) throws an IndexOutOfBoundsException.

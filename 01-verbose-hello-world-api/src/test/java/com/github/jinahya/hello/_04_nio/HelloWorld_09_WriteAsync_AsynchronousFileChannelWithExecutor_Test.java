@@ -66,7 +66,7 @@ class HelloWorld_09_WriteAsync_AsynchronousFileChannelWithExecutor_Test
                 position += channel.write(src, position).get();
             }
             return channel;
-        }).given(serviceInstance()).write(notNull(), longThat(v -> v >= 0));
+        }).given(service()).write(notNull(), longThat(v -> v >= 0));
     }
 
     /**
@@ -84,7 +84,7 @@ class HelloWorld_09_WriteAsync_AsynchronousFileChannelWithExecutor_Test
     void __()
             throws InterruptedException, ExecutionException {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
+        var service = service();
         var channel = _stub_ToWriteSome(mock(AsynchronousFileChannel.class), new LongAdder());
         var position = current().nextLong(0, Long.MAX_VALUE - BYTES);
         var executor = mock(Executor.class);

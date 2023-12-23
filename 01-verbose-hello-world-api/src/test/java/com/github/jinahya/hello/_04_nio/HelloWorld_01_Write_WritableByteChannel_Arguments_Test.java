@@ -50,7 +50,7 @@ class HelloWorld_01_Write_WritableByteChannel_Arguments_Test
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
+        var service = service();
         var channel = (WritableByteChannel) null;
         // ------------------------------------------------------------------------------- when/then
         assertThrows(

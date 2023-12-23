@@ -141,44 +141,44 @@ public interface HelloWorld {
     }
 
     /**
-     * Prints the <a href="#hello-world-bytes">hello-world-bytes</a> on specified chars starting at
-     * specified position.
+     * Prints the <a href="#hello-world-bytes">hello-world-bytes</a> on specified array starting at
+     * specified index.
      * <p>
-     * The elements in the chars, on successful return, will be set as follows.
+     * The elements in the array, on successful return, will be set as follows.
      * <pre>
-     *   0     &lt;= offset                                  offset+12 &lt;=         chars.length
+     *   0     &lt;= index                                    index+12 &lt;=         chars.length
      *   ↓        ↓                                               ↓            ↓
      * |   |....|'h'|'e'|'l'|'l'|'o'|','|' '|'w'|'o'|'r'|'l'|'d'|   |....|   |
      * </pre>
      *
-     * @param chars  the chars on which bytes are set.
-     * @param offset the starting offset of the {@code chars}.
+     * @param chars the array on which characters are set.
+     * @param index the starting index of the {@code chars}.
      * @return given {@code chars}.
      * @throws NullPointerException           if {@code chars} is {@code null}.
-     * @throws ArrayIndexOutOfBoundsException if {@code offset} is negative or {@code chars.length}
-     *                                        is less than or equal to ({@code offset} +
+     * @throws ArrayIndexOutOfBoundsException if {@code index} is negative or {@code chars.length}
+     *                                        is less than or equal to ({@code index} +
      *                                        {@value #BYTES}).
-     * @implSpec The default implementation invokes {@link #set(byte[]) set(array)} method with an
+     * @implNote The default implementation invokes {@link #set(byte[]) set(array)} method with an
      * array of {@value #BYTES} bytes, copies each element in returned array into {@code chars}
-     * starting at {@code offset}, and returns the {@code chars}.
+     * starting at {@code index}, and returns the {@code chars}.
      * @see #set(byte[])
      */
-    default char[] print(char[] chars, int offset) {
+    default char[] print(final char[] chars, int index) {
         if (chars == null) {
             throw new NullPointerException("chars is null");
         }
-        if (offset < 0) {
-            throw new IllegalArgumentException("offset(" + offset + ") is negative");
+        if (index < 0) {
+            throw new IllegalArgumentException("index(" + index + ") is negative");
         }
-        if (offset + BYTES > chars.length) {
+        if (index + BYTES > chars.length) {
             throw new ArrayIndexOutOfBoundsException(
-                    "offset(" + offset + ") + " + BYTES + " > chars.length(" + chars.length + ")"
+                    "index(" + index + ") + " + BYTES + " > chars.length(" + chars.length + ")"
             );
         }
         final var array = new byte[BYTES];
         set(array);
         for (final var b : array) {
-            chars[offset++] = (char) b;
+            chars[index++] = (char) b;
         }
         return chars;
     }

@@ -22,12 +22,16 @@ package com.github.jinahya.hello._02_io;
 
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello._HelloWorldTest;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.OutputStream;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * A class for testing {@link HelloWorld#write(OutputStream) write(stream)} method regarding
@@ -37,7 +41,11 @@ import java.io.OutputStream;
  * @see HelloWorld_01_Write_OutputStream_Test
  */
 @DisplayName("write(stream) arguments")
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
+@SuppressWarnings({
+        "java:S101"
+})
 class HelloWorld_01_Write_OutputStream_Arguments_Test
         extends _HelloWorldTest {
 
@@ -49,10 +57,10 @@ class HelloWorld_01_Write_OutputStream_Arguments_Test
     @Test
     void _ThrowNullPointerException_StreamIsNull() {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
-        var stream = (OutputStream) null;
+        final var service = service();
+        final var stream = (OutputStream) null;
         // ------------------------------------------------------------------------------- when/then
-        Assertions.assertThrows(
+        assertThrows(
                 NullPointerException.class,
                 () -> service.write(stream)
         );

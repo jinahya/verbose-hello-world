@@ -54,7 +54,7 @@ class HelloWorld_09_Append_Appendable_Arguments_Test
     @Test
     void _ThrowNullPointerException_AppendableIsNull() {
         // ----------------------------------------------------------------------------------- given
-        final var service = serviceInstance();
+        final var service = service();
         final var appendable = (Appendable) null;
         // ------------------------------------------------------------------------------- when/then
         assertThrows(

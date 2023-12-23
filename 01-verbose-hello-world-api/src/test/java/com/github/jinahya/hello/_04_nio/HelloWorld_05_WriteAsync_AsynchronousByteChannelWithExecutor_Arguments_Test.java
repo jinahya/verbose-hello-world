@@ -55,7 +55,7 @@ class HelloWorld_05_WriteAsync_AsynchronousByteChannelWithExecutor_Arguments_Tes
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
+        var service = service();
         var channel = (AsynchronousByteChannel) null;
         var executor = mock(Executor.class);
         // ------------------------------------------------------------------------------- when/then
@@ -75,7 +75,7 @@ class HelloWorld_05_WriteAsync_AsynchronousByteChannelWithExecutor_Arguments_Tes
     @Test
     void _ThrowNullPointerException_ExecutorIsNull() {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
+        var service = service();
         var channel = mock(AsynchronousByteChannel.class);
         var executor = (Executor) null;
         // ------------------------------------------------------------------------------- when/then

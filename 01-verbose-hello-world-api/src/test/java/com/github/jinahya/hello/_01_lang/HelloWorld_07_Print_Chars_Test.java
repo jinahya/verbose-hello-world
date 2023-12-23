@@ -45,19 +45,19 @@ class HelloWorld_07_Print_Chars_Test
 
     @BeforeEach
     void _beforeEach() {
-        _stub_PrintCharsWithOffset_ToReturnTheChars();
+        _stub_PrintCharsWithIndex_ToReturnTheChars();
     }
 
     /**
      * Asserts {@link HelloWorld#print(char[]) print(chars)} method invokes
-     * {@link HelloWorld#print(char[], int) set(chars, offset)} method with given {@code chars} and
-     * {@code 0}.
+     * {@link HelloWorld#print(char[], int) set(chars, index)} method with given {@code chars} and
+     * {@code 0}, and returns the {@code chars}.
      */
     @DisplayName(("-> set(chars, 0)"))
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
-        final var service = serviceInstance();
+        final var service = service();
         final var chars = new char[BYTES];
         // ------------------------------------------------------------------------------------ when
         final var result = service.print(chars);

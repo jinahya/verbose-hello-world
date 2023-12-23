@@ -81,7 +81,7 @@ class HelloWorld_07_WriteCompletable_AsynchronousByteChannel_Test
                         }
                     });
             return null;
-        }).given(serviceInstance()).writeAsync(notNull(), notNull(), any());
+        }).given(service()).writeAsync(notNull(), notNull(), any());
     }
 
     /**
@@ -99,7 +99,7 @@ class HelloWorld_07_WriteCompletable_AsynchronousByteChannel_Test
     void _Completed_()
             throws Exception {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
+        var service = service();
         var channel = _stub_ToComplete(mock(AsynchronousByteChannel.class));
         // ------------------------------------------------------------------------------------ when
         var future = service.writeCompletable(channel);
@@ -121,7 +121,7 @@ class HelloWorld_07_WriteCompletable_AsynchronousByteChannel_Test
     @Test
     void _CompletedExceptionally_() {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
+        var service = service();
         var channel = mock(AsynchronousByteChannel.class);
         var exc = _stub_ToFail(channel, mock(Throwable.class));
         // ------------------------------------------------------------------------------------ when

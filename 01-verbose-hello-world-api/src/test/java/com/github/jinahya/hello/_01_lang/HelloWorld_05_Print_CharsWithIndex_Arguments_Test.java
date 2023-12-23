@@ -22,6 +22,8 @@ package com.github.jinahya.hello._01_lang;
 
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello._HelloWorldTest;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,52 +34,73 @@ import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
- * A class for testing {@link HelloWorld#print(char[]) print(chars)} method regarding arguments
- * verification.
+ * A class for testing {@link HelloWorld#print(char[], int) print(chars, index)} method regarding
+ * arguments verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_07_Print_Chars_Test
+ * @see HelloWorld_05_Print_CharsWithIndex_Test
  */
-@DisplayName("print(chars) arguments")
+@DisplayName("set(chars, index) arguments")
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({
         "java:S101"
 })
-class HelloWorld_07_Print_Chars_Arguments_Test
+class HelloWorld_05_Print_CharsWithIndex_Arguments_Test
         extends _HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#print(char[]) print(chars)} method throws a
+     * Asserts {@link HelloWorld#print(char[], int) print(chars, index)} method throws a
      * {@link NullPointerException} when the {@code chars} argument is {@code null}.
      */
     @DisplayName("[chars == null] -> NullPointerException")
     @Test
-    void _ThrowNullPointerException_CharsIsNull() {
+    void _ThrowNullPointerException_ArrayIsNull() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var chars = (char[]) null;
+        final var index = 0;
         // ------------------------------------------------------------------------------- when/then
         assertThrows(
                 NullPointerException.class,
-                () -> service.print(chars)
+                () -> service.print(chars, index)
         );
     }
 
     /**
-     * Asserts {@link HelloWorld#print(char[]) print(chars)} method throws an
-     * {@link ArrayIndexOutOfBoundsException} when {@code chars.length} is less than
-     * {@value HelloWorld#BYTES}.
+     * Asserts {@link HelloWorld#print(char[], int) print(chars, index)} method throws an
+     * {@link ArrayIndexOutOfBoundsException} when {@code index} is negative.
      */
-    @DisplayName("[chars.length < 12] -> ArrayIndexOutOfBoundsException")
+    @DisplayName("[index < 0] -> ArrayIndexOutOfBoundsException")
     @Test
-    void _ThrowArrayIndexOutOfBoundsException_CharsLengthIsLessThan12() {
+    void _ThrowArrayIndexOutOfBoundsException_IndexIsNegative() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        final var chars = new char[ThreadLocalRandom.current().nextInt(BYTES)];
+        final var chars = new char[0];
+        final var index = ThreadLocalRandom.current().nextInt() | Integer.MIN_VALUE;
         // ------------------------------------------------------------------------------- when/then
         assertThrows(
                 ArrayIndexOutOfBoundsException.class,
-                () -> service.print(chars)
+                () -> service.print(chars, index)
+        );
+    }
+
+    /**
+     * Asserts {@link HelloWorld#print(char[], int) print(chars, index)} method throws an
+     * {@link ArrayIndexOutOfBoundsException} when {@code index + BYTES} is greater than
+     * {@code chars.length}.
+     */
+    @DisplayName("[index + BYTES > chars.length] -> ArrayIndexOutOfBoundsException")
+    @Test
+    void _ThrowArrayIndexOutOfBoundsException_IndexPlusBYTESGTCharsLength() {
+        // ----------------------------------------------------------------------------------- given
+        final var service = service();
+        final var chars = new char[ThreadLocalRandom.current().nextInt(BYTES)];
+        final var index = ThreadLocalRandom.current().nextInt(1, chars.length << 1);
+        // ------------------------------------------------------------------------------- when/then
+        assertThrows(
+                ArrayIndexOutOfBoundsException.class,
+                () -> service.print(chars, index)
         );
     }
 }

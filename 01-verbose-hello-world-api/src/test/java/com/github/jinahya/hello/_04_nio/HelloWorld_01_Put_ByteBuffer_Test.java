@@ -63,7 +63,7 @@ class HelloWorld_01_Put_ByteBuffer_Test
     @Test
     void __BufferHasBackingArray() {
         // ----------------------------------------------------------------------------------- given
-        final var service = serviceInstance();
+        final var service = service();
         final var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
         print(buffer);
         // ------------------------------------------------------------------------------------ when
@@ -88,7 +88,7 @@ class HelloWorld_01_Put_ByteBuffer_Test
     @Test
     void __BufferDoesNotHaveBackingArray() {
         // ----------------------------------------------------------------------------------- given
-        final var service = serviceInstance();
+        final var service = service();
         final var buffer = ByteBuffer.allocateDirect(HelloWorld.BYTES);
         print(buffer);
         assumeFalse(buffer.hasArray(),

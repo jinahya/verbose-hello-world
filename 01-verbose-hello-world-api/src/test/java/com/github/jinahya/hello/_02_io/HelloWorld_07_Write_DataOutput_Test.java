@@ -72,7 +72,7 @@ class HelloWorld_07_Write_DataOutput_Test
     void _InvokeSetArrayWriteArrayToData_()
             throws IOException {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
+        var service = service();
         var data = mock(DataOutput.class);                      // <1>
         // ------------------------------------------------------------------------------------ when
         var result = service.write(data);                       // <2>
@@ -98,7 +98,7 @@ class HelloWorld_07_Write_DataOutput_Test
     void _Write12Bytes_()
             throws IOException {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
+        var service = service();
         try (var baos = new ByteArrayOutputStream()) {
             if (current().nextBoolean()) {
                 // TODO: (Optional) Write some bytes to baos
@@ -127,7 +127,7 @@ class HelloWorld_07_Write_DataOutput_Test
     void _Write12Bytes_(@TempDir File tempDir)
             throws IOException {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
+        var service = service();
         var file = createTempFile("tmp", null, tempDir);
         if (current().nextBoolean()) {
             // TODO: (optional) Write some bytes to the file

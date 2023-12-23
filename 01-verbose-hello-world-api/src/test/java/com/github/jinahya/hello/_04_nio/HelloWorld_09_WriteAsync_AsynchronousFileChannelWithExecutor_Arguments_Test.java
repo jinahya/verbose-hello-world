@@ -56,7 +56,7 @@ class HelloWorld_09_WriteAsync_AsynchronousFileChannelWithExecutor_Arguments_Tes
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
+        var service = service();
         var channel = (AsynchronousFileChannel) null;
         var position = current().nextLong() & Long.MAX_VALUE;
         var executor = mock(Executor.class);
@@ -77,7 +77,7 @@ class HelloWorld_09_WriteAsync_AsynchronousFileChannelWithExecutor_Arguments_Tes
     @Test
     void _ThrowIllegalArgumentException_PositionIsNegative() {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
+        var service = service();
         var channel = mock(AsynchronousFileChannel.class);
         var position = current().nextLong() | Long.MIN_VALUE;
         var executor = (Executor) null;
@@ -98,7 +98,7 @@ class HelloWorld_09_WriteAsync_AsynchronousFileChannelWithExecutor_Arguments_Tes
     @Test
     void _ThrowNullPointerException_ExecutorIsNull() {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
+        var service = service();
         var channel = mock(AsynchronousFileChannel.class);
         var position = current().nextLong() & Long.MAX_VALUE;
         var executor = (Executor) null;

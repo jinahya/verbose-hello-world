@@ -59,15 +59,14 @@ class HelloWorld_09_Append_Appendable_Test
     /**
      * Asserts {@link HelloWorld#append(Appendable) append(appendable)} method invokes
      * {@link HelloWorld#print(char[]) print(chars)} method with an array of
-     * {@value HelloWorld#BYTES} characters, appends each character in resulting array to
+     * {@value HelloWorld#BYTES} characters, appends each character in the array to
      * {@code appendable}, and returns the {@code appendable}.
      */
     @DisplayName("-> print(char[12]) -> appendable.append(each-char)")
     @Test
-    void __()
-            throws IOException {
+    void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
-        final var service = serviceInstance();
+        final var service = service();
         final var appendable = mock(Appendable.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.append(appendable);

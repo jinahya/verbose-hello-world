@@ -90,7 +90,7 @@ class HelloWorld_11_WriteCompletable_AsynchronousFileChannel_Test
                 }
             });
             return null;
-        }).given(serviceInstance()).writeAsync(notNull(), longThat(v -> v >= 0L), notNull(), any());
+        }).given(service()).writeAsync(notNull(), longThat(v -> v >= 0L), notNull(), any());
     }
 
     /**
@@ -103,7 +103,7 @@ class HelloWorld_11_WriteCompletable_AsynchronousFileChannel_Test
     void _Completed_()
             throws CancellationException, CompletionException {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
+        var service = service();
         var channel = mock(AsynchronousFileChannel.class);
         var writtenSoFar = new LongAdder();
         _stub_ToComplete(channel, writtenSoFar);
@@ -129,7 +129,7 @@ class HelloWorld_11_WriteCompletable_AsynchronousFileChannel_Test
     @Test
     void _CompletedExceptionally_() {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
+        var service = service();
         var channel = mock(AsynchronousFileChannel.class);
         var exc = _stub_ToFail(channel, mock(Throwable.class));
         var position = current().nextLong(MAX_VALUE - BYTES);

@@ -50,7 +50,7 @@ class HelloWorld_01_Send_Socket_Arguments_Test
     @Test
     void _ThrowNullPointerException_SocketIsNull() {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
+        var service = service();
         Socket socket = null;
         // ------------------------------------------------------------------------------- when/then
         assertThrows(

@@ -71,7 +71,7 @@ class HelloWorld_02_Append_File_Test
     void _InvokeWriteWithFileOutputStreamWithAppendingMode_()
             throws IOException {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
+        var service = service();
         var file = mock(File.class);
         MockInitializer<FileOutputStream> initializer = (m, c) -> {
             // new FileOutputStream(file, true)
@@ -109,7 +109,7 @@ class HelloWorld_02_Append_File_Test
     void _12BytesAppended_(@TempDir File tempDir)
             throws IOException {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
+        var service = service();
         var file = createTempFile("tmp", null, tempDir);
         if (current().nextBoolean()) {
             // TODO: (Optional) Write some bytes to the file

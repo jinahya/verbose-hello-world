@@ -34,14 +34,14 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
- * A class for unit-testing {@link HelloWorld#print(char[])} method.
+ * A class for unit-testing {@link HelloWorld#print(char[], int) print(chars, index)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_07_Print_Chars_Arguments_Test
+ * @see HelloWorld_05_Print_CharsWithIndex_Arguments_Test
  */
-@DisplayName("set(chars)")
+@DisplayName("set(chars, index)")
 @Slf4j
-class HelloWorld_05_Print_CharsWithOffset_Test
+class HelloWorld_05_Print_CharsWithIndex_Test
         extends _HelloWorldTest {
 
     @BeforeEach
@@ -52,15 +52,16 @@ class HelloWorld_05_Print_CharsWithOffset_Test
     /**
      * Asserts {@link HelloWorld#print(char[]) print(chars)} method invokes
      * {@link HelloWorld#print(char[], int) set(array, offset)} method with given {@code array} and
-     * {@code 0}.
+     * {@code 0}, and returns tghe {@code chars}
      */
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
-        final var service = serviceInstance();
+        final var service = service();
         final var chars = new char[HelloWorld.BYTES];
+        final var index = 0;
         // ------------------------------------------------------------------------------------ when
-        final var result = service.print(chars);
+        final var result = service.print(chars, index);
         // ------------------------------------------------------------------------------------ then
         verify(service, times(1)).set(arrayCaptor().capture());
         final var array = arrayCaptor().getValue();

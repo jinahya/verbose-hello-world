@@ -72,7 +72,7 @@ class HelloWorld_09_Write_RandomAccessFile_Test
     void _InvokeSetArrayWriteArrayToFile_()
             throws IOException {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
+        var service = service();
         var file = mock(RandomAccessFile.class);
         // ------------------------------------------------------------------------------------ when
         var result = service.write(file);
@@ -100,7 +100,7 @@ class HelloWorld_09_Write_RandomAccessFile_Test
     void _Write12Bytes_(@TempDir File tempDir)
             throws IOException {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
+        var service = service();
         var tmp = createTempFile("tmp", null, tempDir);
         var pos = current().nextLong(1024);
         // ------------------------------------------------------------------------------------ when

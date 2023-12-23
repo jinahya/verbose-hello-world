@@ -50,7 +50,7 @@ class HelloWorld_04_Write_AsynchronousByteChannel_Arguments_Test
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
+        var service = service();
         var channel = (AsynchronousByteChannel) null;
         // ------------------------------------------------------------------------------- when/then
         assertThrows(

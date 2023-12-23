@@ -49,7 +49,7 @@ class HelloWorld_03_Set_Array_Test
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
-        final var service = serviceInstance();
+        final var service = service();
         final var array = new byte[HelloWorld.BYTES];
         // ------------------------------------------------------------------------------------ when
         final var result = service.set(array);

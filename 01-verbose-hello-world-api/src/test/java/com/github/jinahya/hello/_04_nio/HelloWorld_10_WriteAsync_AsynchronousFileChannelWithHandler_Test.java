@@ -71,7 +71,7 @@ class HelloWorld_10_WriteAsync_AsynchronousFileChannelWithHandler_Test
     @SuppressWarnings({"unchecked"})
     void _Completed_() {
         // ----------------------------------------------------------------------------------- given
-        final var service = serviceInstance();
+        final var service = service();
         final var channel = mock(AsynchronousFileChannel.class);
         final var writtenSoFar = new LongAdder();
         _stub_ToComplete(channel, writtenSoFar);
@@ -98,7 +98,7 @@ class HelloWorld_10_WriteAsync_AsynchronousFileChannelWithHandler_Test
     @SuppressWarnings({"unchecked"})
     void _Failed_() {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
+        var service = service();
         var channel = mock(AsynchronousFileChannel.class);
         var exc = _stub_ToFail(channel, mock(Throwable.class));
         var position = current().nextLong(MAX_VALUE - HelloWorld.BYTES);

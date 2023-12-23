@@ -70,14 +70,14 @@ class HelloWorld_03_Append_Path_Test
                 assert w >= 0;
             }
             return channel;
-        }).when(serviceInstance()).write(notNull(WritableByteChannel.class));
+        }).when(service()).write(notNull(WritableByteChannel.class));
     }
 
     @DisplayName("-> write(FileChannel.open(path, CREATE, WRITE, APPEND))")
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
-        final var service = serviceInstance();
+        final var service = service();
         final var path = mock(Path.class);
         final var channel = _stub_ToWriteSome(mock(FileChannel.class), null);
         try (var mock = mockStatic(FileChannel.class)) {
@@ -106,7 +106,7 @@ class HelloWorld_03_Append_Path_Test
     @畵蛇添足
     void __(@TempDir final Path tempDir) throws IOException {
         // ----------------------------------------------------------------------------------- given
-        final var service = serviceInstance();
+        final var service = service();
         final var path = Files.createTempFile(tempDir, null, null);
         JavaNioUtils.writeSome(path);
         final var size = size(path);

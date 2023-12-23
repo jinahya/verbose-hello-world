@@ -65,7 +65,7 @@ class HelloWorld_01_Send_Socket_Test
     void _InvokeWriteStreamWithSocketOutputStream_()
             throws IOException {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
+        var service = service();
         var socket = mock(Socket.class);                                     // <1>
         when(socket.getOutputStream()).thenReturn(mock(OutputStream.class)); // <3>
         // ------------------------------------------------------------------------------------ when

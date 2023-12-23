@@ -22,21 +22,16 @@ package com.github.jinahya.hello._02_io;
 
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello._HelloWorldTest;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
-import java.io.UncheckedIOException;
 
-import static com.github.jinahya.hello.HelloWorld.BYTES;
-import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -46,7 +41,11 @@ import static org.mockito.Mockito.mock;
  * @see HelloWorld_01_Write_OutputStream_Arguments_Test
  */
 @DisplayName("write(stream)")
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
+@SuppressWarnings({
+        "java:S101"
+})
 class HelloWorld_01_Write_OutputStream_Test
         extends _HelloWorldTest {
 
@@ -65,49 +64,15 @@ class HelloWorld_01_Write_OutputStream_Test
      */
     @DisplayName("(stream) -> stream.write(set(array))")
     @Test
-    void __()
-            throws IOException {
+    void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
-        var stream = mock(OutputStream.class);
+        final var service = service();
+        final var stream = mock(OutputStream.class);
         // ------------------------------------------------------------------------------------ when
-        var result = service.write(stream);
+        final var result = service.write(stream);
         // ------------------------------------------------------------------------------------ then
         // TODO: Verify, service.set(array[12]) invoked, once
         // TODO: Verify, stream.write(array) invoked, once
         // TODO: Assert, result is same as stream
-    }
-
-    @org.junit.jupiter.api.Disabled("not implemented yet")
-    // TODO: remove when implemented
-    @Test
-    void _ReadByteArrayInputStream_WriteByteArrayOutputStream()
-            throws IOException {
-        var service = serviceInstance();
-        var outputStream = service.write(new ByteArrayOutputStream(BYTES));
-        outputStream.flush();
-        var inputStream = new ByteArrayInputStream(outputStream.toByteArray());
-        var array = inputStream.readNBytes(BYTES);
-    }
-
-    @org.junit.jupiter.api.Disabled("not implemented yet")
-    // TODO: remove when implemented
-    @Test
-    void _ReadPipedInputStream_WritePipedOutputStream()
-            throws IOException, InterruptedException {
-        var service = serviceInstance();
-        try (var pos = new PipedOutputStream();
-             var pis = new PipedInputStream(pos, 1)) {
-            var thread = new Thread(() -> {
-                try {
-                    var array = pis.readNBytes(BYTES);
-                } catch (final IOException ioe) {
-                    throw new UncheckedIOException("failed to read", ioe);
-                }
-            });
-            thread.start();
-            service.write(pos).flush();
-            thread.join(SECONDS.toMillis(1L));
-        }
     }
 }

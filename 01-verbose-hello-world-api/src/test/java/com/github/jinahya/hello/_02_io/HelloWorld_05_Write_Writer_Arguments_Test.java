@@ -49,7 +49,7 @@ class HelloWorld_05_Write_Writer_Arguments_Test
     @Test
     void _ThrowNullPointerException_StreamIsNull() {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
+        var service = service();
         var writer = (Writer) null;
         // ------------------------------------------------------------------------------- when/then
         Assertions.assertThrows(

@@ -70,7 +70,7 @@ class HelloWorld_04_Write_AsynchronousByteChannel_Test
     void __()
             throws InterruptedException, ExecutionException {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
+        var service = service();
         var channel = mock(AsynchronousByteChannel.class);
         var writtenSoFar = new LongAdder();
         _stub_ToWriteSome(channel, writtenSoFar);

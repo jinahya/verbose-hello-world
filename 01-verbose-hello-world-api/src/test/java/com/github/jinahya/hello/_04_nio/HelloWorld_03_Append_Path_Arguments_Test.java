@@ -50,7 +50,7 @@ class HelloWorld_03_Append_Path_Arguments_Test
     @Test
     void _ThrowNullPointerException_PathIsNull() {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
+        var service = service();
         var path = (Path) null;
         // ------------------------------------------------------------------------------- when/then
         assertThrows(

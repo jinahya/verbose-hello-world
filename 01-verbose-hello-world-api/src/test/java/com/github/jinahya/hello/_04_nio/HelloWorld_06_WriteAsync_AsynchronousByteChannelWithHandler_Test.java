@@ -76,7 +76,7 @@ class HelloWorld_06_WriteAsync_AsynchronousByteChannelWithHandler_Test
     @SuppressWarnings({"unchecked"})
     void _Completed_() {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
+        var service = service();
         var channel = mock(AsynchronousByteChannel.class);
         var writtenSoFar = new LongAdder();
         _stub_ToComplete(channel, writtenSoFar);
@@ -106,7 +106,7 @@ class HelloWorld_06_WriteAsync_AsynchronousByteChannelWithHandler_Test
     @SuppressWarnings({"unchecked"})
     void _Failed_() {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
+        var service = service();
         var channel = mock(AsynchronousByteChannel.class);
         var exc = mock(Throwable.class);
         _stub_ToFail(channel, exc);

@@ -76,7 +76,7 @@ class HelloWorld_08_Write_AsynchronousFileChannel_Test
     void _PutBufferWriteBufferToChannel_()
             throws InterruptedException, ExecutionException {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
+        var service = service();
         var channel = mock(AsynchronousFileChannel.class);
         var writtenSoFar = new LongAdder();
         _stub_ToWriteSome(channel, writtenSoFar);

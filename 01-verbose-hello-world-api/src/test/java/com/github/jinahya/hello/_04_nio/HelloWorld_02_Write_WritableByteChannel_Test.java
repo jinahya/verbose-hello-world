@@ -77,7 +77,7 @@ class HelloWorld_02_Write_WritableByteChannel_Test
     void __()
             throws IOException {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
+        var service = service();
         var channel = mock(WritableByteChannel.class);               // <1>
         var writtenSoFar = new LongAdder();                          // <2>
         when(channel.write(argThat(b -> b != null && b.hasRemaining())))
@@ -105,7 +105,7 @@ class HelloWorld_02_Write_WritableByteChannel_Test
     @Test
     void _ReadByteArrayInputStream_WriteByteArrayOutputStream()
             throws IOException {
-        var service = serviceInstance();
+        var service = service();
         var output = new ByteArrayOutputStream(BYTES);
         var writable = service.write(newChannel(output));
         service.write(writable);
@@ -122,7 +122,7 @@ class HelloWorld_02_Write_WritableByteChannel_Test
     @Test
     void _ReadPipeSource_WritePipeSink()
             throws IOException, InterruptedException {
-        var service = serviceInstance();
+        var service = service();
         var pipe = Pipe.open();
         var thread = new Thread(() -> {
             try {
