@@ -22,6 +22,8 @@ package com.github.jinahya.hello._04_nio;
 
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello._HelloWorldTest;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -41,7 +43,11 @@ import static org.mockito.Mockito.mock;
  * @see HelloWorld_05_WriteAsync_AsynchronousByteChannelWithExecutor_Test
  */
 @DisplayName("write(channel, executor) arguments")
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
+@SuppressWarnings({
+        "java:S101"
+})
 class HelloWorld_05_WriteAsync_AsynchronousByteChannelWithExecutor_Arguments_Test
         extends _HelloWorldTest {
 
@@ -51,13 +57,13 @@ class HelloWorld_05_WriteAsync_AsynchronousByteChannelWithExecutor_Arguments_Tes
      * method throws a {@link NullPointerException} when the {@code channel} argument is
      * {@code null}.
      */
-    @DisplayName("(null, )NullPointerException")
+    @DisplayName("[channel == null] -> NullPointerException")
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
         // ----------------------------------------------------------------------------------- given
-        var service = service();
-        var channel = (AsynchronousByteChannel) null;
-        var executor = mock(Executor.class);
+        final var service = service();
+        final var channel = (AsynchronousByteChannel) null;
+        final var executor = mock(Executor.class);
         // ------------------------------------------------------------------------------- when/then
         assertThrows(
                 NullPointerException.class,
@@ -71,7 +77,7 @@ class HelloWorld_05_WriteAsync_AsynchronousByteChannelWithExecutor_Arguments_Tes
      * method throws a {@link NullPointerException} when the {@code executor} argument is
      * {@code null}.
      */
-    @DisplayName("(, null)NullPointerException")
+    @DisplayName("[executor == null] -> NullPointerException")
     @Test
     void _ThrowNullPointerException_ExecutorIsNull() {
         // ----------------------------------------------------------------------------------- given

@@ -36,6 +36,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.LongAdder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -84,5 +85,6 @@ class HelloWorld_04_Write_AsynchronousByteChannel_Test extends _HelloWorldTest {
         // TODO: Verify, channel.write(buffer), invoked, at least once
         // TODO: Assert, writtenSoFat.intValue() is equal to BYTES
         // TODO: Assert, result is same as channel
+        assertSame(channel, result);
     }
 }

@@ -507,8 +507,7 @@ public interface HelloWorld {
      * @see #write(WritableByteChannel)
      * @see FileChannel#force(boolean)
      */
-    default <T extends Path> T append(T path)
-            throws IOException {
+    default <T extends Path> T append(final T path) throws IOException {
         Objects.requireNonNull(path, "path is null");
         // TODO: Open a file channel from the path as an appending mode.
         // TODO: Invoke write(channel) method with it.
@@ -533,17 +532,13 @@ public interface HelloWorld {
      * @see #put(ByteBuffer)
      * @see AsynchronousByteChannel#write(ByteBuffer)
      */
-    default <T extends AsynchronousByteChannel> T write(T channel)
+    default <T extends AsynchronousByteChannel> T write(final T channel)
             throws InterruptedException, ExecutionException {
         Objects.requireNonNull(channel, "channel is null");
         final var buffer = ByteBuffer.allocate(BYTES);
         put(buffer);
         buffer.flip();
-        while (buffer.hasRemaining()) {
-            // TODO: Invoke channel.write(buffer) which returns a Future<Integer>
-            // TODO: Get the result of the future
-            break; // TODO: remove!
-        }
+        // TODO: write buffer to channel while buffer has remaining
         return channel;
     }
 
