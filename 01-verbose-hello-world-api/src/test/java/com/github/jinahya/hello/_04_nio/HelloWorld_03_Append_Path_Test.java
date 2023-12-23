@@ -33,16 +33,13 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
+import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import java.util.concurrent.ThreadLocalRandom;
 
-import static com.github.jinahya.hello.HelloWorld.BYTES;
-import static java.nio.ByteBuffer.allocate;
-import static java.nio.file.Files.createTempFile;
 import static java.nio.file.Files.size;
-import static java.nio.file.StandardOpenOption.WRITE;
-import static java.util.concurrent.ThreadLocalRandom.current;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.notNull;
@@ -90,8 +87,7 @@ class HelloWorld_03_Append_Path_Test
             // -------------------------------------------------------------------------------- when
             final var result = service.append(path);
             // -------------------------------------------------------------------------------- then
-            // TODO: Verify, FileChannel.open(path, options) invoked, once.
-            // TODO: Assert, options contains only WRITE, CREATE, and APPEND.
+            // TODO: Verify, FileChannel.open(path, WRITE, CREATE, APPEND) invoked, once.
             // TODO: Verify, write(channel) invoked, once.
             // TODO: Verify, channel.force(true) invoked, once.
             // TODO: Verify, channel.close() invoked, once.
@@ -106,32 +102,30 @@ class HelloWorld_03_Append_Path_Test
      * @param tempDir a temporary directory to test with.
      * @throws IOException if an I/O error occurs.
      */
-    @org.junit.jupiter.api.Disabled("not implemented yet")
-    // TODO: Remove when implemented
-    @DisplayName("(path) -> 12 bytes are appended")
+    @DisplayName("-> 12 bytes are appended")
     @Test
     @畵蛇添足
-    void __(@TempDir Path tempDir)
-            throws IOException {
+    void __(@TempDir Path tempDir) throws IOException {
         // ----------------------------------------------------------------------------------- given
-        var service = serviceInstance();
-        var path = createTempFile(tempDir, null, null);
-        if (current().nextBoolean()) {
-            // write some bytes to the path
-            try (var channel = FileChannel.open(path, WRITE)) {
-                var buffer = allocate(current().nextInt(1024));
+        final var service = serviceInstance();
+        final var path = Files.createTempFile(tempDir, null, null);
+        // write some bytes to the path
+        if (ThreadLocalRandom.current().nextBoolean()) {
+            try (var channel = FileChannel.open(path, StandardOpenOption.WRITE)) {
+                final var buffer = ByteBuffer.allocate(ThreadLocalRandom.current().nextInt(1024));
                 while (buffer.hasRemaining()) {
-                    var written = channel.write(buffer);
+                    final var w = channel.write(buffer);
+                    assert w >= 0;
                 }
                 channel.force(false);
             }
         }
-        var size = size(path);
+        final var size = size(path);
         log.debug("path.size before: {}", size);
         // ------------------------------------------------------------------------------------ when
-        var result = service.append(path);
-        // ------------------------------------------------------------------------------------ then
+        final var result = service.append(path);
         log.debug("path.size after: {}", size(path));
-        assertEquals(size + BYTES, size(path));
+        // ------------------------------------------------------------------------------------ then
+        // TODO: assert path's size is equal to size + HelloWorld.BYTE
     }
 }
