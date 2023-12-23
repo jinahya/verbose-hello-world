@@ -119,12 +119,16 @@ public final class _HelloWorldTestHelper {
         requireMock(channel);
         given(channel.write(argThat(b -> b != null && b.hasRemaining()))).willAnswer(i -> {
             final var src = i.getArgument(0, ByteBuffer.class);
-            final var written = ThreadLocalRandom.current().nextInt(1, src.remaining() + 1);
-            src.position(src.position() + written);
-            if (writtenSoFar != null) {
-                writtenSoFar.add(written);
-            }
-            return CompletableFuture.completedFuture(written);
+            final var future = mock(Future.class);
+            given(future.get()).willAnswer(g -> {
+                final var written = ThreadLocalRandom.current().nextInt(1, src.remaining() + 1);
+                src.position(src.position() + written);
+                if (writtenSoFar != null) {
+                    writtenSoFar.add(written);
+                }
+                return written;
+            });
+            return future;
         });
         return channel;
     }
