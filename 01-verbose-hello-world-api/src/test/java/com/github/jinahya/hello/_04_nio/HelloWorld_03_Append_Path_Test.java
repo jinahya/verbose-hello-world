@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.file.OpenOption;
@@ -46,9 +47,8 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.ArgumentMatchers.same;
-import static org.mockito.BDDMockito.willAnswer;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
 
 /**
@@ -66,16 +66,15 @@ class HelloWorld_03_Append_Path_Test
         extends _HelloWorldTest {
 
     @BeforeEach
-    void _beforeEach()
-            throws IOException {
-        willAnswer(i -> {
-            var channel = i.getArgument(0, WritableByteChannel.class);
-            for (var src = allocate(BYTES); src.hasRemaining(); ) {
-                var w = channel.write(src);
+    void _beforeEach() throws IOException {
+        doAnswer(i -> {
+            final var channel = i.getArgument(0, WritableByteChannel.class);
+            for (final var src = ByteBuffer.allocate(HelloWorld.BYTES); src.hasRemaining(); ) {
+                final var w = channel.write(src);
                 assert w >= 0;
             }
             return channel;
-        }).given(serviceInstance()).write(notNull(WritableByteChannel.class));
+        }).when(serviceInstance()).write(notNull(WritableByteChannel.class));
     }
 
     @DisplayName("-> write(FileChannel.open(path, CREATE, WRITE, APPEND))")
