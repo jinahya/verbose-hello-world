@@ -185,8 +185,15 @@ public final class JavaNioUtils {
     }
 
     // -----------------------------------------------------------------------------------------------------------------
-    public static Path writeSome(final Path path)
-            throws IOException {
+
+    /**
+     * Writes some (possibly zero) bytes to specified path.
+     *
+     * @param path the path to which bytes are written.
+     * @return given {@code path}.
+     * @throws IOException if an I/O error occurs.
+     */
+    public static Path writeSome(final Path path) throws IOException {
         if (!Files.isRegularFile(Objects.requireNonNull(path, "path is null"))) {
             throw new IllegalArgumentException("not a regular path: " + path);
         }

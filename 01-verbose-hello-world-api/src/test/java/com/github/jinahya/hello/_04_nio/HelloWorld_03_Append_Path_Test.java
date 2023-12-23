@@ -22,6 +22,7 @@ package com.github.jinahya.hello._04_nio;
 
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello._HelloWorldTest;
+import com.github.jinahya.hello.util.java.nio.JavaNioUtils;
 import com.github.jinahya.hello.畵蛇添足;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,8 +37,6 @@ import java.nio.channels.WritableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
-import java.util.concurrent.ThreadLocalRandom;
 
 import static java.nio.file.Files.size;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -105,27 +104,17 @@ class HelloWorld_03_Append_Path_Test
     @DisplayName("-> 12 bytes are appended")
     @Test
     @畵蛇添足
-    void __(@TempDir Path tempDir) throws IOException {
+    void __(@TempDir final Path tempDir) throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = serviceInstance();
         final var path = Files.createTempFile(tempDir, null, null);
-        // write some bytes to the path
-        if (ThreadLocalRandom.current().nextBoolean()) {
-            try (var channel = FileChannel.open(path, StandardOpenOption.WRITE)) {
-                final var buffer = ByteBuffer.allocate(ThreadLocalRandom.current().nextInt(1024));
-                while (buffer.hasRemaining()) {
-                    final var w = channel.write(buffer);
-                    assert w >= 0;
-                }
-                channel.force(false);
-            }
-        }
+        JavaNioUtils.writeSome(path);
         final var size = size(path);
         log.debug("path.size before: {}", size);
         // ------------------------------------------------------------------------------------ when
         final var result = service.append(path);
         log.debug("path.size after: {}", size(path));
         // ------------------------------------------------------------------------------------ then
-        // TODO: assert path's size is equal to size + HelloWorld.BYTE
+        // TODO: assert path's size is equal to (size + HelloWorld.BYTE)
     }
 }
