@@ -115,7 +115,7 @@ class HelloWorld_07_WriteCompletable_AsynchronousByteChannel_Test extends _Hello
         // ------------------------------------------------------------------------------------ when
         final var future = service.writeCompletable(channel);
         // ------------------------------------------------------------------------------------ then
-        // TODO: Get the result of the <future> with a timeout.
+        // TODO: Get the result of the <future>
         // TODO: Verify, service.writeAsync(same(chanel), notNull(), any()) invoked, once.
         // TODO: Assert, result is same as channel.
     }
