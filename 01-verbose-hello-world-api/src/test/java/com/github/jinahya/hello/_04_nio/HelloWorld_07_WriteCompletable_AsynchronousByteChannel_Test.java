@@ -96,13 +96,23 @@ class HelloWorld_07_WriteCompletable_AsynchronousByteChannel_Test extends _Hello
     @Test
     void _CompletedExceptionally_() {
         // ----------------------------------------------------------------------------------- given
-        var service = service();
-        var channel = Mockito.mock(AsynchronousByteChannel.class);
-        var exc = _stub_ToFail(channel, Mockito.mock(Throwable.class));
+        final var service = service();
+        final var channel = Mockito.mock(AsynchronousByteChannel.class);
+        final var exc = Mockito.mock(Throwable.class);
+        Mockito.doAnswer(i -> {
+            final var handler = i.getArgument(1, CompletionHandler.class);
+            final var attachment = i.getArgument(2);
+            handler.failed(exc, attachment);
+            return null;
+        }).when(service).writeAsync(
+                ArgumentMatchers.same(channel),
+                ArgumentMatchers.notNull(),
+                ArgumentMatchers.any()
+        );
         // ------------------------------------------------------------------------------------ when
-        var future = service.writeCompletable(channel);
+        final var future = service.writeCompletable(channel);
         // ------------------------------------------------------------------------------------ then
-        // TODO: Join the result of the <future> handling to return what has been thrown
-        // TODO: Assert, the thrown is same as <exc>
+        // TODO: join the result of the <future> handling to return what has been thrown
+        // TODO: assert, the thrown is same as <exc>
     }
 }
