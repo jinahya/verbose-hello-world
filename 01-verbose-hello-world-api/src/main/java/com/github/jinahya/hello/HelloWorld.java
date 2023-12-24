@@ -155,15 +155,13 @@ public interface HelloWorld {
      * @see #set(byte[])
      * @see OutputStream#write(byte[])
      */
-    default <T extends OutputStream> T write(T stream)
-            throws IOException {
+    default <T extends OutputStream> T write(T stream) throws IOException {
         if (stream == null) {
             throw new NullPointerException("stream is null");
         }
-        // TODO: Create an array of 12 bytes
-        // TODO: Invoke set(byte[]) method with the array
+        // TODO: invoke set(array[12])
         // TODO: Write the array to the stream
-        return null;
+        return stream;
     }
 
     /**

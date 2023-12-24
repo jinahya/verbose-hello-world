@@ -46,23 +46,22 @@ import static org.mockito.Mockito.mock;
 @SuppressWarnings({
         "java:S101"
 })
-class HelloWorld_01_Write_OutputStream_Test
-        extends _HelloWorldTest {
+class HelloWorld_01_Write_OutputStream_Test extends _HelloWorldTest {
 
     @BeforeEach
-    void _beforeEach() {
+    void beforeEach() {
         setArray_willReturnTheArray();
     }
 
     /**
      * Asserts {@link HelloWorld#write(OutputStream) write(stream)} method invokes
      * {@link HelloWorld#set(byte[]) set(array)} method with an array of {@value HelloWorld#BYTES}
-     * bytes, and invokes {@link OutputStream#write(byte[])} method on {@code stream} with the
-     * {@code array}.
+     * bytes, invokes {@link OutputStream#write(byte[])} method on {@code stream} with the
+     * {@code array}, and returns the {@code stream}.
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("(stream) -> stream.write(set(array))")
+    @DisplayName("-> set[array[12]) -> stream.write(set(array))")
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
@@ -71,8 +70,10 @@ class HelloWorld_01_Write_OutputStream_Test
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(stream);
         // ------------------------------------------------------------------------------------ then
-        // TODO: Verify, service.set(array[12]) invoked, once
-        // TODO: Verify, stream.write(array) invoked, once
-        // TODO: Assert, result is same as stream
+        // TODO: verify, service.set(arrayCaptor().capture()) invoked, once
+        // TODO: verify, arrayCaptor().getValue() is not null
+        // TODO: verify, arrayCaptor().getValue()'s length is equal to HelloWorld.BYTES
+        // TODO: verify, stream.write(array) invoked, once
+        // TODO: assert, result is same as stream
     }
 }

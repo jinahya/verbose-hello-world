@@ -25,7 +25,6 @@ import com.github.jinahya.hello._HelloWorldTest;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -46,14 +45,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SuppressWarnings({
         "java:S101"
 })
-class HelloWorld_01_Write_OutputStream_Arguments_Test
-        extends _HelloWorldTest {
+class HelloWorld_01_Write_OutputStream_Arguments_Test extends _HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#write(OutputStream) write(stream)} method throws a
+     * Verifies {@link HelloWorld#write(OutputStream) write(stream)} method throws a
      * {@link NullPointerException} when the {@code stream} argument is {@code null}.
      */
-    @DisplayName("(null)NullPointerException")
+    @DisplayName("[stream == null] -> NullPointerException")
     @Test
     void _ThrowNullPointerException_StreamIsNull() {
         // ----------------------------------------------------------------------------------- given
