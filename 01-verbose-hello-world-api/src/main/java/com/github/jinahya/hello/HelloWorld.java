@@ -404,9 +404,7 @@ public interface HelloWorld {
     default <T extends AsynchronousByteChannel> T write(final T channel)
             throws InterruptedException, ExecutionException {
         Objects.requireNonNull(channel, "channel is null");
-        final var buffer = ByteBuffer.allocate(BYTES);
-        put(buffer);
-        buffer.flip();
+        final var buffer = put(ByteBuffer.allocate(BYTES).flip();
         // TODO: write buffer to channel while buffer has remaining
         return channel;
     }
@@ -414,7 +412,7 @@ public interface HelloWorld {
     /**
      * Writes, asynchronously, the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>
      * to specified channel, and notifies a completion (or a failure) to specified handler with
-     * specified attachment.
+     * specified channel and specified attachment.
      *
      * @param <C>        channel type parameter
      * @param channel    the channel to which bytes are written.
@@ -427,9 +425,7 @@ public interface HelloWorld {
             final A attachment) {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(handler, "handler is null");
-        final var buffer = ByteBuffer.allocate(BYTES);
-        put(buffer);
-        buffer.flip();
+        final var buffer = put(ByteBuffer.allocate(BYTES).flip();
         // TODO: keep invoking channel.write(buffer, attachment, a-handler)
         // TODO: while buffer has remaining
         // TODO: and, eventually, invoke handler.complete(channel, attachment)
