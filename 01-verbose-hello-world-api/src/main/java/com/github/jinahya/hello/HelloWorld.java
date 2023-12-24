@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.io.UncheckedIOException;
-import java.io.Writer;
 import java.net.Socket;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
@@ -38,7 +37,6 @@ import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
-import java.nio.charset.Charset;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -142,34 +140,6 @@ public interface HelloWorld {
     }
 
     /**
-     * Appends a string of the <a href="#hello-world-bytes">hello-world-bytes</a> to specified
-     * appendable.
-     *
-     * @param appendable the appendable to which the string is appended.
-     * @return given {@code appendable}.
-     * @throws NullPointerException if {@code appendable} is {@code null}.
-     * @implSpec The default implementation invokes {@link #set(byte[]) set(array)} method with an
-     * array of {@value #BYTES} bytes, constructs a {@code String} by invoking
-     * {@link String#String(byte[], Charset) new String(bytes, charset)} constructor with the
-     * {@code array} and {@link java.nio.charset.StandardCharsets#US_ASCII US_ASCII},
-     * {@link Appendable#append(CharSequence) appends} the {@code String} to the {@code appendable},
-     * and returns the {@code appendable}.
-     * @see #set(byte[])
-     * @see java.nio.charset.StandardCharsets#US_ASCII
-     * @see String#String(byte[], Charset)
-     * @see Appendable#append(CharSequence)
-     */
-    default <T extends Appendable> T append(final T appendable) throws IOException {
-        if (appendable == null) {
-            throw new NullPointerException("appendable is null");
-        }
-        // TODO: invoke set(array[12])
-        // TODO: create a String with array and StandardCharset.US_ASCII
-        // TODO: append the String to appendable
-        return appendable;
-    }
-
-    /**
      * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified output stream.
      *
      * @param <T>    stream type parameter
@@ -194,27 +164,6 @@ public interface HelloWorld {
         // TODO: Invoke set(byte[]) method with the array
         // TODO: Write the array to the stream
         return null;
-    }
-
-    /**
-     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified writer.
-     *
-     * @param <T>    writer type parameter
-     * @param writer the writer to which characters are written.
-     * @return given {@code writer}.
-     * @throws NullPointerException if {@code writer} is {@code null}.
-     * @throws IOException          if an I/O error occurs.
-     * @apiNote This method does not {@link Writer#flush() flush} the {@code writer}.
-     * @implSpec The default implementation invokes {@link #append(Appendable) append(appendable)}
-     * with {@code writer}, and returns the {@code writer}.
-     * @see #append(Appendable)
-     */
-    default <T extends Writer> T write(final T writer) throws IOException {
-        if (writer == null) {
-            throw new NullPointerException("writer is null");
-        }
-        append(writer);
-        return writer;
     }
 
     /**
