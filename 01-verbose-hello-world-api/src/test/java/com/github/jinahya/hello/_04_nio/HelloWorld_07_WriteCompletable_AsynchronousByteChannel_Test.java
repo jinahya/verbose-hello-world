@@ -94,6 +94,7 @@ class HelloWorld_07_WriteCompletable_AsynchronousByteChannel_Test extends _Hello
      */
     @DisplayName("(channel)completedExceptionally")
     @Test
+    @SuppressWarnings({"unchecked"})
     void _CompletedExceptionally_() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
