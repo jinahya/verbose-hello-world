@@ -93,8 +93,9 @@ class HelloWorld_06_WriteAsync_AsynchronousByteChannelWithHandler_Test extends _
         Assertions.assertNotNull(buffer);
         Assertions.assertEquals(HelloWorld.BYTES, buffer.capacity());
         // TODO: verify, handler.completed(channel, attachment) invoked, once, within some time.
-        // TODO: verify, channel.write(buffer, attachment, handler) invoked, at least once.
+        // TODO: verify, channel.write(buffer, attachment, a-handler) invoked, at least once.
         // TODO: assert, writtenSoFar.intValue() is equal to BYTES
+        // TODO: assert, buffer ha no remaining
     }
 
     /**
