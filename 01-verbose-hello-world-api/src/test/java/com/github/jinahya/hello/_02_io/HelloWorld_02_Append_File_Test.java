@@ -27,7 +27,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 import org.mockito.MockedConstruction.MockInitializer;
 import org.mockito.Mockito;
 
@@ -36,8 +35,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import static java.io.File.createTempFile;
-import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
 /**
@@ -91,30 +88,5 @@ class HelloWorld_02_Append_File_Test
             // TODO: verify, construction.constructed().get(0).close() invoked, once.
             assertSame(file, result);
         }
-    }
-
-    /**
-     * Asserts {@link HelloWorld#append(File) append(file)} method appends {@value HelloWorld#BYTES}
-     * bytes to the end of the {@code file}.
-     *
-     * @param tempDir a temporary directory to test with.
-     * @throws IOException if an I/O error occurs.
-     */
-    @DisplayName("(file) -> 12 bytes are appended to the file")
-    @Test
-    void _12BytesAppended_(@TempDir File tempDir)
-            throws IOException {
-        // ----------------------------------------------------------------------------------- given
-        var service = service();
-        var file = createTempFile("tmp", null, tempDir);
-        if (current().nextBoolean()) {
-            // TODO: (Optional) Write some bytes to the file
-        }
-        var length = file.length();
-        // ------------------------------------------------------------------------------------ when
-        var result = service.append(file);
-        // ------------------------------------------------------------------------------------ then
-        // TODO: Assert, 12 bytes are appended to the end of the file.
-        assertSame(file, result);
     }
 }
