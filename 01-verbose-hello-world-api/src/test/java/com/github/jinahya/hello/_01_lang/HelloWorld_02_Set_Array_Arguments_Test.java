@@ -35,7 +35,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_03_Set_Array_Test
+ * @see HelloWorld_02_Set_Array_Test
  */
 @DisplayName("set(array) arguments")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
@@ -43,7 +43,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @SuppressWarnings({
         "java:S101"
 })
-class HelloWorld_03_Set_Array_Arguments_Test extends _HelloWorldTest {
+class HelloWorld_02_Set_Array_Arguments_Test extends _HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#set(byte[]) set(array)} method throws a

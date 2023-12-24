@@ -30,14 +30,14 @@ import org.junit.jupiter.api.Test;
  * A class for unit-testing {@link HelloWorld#set(byte[])} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_03_Set_Array_Arguments_Test
+ * @see HelloWorld_02_Set_Array_Arguments_Test
  */
 @DisplayName("set(array)")
 @Slf4j
 @SuppressWarnings({
         "java:S101"
 })
-class HelloWorld_03_Set_Array_Test extends _HelloWorldTest {
+class HelloWorld_02_Set_Array_Test extends _HelloWorldTest {
 
     /**
      * Verifies that {@link HelloWorld#set(byte[]) set(array)} method invokes
