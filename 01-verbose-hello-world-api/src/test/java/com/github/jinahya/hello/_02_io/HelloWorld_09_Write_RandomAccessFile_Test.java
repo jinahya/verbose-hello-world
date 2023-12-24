@@ -56,7 +56,7 @@ class HelloWorld_09_Write_RandomAccessFile_Test
 
     @BeforeEach
     void _beforeEach() {
-        setArray_ToReturnTheArray();
+        setArray_willReturnTheArray();
     }
 
     /**

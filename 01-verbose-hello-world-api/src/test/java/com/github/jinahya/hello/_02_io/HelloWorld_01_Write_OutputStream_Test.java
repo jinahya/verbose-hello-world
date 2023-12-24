@@ -51,7 +51,7 @@ class HelloWorld_01_Write_OutputStream_Test
 
     @BeforeEach
     void _beforeEach() {
-        setArray_ToReturnTheArray();
+        setArray_willReturnTheArray();
     }
 
     /**

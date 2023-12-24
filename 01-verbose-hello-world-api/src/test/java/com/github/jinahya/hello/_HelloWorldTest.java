@@ -326,11 +326,11 @@ public abstract class _HelloWorldTest {
      * Stubs {@code serviceInstance}'s {@link HelloWorld#set(byte[]) set(array)} method to just
      * return the {@code array}.
      */
-    protected final void setArray_ToReturnTheArray() {
-//        Mockito.doAnswer(i -> i.getArgument(0))
-//                .when(service.set(notNull(byte[].class)));  // <1>
-        BDDMockito.willAnswer(i -> i.getArgument(0))
-                .given(service).set(notNull(byte[].class));
+    protected final void setArray_willReturnTheArray() {
+        Mockito.doAnswer(i -> i.getArgument(0))
+                .when(service.set(notNull(byte[].class)));  // <1>
+//        BDDMockito.willAnswer(i -> i.getArgument(0))
+//                .given(service).set(notNull(byte[].class));
     }
 
     /**

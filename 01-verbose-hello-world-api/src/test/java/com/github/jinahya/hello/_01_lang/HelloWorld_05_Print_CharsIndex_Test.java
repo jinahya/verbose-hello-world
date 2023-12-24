@@ -47,7 +47,7 @@ class HelloWorld_05_Print_CharsIndex_Test extends _HelloWorldTest {
 
     @BeforeEach
     void beforeEach() {
-        setArray_ToReturnTheArray();
+        setArray_willReturnTheArray();
     }
 
     /**
