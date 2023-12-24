@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * arguments verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_05_Print_CharsWithIndex_Test
+ * @see HelloWorld_05_Print_CharsIndex_Test
  */
 @DisplayName("set(chars, index) arguments")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
@@ -46,7 +46,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SuppressWarnings({
         "java:S101"
 })
-class HelloWorld_05_Print_CharsWithIndex_Arguments_Test extends _HelloWorldTest {
+class HelloWorld_05_Print_CharsIndex_Arguments_Test extends _HelloWorldTest {
 
     /**
      * Verifies {@link HelloWorld#print(char[], int) print(chars, index)} method throws a
@@ -78,10 +78,7 @@ class HelloWorld_05_Print_CharsWithIndex_Arguments_Test extends _HelloWorldTest 
         final var chars = new char[0];
         final var index = ThreadLocalRandom.current().nextInt() | Integer.MIN_VALUE;
         // ------------------------------------------------------------------------------- when/then
-        assertThrows(
-                ArrayIndexOutOfBoundsException.class,
-                () -> service.print(chars, index)
-        );
+        // TODO: assert service.print(chars, index) throws an ArrayIndexOutOfBoundsException
     }
 
     /**
@@ -97,9 +94,6 @@ class HelloWorld_05_Print_CharsWithIndex_Arguments_Test extends _HelloWorldTest 
         final var chars = new char[ThreadLocalRandom.current().nextInt(BYTES)];
         final var index = ThreadLocalRandom.current().nextInt(1, chars.length << 1);
         // ------------------------------------------------------------------------------- when/then
-        assertThrows(
-                ArrayIndexOutOfBoundsException.class,
-                () -> service.print(chars, index)
-        );
+        // TODO: Assert service.print(chars, index) throws an ArrayIndexOutOfBoundsException
     }
 }

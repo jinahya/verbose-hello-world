@@ -313,20 +313,24 @@ public abstract class _HelloWorldTest {
      * to just return the {@code array} argument.
      */
     @BeforeEach
-    void _stub_SetArrayWithIndex_ToReturnTheArray() {
-        when(service.set(any(byte[].class),
-                         anyInt()))  // <1>
-                .thenAnswer(i -> i.getArgument(0)); // <2>
+    void setArrayIndex_willReturnArray() {
+        given(service.set(notNull()))
+                .willAnswer(i -> i.getArgument(0));
+//        when(service.set(any(byte[].class),
+//                         anyInt()))  // <1>
+//                .thenAnswer(i -> i.getArgument(0)); // <2>
     }
 
     /**
      * Stubs {@code serviceInstance}'s {@link HelloWorld#set(byte[]) set(array)} method to just
      * return the {@code array}.
      */
-    protected final void _stub_SetArray_ToReturnTheArray() {
-        doAnswer(i -> i.getArgument(0))
-                .when(service)
-                .set(notNull(byte[].class));
+    protected final void setArray_ToReturnTheArray() {
+        given(service.set(notNull()))
+                .willAnswer(i -> i.getArgument(0));
+//        doAnswer(i -> i.getArgument(0))
+//                .when(service)
+//                .set(notNull(byte[].class));
     }
 
     /**

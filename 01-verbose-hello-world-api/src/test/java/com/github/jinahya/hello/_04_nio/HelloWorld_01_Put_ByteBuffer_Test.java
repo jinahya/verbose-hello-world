@@ -46,7 +46,7 @@ class HelloWorld_01_Put_ByteBuffer_Test
 
     @BeforeEach
     void _beforeEach() {
-        _stub_SetArray_ToReturnTheArray();
+        setArray_ToReturnTheArray();
     }
 
     /**

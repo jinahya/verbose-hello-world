@@ -22,6 +22,8 @@ package com.github.jinahya.hello._01_lang;
 
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello._HelloWorldTest;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -37,22 +39,25 @@ import static org.mockito.Mockito.verify;
  * A class for unit-testing {@link HelloWorld#print(char[], int) print(chars, index)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_05_Print_CharsWithIndex_Arguments_Test
+ * @see HelloWorld_05_Print_CharsIndex_Arguments_Test
  */
 @DisplayName("set(chars, index)")
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_05_Print_CharsWithIndex_Test
-        extends _HelloWorldTest {
+@SuppressWarnings({
+        "java:S101"
+})
+class HelloWorld_05_Print_CharsIndex_Test extends _HelloWorldTest {
 
     @BeforeEach
-    void _beforeEach() {
-        _stub_SetArray_ToReturnTheArray();
+    void beforeEach() {
+        setArray_ToReturnTheArray();
     }
 
     /**
      * Asserts {@link HelloWorld#print(char[]) print(chars)} method invokes
      * {@link HelloWorld#print(char[], int) set(array, offset)} method with given {@code array} and
-     * {@code 0}, and returns tghe {@code chars}
+     * {@code 0}, and returns the {@code chars}
      */
     @Test
     void __() {
