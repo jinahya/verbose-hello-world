@@ -25,14 +25,13 @@ import com.github.jinahya.hello._HelloWorldTest;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.CompletionHandler;
-
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
 
 /**
  * A class for testing
@@ -45,9 +44,7 @@ import static org.mockito.Mockito.mock;
 @DisplayName("write(channel, handler, attachment) arguments")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-@SuppressWarnings({
-        "java:S101"
-})
+@SuppressWarnings({"java:S101"})
 class HelloWorld_06_WriteAsync_AsynchronousByteChannelWithHandler_Arguments_Test
         extends _HelloWorldTest {
 
@@ -64,9 +61,9 @@ class HelloWorld_06_WriteAsync_AsynchronousByteChannelWithHandler_Arguments_Test
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var channel = (AsynchronousByteChannel) null;
-        final var handler = mock(CompletionHandler.class);
+        final var handler = Mockito.mock(CompletionHandler.class);
         // ------------------------------------------------------------------------------- when/then
-        assertThrows(
+        Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.writeAsync(channel, handler, null)
         );
@@ -83,11 +80,11 @@ class HelloWorld_06_WriteAsync_AsynchronousByteChannelWithHandler_Arguments_Test
     void _ThrowNullPointerException_HandlerIsNull() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        final var channel = mock(AsynchronousByteChannel.class);
+        final var channel = Mockito.mock(AsynchronousByteChannel.class);
         final var handler = (CompletionHandler<AsynchronousByteChannel, Object>) null;
         final var attachment = (Void) null;
         // ------------------------------------------------------------------------------- when/then
-        assertThrows(
+        Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.writeAsync(channel, handler, attachment)
         );

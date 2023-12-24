@@ -41,7 +41,6 @@ import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Objects;
-import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
@@ -410,29 +409,6 @@ public interface HelloWorld {
         buffer.flip();
         // TODO: write buffer to channel while buffer has remaining
         return channel;
-    }
-
-    /**
-     * Writes, asynchronously, the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>
-     * to specified channel using specified executor.
-     *
-     * @param <T>      channel type parameter
-     * @param channel  the channel to which bytes are written.
-     * @param executor the executor.
-     * @return a future of given {@code channel} that will, some time in the future, write the
-     * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to {@code channel}.
-     * @see #write(AsynchronousByteChannel)
-     * @see FutureTask
-     * @see Executor#execute(Runnable)
-     */
-    default <T extends AsynchronousByteChannel> Future<T> writeAsync(final T channel,
-                                                                     final Executor executor) {
-        Objects.requireNonNull(channel, "channel is null");
-        Objects.requireNonNull(executor, "executor is null");
-        final Callable<T> callable = () -> write(channel);
-        final var command = new FutureTask<>(callable);
-        executor.execute(command); // as Runnable
-        return command;            // as Future<T>
     }
 
     /**
