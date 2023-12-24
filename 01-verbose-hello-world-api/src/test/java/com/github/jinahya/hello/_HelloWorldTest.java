@@ -296,6 +296,16 @@ public abstract class _HelloWorldTest {
     }
 
     /**
+     * Stubs {@code service}'s {@link HelloWorld#write(OutputStream) write(stream)} method to just
+     * return the {@code stream} argument.
+     */
+    protected final void writeStream_willReturnStream() throws IOException {
+        Mockito.doAnswer(i -> i.getArgument(0))
+                .when(service)
+                .write(any(OutputStream.class);
+    }
+
+    /**
      * Stubs {@code service}'s {@link HelloWorld#write(OutputStream) write(stream)} method to write
      * {@value HelloWorld#BYTES} bytes to the {@code stream}, and return the {@code stream}.
      */

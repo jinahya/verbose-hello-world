@@ -22,6 +22,8 @@ package com.github.jinahya.hello._02_io;
 
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello._HelloWorldTest;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,9 +41,10 @@ import java.io.IOException;
  * @see HelloWorld_07_Write_DataOutput_Arguments_Test
  */
 @DisplayName("write(data)")
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_07_Write_DataOutput_Test
-        extends _HelloWorldTest {
+@SuppressWarnings({"java:S101"})
+class HelloWorld_07_Write_DataOutput_Test extends _HelloWorldTest {
 
     @BeforeEach
     void beforeEach() {

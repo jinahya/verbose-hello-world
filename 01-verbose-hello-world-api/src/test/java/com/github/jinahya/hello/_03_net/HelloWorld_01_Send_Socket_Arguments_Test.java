@@ -22,6 +22,8 @@ package com.github.jinahya.hello._03_net;
 
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello._HelloWorldTest;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,9 +40,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * @see HelloWorld_01_Send_Socket_Test
  */
 @DisplayName("send(socket) arguments")
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_01_Send_Socket_Arguments_Test
-        extends _HelloWorldTest {
+@SuppressWarnings({"java:S101"})
+class HelloWorld_01_Send_Socket_Arguments_Test extends _HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#send(Socket) send(socket)} method throws a
