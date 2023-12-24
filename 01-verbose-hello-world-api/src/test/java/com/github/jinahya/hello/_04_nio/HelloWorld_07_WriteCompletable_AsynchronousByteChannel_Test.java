@@ -22,10 +22,14 @@ package com.github.jinahya.hello._04_nio;
 
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello._HelloWorldTest;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.BDDMockito;
+import org.mockito.Mockito;
 
 import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.CompletionHandler;
@@ -37,8 +41,8 @@ import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.nio.ByteBuffer.allocate;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.notNull;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willAnswer;
-import static org.mockito.Mockito.mock;
 
 /**
  * A class for testing
@@ -48,15 +52,16 @@ import static org.mockito.Mockito.mock;
  * @see HelloWorld_07_WriteCompletable_AsynchronousByteChannel_Arguments_Test
  */
 @DisplayName("writeCompletable(channel)")
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_07_WriteCompletable_AsynchronousByteChannel_Test
-        extends _HelloWorldTest {
+@SuppressWarnings({"java:S101"})
+class HelloWorld_07_WriteCompletable_AsynchronousByteChannel_Test extends _HelloWorldTest {
 
     @BeforeEach
     @SuppressWarnings({
             "unchecked" // handler.completed
     })
-    void _beforeEach() {
+    void beforeEach() {
         willAnswer(i -> {
             var channel = i.getArgument(0, AsynchronousByteChannel.class);
             var handler = i.getArgument(1, CompletionHandler.class);
@@ -96,13 +101,19 @@ class HelloWorld_07_WriteCompletable_AsynchronousByteChannel_Test
      */
     @DisplayName("(channel)completed<channel>")
     @Test
-    void _Completed_()
-            throws Exception {
+    @SuppressWarnings({"unchecked"})
+    void _Completed_() throws Exception {
         // ----------------------------------------------------------------------------------- given
-        var service = service();
-        var channel = _stub_ToComplete(mock(AsynchronousByteChannel.class));
+        final var service = service();
+        final var channel = Mockito.mock(AsynchronousByteChannel.class);
+        Mockito.doAnswer(i -> {
+            final var handler = i.getArgument(1, CompletionHandler.class);
+            final var attachment = i.getArgument(2);
+            handler.completed(channel, attachment);
+            return null;
+        }).when(service).writeAsync(channel, notNull(), any());
         // ------------------------------------------------------------------------------------ when
-        var future = service.writeCompletable(channel);
+        final var future = service.writeCompletable(channel);
         // ------------------------------------------------------------------------------------ then
         // TODO: Get the result of the <future> with a timeout.
         // TODO: Verify, service.writeAsync(same(chanel), notNull(), any()) invoked, once.
@@ -122,8 +133,8 @@ class HelloWorld_07_WriteCompletable_AsynchronousByteChannel_Test
     void _CompletedExceptionally_() {
         // ----------------------------------------------------------------------------------- given
         var service = service();
-        var channel = mock(AsynchronousByteChannel.class);
-        var exc = _stub_ToFail(channel, mock(Throwable.class));
+        var channel = Mockito.mock(AsynchronousByteChannel.class);
+        var exc = _stub_ToFail(channel, Mockito.mock(Throwable.class));
         // ------------------------------------------------------------------------------------ when
         var future = service.writeCompletable(channel);
         // ------------------------------------------------------------------------------------ then

@@ -22,13 +22,14 @@ package com.github.jinahya.hello._04_nio;
 
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello._HelloWorldTest;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.nio.channels.AsynchronousByteChannel;
-
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * A class for testing
@@ -39,23 +40,25 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * @see HelloWorld_07_WriteCompletable_AsynchronousByteChannel_Test
  */
 @DisplayName("writeCompletable(channel) arguments")
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
+@SuppressWarnings({"java:S101"})
 class HelloWorld_07_WriteCompletable_AsynchronousByteChannel_Arguments_Test
         extends _HelloWorldTest {
 
     /**
-     * Asserts
+     * Verifies
      * {@link HelloWorld#writeCompletable(AsynchronousByteChannel) writeCompletable(channel)} method
      * throws a {@link NullPointerException} when the {@code channel} argument is {@code null}.
      */
-    @DisplayName("(null)NullPointerException")
+    @DisplayName("[channel == null] -> NullPointerException")
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
         // ----------------------------------------------------------------------------------- given
-        var service = service();
-        var channel = (AsynchronousByteChannel) null;
+        final var service = service();
+        final var channel = (AsynchronousByteChannel) null;
         // ------------------------------------------------------------------------------- when/then
-        assertThrows(
+        Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.writeCompletable(channel)
         );

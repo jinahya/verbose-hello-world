@@ -504,12 +504,11 @@ public interface HelloWorld {
         if (position < 0L) {
             throw new IllegalArgumentException("position(" + position + ") is negative");
         }
-        final var buffer = ByteBuffer.allocate(BYTES);
-        put(buffer);
-        buffer.flip();
+        final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
         while (buffer.hasRemaining()) {
             final var future = channel.write(buffer, position);
-            position += future.get();
+            final var written = future.get();
+            position += written;
         }
         return channel;
     }
