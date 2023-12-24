@@ -430,31 +430,9 @@ public interface HelloWorld {
         final var buffer = ByteBuffer.allocate(BYTES);
         put(buffer);
         buffer.flip();
-        channel.write(
-                buffer,                     // <src>
-                attachment,                 // <attachment>
-                new CompletionHandler<>() { // <handler>
-                    @Override // @formatter:off
-                    public void completed(final Integer result, final A attachment) {
-                        if (!buffer.hasRemaining()) {
-                            handler.completed(
-                                    channel,   // <result>
-                                    attachment // <attachment>
-                            );
-                            return;
-                        }
-                        channel.write(
-                                buffer, // <src>
-                                null,   // <attachment>
-                                this    // <handler>
-                        );
-                    }
-                    @Override
-                    public void failed(final Throwable exc, final A attachment) {
-                        handler.failed(exc, null);
-                    } // @formatter:on
-                }
-        );
+        // TODO: keep invoking channel.write(buffer, attachment, a-handler)
+        // TODO: while buffer has remaining
+        // TODO: and, eventually, invoke handler.complete(channel, attachment)
     }
 
     /**
