@@ -45,8 +45,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
  */
 @DisplayName("append(file)")
 @Slf4j
-class HelloWorld_02_Append_File_Test
-        extends _HelloWorldTest {
+class HelloWorld_02_Append_File_Test extends _HelloWorldTest {
 
     @BeforeEach
     void beforeEach() throws IOException {
