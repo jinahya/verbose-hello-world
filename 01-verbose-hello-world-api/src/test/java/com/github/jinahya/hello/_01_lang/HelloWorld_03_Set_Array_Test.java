@@ -37,13 +37,12 @@ import org.junit.jupiter.api.Test;
 @SuppressWarnings({
         "java:S101"
 })
-class HelloWorld_03_Set_Array_Test
-        extends _HelloWorldTest {
+class HelloWorld_03_Set_Array_Test extends _HelloWorldTest {
 
     /**
      * Verifies that {@link HelloWorld#set(byte[]) set(array)} method invokes
      * {@link HelloWorld#set(byte[], int) set(array, index)} method with given {@code array} and
-     * @code 0}, and returns the {@code array}.
+     * {@code 0}, and returns the {@code array}.
      */
     @DisplayName("-> set(array, 0)")
     @Test
