@@ -22,27 +22,15 @@ package com.github.jinahya.hello._02_io;
 
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello._HelloWorldTest;
-import com.github.jinahya.hello.畵蛇添足;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+import org.mockito.Mockito;
 
-import java.io.ByteArrayOutputStream;
 import java.io.DataOutput;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-
-import static java.io.File.createTempFile;
-import static java.util.concurrent.ThreadLocalRandom.current;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * A class for testing {@link HelloWorld#write(DataOutput) write(data)} method.
@@ -56,7 +44,7 @@ class HelloWorld_07_Write_DataOutput_Test
         extends _HelloWorldTest {
 
     @BeforeEach
-    void _beforeEach() {
+    void beforeEach() {
         setArray_willReturnTheArray();
     }
 
@@ -67,79 +55,21 @@ class HelloWorld_07_Write_DataOutput_Test
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("(data) -> data.write(set(array[12]))")
+    @DisplayName("-> set(array[12]) -> data.write(array)")
     @Test
-    void _InvokeSetArrayWriteArrayToData_()
-            throws IOException {
+    void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
-        var service = service();
-        var data = mock(DataOutput.class);                      // <1>
+        final var service = service();
+        final var data = Mockito.mock(DataOutput.class);
         // ------------------------------------------------------------------------------------ when
-        var result = service.write(data);                       // <2>
+        final var result = service.write(data);
         // ------------------------------------------------------------------------------------ then
-        verify(service, times(1)).set(arrayCaptor().capture());
-        var array = arrayCaptor().getValue();
-        // TODO: Assert, array is not null.
-        // TODO: Assert, array.length is equal to BYTES.
-        // TODO: Verify, once, data.write(array) invoked.
-        // TODO: Verify, no more interactions with data.
-        assertSame(data, result);
-    }
-
-    /**
-     * Asserts, redundantly, {@link HelloWorld#write(DataOutput) write(data)} method writes
-     * {@value HelloWorld#BYTES} bytes to given {@code data} argument.
-     *
-     * @throws IOException if an I/O error occurs.
-     */
-    @DisplayName("(data) -> writes 12 bytes")
-    @Test
-    @畵蛇添足
-    void _Write12Bytes_()
-            throws IOException {
-        // ----------------------------------------------------------------------------------- given
-        var service = service();
-        try (var baos = new ByteArrayOutputStream()) {
-            if (current().nextBoolean()) {
-                // TODO: (Optional) Write some bytes to baos
-            }
-            var size = baos.size();
-            try (var dos = new DataOutputStream(baos)) {
-                // ---------------------------------------------------------------------------- when
-                var result = service.write((DataOutput) dos);
-                dos.flush();
-                // --------------------------------------------------------------------------- then
-                // TODO: Assert, baos.size() is equal to (size + BYTES)
-            }
-        }
-    }
-
-    /**
-     * Asserts, redundantly, {@link HelloWorld#write(DataOutput) write(data)} method writes
-     * {@value HelloWorld#BYTES} bytes to given {@code data} arguments.
-     *
-     * @param tempDir a temporary directory to test with.
-     * @throws IOException if an I/O error occurs.
-     */
-    @DisplayName("(data) -> writes 12 bytes")
-    @Test
-    @畵蛇添足
-    void _Write12Bytes_(@TempDir File tempDir)
-            throws IOException {
-        // ----------------------------------------------------------------------------------- given
-        var service = service();
-        var file = createTempFile("tmp", null, tempDir);
-        if (current().nextBoolean()) {
-            // TODO: (optional) Write some bytes to the file
-        }
-        var length = file.length();
-        // ------------------------------------------------------------------------------------ when
-        try (var fos = new FileOutputStream(file, true); // append
-             var dos = new DataOutputStream(fos)) {
-            var result = service.write((DataOutput) dos);
-            ((OutputStream) result).flush();
-        }
-        // ------------------------------------------------------------------------------------ then
-        // TODO: Assert file.length() is same as (length + BYTES)
+        Mockito.verify(service, Mockito.times(1)).set(arrayCaptor().capture());
+        final var array = arrayCaptor().getValue();
+        Assertions.assertNotNull(array);
+        Assertions.assertEquals(HelloWorld.BYTES, array.length);
+        // TODO: verify, data.write(array) invoked, once
+        Mockito.verifyNoMoreInteractions(data);
+        Assertions.assertSame(data, result);
     }
 }
