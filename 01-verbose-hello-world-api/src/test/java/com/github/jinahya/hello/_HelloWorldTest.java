@@ -327,10 +327,8 @@ public abstract class _HelloWorldTest {
      * return the {@code array}.
      */
     protected final void setArray_willReturnTheArray() {
-        Mockito.doAnswer(i -> i.getArgument(0))
-                .when(service.set(notNull(byte[].class)));  // <1>
-//        BDDMockito.willAnswer(i -> i.getArgument(0))
-//                .given(service).set(notNull(byte[].class));
+        Mockito.doAnswer(i -> i.getArgument(0))            // <2>
+                .when(service.set(notNull(byte[].class))); // <1>
     }
 
     /**
