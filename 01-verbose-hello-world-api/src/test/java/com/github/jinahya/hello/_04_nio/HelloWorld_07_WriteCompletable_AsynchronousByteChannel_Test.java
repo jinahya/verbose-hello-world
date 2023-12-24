@@ -112,7 +112,6 @@ class HelloWorld_07_WriteCompletable_AsynchronousByteChannel_Test extends _Hello
         // ------------------------------------------------------------------------------------ when
         final var future = service.writeCompletable(channel);
         // ------------------------------------------------------------------------------------ then
-        // TODO: join the result of the <future> handling to return what has been thrown
-        // TODO: assert, the thrown is same as <exc>
+        // TODO: assert, future.get() throws <esc>
     }
 }
