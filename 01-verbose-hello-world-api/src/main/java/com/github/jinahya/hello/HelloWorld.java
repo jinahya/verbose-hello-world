@@ -206,7 +206,7 @@ public interface HelloWorld {
      * @see #set(byte[])
      * @see DataOutput#write(byte[])
      */
-    default <T extends DataOutput> T write(T data) throws IOException {
+    default <T extends DataOutput> T write(final T data) throws IOException {
         if (data == null) {
             throw new NullPointerException("data is null");
         }
