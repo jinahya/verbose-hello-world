@@ -22,6 +22,7 @@ package com.github.jinahya.hello._04_nio;
 
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello._HelloWorldTest;
+import com.github.jinahya.hello._HelloWorldTestUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,10 +33,9 @@ import org.junit.jupiter.api.Test;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.CompletionHandler;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.LongAdder;
 
-import static com.github.jinahya.hello.HelloWorld.BYTES;
-import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
@@ -59,7 +59,7 @@ import static org.mockito.Mockito.verify;
 class HelloWorld_06_WriteAsync_AsynchronousByteChannelWithHandler_Test extends _HelloWorldTest {
 
     @BeforeEach
-    void _beforeEach() {
+    void beforeEach() {
         putBuffer_WillReturnTheBuffer_AsItsPositionIncreasedBy12();
     }
 
@@ -73,28 +73,25 @@ class HelloWorld_06_WriteAsync_AsynchronousByteChannelWithHandler_Test extends _
      * {@link CompletionHandler#completed(Object, Object) handler.completed(Object, Object)
      * handler.completed(channel, attachment)}.
      */
-    @DisplayName("""
-            (channel, handler, attachment)
-            -> put(buffer[12])
-            -> handler.completed(channel, attachment)""")
+    @DisplayName("-> put(buffer[12]) -> handler.completed(channel, attachment)")
     @Test
     @SuppressWarnings({"unchecked"})
-    void _Completed_() {
+    void _Completed_Completes() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var channel = mock(AsynchronousByteChannel.class);
         final var writtenSoFar = new LongAdder();
-        _stub_ToComplete(channel, writtenSoFar);
-        CompletionHandler<AsynchronousByteChannel, Object> handler = mock(CompletionHandler.class);
-        var attachment = current().nextBoolean() ? null : new Object();
+        _HelloWorldTestUtils.writeWithHandler_completes(channel, writtenSoFar);
+        final var handler = mock(CompletionHandler.class);
+        final var attachment = ThreadLocalRandom.current().nextBoolean() ? null : new Object();
         // ------------------------------------------------------------------------------------ when
         service.writeAsync(channel, handler, attachment);
         // ------------------------------------------------------------------------------------ then
         verify(service, times(1)).put(bufferCaptor().capture());
         var buffer = bufferCaptor().getValue();
         assertNotNull(buffer);
-        assertEquals(BYTES, buffer.capacity());
-        // TODO: Verify, handler.completed(channel, attachment) invoked, once within some time.
+        assertEquals(HelloWorld.BYTES, buffer.capacity());
+        // TODO: Verify, handler.completed(channel, attachment) invoked, once, within some time.
         // TODO: Verify, channel.write(buffer, attachment, handler) invoked, at least once.
         // TODO: Assert, writtenSoFar.intValue() is equal to BYTES
     }
@@ -105,21 +102,19 @@ class HelloWorld_06_WriteAsync_AsynchronousByteChannelWithHandler_Test extends _
      * writeAsync(channel, handler, attachment)} method invokes
      * {@link CompletionHandler#failed(Throwable, Object) handler.failed(exc, attachment)}.
      */
-    @DisplayName(
-            "(channel, handler, attachment) -> handler.failed(exc, attachment)")
+    @DisplayName("-> handler.failed(exc, attachment)")
     @Test
     @SuppressWarnings({"unchecked"})
-    void _Failed_() {
+    void _Failed_Fails() {
         // ----------------------------------------------------------------------------------- given
-        var service = service();
-        var channel = mock(AsynchronousByteChannel.class);
-        var exc = mock(Throwable.class);
-        _stub_ToFail(channel, exc);
-        CompletionHandler<AsynchronousByteChannel, Object> handler = mock(CompletionHandler.class);
-        var attachment = current().nextBoolean() ? null : new Object();
+        final var service = service();
+        final var channel = mock(AsynchronousByteChannel.class);
+        _HelloWorldTestUtils.writeWithHandler_fails(channel);
+        final var handler = mock(CompletionHandler.class);
+        final var attachment = ThreadLocalRandom.current().nextBoolean() ? null : new Object();
         // ------------------------------------------------------------------------------------ when
         service.writeAsync(channel, handler, attachment);
         // ------------------------------------------------------------------------------------ then
-        // TODO: Verify, handler.failed(exc, attachment) invoked, once within some time.
+        // TODO: Verify, handler.failed(any(), attachment) invoked, once, within some time.
     }
 }

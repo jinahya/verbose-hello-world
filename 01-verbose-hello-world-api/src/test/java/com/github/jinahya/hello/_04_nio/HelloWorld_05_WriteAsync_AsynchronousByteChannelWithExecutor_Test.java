@@ -37,6 +37,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.LongAdder;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -83,12 +84,12 @@ class HelloWorld_05_WriteAsync_AsynchronousByteChannelWithExecutor_Test
      */
     @DisplayName("-> put(buffer[12]) -> channel.write(buffer)+")
     @Test
-    void __() throws InterruptedException, ExecutionException {
+    void __FutureSucceeds() throws InterruptedException, ExecutionException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var channel = mock(AsynchronousByteChannel.class);
         final var writtenSoFar = new LongAdder();
-        _HelloWorldTestUtils.writeBuffer_willWriteSome(channel, writtenSoFar);
+        _HelloWorldTestUtils.write_willReturnFutureSucceeds(channel, writtenSoFar);
         final var executor = mock(Executor.class);
         doAnswer(i -> {
             final var command = i.getArgument(0, Runnable.class);
@@ -97,9 +98,28 @@ class HelloWorld_05_WriteAsync_AsynchronousByteChannelWithExecutor_Test
         }).when(executor).execute(notNull());
         // ------------------------------------------------------------------------------------ when
         final var future = service.writeAsync(channel, executor);
-        final var result = future.get();
         // ------------------------------------------------------------------------------------ then
+        final var result = future.get();
         verify(service, times(1)).write(channel);
         assertSame(channel, result);
+    }
+
+    @DisplayName("-> put(buffer[12]) -> channel.write(buffer)+")
+    @Test
+    void __FutureFails() throws InterruptedException, ExecutionException {
+        // ----------------------------------------------------------------------------------- given
+        final var service = service();
+        final var channel = mock(AsynchronousByteChannel.class);
+        _HelloWorldTestUtils.write_willReturnFutureFails(channel);
+        final var executor = mock(Executor.class);
+        doAnswer(i -> {
+            final var command = i.getArgument(0, Runnable.class);
+            new Thread(command).start();
+            return null;
+        }).when(executor).execute(notNull());
+        // ------------------------------------------------------------------------------------ when
+        final var future = service.writeAsync(channel, executor);
+        // ------------------------------------------------------------------------------------ then
+        assertThrows(Exception.class, future::get);
     }
 }

@@ -551,9 +551,9 @@ public interface HelloWorld {
      * @param executor the executor.
      * @return a future of given {@code channel} that will, some time in the future, write the
      * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to {@code channel}.
+     * @see #write(AsynchronousByteChannel)
+     * @see FutureTask
      * @see Executor#execute(Runnable)
-     * @see #put(ByteBuffer)
-     * @see AsynchronousByteChannel#write(ByteBuffer)
      */
     default <T extends AsynchronousByteChannel> Future<T> writeAsync(final T channel,
                                                                      final Executor executor) {
@@ -564,49 +564,6 @@ public interface HelloWorld {
         executor.execute(command); // as Runnable
         return command;            // as Future<T>
     }
-
-//    /**
-//     * Writes, asynchronously, the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>
-//     * to specified channel, and notifies a completion (or a failure) to specified handler.
-//     *
-//     * @param <C>     channel type parameter
-//     * @param channel the channel to which bytes are written.
-//     * @param handler the completion handler.
-//     * @see AsynchronousByteChannel#write(ByteBuffer, Object, CompletionHandler)
-//     */
-//    default <C extends AsynchronousByteChannel> void writeAsync(
-//            final C channel, final CompletionHandler<? super Integer, ? super Void> handler) {
-//        Objects.requireNonNull(channel, "channel is null");
-//        Objects.requireNonNull(handler, "handler is null");
-//        final var buffer = ByteBuffer.allocate(BYTES);
-//        put(buffer);
-//        buffer.flip();
-//        channel.<Void>write(
-//                buffer,                     // <src>
-//                null,                       // <attachment>
-//                new CompletionHandler<>() { // <handler>
-//                    @Override // @formatter:off
-//                    public void completed(final Integer result, final Void attachment) {
-//                        if (!buffer.hasRemaining()) {
-//                            handler.completed(
-//                                    buffer.position(), // <result>
-//                                    null               // <attachment>
-//                            );
-//                            return;
-//                        }
-//                        channel.write(
-//                                buffer, // <src>
-//                                null,   // <attachment>
-//                                this    // <handler>
-//                        );
-//                    }
-//                    @Override
-//                    public void failed(final Throwable exc, final Void attachment) {
-//                        handler.failed(exc, null);
-//                    } // @formatter:on
-//                }
-//        );
-//    }
 
     /**
      * Writes, asynchronously, the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>
@@ -635,8 +592,8 @@ public interface HelloWorld {
                     public void completed(final Integer result, final A attachment) {
                         if (!buffer.hasRemaining()) {
                             handler.completed(
-                                    channel, // <result>
-                                    attachment         // <attachment>
+                                    channel,   // <result>
+                                    attachment // <attachment>
                             );
                             return;
                         }

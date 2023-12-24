@@ -75,7 +75,7 @@ class HelloWorld_04_Write_AsynchronousByteChannel_Test extends _HelloWorldTest {
         final var service = service();
         final var channel = mock(AsynchronousByteChannel.class);
         final var writtenSoFar = new LongAdder();
-        _HelloWorldTestUtils.writeBuffer_willWriteSome(channel, writtenSoFar);
+        _HelloWorldTestUtils.write_willReturnFutureSucceeds(channel, writtenSoFar);
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(channel);
         // ------------------------------------------------------------------------------------ then

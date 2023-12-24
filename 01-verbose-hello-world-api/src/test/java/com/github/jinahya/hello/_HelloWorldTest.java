@@ -223,9 +223,8 @@ public abstract class _HelloWorldTest {
     }
 
     @SuppressWarnings({"unchecked"})
-    protected static <T extends AsynchronousByteChannel> T _stub_ToComplete(
-            T channel,
-            LongAdder adder) {
+    protected static <T extends AsynchronousByteChannel> T _stub_ToComplete(T channel,
+                                                                            LongAdder adder) {
         if (!mockingDetails(
                 Objects.requireNonNull(channel, "channel is null")).isMock()) {
             throw new IllegalArgumentException("not a mock: " + channel);
