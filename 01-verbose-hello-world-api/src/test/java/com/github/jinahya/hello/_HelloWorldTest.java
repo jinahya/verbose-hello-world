@@ -29,6 +29,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.BDDMockito;
 import org.mockito.Captor;
 import org.mockito.Mockito;
 import org.mockito.Spy;
@@ -326,8 +327,10 @@ public abstract class _HelloWorldTest {
      * return the {@code array}.
      */
     protected final void setArray_ToReturnTheArray() {
-        Mockito.when(service.set(notNull(byte[].class)))  // <1>
-                .thenAnswer(i -> i.getArgument(0));       // <2>
+//        Mockito.doAnswer(i -> i.getArgument(0))
+//                .when(service.set(notNull(byte[].class)));  // <1>
+        BDDMockito.willAnswer(i -> i.getArgument(0))
+                .given(service).set(notNull(byte[].class));
     }
 
     /**
