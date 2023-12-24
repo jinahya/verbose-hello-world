@@ -30,7 +30,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
@@ -91,8 +90,11 @@ class HelloWorld_05_Print_CharsIndex_Arguments_Test extends _HelloWorldTest {
     void _ThrowArrayIndexOutOfBoundsException_IndexPlus12GreaterThanCharsLength() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        final var chars = new char[ThreadLocalRandom.current().nextInt(BYTES)];
-        final var index = ThreadLocalRandom.current().nextInt(1, chars.length << 1);
+        final var chars = new char[ThreadLocalRandom.current().nextInt(HelloWorld.BYTES << 1)];
+        final var index = ThreadLocalRandom.current().nextInt(
+                chars.length - HelloWorld.BYTES + 1,
+                chars.length << 1
+        );
         // ------------------------------------------------------------------------------- when/then
         // TODO: Assert service.print(chars, index) throws an ArrayIndexOutOfBoundsException
     }
