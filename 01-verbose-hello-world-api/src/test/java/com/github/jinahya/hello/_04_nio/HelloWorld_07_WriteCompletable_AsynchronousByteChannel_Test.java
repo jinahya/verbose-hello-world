@@ -112,6 +112,6 @@ class HelloWorld_07_WriteCompletable_AsynchronousByteChannel_Test extends _Hello
         // ------------------------------------------------------------------------------------ when
         final var future = service.writeCompletable(channel);
         // ------------------------------------------------------------------------------------ then
-        // TODO: assert, future.get() throws <esc>
+        // TODO: assert, <future> completes exceptionally with the <exc>
     }
 }
