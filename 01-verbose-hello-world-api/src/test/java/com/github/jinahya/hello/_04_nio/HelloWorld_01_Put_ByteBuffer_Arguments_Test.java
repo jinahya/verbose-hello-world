@@ -22,15 +22,16 @@ package com.github.jinahya.hello._04_nio;
 
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello._HelloWorldTest;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.ThreadLocalRandom;
-
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * A class for testing {@link HelloWorld#put(ByteBuffer) put(buffer)} method regarding arguments
@@ -40,46 +41,46 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * @see HelloWorld_01_Put_ByteBuffer_Test
  */
 @DisplayName("put(buffer) arguments")
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-@SuppressWarnings({
-        "java:S101"
-})
-class HelloWorld_01_Put_ByteBuffer_Arguments_Test
-        extends _HelloWorldTest {
+@SuppressWarnings({"java:S101"})
+class HelloWorld_01_Put_ByteBuffer_Arguments_Test extends _HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method throws a
+     * Verifies {@link HelloWorld#put(ByteBuffer) put(buffer)} method throws a
      * {@link NullPointerException} when the {@code buffer} argument is {@code null}.
      */
-    @DisplayName("(null)NullPointerException")
+    @DisplayName("[buffer == null] -> NullPointerException")
     @Test
     void _ThrowNullPointerException_BufferIsNull() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var buffer = (ByteBuffer) null;
         // ------------------------------------------------------------------------------- when/then
-        assertThrows(
+        Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.put(buffer)
         );
     }
 
     /**
-     * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method throws a
-     * {@link BufferOverflowException} when {@link ByteBuffer#remaining() buffer.remaining} is less
-     * than {@value HelloWorld#BYTES}.
+     * Verifies {@link HelloWorld#put(ByteBuffer) put(buffer)} method throws a
+     * {@link BufferOverflowException} when {@code buffer} argument's
+     * {@link ByteBuffer#remaining() remaining} is less than {@value HelloWorld#BYTES}.
      */
-    @DisplayName("(buffer.remaining < 12)BufferOverflowException")
+    @DisplayName("[buffer.remaining < HelloWorld.BYTES] -> BufferOverflowException")
     @Test
     void _ThrowBufferOverflowException_BufferRemainingIsLessThan12() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        final ByteBuffer buffer;
-        {
-            final var capacity = ThreadLocalRandom.current().nextInt(HelloWorld.BYTES);
-            buffer = ByteBuffer.allocate(capacity);
-        }
+        // https://github.com/mockito/mockito/issues/2927
+        final var buffer = ByteBuffer.allocate(
+                ThreadLocalRandom.current().nextInt(HelloWorld.BYTES)
+        );
         // ------------------------------------------------------------------------------- when/then
-        assertThrows(BufferOverflowException.class, () -> service.put(buffer));
+        Assertions.assertThrows(
+                BufferOverflowException.class,
+                () -> service.put(buffer)
+        );
     }
 }

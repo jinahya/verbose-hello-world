@@ -320,6 +320,8 @@ public interface HelloWorld {
             // TODO: Invoke set(buffer.array(), (buffer.arrayOffset() + buffer.position())
             // TODO: Increment buffer.position by 12
         } else {
+            final var array = new byte[BYTES];
+            set(array);
             // TODO: Invoke set(array[12])
             // TODO: Put the array to the buffer
         }
