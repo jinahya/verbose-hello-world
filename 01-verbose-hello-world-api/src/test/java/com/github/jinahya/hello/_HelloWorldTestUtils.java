@@ -21,8 +21,6 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.awaitility.Awaitility;
-import org.junit.jupiter.api.Assertions;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
@@ -32,21 +30,16 @@ import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.channels.WritableByteChannel;
-import java.time.Duration;
 import java.util.Objects;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.LongAdder;
-import java.util.function.BiFunction;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.longThat;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.BDDMockito.willAnswer;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockingDetails;
 import static org.mockito.Mockito.when;
 
@@ -100,42 +93,34 @@ public final class _HelloWorldTestUtils {
     // --------------------------------------------------------------------- AsynchronousByteChannel
 
     /**
-     * Stubs specified channel whose {@link WritableByteChannel#write(ByteBuffer) write(src)} method
-     * increases the {@code src}'s position by random value.
+     * Stubs specified channel's {@link WritableByteChannel#write(ByteBuffer) write(src)} method to
+     * return a future increases the {@code src}'s position by random value.
      *
-     * @param channel      the channel whose {@link WritableByteChannel#write(ByteBuffer)} method
-     *                     are stubbed.
-     * @param writtenSoFar an adder for accumulating written bytes; may be {@code null}.
+     * @param channel the channel whose {@link WritableByteChannel#write(ByteBuffer)} method are
+     *                stubbed.
+     * @param adder   an adder for accumulating written bytes; may be {@code null}.
      */
     public static void write_willReturnFutureSucceeds(final AsynchronousByteChannel channel,
-                                                      final LongAdder writtenSoFar) {
+                                                      final LongAdder adder) {
         requireMock(channel);
+        final var previousFuture = new Future[1];
         BDDMockito.given(channel.write(argThat(b -> b != null && b.hasRemaining())))
                 .willAnswer(w -> {
+                    if (previousFuture[0] != null) {
+                        Mockito.verify(previousFuture[0], Mockito.times(1)).get();
+                    }
                     final var src = w.getArgument(0, ByteBuffer.class);
-                    final var future = mock(Future.class);
-                    final var computation = (BiFunction<Long, TimeUnit, Integer>) (t, u) -> {
-                        if (t > 0L) {
-                            Awaitility.await()
-                                    .timeout(Duration.of(t, u.toChronoUnit()))
-                                    .pollDelay(Duration.of(t, u.toChronoUnit()))
-                                    .untilAsserted(() -> Assertions.assertTrue(true));
-                        }
-                        final var written = ThreadLocalRandom.current()
-                                .nextInt(1, src.remaining() + 1);
+                    final var future = Mockito.mock(Future.class);
+                    BDDMockito.given(future.get()).willAnswer(g -> {
+                        final var written =
+                                ThreadLocalRandom.current().nextInt(1, src.remaining() + 1);
                         src.position(src.position() + written);
-                        if (writtenSoFar != null) {
-                            writtenSoFar.add(written);
+                        if (adder != null) {
+                            adder.add(written);
                         }
                         return written;
-                    };
-                    BDDMockito.given(future.get())
-                            .willReturn(computation.apply(0L, TimeUnit.NANOSECONDS));
-                    BDDMockito.given(future.get(anyLong(), notNull())).willAnswer(g -> {
-                        final var timeout = g.getArgument(0, long.class);
-                        final var unit = g.getArgument(1, TimeUnit.class);
-                        return computation.apply(timeout, unit);
                     });
+                    previousFuture[0] = future;
                     return future;
                 });
     }
@@ -144,24 +129,8 @@ public final class _HelloWorldTestUtils {
         requireMock(channel);
         BDDMockito.given(channel.write(argThat(b -> b != null && b.hasRemaining())))
                 .willAnswer(w -> {
-                    final var future = mock(Future.class);
+                    final var future = Mockito.mock(Future.class);
                     BDDMockito.given(future.get()).willThrow(new Exception());
-                    final var computation = (BiFunction<Long, TimeUnit, Integer>) (t, u) -> {
-                        if (t > 0L) {
-                            Awaitility.await()
-                                    .timeout(Duration.of(t, u.toChronoUnit()))
-                                    .pollDelay(Duration.of(t, u.toChronoUnit()))
-                                    .untilAsserted(() -> Assertions.assertTrue(true));
-                        }
-                        throw new RuntimeException();
-                    };
-                    BDDMockito.given(future.get())
-                            .willReturn(computation.apply(0L, TimeUnit.NANOSECONDS));
-                    BDDMockito.given(future.get(anyLong(), notNull())).willAnswer(g -> {
-                        final var timeout = g.getArgument(0, long.class);
-                        final var unit = g.getArgument(1, TimeUnit.class);
-                        return computation.apply(timeout, unit);
-                    });
                     return future;
                 });
     }
@@ -230,7 +199,7 @@ public final class _HelloWorldTestUtils {
         }
         Objects.requireNonNull(writtenSoFar, "adder is null");
         willAnswer(w -> { // invocation of channel.write
-            var future = mock(Future.class);
+            var future = Mockito.mock(Future.class);
             when(future.get()).thenAnswer(g -> { // invocation of future.get
                 var src = w.getArgument(0, ByteBuffer.class);
                 var position = w.getArgument(1, Long.class);
