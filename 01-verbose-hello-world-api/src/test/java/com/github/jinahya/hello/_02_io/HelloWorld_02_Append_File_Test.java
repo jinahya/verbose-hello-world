@@ -85,7 +85,7 @@ class HelloWorld_02_Append_File_Test
             // -------------------------------------------------------------------------------- when
             final var result = service.append(file);
             // ---------------------------------------------------------------------------------then
-            // TODO: verify, construction.constructed().size() is equal to 1
+            // TODO: assert, construction.constructed().size() is equal to 1
             // TODO: verify, service.write(construction.constructed().get(0)) invoked, once.
             // TODO: verify, construction.constructed().get(0).flush() invoked, once.
             // TODO: verify, construction.constructed().get(0).close() invoked, once.
