@@ -29,11 +29,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * A class for unit-testing {@link HelloWorld#print(char[], int) print(chars, index)} method.
@@ -68,10 +64,9 @@ class HelloWorld_05_Print_CharsIndex_Test extends _HelloWorldTest {
         // ------------------------------------------------------------------------------------ when
         final var result = service.print(chars, index);
         // ------------------------------------------------------------------------------------ then
-        verify(service, times(1)).set(arrayCaptor().capture());
-        final var array = arrayCaptor().getValue();
-        assertNotNull(array);
-        assertEquals(HelloWorld.BYTES, array.length);
+        // TODO: Verify service.set(arrayCaptor().capture()) invokes, once.
+        // TODO: Assert arrayCaptor().getValue() is not null.
+        // TODO: Assert arrayCaptor().getValue()'s length is equal to HelloWorld.BYTES
         assertSame(chars, result);
     }
 }

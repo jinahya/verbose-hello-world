@@ -167,19 +167,10 @@ public interface HelloWorld {
         if (chars == null) {
             throw new NullPointerException("chars is null");
         }
-        if (index < 0) {
-            throw new ArrayIndexOutOfBoundsException("index(" + index + ") is negative");
-        }
-        if (index + BYTES > chars.length) {
-            throw new ArrayIndexOutOfBoundsException(
-                    "index(" + index + ") + " + BYTES + " > chars.length(" + chars.length + ")"
-            );
-        }
-        final var array = new byte[BYTES];
-        set(array);
-        for (final var b : array) {
-            chars[index++] = (char) b;
-        }
+        // TODO: throw an ArrayIndexOutOfBoundsException when index is negative
+        // TODO: throw an ArrayOutOfBoundsException when index + BYTES > chars.length
+        // TODO: invoke set(byte[]) with an array of BYTES bytes
+        // TODO: copy each byte in that array to chars starting at index
         return chars;
     }
 
