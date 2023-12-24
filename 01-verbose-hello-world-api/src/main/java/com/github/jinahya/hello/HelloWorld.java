@@ -311,7 +311,7 @@ public interface HelloWorld {
      * @see #set(byte[])
      * @see ByteBuffer#put(byte[])
      */
-    default <T extends ByteBuffer> T put(T buffer) {
+    default <T extends ByteBuffer> T put(final T buffer) {
         Objects.requireNonNull(buffer, "buffer is null");
         if (buffer.remaining() < BYTES) {
             throw new BufferOverflowException();
@@ -346,8 +346,7 @@ public interface HelloWorld {
      * @see ByteBuffer#hasRemaining()
      * @see WritableByteChannel#write(ByteBuffer)
      */
-    default <T extends WritableByteChannel> T write(T channel)
-            throws IOException {
+    default <T extends WritableByteChannel> T write(final T channel) throws IOException {
         Objects.requireNonNull(channel, "channel is null");
         final var buffer = ByteBuffer.allocate(BYTES);
         put(buffer);

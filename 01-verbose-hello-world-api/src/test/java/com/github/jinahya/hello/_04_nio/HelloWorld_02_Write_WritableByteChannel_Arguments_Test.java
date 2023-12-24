@@ -22,13 +22,14 @@ package com.github.jinahya.hello._04_nio;
 
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello._HelloWorldTest;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.nio.channels.WritableByteChannel;
-
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * A class for testing {@link HelloWorld#write(WritableByteChannel) write(channel)} method regarding
@@ -38,22 +39,23 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * @see HelloWorld_02_Write_WritableByteChannel_Test
  */
 @DisplayName("write(channel) arguments")
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_02_Write_WritableByteChannel_Arguments_Test
-        extends _HelloWorldTest {
+@SuppressWarnings({"java:S101"})
+class HelloWorld_02_Write_WritableByteChannel_Arguments_Test extends _HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#write(WritableByteChannel) write(channel)} method throws a
+     * Verifies {@link HelloWorld#write(WritableByteChannel) write(channel)} method throws a
      * {@link NullPointerException} when {@code channel} argument is {@code null}.
      */
     @DisplayName("(null)NullPointerException")
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
         // ----------------------------------------------------------------------------------- given
-        var service = service();
-        var channel = (WritableByteChannel) null;
+        final var service = service();
+        final var channel = (WritableByteChannel) null;
         // ------------------------------------------------------------------------------- when/then
-        assertThrows(
+        Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.write(channel)
         );

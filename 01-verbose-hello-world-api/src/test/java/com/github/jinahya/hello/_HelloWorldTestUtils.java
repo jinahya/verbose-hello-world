@@ -45,7 +45,6 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.longThat;
 import static org.mockito.ArgumentMatchers.notNull;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockingDetails;
@@ -75,26 +74,27 @@ public final class _HelloWorldTestUtils {
 
     /**
      * Stubs specified channel whose {@link WritableByteChannel#write(ByteBuffer) write(src)} method
-     * increases the {@code src}'s position by random value.
+     * increases the {@code src}'s position by random amount.
      *
-     * @param channel      the channel whose {@link WritableByteChannel#write(ByteBuffer)} method
-     *                     are stubbed.
-     * @param writtenSoFar an adder for accumulating written bytes; may be {@code null}.
+     * @param channel the channel whose {@link WritableByteChannel#write(ByteBuffer) write(src)}
+     *                method are stubbed.
+     * @param adder   an adder for accumulating written bytes; may be {@code null}.
      * @throws IOException if an I/O error occurs.
      */
     public static void writeBuffer_willWriteSome(final WritableByteChannel channel,
-                                                 final LongAdder writtenSoFar)
+                                                 final LongAdder adder)
             throws IOException {
         requireMock(Objects.requireNonNull(channel, "channel is null"));
-        given(channel.write(argThat(b -> b != null && b.hasRemaining()))).willAnswer(i -> {
-            final var src = i.getArgument(0, ByteBuffer.class);
-            final var written = ThreadLocalRandom.current().nextInt(1, src.remaining() + 1);
-            src.position(src.position() + written);
-            if (writtenSoFar != null) {
-                writtenSoFar.add(written);
-            }
-            return written;
-        });
+        BDDMockito.given(channel.write(argThat(b -> b != null && b.hasRemaining())))
+                .willAnswer(i -> {
+                    final var src = i.getArgument(0, ByteBuffer.class);
+                    final var written = ThreadLocalRandom.current().nextInt(1, src.remaining() + 1);
+                    src.position(src.position() + written);
+                    if (adder != null) {
+                        adder.add(written);
+                    }
+                    return written;
+                });
     }
 
     // --------------------------------------------------------------------- AsynchronousByteChannel
@@ -110,55 +110,60 @@ public final class _HelloWorldTestUtils {
     public static void write_willReturnFutureSucceeds(final AsynchronousByteChannel channel,
                                                       final LongAdder writtenSoFar) {
         requireMock(channel);
-        given(channel.write(argThat(b -> b != null && b.hasRemaining()))).willAnswer(w -> {
-            final var src = w.getArgument(0, ByteBuffer.class);
-            final var future = mock(Future.class);
-            final var computation = (BiFunction<Long, TimeUnit, Integer>) (t, u) -> {
-                if (t > 0L) {
-                    Awaitility.await()
-                            .timeout(Duration.of(t, u.toChronoUnit()))
-                            .pollDelay(Duration.of(t, u.toChronoUnit()))
-                            .untilAsserted(() -> Assertions.assertTrue(true));
-                }
-                final var written = ThreadLocalRandom.current().nextInt(1, src.remaining() + 1);
-                src.position(src.position() + written);
-                if (writtenSoFar != null) {
-                    writtenSoFar.add(written);
-                }
-                return written;
-            };
-            given(future.get()).willReturn(computation.apply(0L, TimeUnit.NANOSECONDS));
-            given(future.get(anyLong(), notNull())).willAnswer(g -> {
-                final var timeout = g.getArgument(0, long.class);
-                final var unit = g.getArgument(1, TimeUnit.class);
-                return computation.apply(timeout, unit);
-            });
-            return future;
-        });
+        BDDMockito.given(channel.write(argThat(b -> b != null && b.hasRemaining())))
+                .willAnswer(w -> {
+                    final var src = w.getArgument(0, ByteBuffer.class);
+                    final var future = mock(Future.class);
+                    final var computation = (BiFunction<Long, TimeUnit, Integer>) (t, u) -> {
+                        if (t > 0L) {
+                            Awaitility.await()
+                                    .timeout(Duration.of(t, u.toChronoUnit()))
+                                    .pollDelay(Duration.of(t, u.toChronoUnit()))
+                                    .untilAsserted(() -> Assertions.assertTrue(true));
+                        }
+                        final var written = ThreadLocalRandom.current()
+                                .nextInt(1, src.remaining() + 1);
+                        src.position(src.position() + written);
+                        if (writtenSoFar != null) {
+                            writtenSoFar.add(written);
+                        }
+                        return written;
+                    };
+                    BDDMockito.given(future.get())
+                            .willReturn(computation.apply(0L, TimeUnit.NANOSECONDS));
+                    BDDMockito.given(future.get(anyLong(), notNull())).willAnswer(g -> {
+                        final var timeout = g.getArgument(0, long.class);
+                        final var unit = g.getArgument(1, TimeUnit.class);
+                        return computation.apply(timeout, unit);
+                    });
+                    return future;
+                });
     }
 
     public static void write_willReturnFutureFails(final AsynchronousByteChannel channel) {
         requireMock(channel);
-        given(channel.write(argThat(b -> b != null && b.hasRemaining()))).willAnswer(w -> {
-            final var future = mock(Future.class);
-            given(future.get()).willThrow(new Exception());
-            final var computation = (BiFunction<Long, TimeUnit, Integer>) (t, u) -> {
-                if (t > 0L) {
-                    Awaitility.await()
-                            .timeout(Duration.of(t, u.toChronoUnit()))
-                            .pollDelay(Duration.of(t, u.toChronoUnit()))
-                            .untilAsserted(() -> Assertions.assertTrue(true));
-                }
-                throw new RuntimeException();
-            };
-            given(future.get()).willReturn(computation.apply(0L, TimeUnit.NANOSECONDS));
-            given(future.get(anyLong(), notNull())).willAnswer(g -> {
-                final var timeout = g.getArgument(0, long.class);
-                final var unit = g.getArgument(1, TimeUnit.class);
-                return computation.apply(timeout, unit);
-            });
-            return future;
-        });
+        BDDMockito.given(channel.write(argThat(b -> b != null && b.hasRemaining())))
+                .willAnswer(w -> {
+                    final var future = mock(Future.class);
+                    BDDMockito.given(future.get()).willThrow(new Exception());
+                    final var computation = (BiFunction<Long, TimeUnit, Integer>) (t, u) -> {
+                        if (t > 0L) {
+                            Awaitility.await()
+                                    .timeout(Duration.of(t, u.toChronoUnit()))
+                                    .pollDelay(Duration.of(t, u.toChronoUnit()))
+                                    .untilAsserted(() -> Assertions.assertTrue(true));
+                        }
+                        throw new RuntimeException();
+                    };
+                    BDDMockito.given(future.get())
+                            .willReturn(computation.apply(0L, TimeUnit.NANOSECONDS));
+                    BDDMockito.given(future.get(anyLong(), notNull())).willAnswer(g -> {
+                        final var timeout = g.getArgument(0, long.class);
+                        final var unit = g.getArgument(1, TimeUnit.class);
+                        return computation.apply(timeout, unit);
+                    });
+                    return future;
+                });
     }
 
     @SuppressWarnings({
