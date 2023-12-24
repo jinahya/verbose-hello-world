@@ -25,11 +25,9 @@ import com.github.jinahya.hello._HelloWorldTest;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
-import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
 import java.nio.channels.AsynchronousByteChannel;
@@ -37,11 +35,6 @@ import java.nio.channels.CompletionHandler;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
-
-import static com.github.jinahya.hello.HelloWorld.BYTES;
-import static java.nio.ByteBuffer.allocate;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willAnswer;
 
 /**
  * A class for testing
@@ -55,38 +48,6 @@ import static org.mockito.BDDMockito.willAnswer;
 @Slf4j
 @SuppressWarnings({"java:S101"})
 class HelloWorld_07_WriteCompletable_AsynchronousByteChannel_Test extends _HelloWorldTest {
-
-    @BeforeEach
-    @SuppressWarnings({
-            "unchecked" // handler.completed
-    })
-    void beforeEach() {
-        willAnswer(i -> {
-            var channel = i.getArgument(0, AsynchronousByteChannel.class);
-            var handler = i.getArgument(1, CompletionHandler.class);
-            var attachment = i.getArgument(2);
-            var src = allocate(BYTES);
-            channel.write(
-                    src,
-                    attachment,
-                    new CompletionHandler<>() {
-                        @Override
-                        public void completed(Integer result,
-                                              Object attachment) {
-                            if (!src.hasRemaining()) {
-                                handler.completed(channel, attachment);
-                            }
-                            channel.write(src, attachment, this);
-                        }
-
-                        @Override
-                        public void failed(Throwable exc, Object attachment) {
-                            handler.failed(exc, attachment);
-                        }
-                    });
-            return null;
-        }).given(service()).writeAsync(ArgumentMatchers.notNull(), ArgumentMatchers.notNull(), ArgumentMatchers.any());
-    }
 
     /**
      * Verifies
