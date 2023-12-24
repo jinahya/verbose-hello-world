@@ -206,8 +206,7 @@ public interface HelloWorld {
      * @see #set(byte[])
      * @see DataOutput#write(byte[])
      */
-    default <T extends DataOutput> T write(T data)
-            throws IOException {
+    default <T extends DataOutput> T write(T data) throws IOException {
         if (data == null) {
             throw new NullPointerException("data is null");
         }
@@ -233,8 +232,7 @@ public interface HelloWorld {
      * @see #set(byte[])
      * @see RandomAccessFile#write(byte[])
      */
-    default <T extends RandomAccessFile> T write(T file)
-            throws IOException {
+    default <T extends RandomAccessFile> T write(final T file) throws IOException {
         if (file == null) {
             throw new NullPointerException("file is null");
         }
