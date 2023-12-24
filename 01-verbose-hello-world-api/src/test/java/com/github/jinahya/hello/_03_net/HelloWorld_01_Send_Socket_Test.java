@@ -49,7 +49,7 @@ class HelloWorld_01_Send_Socket_Test
     @BeforeEach
     void _beforeEach()
             throws IOException {
-        _stub_WriteStream_ToWrite12BytesAndReturnTheStream();
+        writeStream_willWrite12Bytes();
     }
 
     /**

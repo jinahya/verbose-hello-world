@@ -299,12 +299,12 @@ public abstract class _HelloWorldTest {
      * Stubs {@code service}'s {@link HelloWorld#write(OutputStream) write(stream)} method to write
      * {@value HelloWorld#BYTES} bytes to the {@code stream}, and return the {@code stream}.
      */
-    protected final void _stub_WriteStream_ToWrite12BytesAndReturnTheStream() throws IOException {
+    protected final void writeStream_willWrite12Bytes() throws IOException {
         willAnswer(i -> {
             var stream = i.getArgument(0, OutputStream.class);
             stream.write(new byte[BYTES]);
             return stream;
-        }).given(service).write(notNull(OutputStream.class));
+        }).given(service).write(any(OutputStream.class));
     }
 
     // -------------------------------------------------------------------------- set(byte[], index)
@@ -321,6 +321,7 @@ public abstract class _HelloWorldTest {
     }
 
     // --------------------------------------------------------------------------------- set(byte[])
+
     /**
      * Stubs {@code serviceInstance}'s {@link HelloWorld#set(byte[]) set(array)} method to just
      * return the {@code array}.

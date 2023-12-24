@@ -23,11 +23,13 @@ package com.github.jinahya.hello._02_io;
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello._HelloWorldTest;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.MockedConstruction.MockInitializer;
+import org.mockito.Mockito;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -36,11 +38,7 @@ import java.io.OutputStream;
 
 import static java.io.File.createTempFile;
 import static java.util.concurrent.ThreadLocalRandom.current;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockConstruction;
 
 /**
  * A class for testing {@link HelloWorld#append(File) append(file)} method.
@@ -54,44 +52,43 @@ class HelloWorld_02_Append_File_Test
         extends _HelloWorldTest {
 
     @BeforeEach
-    void _beforeEach() throws IOException {
-        _stub_WriteStream_ToWrite12BytesAndReturnTheStream();
+    void beforeEach() throws IOException {
+        writeStream_willWrite12Bytes();
     }
 
     /**
-     * Asserts {@link HelloWorld#append(File) append(file)} method invokes
-     * {@link HelloWorld#write(OutputStream) write(stream)} method with a value of
-     * {@link FileOutputStream#FileOutputStream(File, boolean) new FileOutputStream(file, true)}.
+     * Verifies {@link HelloWorld#append(File) append(file)} method constructs a new
+     * {@link FileOutputStream} with {@code file} and {@code true}, invokes
+     * {@link HelloWorld#write(OutputStream) write(stream)} method, flushes/closes the stream, and
+     * returns the {@code file}.
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("(file) -> write(new FileOutputStream(file, true))")
+    @DisplayName("-> write(new FileOutputStream(file, true))")
     @Test
-    void _InvokeWriteWithFileOutputStreamWithAppendingMode_()
-            throws IOException {
+    void _InvokeWriteWithFileOutputStreamOfAppendingMode_() throws IOException {
         // ----------------------------------------------------------------------------------- given
-        var service = service();
-        var file = mock(File.class);
-        MockInitializer<FileOutputStream> initializer = (m, c) -> {
-            // new FileOutputStream(file, true)
-            assertEquals(FileOutputStream.class.getConstructor(File.class, boolean.class),
-                         c.constructor());
-            var arguments = c.arguments();
-            assert arguments.size() == 2;
-            assertEquals(file, arguments.get(0));
-            assertTrue((boolean) arguments.get(1));
-            assertEquals(1, c.getCount());
-//            doNothing().when(m).write(any(byte[].class));
+        final var service = service();
+        final var file = Mockito.mock(File.class);
+        final var initializer = (MockInitializer<FileOutputStream>) (m, c) -> {
+            Assertions.assertEquals(
+                    FileOutputStream.class.getConstructor(File.class, boolean.class),
+                    c.constructor()
+            );
+            final var arguments = c.arguments();
+            Assertions.assertEquals(2, arguments.size());
+            Assertions.assertEquals(file, arguments.get(0));
+            Assertions.assertTrue((boolean) arguments.get(1));
+            Assertions.assertEquals(1, c.getCount());
         };
-        try (var construction = mockConstruction(FileOutputStream.class, initializer)) {
+        try (var construction = Mockito.mockConstruction(FileOutputStream.class, initializer)) {
             // -------------------------------------------------------------------------------- when
-            var result = service.append(file);
-            // ---------------------------------------------------------------------------------THEN
-            var constructed = construction.constructed();
-            // TODO: Assert, constructed.size() is equal to 1.
-            // TODO: Verify, service.write(constructed.get(0)) invoked, once.
-            // TODO: Verify, constructed.get(0).flush() invoked, once.
-            // TODO: Verify, constructed.get(0).close() invoked, once.
+            final var result = service.append(file);
+            // ---------------------------------------------------------------------------------then
+            // TODO: verify, construction.constructed().size() is equal to 1
+            // TODO: verify, service.write(construction.constructed().get(0)) invoked, once.
+            // TODO: verify, construction.constructed().get(0).flush() invoked, once.
+            // TODO: verify, construction.constructed().get(0).close() invoked, once.
             assertSame(file, result);
         }
     }

@@ -180,8 +180,7 @@ public interface HelloWorld {
      * @see java.io.FileOutputStream#FileOutputStream(File, boolean)
      * @see #write(OutputStream)
      */
-    default <T extends File> T append(T file)
-            throws IOException {
+    default <T extends File> T append(final T file) throws IOException {
         if (file == null) {
             throw new NullPointerException("file is null");
         }
