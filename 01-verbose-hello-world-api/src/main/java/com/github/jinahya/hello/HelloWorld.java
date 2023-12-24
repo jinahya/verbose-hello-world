@@ -366,8 +366,8 @@ public interface HelloWorld {
      * @throws IOException          if an I/O error occurs.
      * @implSpec The default implementation opens a {@link FileChannel} from {@code path} with
      * {@link StandardOpenOption#CREATE}, {@link StandardOpenOption#WRITE}, and
-     * {@link StandardOpenOption#APPEND}, and invokes
-     * {@link #write(WritableByteChannel) write(channel)} method with it,
+     * {@link StandardOpenOption#APPEND}, invokes {@link #write(WritableByteChannel) write(channel)}
+     * method with it,
      * {@link FileChannel#force(boolean) forces}/{@link WritableByteChannel#close() closes} the
      * channel, and returns the {@code path}.
      * @see FileChannel#open(Path, OpenOption...)
