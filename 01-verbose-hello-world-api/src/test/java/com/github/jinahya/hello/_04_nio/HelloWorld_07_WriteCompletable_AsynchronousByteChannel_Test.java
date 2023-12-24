@@ -33,6 +33,7 @@ import org.mockito.Mockito;
 import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 
@@ -95,7 +96,7 @@ class HelloWorld_07_WriteCompletable_AsynchronousByteChannel_Test extends _Hello
     @DisplayName("(channel)completedExceptionally")
     @Test
     @SuppressWarnings({"unchecked"})
-    void _CompletedExceptionally_() {
+    void _CompletedExceptionally_() throws Exception {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var channel = Mockito.mock(AsynchronousByteChannel.class);
