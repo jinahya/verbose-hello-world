@@ -22,30 +22,20 @@ package com.github.jinahya.hello._04_nio;
 
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello._HelloWorldTest;
-import com.github.jinahya.hello.util.java.nio.JavaNioUtils;
-import com.github.jinahya.hello.畵蛇添足;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.nio.channels.WritableByteChannel;
-import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
-
-import static java.nio.file.Files.size;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.notNull;
-import static org.mockito.ArgumentMatchers.same;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 
 /**
  * A class for testing {@link HelloWorld#append(Path) append(path)} method.
@@ -54,23 +44,14 @@ import static org.mockito.Mockito.mockStatic;
  * @see HelloWorld_03_Append_Path_Arguments_Test
  */
 @DisplayName("append(path)")
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-@SuppressWarnings({
-        "java:S101"
-})
-class HelloWorld_03_Append_Path_Test
-        extends _HelloWorldTest {
+@SuppressWarnings({"java:S101"})
+class HelloWorld_03_Append_Path_Test extends _HelloWorldTest {
 
     @BeforeEach
-    void _beforeEach() throws IOException {
-        doAnswer(i -> {
-            final var channel = i.getArgument(0, WritableByteChannel.class);
-            for (final var src = ByteBuffer.allocate(HelloWorld.BYTES); src.hasRemaining(); ) {
-                final var w = channel.write(src);
-                assert w >= 0;
-            }
-            return channel;
-        }).when(service()).write(notNull(WritableByteChannel.class));
+    void beforeEach() throws IOException {
+        writeChannel_willReturnChannel();
     }
 
     @DisplayName("-> write(FileChannel.open(path, CREATE, WRITE, APPEND))")
@@ -78,11 +59,12 @@ class HelloWorld_03_Append_Path_Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        final var path = mock(Path.class);
-        final var channel = _stub_ToWriteSome(mock(FileChannel.class), null);
-        try (var mock = mockStatic(FileChannel.class)) {
-            mock.when(() -> FileChannel.open(same(path), any(OpenOption[].class)))
-                    .thenReturn(channel);
+        final var path = Mockito.mock(Path.class);
+        final var channel = Mockito.mock(FileChannel.class);
+        try (var mockStatic = Mockito.mockStatic(FileChannel.class)) {
+            mockStatic.when(() -> FileChannel.open(
+                    ArgumentMatchers.same(path), ArgumentMatchers.any(OpenOption[].class)
+            )).thenReturn(channel);
             // -------------------------------------------------------------------------------- when
             final var result = service.append(path);
             // -------------------------------------------------------------------------------- then
@@ -90,31 +72,7 @@ class HelloWorld_03_Append_Path_Test
             // TODO: Verify, write(channel) invoked, once.
             // TODO: Verify, channel.force(true) invoked, once.
             // TODO: Verify, channel.close() invoked, once.
-            assertSame(path, result);
+            Assertions.assertSame(path, result);
         }
-    }
-
-    /**
-     * Asserts {@link HelloWorld#append(Path) append(path)} method appends {@value HelloWorld#BYTES}
-     * bytes to {@code path}.
-     *
-     * @param tempDir a temporary directory to test with.
-     * @throws IOException if an I/O error occurs.
-     */
-    @DisplayName("-> 12 bytes are appended")
-    @Test
-    @畵蛇添足
-    void __(@TempDir final Path tempDir) throws IOException {
-        // ----------------------------------------------------------------------------------- given
-        final var service = service();
-        final var path = Files.createTempFile(tempDir, null, null);
-        JavaNioUtils.writeSome(path);
-        final var size = size(path);
-        log.debug("path.size before: {}", size);
-        // ------------------------------------------------------------------------------------ when
-        final var result = service.append(path);
-        log.debug("path.size after: {}", size(path));
-        // ------------------------------------------------------------------------------------ then
-        // TODO: assert path's size is equal to (size + HelloWorld.BYTE)
     }
 }

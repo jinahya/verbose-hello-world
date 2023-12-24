@@ -29,6 +29,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.BDDMockito;
 import org.mockito.Captor;
 import org.mockito.Mockito;
 import org.mockito.Spy;
@@ -56,7 +57,6 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.longThat;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockingDetails;
 
@@ -112,7 +112,7 @@ public abstract class _HelloWorldTest {
             throw new IllegalArgumentException("not a mock: " + channel);
         }
         Objects.requireNonNull(adder, "adder is null");
-        willAnswer(w -> { // invocation of channel.write
+        BDDMockito.willAnswer(w -> { // invocation of channel.write
             var future = mock(Future.class);
             Mockito.when(future.get()).thenAnswer(g -> { // invocation of future.get
                 var src = w.getArgument(0, ByteBuffer.class);
@@ -148,7 +148,7 @@ public abstract class _HelloWorldTest {
             throw new IllegalArgumentException("not a mock: " + channel);
         }
         Objects.requireNonNull(exc, "exc is null");
-        willAnswer(i -> {
+        BDDMockito.willAnswer(i -> {
             var src = i.getArgument(0, ByteBuffer.class);
             var position = i.getArgument(1, Long.class);
             var attachment = i.getArgument(2);
@@ -170,7 +170,7 @@ public abstract class _HelloWorldTest {
         if (!mockingDetails(Objects.requireNonNull(channel, "channel is null")).isMock()) {
             throw new IllegalArgumentException("not a mock: " + channel);
         }
-        willAnswer(i -> {
+        BDDMockito.willAnswer(i -> {
             final var src = i.getArgument(0, ByteBuffer.class);
             final var position = i.getArgument(1, Long.class);
             final var attachment = i.getArgument(2);
@@ -201,7 +201,7 @@ public abstract class _HelloWorldTest {
                 Objects.requireNonNull(channel, "channel is null")).isMock()) {
             throw new IllegalArgumentException("not a mock: " + channel);
         }
-        willAnswer(i -> {
+        BDDMockito.willAnswer(i -> {
             var src = i.getArgument(0, ByteBuffer.class);
             var attachment = i.getArgument(1);
             var handler = i.getArgument(2, CompletionHandler.class);
@@ -229,7 +229,7 @@ public abstract class _HelloWorldTest {
             throw new IllegalArgumentException("not a mock: " + channel);
         }
         Objects.requireNonNull(adder, "adder is null");
-        willAnswer(i -> {
+        BDDMockito.willAnswer(i -> {
             var src = i.getArgument(0, ByteBuffer.class);
             var attachment = i.getArgument(1);
             var handler = i.getArgument(2, CompletionHandler.class);
@@ -268,17 +268,22 @@ public abstract class _HelloWorldTest {
     }
 
     // ---------------------------------------------------------------------------------------------
+    protected final void writeChannel_willReturnChannel() throws IOException {
+        Mockito.doAnswer(i -> i.getArgument(0))
+                .when(service)
+                .write(any(WritableByteChannel.class));
+    }
 
     /**
      * Stubs {@code serviceInstance()}'s {@link HelloWorld#put(ByteBuffer) put(buffer[12])} method
      * to return given {@code buffer} as its position increased by {@value HelloWorld#BYTES}.
      */
     protected final void putBuffer_WillReturnTheBuffer_AsItsPositionIncreasedBy12() {
-        willAnswer(i -> {
-            var buffer = i.getArgument(0, ByteBuffer.class);
-            buffer.position(buffer.limit());
-            return buffer;
-        })
+        BDDMockito.willAnswer(i -> {
+                    var buffer = i.getArgument(0, ByteBuffer.class);
+                    buffer.position(buffer.limit());
+                    return buffer;
+                })
                 .given(service)
                 .put(argThat(b -> b != null && b.capacity() == BYTES && b.remaining() == BYTES));
     }
@@ -310,7 +315,7 @@ public abstract class _HelloWorldTest {
      * {@value HelloWorld#BYTES} bytes to the {@code stream}, and return the {@code stream}.
      */
     protected final void writeStream_willWrite12Bytes() throws IOException {
-        willAnswer(i -> {
+        BDDMockito.willAnswer(i -> {
             var stream = i.getArgument(0, OutputStream.class);
             stream.write(new byte[BYTES]);
             return stream;
