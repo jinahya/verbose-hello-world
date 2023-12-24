@@ -22,13 +22,14 @@ package com.github.jinahya.hello._02_io;
 
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello._HelloWorldTest;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.RandomAccessFile;
-
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * A class for testing {@link HelloWorld#write(RandomAccessFile) write(file)} method regarding
@@ -38,22 +39,23 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * @see HelloWorld_09_Write_RandomAccessFile_Test
  */
 @DisplayName("write(RandomAccessFile file) arguments")
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_09_Write_RandomAccessFile_Arguments_Test
-        extends _HelloWorldTest {
+@SuppressWarnings({"java:S101"})
+class HelloWorld_09_Write_RandomAccessFile_Arguments_Test extends _HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#write(RandomAccessFile file) write(RandomAccessFile file)} method
+     * Verifies {@link HelloWorld#write(RandomAccessFile file) write(RandomAccessFile file)} method
      * throws a {@link NullPointerException} when the {@code file} argument is {@code null}.
      */
-    @DisplayName("(null)NullPointerException")
+    @DisplayName("[file == null] -> NullPointerException")
     @Test
     void _ThrowNullPointerException_FileIsNull() {
         // ----------------------------------------------------------------------------------- given
-        var service = service();
-        var file = (RandomAccessFile) null;
+        final var service = service();
+        final var file = (RandomAccessFile) null;
         // ------------------------------------------------------------------------------- when/then
-        assertThrows(
+        Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.write(file)
         );

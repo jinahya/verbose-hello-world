@@ -326,7 +326,7 @@ public abstract class _HelloWorldTest {
      * Stubs {@code serviceInstance}'s {@link HelloWorld#set(byte[]) set(array)} method to just
      * return the {@code array}.
      */
-    protected final void setArray_willReturnTheArray() {
+    protected final void setArray_willReturnArray() {
         Mockito.doAnswer(i -> i.getArgument(0)) // <2>
                 .when(service).set(any())       // <1>
         ;

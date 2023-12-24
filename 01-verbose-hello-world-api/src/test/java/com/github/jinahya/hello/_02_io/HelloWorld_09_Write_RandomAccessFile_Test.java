@@ -22,26 +22,17 @@ package com.github.jinahya.hello._02_io;
 
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello._HelloWorldTest;
-import com.github.jinahya.hello.畵蛇添足;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+import org.mockito.Mockito;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-
-import static com.github.jinahya.hello.HelloWorld.BYTES;
-import static java.io.File.createTempFile;
-import static java.util.concurrent.ThreadLocalRandom.current;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * A class for testing {@link HelloWorld#write(RandomAccessFile)} method.
@@ -50,66 +41,38 @@ import static org.mockito.Mockito.verify;
  * @see HelloWorld_09_Write_RandomAccessFile_Arguments_Test
  */
 @DisplayName("write(RandomAccessFile file)")
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_09_Write_RandomAccessFile_Test
-        extends _HelloWorldTest {
+@SuppressWarnings({"java:S101"})
+class HelloWorld_09_Write_RandomAccessFile_Test extends _HelloWorldTest {
 
     @BeforeEach
-    void _beforeEach() {
-        setArray_willReturnTheArray();
+    void beforeEach() {
+        setArray_willReturnArray();
     }
 
     /**
-     * Asserts {@link HelloWorld#write(RandomAccessFile) write(file)} method invokes
+     * Verifies {@link HelloWorld#write(RandomAccessFile) write(file)} method invokes
      * {@link HelloWorld#set(byte[]) set(array)} method with an array of {@value HelloWorld#BYTES}
      * bytes, and invokes {@link RandomAccessFile#write(byte[])} method on the {@code file} argument
      * with the array.
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("(file) -> file.write(set(array[12]))")
+    @DisplayName("-> set(array[12]) -> file.write(array)")
     @Test
-    void _InvokeSetArrayWriteArrayToFile_()
-            throws IOException {
+    void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
-        var service = service();
-        var file = mock(RandomAccessFile.class);
+        final var service = service();
+        final var file = Mockito.mock(RandomAccessFile.class);
         // ------------------------------------------------------------------------------------ when
-        var result = service.write(file);
+        final var result = service.write(file);
         // ------------------------------------------------------------------------------------ then
-        verify(service, times(1)).set(arrayCaptor().capture());
-        var array = arrayCaptor().getValue();
-        assertNotNull(array);
-        assertEquals(BYTES, array.length);
+        Mockito.verify(service, Mockito.times(1)).set(arrayCaptor().capture());
+        final var array = arrayCaptor().getValue();
+        Assertions.assertNotNull(array);
+        Assertions.assertEquals(HelloWorld.BYTES, array.length);
         // TODO: Verify file.write(array) invoked, once and only
-        assertSame(result, file);
-    }
-
-    /**
-     * Asserts, redundantly, {@link HelloWorld#write(RandomAccessFile) write(RandomAccessFile file)}
-     * method writes {@value HelloWorld#BYTES} bytes to the {@code file}.
-     *
-     * @param tempDir a temporary directory to test with.
-     * @throws IOException if an I/O error occurs.
-     */
-    @org.junit.jupiter.api.Disabled("not implemented yet")
-    // TODO: Remove when implemented
-    @DisplayName("(file) -> writes 12 bytes")
-    @Test
-    @畵蛇添足
-    void _Write12Bytes_(@TempDir File tempDir)
-            throws IOException {
-        // ----------------------------------------------------------------------------------- given
-        var service = service();
-        var tmp = createTempFile("tmp", null, tempDir);
-        var pos = current().nextLong(1024);
-        // ------------------------------------------------------------------------------------ when
-        try (var file = new RandomAccessFile(tmp, "rw")) {
-            file.seek(pos);
-            var result = service.write(file);
-            file.getFD().sync();
-        }
-        // ------------------------------------------------------------------------------------ then
-        assertEquals(pos + BYTES, tmp.length());
+        Assertions.assertSame(result, file);
     }
 }

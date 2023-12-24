@@ -45,7 +45,7 @@ class HelloWorld_07_Write_DataOutput_Test
 
     @BeforeEach
     void beforeEach() {
-        setArray_willReturnTheArray();
+        setArray_willReturnArray();
     }
 
     /**
