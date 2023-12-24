@@ -302,7 +302,7 @@ public abstract class _HelloWorldTest {
     protected final void writeStream_willReturnStream() throws IOException {
         Mockito.doAnswer(i -> i.getArgument(0))
                 .when(service)
-                .write(any(OutputStream.class);
+                .write(any(OutputStream.class));
     }
 
     /**
