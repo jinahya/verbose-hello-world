@@ -23,17 +23,15 @@ package com.github.jinahya.hello._03_net;
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello._HelloWorldTest;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
-
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * A class for testing {@link HelloWorld#send(Socket) send(socket)} method.
@@ -62,16 +60,16 @@ class HelloWorld_01_Send_Socket_Test
      */
     @DisplayName("-> write(socket.outputStream)")
     @Test
-    void _InvokeWriteStreamWithSocketOutputStream_()
-            throws IOException {
+    void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
-        var service = service();
-        var socket = mock(Socket.class);                                     // <1>
-        when(socket.getOutputStream()).thenReturn(mock(OutputStream.class)); // <3>
+        final var service = service();
+        final var socket = Mockito.mock(Socket.class);                                       // <1>
+        Mockito.when(socket.getOutputStream()).thenReturn(Mockito.mock(OutputStream.class)); // <2>
         // ------------------------------------------------------------------------------------ when
-        var result = service.send(socket);                                   // <4>
+        final var result = service.send(socket);
         // ------------------------------------------------------------------------------------ then
-        // TODO: Verify, once, service.write(socket.getOutputStream) invoked.
-        assertSame(socket, result);
+        // TODO: verify, socket.getOutputStream() invoked, once
+        // TODO: verify, service.write(stream) invoked, once
+        Assertions.assertSame(socket, result);
     }
 }
