@@ -44,16 +44,15 @@ import static org.mockito.Mockito.mock;
 @SuppressWarnings({
         "java:S101"
 })
-class HelloWorld_09_Append_Appendable_Test
-        extends _HelloWorldTest {
+class HelloWorld_09_Append_Appendable_Test extends _HelloWorldTest {
 
     @BeforeEach
-    void _beforeEach() {
+    void beforeEach() {
         setArray_willReturnTheArray();
     }
 
     /**
-     * Asserts {@link HelloWorld#append(Appendable) append(appendable)} method invokes
+     * Verifies {@link HelloWorld#append(Appendable) append(appendable)} method invokes
      * {@link HelloWorld#set(byte[]) set(array)} method with an array of {@value HelloWorld#BYTES}
      * bytes, appends a string create with the {@code array} to {@code appendable}, and returns the
      * {@code appendable}.
