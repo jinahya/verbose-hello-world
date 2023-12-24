@@ -60,7 +60,7 @@ class HelloWorld_01_Send_Socket_Test
      * @throws IOException if an I/O error occurs.
      * @see org.mockito.Mockito#verifyNoMoreInteractions(Object...)
      */
-    @DisplayName("(socket) -> write(socket.outputStream)")
+    @DisplayName("-> write(socket.outputStream)")
     @Test
     void _InvokeWriteStreamWithSocketOutputStream_()
             throws IOException {
