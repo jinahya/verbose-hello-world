@@ -64,7 +64,8 @@ class HelloWorld_01_Send_Socket_Test
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var socket = Mockito.mock(Socket.class);                                       // <1>
-        Mockito.when(socket.getOutputStream()).thenReturn(Mockito.mock(OutputStream.class)); // <2>
+        final var stream = Mockito.mock(OutputStream.class);
+        Mockito.when(socket.getOutputStream()).thenReturn(stream);
         // ------------------------------------------------------------------------------------ when
         final var result = service.send(socket);
         // ------------------------------------------------------------------------------------ then
