@@ -43,8 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SuppressWarnings({
         "java:S101"
 })
-class HelloWorld_09_Append_Appendable_Arguments_Test
-        extends _HelloWorldTest {
+class HelloWorld_09_Append_Appendable_Arguments_Test extends _HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#append(Appendable) append(appendable)} method throws a

@@ -43,12 +43,11 @@ import static org.mockito.Mockito.verify;
  */
 @DisplayName("write(writer)")
 @Slf4j
-class HelloWorld_05_Write_Writer_Test
-        extends _HelloWorldTest {
+class HelloWorld_05_Write_Writer_Test extends _HelloWorldTest {
 
     @BeforeEach
     void _beforeEach() {
-        _stub_PrintChars_ToReturnTheChars();
+//        _stub_PrintChars_ToReturnTheChars();
     }
 
     /**
@@ -60,8 +59,7 @@ class HelloWorld_05_Write_Writer_Test
      */
     @DisplayName("(writer)append(writer)")
     @Test
-    void __()
-            throws IOException {
+    void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         var service = service();
         var writer = mock(Writer.class);

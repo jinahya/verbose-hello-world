@@ -26,16 +26,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.ArgumentMatchers.anyChar;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * A class for testing {@link HelloWorld#append(Appendable) append(appendable)} method.
@@ -53,14 +49,14 @@ class HelloWorld_09_Append_Appendable_Test
 
     @BeforeEach
     void _beforeEach() {
-        _stub_PrintChars_ToReturnTheChars();
+        setArray_willReturnTheArray();
     }
 
     /**
      * Asserts {@link HelloWorld#append(Appendable) append(appendable)} method invokes
-     * {@link HelloWorld#print(char[]) print(chars)} method with an array of
-     * {@value HelloWorld#BYTES} characters, appends each character in the array to
-     * {@code appendable}, and returns the {@code appendable}.
+     * {@link HelloWorld#set(byte[]) set(array)} method with an array of {@value HelloWorld#BYTES}
+     * bytes, appends a string create with the {@code array} to {@code appendable}, and returns the
+     * {@code appendable}.
      */
     @DisplayName("-> print(char[12]) -> appendable.append(each-char)")
     @Test
@@ -68,14 +64,16 @@ class HelloWorld_09_Append_Appendable_Test
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var appendable = mock(Appendable.class);
-        // ------------------------------------------------------------------------------------ when
-        final var result = service.append(appendable);
-        // ------------------------------------------------------------------------------------ then
-        verify(service, times(1)).print(charsCaptor().capture());
-        final var chars = charsCaptor().getValue();
-        assertNotNull(chars);
-        assertEquals(HelloWorld.BYTES, chars.length);
-        verify(appendable, times(chars.length)).append(anyChar());
-        assertSame(appendable, result);
+        try (var mock = Mockito.mockConstruction(String.class)) {
+            // -------------------------------------------------------------------------------- when
+            final var result = service.append(appendable);
+            // -------------------------------------------------------------------------------- then
+            // TODO: verify set(arrayCaptor().capture()) invoked, once
+            // TODO: asert arrayCaptor().getValue() is not null
+            // TODO: asert arrayCaptor().getValue()'s length is equal to HelloWorld.BYTES
+            // TODO: verify new String(array, StandardCharset.US_ASCII) invoked, once
+            // TODO: verify appendable.append(string) invoked, once
+            assertSame(appendable, result);
+        }
     }
 }

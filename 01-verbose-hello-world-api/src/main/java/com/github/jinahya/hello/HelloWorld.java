@@ -38,6 +38,7 @@ import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
+import java.nio.charset.Charset;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -141,94 +142,30 @@ public interface HelloWorld {
     }
 
     /**
-     * Prints the <a href="#hello-world-bytes">hello-world-bytes</a> on specified array starting at
-     * specified index.
-     * <p>
-     * The elements in the array, on successful return, will be set as follows.
-     * <pre>
-     *   0     &lt;= index                                    index+12 &lt;=         chars.length
-     *   ↓        ↓                                               ↓            ↓
-     * |   |....|'h'|'e'|'l'|'l'|'o'|','|' '|'w'|'o'|'r'|'l'|'d'|   |....|   |
-     * </pre>
+     * Appends a string of the <a href="#hello-world-bytes">hello-world-bytes</a> to specified
+     * appendable.
      *
-     * @param chars the array on which characters are set.
-     * @param index the starting index of the {@code chars}.
-     * @return given {@code chars}.
-     * @throws NullPointerException           if {@code chars} is {@code null}.
-     * @throws ArrayIndexOutOfBoundsException if {@code index} is negative or {@code chars.length}
-     *                                        is less than or equal to ({@code index} +
-     *                                        {@value #BYTES}).
-     * @implNote The default implementation invokes {@link #set(byte[]) set(array)} method with an
-     * array of {@value #BYTES} bytes, copies each element in returned array into {@code chars}
-     * starting at {@code index}, and returns the {@code chars}.
-     * @see #set(byte[])
-     */
-    default char[] print(final char[] chars, int index) {
-        if (chars == null) {
-            throw new NullPointerException("chars is null");
-        }
-        // TODO: throw an ArrayIndexOutOfBoundsException when index is negative
-        // TODO: throw an ArrayOutOfBoundsException when index + BYTES > chars.length
-        // TODO: invoke set(byte[]) with an array of BYTES bytes
-        // TODO: copy each byte in that array to chars starting at index
-        return chars;
-    }
-
-    /**
-     * Prints the <a href="#hello-world-bytes">hello-world-bytes</a> on specified array starting at
-     * {@code 0}.
-     * <p>
-     * The elements in the chars, on successful return, will be set as follows.
-     * <pre>
-     *   0                                              12 &lt;=         chars.length
-     *   ↓                                               ↓            ↓
-     * |'h'|'e'|'l'|'l'|'o'|','|' '|'w'|'o'|'r'|'l'|'d'|   |....|   |
-     * </pre>
-     *
-     * @param chars the chars on which characters are set.
-     * @return given {@code chars}.
-     * @throws NullPointerException           if {@code chars} is {@code null}.
-     * @throws ArrayIndexOutOfBoundsException if {@code chars.length} is less than {@link #BYTES}.
-     * @implSpec The default implementation invokes {@link #print(char[], int) set(chars, offset)}
-     * method with {@code chars} and {@code 0}, and returns the result.
-     * @see #print(char[], int)
-     */
-    default char[] print(char[] chars) {
-        if (chars == null) {
-            throw new NullPointerException("chars is null");
-        }
-        if (chars.length < BYTES) {
-            throw new ArrayIndexOutOfBoundsException(
-                    "chars.length(" + chars.length + ") < " + BYTES
-            );
-        }
-        print(chars, 0);
-        return chars;
-    }
-
-    /**
-     * Appends the <a href="#hello-world-bytes">hello-world-bytes</a> to specified appendable.
-     *
-     * @param appendable the appendable to which chars are appended.
+     * @param appendable the appendable to which the string is appended.
      * @return given {@code appendable}.
      * @throws NullPointerException if {@code appendable} is {@code null}.
-     * @implSpec The default implementation invokes {@link #print(char[]) print(chars)} method with
-     * an array of {@value #BYTES} characters, appends each character in the array to
-     * {@code appendable} using {@link Appendable#append(char)} method, and returns the
-     * {@code appendable}.
-     * @see #print(char[])
-     * @see Appendable#append(char)
+     * @implSpec The default implementation invokes {@link #set(byte[]) set(array)} method with an
+     * array of {@value #BYTES} bytes, constructs a {@code String} by invoking
+     * {@link String#String(byte[], Charset) new String(bytes, charset)} constructor with the
+     * {@code array} and {@link java.nio.charset.StandardCharsets#US_ASCII US_ASCII},
+     * {@link Appendable#append(CharSequence) appends} the {@code String} to the {@code appendable},
+     * and returns the {@code appendable}.
+     * @see #set(byte[])
+     * @see java.nio.charset.StandardCharsets#US_ASCII
+     * @see String#String(byte[], Charset)
+     * @see Appendable#append(CharSequence)
      */
-    default <T extends Appendable> T append(T appendable)
-            throws IOException {
+    default <T extends Appendable> T append(final T appendable) throws IOException {
         if (appendable == null) {
             throw new NullPointerException("appendable is null");
         }
-        final var chars = new char[BYTES];
-        print(chars);
-        for (var c : chars) {
-            appendable.append(c);
-        }
+        // TODO: invoke set(array[12])
+        // TODO: create a String with array and StandardCharset.US_ASCII
+        // TODO: append the String to appendable
         return appendable;
     }
 
@@ -271,11 +208,8 @@ public interface HelloWorld {
      * @implSpec The default implementation invokes {@link #append(Appendable) append(appendable)}
      * with {@code writer}, and returns the {@code writer}.
      * @see #append(Appendable)
-     * @see #print(char[])
-     * @see Writer#write(char[])
      */
-    default <T extends Writer> T write(T writer)
-            throws IOException {
+    default <T extends Writer> T write(final T writer) throws IOException {
         if (writer == null) {
             throw new NullPointerException("writer is null");
         }

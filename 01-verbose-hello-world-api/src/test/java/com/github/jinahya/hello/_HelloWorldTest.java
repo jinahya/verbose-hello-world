@@ -29,7 +29,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.BDDMockito;
 import org.mockito.Captor;
 import org.mockito.Mockito;
 import org.mockito.Spy;
@@ -54,12 +53,10 @@ import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.intThat;
 import static org.mockito.ArgumentMatchers.longThat;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willAnswer;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockingDetails;
 
@@ -318,37 +315,20 @@ public abstract class _HelloWorldTest {
      */
     @BeforeEach
     void setArrayIndex_willReturnArray() {
-        Mockito.when(service.set(notNull(byte[].class), intThat(v -> v >= 0)))  // <1>
-                .thenAnswer(i -> i.getArgument(0));                             // <2>
+        Mockito.doAnswer(i -> i.getArgument(0))     // <2>
+                .when(service).set(any(), anyInt()) // <1>
+        ;
     }
 
+    // --------------------------------------------------------------------------------- set(byte[])
     /**
      * Stubs {@code serviceInstance}'s {@link HelloWorld#set(byte[]) set(array)} method to just
      * return the {@code array}.
      */
     protected final void setArray_willReturnTheArray() {
-        Mockito.doAnswer(i -> i.getArgument(0))            // <2>
-                .when(service).set(notNull(byte[].class)); // <1>
-    }
-
-    /**
-     * Stubs {@code serviceInstance}'s {@link HelloWorld#print(char[]) print(chars)} method to just
-     * return the {@code chars}.
-     */
-    protected void _stub_PrintChars_ToReturnTheChars() {
-        doAnswer(i -> i.getArgument(0))
-                .when(service)
-                .print(any(char[].class));
-    }
-
-    /**
-     * Stubs {@code service}'s {@link HelloWorld#print(char[], int) print(chars, index)} method to
-     * just return the {@code chars} argument.
-     */
-    protected final void _stub_PrintCharsWithIndex_ToReturnTheChars() {
-        doAnswer(i -> i.getArgument(0))              // <1>
-                .when(service)                       // <2>
-                .print(any(char[].class), anyInt()); // <3>
+        Mockito.doAnswer(i -> i.getArgument(0)) // <2>
+                .when(service).set(any())       // <1>
+        ;
     }
 
     // ---------------------------------------------------------------------------------------------
