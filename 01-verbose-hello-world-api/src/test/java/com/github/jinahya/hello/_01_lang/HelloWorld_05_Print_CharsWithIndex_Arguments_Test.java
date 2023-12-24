@@ -46,11 +46,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SuppressWarnings({
         "java:S101"
 })
-class HelloWorld_05_Print_CharsWithIndex_Arguments_Test
-        extends _HelloWorldTest {
+class HelloWorld_05_Print_CharsWithIndex_Arguments_Test extends _HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#print(char[], int) print(chars, index)} method throws a
+     * Verifies {@link HelloWorld#print(char[], int) print(chars, index)} method throws a
      * {@link NullPointerException} when the {@code chars} argument is {@code null}.
      */
     @DisplayName("[chars == null] -> NullPointerException")
@@ -68,7 +67,7 @@ class HelloWorld_05_Print_CharsWithIndex_Arguments_Test
     }
 
     /**
-     * Asserts {@link HelloWorld#print(char[], int) print(chars, index)} method throws an
+     * Verifies {@link HelloWorld#print(char[], int) print(chars, index)} method throws an
      * {@link ArrayIndexOutOfBoundsException} when {@code index} is negative.
      */
     @DisplayName("[index < 0] -> ArrayIndexOutOfBoundsException")
@@ -87,12 +86,12 @@ class HelloWorld_05_Print_CharsWithIndex_Arguments_Test
 
     /**
      * Asserts {@link HelloWorld#print(char[], int) print(chars, index)} method throws an
-     * {@link ArrayIndexOutOfBoundsException} when {@code index + BYTES} is greater than
+     * {@link ArrayIndexOutOfBoundsException} when {@code index + HelloWorld.BYTES} is greater than
      * {@code chars.length}.
      */
     @DisplayName("[index + BYTES > chars.length] -> ArrayIndexOutOfBoundsException")
     @Test
-    void _ThrowArrayIndexOutOfBoundsException_IndexPlusBYTESGTCharsLength() {
+    void _ThrowArrayIndexOutOfBoundsException_IndexPlus12GreaterThanCharsLength() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var chars = new char[ThreadLocalRandom.current().nextInt(BYTES)];
