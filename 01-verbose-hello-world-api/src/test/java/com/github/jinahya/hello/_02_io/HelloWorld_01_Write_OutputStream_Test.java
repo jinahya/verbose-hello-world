@@ -25,6 +25,7 @@ import com.github.jinahya.hello._HelloWorldTest;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -74,6 +75,6 @@ class HelloWorld_01_Write_OutputStream_Test extends _HelloWorldTest {
         // TODO: verify, arrayCaptor().getValue() is not null
         // TODO: verify, arrayCaptor().getValue()'s length is equal to HelloWorld.BYTES
         // TODO: verify, stream.write(array) invoked, once
-        // TODO: assert, result is same as stream
+        Assertions.assertEquals(stream, result);
     }
 }
