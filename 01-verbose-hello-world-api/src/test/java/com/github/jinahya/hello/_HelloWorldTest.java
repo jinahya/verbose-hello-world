@@ -30,6 +30,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -52,6 +53,7 @@ import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.intThat;
 import static org.mockito.ArgumentMatchers.longThat;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.BDDMockito.given;
@@ -59,7 +61,6 @@ import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockingDetails;
-import static org.mockito.Mockito.when;
 
 /**
  * An abstract class for testing methods defined in {@link HelloWorld} interface.
@@ -115,7 +116,7 @@ public abstract class _HelloWorldTest {
         Objects.requireNonNull(adder, "adder is null");
         willAnswer(w -> { // invocation of channel.write
             var future = mock(Future.class);
-            when(future.get()).thenAnswer(g -> { // invocation of future.get
+            Mockito.when(future.get()).thenAnswer(g -> { // invocation of future.get
                 var src = w.getArgument(0, ByteBuffer.class);
                 var position = w.getArgument(1, Long.class);
                 var written = current().nextInt(1, src.remaining() + 1);
@@ -308,17 +309,16 @@ public abstract class _HelloWorldTest {
         }).given(service).write(notNull(OutputStream.class));
     }
 
+    // -------------------------------------------------------------------------- set(byte[], index)
+
     /**
      * Stubs {@code serviceInstance}'s {@link HelloWorld#set(byte[], int) set(array, index)} method
      * to just return the {@code array} argument.
      */
     @BeforeEach
     void setArrayIndex_willReturnArray() {
-        given(service.set(notNull()))
-                .willAnswer(i -> i.getArgument(0));
-//        when(service.set(any(byte[].class),
-//                         anyInt()))  // <1>
-//                .thenAnswer(i -> i.getArgument(0)); // <2>
+        Mockito.when(service.set(notNull(byte[].class), intThat(v -> v >= 0)))  // <1>
+                .thenAnswer(i -> i.getArgument(0));                             // <2>
     }
 
     /**
@@ -326,11 +326,8 @@ public abstract class _HelloWorldTest {
      * return the {@code array}.
      */
     protected final void setArray_ToReturnTheArray() {
-        given(service.set(notNull()))
-                .willAnswer(i -> i.getArgument(0));
-//        doAnswer(i -> i.getArgument(0))
-//                .when(service)
-//                .set(notNull(byte[].class));
+        Mockito.when(service.set(notNull(byte[].class)))  // <1>
+                .thenAnswer(i -> i.getArgument(0));       // <2>
     }
 
     /**
