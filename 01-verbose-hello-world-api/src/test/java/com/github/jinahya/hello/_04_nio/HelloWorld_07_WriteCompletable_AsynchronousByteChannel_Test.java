@@ -28,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
@@ -39,8 +40,6 @@ import java.util.function.BiFunction;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.nio.ByteBuffer.allocate;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willAnswer;
 
@@ -86,7 +85,7 @@ class HelloWorld_07_WriteCompletable_AsynchronousByteChannel_Test extends _Hello
                         }
                     });
             return null;
-        }).given(service()).writeAsync(notNull(), notNull(), any());
+        }).given(service()).writeAsync(ArgumentMatchers.notNull(), ArgumentMatchers.notNull(), ArgumentMatchers.any());
     }
 
     /**
@@ -111,7 +110,11 @@ class HelloWorld_07_WriteCompletable_AsynchronousByteChannel_Test extends _Hello
             final var attachment = i.getArgument(2);
             handler.completed(channel, attachment);
             return null;
-        }).when(service).writeAsync(channel, notNull(), any());
+        }).when(service).writeAsync(
+                ArgumentMatchers.same(channel),
+                ArgumentMatchers.notNull(),
+                ArgumentMatchers.any()
+        );
         // ------------------------------------------------------------------------------------ when
         final var future = service.writeCompletable(channel);
         // ------------------------------------------------------------------------------------ then
