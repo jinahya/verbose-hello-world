@@ -34,9 +34,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static com.github.jinahya.hello.util.HelloWorldServerUtils.loadHelloWorld;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 /**
  * A class for testing {@link HelloWorldServerUtils} class.
  *
@@ -51,8 +48,8 @@ class HelloWorldServerUtilsTest {
     @DisplayName("load() return non-null")
     @Test
     void load_NotNull_() {
-        var helloWorld = loadHelloWorld();
-        assertNotNull(helloWorld);
+        var helloWorld = HelloWorldServerUtils.loadHelloWorld();
+        Assertions.assertNotNull(helloWorld);
     }
 
     @Disabled
@@ -60,8 +57,7 @@ class HelloWorldServerUtilsTest {
     class PortTest {
 
         @Test
-        void writePort(@TempDir Path tempDir)
-                throws IOException {
+        void writePort(@TempDir Path tempDir) throws IOException {
             var dir = Files.createTempDirectory(tempDir, null);
             var port = ThreadLocalRandom.current().nextInt(1, 65536);
             HelloWorldServerUtils.writePortNumber(dir, port);

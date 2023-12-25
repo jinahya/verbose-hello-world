@@ -25,8 +25,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import static com.google.inject.name.Names.named;
-
 /**
  * A Guice module for injecting {@link HelloWorld} instances.
  *
@@ -34,8 +32,7 @@ import static com.google.inject.name.Names.named;
  */
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorldDiGuiceModule
-        extends AbstractModule {
+class HelloWorldDiGuiceModule extends AbstractModule {
 
     @Override
     protected void configure() {

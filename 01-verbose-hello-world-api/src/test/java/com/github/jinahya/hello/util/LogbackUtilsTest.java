@@ -21,14 +21,12 @@ package com.github.jinahya.hello.util;
  */
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.slf4j.event.Level;
-
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @Slf4j
 class LogbackUtilsTest {
@@ -39,11 +37,10 @@ class LogbackUtilsTest {
 
         @EnumSource(Level.class)
         @ParameterizedTest
-        void __(final Level slf4jLevel)
-                throws ReflectiveOperationException {
+        void __(final Level slf4jLevel) throws ReflectiveOperationException {
             final var logbackLevel = LogbackUtils.toLogbackLevel(slf4jLevel);
-            assertNotNull(logbackLevel);
-            assertInstanceOf(LogbackUtils.LEVEL_CLASS, logbackLevel);
+            Assertions.assertNotNull(logbackLevel);
+            Assertions.assertInstanceOf(LogbackUtils.LEVEL_CLASS, logbackLevel);
         }
     }
 
@@ -53,10 +50,9 @@ class LogbackUtilsTest {
 
         @EnumSource(Level.class)
         @ParameterizedTest
-        void __(final Level slf4jLevel)
-                throws ReflectiveOperationException {
+        void __(final Level slf4jLevel) throws ReflectiveOperationException {
             LogbackUtils.setLevel(log, slf4jLevel);
-            assertInstanceOf(LogbackUtils.LEVEL_CLASS, LogbackUtils.getLevel_(log));
+            Assertions.assertInstanceOf(LogbackUtils.LEVEL_CLASS, LogbackUtils.getLevel_(log));
         }
     }
 }

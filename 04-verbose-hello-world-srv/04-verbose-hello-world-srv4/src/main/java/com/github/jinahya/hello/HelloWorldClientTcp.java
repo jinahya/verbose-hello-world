@@ -24,17 +24,15 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.net.SocketAddress;
+import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
-
-import static com.github.jinahya.hello.HelloWorld.BYTES;
-import static java.nio.ByteBuffer.wrap;
-import static java.nio.charset.StandardCharsets.US_ASCII;
 
 @Slf4j
 class HelloWorldClientTcp {
@@ -80,9 +78,9 @@ class HelloWorldClientTcp {
                         continue;
                     }
                     if (key.isReadable()) { // ready-to-read
-                        var buffer = wrap(new byte[BYTES]);
+                        var buffer = ByteBuffer.wrap(new byte[HelloWorld.BYTES]);
                         // TODO: fill buffer from the channel
-                        consumer.accept(new String(buffer.array(), US_ASCII));
+                        consumer.accept(new String(buffer.array(), StandardCharsets.US_ASCII));
                         channel.close(); // key.cancel();
                         latch.countDown();
                         continue;

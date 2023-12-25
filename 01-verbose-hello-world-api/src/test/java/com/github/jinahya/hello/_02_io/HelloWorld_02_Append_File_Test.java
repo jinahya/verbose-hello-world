@@ -35,8 +35,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import static org.junit.jupiter.api.Assertions.assertSame;
-
 /**
  * A class for testing {@link HelloWorld#append(File) append(file)} method.
  *
@@ -85,7 +83,7 @@ class HelloWorld_02_Append_File_Test extends _HelloWorldTest {
             // TODO: verify, service.write(construction.constructed().get(0)) invoked, once.
             // TODO: verify, construction.constructed().get(0).flush() invoked, once.
             // TODO: verify, construction.constructed().get(0).close() invoked, once.
-            assertSame(file, result);
+            Assertions.assertSame(file, result);
         }
     }
 }

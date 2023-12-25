@@ -30,10 +30,6 @@ import org.junit.jupiter.api.Test;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 /**
  * An abstract class for testing classes implement {@link HelloWorld} interface.
  *
@@ -63,7 +59,7 @@ abstract class __HelloWorldTest {
         final var array = (byte[]) null;
         final var index = 0;
         // ------------------------------------------------------------------------------- when/then
-        assertThrows(
+        Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.set(array, index)
         );
@@ -83,7 +79,7 @@ abstract class __HelloWorldTest {
         final var index = ThreadLocalRandom.current().nextInt() | Integer.MIN_VALUE;
         assert index < 0;
         // ------------------------------------------------------------------------------- when/then
-        assertThrows(
+        Assertions.assertThrows(
                 IndexOutOfBoundsException.class,
                 () -> service.set(array, index)
         );
@@ -108,7 +104,7 @@ abstract class __HelloWorldTest {
         assert index > array.length - HelloWorld.BYTES;
         assert index + HelloWorld.BYTES > array.length;
         // ------------------------------------------------------------------------------- when/then
-        assertThrows(
+        Assertions.assertThrows(
                 IndexOutOfBoundsException.class,
                 () -> service.set(array, index)
         );
@@ -130,7 +126,7 @@ abstract class __HelloWorldTest {
         // ------------------------------------------------------------------------------------ when
         final var result = service.set(array, index);
         // ------------------------------------------------------------------------------------ then
-        assertSame(array, result);
+        Assertions.assertSame(array, result);
         if (!(service instanceof HelloWorldDemo)) return; // TODO: remove this line!
         Assertions.assertEquals((byte) 0x68, array[0x0]); // 'h'
         Assertions.assertEquals((byte) 0x65, array[001]); // 'e'
@@ -167,10 +163,10 @@ abstract class __HelloWorldTest {
         // ------------------------------------------------------------------------------------ when
         final var result = service.set(array, index);
         // ------------------------------------------------------------------------------------ then
-        assertSame(array, result);
+        Assertions.assertSame(array, result);
         final var expected = "hello, world";
         final var actual = new String(result, index, HelloWorld.BYTES, StandardCharsets.US_ASCII);
         if (!(service instanceof HelloWorldDemo)) return; // TODO: remove this line!
-        assertEquals(expected, actual);
+        Assertions.assertEquals(expected, actual);
     }
 }

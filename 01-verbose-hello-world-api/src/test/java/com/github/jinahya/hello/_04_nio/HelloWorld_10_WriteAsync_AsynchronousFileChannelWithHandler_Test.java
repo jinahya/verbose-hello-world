@@ -23,22 +23,18 @@ package com.github.jinahya.hello._04_nio;
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello._HelloWorldTest;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.CompletionHandler;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.LongAdder;
-
-import static java.lang.Long.MAX_VALUE;
-import static java.util.concurrent.ThreadLocalRandom.current;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.same;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.timeout;
-import static org.mockito.Mockito.verify;
 
 /**
  * A class for testing
@@ -50,8 +46,7 @@ import static org.mockito.Mockito.verify;
  */
 @DisplayName("writeAsync(channel, position, handler, attachment)")
 @Slf4j
-class HelloWorld_10_WriteAsync_AsynchronousFileChannelWithHandler_Test
-        extends _HelloWorldTest {
+class HelloWorld_10_WriteAsync_AsynchronousFileChannelWithHandler_Test extends _HelloWorldTest {
 
     @BeforeEach
     void _beforeEach() {
@@ -72,18 +67,18 @@ class HelloWorld_10_WriteAsync_AsynchronousFileChannelWithHandler_Test
     void _Completed_() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        final var channel = mock(AsynchronousFileChannel.class);
+        final var channel = Mockito.mock(AsynchronousFileChannel.class);
         final var writtenSoFar = new LongAdder();
         _stub_ToComplete(channel, writtenSoFar);
         final var position = 0L;
-        final var handler = mock(CompletionHandler.class);
-        final var attachment = current().nextBoolean() ? null : new Object();
+        final var handler = Mockito.mock(CompletionHandler.class);
+        final var attachment = ThreadLocalRandom.current().nextBoolean() ? null : new Object();
         // ------------------------------------------------------------------------------------ when
         service.writeAsync(channel, position, handler, attachment);
         // ------------------------------------------------------------------------------------ then
-        verify(handler, timeout(TimeUnit.SECONDS.toMillis(8L)).times(1))
+        Mockito.verify(handler, Mockito.timeout(TimeUnit.SECONDS.toMillis(8L)).times(1))
                 .completed(channel, attachment);
-        assertEquals(HelloWorld.BYTES, writtenSoFar.intValue());
+        Assertions.assertEquals(HelloWorld.BYTES, writtenSoFar.intValue());
     }
 
     /**
@@ -99,15 +94,17 @@ class HelloWorld_10_WriteAsync_AsynchronousFileChannelWithHandler_Test
     void _Failed_() {
         // ----------------------------------------------------------------------------------- given
         var service = service();
-        var channel = mock(AsynchronousFileChannel.class);
-        var exc = _stub_ToFail(channel, mock(Throwable.class));
-        var position = current().nextLong(MAX_VALUE - HelloWorld.BYTES);
-        var handler = mock(CompletionHandler.class);
-        var attachment = current().nextBoolean() ? null : new Object();
+        var channel = Mockito.mock(AsynchronousFileChannel.class);
+        var exc = _stub_ToFail(channel, Mockito.mock(Throwable.class));
+        var position = ThreadLocalRandom.current().nextLong(Long.MAX_VALUE - HelloWorld.BYTES);
+        var handler = Mockito.mock(CompletionHandler.class);
+        var attachment = ThreadLocalRandom.current().nextBoolean() ? null : new Object();
         // ------------------------------------------------------------------------------------ when
         service.writeAsync(channel, position, handler, attachment);
         // ------------------------------------------------------------------------------------ then
-        verify(handler, timeout(TimeUnit.SECONDS.toMillis(8L)).times(1)).failed(same(exc),
-                                                                                same(attachment));
+        Mockito.verify(handler, Mockito.timeout(TimeUnit.SECONDS.toMillis(8L)).times(1)).failed(
+                ArgumentMatchers.same(exc),
+                ArgumentMatchers.same(attachment)
+        );
     }
 }

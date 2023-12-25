@@ -22,6 +22,7 @@ package com.github.jinahya.hello.misc;
 
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -33,9 +34,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.Provider;
 import java.security.Security;
 import java.util.stream.Stream;
-
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 /**
  * A class for testing classes defined in {@link java.security} package.
@@ -82,12 +80,12 @@ class JavaxCryptoTest {
         private static Stream<Arguments>
         providerAndRequiredToBeSupportedAlgorithmArgumentsStream() {
             return providers()
-                    .flatMap(p -> supportedAlgorithms().map(a -> arguments(p, a)));
+                    .flatMap(p -> supportedAlgorithms().map(a -> Arguments.of(p, a)));
         }
 
         private static Stream<Arguments> providerAndAlgorithmArgumentsStream() {
             return providers()
-                    .flatMap(p -> algorithms().map(a -> arguments(p, a)));
+                    .flatMap(p -> algorithms().map(a -> Arguments.of(p, a)));
         }
 
         @DisplayName("getInstance(required-to-be-supported)")
@@ -95,7 +93,7 @@ class JavaxCryptoTest {
         @ParameterizedTest
         void getInstance_DoesNotThrow_RequiredToBeSupported(final Provider provider,
                                                             final String algorithm) {
-            assertDoesNotThrow(() -> MessageDigest.getInstance(algorithm, provider));
+            Assertions.assertDoesNotThrow(() -> MessageDigest.getInstance(algorithm, provider));
         }
 
         @DisplayName("getInstance(algorithm)")

@@ -26,7 +26,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import static java.util.concurrent.ThreadLocalRandom.current;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * An abstract class for testing {@link HelloWorld} implementations using Dependency Injection.
@@ -35,8 +35,7 @@ import static java.util.concurrent.ThreadLocalRandom.current;
  */
 @ToString
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-abstract class HelloWorldDiTest
-        extends __HelloWorldTest {
+abstract class HelloWorldDiTest extends __HelloWorldTest {
 
     // ---------------------------------------------------------------------------------------------
     @Override
@@ -45,7 +44,7 @@ abstract class HelloWorldDiTest
         assert namedImpl instanceof HelloWorldImpl;
         assert qualifiedDemo instanceof HelloWorldDemo;
         assert qualifiedImpl instanceof HelloWorldImpl;
-        return switch (current().nextInt(4)) {
+        return switch (ThreadLocalRandom.current().nextInt(4)) {
             case 0 -> namedDemo;
             case 1 -> namedImpl;
             case 2 -> qualifiedDemo;

@@ -23,14 +23,13 @@ package com.github.jinahya.hello._04_nio;
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello._HelloWorldTest;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.nio.channels.AsynchronousFileChannel;
-
-import static java.util.concurrent.ThreadLocalRandom.current;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * A class for testing
@@ -42,8 +41,7 @@ import static org.mockito.Mockito.mock;
  */
 @DisplayName("write(channel) arguments")
 @Slf4j
-class HelloWorld_08_Write_AsynchronousFileChannel_Arguments_Test
-        extends _HelloWorldTest {
+class HelloWorld_08_Write_AsynchronousFileChannel_Arguments_Test extends _HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(AsynchronousFileChannel, long) write(channel, position)}
@@ -54,11 +52,11 @@ class HelloWorld_08_Write_AsynchronousFileChannel_Arguments_Test
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
         // ----------------------------------------------------------------------------------- given
-        var service = service();
-        AsynchronousFileChannel channel = null;
-        var position = 0L;
+        final var service = service();
+        final var channel = (AsynchronousFileChannel) null;
+        final var position = 0L;
         // ------------------------------------------------------------------------------- when/then
-        assertThrows(
+        Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.write(channel, position)
         );
@@ -73,11 +71,11 @@ class HelloWorld_08_Write_AsynchronousFileChannel_Arguments_Test
     @Test
     void _ThrowIllegalArgumentException_PositionIsNegative() {
         // ----------------------------------------------------------------------------------- given
-        var service = service();
-        var channel = mock(AsynchronousFileChannel.class);
-        var position = current().nextLong() | Long.MIN_VALUE;
+        final var service = service();
+        final var channel = Mockito.mock(AsynchronousFileChannel.class);
+        final var position = ThreadLocalRandom.current().nextLong() | Long.MIN_VALUE;
         // ------------------------------------------------------------------------------- when/then
-        assertThrows(
+        Assertions.assertThrows(
                 IllegalArgumentException.class,
                 () -> service.write(channel, position)
         );

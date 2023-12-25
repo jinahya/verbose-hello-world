@@ -23,12 +23,11 @@ package com.github.jinahya.hello._04_nio;
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello._HelloWorldTest;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
-
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * A class for testing {@link HelloWorld#appendCompletable(Path) appendCompletable(path)} method
@@ -39,8 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  */
 @DisplayName("appendCompletable(path) arguments")
 @Slf4j
-class HelloWorld_12_AppendCompletable_Path_Arguments_Test
-        extends _HelloWorldTest {
+class HelloWorld_12_AppendCompletable_Path_Arguments_Test extends _HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#appendCompletable(Path) appendCompletable(path)} method throws a
@@ -53,7 +51,7 @@ class HelloWorld_12_AppendCompletable_Path_Arguments_Test
         var service = service();
         var path = (Path) null;
         // ------------------------------------------------------------------------------- when/then
-        assertThrows(
+        Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.appendCompletable(path)
         );

@@ -23,15 +23,14 @@ package com.github.jinahya.hello._04_nio;
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello._HelloWorldTest;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.CompletionHandler;
-
-import static java.util.concurrent.ThreadLocalRandom.current;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * A class for testing
@@ -60,10 +59,10 @@ class HelloWorld_10_WriteAsync_AsynchronousFileChannelWithHandler_Arguments_Test
         var service = service();
         var channel = (AsynchronousFileChannel) null;
         var position = 0L;
-        var handler = mock(CompletionHandler.class);
+        var handler = Mockito.mock(CompletionHandler.class);
         var attachment = (Object) null;
         // ------------------------------------------------------------------------------- when/then
-        assertThrows(
+        Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.writeAsync(channel, position, handler, attachment)
         );
@@ -81,12 +80,12 @@ class HelloWorld_10_WriteAsync_AsynchronousFileChannelWithHandler_Arguments_Test
     void _ThrowIllegalArgumentException_PositionIsNegative() {
         // ----------------------------------------------------------------------------------- given
         var service = service();
-        var channel = mock(AsynchronousFileChannel.class);
-        var position = current().nextLong() | Long.MIN_VALUE;
-        var handler = mock(CompletionHandler.class);
+        var channel = Mockito.mock(AsynchronousFileChannel.class);
+        var position = ThreadLocalRandom.current().nextLong() | Long.MIN_VALUE;
+        var handler = Mockito.mock(CompletionHandler.class);
         var attachment = (Object) null;
         // ------------------------------------------------------------------------------- when/then
-        assertThrows(
+        Assertions.assertThrows(
                 IllegalArgumentException.class,
                 () -> service.writeAsync(channel, position, handler, attachment)
         );
@@ -103,12 +102,12 @@ class HelloWorld_10_WriteAsync_AsynchronousFileChannelWithHandler_Arguments_Test
     void _ThrowNullPointerException_HandlerIsNull() {
         // ----------------------------------------------------------------------------------- given
         var service = service();
-        var channel = mock(AsynchronousFileChannel.class);
+        var channel = Mockito.mock(AsynchronousFileChannel.class);
         var position = 0L;
         var handler = (CompletionHandler<AsynchronousFileChannel, Object>) null;
         var attachment = (Object) null;
         // ------------------------------------------------------------------------------- when/then
-        assertThrows(
+        Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.writeAsync(channel, position, handler, attachment)
         );

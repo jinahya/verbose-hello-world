@@ -21,6 +21,7 @@ package com.github.jinahya.hello.misc;
  */
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -30,9 +31,6 @@ import javax.crypto.Cipher;
 import java.security.Provider;
 import java.util.List;
 import java.util.stream.Stream;
-
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 /**
  * A class for testing classes defined in {@link java.security} package.
@@ -110,19 +108,19 @@ class JavaxCryptoCipherTest {
 
     private static Stream<Arguments> requiredToBeSupportedTransformationsAnsKeysizss() {
         return Stream.of(
-                arguments("AES/CBC/NoPadding", List.of(128)),
-                arguments("AES/CBC/PKCS5Padding", List.of(128)),
-                arguments("AES/ECB/NoPadding", List.of(128)),
-                arguments("AES/ECB/PKCS5Padding", List.of(128)),
-                arguments("AES/GCM/NoPadding", List.of(128)),
-                arguments("DESede/CBC/NoPadding", List.of(168)),
-                arguments("DESede/CBC/PKCS5Padding", List.of(168)),
-                arguments("DESede/ECB/NoPadding", List.of(168)),
-                arguments("DESede/ECB/PKCS5Padding", List.of(168)),
-                arguments("RSA/ECB/PKCS1Padding", List.of(1024, 2048)),
-                arguments("RSA/ECB/OAEPWithSHA-1AndMGF1Padding", List.of(1024)),
-                arguments("RSA/ECB/OAEPWithSHA-1AndMGF1Padding", List.of(2048)),
-                arguments("RSA/ECB/OAEPWithSHA-256AndMGF1Padding", List.of(1024, 2048))
+                Arguments.of("AES/CBC/NoPadding", List.of(128)),
+                Arguments.of("AES/CBC/PKCS5Padding", List.of(128)),
+                Arguments.of("AES/ECB/NoPadding", List.of(128)),
+                Arguments.of("AES/ECB/PKCS5Padding", List.of(128)),
+                Arguments.of("AES/GCM/NoPadding", List.of(128)),
+                Arguments.of("DESede/CBC/NoPadding", List.of(168)),
+                Arguments.of("DESede/CBC/PKCS5Padding", List.of(168)),
+                Arguments.of("DESede/ECB/NoPadding", List.of(168)),
+                Arguments.of("DESede/ECB/PKCS5Padding", List.of(168)),
+                Arguments.of("RSA/ECB/PKCS1Padding", List.of(1024, 2048)),
+                Arguments.of("RSA/ECB/OAEPWithSHA-1AndMGF1Padding", List.of(1024)),
+                Arguments.of("RSA/ECB/OAEPWithSHA-1AndMGF1Padding", List.of(2048)),
+                Arguments.of("RSA/ECB/OAEPWithSHA-256AndMGF1Padding", List.of(1024, 2048))
         );
     }
 
@@ -133,14 +131,14 @@ class JavaxCryptoCipherTest {
 
     private static Stream<Arguments> providersAndRequiredToBeSupportedTransformations() {
         return providers()
-                .flatMap(p -> requiredToBeSupportedTransformations().map(t -> arguments(p, t)));
+                .flatMap(p -> requiredToBeSupportedTransformations().map(t -> Arguments.of(p, t)));
     }
 
     @MethodSource({"providersAndRequiredToBeSupportedTransformations"})
     @ParameterizedTest
     void requiredToBeSupportedTransformations__(final Provider provider,
                                                 final String transformation) {
-        assertDoesNotThrow(() -> {
+        Assertions.assertDoesNotThrow(() -> {
             Cipher.getInstance(transformation, provider);
         });
     }

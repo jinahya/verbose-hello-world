@@ -26,17 +26,12 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.file.Path;
 import java.util.Set;
-
-import static com.github.jinahya.hello.HelloWorld.BYTES;
-import static java.lang.Thread.currentThread;
-import static java.nio.ByteBuffer.allocate;
-import static java.nio.channels.SelectionKey.OP_READ;
-import static java.nio.channels.SelectionKey.OP_WRITE;
 
 /**
  * A class serves {@code hello, world} to clients.
@@ -44,31 +39,30 @@ import static java.nio.channels.SelectionKey.OP_WRITE;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorldServerUdp
-        extends AbstractHelloWorldServer {
+class HelloWorldServerUdp extends AbstractHelloWorldServer {
 
     private void handle(Set<SelectionKey> keys)
             throws IOException {
         for (var key : keys) {
             var channel = (DatagramChannel) key.channel();
             if (key.isReadable()) {
-                var address = channel.receive(allocate(0));
+                var address = channel.receive(ByteBuffer.allocate(0));
                 if (address != null) {
                     log.debug("received from {}", address);
-                    key.interestOps(key.interestOps() & ~OP_READ);
-                    key.interestOps(key.interestOps() | OP_WRITE);
+                    key.interestOps(key.interestOps() & ~SelectionKey.OP_READ);
+                    key.interestOps(key.interestOps() | SelectionKey.OP_WRITE);
                     key.attach(address);
                 }
                 continue;
             }
             if (key.isWritable()) {
-                var src = allocate(BYTES);
+                var src = ByteBuffer.allocate(HelloWorld.BYTES);
                 service().put(src);
                 // TODO: flip the src!
                 var target = (SocketAddress) key.attachment();
                 if (channel.send(src, target) == src.capacity()) {
-                    key.interestOps(key.interestOps() & ~OP_WRITE);
-                    key.interestOps(key.interestOps() | OP_READ);
+                    key.interestOps(key.interestOps() & ~SelectionKey.OP_WRITE);
+                    key.interestOps(key.interestOps() | SelectionKey.OP_READ);
                 }
                 continue;
             }
@@ -78,8 +72,7 @@ class HelloWorldServerUdp
     }
 
     @Override
-    protected void openInternal(SocketAddress endpoint, Path dir)
-            throws IOException {
+    protected void openInternal(SocketAddress endpoint, Path dir) throws IOException {
         var server = DatagramChannel.open();
         if (endpoint instanceof InetSocketAddress &&
             ((InetSocketAddress) endpoint).getPort() > 0) {
@@ -99,8 +92,8 @@ class HelloWorldServerUdp
         thread = new Thread(() -> {
             try (var selector = Selector.open()) {
                 server.configureBlocking(false);
-                server.register(selector, OP_READ);
-                while (!currentThread().isInterrupted()) {
+                server.register(selector, SelectionKey.OP_READ);
+                while (!Thread.currentThread().isInterrupted()) {
                     if (selector.select() == 0) {
                         continue;
                     }
@@ -128,7 +121,7 @@ class HelloWorldServerUdp
             thread.join();
         } catch (InterruptedException ie) {
             log.error("interrupted while joining server thread", ie);
-            currentThread().interrupt();
+            Thread.currentThread().interrupt();
         }
         thread = null;
         if (server == null || !server.isOpen()) {

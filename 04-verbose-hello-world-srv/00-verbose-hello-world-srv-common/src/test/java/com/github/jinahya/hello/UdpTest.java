@@ -21,13 +21,12 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.net.DatagramSocket;
 import java.net.StandardSocketOptions;
 import java.nio.channels.DatagramChannel;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 class UdpTest {
@@ -43,10 +42,10 @@ class UdpTest {
         try (DatagramSocket socket = new DatagramSocket()) {
             var sendBufferSize = socket.getSendBufferSize();
             log.debug("sendBufferSize: {}", sendBufferSize);
-            assertTrue(sendBufferSize >= MAX_LENGTH);
+            Assertions.assertTrue(sendBufferSize >= MAX_LENGTH);
             var receiveBufferSize = socket.getReceiveBufferSize();
             log.debug("receiveBufferSize: {}", receiveBufferSize);
-            assertTrue(receiveBufferSize >= MAX_LENGTH);
+            Assertions.assertTrue(receiveBufferSize >= MAX_LENGTH);
         }
     }
 
@@ -57,11 +56,11 @@ class UdpTest {
             var sendBufferSize = channel.getOption(
                     StandardSocketOptions.SO_SNDBUF);
             log.debug("sendBufferSize: {}", sendBufferSize);
-            assertTrue(sendBufferSize >= MAX_LENGTH);
+            Assertions.assertTrue(sendBufferSize >= MAX_LENGTH);
             var receiveBufferSize = channel.getOption(
                     StandardSocketOptions.SO_RCVBUF);
             log.debug("receiveBufferSize: {}", receiveBufferSize);
-            assertTrue(receiveBufferSize >= MAX_LENGTH);
+            Assertions.assertTrue(receiveBufferSize >= MAX_LENGTH);
         }
     }
 }

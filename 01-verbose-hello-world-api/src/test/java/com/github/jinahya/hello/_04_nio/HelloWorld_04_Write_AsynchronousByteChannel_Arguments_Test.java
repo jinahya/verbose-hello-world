@@ -25,12 +25,11 @@ import com.github.jinahya.hello._HelloWorldTest;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.nio.channels.AsynchronousByteChannel;
-
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * A class for testing {@link HelloWorld#write(AsynchronousByteChannel) write(channel)} method
@@ -58,7 +57,7 @@ class HelloWorld_04_Write_AsynchronousByteChannel_Arguments_Test extends _HelloW
         final var service = service();
         final var channel = (AsynchronousByteChannel) null;
         // ------------------------------------------------------------------------------- when/then
-        assertThrows(
+        Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.write(channel)
         );

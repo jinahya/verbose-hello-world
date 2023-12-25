@@ -26,19 +26,14 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.net.StandardSocketOptions;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.file.Path;
+import java.util.Objects;
 import java.util.Set;
-
-import static java.lang.Boolean.TRUE;
-import static java.lang.Thread.currentThread;
-import static java.net.StandardSocketOptions.SO_REUSEADDR;
-import static java.nio.channels.SelectionKey.OP_ACCEPT;
-import static java.nio.channels.SelectionKey.OP_WRITE;
-import static java.util.Objects.requireNonNull;
 
 /**
  * A class serves {@code hello, world} to clients.
@@ -46,8 +41,7 @@ import static java.util.Objects.requireNonNull;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorldServerTcp
-        extends AbstractHelloWorldServer {
+class HelloWorldServerTcp extends AbstractHelloWorldServer {
 
     /**
      * Creates a new instance with specified local address to bind.
@@ -65,18 +59,18 @@ class HelloWorldServerTcp
      */
     private void handle(Set<SelectionKey> keys, Selector selector)
             throws IOException {
-        requireNonNull(keys, "keys is null");
+        Objects.requireNonNull(keys, "keys is null");
         if (keys.isEmpty()) {
             throw new IllegalArgumentException("empty keys");
         }
-        requireNonNull(selector, "selector is null");
+        Objects.requireNonNull(selector, "selector is null");
         for (var key : keys) {
             if (key.isAcceptable()) { // server; ready to accept
                 var channel = (ServerSocketChannel) key.channel();
                 var client = channel.accept();
                 log.debug("[S] accepted from {}", client.getRemoteAddress());
                 client.configureBlocking(false);
-                client.register(selector, OP_WRITE);
+                client.register(selector, SelectionKey.OP_WRITE);
                 continue;
             }
             if (key.isWritable()) { // client; ready to write
@@ -97,7 +91,7 @@ class HelloWorldServerTcp
         var server = ServerSocketChannel.open();
         if (endpoint instanceof InetSocketAddress
             && ((InetSocketAddress) endpoint).getPort() > 0) {
-            server.setOption(SO_REUSEADDR, TRUE);
+            server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
         }
         try {
             server.bind(endpoint);
@@ -113,8 +107,8 @@ class HelloWorldServerTcp
         thread = new Thread(() -> {
             try (var selector = Selector.open()) {
                 server.configureBlocking(false);
-                server.register(selector, OP_ACCEPT);
-                while (!currentThread().isInterrupted()) {
+                server.register(selector, SelectionKey.OP_ACCEPT);
+                while (!Thread.currentThread().isInterrupted()) {
                     if (selector.select() == 0) {
                         continue;
                     }
@@ -135,15 +129,14 @@ class HelloWorldServerTcp
     }
 
     @Override
-    protected void closeInternal()
-            throws IOException {
+    protected void closeInternal() throws IOException {
         if (thread != null && thread.isAlive()) {
             thread.interrupt();
             try {
                 thread.join();
             } catch (InterruptedException ie) {
                 log.error("interrupted while joining server thread", ie);
-                currentThread().interrupt();
+                Thread.currentThread().interrupt();
             }
         }
         thread = null;

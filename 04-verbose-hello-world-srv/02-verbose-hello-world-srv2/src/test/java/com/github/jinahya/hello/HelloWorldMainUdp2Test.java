@@ -28,17 +28,14 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.concurrent.ExecutionException;
 
-import static com.github.jinahya.hello.HelloWorldMainUdp2.main;
-
 @Slf4j
 class HelloWorldMainUdp2Test {
 
     @Test
-    void main__()
-            throws IOException, InterruptedException, ExecutionException {
+    void main__() throws IOException, InterruptedException, ExecutionException {
         HelloWorldServerUtils.submitAndWriteQuit(() -> {
             var host = InetAddress.getLoopbackAddress();
-            main("0", host.getHostAddress());
+            HelloWorldMainUdp2.main("0", host.getHostAddress());
             return null;
         });
     }

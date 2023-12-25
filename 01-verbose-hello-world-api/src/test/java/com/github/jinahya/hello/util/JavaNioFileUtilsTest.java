@@ -22,10 +22,12 @@ package com.github.jinahya.hello.util;
 
 import com.github.jinahya.hello.util.java.nio.JavaNioFileUtils;
 import com.github.jinahya.hello.util.java.nio.JavaNioUtils;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import java.io.IOException;
@@ -33,11 +35,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.concurrent.ThreadLocalRandom;
-
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.times;
 
 class JavaNioFileUtilsTest {
 
@@ -60,20 +57,19 @@ class JavaNioFileUtilsTest {
 
         @DisplayName("(dir)isFile")
         @Test
-        void createTempFileInAndWriteSome_IsFile_(@TempDir final Path dir)
-                throws IOException {
+        void createTempFileInAndWriteSome_IsFile_(@TempDir final Path dir) throws IOException {
             try (var mock = Mockito.mockStatic(JavaNioUtils.class, Mockito.CALLS_REAL_METHODS)) {
                 final var path = JavaNioUtils.createTempFileInAndWriteSome(dir);
-                assertNotNull(path);
-                assertTrue(Files.isRegularFile(path));
+                Assertions.assertNotNull(path);
+                Assertions.assertTrue(Files.isRegularFile(path));
                 mock.verify(
                         () -> {
-                            JavaNioUtils.writeSome(argThat(p -> {
+                            JavaNioUtils.writeSome(ArgumentMatchers.argThat(p -> {
                                 return (p != null && Files.isRegularFile(p)) &&
                                        (p.getParent() != null && p.getParent().equals(dir));
                             }));
                         },
-                        times(1)
+                        Mockito.times(1)
                 );
             }
         }

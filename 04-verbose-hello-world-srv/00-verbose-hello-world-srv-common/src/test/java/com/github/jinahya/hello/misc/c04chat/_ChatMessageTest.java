@@ -23,22 +23,17 @@ package com.github.jinahya.hello.misc.c04chat;
 import com.github.jinahya.hello.misc.c04chat._ChatMessage.OfArray;
 import com.github.jinahya.hello.misc.c04chat._ChatMessage.OfBuffer;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.Answers;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 
 import java.time.Instant;
 import java.util.stream.Stream;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Answers.CALLS_REAL_METHODS;
-import static org.mockito.ArgumentMatchers.same;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.withSettings;
 
 @Slf4j
 class _ChatMessageTest {
@@ -79,8 +74,8 @@ class _ChatMessageTest {
         @ParameterizedTest
         void of__(String message) {
             var array = OfArray.of(message);
-            assertNotNull(array);
-            assertTrue(message.startsWith(OfArray.getMessage(array)));
+            Assertions.assertNotNull(array);
+            Assertions.assertTrue(message.startsWith(OfArray.getMessage(array)));
         }
 
         @MethodSource({"getMessageStream_"})
@@ -88,36 +83,39 @@ class _ChatMessageTest {
         void copyOf__(String message) {
             var original = OfArray.of(message);
             var copy = OfArray.copyOf(original);
-            assertNotNull(copy);
-            assertEquals(OfArray.getTimestamp(original),
-                         OfArray.getTimestamp(copy));
-            assertEquals(OfArray.getMessage(original),
-                         OfArray.getMessage(copy));
+            Assertions.assertNotNull(copy);
+            Assertions.assertEquals(OfArray.getTimestamp(original),
+                                    OfArray.getTimestamp(copy));
+            Assertions.assertEquals(OfArray.getMessage(original),
+                                    OfArray.getMessage(copy));
         }
 
         @Test
         void getTimestamp__() {
             var array = OfArray.empty();
-            try (var mock = mockStatic(OfArray.class,
-                                       withSettings().defaultAnswer(CALLS_REAL_METHODS))) {
+            try (var mock = Mockito.mockStatic(
+                    OfArray.class,
+                    Mockito.withSettings().defaultAnswer(Answers.CALLS_REAL_METHODS))) {
                 var value = System.currentTimeMillis();
                 mock.when(() -> OfArray.getTimestamp(array)).thenReturn(value);
                 mock.clearInvocations();
                 var actual = OfArray.getTimestampAsInstant(array);
-                assertNotNull(actual);
-                assertEquals(value, actual.toEpochMilli());
-                mock.verify(() -> OfArray.getTimestamp(array), times(1));
+                Assertions.assertNotNull(actual);
+                Assertions.assertEquals(value, actual.toEpochMilli());
+                mock.verify(() -> OfArray.getTimestamp(array), Mockito.times(1));
             }
         }
 
         @Test
         void setTimestamp__() {
             var array = OfArray.empty();
-            try (var mock = mockStatic(OfArray.class,
-                                       withSettings().defaultAnswer(CALLS_REAL_METHODS))) {
+            try (var mock = Mockito.mockStatic(OfArray.class,
+                                               Mockito.withSettings().defaultAnswer(
+                                                       Answers.CALLS_REAL_METHODS))) {
                 var instant = Instant.now();
                 OfArray.setTimestamp(array, instant);
-                mock.verify(() -> OfArray.setTimestamp(array, instant.toEpochMilli()), times(1));
+                mock.verify(() -> OfArray.setTimestamp(array, instant.toEpochMilli()),
+                            Mockito.times(1));
             }
         }
 
@@ -125,8 +123,8 @@ class _ChatMessageTest {
         void getMessage__() {
             var array = OfArray.empty();
             var message = OfArray.getMessage(array);
-            assertNotNull(message);
-            assertTrue(message.isBlank());
+            Assertions.assertNotNull(message);
+            Assertions.assertTrue(message.isBlank());
         }
 
         @MethodSource({"getMessageStream_"})
@@ -134,7 +132,7 @@ class _ChatMessageTest {
         void setMessage__(String message) {
             var array = OfArray.empty();
             OfArray.setMessage(array, message);
-            assertTrue(message.startsWith(OfArray.getMessage(array)));
+            Assertions.assertTrue(message.startsWith(OfArray.getMessage(array)));
         }
     }
 
@@ -149,8 +147,8 @@ class _ChatMessageTest {
         @ParameterizedTest
         void of__(String message) {
             var buffer = OfBuffer.of(message);
-            assertNotNull(buffer);
-            assertTrue(message.startsWith(OfBuffer.getMessage(buffer)));
+            Assertions.assertNotNull(buffer);
+            Assertions.assertTrue(message.startsWith(OfBuffer.getMessage(buffer)));
         }
 
         @MethodSource({"getMessageStream_"})
@@ -158,36 +156,39 @@ class _ChatMessageTest {
         void copyOf__(String message) {
             var original = OfBuffer.of(message);
             var copy = OfBuffer.copyOf(original);
-            assertNotNull(copy);
-            assertEquals(OfBuffer.getTimestamp(original), OfBuffer.getTimestamp(copy));
-            assertEquals(OfBuffer.getMessage(original), OfBuffer.getMessage(copy));
+            Assertions.assertNotNull(copy);
+            Assertions.assertEquals(OfBuffer.getTimestamp(original), OfBuffer.getTimestamp(copy));
+            Assertions.assertEquals(OfBuffer.getMessage(original), OfBuffer.getMessage(copy));
         }
 
         @Test
         void getTimestamp__() {
             var buffer = OfBuffer.empty();
-            try (var mock = mockStatic(OfBuffer.class,
-                                       withSettings().defaultAnswer(CALLS_REAL_METHODS))) {
+            try (var mock = Mockito.mockStatic(OfBuffer.class,
+                                               Mockito.withSettings().defaultAnswer(
+                                                       Answers.CALLS_REAL_METHODS))) {
                 var value = System.currentTimeMillis();
-                mock.when(() -> OfBuffer.getTimestamp(same(buffer))).thenReturn(value);
+                mock.when(() -> OfBuffer.getTimestamp(
+                        ArgumentMatchers.same(buffer))).thenReturn(value);
                 mock.clearInvocations();
                 var actual = OfBuffer.getTimestampAsInstant(buffer);
-                assertNotNull(actual);
-                assertEquals(Instant.ofEpochMilli(value), actual);
-                mock.verify(() -> OfBuffer.getTimestamp(buffer), times(1));
+                Assertions.assertNotNull(actual);
+                Assertions.assertEquals(Instant.ofEpochMilli(value), actual);
+                mock.verify(() -> OfBuffer.getTimestamp(buffer), Mockito.times(1));
             }
         }
 
         @Test
         void setTimestamp__() {
             var buffer = OfBuffer.empty();
-            try (var mock = mockStatic(OfBuffer.class,
-                                       withSettings().defaultAnswer(CALLS_REAL_METHODS))) {
+            try (var mock = Mockito.mockStatic(OfBuffer.class,
+                                               Mockito.withSettings().defaultAnswer(
+                                                       Answers.CALLS_REAL_METHODS))) {
                 var instant = Instant.now();
                 OfBuffer.setTimestamp(buffer, instant);
                 mock.verify(
                         () -> OfBuffer.setTimestamp(buffer, instant.toEpochMilli()),
-                        times(1)
+                        Mockito.times(1)
                 );
             }
         }
@@ -196,8 +197,8 @@ class _ChatMessageTest {
         void getMessage__() {
             var buffer = OfBuffer.empty();
             var message = OfBuffer.getMessage(buffer);
-            assertNotNull(message);
-            assertTrue(message.isBlank());
+            Assertions.assertNotNull(message);
+            Assertions.assertTrue(message.isBlank());
         }
 
         @MethodSource({"getMessageStream_"})
@@ -205,7 +206,7 @@ class _ChatMessageTest {
         void setMessage__(String message) {
             var buffer = OfBuffer.empty();
             OfBuffer.setMessage(buffer, message);
-            assertTrue(message.startsWith(OfBuffer.getMessage(buffer)));
+            Assertions.assertTrue(message.startsWith(OfBuffer.getMessage(buffer)));
         }
     }
 }

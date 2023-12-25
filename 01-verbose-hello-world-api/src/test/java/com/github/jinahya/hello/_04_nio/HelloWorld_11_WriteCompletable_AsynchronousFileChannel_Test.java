@@ -23,9 +23,13 @@ package com.github.jinahya.hello._04_nio;
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello._HelloWorldTest;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
+import org.mockito.BDDMockito;
+import org.mockito.Mockito;
 
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
@@ -33,23 +37,8 @@ import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletionException;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.LongAdder;
-
-import static com.github.jinahya.hello.HelloWorld.BYTES;
-import static java.lang.Long.MAX_VALUE;
-import static java.util.concurrent.ThreadLocalRandom.current;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.longThat;
-import static org.mockito.ArgumentMatchers.notNull;
-import static org.mockito.ArgumentMatchers.same;
-import static org.mockito.BDDMockito.willAnswer;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * A class for testing
@@ -61,18 +50,17 @@ import static org.mockito.Mockito.verify;
  */
 @DisplayName("write(channel, position)")
 @Slf4j
-class HelloWorld_11_WriteCompletable_AsynchronousFileChannel_Test
-        extends _HelloWorldTest {
+class HelloWorld_11_WriteCompletable_AsynchronousFileChannel_Test extends _HelloWorldTest {
 
     @BeforeEach
     @SuppressWarnings({"unchecked"})
     void _beforeEach() {
-        willAnswer(i -> {
+        BDDMockito.willAnswer(i -> {
             var channel = i.getArgument(0, AsynchronousFileChannel.class);
             var position = i.getArgument(1, Long.class);
             var handler = i.getArgument(2, CompletionHandler.class);
             var attachment = i.getArgument(3);
-            var src = ByteBuffer.allocate(BYTES);
+            var src = ByteBuffer.allocate(HelloWorld.BYTES);
             channel.write(src, position, position, new CompletionHandler<>() {
                 @Override
                 public void completed(Integer result, Long attachment_) {
@@ -90,7 +78,12 @@ class HelloWorld_11_WriteCompletable_AsynchronousFileChannel_Test
                 }
             });
             return null;
-        }).given(service()).writeAsync(notNull(), longThat(v -> v >= 0L), notNull(), any());
+        }).given(service()).writeAsync(
+                ArgumentMatchers.notNull(),
+                ArgumentMatchers.longThat(v -> v >= 0L),
+                ArgumentMatchers.notNull(),
+                ArgumentMatchers.any()
+        );
     }
 
     /**
@@ -100,25 +93,29 @@ class HelloWorld_11_WriteCompletable_AsynchronousFileChannel_Test
      */
     @DisplayName("(channel, position)completed<channel>")
     @Test
-    void _Completed_()
-            throws CancellationException, CompletionException {
+    void _Completed_() throws CancellationException, CompletionException {
         // ----------------------------------------------------------------------------------- given
         var service = service();
-        var channel = mock(AsynchronousFileChannel.class);
+        var channel = Mockito.mock(AsynchronousFileChannel.class);
         var writtenSoFar = new LongAdder();
         _stub_ToComplete(channel, writtenSoFar);
-        var position = current().nextLong(MAX_VALUE - BYTES);
+        var position = ThreadLocalRandom.current().nextLong(Long.MAX_VALUE - HelloWorld.BYTES);
         // ------------------------------------------------------------------------------------ when
         var future = service.writeCompletable(channel, position);
         // ------------------------------------------------------------------------------------ then
-        assertNotNull(future);
+        Assertions.assertNotNull(future);
         var result = future.handle((r, t) -> {
             assert r != null;
             assert t == null;
             return r;
         }).join();
-        verify(service, times(1)).writeAsync(same(channel), eq(position), notNull(), any());
-        assertSame(channel, result);
+        Mockito.verify(service, Mockito.times(1)).writeAsync(
+                ArgumentMatchers.same(channel),
+                ArgumentMatchers.eq(position),
+                ArgumentMatchers.notNull(),
+                ArgumentMatchers.any()
+        );
+        Assertions.assertSame(channel, result);
     }
 
     /**
@@ -130,13 +127,13 @@ class HelloWorld_11_WriteCompletable_AsynchronousFileChannel_Test
     void _CompletedExceptionally_() {
         // ----------------------------------------------------------------------------------- given
         var service = service();
-        var channel = mock(AsynchronousFileChannel.class);
-        var exc = _stub_ToFail(channel, mock(Throwable.class));
-        var position = current().nextLong(MAX_VALUE - BYTES);
+        var channel = Mockito.mock(AsynchronousFileChannel.class);
+        var exc = _stub_ToFail(channel, Mockito.mock(Throwable.class));
+        var position = ThreadLocalRandom.current().nextLong(Long.MAX_VALUE - HelloWorld.BYTES);
         // ------------------------------------------------------------------------------------ when
         var future = service.writeCompletable(channel, position);
         // ------------------------------------------------------------------------------------ then
-        assertNotNull(future);
-        assertThrows(CompletionException.class, future::join);
+        Assertions.assertNotNull(future);
+        Assertions.assertThrows(CompletionException.class, future::join);
     }
 }

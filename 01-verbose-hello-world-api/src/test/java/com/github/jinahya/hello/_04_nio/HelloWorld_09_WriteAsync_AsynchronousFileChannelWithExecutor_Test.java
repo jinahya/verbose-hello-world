@@ -23,25 +23,20 @@ package com.github.jinahya.hello._04_nio;
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello._HelloWorldTest;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
+import org.mockito.BDDMockito;
+import org.mockito.Mockito;
 
+import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousFileChannel;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.LongAdder;
-
-import static com.github.jinahya.hello.HelloWorld.BYTES;
-import static java.nio.ByteBuffer.allocate;
-import static java.util.concurrent.ThreadLocalRandom.current;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.ArgumentMatchers.longThat;
-import static org.mockito.ArgumentMatchers.notNull;
-import static org.mockito.BDDMockito.willAnswer;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * A class for testing
@@ -59,14 +54,17 @@ class HelloWorld_09_WriteAsync_AsynchronousFileChannelWithExecutor_Test
     @BeforeEach
     void _beforeEach()
             throws InterruptedException, ExecutionException {
-        willAnswer(i -> {
+        BDDMockito.willAnswer(i -> {
             var channel = i.getArgument(0, AsynchronousFileChannel.class);
             var position = i.getArgument(1, Long.class);
-            for (var src = allocate(BYTES); src.hasRemaining(); ) {
+            for (var src = ByteBuffer.allocate(HelloWorld.BYTES); src.hasRemaining(); ) {
                 position += channel.write(src, position).get();
             }
             return channel;
-        }).given(service()).write(notNull(), longThat(v -> v >= 0));
+        }).given(service()).write(
+                ArgumentMatchers.notNull(),
+                ArgumentMatchers.longThat(v -> v >= 0)
+        );
     }
 
     /**
@@ -81,23 +79,23 @@ class HelloWorld_09_WriteAsync_AsynchronousFileChannelWithExecutor_Test
      */
     @DisplayName("(channel, position, executor) -> channel.write(buffer, >= position)+")
     @Test
-    void __()
-            throws InterruptedException, ExecutionException {
+    void __() throws InterruptedException, ExecutionException {
         // ----------------------------------------------------------------------------------- given
         var service = service();
-        var channel = _stub_ToWriteSome(mock(AsynchronousFileChannel.class), new LongAdder());
-        var position = current().nextLong(0, Long.MAX_VALUE - BYTES);
-        var executor = mock(Executor.class);
-        willAnswer(i -> {
+        var channel = _stub_ToWriteSome(Mockito.mock(AsynchronousFileChannel.class),
+                                        new LongAdder());
+        var position = ThreadLocalRandom.current().nextLong(0, Long.MAX_VALUE - HelloWorld.BYTES);
+        var executor = Mockito.mock(Executor.class);
+        BDDMockito.willAnswer(i -> {
             var command = i.getArgument(0, Runnable.class);
             new Thread(command).start();
             return null;
-        }).given(executor).execute(notNull());
+        }).given(executor).execute(ArgumentMatchers.notNull());
         // ------------------------------------------------------------------------------------ when
         var future = service.writeAsync(channel, position, executor);
         var result = future.get();
         // ------------------------------------------------------------------------------------ then
-        verify(service, times(1)).write(channel, position);
-        assertSame(channel, result);
+        Mockito.verify(service, Mockito.times(1)).write(channel, position);
+        Assertions.assertSame(channel, result);
     }
 }

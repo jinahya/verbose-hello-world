@@ -23,15 +23,13 @@ package com.github.jinahya.hello._04_nio;
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello._HelloWorldTest;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.nio.channels.AsynchronousFileChannel;
-
-import static java.lang.Long.MIN_VALUE;
-import static java.util.concurrent.ThreadLocalRandom.current;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * A class for testing
@@ -60,7 +58,7 @@ class HelloWorld_11_WriteCompletable_AsynchronousFileChannel_Arguments_Test
         var channel = (AsynchronousFileChannel) null;
         var position = 0L;
         // ------------------------------------------------------------------------------- when/then
-        assertThrows(
+        Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.writeCompletable(channel, position)
         );
@@ -77,10 +75,10 @@ class HelloWorld_11_WriteCompletable_AsynchronousFileChannel_Arguments_Test
     void _ThrowIllegalArgumentException_PositionIsNegative() {
         // ----------------------------------------------------------------------------------- given
         var service = service();
-        var channel = mock(AsynchronousFileChannel.class);
-        var position = current().nextLong() | MIN_VALUE;
+        var channel = Mockito.mock(AsynchronousFileChannel.class);
+        var position = ThreadLocalRandom.current().nextLong() | Long.MIN_VALUE;
         // ------------------------------------------------------------------------------- when/then
-        assertThrows(
+        Assertions.assertThrows(
                 IllegalArgumentException.class,
                 () -> service.writeCompletable(channel, position)
         );

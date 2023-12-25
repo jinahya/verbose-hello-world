@@ -47,6 +47,7 @@ import java.nio.file.StandardOpenOption;
 import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
 import java.util.Objects;
+import java.util.ServiceLoader;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletionService;
@@ -59,9 +60,6 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.IntConsumer;
 import java.util.function.IntFunction;
-
-import static java.lang.System.setIn;
-import static java.util.ServiceLoader.load;
 
 /**
  * A utility class for Hello World servers.
@@ -217,7 +215,7 @@ public final class HelloWorldServerUtils {
         var in = System.in;
         try (var pos = new PipedOutputStream();
              var pis = new PipedInputStream(pos)) {
-            setIn(pis);
+            System.setIn(pis);
             var executor = Executors.newSingleThreadExecutor();
             try {
                 var future = executor.submit(task);
@@ -228,7 +226,7 @@ public final class HelloWorldServerUtils {
                 HelloWorldServerUtils.shutdownAndAwaitTermination(executor);
             }
         } finally {
-            setIn(in);
+            System.setIn(in);
         }
     }
 
@@ -240,7 +238,7 @@ public final class HelloWorldServerUtils {
      */
     @Deprecated
     public static HelloWorld loadHelloWorld() {
-        return load(HelloWorld.class).iterator().next();
+        return ServiceLoader.load(HelloWorld.class).iterator().next();
     }
 
     /**

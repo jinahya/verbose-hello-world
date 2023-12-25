@@ -21,6 +21,8 @@ package com.github.jinahya.hello.misc.c01rfc863;
  */
 
 import lombok.extern.slf4j.Slf4j;
+import org.awaitility.Awaitility;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Named;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -31,9 +33,6 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
-
-import static org.awaitility.Awaitility.await;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 class Rfc863TcpTest {
@@ -81,7 +80,8 @@ class Rfc863TcpTest {
                 throw new RuntimeException(e);
             }
         });
-        await().pollDelay(Duration.ofMillis(100L)).untilAsserted(() -> assertTrue(true));
+        Awaitility.await().pollDelay(Duration.ofMillis(100L))
+                .untilAsserted(() -> Assertions.assertTrue(true));
         final var clientFuture = executor.submit(() -> {
             try {
                 clientClass.getMethod("main", String[].class)

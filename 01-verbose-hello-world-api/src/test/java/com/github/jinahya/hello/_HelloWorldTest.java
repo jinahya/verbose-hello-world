@@ -48,18 +48,9 @@ import java.nio.channels.WritableByteChannel;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.LongAdder;
 import java.util.function.UnaryOperator;
-
-import static com.github.jinahya.hello.HelloWorld.BYTES;
-import static java.util.concurrent.ThreadLocalRandom.current;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.longThat;
-import static org.mockito.ArgumentMatchers.notNull;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockingDetails;
 
 /**
  * An abstract class for testing methods defined in {@link HelloWorld} interface.
@@ -77,12 +68,13 @@ public abstract class _HelloWorldTest {
                                                                          final LongAdder adder)
             throws IOException {
         Objects.requireNonNull(channel, "channel is null");
-        if (!mockingDetails(channel).isMock()) {
+        if (!Mockito.mockingDetails(channel).isMock()) {
             throw new IllegalArgumentException("channel is not a mock: " + channel);
         }
-        given(channel.write(argThat(b -> b != null && b.hasRemaining()))).willAnswer(i -> {
+        BDDMockito.given(channel.write(
+                ArgumentMatchers.argThat(b -> b != null && b.hasRemaining()))).willAnswer(i -> {
             final var src = i.getArgument(0, ByteBuffer.class);
-            final var written = current().nextInt(1, src.remaining() + 1);
+            final var written = ThreadLocalRandom.current().nextInt(1, src.remaining() + 1);
             src.position(src.position() + written);
             if (adder != null) {
                 adder.add(written);
@@ -108,25 +100,25 @@ public abstract class _HelloWorldTest {
     protected static <T extends AsynchronousFileChannel> T _stub_ToWriteSome(
             T channel,
             LongAdder adder) {
-        if (!mockingDetails(
+        if (!Mockito.mockingDetails(
                 Objects.requireNonNull(channel, "channel is null")).isMock()) {
             throw new IllegalArgumentException("not a mock: " + channel);
         }
         Objects.requireNonNull(adder, "adder is null");
         BDDMockito.willAnswer(w -> { // invocation of channel.write
-            var future = mock(Future.class);
+            var future = Mockito.mock(Future.class);
             Mockito.when(future.get()).thenAnswer(g -> { // invocation of future.get
                 var src = w.getArgument(0, ByteBuffer.class);
                 var position = w.getArgument(1, Long.class);
-                var written = current().nextInt(1, src.remaining() + 1);
+                var written = ThreadLocalRandom.current().nextInt(1, src.remaining() + 1);
                 src.position(src.position() + written);
                 adder.add(written);
                 return written;
             });
             return future;
         }).given(channel).write(
-                argThat(b -> b != null && b.hasRemaining()), // <src>
-                longThat(v -> v >= 0L)                       // <position>
+                ArgumentMatchers.argThat(b -> b != null && b.hasRemaining()), // <src>
+                ArgumentMatchers.longThat(v -> v >= 0L)                       // <position>
         );
         return channel;
     }
@@ -144,7 +136,7 @@ public abstract class _HelloWorldTest {
     protected static <T extends Throwable> T _stub_ToFail(
             AsynchronousFileChannel channel,
             final T exc) {
-        if (!mockingDetails(
+        if (!Mockito.mockingDetails(
                 Objects.requireNonNull(channel, "channel is null")).isMock()) {
             throw new IllegalArgumentException("not a mock: " + channel);
         }
@@ -157,10 +149,10 @@ public abstract class _HelloWorldTest {
             handler.failed(exc, attachment);
             return null;
         }).given(channel).write(
-                argThat(b -> b != null && b.hasRemaining()),
-                longThat(v -> v >= 0L),
+                ArgumentMatchers.argThat(b -> b != null && b.hasRemaining()),
+                ArgumentMatchers.longThat(v -> v >= 0L),
                 ArgumentMatchers.any(),
-                notNull()
+                ArgumentMatchers.notNull()
         );
         return exc;
     }
@@ -168,7 +160,7 @@ public abstract class _HelloWorldTest {
     @SuppressWarnings({"unchecked"})
     protected static void _stub_ToComplete(final AsynchronousFileChannel channel,
                                            final LongAdder adder) {
-        if (!mockingDetails(Objects.requireNonNull(channel, "channel is null")).isMock()) {
+        if (!Mockito.mockingDetails(Objects.requireNonNull(channel, "channel is null")).isMock()) {
             throw new IllegalArgumentException("not a mock: " + channel);
         }
         BDDMockito.willAnswer(i -> {
@@ -176,7 +168,7 @@ public abstract class _HelloWorldTest {
             final var position = i.getArgument(1, Long.class);
             final var attachment = i.getArgument(2);
             final var handler = i.getArgument(3, CompletionHandler.class);
-            final var written = current().nextInt(1, src.remaining() + 1);
+            final var written = ThreadLocalRandom.current().nextInt(1, src.remaining() + 1);
             src.position(src.position() + written);
             if (adder != null) {
                 adder.add(written);
@@ -184,9 +176,9 @@ public abstract class _HelloWorldTest {
             handler.completed(written, attachment);
             return null;
         }).given(channel).write(
-                argThat(s -> s != null && s.hasRemaining()),
-                longThat(p -> p >= 0L),
-                notNull(),
+                ArgumentMatchers.argThat(s -> s != null && s.hasRemaining()),
+                ArgumentMatchers.longThat(p -> p >= 0L),
+                ArgumentMatchers.notNull(),
                 ArgumentMatchers.any()
         );
     }
@@ -198,7 +190,7 @@ public abstract class _HelloWorldTest {
     @SuppressWarnings({"unchecked"})
     protected static <T extends Throwable> T _stub_ToFail(
             AsynchronousByteChannel channel, T exc) {
-        if (!mockingDetails(
+        if (!Mockito.mockingDetails(
                 Objects.requireNonNull(channel, "channel is null")).isMock()) {
             throw new IllegalArgumentException("not a mock: " + channel);
         }
@@ -209,10 +201,10 @@ public abstract class _HelloWorldTest {
             handler.failed(exc, attachment);
             return null;
         }).given(channel).write(
-                argThat(b -> b != null && b.hasRemaining()), // <src>
+                ArgumentMatchers.argThat(b -> b != null && b.hasRemaining()), // <src>
                 ArgumentMatchers.any(),
                 // <attachment>
-                notNull()                                    // <handler>
+                ArgumentMatchers.notNull()                                    // <handler>
         );
         return exc;
     }
@@ -225,7 +217,7 @@ public abstract class _HelloWorldTest {
     @SuppressWarnings({"unchecked"})
     protected static <T extends AsynchronousByteChannel> T _stub_ToComplete(T channel,
                                                                             LongAdder adder) {
-        if (!mockingDetails(
+        if (!Mockito.mockingDetails(
                 Objects.requireNonNull(channel, "channel is null")).isMock()) {
             throw new IllegalArgumentException("not a mock: " + channel);
         }
@@ -234,16 +226,16 @@ public abstract class _HelloWorldTest {
             var src = i.getArgument(0, ByteBuffer.class);
             var attachment = i.getArgument(1);
             var handler = i.getArgument(2, CompletionHandler.class);
-            var written = current().nextInt(1, src.remaining() + 1);
+            var written = ThreadLocalRandom.current().nextInt(1, src.remaining() + 1);
             src.position(src.position() + written);
             adder.add(written);
             handler.completed(written, attachment);
             return null;
         }).given(channel).write(
-                argThat(b -> b != null && b.hasRemaining()), // <src>
+                ArgumentMatchers.argThat(b -> b != null && b.hasRemaining()), // <src>
                 ArgumentMatchers.any(),
                 // <attachment>
-                notNull()                                    // <handler>
+                ArgumentMatchers.notNull()                                    // <handler>
         );
         return channel;
     }
@@ -251,15 +243,16 @@ public abstract class _HelloWorldTest {
     protected static void _stub_ToWriteSome(final AsynchronousByteChannel channel,
                                             final LongAdder adder) {
         Objects.requireNonNull(channel, "channel is null");
-        if (!mockingDetails(channel).isMock()) {
+        if (!Mockito.mockingDetails(channel).isMock()) {
             throw new IllegalArgumentException("channel is not a mock: " + channel);
         }
         Objects.requireNonNull(adder, "adder is null");
-        given(channel.write(argThat(b -> b != null && b.hasRemaining()))).willAnswer(w -> {
-            final var future = mock(Future.class);
-            given(future.get()).willAnswer(g -> {
+        BDDMockito.given(channel.write(
+                ArgumentMatchers.argThat(b -> b != null && b.hasRemaining()))).willAnswer(w -> {
+            final var future = Mockito.mock(Future.class);
+            BDDMockito.given(future.get()).willAnswer(g -> {
                 final var src = w.getArgument(0, ByteBuffer.class);
-                final var written = current().nextInt(1, src.remaining() + 1);
+                final var written = ThreadLocalRandom.current().nextInt(1, src.remaining() + 1);
                 src.position(src.position() + written);
                 adder.add(written);
                 return written;
@@ -286,19 +279,22 @@ public abstract class _HelloWorldTest {
                     return buffer;
                 })
                 .given(service)
-                .put(argThat(b -> b != null && b.capacity() == BYTES && b.remaining() == BYTES));
+                .put(ArgumentMatchers.argThat(b -> b != null &&
+                                                   b.capacity() == HelloWorld.BYTES &&
+                                                   b.remaining() == HelloWorld.BYTES));
     }
 
     protected final void writeAsynchronousByteChannel_willWrite12Bytes()
             throws ExecutionException, InterruptedException {
-        given(service.write(notNull(AsynchronousByteChannel.class))).willAnswer(i -> {
-            final var channel = i.getArgument(0, AsynchronousByteChannel.class);
-            for (final var b = ByteBuffer.allocate(12); b.hasRemaining(); ) {
-                final var w = channel.write(b).get();
-                assert w >= 0;
-            }
-            return channel;
-        });
+        BDDMockito.given(service.write(ArgumentMatchers.notNull(AsynchronousByteChannel.class)))
+                .willAnswer(i -> {
+                    final var channel = i.getArgument(0, AsynchronousByteChannel.class);
+                    for (final var b = ByteBuffer.allocate(12); b.hasRemaining(); ) {
+                        final var w = channel.write(b).get();
+                        assert w >= 0;
+                    }
+                    return channel;
+                });
     }
 
     /**
@@ -318,7 +314,7 @@ public abstract class _HelloWorldTest {
     protected final void writeStream_willWrite12Bytes() throws IOException {
         BDDMockito.willAnswer(i -> {
             var stream = i.getArgument(0, OutputStream.class);
-            stream.write(new byte[BYTES]);
+            stream.write(new byte[HelloWorld.BYTES]);
             return stream;
         }).given(service).write(ArgumentMatchers.any(OutputStream.class));
     }
@@ -332,7 +328,7 @@ public abstract class _HelloWorldTest {
     @BeforeEach
     void setArrayIndex_willReturnArray() {
         Mockito.doAnswer(i -> i.getArgument(0))     // <2>
-                .when(service).set(ArgumentMatchers.any(), anyInt()) // <1>
+                .when(service).set(ArgumentMatchers.any(), ArgumentMatchers.anyInt()) // <1>
         ;
     }
 
@@ -389,29 +385,6 @@ public abstract class _HelloWorldTest {
     @Accessors(fluent = true)
     @Getter(AccessLevel.PROTECTED)
     private ArgumentCaptor<Integer> indexCaptor;
-
-    /**
-     * A captor for capturing the {@code chars} argument.
-     *
-     * @see HelloWorld#print(char[])
-     * @see HelloWorld#print(char[], int)
-     * @see #offsetCaptor
-     */
-    @Captor
-    @Accessors(fluent = true)
-    @Getter(AccessLevel.PROTECTED)
-    private ArgumentCaptor<char[]> charsCaptor;
-
-    /**
-     * A captor for capturing the {@code offset} argument.
-     *
-     * @see HelloWorld#print(char[], int)
-     * @see #charsCaptor
-     */
-    @Captor
-    @Accessors(fluent = true)
-    @Getter(AccessLevel.PROTECTED)
-    private ArgumentCaptor<Integer> offsetCaptor;
 
     /**
      * An argument captor for capturing an argument of {@link OutputStream}.

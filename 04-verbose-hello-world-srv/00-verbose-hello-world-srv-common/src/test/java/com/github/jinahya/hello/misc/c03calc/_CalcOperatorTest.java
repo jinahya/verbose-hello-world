@@ -20,12 +20,11 @@ package com.github.jinahya.hello.misc.c03calc;
  * #L%
  */
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class _CalcOperatorTest {
 
@@ -37,14 +36,15 @@ class _CalcOperatorTest {
         @EnumSource(_CalcOperator.class)
         @ParameterizedTest
         void _IsEqualToNameLength_NameLength(final _CalcOperator value) {
-            assertEquals(_CalcOperator.LENGTH, value.name().length());
+            Assertions.assertEquals(_CalcOperator.LENGTH, value.name().length());
         }
 
         @DisplayName("value.name().bytes(\"US_ASCII\").length == NAME_BYTES")
         @EnumSource(_CalcOperator.class)
         @ParameterizedTest
         void _IsEqualToNameBytes_NameBytesLength(final _CalcOperator value) {
-            assertEquals(_CalcOperator.BYTES, value.name().getBytes(_CalcOperator.CHARSET).length);
+            Assertions.assertEquals(_CalcOperator.BYTES,
+                                    value.name().getBytes(_CalcOperator.CHARSET).length);
         }
     }
 }

@@ -28,8 +28,6 @@ import org.junit.jupiter.api.BeforeEach;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-import static com.google.inject.Guice.createInjector;
-
 /**
  * A test class injects using Guice.
  *
@@ -43,7 +41,7 @@ class HelloWorldDiGuiceTest
 
     @BeforeEach
     void _beforeEach() {
-        final var injector = createInjector(new HelloWorldDiGuiceModule());
+        final var injector = Guice.createInjector(new HelloWorldDiGuiceModule());
         log.debug("injector: {}", injector);
         injector.injectMembers(this);
         log.debug("members injected: {}", this);

@@ -26,14 +26,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.ThreadLocalRandom;
-
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.times;
 
 class JavaIoUtilsTest {
 
@@ -64,12 +62,12 @@ class JavaIoUtilsTest {
                 Assertions.assertTrue(file.isFile());
                 mock.verify(
                         () -> {
-                            _JavaIoUtils.writeSome(argThat(f -> {
+                            _JavaIoUtils.writeSome(ArgumentMatchers.argThat(f -> {
                                 return (f != null && f.isFile()) &&
                                        (f.getParent() != null && f.getParentFile().equals(dir));
                             }));
                         },
-                        times(1)
+                        Mockito.times(1)
                 );
             }
         }

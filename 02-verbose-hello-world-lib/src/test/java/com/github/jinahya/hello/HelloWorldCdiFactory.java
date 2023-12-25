@@ -25,8 +25,7 @@ import jakarta.enterprise.inject.Produces;
 import jakarta.enterprise.inject.spi.InjectionPoint;
 import jakarta.inject.Named;
 import lombok.extern.slf4j.Slf4j;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Assertions;
 
 /**
  * A provider produces {@link HelloWorld} instances.
@@ -60,7 +59,7 @@ class HelloWorldCdiFactory {
     void disposeNamedDemo(
             @Named(HelloWorldDiConstants._NAME_DEMO) @Disposes final HelloWorld bean) {
         log.debug("disposing {}", bean);
-        assertTrue(bean instanceof HelloWorldDemo);
+        Assertions.assertTrue(bean instanceof HelloWorldDemo);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -89,7 +88,7 @@ class HelloWorldCdiFactory {
     void disposeNamedImpl(
             @Named(HelloWorldDiConstants._NAME_IMPL) @Disposes final HelloWorld bean) {
         log.debug("disposing {}", bean);
-        assertTrue(bean instanceof HelloWorldImpl);
+        Assertions.assertTrue(bean instanceof HelloWorldImpl);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -115,7 +114,7 @@ class HelloWorldCdiFactory {
      */
     void disposeQualifiedDemo(@_QualifiedDemo @Disposes final HelloWorld bean) {
         log.debug("disposing {}", bean);
-        assertTrue(bean instanceof HelloWorldDemo);
+        Assertions.assertTrue(bean instanceof HelloWorldDemo);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -141,6 +140,6 @@ class HelloWorldCdiFactory {
      */
     void disposeQualifiedImpl(@_QualifiedImpl @Disposes final HelloWorld bean) {
         log.debug("disposing {}", bean);
-        assertTrue(bean instanceof HelloWorldImpl);
+        Assertions.assertTrue(bean instanceof HelloWorldImpl);
     }
 }

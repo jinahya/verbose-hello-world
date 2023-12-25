@@ -25,39 +25,26 @@ import com.github.jinahya.hello._HelloWorldTest;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
+import org.mockito.Mockito;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
-
-import static com.github.jinahya.hello.HelloWorld.BYTES;
-import static java.lang.Long.MAX_VALUE;
-import static java.nio.ByteBuffer.allocate;
-import static java.nio.channels.AsynchronousFileChannel.open;
-import static java.nio.file.StandardOpenOption.WRITE;
-import static java.util.Arrays.asList;
-import static java.util.concurrent.ThreadLocalRandom.current;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentCaptor.forClass;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.longThat;
-import static org.mockito.ArgumentMatchers.notNull;
-import static org.mockito.ArgumentMatchers.same;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * A class for testing {@link HelloWorld#appendCompletable(Path) appendCompletable(path)} method.
@@ -74,53 +61,66 @@ class HelloWorld_12_AppendCompletable_Path_Test extends _HelloWorldTest {
     @BeforeEach
     void beforeEach() {
         BDDMockito.willAnswer(i -> {
-            var channel = i.getArgument(0, AsynchronousFileChannel.class);
-            var position = i.getArgument(1, Long.class);
-            var future = new CompletableFuture<>();
-            var src = allocate(BYTES);
-            channel.write(src, position, position, new CompletionHandler<>() { // @formatter:off
-                @Override public void completed(Integer result, Long attachment) {
-                    if (!src.hasRemaining()) {
-                        future.complete(channel);
-                        return;
-                    }
-                    attachment += result;
-                    channel.write(src, attachment, attachment, this);
-                }
-                @Override public void failed(Throwable exc, Long attachment) {
-                    future.completeExceptionally(exc);
-                } // @formatter:on
-            });
-            return future;
-        }).given(service())
-                .writeCompletable(notNull(), longThat(v -> v >= 0L));
+                    var channel = i.getArgument(0, AsynchronousFileChannel.class);
+                    var position = i.getArgument(1, Long.class);
+                    var future = new CompletableFuture<>();
+                    var src = ByteBuffer.allocate(HelloWorld.BYTES);
+                    channel.write(
+                            src,
+                            position,
+                            position,
+                            new CompletionHandler<>() { // @formatter:off
+                                @Override
+                                public void completed(final Integer result, Long attachment) {
+                                    if (!src.hasRemaining()) {
+                                        future.complete(channel);
+                                        return;
+                                    }
+                                    attachment += result;
+                                    channel.write(src, attachment, attachment, this);
+                                }
+                                @Override
+                                public void failed(final Throwable exc, final Long attachment) {
+                                    future.completeExceptionally(exc);
+                                } // @formatter:on
+                            });
+                    return future;
+                })
+                .given(service())
+                .writeCompletable(ArgumentMatchers.notNull(),
+                                  ArgumentMatchers.longThat(v -> v >= 0L));
     }
 
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         var service = service();
-        var path = mock(Path.class);
-        var channel = mock(AsynchronousFileChannel.class);
+        var path = Mockito.mock(Path.class);
+        var channel = Mockito.mock(AsynchronousFileChannel.class);
         _stub_ToComplete(channel, null);
-        var size = current().nextLong(MAX_VALUE - BYTES);
-        given(channel.size()).willReturn(size);
-        try (var mockedStatic = mockStatic(AsynchronousFileChannel.class)) {
-            mockedStatic.when(() -> open(same(path), any(OpenOption[].class))).thenReturn(channel);
+        var size = ThreadLocalRandom.current().nextLong(Long.MAX_VALUE - HelloWorld.BYTES);
+        BDDMockito.given(channel.size()).willReturn(size);
+        try (var mockedStatic = Mockito.mockStatic(AsynchronousFileChannel.class)) {
+            mockedStatic.when(() -> AsynchronousFileChannel.open(
+                            ArgumentMatchers.same(path),
+                            ArgumentMatchers.any(OpenOption[].class)))
+                    .thenReturn(channel);
             // -------------------------------------------------------------------------------- when
-            var result = service.appendCompletable(path).join();
+            final var result = service.appendCompletable(path).join();
             // -------------------------------------------------------------------------------- then
-            var optionsCaptor = forClass(OpenOption[].class);
-            mockedStatic.verify(() -> open(same(path), optionsCaptor.capture()), times(1));
-            var options = new ArrayList<>(asList(optionsCaptor.getValue()));
-            assertTrue(options.remove(StandardOpenOption.CREATE));
-            assertTrue(options.remove(WRITE));
-            assertTrue(options.isEmpty());
-            verify(channel, times(1)).size();
-            verify(service, times(1)).writeCompletable(channel, size);
-            verify(channel, times(1)).force(true);
-            verify(channel, times(1)).close();
-            assertSame(path, result);
+            var optionsCaptor = ArgumentCaptor.forClass(OpenOption[].class);
+            mockedStatic.verify(() -> AsynchronousFileChannel.open(ArgumentMatchers.same(path),
+                                                                   optionsCaptor.capture()),
+                                Mockito.times(1));
+            var options = new ArrayList<>(Arrays.asList(optionsCaptor.getValue()));
+            Assertions.assertTrue(options.remove(StandardOpenOption.CREATE));
+            Assertions.assertTrue(options.remove(StandardOpenOption.WRITE));
+            Assertions.assertTrue(options.isEmpty());
+            Mockito.verify(channel, Mockito.times(1)).size();
+            Mockito.verify(service, Mockito.times(1)).writeCompletable(channel, size);
+            Mockito.verify(channel, Mockito.times(1)).force(true);
+            Mockito.verify(channel, Mockito.times(1)).close();
+            Assertions.assertSame(path, result);
         }
     }
 }

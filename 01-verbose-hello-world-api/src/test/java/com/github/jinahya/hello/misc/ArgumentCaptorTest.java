@@ -20,14 +20,11 @@ package com.github.jinahya.hello.misc;
  * #L%
  */
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import org.mockito.Mockito;
 
 class ArgumentCaptorTest {
 
@@ -44,11 +41,11 @@ class ArgumentCaptorTest {
     @Disabled
     @Test
     void test() {
-        var some = spy(new Some());
+        var some = Mockito.spy(new Some());
         some.b();
         var captor = ArgumentCaptor.forClass(int.class);
-        verify(some, times(1)).a(captor.capture());
+        Mockito.verify(some, Mockito.times(1)).a(captor.capture());
         var a = captor.getValue();
-        assertEquals(0, a);
+        Assertions.assertEquals(0, a);
     }
 }

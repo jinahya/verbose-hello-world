@@ -23,15 +23,10 @@ package com.github.jinahya.hello;
 import jakarta.inject.Qualifier;
 
 import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.ElementType.PARAMETER;
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * An injection qualifier for {@link HelloWorldImpl}.
@@ -40,8 +35,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  */
 @Documented
 @Qualifier
-@Retention(RUNTIME)
-@Target({FIELD, METHOD, PARAMETER, TYPE, ANNOTATION_TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE,
+         ElementType.ANNOTATION_TYPE})
 @interface _QualifiedImpl {
 
 }

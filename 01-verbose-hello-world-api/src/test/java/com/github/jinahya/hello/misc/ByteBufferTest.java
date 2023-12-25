@@ -20,6 +20,8 @@ package com.github.jinahya.hello.misc;
  * #L%
  */
 
+import com.github.jinahya.hello.HelloWorld;
+import com.github.jinahya.hello.util.java.nio.JavaNioUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -29,10 +31,6 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.IntStream;
-
-import static com.github.jinahya.hello.HelloWorld.BYTES;
-import static com.github.jinahya.hello.util.java.nio.JavaNioUtils.print;
-import static java.nio.ByteBuffer.allocateDirect;
 
 @Slf4j
 class ByteBufferTest {
@@ -105,7 +103,7 @@ class ByteBufferTest {
     @MethodSource({"capacities"})
     @ParameterizedTest(name = "Buffer.allocateDirect({0})")
     void allocateDirect__(final int capacity) {
-        var buffer = allocateDirect(capacity);
+        var buffer = ByteBuffer.allocateDirect(capacity);
         debugBuffer(buffer);
         assert buffer.capacity() == capacity;
         assert buffer.limit() == buffer.capacity();
@@ -117,10 +115,10 @@ class ByteBufferTest {
 
     @Test
     void printDocumented() {
-        var buffer = allocateDirect(31).position(4).limit(25);
-        print(buffer);
-        buffer.position(buffer.position() + BYTES);
+        var buffer = ByteBuffer.allocateDirect(31).position(4).limit(25);
+        JavaNioUtils.print(buffer);
+        buffer.position(buffer.position() + HelloWorld.BYTES);
         assert buffer.position() == 16;
-        print(buffer);
+        JavaNioUtils.print(buffer);
     }
 }

@@ -22,9 +22,9 @@ package com.github.jinahya.hello.misc.c01rfc863;
 
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils;
+import com.github.jinahya.hello.util.JavaSecurityUtils;
 import com.github.jinahya.hello.util._ExcludeFromCoverage_FailingCase;
 import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
-import com.github.jinahya.hello.util.JavaSecurityUtils;
 import com.github.jinahya.hello.util._TcpUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,13 +34,10 @@ import java.nio.channels.CompletionHandler;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static com.github.jinahya.hello.misc.c01rfc863._Rfc863Utils.logDigest;
-
 @Slf4j
 class Rfc863Tcp5Client {
 
-    public static void main(final String... args)
-            throws Exception {
+    public static void main(final String... args) throws Exception {
         try (var client = AsynchronousSocketChannel.open()) {
             // -------------------------------------------------------------------------------- BIND
             if (ThreadLocalRandom.current().nextBoolean()) {
@@ -73,7 +70,7 @@ class Rfc863Tcp5Client {
                                         public void completed(final Integer result, final Void a) {
                                             JavaSecurityUtils.updateDigest(digest, buffer, result);
                                             if ((bytes[0] -= result) == 0) {
-                                                logDigest(digest);
+                                                _Rfc863Utils.logDigest(digest);
                                                 latch.countDown();
                                                 return;
                                             }

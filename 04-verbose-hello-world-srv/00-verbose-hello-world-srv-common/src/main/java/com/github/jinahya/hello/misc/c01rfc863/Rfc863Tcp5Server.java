@@ -22,9 +22,9 @@ package com.github.jinahya.hello.misc.c01rfc863;
 
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils;
+import com.github.jinahya.hello.util.JavaSecurityUtils;
 import com.github.jinahya.hello.util._ExcludeFromCoverage_FailingCase;
 import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
-import com.github.jinahya.hello.util.JavaSecurityUtils;
 import com.github.jinahya.hello.util._TcpUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -35,10 +35,6 @@ import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.concurrent.CountDownLatch;
-
-import static com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants.ACCEPT_TIMEOUT;
-import static com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants.ACCEPT_TIMEOUT_UNIT;
-import static com.github.jinahya.hello.util._TcpUtils.logBound;
 
 @Slf4j
 class Rfc863Tcp5Server {
@@ -67,7 +63,7 @@ class Rfc863Tcp5Server {
             server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
             // -------------------------------------------------------------------------------- BIND
             server.bind(_Rfc863Constants.ADDR, 1);
-            logBound(server);
+            _TcpUtils.logBound(server);
             // ----------------------------------------------------------------------------- RECEIVE
             final var latch = new CountDownLatch(1);
             // ------------------------------------------------------------------------------ accept
@@ -126,7 +122,8 @@ class Rfc863Tcp5Server {
                         } // @formatter:on
                     }
             );
-            final var terminated = latch.await(ACCEPT_TIMEOUT, ACCEPT_TIMEOUT_UNIT);
+            final var terminated = latch.await(_Rfc86_Constants.ACCEPT_TIMEOUT,
+                                               _Rfc86_Constants.ACCEPT_TIMEOUT_UNIT);
             assert terminated : "latch hasn't been broken";
         }
     }

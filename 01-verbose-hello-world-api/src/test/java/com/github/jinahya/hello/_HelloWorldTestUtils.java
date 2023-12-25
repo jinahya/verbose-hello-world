@@ -21,6 +21,7 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
+import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
@@ -36,14 +37,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.LongAdder;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.longThat;
-import static org.mockito.ArgumentMatchers.notNull;
-import static org.mockito.BDDMockito.willAnswer;
-import static org.mockito.Mockito.mockingDetails;
-import static org.mockito.Mockito.when;
-
 @Slf4j
 @SuppressWarnings({
         "java:S101"
@@ -51,14 +44,14 @@ import static org.mockito.Mockito.when;
 public final class _HelloWorldTestUtils {
 
     private static <T> T requireMock(final T object) {
-        if (!mockingDetails(object).isMock()) {
+        if (!Mockito.mockingDetails(object).isMock()) {
             throw new IllegalArgumentException("not a mock: " + object);
         }
         return object;
     }
 
     private static <T> T requireSpy(final T object) {
-        if (!mockingDetails(object).isSpy()) {
+        if (!Mockito.mockingDetails(object).isSpy()) {
             throw new IllegalArgumentException("not a spy: " + object);
         }
         return object;
@@ -79,7 +72,8 @@ public final class _HelloWorldTestUtils {
                                                  final LongAdder adder)
             throws IOException {
         requireMock(Objects.requireNonNull(channel, "channel is null"));
-        BDDMockito.given(channel.write(argThat(b -> b != null && b.hasRemaining())))
+        BDDMockito.given(
+                        channel.write(ArgumentMatchers.argThat(b -> b != null && b.hasRemaining())))
                 .willAnswer(i -> {
                     final var src = i.getArgument(0, ByteBuffer.class);
                     final var written = ThreadLocalRandom.current().nextInt(1, src.remaining() + 1);
@@ -105,7 +99,8 @@ public final class _HelloWorldTestUtils {
                                                       final LongAdder adder) {
         requireMock(channel);
         final var previousFuture = new Future[1];
-        BDDMockito.given(channel.write(argThat(b -> b != null && b.hasRemaining())))
+        BDDMockito.given(
+                        channel.write(ArgumentMatchers.argThat(b -> b != null && b.hasRemaining())))
                 .willAnswer(w -> {
                     if (previousFuture[0] != null) {
                         Mockito.verify(previousFuture[0], Mockito.times(1)).get();
@@ -128,7 +123,8 @@ public final class _HelloWorldTestUtils {
 
     public static void write_willReturnFutureFails(final AsynchronousByteChannel channel) {
         requireMock(channel);
-        BDDMockito.given(channel.write(argThat(b -> b != null && b.hasRemaining())))
+        BDDMockito.given(
+                        channel.write(ArgumentMatchers.argThat(b -> b != null && b.hasRemaining())))
                 .willAnswer(w -> {
                     final var future = Mockito.mock(Future.class);
                     BDDMockito.given(future.get())
@@ -158,9 +154,9 @@ public final class _HelloWorldTestUtils {
                     return null;
                 })
                 .when(channel).write(
-                        argThat(b -> b != null && b.hasRemaining()),
-                        any(),
-                        notNull()
+                        ArgumentMatchers.argThat(b -> b != null && b.hasRemaining()),
+                        ArgumentMatchers.any(),
+                        ArgumentMatchers.notNull()
                 );
     }
 
@@ -174,9 +170,9 @@ public final class _HelloWorldTestUtils {
                     return null;
                 })
                 .given(given).write(
-                        argThat(b -> b != null && b.hasRemaining()),
-                        any(),
-                        notNull()
+                        ArgumentMatchers.argThat(b -> b != null && b.hasRemaining()),
+                        ArgumentMatchers.any(),
+                        ArgumentMatchers.notNull()
                 );
     }
 
@@ -195,14 +191,14 @@ public final class _HelloWorldTestUtils {
      */
     public static void _stub_ToWriteSome(final AsynchronousFileChannel channel,
                                          final LongAdder writtenSoFar) {
-        if (!mockingDetails(
+        if (!Mockito.mockingDetails(
                 Objects.requireNonNull(channel, "channel is null")).isMock()) {
             throw new IllegalArgumentException("not a mock: " + channel);
         }
         Objects.requireNonNull(writtenSoFar, "adder is null");
-        willAnswer(w -> { // invocation of channel.write
+        BDDMockito.willAnswer(w -> { // invocation of channel.write
             var future = Mockito.mock(Future.class);
-            when(future.get()).thenAnswer(g -> { // invocation of future.get
+            Mockito.when(future.get()).thenAnswer(g -> { // invocation of future.get
                 var src = w.getArgument(0, ByteBuffer.class);
                 var position = w.getArgument(1, Long.class);
                 var written = ThreadLocalRandom.current().nextInt(1, src.remaining() + 1);
@@ -212,8 +208,8 @@ public final class _HelloWorldTestUtils {
             });
             return future;
         }).given(channel).write(
-                argThat(b -> b != null && b.hasRemaining()), // <src>
-                longThat(v -> v >= 0L)                       // <position>
+                ArgumentMatchers.argThat(b -> b != null && b.hasRemaining()), // <src>
+                ArgumentMatchers.longThat(v -> v >= 0L)                       // <position>
         );
     }
 
@@ -227,15 +223,13 @@ public final class _HelloWorldTestUtils {
      * @param exc     the error for the {@code exc} parameter.
      */
     @SuppressWarnings({"unchecked"})
-    protected static <T extends Throwable> T _stub_ToFail(
-            AsynchronousFileChannel channel,
-            final T exc) {
-        if (!mockingDetails(
-                Objects.requireNonNull(channel, "channel is null")).isMock()) {
+    protected static <T extends Throwable> T _stub_ToFail(AsynchronousFileChannel channel,
+                                                          final T exc) {
+        if (!Mockito.mockingDetails(Objects.requireNonNull(channel, "channel is null")).isMock()) {
             throw new IllegalArgumentException("not a mock: " + channel);
         }
         Objects.requireNonNull(exc, "exc is null");
-        willAnswer(i -> {
+        BDDMockito.willAnswer(i -> {
             var src = i.getArgument(0, ByteBuffer.class);
             var position = i.getArgument(1, Long.class);
             var attachment = i.getArgument(2);
@@ -243,10 +237,10 @@ public final class _HelloWorldTestUtils {
             handler.failed(exc, attachment);
             return null;
         }).given(channel).write(
-                argThat(b -> b != null && b.hasRemaining()),
-                longThat(v -> v >= 0L),
-                any(),
-                notNull()
+                ArgumentMatchers.argThat(b -> b != null && b.hasRemaining()),
+                ArgumentMatchers.longThat(v -> v >= 0L),
+                ArgumentMatchers.any(),
+                ArgumentMatchers.notNull()
         );
         return exc;
     }
@@ -254,10 +248,10 @@ public final class _HelloWorldTestUtils {
     @SuppressWarnings({"unchecked"})
     protected static void _stub_ToComplete(final AsynchronousFileChannel channel,
                                            final LongAdder adder) {
-        if (!mockingDetails(Objects.requireNonNull(channel, "channel is null")).isMock()) {
+        if (!Mockito.mockingDetails(Objects.requireNonNull(channel, "channel is null")).isMock()) {
             throw new IllegalArgumentException("not a mock: " + channel);
         }
-        willAnswer(i -> {
+        BDDMockito.willAnswer(i -> {
             final var src = i.getArgument(0, ByteBuffer.class);
             final var position = i.getArgument(1, Long.class);
             final var attachment = i.getArgument(2);
@@ -270,10 +264,10 @@ public final class _HelloWorldTestUtils {
             handler.completed(written, attachment);
             return null;
         }).given(channel).write(
-                argThat(s -> s != null && s.hasRemaining()),
-                longThat(p -> p >= 0L),
-                notNull(),
-                any()
+                ArgumentMatchers.argThat(s -> s != null && s.hasRemaining()),
+                ArgumentMatchers.longThat(p -> p >= 0L),
+                ArgumentMatchers.notNull(),
+                ArgumentMatchers.any()
         );
     }
 

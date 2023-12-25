@@ -21,22 +21,19 @@ package com.github.jinahya.hello;
  */
 
 import com.github.jinahya.hello.util.HelloWorldServerUtils;
+import com.github.jinahya.hello.util.JavaLangUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 
-import static com.github.jinahya.hello.HelloWorldServerHelper.loadService;
-import static com.github.jinahya.hello.util.JavaLangUtils.readLinesAndCloseWhenTests;
-
 @Slf4j
 class HelloWorldTcp0Server {
 
     private static final int BACKLOG = 50; // default
 
-    public static void main(String... args)
-            throws Exception {
+    public static void main(final String... args) throws Exception {
         InetAddress host;
         try {
             host = InetAddress.getByName(args[0]);
@@ -46,8 +43,8 @@ class HelloWorldTcp0Server {
         try (ServerSocket server = new ServerSocket()) {
             server.bind(new InetSocketAddress(host, HelloWorldServerConstants.PORT), BACKLOG);
             log.debug("bound to {}", server.getLocalSocketAddress());
-            readLinesAndCloseWhenTests(HelloWorldServerUtils::isQuit, server);
-            var service = loadService();
+            JavaLangUtils.readLinesAndCloseWhenTests(HelloWorldServerUtils::isQuit, server);
+            var service = HelloWorldServerHelper.loadService();
             while (!server.isClosed()) {
                 // TODO: accept client
                 // TODO: send 'hello, world'
