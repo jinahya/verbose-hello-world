@@ -70,7 +70,8 @@ class Rfc863Udp3Client {
                         final var buffer = ByteBuffer.allocate(
                                 ThreadLocalRandom.current().nextInt(
 //                                        channel.getOption(StandardSocketOptions.SO_SNDBUF) + 1
-                                        (channel.getOption(StandardSocketOptions.SO_SNDBUF) >> 1) + 1
+                                        (channel.getOption(StandardSocketOptions.SO_SNDBUF) >> 1)
+                                        + 1
                                 )
                         );
                         _Rfc863Utils.logClientBytes(buffer.remaining());

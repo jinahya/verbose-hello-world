@@ -71,7 +71,8 @@ class Rfc862UdpTest {
                 throw new RuntimeException(e);
             }
         });
-        Awaitility.await().pollDelay(Duration.ofMillis(100L)).untilAsserted(() -> Assertions.assertTrue(true));
+        Awaitility.await().pollDelay(Duration.ofMillis(100L))
+                .untilAsserted(() -> Assertions.assertTrue(true));
         var client = executor.submit(() -> {
             try {
                 clientClass.getMethod("main", String[].class)
