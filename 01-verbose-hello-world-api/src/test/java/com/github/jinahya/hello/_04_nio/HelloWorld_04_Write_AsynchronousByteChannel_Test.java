@@ -69,7 +69,7 @@ class HelloWorld_04_Write_AsynchronousByteChannel_Test extends _HelloWorldTest {
      */
     @DisplayName("-> put(buffer[12]) -> channel.write(buffer)+")
     @Test
-    void __() throws InterruptedException, ExecutionException {
+    void __WriteSucceeds() throws InterruptedException, ExecutionException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var channel = mock(AsynchronousByteChannel.class);
