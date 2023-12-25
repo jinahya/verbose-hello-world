@@ -97,6 +97,6 @@ class HelloWorld_04_Write_AsynchronousByteChannel_Test extends _HelloWorldTest {
         final var channel = Mockito.mock(AsynchronousByteChannel.class);
         _HelloWorldTestUtils.write_willReturnFutureFails(channel);
         // ------------------------------------------------------------------------------- when/then
-        // TODO: assert, service.write(channel) throws an ExecutionExceeption
+        // TODO: assert, service.write(channel) throws an ExecutionException
     }
 }

@@ -31,6 +31,7 @@ import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.channels.WritableByteChannel;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.LongAdder;
@@ -130,7 +131,8 @@ public final class _HelloWorldTestUtils {
         BDDMockito.given(channel.write(argThat(b -> b != null && b.hasRemaining())))
                 .willAnswer(w -> {
                     final var future = Mockito.mock(Future.class);
-                    BDDMockito.given(future.get()).willThrow(new Exception());
+                    BDDMockito.given(future.get())
+                            .willThrow(new ExecutionException(new RuntimeException()));
                     return future;
                 });
     }
