@@ -38,13 +38,13 @@ import java.io.RandomAccessFile;
  * A class for testing {@link HelloWorld#write(RandomAccessFile)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_09_Write_RandomAccessFile_Arguments_Test
+ * @see HelloWorld_04_Write_RandomAccessFile_Arguments_Test
  */
 @DisplayName("write(RandomAccessFile file)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_09_Write_RandomAccessFile_Test extends _HelloWorldTest {
+class HelloWorld_04_Write_RandomAccessFile_Test extends _HelloWorldTest {
 
     @BeforeEach
     void beforeEach() {

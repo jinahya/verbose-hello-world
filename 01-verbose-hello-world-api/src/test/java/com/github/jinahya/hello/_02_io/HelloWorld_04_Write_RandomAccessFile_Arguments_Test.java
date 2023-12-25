@@ -25,40 +25,39 @@ import com.github.jinahya.hello._HelloWorldTest;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.io.DataOutput;
-
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import java.io.RandomAccessFile;
 
 /**
- * A class for testing {@link HelloWorld#write(DataOutput) write(data)} method regarding arguments
- * verification.
+ * A class for testing {@link HelloWorld#write(RandomAccessFile) write(file)} method regarding
+ * arguments verification.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_07_Write_DataOutput_Test
+ * @see HelloWorld_04_Write_RandomAccessFile_Test
  */
-@DisplayName("write(data) arguments")
+@DisplayName("write(RandomAccessFile file) arguments")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_07_Write_DataOutput_Arguments_Test extends _HelloWorldTest {
+class HelloWorld_04_Write_RandomAccessFile_Arguments_Test extends _HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#write(DataOutput) write(data)} method throws a
-     * {@link NullPointerException} when the {@code data} argument is {@code null}.
+     * Verifies {@link HelloWorld#write(RandomAccessFile file) write(RandomAccessFile file)} method
+     * throws a {@link NullPointerException} when the {@code file} argument is {@code null}.
      */
-    @DisplayName("(null)NullPointerException")
+    @DisplayName("[file == null] -> NullPointerException")
     @Test
-    void _ThrowNullPointerException_DataIsNull() {
+    void _ThrowNullPointerException_FileIsNull() {
         // ----------------------------------------------------------------------------------- given
-        var service = service();
-        var data = (DataOutput) null;
+        final var service = service();
+        final var file = (RandomAccessFile) null;
         // ------------------------------------------------------------------------------- when/then
-        assertThrows(
+        Assertions.assertThrows(
                 NullPointerException.class,
-                () -> service.write(data)
+                () -> service.write(file)
         );
     }
 }

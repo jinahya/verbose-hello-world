@@ -38,13 +38,13 @@ import java.io.IOException;
  * A class for testing {@link HelloWorld#write(DataOutput) write(data)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_07_Write_DataOutput_Arguments_Test
+ * @see HelloWorld_03_Write_DataOutput_Arguments_Test
  */
 @DisplayName("write(data)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_07_Write_DataOutput_Test extends _HelloWorldTest {
+class HelloWorld_03_Write_DataOutput_Test extends _HelloWorldTest {
 
     @BeforeEach
     void beforeEach() {
