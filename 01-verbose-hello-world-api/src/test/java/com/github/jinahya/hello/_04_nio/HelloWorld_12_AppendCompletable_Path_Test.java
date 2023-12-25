@@ -22,17 +22,17 @@ package com.github.jinahya.hello._04_nio;
 
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello._HelloWorldTest;
-import com.github.jinahya.hello.畵蛇添足;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+import org.mockito.BDDMockito;
 
 import java.io.IOException;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.CompletionHandler;
-import java.nio.channels.FileChannel;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -43,13 +43,9 @@ import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.lang.Long.MAX_VALUE;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.channels.AsynchronousFileChannel.open;
-import static java.nio.file.Files.createTempFile;
-import static java.nio.file.Files.getLastModifiedTime;
-import static java.nio.file.Files.size;
 import static java.nio.file.StandardOpenOption.WRITE;
 import static java.util.Arrays.asList;
 import static java.util.concurrent.ThreadLocalRandom.current;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentCaptor.forClass;
@@ -58,7 +54,6 @@ import static org.mockito.ArgumentMatchers.longThat;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
@@ -71,13 +66,14 @@ import static org.mockito.Mockito.verify;
  * @see HelloWorld_12_AppendCompletable_Path_Arguments_Test
  */
 @DisplayName("appendCompletable(path)")
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_12_AppendCompletable_Path_Test
-        extends _HelloWorldTest {
+@SuppressWarnings({"java:S101"})
+class HelloWorld_12_AppendCompletable_Path_Test extends _HelloWorldTest {
 
     @BeforeEach
-    void _beforeEach() {
-        willAnswer(i -> {
+    void beforeEach() {
+        BDDMockito.willAnswer(i -> {
             var channel = i.getArgument(0, AsynchronousFileChannel.class);
             var position = i.getArgument(1, Long.class);
             var future = new CompletableFuture<>();
@@ -101,8 +97,7 @@ class HelloWorld_12_AppendCompletable_Path_Test
     }
 
     @Test
-    void __()
-            throws IOException {
+    void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         var service = service();
         var path = mock(Path.class);
@@ -127,35 +122,5 @@ class HelloWorld_12_AppendCompletable_Path_Test
             verify(channel, times(1)).close();
             assertSame(path, result);
         }
-    }
-
-    /**
-     * Tests {@link HelloWorld#appendCompletable(Path)} method using a real file.
-     *
-     * @param tempDir a temporary directory to use.
-     * @throws IOException if an I/O error occurs.
-     */
-    @畵蛇添足
-    @Test
-    void __(@TempDir Path tempDir)
-            throws IOException {
-        // ----------------------------------------------------------------------------------- given
-        var service = service();
-        var path = createTempFile(tempDir, null, null);
-        if (current().nextBoolean()) {
-            log.debug("lastModifiedTime: {}", getLastModifiedTime(path));
-            try (var channel = FileChannel.open(path, WRITE)) {
-                for (var src = allocate(current().nextInt(1024)); src.hasRemaining(); ) {
-                    var w = channel.write(src);
-                }
-                channel.force(true);
-                log.debug("lastModifiedTime: {}", getLastModifiedTime(path));
-            }
-        }
-        var size = size(path);
-        // ------------------------------------------------------------------------------------ when
-        service.appendCompletable(path).join();
-        // ------------------------------------------------------------------------------------ then
-        assertEquals(size + BYTES, size(path));
     }
 }

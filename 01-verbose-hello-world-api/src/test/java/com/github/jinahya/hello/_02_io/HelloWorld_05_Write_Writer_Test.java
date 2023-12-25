@@ -26,7 +26,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
@@ -47,13 +46,6 @@ import java.io.Writer;
 @Slf4j
 @SuppressWarnings({"java:S101"})
 class HelloWorld_05_Write_Writer_Test extends _HelloWorldTest {
-
-    @BeforeEach
-    void beforeEach() throws IOException {
-        Mockito.doAnswer(i -> i.getArgument(0))
-                .when(service())
-                .append(ArgumentMatchers.any(Appendable.class));
-    }
 
     /**
      * Verifies {@link HelloWorld#write(RandomAccessFile) write(file)} method invokes
