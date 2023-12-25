@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.io.UncheckedIOException;
+import java.io.Writer;
 import java.net.Socket;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
@@ -254,13 +255,56 @@ public interface HelloWorld {
      * @see Socket#getOutputStream()
      * @see #write(OutputStream)
      */
-    default <T extends Socket> T send(T socket)
-            throws IOException {
+    default <T extends Socket> T send(final T socket) throws IOException {
         if (socket == null) {
             throw new NullPointerException("socket is null");
         }
         // TODO: Invoke write(socket.getOutputStream())
         return socket;
+    }
+
+    /**
+     * Appends the <a href="#hello-world-bytes">hello-world-bytes</a> to specified appendable.
+     *
+     * @param <T>        appendable type parameter
+     * @param appendable the appendable to which bytes are appended.
+     * @return given {@code appendable}.
+     * @throws NullPointerException if {@code appendable} is {@code null}.
+     * @throws IOException          if an I/O error occurs.
+     * @implSpec The default implementation invokes {@link #set(byte[]) set(array)} method with an
+     * array of {@value #BYTES} bytes, and appends each byte (as a {@code char}) in the array to
+     * {@code appendable}.
+     * @see #set(byte[])
+     * @see Appendable#append(char)
+     */
+    default <T extends Appendable> T append(final T appendable) throws IOException {
+        if (appendable == null) {
+            throw new NullPointerException("appendable is null");
+        }
+        final var array = new byte[BYTES];
+        set(array);
+        // TODO: append each byte (as char) in array to appendable
+        return appendable;
+    }
+
+    /**
+     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified writer.
+     *
+     * @param <T>    writer type parameter
+     * @param writer the writer to which bytes are appended.
+     * @return given {@code writer}.
+     * @throws NullPointerException if {@code writer} is {@code null}.
+     * @throws IOException          if an I/O error occurs.
+     * @implSpec The default implementation invokes {@link #append(Appendable) append(appendable)}
+     * method with {@code writer}, and returns the writer.
+     * @see #append(Appendable)
+     */
+    default <T extends Writer> T write(final T writer) throws IOException {
+        if (writer == null) {
+            throw new NullPointerException("writer is null");
+        }
+        // TODO: invoke #append(appendable) method with <writer>
+        return writer;
     }
 
     /**

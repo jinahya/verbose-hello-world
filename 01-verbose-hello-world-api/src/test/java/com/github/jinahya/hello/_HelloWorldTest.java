@@ -29,6 +29,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 import org.mockito.Captor;
 import org.mockito.Mockito;
@@ -48,10 +49,10 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.LongAdder;
+import java.util.function.UnaryOperator;
 
 import static com.github.jinahya.hello.HelloWorld.BYTES;
 import static java.util.concurrent.ThreadLocalRandom.current;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.longThat;
@@ -158,7 +159,7 @@ public abstract class _HelloWorldTest {
         }).given(channel).write(
                 argThat(b -> b != null && b.hasRemaining()),
                 longThat(v -> v >= 0L),
-                any(),
+                ArgumentMatchers.any(),
                 notNull()
         );
         return exc;
@@ -186,7 +187,7 @@ public abstract class _HelloWorldTest {
                 argThat(s -> s != null && s.hasRemaining()),
                 longThat(p -> p >= 0L),
                 notNull(),
-                any()
+                ArgumentMatchers.any()
         );
     }
 
@@ -209,7 +210,7 @@ public abstract class _HelloWorldTest {
             return null;
         }).given(channel).write(
                 argThat(b -> b != null && b.hasRemaining()), // <src>
-                any(),
+                ArgumentMatchers.any(),
                 // <attachment>
                 notNull()                                    // <handler>
         );
@@ -240,7 +241,7 @@ public abstract class _HelloWorldTest {
             return null;
         }).given(channel).write(
                 argThat(b -> b != null && b.hasRemaining()), // <src>
-                any(),
+                ArgumentMatchers.any(),
                 // <attachment>
                 notNull()                                    // <handler>
         );
@@ -271,7 +272,7 @@ public abstract class _HelloWorldTest {
     protected final void writeChannel_willReturnChannel() throws IOException {
         Mockito.doAnswer(i -> i.getArgument(0))
                 .when(service)
-                .write(any(WritableByteChannel.class));
+                .write(ArgumentMatchers.any(WritableByteChannel.class));
     }
 
     /**
@@ -307,7 +308,7 @@ public abstract class _HelloWorldTest {
     protected final void writeStream_willReturnStream() throws IOException {
         Mockito.doAnswer(i -> i.getArgument(0))
                 .when(service)
-                .write(any(OutputStream.class));
+                .write(ArgumentMatchers.any(OutputStream.class));
     }
 
     /**
@@ -319,7 +320,7 @@ public abstract class _HelloWorldTest {
             var stream = i.getArgument(0, OutputStream.class);
             stream.write(new byte[BYTES]);
             return stream;
-        }).given(service).write(any(OutputStream.class));
+        }).given(service).write(ArgumentMatchers.any(OutputStream.class));
     }
 
     // -------------------------------------------------------------------------- set(byte[], index)
@@ -331,7 +332,7 @@ public abstract class _HelloWorldTest {
     @BeforeEach
     void setArrayIndex_willReturnArray() {
         Mockito.doAnswer(i -> i.getArgument(0))     // <2>
-                .when(service).set(any(), anyInt()) // <1>
+                .when(service).set(ArgumentMatchers.any(), anyInt()) // <1>
         ;
     }
 
@@ -341,10 +342,20 @@ public abstract class _HelloWorldTest {
      * Stubs {@code serviceInstance}'s {@link HelloWorld#set(byte[]) set(array)} method to just
      * return the {@code array}.
      */
-    protected final void setArray_willReturnArray() {
-        Mockito.doAnswer(i -> i.getArgument(0)) // <2>
-                .when(service).set(any())       // <1>
+    protected final void setArray_willReturnArray(final UnaryOperator<? super byte[]> operator) {
+        Objects.requireNonNull(operator, "operator is null");
+        Mockito.doAnswer(i -> operator.apply(i.getArgument(0, byte[].class)))
+                .when(service)
+                .set(ArgumentMatchers.any())
         ;
+    }
+
+    /**
+     * Stubs {@code serviceInstance}'s {@link HelloWorld#set(byte[]) set(array)} method to just
+     * return the {@code array}.
+     */
+    protected final void setArray_willReturnArray() {
+        setArray_willReturnArray(UnaryOperator.identity());
     }
 
     // ---------------------------------------------------------------------------------------------

@@ -48,7 +48,7 @@
   </issueManagement>
 
   <properties>
-<!--    <maven.compiler.source>17</maven.compiler.source>-->
+    <!--    <maven.compiler.source>17</maven.compiler.source>-->
     <maven.compiler.source>21</maven.compiler.source>
     <maven.compiler.target>${maven.compiler.source}</maven.compiler.target>
     <maven.compiler.release>${maven.compiler.target}</maven.compiler.release>
@@ -67,7 +67,8 @@
     <version.maven-javadoc-plugin>3.6.3</version.maven-javadoc-plugin>
     <version.org.apache.openwebbeans>4.0.1</version.org.apache.openwebbeans>
     <version.org.aspectj>1.9.21</version.org.aspectj>
-    <version.org.glassfish.hk2>3.0.5</version.org.glassfish.hk2>
+    <!--    <version.org.glassfish.hk2>3.0.5</version.org.glassfish.hk2>-->
+    <version.org.glassfish.hk2>4.0.0-M1</version.org.glassfish.hk2>
     <version.org.hibernate.validator>8.0.1.Final</version.org.hibernate.validator>
     <version.org.jboss.weld>6.0.0.Alpha1</version.org.jboss.weld> <!-- weld-junit5 -->
     <version.org.jboss.weld-junit>4.0.1.Final</version.org.jboss.weld-junit> <!-- weld-se-core -->
@@ -336,7 +337,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.11.0</version>
+          <version>3.12.1</version>
           <configuration>
             <compilerArgs>
               <arg>-Xlint</arg>
@@ -382,7 +383,8 @@
               </configuration>
             </execution>
             <execution>
-              <id>enforce-require-maven-version</id>
+              <!--              <id>enforce-require-maven-version</id>-->
+              <id>enforce-maven</id> <!-- https://github.com/mojohaus/versions/issues/1034 -->
               <goals>
                 <goal>enforce</goal>
               </goals>
