@@ -37,8 +37,6 @@ import java.nio.channels.AsynchronousByteChannel;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.LongAdder;
 
-import static org.mockito.Mockito.mock;
-
 /**
  * A class for testing {@link HelloWorld#write(AsynchronousByteChannel) write(channel)} method.
  *
@@ -71,7 +69,7 @@ class HelloWorld_04_Write_AsynchronousByteChannel_Test extends _HelloWorldTest {
     void __WriteSucceeds() throws InterruptedException, ExecutionException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        final var channel = mock(AsynchronousByteChannel.class);
+        final var channel = Mockito.mock(AsynchronousByteChannel.class);
         final var writtenSoFar = new LongAdder();
         _HelloWorldTestUtils.write_willReturnFutureSucceeds(channel, writtenSoFar);
         // ------------------------------------------------------------------------------------ when
@@ -90,16 +88,13 @@ class HelloWorld_04_Write_AsynchronousByteChannel_Test extends _HelloWorldTest {
      * Verifies {@link HelloWorld#write(AsynchronousByteChannel) write(channel)} method invokes
      * {@link HelloWorld#put(ByteBuffer) put(buffer)} method with a buffer of
      * {@value HelloWorld#BYTES} bytes, and writes the buffer to specified {@code channel}.
-     *
-     * @throws InterruptedException if interrupted while testing.
-     * @throws ExecutionException   if failed to execute.
      */
     @DisplayName("-> put(buffer[12]) -> channel.write(buffer)+")
     @Test
-    void __WriteFails() throws InterruptedException, ExecutionException {
+    void __WriteFails() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        final var channel = mock(AsynchronousByteChannel.class);
+        final var channel = Mockito.mock(AsynchronousByteChannel.class);
         _HelloWorldTestUtils.write_willReturnFutureFails(channel);
         // ------------------------------------------------------------------------------- when/then
         // TODO: assert, service.write(channel) throws an ExecutionExceeption
