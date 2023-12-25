@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
@@ -37,8 +38,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.LongAdder;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * A class for testing {@link HelloWorld#write(AsynchronousByteChannel) write(channel)} method.
@@ -60,7 +59,7 @@ class HelloWorld_04_Write_AsynchronousByteChannel_Test extends _HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#write(AsynchronousByteChannel) write(channel)} method invokes
+     * Verifies {@link HelloWorld#write(AsynchronousByteChannel) write(channel)} method invokes
      * {@link HelloWorld#put(ByteBuffer) put(buffer)} method with a buffer of
      * {@value HelloWorld#BYTES} bytes, and writes the buffer to specified {@code channel}.
      *
@@ -78,12 +77,31 @@ class HelloWorld_04_Write_AsynchronousByteChannel_Test extends _HelloWorldTest {
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(channel);
         // ------------------------------------------------------------------------------------ then
-        verify(service, times(1)).put(bufferCaptor().capture());
+        Mockito.verify(service, Mockito.times(1)).put(bufferCaptor().capture());
         final var buffer = bufferCaptor().getValue();
         Assertions.assertEquals(HelloWorld.BYTES, buffer.capacity());
         // TODO: Verify, channel.write(buffer), invoked, at least once
         // TODO: Assert, writtenSoFat.intValue() is equal to BYTES
         // TODO: Assert, result is same as channel
         Assertions.assertSame(channel, result);
+    }
+
+    /**
+     * Verifies {@link HelloWorld#write(AsynchronousByteChannel) write(channel)} method invokes
+     * {@link HelloWorld#put(ByteBuffer) put(buffer)} method with a buffer of
+     * {@value HelloWorld#BYTES} bytes, and writes the buffer to specified {@code channel}.
+     *
+     * @throws InterruptedException if interrupted while testing.
+     * @throws ExecutionException   if failed to execute.
+     */
+    @DisplayName("-> put(buffer[12]) -> channel.write(buffer)+")
+    @Test
+    void __WriteFails() throws InterruptedException, ExecutionException {
+        // ----------------------------------------------------------------------------------- given
+        final var service = service();
+        final var channel = mock(AsynchronousByteChannel.class);
+        _HelloWorldTestUtils.write_willReturnFutureFails(channel);
+        // ------------------------------------------------------------------------------- when/then
+        // TODO: assert, service.write(channel) throws an ExecutionExceeption
     }
 }
