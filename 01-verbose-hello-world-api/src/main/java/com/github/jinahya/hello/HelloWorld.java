@@ -315,7 +315,7 @@ public interface HelloWorld {
         if (socket == null) {
             throw new NullPointerException("socket is null");
         }
-        // TODO: Invoke write(socket.getOutputStream())
+        // TODO: implement
         return socket;
     }
 
