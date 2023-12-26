@@ -68,7 +68,8 @@ class HelloWorld_03_Append_Path_Test extends _HelloWorldTest {
             // -------------------------------------------------------------------------------- when
             final var result = service.append(path);
             // -------------------------------------------------------------------------------- then
-            // TODO: verify, FileChannel.open(path, WRITE, CREATE, APPEND) invoked, once.
+            // TODO: verify, FileChannel.open(path, StandardOpenOption.WRITE, StandardOpenOption.CREATE,
+            //               StandardOpenOption.APPEND) invoked, once.
             // TODO: verify, write(channel) invoked, once.
             // TODO: verify, channel.force(true) invoked, once.
             // TODO: verify, channel.close() invoked, once.
