@@ -53,7 +53,7 @@ class HelloWorld_02_Set_Array_Test extends _HelloWorldTest {
         // ------------------------------------------------------------------------------------ when
         final var result = service.set(array);
         // ------------------------------------------------------------------------------------ then
-        // TODO: Verify service.set(array, 0) invoked, once
-        // TODO: Assert result is same as array
+        // TODO: verify, service.set(array, 0) invoked, once
+        // TODO: assert, result is same as array
     }
 }
