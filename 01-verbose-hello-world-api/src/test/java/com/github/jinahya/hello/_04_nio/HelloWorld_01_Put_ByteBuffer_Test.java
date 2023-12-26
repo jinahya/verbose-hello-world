@@ -54,10 +54,10 @@ class HelloWorld_01_Put_ByteBuffer_Test extends _HelloWorldTest {
     }
 
     /**
-     * Verifies {@link HelloWorld#put(ByteBuffer) put(buffer)} method, when the {@code buffer} has a
-     * backing array, invokes {@link HelloWorld#set(byte[], int) set(array, index)} method with
-     * {@code buffer.array} and ({@code buffer.arrayOffset + buffer.position}), and returns the
-     * {@code buffer} as its {@link ByteBuffer#position() position} increased by
+     * Verifies {@link HelloWorld#put(ByteBuffer) put(buffer)} method, invoked with a byte buffer
+     * which has a backing array, invokes {@link HelloWorld#set(byte[], int) set(array, index)}
+     * method with {@code buffer.array} and ({@code buffer.arrayOffset + buffer.position}), and
+     * returns the {@code buffer} as its {@link ByteBuffer#position() position} increased by
      * {@value HelloWorld#BYTES}.
      */
     @DisplayName("""
@@ -103,10 +103,10 @@ class HelloWorld_01_Put_ByteBuffer_Test extends _HelloWorldTest {
     }
 
     /**
-     * Asserts {@link HelloWorld#put(ByteBuffer) put(buffer)} method, when invoked with a byte
-     * buffer which does not have a backing array, invokes {@link HelloWorld#set(byte[]) set(array)}
-     * method with an array of {@value HelloWorld#BYTES} bytes, puts the array to {@code buffer},
-     * and returns the {@code buffer}.
+     * Verifies {@link HelloWorld#put(ByteBuffer) put(buffer)} method, invoked with a byte buffer
+     * which does not have a backing array, invokes {@link HelloWorld#set(byte[]) set(array)} method
+     * with an array of {@value HelloWorld#BYTES} bytes, puts the array to {@code buffer}, and
+     * returns the {@code buffer}.
      */
     @DisplayName("""
             [!buffer.hasArray]
