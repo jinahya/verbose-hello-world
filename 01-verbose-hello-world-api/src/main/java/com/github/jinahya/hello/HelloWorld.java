@@ -67,13 +67,15 @@ import java.util.concurrent.atomic.LongAccumulator;
 @FunctionalInterface
 public interface HelloWorld {
 
+    // ---------------------------------------------------------------------------------- log/logger
+
     /**
      * Returns a logger for this interface.
      *
      * @return a logger for this interface.
      */
     private Logger log() {
-        return HelloWorldLoggers.log(getClass());
+        return HelloWorldLoggers.log();
     }
 
     /**
@@ -82,8 +84,10 @@ public interface HelloWorld {
      * @return a logger for this interface.
      */
     private System.Logger logger() {
-        return HelloWorldLoggers.logger(getClass());
+        return HelloWorldLoggers.logger();
     }
+
+    // ----------------------------------------------------------------------------------- constants
 
     /**
      * The length of the <a href="#hello-world-bytes">hello-world-bytes</a> which is {@value}.
@@ -313,6 +317,8 @@ public interface HelloWorld {
         return socket;
     }
 
+    // ------------------------------------------------------------------------------------- java.nio
+
     /**
      * Puts the <a href="#hello-world-bytes">hello-world-bytes</a> on specified byte buffer.
      * <p>
@@ -489,8 +495,8 @@ public interface HelloWorld {
      * @param channel the channel to which bytes are written.
      * @return a completable future of {@code channel}.
      */
-    default <T extends AsynchronousByteChannel>
-    CompletableFuture<T> writeCompletable(final T channel) {
+    default <T extends AsynchronousByteChannel> CompletableFuture<T> writeCompletable(
+            final T channel) {
         Objects.requireNonNull(channel, "channel is null");
         final var future = new CompletableFuture<T>();
         // TODO: Invoke, writeAsync(channel, a-handler, null)
