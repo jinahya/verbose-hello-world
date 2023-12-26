@@ -61,7 +61,9 @@ class HelloWorld_01_Put_ByteBuffer_Test extends _HelloWorldTest {
      * {@value HelloWorld#BYTES}.
      */
     @DisplayName("""
-            [buffer.hasArray] -> set(buffer.array, buffer.arrayOffset + buffer.position)
+            [buffer.hasArray]
+            -> set(buffer.array(), buffer.arrayOffset() + buffer.position())
+            -> buffer.position is increased by HelloWorld.BYTES
             """
     )
     @Test
@@ -96,7 +98,7 @@ class HelloWorld_01_Put_ByteBuffer_Test extends _HelloWorldTest {
         final var result = service.put(buffer);
         // ------------------------------------------------------------------------------------ then
         // TODO: verify, set(buffer.array(), buffer.arrayOffset() + position) invoked, once
-        // TODO: assert, buffer.position() is equal to (position + 12).
+        // TODO: assert, buffer.position() is equal to (position + HelloWorld.BYTES).
         Assertions.assertSame(buffer, result);
     }
 
@@ -107,7 +109,9 @@ class HelloWorld_01_Put_ByteBuffer_Test extends _HelloWorldTest {
      * and returns the {@code buffer}.
      */
     @DisplayName("""
-            [!buffer.hasArray] -> set(array[12]) -> buffer.put(array)
+            [!buffer.hasArray]
+            -> set(array[HelloWorld.BYTES])
+            -> buffer.put(array)
             """
     )
     @Test
