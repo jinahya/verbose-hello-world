@@ -56,7 +56,7 @@ class HelloWorld_06_WriteAsync_AsynchronousByteChannelWithHandler_Test extends _
 
     @BeforeEach
     void beforeEach() {
-        putBuffer_WillReturnTheBuffer_AsItsPositionIncreasedBy12();
+        putBuffer_willReturnTheBuffer_asItsPositionIncreasedBy12();
     }
 
     /**

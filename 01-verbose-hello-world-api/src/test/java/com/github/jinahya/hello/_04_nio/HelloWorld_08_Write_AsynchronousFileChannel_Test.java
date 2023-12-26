@@ -50,7 +50,7 @@ class HelloWorld_08_Write_AsynchronousFileChannel_Test
 
     @BeforeEach
     void _beforeEach() {
-        putBuffer_WillReturnTheBuffer_AsItsPositionIncreasedBy12();
+        putBuffer_willReturnTheBuffer_asItsPositionIncreasedBy12();
     }
 
     /**

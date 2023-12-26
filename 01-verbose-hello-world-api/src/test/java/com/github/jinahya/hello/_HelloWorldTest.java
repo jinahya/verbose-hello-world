@@ -46,7 +46,6 @@ import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.channels.WritableByteChannel;
 import java.util.Objects;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.LongAdder;
@@ -269,32 +268,17 @@ public abstract class _HelloWorldTest {
     }
 
     /**
-     * Stubs {@code serviceInstance()}'s {@link HelloWorld#put(ByteBuffer) put(buffer[12])} method
-     * to return given {@code buffer} as its position increased by {@value HelloWorld#BYTES}.
+     * Stubs {@code service}'s {@link HelloWorld#put(ByteBuffer) put(buffer)} method to return given
+     * {@code buffer} as its position increased by {@value HelloWorld#BYTES}.
      */
-    protected final void putBuffer_WillReturnTheBuffer_AsItsPositionIncreasedBy12() {
+    protected final void putBuffer_willReturnTheBuffer_asItsPositionIncreasedBy12() {
         BDDMockito.willAnswer(i -> {
-                    var buffer = i.getArgument(0, ByteBuffer.class);
-                    buffer.position(buffer.limit());
+                    final var buffer = i.getArgument(0, ByteBuffer.class);
+                    buffer.position(buffer.position() + HelloWorld.BYTES);
                     return buffer;
                 })
                 .given(service)
-                .put(ArgumentMatchers.argThat(b -> b != null &&
-                                                   b.capacity() == HelloWorld.BYTES &&
-                                                   b.remaining() == HelloWorld.BYTES));
-    }
-
-    protected final void writeAsynchronousByteChannel_willWrite12Bytes()
-            throws ExecutionException, InterruptedException {
-        BDDMockito.given(service.write(ArgumentMatchers.notNull(AsynchronousByteChannel.class)))
-                .willAnswer(i -> {
-                    final var channel = i.getArgument(0, AsynchronousByteChannel.class);
-                    for (final var b = ByteBuffer.allocate(12); b.hasRemaining(); ) {
-                        final var w = channel.write(b).get();
-                        assert w >= 0;
-                    }
-                    return channel;
-                });
+                .put(ArgumentMatchers.argThat(b -> b != null && b.remaining() > HelloWorld.BYTES));
     }
 
     /**

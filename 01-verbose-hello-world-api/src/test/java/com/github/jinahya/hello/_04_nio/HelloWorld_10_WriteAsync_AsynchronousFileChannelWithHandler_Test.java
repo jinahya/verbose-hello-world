@@ -50,7 +50,7 @@ class HelloWorld_10_WriteAsync_AsynchronousFileChannelWithHandler_Test extends _
 
     @BeforeEach
     void _beforeEach() {
-        putBuffer_WillReturnTheBuffer_AsItsPositionIncreasedBy12();
+        putBuffer_willReturnTheBuffer_asItsPositionIncreasedBy12();
     }
 
     /**

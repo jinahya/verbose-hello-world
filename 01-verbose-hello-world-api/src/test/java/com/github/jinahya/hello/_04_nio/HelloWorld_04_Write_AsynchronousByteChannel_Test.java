@@ -53,7 +53,7 @@ class HelloWorld_04_Write_AsynchronousByteChannel_Test extends _HelloWorldTest {
 
     @BeforeEach
     void beforeEach() {
-        putBuffer_WillReturnTheBuffer_AsItsPositionIncreasedBy12();
+        putBuffer_willReturnTheBuffer_asItsPositionIncreasedBy12();
     }
 
     /**

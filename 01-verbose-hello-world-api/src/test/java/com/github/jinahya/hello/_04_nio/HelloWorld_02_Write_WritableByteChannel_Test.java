@@ -51,7 +51,7 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends _HelloWorldTest {
 
     @BeforeEach
     void beforeEach() {
-        putBuffer_WillReturnTheBuffer_AsItsPositionIncreasedBy12();
+        putBuffer_willReturnTheBuffer_asItsPositionIncreasedBy12();
     }
 
     /**
@@ -66,9 +66,9 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends _HelloWorldTest {
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        final var channel = Mockito.mock(WritableByteChannel.class);                   // <1>
-        final var writtenSoFar = new LongAdder();                                      // <2>
-        _HelloWorldTestUtils.writeBuffer_willWriteSome(channel, writtenSoFar);         // <3>
+        final var channel = Mockito.mock(WritableByteChannel.class);           // <1>
+        final var writtenSoFar = new LongAdder();                              // <2>
+        _HelloWorldTestUtils.writeBuffer_willWriteSome(channel, writtenSoFar); // <3>
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(channel);
         // ------------------------------------------------------------------------------------ then
