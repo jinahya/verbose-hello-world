@@ -69,7 +69,7 @@ class HelloWorld_03_Append_Appendable_Test extends _HelloWorldTest {
         final var appendable = Mockito.mock(Appendable.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.append(appendable);
-        // ------------------------------------------------------------------------------------- then
+        // ------------------------------------------------------------------------------------ then
         Mockito.verify(service, Mockito.times(1)).set(arrayCaptor().capture());
         final var array = arrayCaptor().getValue();
         Assertions.assertNotNull(array);

@@ -298,16 +298,6 @@ public abstract class _HelloWorldTest {
     }
 
     /**
-     * Stubs {@code service}'s {@link HelloWorld#write(OutputStream) write(stream)} method to just
-     * return the {@code stream} argument.
-     */
-    protected final void writeStream_willReturnStream() throws IOException {
-        Mockito.doAnswer(i -> i.getArgument(0))
-                .when(service)
-                .write(ArgumentMatchers.any(OutputStream.class));
-    }
-
-    /**
      * Stubs {@code service}'s {@link HelloWorld#write(OutputStream) write(stream)} method to write
      * {@value HelloWorld#BYTES} bytes to the {@code stream}, and return the {@code stream}.
      */
@@ -352,6 +342,18 @@ public abstract class _HelloWorldTest {
      */
     protected final void setArray_willReturnArray() {
         setArray_willReturnArray(UnaryOperator.identity());
+    }
+
+    // ------------------------------------------------------------------------------- write(stream)
+
+    /**
+     * Stubs {@code service}'s {@link HelloWorld#write(OutputStream) write(stream)} method to just
+     * return the {@code stream} argument.
+     */
+    protected final void writeStream_willReturnStream() throws IOException {
+        Mockito.doAnswer(i -> i.getArgument(0))
+                .when(service)
+                .write(ArgumentMatchers.any(OutputStream.class));
     }
 
     // ---------------------------------------------------------------------------------------------

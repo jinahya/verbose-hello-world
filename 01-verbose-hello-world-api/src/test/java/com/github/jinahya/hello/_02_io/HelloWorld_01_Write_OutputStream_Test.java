@@ -43,9 +43,7 @@ import java.io.OutputStream;
 @DisplayName("write(stream)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-@SuppressWarnings({
-        "java:S101"
-})
+@SuppressWarnings({"java:S101"})
 class HelloWorld_01_Write_OutputStream_Test extends _HelloWorldTest {
 
     @BeforeEach

@@ -41,9 +41,7 @@ import java.io.File;
 @DisplayName("append(file) arguments")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-@SuppressWarnings({
-        "java:S101"
-})
+@SuppressWarnings({"java:S101"})
 class HelloWorld_02_Append_File_Arguments_Test extends _HelloWorldTest {
 
     /**

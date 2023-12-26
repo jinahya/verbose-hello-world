@@ -22,18 +22,21 @@ package com.github.jinahya.hello._02_io;
 
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello._HelloWorldTest;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedConstruction.MockInitializer;
+import org.mockito.MockedConstruction;
 import org.mockito.Mockito;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.LinkedHashMap;
 
 /**
  * A class for testing {@link HelloWorld#append(File) append(file)} method.
@@ -42,12 +45,15 @@ import java.io.OutputStream;
  * @see HelloWorld_02_Append_File_Arguments_Test
  */
 @DisplayName("append(file)")
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
+@SuppressWarnings({"java:S101"})
 class HelloWorld_02_Append_File_Test extends _HelloWorldTest {
 
     @BeforeEach
     void beforeEach() throws IOException {
-        writeStream_willWrite12Bytes();
+//        writeStream_willWrite12Bytes();
+        writeStream_willReturnStream();
     }
 
     /**
@@ -60,29 +66,20 @@ class HelloWorld_02_Append_File_Test extends _HelloWorldTest {
      */
     @DisplayName("-> write(new FileOutputStream(file, true))")
     @Test
-    void _InvokeWriteWithFileOutputStreamOfAppendingMode_() throws IOException {
+    void _InvokeWriteWithFileOutputStreamOfAppendingMode_()
+            throws IOException, NoSuchMethodException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var file = Mockito.mock(File.class);
-        final var initializer = (MockInitializer<FileOutputStream>) (m, c) -> {
-            Assertions.assertEquals(
-                    FileOutputStream.class.getConstructor(File.class, boolean.class),
-                    c.constructor()
-            );
-            final var arguments = c.arguments();
-            Assertions.assertEquals(2, arguments.size());
-            Assertions.assertEquals(file, arguments.get(0));
-            Assertions.assertTrue((boolean) arguments.get(1));
-            Assertions.assertEquals(1, c.getCount());
-        };
-        try (var construction = Mockito.mockConstruction(FileOutputStream.class, initializer)) {
+        final var contexts = new LinkedHashMap<FileOutputStream, MockedConstruction.Context>();
+        try (var mock = Mockito.mockConstruction(FileOutputStream.class, contexts::put)) {
             // -------------------------------------------------------------------------------- when
             final var result = service.append(file);
             // ---------------------------------------------------------------------------------then
-            // TODO: assert, construction.constructed().size() is equal to 1
-            // TODO: verify, service.write(construction.constructed().get(0)) invoked, once.
-            // TODO: verify, construction.constructed().get(0).flush() invoked, once.
-            // TODO: verify, construction.constructed().get(0).close() invoked, once.
+            // TODO: assert, FileOutputStream(file, true) invoked, once
+            // TODO: verify, service.write(stream) invoked, once
+            // TODO: verify, stream.flush() invoked, once
+            // TODO: verify, stream.close() invoked, once
             Assertions.assertSame(file, result);
         }
     }

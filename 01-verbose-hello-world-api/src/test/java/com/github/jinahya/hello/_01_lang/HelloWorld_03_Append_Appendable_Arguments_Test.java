@@ -39,9 +39,7 @@ import org.junit.jupiter.api.Test;
 @DisplayName("append(appendable) arguments")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-@SuppressWarnings({
-        "java:S101"
-})
+@SuppressWarnings({"java:S101"})
 class HelloWorld_03_Append_Appendable_Arguments_Test extends _HelloWorldTest {
 
     /**
