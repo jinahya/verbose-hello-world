@@ -436,11 +436,11 @@ public interface HelloWorld {
      */
     default <T extends Path> T append(final T path) throws IOException {
         Objects.requireNonNull(path, "path is null");
-        // TODO: Open a file channel with path, StandardOpenOption.WRITE, StandardOpenOption.CREATE,
+        // TODO: open a file channel with path, StandardOpenOption.WRITE, StandardOpenOption.CREATE,
         //       and StandardOpenOption.APPEND
-        // TODO: Invoke write(channel) method with it.
-        // TODO: Force the channel with true.
-        // TODO: Close the channel.
+        // TODO: invoke write(channel) method with it.
+        // TODO: force the channel with true.
+        // TODO: close the channel.
         return path;
     }
 
