@@ -39,7 +39,7 @@ import java.io.Writer;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld_05_Write_Writer_Test
  */
-@DisplayName("write(RandomAccessFile file) arguments")
+@DisplayName("write(writer) arguments")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
