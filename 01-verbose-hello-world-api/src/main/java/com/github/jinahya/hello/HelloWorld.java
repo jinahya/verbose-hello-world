@@ -91,6 +91,8 @@ public interface HelloWorld {
     public static final // redundant
             int BYTES = 12;
 
+    // ----------------------------------------------------------------------------------- java.lang
+
     /**
      * Sets the <a href="#hello-world-bytes">hello-world-bytes</a> on specified array starting at
      * specified position.
@@ -140,6 +142,32 @@ public interface HelloWorld {
     }
 
     /**
+     * Appends the <a href="#hello-world-bytes">hello-world-bytes</a> to specified appendable.
+     *
+     * @param <T>        appendable type parameter
+     * @param appendable the appendable to which bytes are appended.
+     * @return given {@code appendable}.
+     * @throws NullPointerException if {@code appendable} is {@code null}.
+     * @throws IOException          if an I/O error occurs.
+     * @implSpec The default implementation invokes {@link #set(byte[]) set(array)} method with an
+     * array of {@value #BYTES} bytes, and appends each byte (as a {@code char}) in the array to
+     * {@code appendable}.
+     * @see #set(byte[])
+     * @see Appendable#append(char)
+     */
+    default <T extends Appendable> T append(final T appendable) throws IOException {
+        if (appendable == null) {
+            throw new NullPointerException("appendable is null");
+        }
+        final var array = new byte[BYTES];
+        set(array);
+        // TODO: append each byte (as char) in array to appendable
+        return appendable;
+    }
+
+    // ------------------------------------------------------------------------------------- java.io
+
+    /**
      * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified output stream.
      *
      * @param <T>    stream type parameter
@@ -155,7 +183,7 @@ public interface HelloWorld {
      * @see #set(byte[])
      * @see OutputStream#write(byte[])
      */
-    default <T extends OutputStream> T write(T stream) throws IOException {
+    default <T extends OutputStream> T write(final T stream) throws IOException {
         if (stream == null) {
             throw new NullPointerException("stream is null");
         }
@@ -243,6 +271,28 @@ public interface HelloWorld {
     }
 
     /**
+     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified writer.
+     *
+     * @param <T>    writer type parameter
+     * @param writer the writer to which bytes are appended.
+     * @return given {@code writer}.
+     * @throws NullPointerException if {@code writer} is {@code null}.
+     * @throws IOException          if an I/O error occurs.
+     * @implSpec The default implementation invokes {@link #append(Appendable) append(appendable)}
+     * method with {@code writer}, and returns the writer.
+     * @see #append(Appendable)
+     */
+    default <T extends Writer> T write(final T writer) throws IOException {
+        if (writer == null) {
+            throw new NullPointerException("writer is null");
+        }
+        // TODO: invoke #append(appendable) method with <writer>
+        return writer;
+    }
+
+    // ------------------------------------------------------------------------------------ java.net
+
+    /**
      * Sends the <a href="#hello-world-bytes">hello-world-bytes</a> through specified socket.
      *
      * @param <T>    socket type parameter
@@ -261,50 +311,6 @@ public interface HelloWorld {
         }
         // TODO: Invoke write(socket.getOutputStream())
         return socket;
-    }
-
-    /**
-     * Appends the <a href="#hello-world-bytes">hello-world-bytes</a> to specified appendable.
-     *
-     * @param <T>        appendable type parameter
-     * @param appendable the appendable to which bytes are appended.
-     * @return given {@code appendable}.
-     * @throws NullPointerException if {@code appendable} is {@code null}.
-     * @throws IOException          if an I/O error occurs.
-     * @implSpec The default implementation invokes {@link #set(byte[]) set(array)} method with an
-     * array of {@value #BYTES} bytes, and appends each byte (as a {@code char}) in the array to
-     * {@code appendable}.
-     * @see #set(byte[])
-     * @see Appendable#append(char)
-     */
-    default <T extends Appendable> T append(final T appendable) throws IOException {
-        if (appendable == null) {
-            throw new NullPointerException("appendable is null");
-        }
-        final var array = new byte[BYTES];
-        set(array);
-        // TODO: append each byte (as char) in array to appendable
-        return appendable;
-    }
-
-    /**
-     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified writer.
-     *
-     * @param <T>    writer type parameter
-     * @param writer the writer to which bytes are appended.
-     * @return given {@code writer}.
-     * @throws NullPointerException if {@code writer} is {@code null}.
-     * @throws IOException          if an I/O error occurs.
-     * @implSpec The default implementation invokes {@link #append(Appendable) append(appendable)}
-     * method with {@code writer}, and returns the writer.
-     * @see #append(Appendable)
-     */
-    default <T extends Writer> T write(final T writer) throws IOException {
-        if (writer == null) {
-            throw new NullPointerException("writer is null");
-        }
-        // TODO: invoke #append(appendable) method with <writer>
-        return writer;
     }
 
     /**
