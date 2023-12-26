@@ -70,10 +70,7 @@ class HelloWorld_03_Append_Appendable_Test extends _HelloWorldTest {
         // ------------------------------------------------------------------------------------ when
         final var result = service.append(appendable);
         // ------------------------------------------------------------------------------------ then
-        Mockito.verify(service, Mockito.times(1)).set(arrayCaptor().capture());
-        final var array = arrayCaptor().getValue();
-        Assertions.assertNotNull(array);
-        Assertions.assertEquals(HelloWorld.BYTES, array.length);
+        // TODO: verify, set(array) method invoked with an array of [HelloWorld.BYTES] bytes
         // TODO: verify each byte in <array>, as char, appended to <appendable>
         Assertions.assertSame(appendable, result);
     }

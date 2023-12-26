@@ -165,7 +165,7 @@ public interface HelloWorld {
             throw new NullPointerException("appendable is null");
         }
         final var array = new byte[BYTES];
-        set(array);
+        // TODO: invoke set(array)
         // TODO: append each byte (as char) in array to appendable
         return appendable;
     }
@@ -192,7 +192,8 @@ public interface HelloWorld {
         if (stream == null) {
             throw new NullPointerException("stream is null");
         }
-        // TODO: invoke set(array[12])
+        final var array = new byte[BYTES];
+        set(array);
         // TODO: Write the array to the stream
         return stream;
     }
