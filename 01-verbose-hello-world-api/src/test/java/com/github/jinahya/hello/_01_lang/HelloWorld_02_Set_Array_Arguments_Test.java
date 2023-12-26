@@ -40,13 +40,11 @@ import java.util.concurrent.ThreadLocalRandom;
 @DisplayName("set(array) arguments")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-@SuppressWarnings({
-        "java:S101"
-})
+@SuppressWarnings({"java:S101"})
 class HelloWorld_02_Set_Array_Arguments_Test extends _HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#set(byte[]) set(array)} method throws a
+     * Verifies {@link HelloWorld#set(byte[]) set(array)} method throws a
      * {@link NullPointerException} when the {@code array} argument is {@code null}.
      */
     @DisplayName("[array == null] -> NullPointerException")
@@ -56,11 +54,11 @@ class HelloWorld_02_Set_Array_Arguments_Test extends _HelloWorldTest {
         final var service = service();
         final var array = (byte[]) null;
         // ------------------------------------------------------------------------------- when/then
-        // TODO: Assert service.set(array) throws a NullPointerException.
+        // TODO: assert, service.set(array) throws a NullPointerException.
     }
 
     /**
-     * Asserts {@link HelloWorld#set(byte[]) set(array)} method throws an
+     * Verifies {@link HelloWorld#set(byte[]) set(array)} method throws an
      * {@link ArrayIndexOutOfBoundsException} when {@code array.length} is less than
      * {@value HelloWorld#BYTES}.
      */
@@ -71,6 +69,6 @@ class HelloWorld_02_Set_Array_Arguments_Test extends _HelloWorldTest {
         final var service = service();
         final var array = new byte[ThreadLocalRandom.current().nextInt(HelloWorld.BYTES)];
         // ------------------------------------------------------------------------------- when/then
-        // TODO: Assert service.set(array) throws an ArrayIndexOutOfBoundsException.
+        // TODO: assert, service.set(array) throws an ArrayIndexOutOfBoundsException.
     }
 }
