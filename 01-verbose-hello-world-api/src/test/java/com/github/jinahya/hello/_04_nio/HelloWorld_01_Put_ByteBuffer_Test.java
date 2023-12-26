@@ -97,7 +97,7 @@ class HelloWorld_01_Put_ByteBuffer_Test extends _HelloWorldTest {
         // ------------------------------------------------------------------------------------ when
         final var result = service.put(buffer);
         // ------------------------------------------------------------------------------------ then
-        // TODO: verify, set(buffer.array(), buffer.arrayOffset() + buffer.position()) invoked, once
+        // TODO: verify, set(buffer.array(), buffer.arrayOffset() + <position>) invoked, once
         // TODO: assert, buffer.position() is equal to (<position> + HelloWorld.BYTES)
         Assertions.assertSame(buffer, result);
     }
