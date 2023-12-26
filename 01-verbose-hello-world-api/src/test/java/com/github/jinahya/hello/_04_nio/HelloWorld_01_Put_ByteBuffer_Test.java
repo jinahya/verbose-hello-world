@@ -97,8 +97,8 @@ class HelloWorld_01_Put_ByteBuffer_Test extends _HelloWorldTest {
         // ------------------------------------------------------------------------------------ when
         final var result = service.put(buffer);
         // ------------------------------------------------------------------------------------ then
-        // TODO: verify, set(buffer.array(), buffer.arrayOffset() + position) invoked, once
-        // TODO: assert, buffer.position() is equal to (position + HelloWorld.BYTES).
+        // TODO: verify, set(buffer.array(), buffer.arrayOffset() + buffer.position()) invoked, once
+        // TODO: assert, buffer.position() is equal to (<position> + HelloWorld.BYTES).
         Assertions.assertSame(buffer, result);
     }
 
@@ -144,7 +144,7 @@ class HelloWorld_01_Put_ByteBuffer_Test extends _HelloWorldTest {
         final var array = arrayCaptor().getValue();
         Assertions.assertNotNull(array);
         Assertions.assertEquals(HelloWorld.BYTES, array.length);
-        // TODO: Verify, once, buffer.put(array) invoked
+        // TODO: verify, buffer.put(<array>) invoked, once
         Assertions.assertSame(result, buffer);
     }
 }
