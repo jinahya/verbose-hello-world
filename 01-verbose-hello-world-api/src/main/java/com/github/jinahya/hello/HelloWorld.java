@@ -142,6 +142,7 @@ public interface HelloWorld {
         // TODO: Throw a NullPointerException when array is null
         // TODO: Throw a ArrayIndexOutOfBoundsException when array.length is less than BYTES
         // TODO: Invoke set(array, 0);
+        // TODO: return array
         return null;
     }
 
