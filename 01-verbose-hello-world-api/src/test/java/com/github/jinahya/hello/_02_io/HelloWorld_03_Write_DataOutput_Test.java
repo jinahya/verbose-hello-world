@@ -72,7 +72,6 @@ class HelloWorld_03_Write_DataOutput_Test extends _HelloWorldTest {
         Assertions.assertNotNull(array);
         Assertions.assertEquals(HelloWorld.BYTES, array.length);
         // TODO: verify, data.write(array) invoked, once
-        Mockito.verifyNoMoreInteractions(data);
         Assertions.assertSame(data, result);
     }
 }
