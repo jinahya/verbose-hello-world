@@ -139,9 +139,9 @@ public interface HelloWorld {
      * @see #set(byte[], int)
      */
     default byte[] set(final byte[] array) {
-        // TODO: Throw a NullPointerException when array is null
-        // TODO: Throw a ArrayIndexOutOfBoundsException when array.length is less than BYTES
-        // TODO: Invoke set(array, 0);
+        // TODO: throw a NullPointerException when array is null
+        // TODO: throw a ArrayIndexOutOfBoundsException when array.length is less than BYTES
+        // TODO: invoke set(array, 0);
         // TODO: return array
         return null;
     }
@@ -194,7 +194,7 @@ public interface HelloWorld {
         }
         final var array = new byte[BYTES];
         set(array);
-        // TODO: Write the array to the stream
+        // TODO: write the array to the stream
         return stream;
     }
 
