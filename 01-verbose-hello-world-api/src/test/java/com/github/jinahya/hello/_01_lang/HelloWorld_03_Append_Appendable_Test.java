@@ -74,7 +74,7 @@ class HelloWorld_03_Append_Appendable_Test extends _HelloWorldTest {
         final var array = arrayCaptor().getValue();
         Assertions.assertNotNull(array);
         Assertions.assertEquals(HelloWorld.BYTES, array.length);
-        // TODO: verify each byte in <array>, as char, appended to <appendable>
+        // TODO: verify each byte in <array> has been appended to <appendable>
         Assertions.assertSame(appendable, result);
     }
 }

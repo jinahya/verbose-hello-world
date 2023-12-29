@@ -272,13 +272,13 @@ public abstract class _HelloWorldTest {
      * {@code buffer} as its position increased by {@value HelloWorld#BYTES}.
      */
     protected final void putBuffer_willReturnTheBuffer_asItsPositionIncreasedBy12() {
-        BDDMockito.willAnswer(i -> {
+        BDDMockito.doAnswer(i -> {
                     final var buffer = i.getArgument(0, ByteBuffer.class);
                     buffer.position(buffer.position() + HelloWorld.BYTES);
                     return buffer;
                 })
-                .given(service)
-                .put(ArgumentMatchers.argThat(b -> b != null && b.remaining() > HelloWorld.BYTES));
+                .when(service)
+                .put(ArgumentMatchers.argThat(b -> b != null && b.remaining() >= HelloWorld.BYTES));
     }
 
     /**

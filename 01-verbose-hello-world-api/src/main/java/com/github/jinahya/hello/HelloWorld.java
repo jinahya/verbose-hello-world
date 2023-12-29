@@ -165,8 +165,8 @@ public interface HelloWorld {
             throw new NullPointerException("appendable is null");
         }
         final var array = new byte[BYTES];
-        // TODO: invoke set(array)
-        // TODO: append each byte (as char) in array to appendable
+        set(array);
+        // TODO: append each byte in array to appendable
         return appendable;
     }
 

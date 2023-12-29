@@ -184,28 +184,31 @@ public final class _HelloWorldTestUtils {
      * a future writes some bytes from {@code src} starting at specified position while adding the
      * number of written bytes to specified adder.
      *
-     * @param channel      the channel whose
-     *                     {@link AsynchronousFileChannel#write(ByteBuffer, long) write(src,
-     *                     position)} method is stubbed.
-     * @param writtenSoFar the adder to which the number of written bytes is added.
+     * @param channel the channel whose
+     *                {@link AsynchronousFileChannel#write(ByteBuffer, long) write(src, position)}
+     *                method is stubbed.
+     * @param adder   the adder to which the number of written bytes is added.
      */
-    public static void _stub_ToWriteSome(final AsynchronousFileChannel channel,
-                                         final LongAdder writtenSoFar) {
-        if (!Mockito.mockingDetails(
-                Objects.requireNonNull(channel, "channel is null")).isMock()) {
-            throw new IllegalArgumentException("not a mock: " + channel);
-        }
-        Objects.requireNonNull(writtenSoFar, "adder is null");
+    public static void writeBuffer_willWriteSome(final AsynchronousFileChannel channel,
+                                                 final LongAdder adder) {
+        requireMock(channel);
+        final var previousFuture = new Future[1];
         BDDMockito.willAnswer(w -> { // invocation of channel.write
-            var future = Mockito.mock(Future.class);
+            if (previousFuture[0] != null) {
+                Mockito.verify(previousFuture[0], Mockito.times(1)).get();
+            }
+            final var future = Mockito.mock(Future.class);
             Mockito.when(future.get()).thenAnswer(g -> { // invocation of future.get
-                var src = w.getArgument(0, ByteBuffer.class);
-                var position = w.getArgument(1, Long.class);
-                var written = ThreadLocalRandom.current().nextInt(1, src.remaining() + 1);
+                final var src = w.getArgument(0, ByteBuffer.class);
+                final var position = w.getArgument(1, Long.class);
+                final var written = ThreadLocalRandom.current().nextInt(1, src.remaining() + 1);
                 src.position(src.position() + written);
-                writtenSoFar.add(written);
+                if (adder != null) {
+                    adder.add(written);
+                }
                 return written;
             });
+            previousFuture[0] = future;
             return future;
         }).given(channel).write(
                 ArgumentMatchers.argThat(b -> b != null && b.hasRemaining()), // <src>

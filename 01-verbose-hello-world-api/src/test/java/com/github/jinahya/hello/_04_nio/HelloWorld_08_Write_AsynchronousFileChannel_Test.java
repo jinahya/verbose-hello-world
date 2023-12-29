@@ -22,6 +22,7 @@ package com.github.jinahya.hello._04_nio;
 
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello._HelloWorldTest;
+import com.github.jinahya.hello._HelloWorldTestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,8 +46,7 @@ import java.util.concurrent.atomic.LongAdder;
  */
 @DisplayName("write(channel, position)")
 @Slf4j
-class HelloWorld_08_Write_AsynchronousFileChannel_Test
-        extends _HelloWorldTest {
+class HelloWorld_08_Write_AsynchronousFileChannel_Test extends _HelloWorldTest {
 
     @BeforeEach
     void _beforeEach() {
@@ -67,27 +67,30 @@ class HelloWorld_08_Write_AsynchronousFileChannel_Test
     @Test
     void _PutBufferWriteBufferToChannel_() throws InterruptedException, ExecutionException {
         // ----------------------------------------------------------------------------------- given
-        var service = service();
-        var channel = Mockito.mock(AsynchronousFileChannel.class);
-        var writtenSoFar = new LongAdder();
-        _stub_ToWriteSome(channel, writtenSoFar);
-        var position = ThreadLocalRandom.current().nextLong(Long.MAX_VALUE - HelloWorld.BYTES);
+        final var service = service();
+        final var channel = Mockito.mock(AsynchronousFileChannel.class);
+        final var writtenSoFar = new LongAdder();
+        _HelloWorldTestUtils.writeBuffer_willWriteSome(channel, writtenSoFar);
+        final var position = ThreadLocalRandom.current()
+                .nextLong(Long.MAX_VALUE - HelloWorld.BYTES);
         // ------------------------------------------------------------------------------------ when
-        var result = service.write(channel, position);
+        final var result = service.write(channel, position);
         // ------------------------------------------------------------------------------------ then
-        Mockito.verify(service, Mockito.times(1)).put(bufferCaptor().capture()); // ------------ <1>
-        var buffer = bufferCaptor().getValue();
+        Mockito.verify(service, Mockito.times(1)).put(bufferCaptor().capture());
+        final var buffer = bufferCaptor().getValue();
+        Assertions.assertNotNull(buffer);
+        Assertions.assertEquals(HelloWorld.BYTES, buffer.capacity());
         Mockito.verify(channel, Mockito.atLeastOnce())
-                .write(ArgumentMatchers.same(buffer), positionCaptor().capture()); // ---------- <2>
-        var positionArguments = positionCaptor().getAllValues(); // -----------------------------<3>
-        Assertions.assertEquals(position, positionArguments.get(0)); // ------------------------ <4>
-        var lastPosition = positionArguments.stream().reduce((p1, p2) -> { // ------------------ <5>
+                .write(ArgumentMatchers.same(buffer), positionCaptor().capture()); // ---------- <1>
+        final var positionArguments = positionCaptor().getAllValues(); // -----------------------<2>
+        Assertions.assertEquals(position, positionArguments.get(0)); // ------------------------ <3>
+        var lastPosition = positionArguments.stream().reduce((p1, p2) -> { // ------------------ <4>
             Assertions.assertTrue(p2 >= p1);
             return p2;
         });
-        Assertions.assertTrue(lastPosition.isPresent());
-        Assertions.assertTrue(lastPosition.get() < position + HelloWorld.BYTES);
-        Assertions.assertEquals(HelloWorld.BYTES, writtenSoFar.intValue()); // ----------------- <6>
+        Assertions.assertTrue(lastPosition.isPresent()); // ------------------------------------ <5>
+        Assertions.assertTrue(lastPosition.get() < (position + HelloWorld.BYTES)); // ---------- <6>
+        Assertions.assertEquals(HelloWorld.BYTES, writtenSoFar.intValue()); // ----------------- <7>
         Assertions.assertSame(channel, result);
     }
 }
