@@ -218,10 +218,10 @@ public interface HelloWorld {
         if (file == null) {
             throw new NullPointerException("file is null");
         }
-        // TODO: Create a new FileOutputStream with file, in appending mode.
-        // TODO: Invoke write(stream) method with it.
-        // TODO: Flush the stream.
-        // TODO: Close the stream.
+        // TODO: create a new FileOutputStream with <file> and true
+        // TODO: invoke write(stream) method with it.
+        // TODO: flush the stream.
+        // TODO: close the stream.
         return file;
     }
 
