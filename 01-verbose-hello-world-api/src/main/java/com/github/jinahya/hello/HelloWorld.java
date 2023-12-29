@@ -246,7 +246,7 @@ public interface HelloWorld {
         }
         final var array = new byte[BYTES];
         set(array);
-        // TODO: Write array to data!
+        // TODO: write <array> to data
         return data;
     }
 
@@ -272,7 +272,7 @@ public interface HelloWorld {
         }
         final var array = new byte[BYTES];
         set(array);
-        // TODO: Write array to file!
+        // TODO: write <array> to file
         return file;
     }
 
@@ -292,7 +292,7 @@ public interface HelloWorld {
         if (writer == null) {
             throw new NullPointerException("writer is null");
         }
-        // TODO: invoke #append(appendable) method with <writer>
+        // TODO: invoke append(<writer>)
         return writer;
     }
 
@@ -315,7 +315,7 @@ public interface HelloWorld {
         if (socket == null) {
             throw new NullPointerException("socket is null");
         }
-        // TODO: implement
+        // TODO: invoke write(socket.getOutputStream())
         return socket;
     }
 
@@ -374,13 +374,12 @@ public interface HelloWorld {
             throw new BufferOverflowException();
         }
         if (buffer.hasArray()) {
-            // TODO: Invoke set(buffer.array(), (buffer.arrayOffset() + buffer.position())
-            // TODO: Increment buffer.position by 12
+            // TODO: invoke set(buffer.array(), (buffer.arrayOffset() + buffer.position())
+            // TODO: increment buffer.position by BYTES
         } else {
             final var array = new byte[BYTES];
             set(array);
-            // TODO: Invoke set(array[12])
-            // TODO: Put the array to the buffer
+            // TODO: put <array> to the <buffer>
         }
         return buffer;
     }
@@ -408,7 +407,7 @@ public interface HelloWorld {
         final var buffer = ByteBuffer.allocate(BYTES);
         put(buffer);
         buffer.flip();
-        // TODO: Invoke channel.write(buffer), continuously, while buffer.hasRemaining()
+        // TODO: invoke channel.write(buffer)+ while buffer.hasRemaining()
         return channel;
     }
 
