@@ -49,6 +49,7 @@ import java.util.Objects;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.LongAdder;
+import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 /**
@@ -306,23 +307,28 @@ public abstract class _HelloWorldTest {
         ;
     }
 
-    // --------------------------------------------------------------------------------- set(byte[])
+    // ---------------------------------------------------------------------------------- set(array)
 
     /**
-     * Stubs {@code serviceInstance}'s {@link HelloWorld#set(byte[]) set(array)} method to just
-     * return the {@code array}.
+     * Stubs {@code service}'s {@link HelloWorld#set(byte[]) set(array)} method to return the result
+     * of specified function applied with the {@code array}.
+     *
+     * @param operator the function to apply with the {@code array}.
      */
     protected final void setArray_willReturnArray(final UnaryOperator<? super byte[]> operator) {
         Objects.requireNonNull(operator, "operator is null");
+        log.debug("stubbing set(array); operator: {}", operator);
         Mockito.doAnswer(i -> operator.apply(i.getArgument(0, byte[].class)))
                 .when(service)
-                .set(ArgumentMatchers.any())
-        ;
+                .set(ArgumentMatchers.any());
     }
 
     /**
-     * Stubs {@code serviceInstance}'s {@link HelloWorld#set(byte[]) set(array)} method to just
-     * return the {@code array}.
+     * Stubs {@code service}'s {@link HelloWorld#set(byte[]) set(array)} method to just return the
+     * {@code array}.
+     *
+     * @implSpec This method invokes {@link #setArray_willReturnArray(UnaryOperator)} method with
+     * {@link Function#identity()}.
      */
     protected final void setArray_willReturnArray() {
         setArray_willReturnArray(UnaryOperator.identity());

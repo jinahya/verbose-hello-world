@@ -114,7 +114,7 @@ class HelloWorldImplTest {
             );
             array = new byte[length];
         }
-        final var index = ThreadLocalRandom.current().nextInt(array.length - HelloWorld.BYTES);
+        final var index = ThreadLocalRandom.current().nextInt(array.length - HelloWorld.BYTES + 1);
         // ------------------------------------------------------------------------------------ when
         final var result = instance.set(array, index);
         // ------------------------------------------------------------------------------------ then

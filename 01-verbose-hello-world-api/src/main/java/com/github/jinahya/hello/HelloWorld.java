@@ -38,6 +38,7 @@ import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -45,9 +46,11 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
+import java.util.concurrent.Flow;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.atomic.LongAccumulator;
+import java.util.function.Function;
 
 /**
  * An interface for generating <a href="#hello-world-bytes">hello-world-bytes</a> to various
@@ -355,10 +358,11 @@ public interface HelloWorld {
      * @implSpec The default implementation, if {@code buffer}
      * {@link ByteBuffer#hasArray() has a backing-array}, invokes
      * {@link #set(byte[], int) #set(array, index)} method with the buffer's
-     * {@link ByteBuffer#array() backing-array} and ({@code buffer.arrayOffset} +
-     * {@code buffer.position}), and then manually increments the buffer"s position by
-     * {@value #BYTES}. Otherwise, this method invokes {@link #set(byte[]) #set(array)} method with
-     * an array of {@value #BYTES} bytes, and puts the array on the buffer by invoking
+     * {@link ByteBuffer#array() backing-array} and
+     * ({@link ByteBuffer#arrayOffset() buffer.arrayOffset} +
+     * {@link ByteBuffer#position() buffer.position}), and then manually increments the buffer"s
+     * position by {@value #BYTES}. Otherwise, this method invokes {@link #set(byte[]) #set(array)}
+     * method with an array of {@value #BYTES} bytes, and puts the array on the buffer by invoking
      * {@link ByteBuffer#put(byte[])} method on {@code buffer} with the array.
      * @see ByteBuffer#hasArray()
      * @see ByteBuffer#array()
@@ -423,9 +427,8 @@ public interface HelloWorld {
      * @implSpec The default implementation opens a {@link FileChannel} from {@code path} with
      * {@link StandardOpenOption#CREATE}, {@link StandardOpenOption#WRITE}, and
      * {@link StandardOpenOption#APPEND}, invokes {@link #write(WritableByteChannel) write(channel)}
-     * method with it,
-     * {@link FileChannel#force(boolean) forces}/{@link WritableByteChannel#close() closes} the
-     * channel, and returns the {@code path}.
+     * method with it, {@link FileChannel#force(boolean) forces} the channel with {@code true},
+     * {@link WritableByteChannel#close() closes} the channel, and returns the {@code path}.
      * @see FileChannel#open(Path, OpenOption...)
      * @see StandardOpenOption#CREATE
      * @see StandardOpenOption#WRITE
@@ -435,8 +438,10 @@ public interface HelloWorld {
      */
     default <T extends Path> T append(final T path) throws IOException {
         Objects.requireNonNull(path, "path is null");
-        // TODO: open a file channel with path, StandardOpenOption.WRITE, StandardOpenOption.CREATE,
-        //       and StandardOpenOption.APPEND
+        // TODO: open a file channel with path,
+        //       StandardOpenOption.WRITE,
+        //       StandardOpenOption.CREATE, and
+        //       StandardOpenOption.APPEND
         // TODO: invoke write(channel) method with it
         // TODO: force the channel with true
         // TODO: close the channel
@@ -726,5 +731,145 @@ public interface HelloWorld {
                     assert !c.isOpen();
                     return path;
                 });
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    default void subscribeForBytes(final Flow.Subscriber<? super Byte> subscriber) {
+        Objects.requireNonNull(subscriber, "subscriber is null");
+        subscriber.onSubscribe(new Flow.Subscription() { // @formatter:off
+            @Override public void request(final long n) {
+                if (n <= 0L) {
+                    cancel();
+                    subscriber.onError(new IllegalArgumentException("non-positive n: " + n));
+                }
+                if (canceled) { return; }
+                this.n += Math.min(n, Long.MAX_VALUE - this.n);
+                assert this.n > 0L;
+                while (!canceled && index < array.length && this.n-- > 0) {
+                    subscriber.onNext(array[index++]);
+                }
+                if (index == array.length && !canceled) {
+                    cancel();
+                    subscriber.onComplete();
+                }
+            }
+            @Override public void cancel() { canceled = true; }
+            private final byte[] array = set(new byte[BYTES]);
+            private int index = 0;
+            private long n = 0L;
+            private boolean canceled = false;
+        }); // @formatter:on
+    }
+
+    default void subscribeForArrays(final Flow.Subscriber<byte[]> subscriber) {
+        Objects.requireNonNull(subscriber, "subscriber is null");
+        subscriber.onSubscribe(new Flow.Subscription() { // @formatter:off
+            @Override
+            public void request(final long n) {
+                if (n <= 0L) {
+                    cancel();
+                    subscriber.onError(new IllegalArgumentException("non-positive n: " + n));
+                }
+                if (canceled) { return; }
+                for (int i = 0; i < n; i++) {
+                    subscribeForBytes(new Flow.Subscriber<>() {
+                        @Override
+                        public void onSubscribe(final Flow.Subscription subscription) {
+                            subscription.request(array.length);
+                        }
+                        @Override
+                        public void onNext(final Byte item) {
+                            array[index++] = item;
+                        }
+                        @Override
+                        public void onError(final Throwable throwable) {
+                            cancel();
+                            subscriber.onError(throwable);
+                        }
+                        @Override
+                        public void onComplete() {
+                            assert index == BYTES;
+                            if (canceled) {
+                                return;
+                            }
+                            subscriber.onNext(array);
+                        }
+                        private final byte[] array = new byte[BYTES];
+                        private int index = 0;
+                    });
+                }
+            }
+            @Override
+            public void cancel() {
+                canceled = true;
+            }
+            private boolean canceled = false;
+        }); // @formatter:on
+    }
+
+    default void subscribeForStrings(final Flow.Subscriber<String> subscriber) {
+        Objects.requireNonNull(subscriber, "subscriber is null");
+        subscriber.onSubscribe(new Flow.Subscription() { // @formatter:off
+            @Override
+            public void request(final long n) {
+                if (n <= 0L) {
+                    cancel();
+                    subscriber.onError(new IllegalArgumentException("non-positive n: " + n));
+                }
+                if (canceled) { return; }
+                subscribeForArrays(new Flow.Subscriber<>() {
+                    @Override
+                    public void onSubscribe(final Flow.Subscription subscription) {
+                        subscription.request(n);
+                    }
+                    @Override
+                    public void onNext(final byte[] item) {
+                        if (!canceled) {
+                            return;
+                        }
+                        subscriber.onNext(new String(item, StandardCharsets.US_ASCII));
+                    }
+                    @Override
+                    public void onError(final Throwable throwable) {
+                        cancel();
+                        subscriber.onError(throwable);
+                    }
+                    @Override
+                    public void onComplete() {
+                        cancel();
+                        subscriber.onComplete();
+                    }
+                });
+            }
+            @Override
+            public void cancel() {
+                canceled = true;
+            }
+            private volatile boolean canceled = false;
+        }); // @formatter:on
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    default <T> Future<T> executeAsync(final Function<? super HelloWorld, ? extends T> function,
+                                       final Executor executor) {
+        Objects.requireNonNull(function, "function is null");
+        Objects.requireNonNull(executor, "executor is null");
+        return HelloWorldUtils.executeAsync(
+                () -> this,
+                function,
+                executor
+        );
+    }
+
+    default <T> CompletableFuture<T> completeAsync(
+            final Function<? super HelloWorld, ? extends T> function,
+            final Executor executor) {
+        Objects.requireNonNull(function, "function is null");
+        Objects.requireNonNull(executor, "executor is null");
+        return HelloWorldUtils.completeAsync(
+                () -> this,
+                function,
+                executor
+        );
     }
 }
