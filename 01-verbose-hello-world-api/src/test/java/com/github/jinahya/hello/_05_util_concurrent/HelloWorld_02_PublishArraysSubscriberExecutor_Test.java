@@ -1,8 +1,27 @@
 package com.github.jinahya.hello._05_util_concurrent;
 
+/*-
+ * #%L
+ * verbose-hello-world-api
+ * %%
+ * Copyright (C) 2018 - 2024 Jinahya, Inc.
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello._HelloWorldTest;
-import com.sun.tools.jconsole.JConsoleContext;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -117,10 +136,10 @@ class HelloWorld_02_PublishArraysSubscriberExecutor_Test extends _HelloWorldTest
         final var service = service();
         @SuppressWarnings({"unchecked"})
         final var subscriber = (Subscriber<byte[]>) Mockito.mock(Subscriber.class);
-        final var subscription= new AtomicReference<Subscription>();
+        final var subscription = new AtomicReference<Subscription>();
         final var n = ThreadLocalRandom.current().nextInt(8) + 1;
         BDDMockito.willAnswer(i -> {                                                          // <1>
-            subscription.set(i.getArgument(0, Subscription.class));
+            subscription.set(Mockito.spy(i.getArgument(0, Subscription.class)));
             log.debug("onSubscribe({})", subscription.get());
             try {
                 subscription.get().request(n);
@@ -142,7 +161,7 @@ class HelloWorld_02_PublishArraysSubscriberExecutor_Test extends _HelloWorldTest
             return null;
         }).given(subscriber).onNext(ArgumentMatchers.notNull());
         final var onErrorLatch = new CountDownLatch(1);
-        BDDMockito.willAnswer(i -> {                                                          // <4>
+        BDDMockito.willAnswer(i -> {                                                          // <3>
             final var t = i.getArgument(0, Throwable.class);
             log.debug("onError({})", t, t);
             assert onErrorLatch.getCount() > 0;
@@ -150,7 +169,7 @@ class HelloWorld_02_PublishArraysSubscriberExecutor_Test extends _HelloWorldTest
             return null;
         }).given(subscriber).onError(ArgumentMatchers.notNull());
         final var onCompleteLatch = new CountDownLatch(1);
-        BDDMockito.willAnswer(i -> {                                                          // <3>
+        BDDMockito.willAnswer(i -> {                                                          // <4>
             log.debug("onComplete()");
             assert onCompleteLatch.getCount() > 0;
             onCompleteLatch.countDown();
@@ -163,8 +182,7 @@ class HelloWorld_02_PublishArraysSubscriberExecutor_Test extends _HelloWorldTest
         service.publishArrays(subscriber, executor);
         // ------------------------------------------------------------------------------------ then
         Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(ArgumentMatchers.notNull());
-        Assertions.assertTrue(onNextLatch.await(60L, TimeUnit.SECONDS));
+        Assertions.assertTrue(onNextLatch.await(4L, TimeUnit.SECONDS));
         Mockito.verify(subscriber, Mockito.times(n)).onNext(ArgumentMatchers.notNull());
-//        Mockito.verify(subscriber, Mockito.times(1)).onComplete();
     }
 }

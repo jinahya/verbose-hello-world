@@ -746,13 +746,9 @@ public interface HelloWorld {
      * @see <a href="https://github.com/reactive-streams/reactive-streams-jvm/">Reactive Streams</a>
      */
     default void publishBytes(final Flow.Subscriber<? super Byte> subscriber,
-                              ExecutorService executor) {
+                              final ExecutorService executor) {
         Objects.requireNonNull(subscriber, "subscriber is null");
-        if (executor == null) {
-            executor = Executors.newSingleThreadExecutor(
-                    Thread.ofVirtual().name("bytes-publisher", 0L).factory()
-            );
-        }
+        Objects.requireNonNull(executor, "executor is null");
         final var buffer = put(ByteBuffer.allocate(BYTES)).limit(0);
         final var future = executor.<Void>submit(() -> {
             while (!Thread.currentThread().isInterrupted()) {
@@ -791,15 +787,6 @@ public interface HelloWorld {
             }
             @Override public void cancel() {
                 final var canceled = future.cancel(true);
-                assert canceled;
-                try {
-                    future.get();
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    throw new RuntimeException(e);
-                } catch (ExecutionException e) {
-                    throw new RuntimeException(e);
-                }
             } // @formatter:on
         });
     }
@@ -813,13 +800,9 @@ public interface HelloWorld {
      * @see <a href="https://github.com/reactive-streams/reactive-streams-jvm/">Reactive Streams</a>
      */
     default void publishArrays(final Flow.Subscriber<? super byte[]> subscriber,
-                               ExecutorService executor) {
+                               final ExecutorService executor) {
         Objects.requireNonNull(subscriber, "subscriber is null");
-        if (executor == null) {
-            executor = Executors.newSingleThreadExecutor(
-                    Thread.ofVirtual().name("array-publisher", 0L).factory()
-            );
-        }
+        Objects.requireNonNull(executor, "executor is null");
         final var accumulated = new AtomicLong();
         final var future = executor.submit(() -> {
             final var executorForBytes = Executors.newSingleThreadExecutor(
@@ -849,7 +832,6 @@ public interface HelloWorld {
                                 @Override public void onError(final Throwable throwable) {
                                 }
                                 @Override public void onComplete() {
-                                    assert index == array.length;
                                     subscriber.onNext(array);
                                 }
                                 private final byte[] array = new byte[BYTES];
