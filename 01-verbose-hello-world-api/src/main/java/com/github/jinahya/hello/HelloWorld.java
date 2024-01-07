@@ -38,7 +38,6 @@ import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -46,9 +45,12 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Flow;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.LongAccumulator;
 import java.util.function.Function;
 
@@ -734,119 +736,182 @@ public interface HelloWorld {
     }
 
     // ---------------------------------------------------------------------------------------------
-    default void subscribeForBytes(final Flow.Subscriber<? super Byte> subscriber) {
+
+    /**
+     * Publishes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified subscriber as
+     * it requests.
+     *
+     * @param subscriber the subscriber to be subscribed.
+     * @param executor   and executor to publish bytes asynchronously.
+     * @see <a href="https://github.com/reactive-streams/reactive-streams-jvm/">Reactive Streams</a>
+     */
+    default void publishBytes(final Flow.Subscriber<? super Byte> subscriber,
+                              ExecutorService executor) {
         Objects.requireNonNull(subscriber, "subscriber is null");
+        if (executor == null) {
+            executor = Executors.newSingleThreadExecutor(
+                    Thread.ofVirtual().name("bytes-publisher", 0L).factory()
+            );
+        }
+        final var buffer = put(ByteBuffer.allocate(BYTES)).limit(0);
+        final var future = executor.<Void>submit(() -> {
+            while (!Thread.currentThread().isInterrupted()) {
+                synchronized (buffer) {
+                    while (!buffer.hasRemaining()) {
+                        try {
+                            buffer.wait();
+                        } catch (final InterruptedException ie) {
+                            Thread.currentThread().interrupt();
+                        }
+                    }
+                    while (!Thread.currentThread().isInterrupted() && buffer.hasRemaining()) {
+                        subscriber.onNext(buffer.get());
+                    }
+                    if (buffer.position() == buffer.capacity()) {
+                        Thread.currentThread().interrupt();
+                        subscriber.onComplete();
+                    }
+                }
+            }
+            return null;
+        });
         subscriber.onSubscribe(new Flow.Subscription() { // @formatter:off
             @Override public void request(final long n) {
                 if (n <= 0L) {
                     cancel();
                     subscriber.onError(new IllegalArgumentException("non-positive n: " + n));
                 }
-                if (canceled) { return; }
-                this.n += Math.min(n, Long.MAX_VALUE - this.n);
-                assert this.n > 0L;
-                while (!canceled && index < array.length && this.n-- > 0) {
-                    subscriber.onNext(array[index++]);
+                if (future.isCancelled() || future.isDone()) {
+                    return;
                 }
-                if (index == array.length && !canceled) {
-                    cancel();
-                    subscriber.onComplete();
+                synchronized (buffer) {
+                    buffer.limit((int) Math.min(buffer.capacity(), buffer.limit() + n));
+                    buffer.notifyAll();
                 }
             }
-            @Override public void cancel() { canceled = true; }
-            private final byte[] array = set(new byte[BYTES]);
-            private int index = 0;
-            private long n = 0L;
-            private boolean canceled = false;
-        }); // @formatter:on
+            @Override public void cancel() {
+                final var canceled = future.cancel(true);
+                assert canceled;
+                try {
+                    future.get();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new RuntimeException(e);
+                } catch (ExecutionException e) {
+                    throw new RuntimeException(e);
+                }
+            } // @formatter:on
+        });
     }
 
-    default void subscribeForArrays(final Flow.Subscriber<byte[]> subscriber) {
+    /**
+     * Publishes arrays of the <a href="#hello-world-bytes">hello-world-bytes</a> to specified
+     * subscriber as it requests.
+     *
+     * @param subscriber the subscriber to be subscribed.
+     * @param executor   an executor for publishing arrays asynchronously; may be {@code null}.
+     * @see <a href="https://github.com/reactive-streams/reactive-streams-jvm/">Reactive Streams</a>
+     */
+    default void publishArrays(final Flow.Subscriber<? super byte[]> subscriber,
+                               ExecutorService executor) {
         Objects.requireNonNull(subscriber, "subscriber is null");
-        subscriber.onSubscribe(new Flow.Subscription() { // @formatter:off
-            @Override
-            public void request(final long n) {
-                if (n <= 0L) {
-                    cancel();
-                    subscriber.onError(new IllegalArgumentException("non-positive n: " + n));
-                }
-                if (canceled) { return; }
-                for (int i = 0; i < n; i++) {
-                    subscribeForBytes(new Flow.Subscriber<>() {
-                        @Override
-                        public void onSubscribe(final Flow.Subscription subscription) {
-                            subscription.request(array.length);
-                        }
-                        @Override
-                        public void onNext(final Byte item) {
-                            array[index++] = item;
-                        }
-                        @Override
-                        public void onError(final Throwable throwable) {
-                            cancel();
-                            subscriber.onError(throwable);
-                        }
-                        @Override
-                        public void onComplete() {
-                            assert index == BYTES;
-                            if (canceled) {
-                                return;
-                            }
-                            subscriber.onNext(array);
-                        }
-                        private final byte[] array = new byte[BYTES];
-                        private int index = 0;
-                    });
-                }
-            }
-            @Override
-            public void cancel() {
-                canceled = true;
-            }
-            private boolean canceled = false;
-        }); // @formatter:on
-    }
-
-    default void subscribeForStrings(final Flow.Subscriber<String> subscriber) {
-        Objects.requireNonNull(subscriber, "subscriber is null");
-        subscriber.onSubscribe(new Flow.Subscription() { // @formatter:off
-            @Override
-            public void request(final long n) {
-                if (n <= 0L) {
-                    cancel();
-                    subscriber.onError(new IllegalArgumentException("non-positive n: " + n));
-                }
-                if (canceled) { return; }
-                subscribeForArrays(new Flow.Subscriber<>() {
-                    @Override
-                    public void onSubscribe(final Flow.Subscription subscription) {
-                        subscription.request(n);
-                    }
-                    @Override
-                    public void onNext(final byte[] item) {
-                        if (!canceled) {
+        if (executor == null) {
+            executor = Executors.newSingleThreadExecutor(
+                    Thread.ofVirtual().name("array-publisher", 0L).factory()
+            );
+        }
+        final var accumulated = new AtomicLong();
+        final var future = executor.submit(() -> {
+            final var executorForBytes = Executors.newSingleThreadExecutor(
+                    Thread.ofVirtual().name("bytes-publisher").factory()
+            );
+            while (!Thread.currentThread().isInterrupted()) {
+                synchronized (accumulated) {
+                    while (accumulated.get() == 0L) {
+                        try {
+                            accumulated.wait();
+                        } catch (final InterruptedException ie) {
+                            Thread.currentThread().interrupt();
                             return;
                         }
-                        subscriber.onNext(new String(item, StandardCharsets.US_ASCII));
                     }
-                    @Override
-                    public void onError(final Throwable throwable) {
-                        cancel();
-                        subscriber.onError(throwable);
+                    accumulated.decrementAndGet();
+                }
+                publishBytes(
+                        new Flow.Subscriber<>() { // @formatter:off
+                                @Override
+                                public void onSubscribe(final Flow.Subscription subscription) {
+                                    subscription.request(array.length);
+                                }
+                                @Override public void onNext(final Byte item) {
+                                    array[index++] = item;
+                                }
+                                @Override public void onError(final Throwable throwable) {
+                                }
+                                @Override public void onComplete() {
+                                    assert index == array.length;
+                                    subscriber.onNext(array);
+                                }
+                                private final byte[] array = new byte[BYTES];
+                                private int index = 0;
+                            }, // @formatter:on
+                        executorForBytes
+                );
+            }
+        });
+        subscriber.onSubscribe(new Flow.Subscription() { // @formatter:off
+            @Override public void request(final long n) {
+                if (n <= 0L) {
+                    cancel();
+                    subscriber.onError(new IllegalArgumentException("non-positive n: " + n));
+                }
+                if (future.isCancelled() || future.isDone()) {
+                    return;
+                }
+                synchronized (accumulated) {
+                    if (accumulated.addAndGet(n) < 0L) {
+                        accumulated.set(Long.MAX_VALUE);
                     }
-                    @Override
-                    public void onComplete() {
-                        cancel();
-                        subscriber.onComplete();
+                    accumulated.notifyAll();
+                }
+            }
+            @Override public void cancel() {
+                final var canceled = future.cancel(true);
+            }
+        }); // @formatter:on
+    }
+
+    default void publishBuffers(final Flow.Subscriber<? super ByteBuffer> subscriber,
+                                final ExecutorService executor) {
+        Objects.requireNonNull(subscriber, "subscriber is null");
+        Objects.requireNonNull(executor, "executor is null");
+        final var processor = new Flow.Processor<byte[], ByteBuffer>() { // @formatter:off
+            @Override public void subscribe(final Flow.Subscriber<? super ByteBuffer> subscriber) {
+                subscriber.onSubscribe(new Flow.Subscription() {
+                    @Override public void request(final long n) {
+                        subscription.request(n);
+                    }
+                    @Override public void cancel() {
+                        subscription.cancel();
                     }
                 });
             }
-            @Override
-            public void cancel() {
-                canceled = true;
+            @Override public void onSubscribe(final Flow.Subscription subscription) {
+                this.subscription = subscription;
             }
-            private volatile boolean canceled = false;
-        }); // @formatter:on
+            @Override public void onNext(final byte[] item) {
+                subscriber.onNext(ByteBuffer.wrap(item));
+            }
+            @Override public void onError(final Throwable throwable) {
+                subscriber.onError(throwable);
+            }
+            @Override public void onComplete() {
+                subscriber.onComplete();
+            }
+            private Flow.Subscription subscription;
+        }; // @formatter:on
+        publishArrays(processor, executor);
+        processor.subscribe(subscriber);
     }
 
     // -----------------------------------------------------------------------------------------------------------------

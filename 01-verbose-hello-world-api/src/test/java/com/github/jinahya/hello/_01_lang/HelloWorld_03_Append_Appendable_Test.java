@@ -52,7 +52,6 @@ class HelloWorld_03_Append_Appendable_Test extends _HelloWorldTest {
             if (a != null) {
                 ThreadLocalRandom.current().nextBytes(a);
             }
-            return a;
         });
     }
 

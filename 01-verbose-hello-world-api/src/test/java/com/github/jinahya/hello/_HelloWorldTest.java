@@ -49,8 +49,7 @@ import java.util.Objects;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.LongAdder;
-import java.util.function.Function;
-import java.util.function.UnaryOperator;
+import java.util.function.Consumer;
 
 /**
  * An abstract class for testing methods defined in {@link HelloWorld} interface.
@@ -269,20 +268,6 @@ public abstract class _HelloWorldTest {
     }
 
     /**
-     * Stubs {@code service}'s {@link HelloWorld#put(ByteBuffer) put(buffer)} method to return given
-     * {@code buffer} as its position increased by {@value HelloWorld#BYTES}.
-     */
-    protected final void putBuffer_willReturnTheBuffer_asItsPositionIncreasedBy12() {
-        BDDMockito.doAnswer(i -> {
-                    final var buffer = i.getArgument(0, ByteBuffer.class);
-                    buffer.position(buffer.position() + HelloWorld.BYTES);
-                    return buffer;
-                })
-                .when(service)
-                .put(ArgumentMatchers.argThat(b -> b != null && b.remaining() >= HelloWorld.BYTES));
-    }
-
-    /**
      * Stubs {@code service}'s {@link HelloWorld#write(OutputStream) write(stream)} method to write
      * {@value HelloWorld#BYTES} bytes to the {@code stream}, and return the {@code stream}.
      */
@@ -297,28 +282,33 @@ public abstract class _HelloWorldTest {
     // -------------------------------------------------------------------------- set(byte[], index)
 
     /**
-     * Stubs {@code serviceInstance}'s {@link HelloWorld#set(byte[], int) set(array, index)} method
-     * to just return the {@code array} argument.
+     * Stubs {@code service}'s {@link HelloWorld#set(byte[], int) set(array, index)} method to just
+     * return the {@code array} argument.
      */
     @BeforeEach
-    void setArrayIndex_willReturnArray() {
-        Mockito.doAnswer(i -> i.getArgument(0))     // <2>
-                .when(service).set(ArgumentMatchers.any(), ArgumentMatchers.anyInt()) // <1>
+    final void setArrayIndex_willReturnArray() {
+        Mockito.doAnswer(i -> i.getArgument(0))                         // <3>
+                .when(service)                                          // <1>
+                .set(ArgumentMatchers.any(), ArgumentMatchers.anyInt()) // <2>
         ;
     }
 
-    // ---------------------------------------------------------------------------------- set(array)
+    // --------------------------------------------------------------------------------- set(byte[])
 
     /**
-     * Stubs {@code service}'s {@link HelloWorld#set(byte[]) set(array)} method to return the result
-     * of specified function applied with the {@code array}.
+     * Stubs {@code service}'s {@link HelloWorld#set(byte[]) set(array)} method to return the
+     * {@code buffer} after accepted to specified consumer.
      *
-     * @param operator the function to apply with the {@code array}.
+     * @param consumer the consumer accepts the {@code array}.
      */
-    protected final void setArray_willReturnArray(final UnaryOperator<? super byte[]> operator) {
-        Objects.requireNonNull(operator, "operator is null");
-        log.debug("stubbing set(array); operator: {}", operator);
-        Mockito.doAnswer(i -> operator.apply(i.getArgument(0, byte[].class)))
+    protected final void setArray_willReturnArray(final Consumer<? super byte[]> consumer) {
+        Objects.requireNonNull(consumer, "consumer is null");
+        log.debug("stubbing set(array); consumer: {}", consumer);
+        Mockito.doAnswer(i -> {
+                    final var array = i.getArgument(0, byte[].class);
+                    consumer.accept(array);
+                    return array;
+                })
                 .when(service)
                 .set(ArgumentMatchers.any());
     }
@@ -327,11 +317,13 @@ public abstract class _HelloWorldTest {
      * Stubs {@code service}'s {@link HelloWorld#set(byte[]) set(array)} method to just return the
      * {@code array}.
      *
-     * @implSpec This method invokes {@link #setArray_willReturnArray(UnaryOperator)} method with
-     * {@link Function#identity()}.
+     * @implSpec This method invokes {@link #setArray_willReturnArray(Consumer)} method with a
+     * consumer does nothing.
      */
     protected final void setArray_willReturnArray() {
-        setArray_willReturnArray(UnaryOperator.identity());
+        setArray_willReturnArray(a -> {
+            // does nothing
+        });
     }
 
     // ------------------------------------------------------------------------------- write(stream)
@@ -346,8 +338,46 @@ public abstract class _HelloWorldTest {
                 .write(ArgumentMatchers.any(OutputStream.class));
     }
 
-    // ---------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------- put(buffer)
 
+    /**
+     * Stubs {@code service}'s {@link HelloWorld#put(ByteBuffer) put(buffer)} method to return the
+     * {@code buffer} after accepted to specified consumer.
+     *
+     * @param consumer the consumer accepts the {@code buffer} argument.
+     */
+    protected final void putBuffer_willReturnTheBuffer(
+            final Consumer<? super ByteBuffer> consumer) {
+        Objects.requireNonNull(consumer, "consumer is null");
+        BDDMockito.doAnswer(i -> {
+                    final var buffer = i.getArgument(0, ByteBuffer.class);
+                    consumer.accept(buffer);
+                    return buffer;
+                })
+                .when(service)
+                .put(ArgumentMatchers.any());
+    }
+
+    /**
+     * Stubs {@code service}'s {@link HelloWorld#put(ByteBuffer) put(buffer)} method to return the
+     * {@code buffer} as its position increased by {@value HelloWorld#BYTES}.
+     */
+    protected final void putBuffer_willReturnTheBuffer_asItsPositionIncreasedBy12() {
+        putBuffer_willReturnTheBuffer(b -> {
+            if (b != null) {
+                b.position(b.position() + HelloWorld.BYTES);
+            }
+        });
+//        BDDMockito.doAnswer(i -> {
+//                    final var buffer = i.getArgument(0, ByteBuffer.class);
+//                    buffer.position(buffer.position() + HelloWorld.BYTES);
+//                    return buffer;
+//                })
+//                .when(service)
+//                .put(ArgumentMatchers.argThat(b -> b != null && b.remaining() >= HelloWorld.BYTES));
+    }
+
+    // ---------------------------------------------------------------------------------------------
     @Spy
     @Accessors(fluent = true)
     @Getter(AccessLevel.PROTECTED)
