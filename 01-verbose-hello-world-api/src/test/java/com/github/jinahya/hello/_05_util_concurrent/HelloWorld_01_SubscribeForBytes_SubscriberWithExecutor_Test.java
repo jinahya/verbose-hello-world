@@ -28,6 +28,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
@@ -39,20 +40,20 @@ import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.Flow.Subscription;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.LongAccumulator;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BooleanSupplier;
 import java.util.stream.IntStream;
 
 /**
  * A class for testing
- * {@link HelloWorld#publishBytes(Subscriber, ExecutorService) publishBytes(subscriber, executor)}
- * method.
+ * {@link HelloWorld#subscribeForBytes(Subscriber, ExecutorService) subscribeForBytes(subscriber,
+ * executor)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("publishBytes(subscriber, executor)")
+@DisplayName("subscribeForBytes(subscriber, executor)")
 @Slf4j
-class HelloWorld_01_PublishBytesSubscriberExecutor_Test extends _HelloWorldTest {
+class HelloWorld_01_SubscribeForBytes_SubscriberWithExecutor_Test extends _HelloWorldTest {
 
     @DisplayName("arguments")
     @Nested
@@ -60,9 +61,9 @@ class HelloWorld_01_PublishBytesSubscriberExecutor_Test extends _HelloWorldTest 
 
         /**
          * Verifies that
-         * {@link HelloWorld#publishBytes(Subscriber, ExecutorService) publishBytes(subscriber,
-         * executor)} method throws a {@code NullPointerException} when the {@code subscriber}
-         * argument is {@code null}.
+         * {@link HelloWorld#subscribeForBytes(Subscriber, ExecutorService)
+         * subscribeForBytes(subscriber, executor)} method throws a {@code NullPointerException}
+         * when the {@code subscriber} argument is {@code null}.
          */
         @DisplayName("""
                 should throw a NullPointerException
@@ -76,15 +77,15 @@ class HelloWorld_01_PublishBytesSubscriberExecutor_Test extends _HelloWorldTest 
             // --------------------------------------------------------------------------- when/then
             Assertions.assertThrows(
                     NullPointerException.class,
-                    () -> service.publishBytes(subscriber, executor)
+                    () -> service.subscribeForBytes(subscriber, executor)
             );
         }
 
         /**
          * Verifies that
-         * {@link HelloWorld#publishBytes(Subscriber, ExecutorService) publishBytes(subscriber,
-         * executor)} method throws a {@code NullPointerException} when the {@code executor}
-         * argument is {@code null}.
+         * {@link HelloWorld#subscribeForBytes(Subscriber, ExecutorService)
+         * subscribeForBytes(subscriber, executor)} method throws a {@code NullPointerException}
+         * when the {@code executor} argument is {@code null}.
          */
         @DisplayName("""
                 should throw a NullPointerException
@@ -98,7 +99,7 @@ class HelloWorld_01_PublishBytesSubscriberExecutor_Test extends _HelloWorldTest 
             // --------------------------------------------------------------------------- when/then
             Assertions.assertThrows(
                     NullPointerException.class,
-                    () -> service.publishBytes(subscriber, executor)
+                    () -> service.subscribeForBytes(subscriber, executor)
             );
         }
     }
@@ -115,7 +116,7 @@ class HelloWorld_01_PublishBytesSubscriberExecutor_Test extends _HelloWorldTest 
 
     /**
      * Verifies that
-     * {@link HelloWorld#publishArrays(Subscriber, ExecutorService) publishArrays(subscriber,
+     * {@link HelloWorld#subscribeForArrays(Subscriber, ExecutorService) publishArrays(subscriber,
      * executor)} method invokes, on the {@code subscriber},
      * <ul>
      *   <li>{@link Subscriber#onSubscribe(Subscription) onSubscribe(subscription)}
@@ -126,8 +127,8 @@ class HelloWorld_01_PublishBytesSubscriberExecutor_Test extends _HelloWorldTest 
      */
     @DisplayName("""
             should invoke
-            subscriber.onSubscribe(s -> s.request(n))
-            subscriber.onNext(item){n}
+            subscriber.onSubscribe(s -> s.request(BYTES))
+            subscriber.onNext(item){BYTES}
             subscriber.onComplete()
             """)
     @Test
@@ -142,27 +143,25 @@ class HelloWorld_01_PublishBytesSubscriberExecutor_Test extends _HelloWorldTest 
             subscription.request(HelloWorld.BYTES);
             return null;
         }).given(subscriber).onSubscribe(ArgumentMatchers.notNull());
-        final var counter = new AtomicInteger();
         BDDMockito.willAnswer(i -> {                                                          // <2>
             final var item = i.getArgument(0, Byte.class);
-            log.debug("[{}] onNext({})", String.format("%1$02d", counter.getAndIncrement()),
-                      String.format("%1$02x", item));
+            log.debug("onNext({})", String.format("%1$02x", item));
             return null;
         }).given(subscriber).onNext(ArgumentMatchers.notNull());
-        final var completed = new CountDownLatch(1);
+        final var onCompleteLatch = new CountDownLatch(1);
         BDDMockito.willAnswer(i -> {                                                          // <3>
             log.debug("onComplete()");
-            completed.countDown();
+            onCompleteLatch.countDown();
             return null;
         }).given(subscriber).onComplete();
         final var executor = Executors.newSingleThreadExecutor(
-                Thread.ofVirtual().name("publisher").factory()
+                Thread.ofVirtual().name("byte-publisher-", 0L).factory()
         );
         // ------------------------------------------------------------------------------------ when
-        service.publishBytes(subscriber, executor);
+        service.subscribeForBytes(subscriber, executor);
         // ------------------------------------------------------------------------------------ then
         Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(Mockito.notNull());
-        Assertions.assertTrue(completed.await(4L, TimeUnit.SECONDS));
+        Assertions.assertTrue(onCompleteLatch.await(1L, TimeUnit.SECONDS));
         Mockito.verify(subscriber, Mockito.times(HelloWorld.BYTES))
                 .onNext(ArgumentMatchers.notNull());
         Mockito.verify(subscriber, Mockito.times(1)).onComplete();
@@ -170,90 +169,77 @@ class HelloWorld_01_PublishBytesSubscriberExecutor_Test extends _HelloWorldTest 
 
     /**
      * Verifies that
-     * {@link HelloWorld#publishBytes(Subscriber, ExecutorService) publishBytes(subscriber,
-     * executor)} method throws a {@code NullPointerException} when the {@code subscriber} argument
-     * is {@code null}.
+     * {@link HelloWorld#subscribeForBytes(Subscriber, ExecutorService)
+     * subscribeForBytes(subscriber, executor)} method throws a {@code NullPointerException} when
+     * the {@code subscriber} argument is {@code null}.
      */
     @DisplayName("""
-            should invoke onNext+/onComplete
+            should invoke onSubscribe/onNext*/onComplete?
             """)
     @Test
     @SuppressWarnings({"unchecked"})
-    void __() throws InterruptedException {
+    void __Random() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         @SuppressWarnings({"unchecked"})
         final var subscriber = (Subscriber<Byte>) Mockito.mock(Subscriber.class);
-        final var accumulator = new LongAccumulator((x, y) -> x - y, HelloWorld.BYTES);
-        final var subscriptions = new Subscription[1];
-        final var completed = new CountDownLatch(1);
-        final boolean cancelRandomly = false;
+        final var subscription = new AtomicReference<Subscription>();
+        final var cancel = (BooleanSupplier) () -> ThreadLocalRandom.current().nextInt() % 23 == 0;
         BDDMockito.willAnswer(i -> {
-            final var subscription = i.getArgument(0, Subscription.class);
-            log.debug("onSubscribe({})", subscription);
-            subscriptions[0] = subscription;
-            if (cancelRandomly && ThreadLocalRandom.current().nextBoolean()) {
-                log.debug("randomly canceling the subscription...");
-                subscriptions[0].cancel();
-                // return null; // commented out, intentionally
+            subscription.set(Mockito.spy(i.getArgument(0, Subscription.class)));
+            log.debug("onSubscribe({})", subscription.get());
+            if (cancel.getAsBoolean()) {
+                log.debug("\t\\ randomly, cancelling the subscription...");
+                subscription.get().cancel();
             }
-            final var n = ThreadLocalRandom.current().nextInt(accumulator.intValue() >> 2) + 1;
-            accumulator.accumulate(n);
-            log.debug("requesting {} item(s)...", n);
-            subscriptions[0].request(n);
+            final var n = ThreadLocalRandom.current().nextInt(HelloWorld.BYTES) + 1;
+            log.debug("\t\\ requesting {} item(s)...", n);
+            subscription.get().request(n);
             return null;
         }).given(subscriber).onSubscribe(ArgumentMatchers.any());
-        final var index = new AtomicInteger();
         BDDMockito.willAnswer(i -> {
             final var item = i.getArgument(0, Byte.class);
             assert item != null : "item supposed to be not null";
-            log.debug("[{}] onNext({})", String.format("%1$02d", index.getAndIncrement()),
-                      String.format("0x%1$02x", item));
-            if (cancelRandomly && ThreadLocalRandom.current().nextBoolean()) {
-                log.debug("randomly canceling the subscription...");
-                subscriptions[0].cancel();
-                // return null; // commented out, intentionally
+            log.debug("onNext({})", String.format("0x%1$02x", item));
+            if (cancel.getAsBoolean()) {
+                log.debug("\t\\ randomly, cancelling the subscription...");
+                subscription.get().cancel();
             }
-            if (ThreadLocalRandom.current().nextInt() % 3 == 0) {
-                final var r = accumulator.get();
-                if (r > 1) {
-                    final var n = ThreadLocalRandom.current().nextLong(r - 1) + 1;
-                    accumulator.accumulate(n);
-                    log.debug("requesting {} more item(s)...", n);
-                    subscriptions[0].request(n);
-                }
-            }
+            final var n = ThreadLocalRandom.current().nextInt(HelloWorld.BYTES) + 1;
+            log.debug("\t\\ requesting {} item(s)...", n);
+            subscription.get().request(n);
             return null;
         }).given(subscriber).onNext(ArgumentMatchers.any());
+        final var onCompleteLatch = new CountDownLatch(1);
         BDDMockito.willAnswer(i -> {
             log.debug("onComplete()");
-            completed.countDown();
+            onCompleteLatch.countDown();
             return null;
         }).given(subscriber).onComplete();
-        final var executor = Executors.newSingleThreadExecutor();
+        final var executor = Executors.newSingleThreadExecutor(
+                Thread.ofVirtual().name("byte-publisher-", 0L).factory()
+        );
         // ------------------------------------------------------------------------------------ when
-        service.publishBytes(subscriber, executor);
-        assert subscriptions[0] != null;
+        service.subscribeForBytes(subscriber, executor);
         // ------------------------------------------------------------------------------------ then
-        Mockito.verify(subscriber, Mockito.atMost(HelloWorld.BYTES))
-                .onNext(ArgumentMatchers.notNull());
-        if (ThreadLocalRandom.current().nextBoolean()) {
-            final var r = accumulator.get();
-            if (r > 0L) {
-                accumulator.accumulate(r);
-                log.debug("requesting {} last item(s)...", r);
-                subscriptions[0].request(r);
-            }
-            Assertions.assertEquals(0L, accumulator.get());
-            final var broken = completed.await(1L, TimeUnit.SECONDS);
-            Assertions.assertTrue(broken, "should've been completed");
+        Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(ArgumentMatchers.notNull());
+        assert subscription.get() != null;
+        {
+            log.debug("explicitly, cancelling the subscription...");
+            subscription.get().cancel();
         }
-        if (ThreadLocalRandom.current().nextBoolean()) {
-            log.debug("canceling the subscription...");
-            subscriptions[0].cancel();
-            final long n = ThreadLocalRandom.current().nextInt(8) + 1L;
-            log.debug("requesting {} more item(s), on the canceled subscription...", n);
-            subscriptions[0].request(n);
+        {
+            final var n = ThreadLocalRandom.current().nextInt(HelloWorld.BYTES) + 1;
+            log.debug("requesting {} item(s)...", n);
+            subscription.get().request(n);
         }
+        final int s;
+        {
+            final var c = ArgumentCaptor.forClass(long.class);
+            Mockito.verify(subscription.get(), Mockito.atLeast(0)).request(c.capture());
+            s = c.getAllValues().stream().mapToInt(Math::toIntExact).sum();
+        }
+        Mockito.verify(subscriber, Mockito.atMost(s)).onNext(ArgumentMatchers.notNull());
+        Mockito.verify(subscriber, Mockito.atMost(1)).onComplete();
     }
 }

@@ -32,7 +32,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
-import java.util.HexFormat;
+import java.nio.ByteBuffer;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -45,14 +45,14 @@ import java.util.stream.IntStream;
 
 /**
  * A class for testing
- * {@link HelloWorld#publishArrays(Subscriber, ExecutorService) publishArrays(subscriber, executor)}
- * method.
+ * {@link HelloWorld#subscribeForBuffers(Subscriber, ExecutorService)
+ * subscribeForBuffers(subscriber, executor)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("publishArrays(subscriber, executor)")
+@DisplayName("subscribeForBuffers(subscriber, executor)")
 @Slf4j
-class HelloWorld_02_PublishArraysSubscriberExecutor_Test extends _HelloWorldTest {
+class HelloWorld_03_SubscribeForBuffers_SubscriberWithExecutor_Test extends _HelloWorldTest {
 
     @DisplayName("arguments")
     @Nested
@@ -60,49 +60,51 @@ class HelloWorld_02_PublishArraysSubscriberExecutor_Test extends _HelloWorldTest
 
         /**
          * Verifies that
-         * {@link HelloWorld#publishArrays(Subscriber, ExecutorService) publishArrays(subscriber,
-         * executor)} method throws a {@code NullPointerException} when the {@code subscriber}
-         * argument is {@code null}.
+         * {@link HelloWorld#subscribeForBuffers(Subscriber, ExecutorService)
+         * subscribeForBuffers(subscriber, executor)} method throws a {@code NullPointerException}
+         * when the {@code subscriber} argument is {@code null}.
          */
         @DisplayName("""
                 should throw a NullPointerException
-                when subscriber is null""")
+                when [subscriber] is null""")
         @Test
         void _ThrowNullPointerException_SubscriberIsNull() {
             // ------------------------------------------------------------------------------- given
             final var service = service();
-            final var subscriber = (Subscriber<byte[]>) null;
+            final var subscriber = (Subscriber<ByteBuffer>) null;
             final var executor = Mockito.mock(ExecutorService.class);
             // --------------------------------------------------------------------------- when/then
             Assertions.assertThrows(
                     NullPointerException.class,
-                    () -> service.publishArrays(subscriber, executor)
+                    () -> service.subscribeForBuffers(subscriber, executor)
             );
         }
 
         /**
          * Verifies that
-         * {@link HelloWorld#publishArrays(Subscriber, ExecutorService) publishArrays(subscriber,
-         * executor)} method throws a {@code NullPointerException} when the {@code executor}
-         * argument is {@code null}.
+         * {@link HelloWorld#subscribeForBuffers(Subscriber, ExecutorService)
+         * subscribeForBuffers(subscriber, executor)} method throws a {@code NullPointerException}
+         * when the {@code executor} argument is {@code null}.
          */
         @DisplayName("""
                 should throw a NullPointerException
-                when executor is null""")
+                when [executor] is null""")
         @Test
         void _ThrowNullPointerException_ExecutorIsNull() {
             // ------------------------------------------------------------------------------- given
             final var service = service();
-            final var subscriber = (Subscriber<byte[]>) Mockito.mock(Subscriber.class);
+            @SuppressWarnings({"unchecked"})
+            final var subscriber = (Subscriber<ByteBuffer>) Mockito.mock(Subscriber.class);
             final var executor = (ExecutorService) null;
             // --------------------------------------------------------------------------- when/then
             Assertions.assertThrows(
                     NullPointerException.class,
-                    () -> service.publishArrays(subscriber, executor)
+                    () -> service.subscribeForBuffers(subscriber, executor)
             );
         }
     }
 
+    // ---------------------------------------------------------------------------------------------
     @BeforeEach
     void beforeEach() {
         putBuffer_willReturnTheBuffer(b -> {
@@ -113,46 +115,42 @@ class HelloWorld_02_PublishArraysSubscriberExecutor_Test extends _HelloWorldTest
         });
     }
 
+    // ---------------------------------------------------------------------------------------------
+
     /**
      * Verifies that
-     * {@link HelloWorld#publishArrays(Subscriber, ExecutorService) publishArrays(subscriber,
-     * executor)} method invokes, on the {@code subscriber},
+     * {@link HelloWorld#subscribeForBuffers(Subscriber, ExecutorService)
+     * subscribeForBuffers(subscriber, executor)} method invokes, on the {@code subscriber},
      * <ul>
      *   <li>{@link Subscriber#onSubscribe(Subscription) onSubscribe(subscription)}
-     *       which invokes {@link Subscription#request(long) subscription.request(12)}</li>
-     *   <li>{@link Subscriber#onNext(Object) subscriber.onNext(item)} 12 times</li>
-     *   <li>{@link Subscriber#onComplete() subscriber.onComplete()}</li>
+     *       which invokes {@link Subscription#request(long) subscription.request(n)}</li>
+     *   <li>{@link Subscriber#onNext(Object) subscriber.onNext(item)} <em>n</em> times</li>
      * </ul> in order.
      */
     @DisplayName("""
             should invoke
             subscriber.onSubscribe(s -> s.request(n))
             subscriber.onNext(item){n}
-            subscriber.onComplete()
             """)
     @Test
     void __RequestOnSubscribe() throws InterruptedException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         @SuppressWarnings({"unchecked"})
-        final var subscriber = (Subscriber<byte[]>) Mockito.mock(Subscriber.class);
+        final var subscriber = (Subscriber<ByteBuffer>) Mockito.mock(Subscriber.class);
         final var subscription = new AtomicReference<Subscription>();
         final var n = ThreadLocalRandom.current().nextInt(8) + 1;
         BDDMockito.willAnswer(i -> {                                                          // <1>
             subscription.set(Mockito.spy(i.getArgument(0, Subscription.class)));
             log.debug("onSubscribe({})", subscription.get());
-            try {
-                subscription.get().request(n);
-            } catch (final Throwable t) {
-                log.error("failed to request({})", n, t);
-            }
+            log.debug("\t\\ request {} item(s)...", n);
+            subscription.get().request(n);
             return null;
         }).given(subscriber).onSubscribe(ArgumentMatchers.notNull());
         final var onNextLatch = new CountDownLatch(n);
         BDDMockito.willAnswer(i -> {                                                          // <2>
-            final var item = i.getArgument(0, byte[].class);
-            log.debug("[{}] onNext({})", String.format("%1$02d", n - onNextLatch.getCount()),
-                      HexFormat.of().formatHex(item));
+            final var item = i.getArgument(0, ByteBuffer.class);
+            log.debug("onNext({})", item);
             assert onNextLatch.getCount() > 0;
             onNextLatch.countDown();
             if (onNextLatch.getCount() == 0) {
@@ -163,7 +161,7 @@ class HelloWorld_02_PublishArraysSubscriberExecutor_Test extends _HelloWorldTest
         final var onErrorLatch = new CountDownLatch(1);
         BDDMockito.willAnswer(i -> {                                                          // <3>
             final var t = i.getArgument(0, Throwable.class);
-            log.debug("onError({})", t, t);
+            log.error("onError({})", t, t);
             assert onErrorLatch.getCount() > 0;
             onErrorLatch.countDown();
             return null;
@@ -176,10 +174,10 @@ class HelloWorld_02_PublishArraysSubscriberExecutor_Test extends _HelloWorldTest
             return null;
         }).given(subscriber).onComplete();
         final var executor = Executors.newSingleThreadExecutor(
-                Thread.ofVirtual().name("arrays-publisher").factory()
+                Thread.ofVirtual().name("buffer-publisher-", 0L).factory()
         );
         // ------------------------------------------------------------------------------------ when
-        service.publishArrays(subscriber, executor);
+        service.subscribeForBuffers(subscriber, executor);
         // ------------------------------------------------------------------------------------ then
         Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(ArgumentMatchers.notNull());
         Assertions.assertTrue(onNextLatch.await(4L, TimeUnit.SECONDS));

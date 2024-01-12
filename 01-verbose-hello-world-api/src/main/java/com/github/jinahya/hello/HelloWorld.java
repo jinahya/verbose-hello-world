@@ -46,11 +46,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Flow;
+import java.util.concurrent.Flow.Subscription;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.LongAccumulator;
 import java.util.function.Function;
 
@@ -735,6 +734,25 @@ public interface HelloWorld {
                 });
     }
 
+
+    // ---------------------------------------------------------------------------------------------
+    default <T> Future<T> executeAsync(final Function<? super HelloWorld, ? extends T> function,
+                                       final Executor executor) {
+        Objects.requireNonNull(function, "function is null");
+        Objects.requireNonNull(executor, "executor is null");
+        final var command = new FutureTask<T>(() -> function.apply(this));
+        executor.execute(command); // Runnable  <- RunnableFuture<V> <- FutureTask<V>
+        return command;            // Future<V> <- RunnableFuture<V> <- FutureTask<V>
+    }
+
+    default <T> CompletableFuture<T> completeAsync(
+            final Function<? super HelloWorld, ? extends T> function,
+            final Executor executor) {
+        Objects.requireNonNull(function, "function is null");
+        Objects.requireNonNull(executor, "executor is null");
+        return CompletableFuture.supplyAsync(() -> function.apply(this), executor);
+    }
+
     // ---------------------------------------------------------------------------------------------
 
     /**
@@ -745,178 +763,40 @@ public interface HelloWorld {
      * @param executor   and executor to publish bytes asynchronously.
      * @see <a href="https://github.com/reactive-streams/reactive-streams-jvm/">Reactive Streams</a>
      */
-    default void publishBytes(final Flow.Subscriber<? super Byte> subscriber,
-                              final ExecutorService executor) {
+    default void subscribeForBytes(final Flow.Subscriber<? super Byte> subscriber,
+                                   final ExecutorService executor) {
         Objects.requireNonNull(subscriber, "subscriber is null");
         Objects.requireNonNull(executor, "executor is null");
-        final var buffer = put(ByteBuffer.allocate(BYTES)).limit(0);
-        final var future = executor.<Void>submit(() -> {
-            while (!Thread.currentThread().isInterrupted()) {
-                synchronized (buffer) {
-                    while (!buffer.hasRemaining()) {
-                        try {
-                            buffer.wait();
-                        } catch (final InterruptedException ie) {
-                            Thread.currentThread().interrupt();
-                        }
-                    }
-                    while (!Thread.currentThread().isInterrupted() && buffer.hasRemaining()) {
-                        subscriber.onNext(buffer.get());
-                    }
-                    if (buffer.position() == buffer.capacity()) {
-                        Thread.currentThread().interrupt();
-                        subscriber.onComplete();
-                    }
-                }
-            }
-            return null;
-        });
-        subscriber.onSubscribe(new Flow.Subscription() { // @formatter:off
-            @Override public void request(final long n) {
-                if (n <= 0L) {
-                    cancel();
-                    subscriber.onError(new IllegalArgumentException("non-positive n: " + n));
-                }
-                if (future.isCancelled() || future.isDone()) {
-                    return;
-                }
-                synchronized (buffer) {
-                    buffer.limit((int) Math.min(buffer.capacity(), buffer.limit() + n));
-                    buffer.notifyAll();
-                }
-            }
-            @Override public void cancel() {
-                final var canceled = future.cancel(true);
-            } // @formatter:on
-        });
+        HelloWorldFlow.newPublisherForBytes(this, executor).subscribe(subscriber);
     }
 
     /**
      * Publishes arrays of the <a href="#hello-world-bytes">hello-world-bytes</a> to specified
-     * subscriber as it requests.
+     * subscriber as it {@link Subscription#request(long) requests}.
      *
      * @param subscriber the subscriber to be subscribed.
-     * @param executor   an executor for publishing arrays asynchronously; may be {@code null}.
+     * @param executor   an executor for publishing items asynchronously.
      * @see <a href="https://github.com/reactive-streams/reactive-streams-jvm/">Reactive Streams</a>
      */
-    default void publishArrays(final Flow.Subscriber<? super byte[]> subscriber,
-                               final ExecutorService executor) {
+    default void subscribeForArrays(final Flow.Subscriber<? super byte[]> subscriber,
+                                    final ExecutorService executor) {
         Objects.requireNonNull(subscriber, "subscriber is null");
         Objects.requireNonNull(executor, "executor is null");
-        final var accumulated = new AtomicLong();
-        final var future = executor.submit(() -> {
-            final var executorForBytes = Executors.newSingleThreadExecutor(
-                    Thread.ofVirtual().name("bytes-publisher").factory()
-            );
-            while (!Thread.currentThread().isInterrupted()) {
-                synchronized (accumulated) {
-                    while (accumulated.get() == 0L) {
-                        try {
-                            accumulated.wait();
-                        } catch (final InterruptedException ie) {
-                            Thread.currentThread().interrupt();
-                            return;
-                        }
-                    }
-                    accumulated.decrementAndGet();
-                }
-                publishBytes(
-                        new Flow.Subscriber<>() { // @formatter:off
-                                @Override
-                                public void onSubscribe(final Flow.Subscription subscription) {
-                                    subscription.request(array.length);
-                                }
-                                @Override public void onNext(final Byte item) {
-                                    array[index++] = item;
-                                }
-                                @Override public void onError(final Throwable throwable) {
-                                }
-                                @Override public void onComplete() {
-                                    subscriber.onNext(array);
-                                }
-                                private final byte[] array = new byte[BYTES];
-                                private int index = 0;
-                            }, // @formatter:on
-                        executorForBytes
-                );
-            }
-        });
-        subscriber.onSubscribe(new Flow.Subscription() { // @formatter:off
-            @Override public void request(final long n) {
-                if (n <= 0L) {
-                    cancel();
-                    subscriber.onError(new IllegalArgumentException("non-positive n: " + n));
-                }
-                if (future.isCancelled() || future.isDone()) {
-                    return;
-                }
-                synchronized (accumulated) {
-                    if (accumulated.addAndGet(n) < 0L) {
-                        accumulated.set(Long.MAX_VALUE);
-                    }
-                    accumulated.notifyAll();
-                }
-            }
-            @Override public void cancel() {
-                final var canceled = future.cancel(true);
-            }
-        }); // @formatter:on
+        HelloWorldFlow.newPublisherForArrays(this, executor).subscribe(subscriber);
     }
 
-    default void publishBuffers(final Flow.Subscriber<? super ByteBuffer> subscriber,
-                                final ExecutorService executor) {
+    /**
+     * Subscribes specified subscriber, and publishes byte buffers of the <a
+     * href="#hello-world-bytes">hello-world-bytes</a> as
+     * {@link Subscription#request(long) requested}.
+     *
+     * @param subscriber the subscriber.
+     * @param executor   an executor for publishing items asynchronously.
+     */
+    default void subscribeForBuffers(final Flow.Subscriber<? super ByteBuffer> subscriber,
+                                     final ExecutorService executor) {
         Objects.requireNonNull(subscriber, "subscriber is null");
         Objects.requireNonNull(executor, "executor is null");
-        final var processor = new Flow.Processor<byte[], ByteBuffer>() { // @formatter:off
-            @Override public void subscribe(final Flow.Subscriber<? super ByteBuffer> subscriber) {
-                subscriber.onSubscribe(new Flow.Subscription() {
-                    @Override public void request(final long n) {
-                        subscription.request(n);
-                    }
-                    @Override public void cancel() {
-                        subscription.cancel();
-                    }
-                });
-            }
-            @Override public void onSubscribe(final Flow.Subscription subscription) {
-                this.subscription = subscription;
-            }
-            @Override public void onNext(final byte[] item) {
-                subscriber.onNext(ByteBuffer.wrap(item));
-            }
-            @Override public void onError(final Throwable throwable) {
-                subscriber.onError(throwable);
-            }
-            @Override public void onComplete() {
-                subscriber.onComplete();
-            }
-            private Flow.Subscription subscription;
-        }; // @formatter:on
-        publishArrays(processor, executor);
-        processor.subscribe(subscriber);
-    }
-
-    // -----------------------------------------------------------------------------------------------------------------
-    default <T> Future<T> executeAsync(final Function<? super HelloWorld, ? extends T> function,
-                                       final Executor executor) {
-        Objects.requireNonNull(function, "function is null");
-        Objects.requireNonNull(executor, "executor is null");
-        return HelloWorldUtils.executeAsync(
-                () -> this,
-                function,
-                executor
-        );
-    }
-
-    default <T> CompletableFuture<T> completeAsync(
-            final Function<? super HelloWorld, ? extends T> function,
-            final Executor executor) {
-        Objects.requireNonNull(function, "function is null");
-        Objects.requireNonNull(executor, "executor is null");
-        return HelloWorldUtils.completeAsync(
-                () -> this,
-                function,
-                executor
-        );
+        HelloWorldFlow.newPublisherForBuffers(this, executor).subscribe(subscriber);
     }
 }

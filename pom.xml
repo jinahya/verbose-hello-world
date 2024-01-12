@@ -80,6 +80,7 @@
     <!-- https://docs.spring.io/spring-boot/docs/current/reference/html/dependency-versions.html -->
     <version.org.springframework>6.1.2</version.org.springframework>
     <version.org.springframework.boot>3.2.1</version.org.springframework.boot>
+    <version.org.vertx>4.5.1</version.org.vertx>
   </properties>
 
   <dependencyManagement>
@@ -98,6 +99,12 @@
         <groupId>com.google.dagger</groupId>
         <artifactId>dagger</artifactId>
         <version>${version.com.google.dagger}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>com.google.dagger</groupId>
@@ -121,6 +128,21 @@
       <!--        <artifactId>prov</artifactId>-->
       <!--        <version>1.58.0.0</version>-->
       <!--      </dependency>-->
+      <dependency>
+        <groupId>io.projectreactor</groupId>
+        <artifactId>reactor-core</artifactId>
+        <version>3.6.2</version>
+      </dependency>
+      <dependency>
+        <groupId>io.reactivex.rxjava3</groupId>
+        <artifactId>rxjava</artifactId>
+        <version>3.1.8</version>
+      </dependency>
+      <dependency>
+        <groupId>io.vertx</groupId>
+        <artifactId>vertx-reactive-streams</artifactId>
+        <version>${version.org.vertx}</version>
+      </dependency>
       <dependency>
         <groupId>jakarta.enterprise</groupId>
         <artifactId>jakarta.enterprise.cdi-api</artifactId>

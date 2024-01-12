@@ -303,7 +303,6 @@ public abstract class _HelloWorldTest {
      */
     protected final void setArray_willReturnArray(final Consumer<? super byte[]> consumer) {
         Objects.requireNonNull(consumer, "consumer is null");
-        log.debug("stubbing set(array); consumer: {}", consumer);
         Mockito.doAnswer(i -> {
                     final var array = i.getArgument(0, byte[].class);
                     consumer.accept(array);
