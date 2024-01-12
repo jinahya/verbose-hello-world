@@ -31,7 +31,6 @@ import org.junit.jupiter.api.DisplayName;
  * A class for unit-testing {@link HelloWorld#set(byte[], int) set(array, index)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_01_Set_ArrayWithIndex_Arguments_Test
  */
 @DisplayName("set(array, index)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
@@ -40,8 +39,7 @@ import org.junit.jupiter.api.DisplayName;
         "java:S101",
         "java:S2187"
 })
-class HelloWorld_01_Set_ArrayWithIndex_Test
-        extends _HelloWorldTest {
+class HelloWorld_01_Set_ArrayWithIndex_Test extends _HelloWorldTest {
 
     // empty; we won't implement the method in this module.
 }

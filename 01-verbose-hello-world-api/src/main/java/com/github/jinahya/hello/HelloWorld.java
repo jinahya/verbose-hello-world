@@ -159,8 +159,8 @@ public interface HelloWorld {
      * @throws NullPointerException if {@code appendable} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @implSpec The default implementation invokes {@link #set(byte[]) set(array)} method with an
-     * array of {@value #BYTES} bytes, and appends each byte (as a {@code char}) in the array to
-     * {@code appendable}.
+     * array of {@value #BYTES} bytes, and {@link Appendable#append(char) appends} each byte in the
+     * array, as a {@code char}, to {@code appendable}.
      * @see #set(byte[])
      * @see Appendable#append(char)
      */
@@ -733,7 +733,6 @@ public interface HelloWorld {
                     return path;
                 });
     }
-
 
     // ---------------------------------------------------------------------------------------------
     default <T> Future<T> executeAsync(final Function<? super HelloWorld, ? extends T> function,

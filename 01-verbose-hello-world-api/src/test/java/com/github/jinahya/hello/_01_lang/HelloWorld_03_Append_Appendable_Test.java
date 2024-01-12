@@ -28,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -38,13 +39,33 @@ import java.util.concurrent.ThreadLocalRandom;
  * A class for testing {@link HelloWorld#append(Appendable) append(appendable)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_03_Append_Appendable_Arguments_Test
  */
 @DisplayName("append(appendable) arguments")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
 class HelloWorld_03_Append_Appendable_Test extends _HelloWorldTest {
+
+    @Nested
+    class ArgumentsTest {
+
+        /**
+         * Verifies {@link HelloWorld#append(Appendable) append(appendable)} method throws a
+         * {@link NullPointerException} when the {@code appendable} argument is {@code null}.
+         */
+        @DisplayName("[appendable == null] -> NullPointerException")
+        @Test
+        void _ThrowNullPointerException_AppendableNull() {
+            // ------------------------------------------------------------------------------- given
+            final var service = service();
+            final var appendable = (Appendable) null;
+            // --------------------------------------------------------------------------- when/then
+            Assertions.assertThrows(
+                    NullPointerException.class,
+                    () -> service.append(appendable)
+            );
+        }
+    }
 
     @BeforeEach
     void beforeEach() {

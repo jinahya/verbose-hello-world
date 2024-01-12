@@ -26,11 +26,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 /**
  * A class for unit-testing {@link HelloWorld#set(byte[])} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_02_Set_Array_Arguments_Test
  */
 @DisplayName("set(array)")
 @Slf4j
@@ -40,7 +41,36 @@ import org.junit.jupiter.api.Test;
 class HelloWorld_02_Set_Array_Test extends _HelloWorldTest {
 
     /**
-     * Verifies that {@link HelloWorld#set(byte[]) set(array)} method invokes
+     * Verifies that the {@link HelloWorld#set(byte[]) set(array)} method throws a
+     * {@link NullPointerException} when the {@code array} argument is {@code null}.
+     */
+    @DisplayName("[array == null] -> NullPointerException")
+    @Test
+    void _ThrowNullPointerException_ArrayIsNull() {
+        // ----------------------------------------------------------------------------------- given
+        final var service = service();
+        final var array = (byte[]) null;
+        // ------------------------------------------------------------------------------- when/then
+        // TODO: assert, service.set(array) throws a NullPointerException.
+    }
+
+    /**
+     * Verifies that the {@link HelloWorld#set(byte[]) set(array)} method throws an
+     * {@link ArrayIndexOutOfBoundsException} when {@code array.length} is less than
+     * {@value HelloWorld#BYTES}.
+     */
+    @DisplayName("[array.length < 12] -> ArrayIndexOutOfBoundsException")
+    @Test
+    void _ThrowArrayIndexOutOfBoundsException_ArrayLengthIsLessThan12() {
+        // ----------------------------------------------------------------------------------- given
+        final var service = service();
+        final var array = new byte[ThreadLocalRandom.current().nextInt(HelloWorld.BYTES)];
+        // ------------------------------------------------------------------------------- when/then
+        // TODO: assert, service.set(array) throws an ArrayIndexOutOfBoundsException.
+    }
+
+    /**
+     * Verifies that the {@link HelloWorld#set(byte[]) set(array)} method invokes
      * {@link HelloWorld#set(byte[], int) set(array, index)} method with given {@code array} and
      * {@code 0}, and returns the {@code array}.
      */
