@@ -29,17 +29,16 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
+import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.io.Writer;
 
 /**
  * A class for testing {@link HelloWorld#write(Writer) write(writer)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_05_Write_Writer_Arguments_Test
  */
 @DisplayName("write(writer)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
@@ -48,26 +47,45 @@ import java.io.Writer;
 class HelloWorld_05_Write_Writer_Test extends _HelloWorldTest {
 
     /**
-     * Verifies {@link HelloWorld#write(RandomAccessFile) write(file)} method invokes
-     * {@link HelloWorld#set(byte[]) set(array)} method with an array of {@value HelloWorld#BYTES}
-     * bytes, and invokes {@link RandomAccessFile#write(byte[])} method on the {@code file} argument
-     * with the array.
+     * Verifies that the {@link HelloWorld#write(Writer) write(writer)} method throws a
+     * {@link NullPointerException} when the {@code writer} argument is {@code null}.
+     */
+    @DisplayName("""
+            should throw a NullPointerException
+            when the writer argument is null"""
+    )
+    @Test
+    void _ThrowNullPointerException_WriterIsNull() {
+        // ----------------------------------------------------------------------------------- given
+        final var service = service();
+        final var writer = (Writer) null;
+        // ------------------------------------------------------------------------------- when/then
+        Assertions.assertThrows(
+                NullPointerException.class,
+                () -> service.write(writer)
+        );
+    }
+
+    /**
+     * Verifies that the {@link HelloWorld#write(Writer) write(writer)} method invokes
+     * {@link HelloWorld#append(Appendable) append(appendable)} method with given {@code writer},
+     * and returns the {@code writer}.
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("-> set(array[12]) -> file.write(array)")
+    @DisplayName("should invoke append(writer)")
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        Mockito.doAnswer(i -> i.getArgument(0))
-                .when(service)
+        BDDMockito.willAnswer(i -> i.getArgument(0))
+                .given(service())
                 .append(ArgumentMatchers.any(Appendable.class));
         final var writer = Mockito.mock(Writer.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(writer);
         // ------------------------------------------------------------------------------------ then
-        // TODO: verify, append(writer) invoked, once
+        // TODO: verify, service.append(writer) invoked, once
         Assertions.assertSame(writer, result);
     }
 }

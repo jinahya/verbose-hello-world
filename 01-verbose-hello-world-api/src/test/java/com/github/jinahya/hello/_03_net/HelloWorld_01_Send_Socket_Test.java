@@ -29,6 +29,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
+import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
 import java.io.IOException;
@@ -39,7 +41,6 @@ import java.net.Socket;
  * A class for testing {@link HelloWorld#send(Socket) send(socket)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_01_Send_Socket_Arguments_Test
  */
 @DisplayName("send(socket)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
@@ -47,27 +48,49 @@ import java.net.Socket;
 @SuppressWarnings({"java:S101"})
 class HelloWorld_01_Send_Socket_Test extends _HelloWorldTest {
 
+    /**
+     * Verifies that the {@link HelloWorld#send(Socket) send(socket)} method throws a
+     * {@link NullPointerException} when the {@code socket} argument is {@code null}.
+     */
+    @DisplayName("""
+            should throw a NullPointerException
+            when the socket argument is null"""
+    )
+    @Test
+    void _ThrowNullPointerException_SocketIsNull() {
+        // ----------------------------------------------------------------------------------- given
+        final var service = service();
+        final Socket socket = null;
+        // ------------------------------------------------------------------------------- when/then
+        Assertions.assertThrows(
+                NullPointerException.class,
+                () -> service.send(socket)
+        );
+    }
+
     @BeforeEach
     void beforeEach() throws IOException {
         writeStream_willReturnStream();
     }
 
     /**
-     * Asserts {@link HelloWorld#send(Socket) send(socket)} method invokes the
+     * Verifies that the {@link HelloWorld#send(Socket) send(socket)} method invokes
      * {@link HelloWorld#write(OutputStream) write(stream)} method with
      * {@link Socket#getOutputStream() socket.outputStream}, and returns the {@code socket}.
      *
      * @throws IOException if an I/O error occurs.
-     * @see org.mockito.Mockito#verifyNoMoreInteractions(Object...)
      */
-    @DisplayName("-> write(socket.outputStream)")
+    @DisplayName("should invoke write(socket.getOutputStream())")
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        final var socket = Mockito.mock(Socket.class);             // <1>
-        final var stream = Mockito.mock(OutputStream.class);       // <2>
-        Mockito.when(socket.getOutputStream()).thenReturn(stream); // <3>
+        BDDMockito.willAnswer(i -> i.getArgument(0, OutputStream.class))
+                .given(service)
+                .write(ArgumentMatchers.any(OutputStream.class));
+        final var socket = Mockito.mock(Socket.class);                 // <1>
+        final var stream = Mockito.mock(OutputStream.class);           // <2>
+        BDDMockito.given(socket.getOutputStream()).willReturn(stream); // <3>
         // ------------------------------------------------------------------------------------ when
         final var result = service.send(socket);
         // ------------------------------------------------------------------------------------ then

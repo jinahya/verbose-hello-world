@@ -399,8 +399,8 @@ public interface HelloWorld {
      * @throws IOException          if an I/O error occurs.
      * @implSpec The default implementation invokes {@link #put(ByteBuffer)} method with a buffer of
      * {@value #BYTES} bytes, {@link ByteBuffer#flip() flips} it, writes the buffer to
-     * {@code channel} by continuously invoking
-     * {@link WritableByteChannel#write(ByteBuffer) channel.write(buffer)} while the buffer has
+     * {@code channel}, by continuously invoking
+     * {@link WritableByteChannel#write(ByteBuffer) channel.write(buffer)}, while the buffer has
      * remaining, and returns the {@code channel}.
      * @see #put(ByteBuffer)
      * @see ByteBuffer#flip()

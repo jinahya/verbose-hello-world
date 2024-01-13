@@ -38,13 +38,32 @@ import java.io.RandomAccessFile;
  * A class for testing {@link HelloWorld#write(RandomAccessFile)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_04_Write_RandomAccessFile_Arguments_Test
  */
 @DisplayName("write(RandomAccessFile file)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
 class HelloWorld_04_Write_RandomAccessFile_Test extends _HelloWorldTest {
+
+    /**
+     * Verifies {@link HelloWorld#write(RandomAccessFile file) write(RandomAccessFile file)} method
+     * throws a {@link NullPointerException} when the {@code file} argument is {@code null}.
+     */
+    @DisplayName("""
+            should throw a NullPointerException
+            when the file argument is null"""
+    )
+    @Test
+    void _ThrowNullPointerException_FileIsNull() {
+        // ----------------------------------------------------------------------------------- given
+        final var service = service();
+        final var file = (RandomAccessFile) null;
+        // ------------------------------------------------------------------------------- when/then
+        Assertions.assertThrows(
+                NullPointerException.class,
+                () -> service.write(file)
+        );
+    }
 
     @BeforeEach
     void beforeEach() {

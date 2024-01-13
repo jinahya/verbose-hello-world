@@ -38,13 +38,29 @@ import java.io.OutputStream;
  * A class for testing {@link HelloWorld#write(OutputStream) write(stream)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_01_Write_OutputStream_Arguments_Test
  */
 @DisplayName("write(stream)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
 class HelloWorld_01_Write_OutputStream_Test extends _HelloWorldTest {
+
+    /**
+     * Verifies {@link HelloWorld#write(OutputStream) write(stream)} method throws a
+     * {@link NullPointerException} when the {@code stream} argument is {@code null}.
+     */
+    @DisplayName("[stream == null] -> NullPointerException")
+    @Test
+    void _ThrowNullPointerException_StreamIsNull() {
+        // ----------------------------------------------------------------------------------- given
+        final var service = service();
+        final var stream = (OutputStream) null;
+        // ------------------------------------------------------------------------------- when/then
+        Assertions.assertThrows(
+                NullPointerException.class,
+                () -> service.write(stream)
+        );
+    }
 
     @BeforeEach
     void beforeEach() {

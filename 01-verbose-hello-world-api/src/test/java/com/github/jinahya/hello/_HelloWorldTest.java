@@ -46,6 +46,7 @@ import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.channels.WritableByteChannel;
 import java.util.Objects;
+import java.util.Random;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.LongAdder;
@@ -258,6 +259,17 @@ public abstract class _HelloWorldTest {
             });
             return future;
         });
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Returns an instance of {@link Random} for testing.
+     *
+     * @return an instance of {@link Random}.
+     */
+    protected final Random random() {
+        return ThreadLocalRandom.current();
     }
 
     // ---------------------------------------------------------------------------------------------

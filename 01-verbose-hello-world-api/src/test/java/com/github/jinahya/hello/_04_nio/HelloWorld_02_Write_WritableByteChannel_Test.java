@@ -30,6 +30,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
+import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
 import java.io.IOException;
@@ -41,7 +43,6 @@ import java.util.concurrent.atomic.LongAdder;
  * A class for testing {@link HelloWorld#write(WritableByteChannel) write(channel)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_02_Write_WritableByteChannel_Arguments_Test
  */
 @DisplayName("write(channel)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
@@ -49,23 +50,53 @@ import java.util.concurrent.atomic.LongAdder;
 @SuppressWarnings({"java:S101"})
 class HelloWorld_02_Write_WritableByteChannel_Test extends _HelloWorldTest {
 
+    /**
+     * Verifies that the {@link HelloWorld#write(WritableByteChannel) write(channel)} method throws
+     * a {@link NullPointerException} when {@code channel} argument is {@code null}.
+     */
+    @DisplayName("""
+            should throw a NullPointerException
+            when the channel argument is null"""
+    )
+    @Test
+    void _ThrowNullPointerException_ChannelIsNull() {
+        // ----------------------------------------------------------------------------------- given
+        final var service = service();
+        final var channel = (WritableByteChannel) null;
+        // ------------------------------------------------------------------------------- when/then
+        Assertions.assertThrows(
+                NullPointerException.class,
+                () -> service.write(channel)
+        );
+    }
+
     @BeforeEach
     void beforeEach() {
-        putBuffer_willReturnTheBuffer_asItsPositionIncreasedBy12();
     }
 
     /**
-     * Verifies {@link HelloWorld#write(WritableByteChannel) write(channel)} method invokes
+     * Verifies that the {@link HelloWorld#write(WritableByteChannel) write(channel)} method invokes
      * {@link HelloWorld#put(ByteBuffer) put(buffer)} method with a byte buffer of
      * {@value HelloWorld#BYTES} bytes, and writes the buffer to specified channel.
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("-> put(buffer[12]) -> channel.write(buffer)+")
+    @DisplayName("""
+            should invoke put(buffer[12])
+            and invoke channel.write(buffer)
+            while the buffer has remaining"""
+    )
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
+        BDDMockito.willAnswer(i -> {
+                    final var buffer = i.getArgument(0, ByteBuffer.class);
+                    buffer.position(buffer.position() + HelloWorld.BYTES);
+                    return buffer;
+                })
+                .given(service)
+                .put(ArgumentMatchers.argThat(b -> b != null && b.remaining() >= HelloWorld.BYTES));
         final var channel = Mockito.mock(WritableByteChannel.class);           // <1>
         final var writtenSoFar = new LongAdder();                              // <2>
         _HelloWorldTestUtils.writeBuffer_willWriteSome(channel, writtenSoFar); // <3>

@@ -21,8 +21,6 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.mockito.ArgumentMatchers;
-import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
 import java.io.IOException;
@@ -34,8 +32,17 @@ import java.nio.channels.WritableByteChannel;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.LongAdder;
+
+import static java.util.concurrent.ThreadLocalRandom.current;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.longThat;
+import static org.mockito.ArgumentMatchers.notNull;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willAnswer;
+import static org.mockito.Mockito.verify;
 
 @Slf4j
 @SuppressWarnings({
@@ -60,120 +67,112 @@ public final class _HelloWorldTestUtils {
     // ------------------------------------------------------------------------- WritableByteChannel
 
     /**
-     * Stubs specified channel whose {@link WritableByteChannel#write(ByteBuffer) write(src)} method
-     * increases the {@code src}'s position by random amount.
+     * Stubs specified channel's {@link WritableByteChannel#write(ByteBuffer) write(src)} method to
+     * increases the {@code src}'s position by a random value.
      *
      * @param channel the channel whose {@link WritableByteChannel#write(ByteBuffer) write(src)}
-     *                method are stubbed.
-     * @param adder   an adder for accumulating written bytes; may be {@code null}.
+     *                method is stubbed.
+     * @param adder   an adder for accumulating the number of bytes written; may be {@code null}.
      * @throws IOException if an I/O error occurs.
      */
     public static void writeBuffer_willWriteSome(final WritableByteChannel channel,
                                                  final LongAdder adder)
             throws IOException {
         requireMock(Objects.requireNonNull(channel, "channel is null"));
-        BDDMockito.given(
-                        channel.write(ArgumentMatchers.argThat(b -> b != null && b.hasRemaining())))
-                .willAnswer(i -> {
-                    final var src = i.getArgument(0, ByteBuffer.class);
-                    final var written = ThreadLocalRandom.current().nextInt(1, src.remaining() + 1);
-                    src.position(src.position() + written);
-                    if (adder != null) {
-                        adder.add(written);
-                    }
-                    return written;
-                });
+        given(channel.write(notNull())).willAnswer(i -> {
+            final var src = i.getArgument(0, ByteBuffer.class);
+            final var written = current().nextInt(1, src.remaining() + 1);
+            src.position(src.position() + written);
+            if (adder != null) {
+                adder.add(written);
+            }
+            return written;
+        });
     }
 
     // --------------------------------------------------------------------- AsynchronousByteChannel
 
     /**
      * Stubs specified channel's {@link WritableByteChannel#write(ByteBuffer) write(src)} method to
-     * return a future increases the {@code src}'s position by random value.
+     * return a future increases the {@code src}'s position by a random value.
      *
      * @param channel the channel whose {@link WritableByteChannel#write(ByteBuffer)} method are
      *                stubbed.
-     * @param adder   an adder for accumulating written bytes; may be {@code null}.
+     * @param adder   an adder for accumulating the number of written bytes; may be {@code null}.
      */
-    public static void write_willReturnFutureSucceeds(final AsynchronousByteChannel channel,
-                                                      final LongAdder adder) {
+    public static void write_willReturnFutureDrainsBuffer(final AsynchronousByteChannel channel,
+                                                          final LongAdder adder) {
         requireMock(channel);
-        final var previousFuture = new Future[1];
-        BDDMockito.given(
-                        channel.write(ArgumentMatchers.argThat(b -> b != null && b.hasRemaining())))
-                .willAnswer(w -> {
-                    if (previousFuture[0] != null) {
-                        Mockito.verify(previousFuture[0], Mockito.times(1)).get();
-                    }
-                    final var src = w.getArgument(0, ByteBuffer.class);
-                    final var future = Mockito.mock(Future.class);
-                    BDDMockito.given(future.get()).willAnswer(g -> {
-                        final var written =
-                                ThreadLocalRandom.current().nextInt(1, src.remaining() + 1);
-                        src.position(src.position() + written);
-                        if (adder != null) {
-                            adder.add(written);
-                        }
-                        return written;
-                    });
-                    previousFuture[0] = future;
-                    return future;
-                });
+        final var futureReference = new AtomicReference<Future<Integer>>();
+        given(channel.write(argThat(b -> b != null && b.hasRemaining()))).willAnswer(w -> {
+            final var previousFuture = futureReference.get();
+            if (previousFuture != null) {
+                verify(previousFuture, Mockito.times(1)).get();
+            }
+            final var src = w.getArgument(0, ByteBuffer.class);
+            @SuppressWarnings({"unchecked"})
+            final var future = (Future<Integer>) Mockito.mock(Future.class);
+            given(future.get()).willAnswer(g -> {
+                final var written = current().nextInt(1, src.remaining() + 1);
+                src.position(src.position() + written);
+                if (adder != null) {
+                    adder.add(written);
+                }
+                return written;
+            });
+            futureReference.set(future);
+            return future;
+        });
     }
 
     public static void write_willReturnFutureFails(final AsynchronousByteChannel channel) {
         requireMock(channel);
-        BDDMockito.given(
-                        channel.write(ArgumentMatchers.argThat(b -> b != null && b.hasRemaining())))
-                .willAnswer(w -> {
-                    final var future = Mockito.mock(Future.class);
-                    BDDMockito.given(future.get())
-                            .willThrow(new ExecutionException(new RuntimeException()));
-                    return future;
-                });
+        given(channel.write(argThat(b -> b != null && b.hasRemaining()))).willAnswer(w -> {
+            final var future = Mockito.mock(Future.class);
+            given(future.get()).willThrow(new ExecutionException(new RuntimeException()));
+            return future;
+        });
     }
 
     @SuppressWarnings({
             "unchecked"
     })
-    public static void writeWithHandler_completes(final AsynchronousByteChannel channel,
-                                                  final LongAdder adder) {
+    public static void write_invokeHandlerCompleted(final AsynchronousByteChannel channel,
+                                                    final LongAdder adder) {
         requireMock(channel);
-        Mockito.doAnswer(i -> {
-                    final var src = i.getArgument(0, ByteBuffer.class);
-                    final var attachment = i.getArgument(1);
-                    final var handler = i.getArgument(2, CompletionHandler.class);
-                    new Thread(() -> {
-                        final var w = ThreadLocalRandom.current().nextInt(1, src.remaining() + 1);
-                        src.position(src.position() + w);
-                        handler.completed(w, attachment);
-                        if (adder != null) {
-                            adder.add(w);
-                        }
-                    }).start();
-                    return null;
-                })
-                .when(channel).write(
-                        ArgumentMatchers.argThat(b -> b != null && b.hasRemaining()),
-                        ArgumentMatchers.any(),
-                        ArgumentMatchers.notNull()
-                );
+        willAnswer(i -> {
+            final var src = i.getArgument(0, ByteBuffer.class);
+            final var attachment = i.getArgument(1);
+            final var handler = i.getArgument(2, CompletionHandler.class);
+            Thread.ofVirtual().start(() -> {
+                final var written = current().nextInt(1, src.remaining() + 1);
+                src.position(src.position() + written);
+                handler.completed(written, attachment);
+                if (adder != null) {
+                    adder.add(written);
+                }
+            });
+            return null;
+        }).given(channel).write(
+                argThat(b -> b != null && b.hasRemaining()),
+                any(),
+                notNull()
+        );
     }
 
     @SuppressWarnings({"unchecked"})
     public static void writeWithHandler_fails(final AsynchronousByteChannel given) {
         requireMock(Objects.requireNonNull(given, "given is null"));
-        BDDMockito.willAnswer(i -> {
-                    final var attachment = i.getArgument(1);
-                    final var handler = i.getArgument(2, CompletionHandler.class);
-                    handler.failed(new Exception(), attachment);
-                    return null;
-                })
-                .given(given).write(
-                        ArgumentMatchers.argThat(b -> b != null && b.hasRemaining()),
-                        ArgumentMatchers.any(),
-                        ArgumentMatchers.notNull()
-                );
+        willAnswer(i -> {
+            final var attachment = i.getArgument(1);
+            final var handler = i.getArgument(2, CompletionHandler.class);
+            handler.failed(new Exception(), attachment);
+            return null;
+        }).given(given).write(
+                argThat(b -> b != null && b.hasRemaining()),
+                any(),
+                notNull()
+        );
     }
 
     // --------------------------------------------------------------------- AsynchronousFileChannel
@@ -193,15 +192,15 @@ public final class _HelloWorldTestUtils {
                                                  final LongAdder adder) {
         requireMock(channel);
         final var previousFuture = new Future[1];
-        BDDMockito.willAnswer(w -> { // invocation of channel.write
+        willAnswer(w -> { // invocation of channel.write
             if (previousFuture[0] != null) {
-                Mockito.verify(previousFuture[0], Mockito.times(1)).get();
+                verify(previousFuture[0], Mockito.times(1)).get();
             }
             final var future = Mockito.mock(Future.class);
-            Mockito.when(future.get()).thenAnswer(g -> { // invocation of future.get
+            given(future.get()).willAnswer(g -> { // invocation of future.get
                 final var src = w.getArgument(0, ByteBuffer.class);
                 final var position = w.getArgument(1, Long.class);
-                final var written = ThreadLocalRandom.current().nextInt(1, src.remaining() + 1);
+                final var written = current().nextInt(1, src.remaining() + 1);
                 src.position(src.position() + written);
                 if (adder != null) {
                     adder.add(written);
@@ -211,8 +210,8 @@ public final class _HelloWorldTestUtils {
             previousFuture[0] = future;
             return future;
         }).given(channel).write(
-                ArgumentMatchers.argThat(b -> b != null && b.hasRemaining()), // <src>
-                ArgumentMatchers.longThat(v -> v >= 0L)                       // <position>
+                argThat(b -> b != null && b.hasRemaining()), // <src>
+                longThat(v -> v >= 0L)                       // <position>
         );
     }
 
@@ -228,11 +227,9 @@ public final class _HelloWorldTestUtils {
     @SuppressWarnings({"unchecked"})
     protected static <T extends Throwable> T _stub_ToFail(AsynchronousFileChannel channel,
                                                           final T exc) {
-        if (!Mockito.mockingDetails(Objects.requireNonNull(channel, "channel is null")).isMock()) {
-            throw new IllegalArgumentException("not a mock: " + channel);
-        }
+        requireMock(channel);
         Objects.requireNonNull(exc, "exc is null");
-        BDDMockito.willAnswer(i -> {
+        willAnswer(i -> {
             var src = i.getArgument(0, ByteBuffer.class);
             var position = i.getArgument(1, Long.class);
             var attachment = i.getArgument(2);
@@ -240,10 +237,10 @@ public final class _HelloWorldTestUtils {
             handler.failed(exc, attachment);
             return null;
         }).given(channel).write(
-                ArgumentMatchers.argThat(b -> b != null && b.hasRemaining()),
-                ArgumentMatchers.longThat(v -> v >= 0L),
-                ArgumentMatchers.any(),
-                ArgumentMatchers.notNull()
+                argThat(b -> b != null && b.hasRemaining()),
+                longThat(v -> v >= 0L),
+                any(),
+                notNull()
         );
         return exc;
     }
@@ -251,15 +248,13 @@ public final class _HelloWorldTestUtils {
     @SuppressWarnings({"unchecked"})
     protected static void _stub_ToComplete(final AsynchronousFileChannel channel,
                                            final LongAdder adder) {
-        if (!Mockito.mockingDetails(Objects.requireNonNull(channel, "channel is null")).isMock()) {
-            throw new IllegalArgumentException("not a mock: " + channel);
-        }
-        BDDMockito.willAnswer(i -> {
+        requireMock(channel);
+        willAnswer(i -> {
             final var src = i.getArgument(0, ByteBuffer.class);
             final var position = i.getArgument(1, Long.class);
             final var attachment = i.getArgument(2);
             final var handler = i.getArgument(3, CompletionHandler.class);
-            final var written = ThreadLocalRandom.current().nextInt(1, src.remaining() + 1);
+            final var written = current().nextInt(1, src.remaining() + 1);
             src.position(src.position() + written);
             if (adder != null) {
                 adder.add(written);
@@ -267,10 +262,10 @@ public final class _HelloWorldTestUtils {
             handler.completed(written, attachment);
             return null;
         }).given(channel).write(
-                ArgumentMatchers.argThat(s -> s != null && s.hasRemaining()),
-                ArgumentMatchers.longThat(p -> p >= 0L),
-                ArgumentMatchers.notNull(),
-                ArgumentMatchers.any()
+                argThat(s -> s != null && s.hasRemaining()),
+                longThat(p -> p >= 0L),
+                notNull(),
+                any()
         );
     }
 

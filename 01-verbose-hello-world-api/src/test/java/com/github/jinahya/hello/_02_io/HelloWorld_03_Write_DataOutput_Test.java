@@ -38,13 +38,32 @@ import java.io.IOException;
  * A class for testing {@link HelloWorld#write(DataOutput) write(data)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_03_Write_DataOutput_Arguments_Test
  */
 @DisplayName("write(data)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
 class HelloWorld_03_Write_DataOutput_Test extends _HelloWorldTest {
+
+    /**
+     * Asserts {@link HelloWorld#write(DataOutput) write(data)} method throws a
+     * {@link NullPointerException} when the {@code data} argument is {@code null}.
+     */
+    @DisplayName("""
+            should throw a NullPointerException
+            when the data argument is null"""
+    )
+    @Test
+    void _ThrowNullPointerException_DataIsNull() {
+        // ----------------------------------------------------------------------------------- given
+        final var service = service();
+        final var data = (DataOutput) null;
+        // ------------------------------------------------------------------------------- when/then
+        Assertions.assertThrows(
+                NullPointerException.class,
+                () -> service.write(data)
+        );
+    }
 
     @BeforeEach
     void beforeEach() {

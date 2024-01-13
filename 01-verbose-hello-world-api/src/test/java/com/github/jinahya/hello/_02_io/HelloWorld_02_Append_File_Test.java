@@ -42,7 +42,6 @@ import java.util.LinkedHashMap;
  * A class for testing {@link HelloWorld#append(File) append(file)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_02_Append_File_Arguments_Test
  */
 @DisplayName("append(file)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
@@ -50,9 +49,25 @@ import java.util.LinkedHashMap;
 @SuppressWarnings({"java:S101"})
 class HelloWorld_02_Append_File_Test extends _HelloWorldTest {
 
+    /**
+     * Verifies {@link HelloWorld#append(File) append(file)} method throws a
+     * {@link NullPointerException} when the {@code file} argument is {@code null}.
+     */
+    @DisplayName("[file == null] -> NullPointerException")
+    @Test
+    void _ThrowNullPointerException_FileIsNull() {
+        // ----------------------------------------------------------------------------------- given
+        final var service = service();
+        final var file = (File) null;
+        // ------------------------------------------------------------------------------- when/then
+        Assertions.assertThrows(
+                NullPointerException.class,
+                () -> service.append(file)
+        );
+    }
+
     @BeforeEach
     void beforeEach() throws IOException {
-//        writeStream_willWrite12Bytes();
         writeStream_willReturnStream();
     }
 
