@@ -26,13 +26,15 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.io.OutputStream;
+
+import static org.mockito.ArgumentMatchers.any;
 
 /**
  * A class for testing {@link HelloWorld#write(OutputStream) write(stream)} method.
@@ -46,10 +48,13 @@ import java.io.OutputStream;
 class HelloWorld_01_Write_OutputStream_Test extends _HelloWorldTest {
 
     /**
-     * Verifies {@link HelloWorld#write(OutputStream) write(stream)} method throws a
+     * Verifies that the {@link HelloWorld#write(OutputStream) write(stream)} method throws a
      * {@link NullPointerException} when the {@code stream} argument is {@code null}.
      */
-    @DisplayName("[stream == null] -> NullPointerException")
+    @DisplayName("""
+            should throw a NullPointerException
+            when the stream argument is null"""
+    )
     @Test
     void _ThrowNullPointerException_StreamIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -62,11 +67,6 @@ class HelloWorld_01_Write_OutputStream_Test extends _HelloWorldTest {
         );
     }
 
-    @BeforeEach
-    void beforeEach() {
-        setArray_willReturnArray();
-    }
-
     /**
      * Asserts {@link HelloWorld#write(OutputStream) write(stream)} method invokes
      * {@link HelloWorld#set(byte[]) set(array)} method with an array of {@value HelloWorld#BYTES}
@@ -75,11 +75,17 @@ class HelloWorld_01_Write_OutputStream_Test extends _HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("-> set[array[12]) -> stream.write(set(array))")
+    @DisplayName("""
+            -> set[array[12])
+            -> stream.write(array)"""
+    )
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
+        BDDMockito.willAnswer(i -> i.getArgument(0, byte[].class))
+                .given(service)
+                .set(any());
         final var stream = Mockito.mock(OutputStream.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(stream);
@@ -89,6 +95,6 @@ class HelloWorld_01_Write_OutputStream_Test extends _HelloWorldTest {
         Assertions.assertNotNull(array);
         Assertions.assertEquals(HelloWorld.BYTES, array.length);
         // TODO: verify, stream.write(array) invoked, once
-        Assertions.assertEquals(stream, result);
+        Assertions.assertSame(stream, result);
     }
 }

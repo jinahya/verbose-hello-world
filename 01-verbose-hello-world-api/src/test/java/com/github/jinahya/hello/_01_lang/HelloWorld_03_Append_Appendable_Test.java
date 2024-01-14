@@ -26,14 +26,15 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
+import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
 import java.io.IOException;
-import java.util.concurrent.ThreadLocalRandom;
+
+import static org.mockito.Mockito.mock;
 
 /**
  * A class for testing {@link HelloWorld#append(Appendable) append(appendable)} method.
@@ -46,34 +47,24 @@ import java.util.concurrent.ThreadLocalRandom;
 @SuppressWarnings({"java:S101"})
 class HelloWorld_03_Append_Appendable_Test extends _HelloWorldTest {
 
-    @Nested
-    class ArgumentsTest {
-
-        /**
-         * Verifies {@link HelloWorld#append(Appendable) append(appendable)} method throws a
-         * {@link NullPointerException} when the {@code appendable} argument is {@code null}.
-         */
-        @DisplayName("[appendable == null] -> NullPointerException")
-        @Test
-        void _ThrowNullPointerException_AppendableNull() {
-            // ------------------------------------------------------------------------------- given
-            final var service = service();
-            final var appendable = (Appendable) null;
-            // --------------------------------------------------------------------------- when/then
-            Assertions.assertThrows(
-                    NullPointerException.class,
-                    () -> service.append(appendable)
-            );
-        }
-    }
-
-    @BeforeEach
-    void beforeEach() {
-        setArray_willReturnArray(a -> {
-            if (a != null) {
-                ThreadLocalRandom.current().nextBytes(a);
-            }
-        });
+    /**
+     * Verifies that the {@link HelloWorld#append(Appendable) append(appendable)} method throws a
+     * {@link NullPointerException} when the {@code appendable} argument is {@code null}.
+     */
+    @DisplayName("""
+            should throw a NullPointerException
+            when the appendable argument is null"""
+    )
+    @Test
+    void _ThrowNullPointerException_AppendableNull() {
+        // ----------------------------------------------------------------------------------- given
+        final var service = service();
+        final var appendable = (Appendable) null;
+        // ------------------------------------------------------------------------------- when/then
+        Assertions.assertThrows(
+                NullPointerException.class,
+                () -> service.append(appendable)
+        );
     }
 
     /**
@@ -86,7 +77,16 @@ class HelloWorld_03_Append_Appendable_Test extends _HelloWorldTest {
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        final var appendable = Mockito.mock(Appendable.class);
+        BDDMockito.willAnswer(i -> {
+            final var array = i.getArgument(0, byte[].class);
+            if (array != null) {
+                for (int j = 0; j < array.length; j++) {
+                    array[j] = (byte) j;
+                }
+            }
+            return array;
+        }).given(service).set(ArgumentMatchers.any(byte[].class));
+        final var appendable = mock(Appendable.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.append(appendable);
         // ------------------------------------------------------------------------------------ then

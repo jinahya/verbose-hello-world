@@ -75,8 +75,8 @@ public final class _HelloWorldTestUtils {
      * @param adder   an adder for accumulating the number of bytes written; may be {@code null}.
      * @throws IOException if an I/O error occurs.
      */
-    public static void writeBuffer_willWriteSome(final WritableByteChannel channel,
-                                                 final LongAdder adder)
+    public static void write_willWriteSome(final WritableByteChannel channel,
+                                           final LongAdder adder)
             throws IOException {
         requireMock(Objects.requireNonNull(channel, "channel is null"));
         given(channel.write(notNull())).willAnswer(i -> {

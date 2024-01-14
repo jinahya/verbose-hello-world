@@ -41,5 +41,5 @@ import org.junit.jupiter.api.DisplayName;
 })
 class HelloWorld_01_Set_ArrayWithIndex_Test extends _HelloWorldTest {
 
-    // empty; we won't implement the method in this module.
+    // empty; we're not going to implement the method in this module.
 }

@@ -26,23 +26,18 @@ import com.github.jinahya.hello._HelloWorldTestUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
+import org.mockito.BDDMockito;
+import org.mockito.Mockito;
 
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.LongAdder;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.BDDMockito.willAnswer;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * A class for testing
@@ -75,10 +70,10 @@ class HelloWorld_06_WriteAsync_AsynchronousByteChannelWithHandler_Test extends _
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var channel = (AsynchronousByteChannel) null;
-        final var handler = mock(CompletionHandler.class);
+        final var handler = Mockito.mock(CompletionHandler.class);
         final var attachment = (Void) null;
         // ------------------------------------------------------------------------------- when/then
-        assertThrows(
+        Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.writeAsync(channel, handler, attachment)
         );
@@ -98,11 +93,11 @@ class HelloWorld_06_WriteAsync_AsynchronousByteChannelWithHandler_Test extends _
     void _ThrowNullPointerException_HandlerIsNull() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        final var channel = mock(AsynchronousByteChannel.class);
+        final var channel = Mockito.mock(AsynchronousByteChannel.class);
         final var handler = (CompletionHandler<AsynchronousByteChannel, Void>) null;
         final var attachment = (Void) null;
         // ------------------------------------------------------------------------------- when/then
-        assertThrows(
+        Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.writeAsync(channel, handler, attachment)
         );
@@ -120,8 +115,8 @@ class HelloWorld_06_WriteAsync_AsynchronousByteChannelWithHandler_Test extends _
      * handler.completed(channel, attachment)}.
      */
     @DisplayName("""
-            should invoke put(buffer[12])
-            , and should write the buffer to channel while the buffer has remaining
+            -> put(buffer[12])
+            -> write the buffer to channel while the buffer has remaining
             """
     )
     @Test
@@ -129,23 +124,25 @@ class HelloWorld_06_WriteAsync_AsynchronousByteChannelWithHandler_Test extends _
     void __() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        willAnswer(i -> {
-            final var buffer = i.getArgument(0, ByteBuffer.class);
-            buffer.position(buffer.position() + HelloWorld.BYTES);
-            return buffer;
-        }).given(service).put(argThat(b -> b != null && b.remaining() >= HelloWorld.BYTES));
-        final var channel = mock(AsynchronousByteChannel.class);
+        BDDMockito.willAnswer(i -> {
+                    final var buffer = i.getArgument(0, ByteBuffer.class);
+                    buffer.position(buffer.position() + HelloWorld.BYTES);
+                    return buffer;
+                })
+                .given(service)
+                .put(ArgumentMatchers.argThat(b -> b != null && b.remaining() >= HelloWorld.BYTES));
+        final var channel = Mockito.mock(AsynchronousByteChannel.class);
         final var writtenSoFar = new LongAdder();
         _HelloWorldTestUtils.write_invokeHandlerCompleted(channel, writtenSoFar);
-        final var handler = mock(CompletionHandler.class);
+        final var handler = Mockito.mock(CompletionHandler.class);
         final var attachment = ThreadLocalRandom.current().nextBoolean() ? null : new Object();
         // ------------------------------------------------------------------------------------ when
         service.writeAsync(channel, handler, attachment);
         // ------------------------------------------------------------------------------------ then
-        verify(service, times(1)).put(bufferCaptor().capture());
+        Mockito.verify(service, Mockito.times(1)).put(bufferCaptor().capture());
         final var buffer = bufferCaptor().getValue();
-        assertNotNull(buffer);
-        assertEquals(HelloWorld.BYTES, buffer.capacity());
+        Assertions.assertNotNull(buffer);
+        Assertions.assertEquals(HelloWorld.BYTES, buffer.capacity());
         // TODO: verify, handler.completed(channel, attachment) invoked, once, within some time.
         // TODO: verify, channel.write(buffer, attachment, a-handler) invoked, at least once.
         // TODO: assert, writtenSoFar.intValue() is equal to BYTES

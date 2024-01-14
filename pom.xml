@@ -47,7 +47,6 @@
   </issueManagement>
 
   <properties>
-    <!--    <maven.compiler.source>17</maven.compiler.source>-->
     <maven.compiler.source>21</maven.compiler.source>
     <maven.compiler.target>${maven.compiler.source}</maven.compiler.target>
     <maven.compiler.release>${maven.compiler.target}</maven.compiler.release>
@@ -56,17 +55,17 @@
     <maven.compiler.testRelase>${maven.compiler.testTarget}</maven.compiler.testRelase>
     <sonar.organization>jinahya-github</sonar.organization>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-    <version.asciidoctorj>3.0.0-alpha.1</version.asciidoctorj>
+    <version.asciidoctorj>3.0.0-alpha.2</version.asciidoctorj>
     <version.asciidoctorj-pdf>2.3.10</version.asciidoctorj-pdf>
-    <version.com.formdev>3.2.5</version.com.formdev>
+    <version.com.formdev>3.3</version.com.formdev>
     <version.com.google.dagger>2.50</version.com.google.dagger>
     <version.com.google.guava>33.0.0-jre</version.com.google.guava>
-    <version.maven-surefire>3.2.3</version.maven-surefire>
+    <version.maven-surefire>3.2.5</version.maven-surefire>
     <version.maven-failsafe>${version.maven-surefire}</version.maven-failsafe>
     <version.maven-javadoc-plugin>3.6.3</version.maven-javadoc-plugin>
+    <version.io.smallrye.reactive>2.5.3</version.io.smallrye.reactive>
     <version.org.apache.openwebbeans>4.0.1</version.org.apache.openwebbeans>
     <version.org.aspectj>1.9.21</version.org.aspectj>
-    <!--    <version.org.glassfish.hk2>3.0.5</version.org.glassfish.hk2>-->
     <version.org.glassfish.hk2>4.0.0-M1</version.org.glassfish.hk2>
     <version.org.hibernate.validator>8.0.1.Final</version.org.hibernate.validator>
     <version.org.jboss.weld>6.0.0.Alpha1</version.org.jboss.weld> <!-- weld-junit5 -->
@@ -76,7 +75,7 @@
     <version.org.mockito>5.8.0</version.org.mockito>
     <version.org.reactivestreams>1.0.4</version.org.reactivestreams>
     <version.org.projectlombok>1.18.30</version.org.projectlombok>
-    <version.org.slf4j>2.0.9</version.org.slf4j>
+    <version.org.slf4j>2.1.0-alpha1</version.org.slf4j> <!-- https://search.maven.org/search?q=g:org.slf4j -->
     <!-- https://docs.spring.io/spring-boot/docs/current/reference/html/dependency-versions.html -->
     <version.org.springframework>6.1.2</version.org.springframework>
     <version.org.springframework.boot>3.2.1</version.org.springframework.boot>
@@ -85,7 +84,7 @@
 
   <dependencyManagement>
     <dependencies>
-      <dependency>
+      <dependency><!-- https://search.maven.org/artifact/ch.qos.logback/logback-classic -->
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
         <version>1.4.14</version>
@@ -138,6 +137,18 @@
         <artifactId>rxjava</artifactId>
         <version>3.1.8</version>
       </dependency>
+      <dependency>
+        <groupId>io.smallrye.reactive</groupId>
+        <artifactId>mutiny-bom</artifactId>
+        <version>${version.io.smallrye.reactive}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+<!--      <dependency>-->
+<!--        <groupId>io.smallrye.reactive</groupId>-->
+<!--        <artifactId>mutiny</artifactId>-->
+<!--        <version>2.5.3</version>-->
+<!--      </dependency>-->
       <dependency>
         <groupId>io.vertx</groupId>
         <artifactId>vertx-reactive-streams</artifactId>
@@ -472,7 +483,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jxr-plugin</artifactId>
-          <version>3.3.1</version>
+          <version>3.3.2</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -515,7 +526,7 @@
         <plugin>
           <groupId>org.asciidoctor</groupId>
           <artifactId>asciidoctor-maven-plugin</artifactId>
-          <version>2.2.4</version>
+          <version>2.2.5</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>

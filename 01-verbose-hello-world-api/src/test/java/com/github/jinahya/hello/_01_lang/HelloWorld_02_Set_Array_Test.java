@@ -25,8 +25,12 @@ import com.github.jinahya.hello._HelloWorldTest;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
+import org.mockito.BDDMockito;
 
-import java.util.concurrent.ThreadLocalRandom;
+import static com.github.jinahya.hello.HelloWorld.BYTES;
+import static java.util.concurrent.ThreadLocalRandom.current;
+import static org.mockito.ArgumentMatchers.anyInt;
 
 /**
  * A class for unit-testing {@link HelloWorld#set(byte[])} method.
@@ -44,7 +48,10 @@ class HelloWorld_02_Set_Array_Test extends _HelloWorldTest {
      * Verifies that the {@link HelloWorld#set(byte[]) set(array)} method throws a
      * {@link NullPointerException} when the {@code array} argument is {@code null}.
      */
-    @DisplayName("[array == null] -> NullPointerException")
+    @DisplayName("""
+            should throw a NullPointerException
+            when the array argument is null"""
+    )
     @Test
     void _ThrowNullPointerException_ArrayIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -57,14 +64,18 @@ class HelloWorld_02_Set_Array_Test extends _HelloWorldTest {
     /**
      * Verifies that the {@link HelloWorld#set(byte[]) set(array)} method throws an
      * {@link ArrayIndexOutOfBoundsException} when {@code array.length} is less than
-     * {@value HelloWorld#BYTES}.
+     * {@link HelloWorld#BYTES}({@value HelloWorld#BYTES}).
      */
-    @DisplayName("[array.length < 12] -> ArrayIndexOutOfBoundsException")
+    @DisplayName("""
+            should throw an ArrayIndexOutOfBoundsException
+            when array.length is less than HelloWorld.BYTES"""
+    )
     @Test
     void _ThrowArrayIndexOutOfBoundsException_ArrayLengthIsLessThan12() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        final var array = new byte[ThreadLocalRandom.current().nextInt(HelloWorld.BYTES)];
+        final var array = new byte[current().nextInt(BYTES)];
+        assert array.length < BYTES;
         // ------------------------------------------------------------------------------- when/then
         // TODO: assert, service.set(array) throws an ArrayIndexOutOfBoundsException.
     }
@@ -79,7 +90,10 @@ class HelloWorld_02_Set_Array_Test extends _HelloWorldTest {
     void __() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        final var array = new byte[HelloWorld.BYTES];
+        BDDMockito.willAnswer(i -> i.getArgument(0, byte[].class))
+                .given(service)
+                .set(ArgumentMatchers.any(byte[].class), anyInt());
+        final var array = new byte[BYTES];
         // ------------------------------------------------------------------------------------ when
         final var result = service.set(array);
         // ------------------------------------------------------------------------------------ then

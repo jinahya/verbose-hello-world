@@ -80,9 +80,9 @@ class HelloWorld_03_Append_Path_Test extends _HelloWorldTest {
         final var path = Mockito.mock(Path.class);
         final var channel = Mockito.mock(FileChannel.class);
         try (var mockStatic = Mockito.mockStatic(FileChannel.class)) {
-            mockStatic.when(() -> FileChannel.open(
-                    ArgumentMatchers.same(path), ArgumentMatchers.any(OpenOption[].class)
-            )).thenReturn(channel);
+            mockStatic.when(() -> FileChannel.open(ArgumentMatchers.same(path),
+                                                   ArgumentMatchers.any(OpenOption[].class)))
+                    .thenReturn(channel);
             // -------------------------------------------------------------------------------- when
             final var result = service.append(path);
             // -------------------------------------------------------------------------------- then

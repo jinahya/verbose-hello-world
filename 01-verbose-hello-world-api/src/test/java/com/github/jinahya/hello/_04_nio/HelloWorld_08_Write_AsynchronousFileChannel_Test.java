@@ -29,6 +29,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
+import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
 import java.nio.ByteBuffer;
@@ -42,11 +43,54 @@ import java.util.concurrent.atomic.LongAdder;
  * {@link HelloWorld#write(AsynchronousFileChannel, long) write(channel, position)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_08_Write_AsynchronousFileChannel_Arguments_Test
  */
 @DisplayName("write(channel, position)")
 @Slf4j
 class HelloWorld_08_Write_AsynchronousFileChannel_Test extends _HelloWorldTest {
+
+    /**
+     * Verifies that the
+     * {@link HelloWorld#write(AsynchronousFileChannel, long) write(channel, position)} method
+     * throws a {@link NullPointerException} when the {@code channel} argument is {@code null}.
+     */
+    @DisplayName("""
+            should throw a NullPointerException
+            when the [channel] argument is [null]"""
+    )
+    @Test
+    void _ThrowNullPointerException_ChannelIsNull() {
+        // ----------------------------------------------------------------------------------- given
+        final var service = service();
+        final var channel = (AsynchronousFileChannel) null;
+        final var position = 0L;
+        // ------------------------------------------------------------------------------- when/then
+        Assertions.assertThrows(
+                NullPointerException.class,
+                () -> service.write(channel, position)
+        );
+    }
+
+    /**
+     * Verifies that the
+     * {@link HelloWorld#write(AsynchronousFileChannel, long) write(channel, position)} method
+     * throws a {@link IllegalArgumentException} when the {@code position} argument is negative.
+     */
+    @DisplayName("""
+            should throw an IllegalArgumentException
+            when the [position] argument is [not positive]"""
+    )
+    @Test
+    void _ThrowIllegalArgumentException_PositionIsNegative() {
+        // ----------------------------------------------------------------------------------- given
+        final var service = service();
+        final var channel = Mockito.mock(AsynchronousFileChannel.class);
+        final var position = ThreadLocalRandom.current().nextLong() | Long.MIN_VALUE;
+        // ------------------------------------------------------------------------------- when/then
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> service.write(channel, position)
+        );
+    }
 
     @BeforeEach
     void _beforeEach() {
@@ -68,6 +112,14 @@ class HelloWorld_08_Write_AsynchronousFileChannel_Test extends _HelloWorldTest {
     void _PutBufferWriteBufferToChannel_() throws InterruptedException, ExecutionException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
+        BDDMockito.willAnswer(i -> {
+                    final var buffer = i.getArgument(0, ByteBuffer.class);
+                    if (buffer != null && buffer.remaining() >= HelloWorld.BYTES) {
+                        buffer.position(buffer.position() + HelloWorld.BYTES);
+                    }
+                    return buffer;
+                })
+                .given(service).put(ArgumentMatchers.any());
         final var channel = Mockito.mock(AsynchronousFileChannel.class);
         final var writtenSoFar = new LongAdder();
         _HelloWorldTestUtils.writeBuffer_willWriteSome(channel, writtenSoFar);

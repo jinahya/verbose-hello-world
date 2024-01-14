@@ -45,9 +45,6 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Flow;
-import java.util.concurrent.Flow.Subscription;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.atomic.LongAccumulator;
@@ -750,52 +747,5 @@ public interface HelloWorld {
         Objects.requireNonNull(function, "function is null");
         Objects.requireNonNull(executor, "executor is null");
         return CompletableFuture.supplyAsync(() -> function.apply(this), executor);
-    }
-
-    // ---------------------------------------------------------------------------------------------
-
-    /**
-     * Publishes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified subscriber as
-     * it requests.
-     *
-     * @param subscriber the subscriber to be subscribed.
-     * @param executor   and executor to publish bytes asynchronously.
-     * @see <a href="https://github.com/reactive-streams/reactive-streams-jvm/">Reactive Streams</a>
-     */
-    default void subscribeForBytes(final Flow.Subscriber<? super Byte> subscriber,
-                                   final ExecutorService executor) {
-        Objects.requireNonNull(subscriber, "subscriber is null");
-        Objects.requireNonNull(executor, "executor is null");
-        HelloWorldFlow.newPublisherForBytes(this, executor).subscribe(subscriber);
-    }
-
-    /**
-     * Publishes arrays of the <a href="#hello-world-bytes">hello-world-bytes</a> to specified
-     * subscriber as it {@link Subscription#request(long) requests}.
-     *
-     * @param subscriber the subscriber to be subscribed.
-     * @param executor   an executor for publishing items asynchronously.
-     * @see <a href="https://github.com/reactive-streams/reactive-streams-jvm/">Reactive Streams</a>
-     */
-    default void subscribeForArrays(final Flow.Subscriber<? super byte[]> subscriber,
-                                    final ExecutorService executor) {
-        Objects.requireNonNull(subscriber, "subscriber is null");
-        Objects.requireNonNull(executor, "executor is null");
-        HelloWorldFlow.newPublisherForArrays(this, executor).subscribe(subscriber);
-    }
-
-    /**
-     * Subscribes specified subscriber, and publishes byte buffers of the <a
-     * href="#hello-world-bytes">hello-world-bytes</a> as
-     * {@link Subscription#request(long) requested}.
-     *
-     * @param subscriber the subscriber.
-     * @param executor   an executor for publishing items asynchronously.
-     */
-    default void subscribeForBuffers(final Flow.Subscriber<? super ByteBuffer> subscriber,
-                                     final ExecutorService executor) {
-        Objects.requireNonNull(subscriber, "subscriber is null");
-        Objects.requireNonNull(executor, "executor is null");
-        HelloWorldFlow.newPublisherForBuffers(this, executor).subscribe(subscriber);
     }
 }

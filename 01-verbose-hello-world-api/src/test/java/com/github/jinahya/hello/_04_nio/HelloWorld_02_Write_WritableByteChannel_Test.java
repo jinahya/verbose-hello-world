@@ -27,7 +27,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
@@ -38,6 +37,9 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 import java.util.concurrent.atomic.LongAdder;
+
+import static com.github.jinahya.hello.HelloWorld.BYTES;
+import static org.mockito.Mockito.mock;
 
 /**
  * A class for testing {@link HelloWorld#write(WritableByteChannel) write(channel)} method.
@@ -70,10 +72,6 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends _HelloWorldTest {
         );
     }
 
-    @BeforeEach
-    void beforeEach() {
-    }
-
     /**
      * Verifies that the {@link HelloWorld#write(WritableByteChannel) write(channel)} method invokes
      * {@link HelloWorld#put(ByteBuffer) put(buffer)} method with a byte buffer of
@@ -82,31 +80,28 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends _HelloWorldTest {
      * @throws IOException if an I/O error occurs.
      */
     @DisplayName("""
-            should invoke put(buffer[12])
-            and invoke channel.write(buffer)
-            while the buffer has remaining"""
+            -> put(buffer[12])
+            -> channel.write(buffer)+"""
     )
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         BDDMockito.willAnswer(i -> {
-                    final var buffer = i.getArgument(0, ByteBuffer.class);
-                    buffer.position(buffer.position() + HelloWorld.BYTES);
-                    return buffer;
-                })
-                .given(service)
-                .put(ArgumentMatchers.argThat(b -> b != null && b.remaining() >= HelloWorld.BYTES));
-        final var channel = Mockito.mock(WritableByteChannel.class);           // <1>
-        final var writtenSoFar = new LongAdder();                              // <2>
-        _HelloWorldTestUtils.writeBuffer_willWriteSome(channel, writtenSoFar); // <3>
+            final var buffer = i.getArgument(0, ByteBuffer.class);
+            buffer.position(buffer.position() + BYTES);
+            return buffer;
+        }).given(service).put(ArgumentMatchers.argThat(b -> b != null && b.remaining() >= BYTES));
+        final var channel = mock(WritableByteChannel.class); // <1>
+        final var writtenSoFar = new LongAdder();            // <2>
+        _HelloWorldTestUtils.write_willWriteSome(channel, writtenSoFar);    // <3>
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(channel);
         // ------------------------------------------------------------------------------------ then
         Mockito.verify(service, Mockito.times(1)).put(bufferCaptor().capture()); // <1>
         final var buffer = bufferCaptor().getValue();                            // <2>
         Assertions.assertNotNull(buffer);                                        // <3>
-        Assertions.assertEquals(HelloWorld.BYTES, buffer.capacity());            // <4>
+        Assertions.assertEquals(BYTES, buffer.capacity());                       // <4>
         // TODO: verify, channel.write(buffer) invoked, at least once.
         // TODO: assert, buffer has no remaining.
         // TODO: assert, writtenSoFar.intValue() is equal to HelloWorld.BYTES.

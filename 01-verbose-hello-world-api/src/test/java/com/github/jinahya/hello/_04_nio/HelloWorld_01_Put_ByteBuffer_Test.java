@@ -22,7 +22,7 @@ package com.github.jinahya.hello._04_nio;
 
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello._HelloWorldTest;
-import com.github.jinahya.hello.util.java.nio.JavaNioUtils;
+import com.github.jinahya.hello.util.java.nio.ByteBufferUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +40,8 @@ import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
+
+import static org.mockito.Mockito.spy;
 
 /**
  * A class for testing {@link HelloWorld#put(ByteBuffer)} method.
@@ -86,12 +88,12 @@ class HelloWorld_01_Put_ByteBuffer_Test extends _HelloWorldTest {
     Stream<DynamicTest> _ThrowBufferOverflowException_BufferRemainingIsLessThanHelloWorldBytes() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // ------------------------------------------------------------------------------- when/then
         return Stream.of(
                 ByteBuffer.allocate(ThreadLocalRandom.current().nextInt(HelloWorld.BYTES)),
                 ByteBuffer.allocateDirect(ThreadLocalRandom.current().nextInt(HelloWorld.BYTES))
         ).map(b -> DynamicTest.dynamicTest(
                 "should throw a BufferOverflowException for " + b,
+                // ----------------------------------------------------------------------- when/then
                 () -> {
                     Assertions.assertThrows(
                             BufferOverflowException.class,
@@ -129,16 +131,20 @@ class HelloWorld_01_Put_ByteBuffer_Test extends _HelloWorldTest {
             assert b.limit() == b.capacity();
             assert b.hasArray();
             assert b.arrayOffset() == 0;
-            final var index = random().nextInt(HelloWorld.BYTES + 1);
-            final var length = HelloWorld.BYTES + random().nextInt(HelloWorld.BYTES - index + 1);
-            buffer = Mockito.spy(b.slice(index, length));
+            final var index = ThreadLocalRandom.current().nextInt(HelloWorld.BYTES + 1);
+            final var length = HelloWorld.BYTES + ThreadLocalRandom.current()
+                    .nextInt(HelloWorld.BYTES - index + 1);
+            buffer = spy(b.slice(index, length));
         }
         buffer.position(
                 buffer.position() +
-                random().nextInt(buffer.remaining() - HelloWorld.BYTES + 1)
+                ThreadLocalRandom.current().nextInt(buffer.remaining() - HelloWorld.BYTES + 1)
         );
-        buffer.limit(buffer.limit() - random().nextInt(buffer.remaining() - HelloWorld.BYTES + 1));
-        JavaNioUtils.print(buffer);
+        buffer.limit(
+                buffer.limit() -
+                ThreadLocalRandom.current().nextInt(buffer.remaining() - HelloWorld.BYTES + 1)
+        );
+        ByteBufferUtils.printBuffer(buffer);
         assert buffer.hasArray();
         assert buffer.remaining() >= HelloWorld.BYTES;
         final var position = buffer.position();
@@ -157,8 +163,8 @@ class HelloWorld_01_Put_ByteBuffer_Test extends _HelloWorldTest {
      * bytes, puts the array to {@code buffer}, and returns the {@code buffer}.
      */
     @DisplayName("""
-            should invoke set(array[HelloWorld.BYTES])
-            and put the array to the buffer"""
+            -> set(array[HelloWorld.BYTES])
+            -> put the array to the buffer"""
     )
     @Test
     void __BufferDoesNotHaveBackingArray() {
@@ -176,11 +182,12 @@ class HelloWorld_01_Put_ByteBuffer_Test extends _HelloWorldTest {
                     b.hasArray(),
                     "failed to assume that a direct buffer does not has a backing array"
             );
-            b.position(random().nextInt(HelloWorld.BYTES + 1));
-            b.limit(b.limit() - random().nextInt(b.remaining() - HelloWorld.BYTES + 1));
-            buffer = Mockito.spy(b);
+            b.position(ThreadLocalRandom.current().nextInt(HelloWorld.BYTES + 1));
+            b.limit(b.limit() - ThreadLocalRandom.current()
+                    .nextInt(b.remaining() - HelloWorld.BYTES + 1));
+            buffer = spy(b);
         }
-        JavaNioUtils.print(buffer);
+        ByteBufferUtils.printBuffer(buffer);
         assert !buffer.hasArray();
         assert buffer.remaining() >= HelloWorld.BYTES;
         final var position = buffer.position();

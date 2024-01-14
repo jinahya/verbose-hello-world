@@ -26,9 +26,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
+import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
 import java.io.DataOutput;
@@ -65,11 +66,6 @@ class HelloWorld_03_Write_DataOutput_Test extends _HelloWorldTest {
         );
     }
 
-    @BeforeEach
-    void beforeEach() {
-        setArray_willReturnArray();
-    }
-
     /**
      * Asserts {@link HelloWorld#write(DataOutput) write(data)} method invokes
      * {@link HelloWorld#set(byte[]) set(array)} method with an array of {@value HelloWorld#BYTES}
@@ -82,6 +78,9 @@ class HelloWorld_03_Write_DataOutput_Test extends _HelloWorldTest {
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
+        BDDMockito.willAnswer(i -> i.getArgument(0, byte[].class))
+                .given(service)
+                .set(ArgumentMatchers.any());
         final var data = Mockito.mock(DataOutput.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(data);

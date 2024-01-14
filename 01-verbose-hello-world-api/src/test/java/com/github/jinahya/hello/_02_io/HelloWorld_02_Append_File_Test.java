@@ -26,9 +26,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
+import org.mockito.BDDMockito;
 import org.mockito.MockedConstruction;
 import org.mockito.Mockito;
 
@@ -50,10 +51,13 @@ import java.util.LinkedHashMap;
 class HelloWorld_02_Append_File_Test extends _HelloWorldTest {
 
     /**
-     * Verifies {@link HelloWorld#append(File) append(file)} method throws a
+     * Verifies that the {@link HelloWorld#append(File) append(file)} method throws a
      * {@link NullPointerException} when the {@code file} argument is {@code null}.
      */
-    @DisplayName("[file == null] -> NullPointerException")
+    @DisplayName("""
+            should throw a NullPointerException
+            when the file argument is null"""
+    )
     @Test
     void _ThrowNullPointerException_FileIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -66,11 +70,6 @@ class HelloWorld_02_Append_File_Test extends _HelloWorldTest {
         );
     }
 
-    @BeforeEach
-    void beforeEach() throws IOException {
-        writeStream_willReturnStream();
-    }
-
     /**
      * Verifies {@link HelloWorld#append(File) append(file)} method constructs a new
      * {@link FileOutputStream} with {@code file} and {@code true}, invokes
@@ -81,20 +80,22 @@ class HelloWorld_02_Append_File_Test extends _HelloWorldTest {
      */
     @DisplayName("-> write(new FileOutputStream(file, true))")
     @Test
-    void _InvokeWriteWithFileOutputStreamOfAppendingMode_()
-            throws IOException, NoSuchMethodException {
+    void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
+        BDDMockito.willAnswer(i -> i.getArgument(0, OutputStream.class))
+                .given(service)
+                .write(ArgumentMatchers.any(OutputStream.class));
         final var file = Mockito.mock(File.class);
         final var contexts = new LinkedHashMap<FileOutputStream, MockedConstruction.Context>();
         try (var mock = Mockito.mockConstruction(FileOutputStream.class, contexts::put)) {
             // -------------------------------------------------------------------------------- when
             final var result = service.append(file);
             // ---------------------------------------------------------------------------------then
-            // TODO: assert, FileOutputStream(file, true) invoked, once
-            // TODO: verify, service.write(stream) invoked, once
-            // TODO: verify, stream.flush() invoked, once
-            // TODO: verify, stream.close() invoked, once
+            // TODO: assert, FileOutputStream(file, true)<stream> invoked, once
+            // TODO: verify, service.write(<stream>) invoked, once
+            // TODO: verify, <stream>.flush() invoked, once
+            // TODO: verify, <stream>.close() invoked, once
             Assertions.assertSame(file, result);
         }
     }

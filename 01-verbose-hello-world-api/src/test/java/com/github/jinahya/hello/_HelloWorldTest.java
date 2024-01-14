@@ -25,7 +25,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -37,6 +36,7 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.mockito.verification.VerificationMode;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -46,11 +46,15 @@ import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.channels.WritableByteChannel;
 import java.util.Objects;
-import java.util.Random;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.LongAdder;
 import java.util.function.Consumer;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.BDDMockito.willAnswer;
+import static org.mockito.Mockito.verify;
 
 /**
  * An abstract class for testing methods defined in {@link HelloWorld} interface.
@@ -105,7 +109,7 @@ public abstract class _HelloWorldTest {
             throw new IllegalArgumentException("not a mock: " + channel);
         }
         Objects.requireNonNull(adder, "adder is null");
-        BDDMockito.willAnswer(w -> { // invocation of channel.write
+        willAnswer(w -> { // invocation of channel.write
             var future = Mockito.mock(Future.class);
             Mockito.when(future.get()).thenAnswer(g -> { // invocation of future.get
                 var src = w.getArgument(0, ByteBuffer.class);
@@ -141,7 +145,7 @@ public abstract class _HelloWorldTest {
             throw new IllegalArgumentException("not a mock: " + channel);
         }
         Objects.requireNonNull(exc, "exc is null");
-        BDDMockito.willAnswer(i -> {
+        willAnswer(i -> {
             var src = i.getArgument(0, ByteBuffer.class);
             var position = i.getArgument(1, Long.class);
             var attachment = i.getArgument(2);
@@ -151,7 +155,7 @@ public abstract class _HelloWorldTest {
         }).given(channel).write(
                 ArgumentMatchers.argThat(b -> b != null && b.hasRemaining()),
                 ArgumentMatchers.longThat(v -> v >= 0L),
-                ArgumentMatchers.any(),
+                any(),
                 ArgumentMatchers.notNull()
         );
         return exc;
@@ -163,7 +167,7 @@ public abstract class _HelloWorldTest {
         if (!Mockito.mockingDetails(Objects.requireNonNull(channel, "channel is null")).isMock()) {
             throw new IllegalArgumentException("not a mock: " + channel);
         }
-        BDDMockito.willAnswer(i -> {
+        willAnswer(i -> {
             final var src = i.getArgument(0, ByteBuffer.class);
             final var position = i.getArgument(1, Long.class);
             final var attachment = i.getArgument(2);
@@ -179,7 +183,7 @@ public abstract class _HelloWorldTest {
                 ArgumentMatchers.argThat(s -> s != null && s.hasRemaining()),
                 ArgumentMatchers.longThat(p -> p >= 0L),
                 ArgumentMatchers.notNull(),
-                ArgumentMatchers.any()
+                any()
         );
     }
 
@@ -194,7 +198,7 @@ public abstract class _HelloWorldTest {
                 Objects.requireNonNull(channel, "channel is null")).isMock()) {
             throw new IllegalArgumentException("not a mock: " + channel);
         }
-        BDDMockito.willAnswer(i -> {
+        willAnswer(i -> {
             var src = i.getArgument(0, ByteBuffer.class);
             var attachment = i.getArgument(1);
             var handler = i.getArgument(2, CompletionHandler.class);
@@ -202,7 +206,7 @@ public abstract class _HelloWorldTest {
             return null;
         }).given(channel).write(
                 ArgumentMatchers.argThat(b -> b != null && b.hasRemaining()), // <src>
-                ArgumentMatchers.any(),
+                any(),
                 // <attachment>
                 ArgumentMatchers.notNull()                                    // <handler>
         );
@@ -222,7 +226,7 @@ public abstract class _HelloWorldTest {
             throw new IllegalArgumentException("not a mock: " + channel);
         }
         Objects.requireNonNull(adder, "adder is null");
-        BDDMockito.willAnswer(i -> {
+        willAnswer(i -> {
             var src = i.getArgument(0, ByteBuffer.class);
             var attachment = i.getArgument(1);
             var handler = i.getArgument(2, CompletionHandler.class);
@@ -233,7 +237,7 @@ public abstract class _HelloWorldTest {
             return null;
         }).given(channel).write(
                 ArgumentMatchers.argThat(b -> b != null && b.hasRemaining()), // <src>
-                ArgumentMatchers.any(),
+                any(),
                 // <attachment>
                 ArgumentMatchers.notNull()                                    // <handler>
         );
@@ -262,21 +266,10 @@ public abstract class _HelloWorldTest {
     }
 
     // ---------------------------------------------------------------------------------------------
-
-    /**
-     * Returns an instance of {@link Random} for testing.
-     *
-     * @return an instance of {@link Random}.
-     */
-    protected final Random random() {
-        return ThreadLocalRandom.current();
-    }
-
-    // ---------------------------------------------------------------------------------------------
     protected final void writeChannel_willReturnChannel() throws IOException {
         Mockito.doAnswer(i -> i.getArgument(0))
                 .when(service)
-                .write(ArgumentMatchers.any(WritableByteChannel.class));
+                .write(any(WritableByteChannel.class));
     }
 
     /**
@@ -284,25 +277,30 @@ public abstract class _HelloWorldTest {
      * {@value HelloWorld#BYTES} bytes to the {@code stream}, and return the {@code stream}.
      */
     protected final void writeStream_willWrite12Bytes() throws IOException {
-        BDDMockito.willAnswer(i -> {
+        willAnswer(i -> {
             var stream = i.getArgument(0, OutputStream.class);
             stream.write(new byte[HelloWorld.BYTES]);
             return stream;
-        }).given(service).write(ArgumentMatchers.any(OutputStream.class));
+        }).given(service).write(any(OutputStream.class));
     }
 
     // -------------------------------------------------------------------------- set(byte[], index)
 
     /**
-     * Stubs {@code service}'s {@link HelloWorld#set(byte[], int) set(array, index)} method to just
-     * return the {@code array} argument.
+     * Stubs {@link #service() service}'s {@link HelloWorld#set(byte[], int) set(array, index)}
+     * method to just return the {@code array} argument.
      */
-    @BeforeEach
-    final void setArrayIndex_willReturnArray() {
-        Mockito.doAnswer(i -> i.getArgument(0))                         // <3>
-                .when(service)                                          // <1>
-                .set(ArgumentMatchers.any(), ArgumentMatchers.anyInt()) // <2>
+    protected final void stub_setArrayIndex_toReturnArray() {
+        willAnswer(i -> i.getArgument(0))         // <3>
+                .given(service)                   // <1>
+                .set(any(byte[].class), anyInt()) // <2>
         ;
+    }
+
+    protected final void verify_setArrayIndex_invoked(final VerificationMode verificationMode,
+                                                      final byte[] matchedArray,
+                                                      final Integer matchedIndex) {
+        verify(service, verificationMode).set(matchedArray, matchedIndex);
     }
 
     // --------------------------------------------------------------------------------- set(byte[])
@@ -321,7 +319,7 @@ public abstract class _HelloWorldTest {
                     return array;
                 })
                 .when(service)
-                .set(ArgumentMatchers.any());
+                .set(any());
     }
 
     /**
@@ -346,7 +344,7 @@ public abstract class _HelloWorldTest {
     protected final void writeStream_willReturnStream() throws IOException {
         Mockito.doAnswer(i -> i.getArgument(0))
                 .when(service)
-                .write(ArgumentMatchers.any(OutputStream.class));
+                .write(any(OutputStream.class));
     }
 
     // --------------------------------------------------------------------------------- put(buffer)
@@ -366,7 +364,7 @@ public abstract class _HelloWorldTest {
                     return buffer;
                 })
                 .when(service)
-                .put(ArgumentMatchers.any());
+                .put(any());
     }
 
     /**

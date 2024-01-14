@@ -25,9 +25,11 @@ import com.github.jinahya.hello._HelloWorldTest;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
+import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
 import java.nio.channels.AsynchronousByteChannel;
@@ -41,13 +43,32 @@ import java.util.function.BiFunction;
  * {@link HelloWorld#writeCompletable(AsynchronousByteChannel) writeCompletable(channel)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorld_07_WriteCompletable_AsynchronousByteChannel_Arguments_Test
  */
 @DisplayName("writeCompletable(channel)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
 class HelloWorld_07_WriteCompletable_AsynchronousByteChannel_Test extends _HelloWorldTest {
+
+    /**
+     * Verifies that the
+     * {@link HelloWorld#writeCompletable(AsynchronousByteChannel) writeCompletable(channel)} method
+     * throws a {@link NullPointerException} when the {@code channel} argument is {@code null}.
+     */
+    @DisplayName("""
+            should throw a NullPointerException
+            when the channel argument is null""")
+    @Test
+    void _ThrowNullPointerException_ChannelIsNull() {
+        // ----------------------------------------------------------------------------------- given
+        final var service = service();
+        final var channel = (AsynchronousByteChannel) null;
+        // ------------------------------------------------------------------------------- when/then
+        Assertions.assertThrows(
+                NullPointerException.class,
+                () -> service.writeCompletable(channel)
+        );
+    }
 
     /**
      * Verifies
@@ -66,15 +87,15 @@ class HelloWorld_07_WriteCompletable_AsynchronousByteChannel_Test extends _Hello
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var channel = Mockito.mock(AsynchronousByteChannel.class);
-        Mockito.doAnswer(i -> {
+        BDDMockito.willAnswer(i -> {
             final var handler = i.getArgument(1, CompletionHandler.class);
             final var attachment = i.getArgument(2);
             handler.completed(channel, attachment);
             return null;
-        }).when(service).writeAsync(
-                ArgumentMatchers.same(channel),
-                ArgumentMatchers.notNull(),
-                ArgumentMatchers.any()
+        }).given(service).writeAsync(
+                ArgumentMatchers.same(channel), // <channel>
+                ArgumentMatchers.notNull(),     // <handler>
+                ArgumentMatchers.any()          // <attachment>
         );
         // ------------------------------------------------------------------------------------ when
         final var future = service.writeCompletable(channel);

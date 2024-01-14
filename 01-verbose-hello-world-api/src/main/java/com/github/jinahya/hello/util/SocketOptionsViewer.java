@@ -38,8 +38,7 @@ import java.util.concurrent.Callable;
  * @see HelloWorldNetUtils#printSocketOptions(Class, Object)
  */
 @Slf4j
-class SocketOptionsViewer
-        extends _AbstractViewer {
+class SocketOptionsViewer extends _AbstractViewer {
 
     private static final String NAME = "Socket Options Viewer";
 
@@ -47,8 +46,7 @@ class SocketOptionsViewer
         System.setProperty("apple.awt.application.name", NAME);
     }
 
-    public static void main(final String... args)
-            throws Exception {
+    public static void main(final String... args) throws Exception {
         if (!init(args, SocketOptionsPrinter.class)) {
             return;
         }
