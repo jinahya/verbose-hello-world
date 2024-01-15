@@ -27,10 +27,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
-import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
-import java.nio.ByteBuffer;
 import java.time.Duration;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
@@ -149,15 +147,6 @@ class _HelloWorld_Flow_02_ArrayPublisher_Test extends __HelloWorld_Flow_Test {
     void __() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        BDDMockito.willAnswer(i -> {
-            final var buffer = i.getArgument(0, ByteBuffer.class);
-            if (buffer != null) {
-                for (int j = 0; j < HelloWorld.BYTES && buffer.hasRemaining(); j++) {
-                    buffer.put((byte) j);
-                }
-            }
-            return buffer;
-        }).given(service).put(ArgumentMatchers.any(ByteBuffer.class));
         final var publisher = Mockito.spy(new ArrayPublisher(service));
         final var n = ThreadLocalRandom.current().nextInt(HelloWorld.BYTES >> 1) + 1;
         final var subscriber = Mockito.spy(new Flow.Subscriber<byte[]>() { // @formatter:off

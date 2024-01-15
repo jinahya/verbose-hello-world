@@ -404,6 +404,9 @@ public final class HelloWorldFlow {
         private HelloWorldSubscriber() { super(); }
         @Override public void onSubscribe(final Flow.Subscription subscription) {
             log.debug("{}.onSubscribe({})", this, subscription);
+            if (this.subscription != null) {
+                this.subscription.cancel();
+            }
             this.subscription = subscription;
         }
         @Override public void onNext(final T item) {

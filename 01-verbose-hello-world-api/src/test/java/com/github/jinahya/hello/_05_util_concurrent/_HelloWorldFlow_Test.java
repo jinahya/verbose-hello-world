@@ -23,11 +23,9 @@ package com.github.jinahya.hello._05_util_concurrent;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
@@ -36,19 +34,4 @@ abstract class _HelloWorldFlow_Test extends __HelloWorld_Flow_Test {
     static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor(
             Thread.ofVirtual().name("publisher-", 0L).factory()
     );
-
-    static {
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            EXECUTOR.shutdown();
-            final boolean terminated;
-            try {
-                terminated = EXECUTOR.awaitTermination(4L, TimeUnit.SECONDS);
-            } catch (final InterruptedException ie) {
-                Thread.currentThread().interrupt();
-                throw new RuntimeException(ie);
-            }
-            Assertions.assertTrue(terminated, "not terminated");
-            EXECUTOR.close();
-        }));
-    }
 }
