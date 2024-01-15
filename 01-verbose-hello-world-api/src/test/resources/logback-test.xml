@@ -24,8 +24,15 @@
       <pattern>%d{HH:mm:ss.SSS} [%20thread] %highlight(%-5level) - %msg%n</pattern>
     </encoder>
   </appender>
+  <appender name="async" class="ch.qos.logback.classic.AsyncAppender">
+    <appender-ref ref="console"/>
+    <queueSize>10000</queueSize>
+    <maxFlushTime>5000</maxFlushTime>
+    <neverBlock>true</neverBlock>
+  </appender>
   <root level="info">
     <appender-ref ref="console"/>
+    <!--    <appender-ref ref="async"/>-->
   </root>
   <logger name="com.github.jinahya.hello" level="debug"/>
 </configuration>

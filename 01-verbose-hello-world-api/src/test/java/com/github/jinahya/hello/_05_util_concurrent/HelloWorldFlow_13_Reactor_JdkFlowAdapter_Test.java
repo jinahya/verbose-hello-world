@@ -20,40 +20,12 @@ package com.github.jinahya.hello._05_util_concurrent;
  * #L%
  */
 
-import com.github.jinahya.hello.HelloWorld;
-import com.github.jinahya.hello._HelloWorldTest;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-
-import java.nio.charset.StandardCharsets;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 @DisplayName("JdkFlowAdapter")
 @Slf4j
-class HelloWorldFlow_09_Reactor_JdkFlowAdapter_Test extends _HelloWorldTest {
-
-    private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor(
-            Thread.ofVirtual().name("publisher-", 0L).factory()
-    );
-
-    @AfterAll
-    static void closeTheExecutor() {
-        EXECUTOR.close();
-    }
-
-    // ---------------------------------------------------------------------------------------------
-    @BeforeEach
-    void beforeEach() {
-        putBuffer_willReturnTheBuffer(b -> {
-            if (b == null || b.remaining() < HelloWorld.BYTES) {
-                return;
-            }
-            b.put("hello, world".getBytes(StandardCharsets.US_ASCII)).clear();
-        });
-    }
+class HelloWorldFlow_13_Reactor_JdkFlowAdapter_Test extends _HelloWorldFlow_Test {
 
     // -----------------------------------------------------------------------------------------------------------------
 

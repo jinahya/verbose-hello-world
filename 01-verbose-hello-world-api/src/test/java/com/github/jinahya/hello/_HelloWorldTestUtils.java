@@ -21,6 +21,8 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
+import org.awaitility.Awaitility;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 import java.io.IOException;
@@ -29,6 +31,7 @@ import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.channels.WritableByteChannel;
+import java.time.Duration;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -267,6 +270,19 @@ public final class _HelloWorldTestUtils {
                 notNull(),
                 any()
         );
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    public static void await(final Duration duration) {
+        log.debug("awaiting for {}...", duration);
+        Awaitility.await()
+                .timeout(duration.plusMillis(1L))
+                .pollDelay(duration)
+                .untilAsserted(() -> Assertions.assertTrue(true));
+    }
+
+    public static void awaitForOneSecond() {
+        await(Duration.ofSeconds(1L));
     }
 
     // ---------------------------------------------------------------------------------------------

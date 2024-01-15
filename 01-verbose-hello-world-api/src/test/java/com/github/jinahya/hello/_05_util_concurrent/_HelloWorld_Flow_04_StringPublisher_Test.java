@@ -21,7 +21,6 @@ package com.github.jinahya.hello._05_util_concurrent;
  */
 
 import com.github.jinahya.hello.HelloWorld;
-import com.github.jinahya.hello._HelloWorldTest;
 import lombok.extern.slf4j.Slf4j;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Assertions;
@@ -39,7 +38,7 @@ import java.util.concurrent.Flow;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
-class HelloWorld_04_Flow_StringPublisher_Test extends _HelloWorldTest {
+class _HelloWorld_Flow_04_StringPublisher_Test extends __HelloWorld_Flow_Test {
 
     // ---------------------------------------------------------------------------------------------
     static class StringPublisher implements Flow.Publisher<String> { // @formatter:off
@@ -85,7 +84,7 @@ class HelloWorld_04_Flow_StringPublisher_Test extends _HelloWorldTest {
                 }
                 private Flow.Subscription subscription;
             };
-            new HelloWorld_03_Flow_BufferPublisher_Test.BufferPublisher(service).subscribe(processor);
+            new _HelloWorld_Flow_03_BufferPublisher_Test.BufferPublisher(service).subscribe(processor);
             processor.subscribe(subscriber);
         }
         final HelloWorld service;
@@ -110,7 +109,7 @@ class HelloWorld_04_Flow_StringPublisher_Test extends _HelloWorldTest {
             }
             @Override public void onSubscribe(final Flow.Subscription subscription) {
                 log.debug("{}.onSubscribe({})", this, subscription);
-                log.debug("    - requesting {} item(s)...", n);
+                log.debug("  - requesting {} item(s)...", n);
                 subscription.request(n);
             }
             @Override public void onNext(final String item) {

@@ -20,12 +20,11 @@ package com.github.jinahya.hello._05_util_concurrent;
  * #L%
  */
 
-import com.github.jinahya.hello._HelloWorldTest;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
 @Slf4j
-class HelloWorldFlow_08_RxJava extends _HelloWorldTest {
+class HelloWorldFlow_12_RxJava extends _HelloWorldFlow_Test {
 
     @Test
     void __() {

@@ -21,54 +21,23 @@ package com.github.jinahya.hello._05_util_concurrent;
  */
 
 import com.github.jinahya.hello.HelloWorldFlow;
-import com.github.jinahya.hello._HelloWorldTest;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
-import org.mockito.BDDMockito;
 
 import java.nio.ByteBuffer;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Flow;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 
-@DisplayName("HelloWorldFlow.HelloWorldPublisher.OfArrays")
+@DisplayName("HelloWorldFlow.HelloWorldPublisher.OfBuffer")
 @Slf4j
-class HelloWorldFlow_02_HelloWorldPublisher_OfBuffers_Test extends _HelloWorldTest {
-
-    private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor(
-            Thread.ofVirtual().name("buffer-publisher-", 0L).factory()
-    );
-
-    @AfterAll
-    static void closeExecutor() throws InterruptedException {
-        EXECUTOR.shutdown();
-        final var terminated = EXECUTOR.awaitTermination(4L, TimeUnit.SECONDS);
-        Assertions.assertTrue(terminated, "not terminated; cancel() not invoked?");
-        EXECUTOR.close();
-    }
+class HelloWorldFlow_03_HelloWorldPublisher_OfBuffer_Test extends _HelloWorldFlow_Test {
 
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        BDDMockito.willAnswer(i -> {
-                    final var buffer = i.getArgument(0, ByteBuffer.class);
-                    if (buffer != null) {
-                        while (buffer.hasRemaining()) {
-                            buffer.put((byte) buffer.position());
-                        }
-                    }
-                    return buffer;
-                })
-                .given(service)
-                .put(ArgumentMatchers.any(ByteBuffer.class));
-        final var publisher = new HelloWorldFlow.HelloWorldPublisher.OfBuffer(service(), EXECUTOR);
+        final var publisher = new HelloWorldFlow.HelloWorldPublisher.OfBuffer(service, EXECUTOR);
         final var subscriber = new HelloWorldFlow.HelloWorldSubscriber.OfBuffer() { // @formatter:off
             @Override public void onSubscribe(final Flow.Subscription subscription) {
                 super.onSubscribe(subscription);
