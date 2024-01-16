@@ -30,7 +30,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @DisplayName("HelloWorldFlow.HelloWorldPublisher.OfString")
 @Slf4j
-class HelloWorldFlow_04_HelloWorldPublisher_OfString_Test extends _HelloWorldFlow_Test {
+class HelloWorldFlow_04_HelloWorldPublisher_OfString_Test extends _HelloWorldFlowTest {
 
     @Test
     void __() {

@@ -22,13 +22,13 @@ package com.github.jinahya.hello._04_nio;
 
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello._HelloWorldTest;
-import com.github.jinahya.hello._HelloWorldTestUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
@@ -37,12 +37,13 @@ import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.LongAdder;
 
 /**
  * A class for testing
- * {@link HelloWorld#writeAsync(AsynchronousByteChannel, CompletionHandler, Object)
- * writeAsync(channel, handler, attachment)} method.
+ * {@link HelloWorld#write(AsynchronousByteChannel, CompletionHandler, Object) write(channel,
+ * handler, attachment)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -52,17 +53,17 @@ import java.util.concurrent.atomic.LongAdder;
 @SuppressWarnings({
         "java:S101"
 })
-class HelloWorld_06_WriteAsync_AsynchronousByteChannelWithHandler_Test extends _HelloWorldTest {
+class HelloWorld_06_Write_AsynchronousByteChannelWithHandler_Test extends _HelloWorldTest {
 
     /**
      * Verifies that the
-     * {@link HelloWorld#writeAsync(AsynchronousByteChannel, CompletionHandler, Object)
-     * writeAsync(channel, handler, attachment)} method throws a {@link NullPointerException} when
-     * the {@code channel} argument is {@code null}.
+     * {@link HelloWorld#write(AsynchronousByteChannel, CompletionHandler, Object) write(channel,
+     * handler, attachment)} method throws a {@link NullPointerException} when the {@code channel}
+     * argument is {@code null}.
      */
     @DisplayName("""
             should throw a NullPointerException
-            when the channel argument is null"""
+            when the <channel> argument is <null>"""
     )
     @Test
     @SuppressWarnings({"unchecked"})
@@ -75,19 +76,19 @@ class HelloWorld_06_WriteAsync_AsynchronousByteChannelWithHandler_Test extends _
         // ------------------------------------------------------------------------------- when/then
         Assertions.assertThrows(
                 NullPointerException.class,
-                () -> service.writeAsync(channel, handler, attachment)
+                () -> service.write(channel, handler, attachment)
         );
     }
 
     /**
      * Verifies that the
-     * {@link HelloWorld#writeAsync(AsynchronousByteChannel, CompletionHandler, Object)
-     * writeAsync(channel, handler, attachment)} method throws a {@link NullPointerException} when
-     * the {@code handler} argument is {@code null}.
+     * {@link HelloWorld#write(AsynchronousByteChannel, CompletionHandler, Object) write(channel,
+     * handler, attachment)} method throws a {@link NullPointerException} when the {@code handler}
+     * argument is {@code null}.
      */
     @DisplayName("""
             should throw a NullPointerException
-            when the handler argument is null"""
+            when the <handler> argument is <null>"""
     )
     @Test
     void _ThrowNullPointerException_HandlerIsNull() {
@@ -99,25 +100,23 @@ class HelloWorld_06_WriteAsync_AsynchronousByteChannelWithHandler_Test extends _
         // ------------------------------------------------------------------------------- when/then
         Assertions.assertThrows(
                 NullPointerException.class,
-                () -> service.writeAsync(channel, handler, attachment)
+                () -> service.write(channel, handler, attachment)
         );
     }
 
     /**
      * Verifies that the
-     * {@link HelloWorld#writeAsync(AsynchronousByteChannel, CompletionHandler, Object)
-     * writeAsync(channel, handler, attachment)} method invokes
-     * {@link HelloWorld#put(ByteBuffer) put(buffer)} method with a byte buffer of
-     * {@value HelloWorld#BYTES} bytes, continuously invokes
+     * {@link HelloWorld#write(AsynchronousByteChannel, CompletionHandler, Object) write(channel,
+     * handler, attachment)} method invokes {@link HelloWorld#put(ByteBuffer) put(buffer)} method
+     * with a byte buffer of {@value HelloWorld#BYTES} bytes, continuously invokes
      * {@link AsynchronousByteChannel#write(ByteBuffer, Object, CompletionHandler)
      * channel.write(buffer, attachment, a-handler)}, and eventually invokes
      * {@link CompletionHandler#completed(Object, Object) handler.completed(Object, Object)
      * handler.completed(channel, attachment)}.
      */
     @DisplayName("""
-            -> put(buffer[12])
-            -> write the buffer to channel while the buffer has remaining
-            """
+            should invoke put(buffer[12])
+            and write the <buffer> to the <channel> while the <buffer> has remaining"""
     )
     @Test
     @SuppressWarnings({"unchecked"})
@@ -131,16 +130,44 @@ class HelloWorld_06_WriteAsync_AsynchronousByteChannelWithHandler_Test extends _
                 })
                 .given(service)
                 .put(ArgumentMatchers.argThat(b -> b != null && b.remaining() >= HelloWorld.BYTES));
-        final var channel = Mockito.mock(AsynchronousByteChannel.class);
         final var writtenSoFar = new LongAdder();
-        _HelloWorldTestUtils.write_invokeHandlerCompleted(channel, writtenSoFar);
+        final var channel = Mockito.mock(AsynchronousByteChannel.class);
+        // channel.write(src, attachment, handler) will drain the src
+        final var threadRef = new AtomicReference<Thread>();
+        BDDMockito.willAnswer(i -> {
+            final var src = i.getArgument(0, ByteBuffer.class);
+            final var attachment = i.getArgument(1);
+            final var handler = i.getArgument(2, CompletionHandler.class);
+            Thread.ofVirtual().start(() -> {
+                final var previous = threadRef.get();
+                if (previous != null) {
+                    try {
+                        previous.join();
+                    } catch (final InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        throw new RuntimeException(ie);
+                    }
+                }
+                threadRef.set(Thread.currentThread());
+                final var result = ThreadLocalRandom.current().nextInt(src.remaining()) + 1;
+                src.position(src.position() + result);
+                handler.completed(result, attachment);
+                writtenSoFar.add(result);
+            });
+            return null;
+        }).given(channel).write(
+                ArgumentMatchers.argThat(b -> b != null && b.hasRemaining()), // <src>
+                ArgumentMatchers.any(),                                       // <attachment>
+                ArgumentMatchers.notNull()                                    // <handler>
+        );
         final var handler = Mockito.mock(CompletionHandler.class);
         final var attachment = ThreadLocalRandom.current().nextBoolean() ? null : new Object();
         // ------------------------------------------------------------------------------------ when
-        service.writeAsync(channel, handler, attachment);
+        service.write(channel, handler, attachment);
         // ------------------------------------------------------------------------------------ then
-        Mockito.verify(service, Mockito.times(1)).put(bufferCaptor().capture());
-        final var buffer = bufferCaptor().getValue();
+        final var bufferCaptor = ArgumentCaptor.forClass(ByteBuffer.class);
+        Mockito.verify(service, Mockito.times(1)).put(bufferCaptor.capture());
+        final var buffer = bufferCaptor.getValue();
         Assertions.assertNotNull(buffer);
         Assertions.assertEquals(HelloWorld.BYTES, buffer.capacity());
         // TODO: verify, handler.completed(channel, attachment) invoked, once, within some time.

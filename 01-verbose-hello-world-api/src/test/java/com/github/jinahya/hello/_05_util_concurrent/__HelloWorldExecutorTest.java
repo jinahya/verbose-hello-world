@@ -20,18 +20,28 @@ package com.github.jinahya.hello._05_util_concurrent;
  * #L%
  */
 
+import com.github.jinahya.hello.HelloWorldExecutor;
+import com.github.jinahya.hello._HelloWorldTest;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
+import org.mockito.Spy;
 
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-abstract class _HelloWorldFlow_Test extends __HelloWorld_Flow_Test {
+abstract class __HelloWorldExecutorTest extends _HelloWorldTest {
 
-    static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor(
-            Thread.ofVirtual().name("publisher-", 0L).factory()
+    static final Executor EXECUTOR = Executors.newSingleThreadExecutor(
+            Thread.ofVirtual().name("executor-", 0L).factory()
     );
+
+    @Spy
+    @Accessors(fluent = true)
+    @Getter(AccessLevel.PROTECTED)
+    private HelloWorldExecutor executor;
 }

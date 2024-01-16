@@ -143,24 +143,7 @@ public final class _HelloWorldTestUtils {
     public static void write_invokeHandlerCompleted(final AsynchronousByteChannel channel,
                                                     final LongAdder adder) {
         requireMock(channel);
-        willAnswer(i -> {
-            final var src = i.getArgument(0, ByteBuffer.class);
-            final var attachment = i.getArgument(1);
-            final var handler = i.getArgument(2, CompletionHandler.class);
-            Thread.ofVirtual().start(() -> {
-                final var written = current().nextInt(1, src.remaining() + 1);
-                src.position(src.position() + written);
-                handler.completed(written, attachment);
-                if (adder != null) {
-                    adder.add(written);
-                }
-            });
-            return null;
-        }).given(channel).write(
-                argThat(b -> b != null && b.hasRemaining()),
-                any(),
-                notNull()
-        );
+
     }
 
     @SuppressWarnings({"unchecked"})
@@ -194,28 +177,7 @@ public final class _HelloWorldTestUtils {
     public static void writeBuffer_willWriteSome(final AsynchronousFileChannel channel,
                                                  final LongAdder adder) {
         requireMock(channel);
-        final var previousFuture = new Future[1];
-        willAnswer(w -> { // invocation of channel.write
-            if (previousFuture[0] != null) {
-                verify(previousFuture[0], Mockito.times(1)).get();
-            }
-            final var future = Mockito.mock(Future.class);
-            given(future.get()).willAnswer(g -> { // invocation of future.get
-                final var src = w.getArgument(0, ByteBuffer.class);
-                final var position = w.getArgument(1, Long.class);
-                final var written = current().nextInt(1, src.remaining() + 1);
-                src.position(src.position() + written);
-                if (adder != null) {
-                    adder.add(written);
-                }
-                return written;
-            });
-            previousFuture[0] = future;
-            return future;
-        }).given(channel).write(
-                argThat(b -> b != null && b.hasRemaining()), // <src>
-                longThat(v -> v >= 0L)                       // <position>
-        );
+
     }
 
     /**

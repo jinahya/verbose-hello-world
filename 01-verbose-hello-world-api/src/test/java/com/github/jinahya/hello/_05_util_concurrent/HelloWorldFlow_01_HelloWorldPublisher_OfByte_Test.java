@@ -30,7 +30,7 @@ import java.util.concurrent.Flow;
 
 @DisplayName("HelloWorldFlow.HelloWorldPublisher.OfByte")
 @Slf4j
-class HelloWorldFlow_01_HelloWorldPublisher_OfByte_Test extends _HelloWorldFlow_Test {
+class HelloWorldFlow_01_HelloWorldPublisher_OfByte_Test extends _HelloWorldFlowTest {
 
     @Test
     void __() {

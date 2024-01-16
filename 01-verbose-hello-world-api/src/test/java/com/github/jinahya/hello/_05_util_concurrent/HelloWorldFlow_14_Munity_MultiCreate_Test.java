@@ -32,7 +32,7 @@ import org.mockito.Mockito;
 
 @DisplayName("MultiCreate")
 @Slf4j
-class HelloWorldFlow_14_Munity_MultiCreate_Test extends _HelloWorldFlow_Test {
+class HelloWorldFlow_14_Munity_MultiCreate_Test extends _HelloWorldFlowTest {
 
     @DisplayName("publisher(Flow.Publisher)")
     @Nested

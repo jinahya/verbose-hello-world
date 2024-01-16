@@ -25,7 +25,7 @@ import org.junit.jupiter.api.DisplayName;
 
 @DisplayName("JdkFlowAdapter")
 @Slf4j
-class HelloWorldFlow_13_Reactor_JdkFlowAdapter_Test extends _HelloWorldFlow_Test {
+class HelloWorldFlow_13_Reactor_JdkFlowAdapter_Test extends _HelloWorldFlowTest {
 
     // -----------------------------------------------------------------------------------------------------------------
 

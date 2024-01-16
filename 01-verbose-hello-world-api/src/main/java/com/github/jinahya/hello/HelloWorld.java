@@ -28,7 +28,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
-import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.net.Socket;
 import java.nio.BufferOverflowException;
@@ -42,13 +41,8 @@ import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
 import java.util.concurrent.atomic.LongAccumulator;
-import java.util.function.Function;
 
 /**
  * An interface for generating <a href="#hello-world-bytes">hello-world-bytes</a> to various
@@ -471,18 +465,18 @@ public interface HelloWorld {
     }
 
     /**
-     * Writes, asynchronously, the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>
-     * to specified channel, and notifies a completion (or a failure) to specified handler with
-     * specified channel and specified attachment.
+     * Writes the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to specified
+     * channel, and notifies a completion (or a failure) to specified handler with specified
+     * attachment.
      *
-     * @param <C>        channel type parameter
+     * @param <T>        channel type parameter
      * @param channel    the channel to which bytes are written.
      * @param handler    the completion handler.
      * @param attachment the attachment for the {@code handler}; may be {@code null}.
      * @see AsynchronousByteChannel#write(ByteBuffer, Object, CompletionHandler)
      */
-    default <C extends AsynchronousByteChannel, A> void writeAsync(
-            final C channel, final CompletionHandler<? super C, ? super A> handler,
+    default <T extends AsynchronousByteChannel, A> void write(
+            final T channel, final CompletionHandler<? super T, ? super A> handler,
             final A attachment) {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(handler, "handler is null");
@@ -490,22 +484,6 @@ public interface HelloWorld {
         // TODO: keep invoking channel.write(buffer, attachment, a-handler)
         // TODO: while buffer has remaining
         // TODO: and, eventually, invoke handler.complete(channel, attachment)
-    }
-
-    /**
-     * Returns a completable future of specified channel which writes the <a
-     * href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to the channel.
-     *
-     * @param <T>     channel type parameter
-     * @param channel the channel to which bytes are written.
-     * @return a completable future of {@code channel}.
-     */
-    default <T extends AsynchronousByteChannel> CompletableFuture<T> writeCompletable(
-            final T channel) {
-        Objects.requireNonNull(channel, "channel is null");
-        final var future = new CompletableFuture<T>();
-        // TODO: Invoke, writeAsync(channel, a-handler, null)
-        return future;
     }
 
     /**
@@ -576,32 +554,6 @@ public interface HelloWorld {
 
     /**
      * Writes, asynchronously, the <a href="hello-world-bytes">hello-world-bytes</a> to specified
-     * file channel, starting at given file position.
-     *
-     * @param <T>      channel type parameter
-     * @param channel  the file channel to which bytes are written.
-     * @param position the file position at which the transfer is to begin; must be non-negative.
-     * @param executor an executor.
-     * @return a future of {@code channel}.
-     * @implSpec The default implementation returns a future of {@code channel} which invokes
-     * {@link #write(AsynchronousFileChannel, long) write(channel, position)} method with
-     * {@code channel}, and {@code position}.
-     * @see #write(AsynchronousFileChannel, long)
-     */
-    default <T extends AsynchronousFileChannel>
-    Future<T> writeAsync(final T channel, final long position, final Executor executor) {
-        Objects.requireNonNull(channel, "channel is null");
-        if (position < 0L) {
-            throw new IllegalArgumentException("position(" + position + ") is negative");
-        }
-        Objects.requireNonNull(executor, "executor is null");
-        final var command = new FutureTask<T>(() -> write(channel, position));
-        executor.execute(command); // Runnable  <- RunnableFuture<V> <- FutureTask<V>
-        return command;            // Future<V> <- RunnableFuture<V> <- FutureTask<V>
-    }
-
-    /**
-     * Writes, asynchronously, the <a href="hello-world-bytes">hello-world-bytes</a> to specified
      * channel, starting at specified position, and notifies a completion (or a failure) to
      * specified handler.
      *
@@ -618,7 +570,7 @@ public interface HelloWorld {
     @SuppressWarnings({
             "java:S117" // attachment_
     })
-    default <C extends AsynchronousFileChannel, A> void writeAsync(
+    default <C extends AsynchronousFileChannel, A> void write(
             final C channel, final long position,
             final CompletionHandler<? super C, ? super A> handler, final A attachment) {
         Objects.requireNonNull(channel, "channel is null");
@@ -654,98 +606,5 @@ public interface HelloWorld {
                     } // @formatter:on
                 }
         );
-    }
-
-    /**
-     * Returns a completable future of specified channel which writes the <a
-     * href="#hello-world-bytes">hello-world-bytes</a> to the channel starting at specified
-     * position.
-     *
-     * @param channel  the channel to which bytes are written.
-     * @param position the starting position to which the bytes are transferred; must be
-     *                 non-negative.
-     * @param <C>      channel type parameter
-     * @return a completable future of {@code channel}.
-     * @throws NullPointerException     when {@code channel} is {@code null}.
-     * @throws IllegalArgumentException when {@code position} is negative.
-     */
-    default <C extends AsynchronousFileChannel>
-    CompletableFuture<C> writeCompletable(final C channel, final long position) {
-        Objects.requireNonNull(channel, "channel is null");
-        if (position < 0L) {
-            throw new IllegalArgumentException("position(" + position + ") is negative");
-        }
-        final var future = new CompletableFuture<C>();
-        final var handler = new CompletionHandler<C, Object>() {
-            @Override // @formatter:off
-            public void completed(final C result, final Object attachment) {
-                future.complete(result);
-            }
-            @Override
-            public void failed(final Throwable exc, final Object attachment) {
-                future.completeExceptionally(exc);
-            } // @formatter:on
-        };
-        writeAsync(
-                channel,  // <channel>
-                position, // <position>
-                handler,  // <handler>
-                null      // <attachment>
-        );
-        return future;
-    }
-
-    /**
-     * Returns a completable future of specified path which writes the <a
-     * href="#hello-world-bytes">hello-world-bytes</a> to the end of specified path.
-     *
-     * @param path the path to the file to which bytes are appended.
-     * @param <P>  path type parameter
-     * @return a completable future of {@code path}.
-     * @throws NullPointerException when {@code path} is {@code null}.
-     */
-    @SuppressWarnings({
-            "java:S2095" // no try-with-resources
-    })
-    default <P extends Path> CompletableFuture<P> appendCompletable(final P path)
-            throws IOException {
-        Objects.requireNonNull(path, "path is null");
-        final var channel = AsynchronousFileChannel.open(
-                path,
-                StandardOpenOption.CREATE,
-                StandardOpenOption.WRITE
-        );
-        return writeCompletable(channel, channel.size())
-                .whenComplete((r, e) -> {
-                    assert r == null || r == channel;
-                    try {
-                        channel.force(true);
-                        channel.close();
-                    } catch (final IOException ioe) {
-                        throw new UncheckedIOException("unable to force/close " + channel, ioe);
-                    }
-                })
-                .thenApply(c -> {
-                    assert !c.isOpen();
-                    return path;
-                });
-    }
-
-    // ---------------------------------------------------------------------------------------------
-    default <T> Future<T> executeAsync(final Function<? super HelloWorld, ? extends T> function,
-                                       final Executor executor) {
-        Objects.requireNonNull(function, "function is null");
-        Objects.requireNonNull(executor, "executor is null");
-        final var command = new FutureTask<T>(() -> function.apply(this));
-        executor.execute(command); // Runnable  <- RunnableFuture<V> <- FutureTask<V>
-        return command;            // Future<V> <- RunnableFuture<V> <- FutureTask<V>
-    }
-
-    default <T> CompletableFuture<T> completeAsync(
-            final Function<? super HelloWorld, ? extends T> function,
-            final Executor executor) {
-        Objects.requireNonNull(function, "function is null");
-        Objects.requireNonNull(executor, "executor is null");
-        return CompletableFuture.supplyAsync(() -> function.apply(this), executor);
     }
 }

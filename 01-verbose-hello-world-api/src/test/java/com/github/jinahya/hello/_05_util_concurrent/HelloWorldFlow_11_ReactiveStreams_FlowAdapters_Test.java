@@ -42,7 +42,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlow_Test {
+class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlowTest {
 
     /**
      * A simple subscriber which requests {@value HelloWorld#BYTES} items on its

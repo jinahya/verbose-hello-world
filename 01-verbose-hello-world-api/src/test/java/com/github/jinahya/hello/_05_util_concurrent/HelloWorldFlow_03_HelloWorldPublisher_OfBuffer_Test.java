@@ -31,7 +31,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @DisplayName("HelloWorldFlow.HelloWorldPublisher.OfBuffer")
 @Slf4j
-class HelloWorldFlow_03_HelloWorldPublisher_OfBuffer_Test extends _HelloWorldFlow_Test {
+class HelloWorldFlow_03_HelloWorldPublisher_OfBuffer_Test extends _HelloWorldFlowTest {
 
     @Test
     void __() {
