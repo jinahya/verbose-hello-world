@@ -27,8 +27,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
+import org.mockito.BDDMockito;
 import org.mockito.Mockito;
+
+import java.nio.ByteBuffer;
+import java.util.concurrent.Flow;
 
 @DisplayName("MultiCreate")
 @Slf4j
@@ -52,47 +57,153 @@ class HelloWorldFlow_14_Munity_MultiCreate_Test extends _HelloWorldFlowTest {
                     .with(i -> {
                         log.debug("item: {}", (char) i.byteValue());
                     });
-            // -------------------------------------------------------------------------------- then
             _HelloWorldTestUtils.awaitForOneSecond();
+            // -------------------------------------------------------------------------------- then
             // verify, publisher.subscribe(non-null) invoked, once
             Mockito.verify(publisher, Mockito.times(1)).subscribe(ArgumentMatchers.notNull());
+            cancellable.cancel();
         }
 
         @Test
+        @SuppressWarnings({"unchecked"})
         void __byte() {
             interface AlienService { // @formatter:off
                 default void doWithMulti(final Multi<? extends Byte> multi) {
-                    multi.subscribe().with(i -> {
+                    final var cancellable = multi.subscribe().with(i -> {
                         log.debug("item: {}", (char) i.byteValue());
                     });
+                    _HelloWorldTestUtils.awaitForOneSecond();
+                    cancellable.cancel();
                 }
             } // @formatter:on
             // ------------------------------------------------------------------------------- given
             final var service = service();
-            final var publisher = new HelloWorldFlow.HelloWorldPublisher.OfByte(service, EXECUTOR);
+            final var publisher = Mockito.spy(
+                    new HelloWorldFlow.HelloWorldPublisher.OfByte(service, EXECUTOR)
+            );
+            BDDMockito.willAnswer(i -> {
+                final var subscriber = Mockito.spy(i.getArgument(0, Flow.Subscriber.class));
+                BDDMockito.willAnswer(j -> {
+                    final var subscription = Mockito.spy(j.getArgument(0, Flow.Subscription.class));
+                    j.getArguments()[0] = subscription;
+                    j.callRealMethod();
+                    return null;
+                }).given(subscriber).onSubscribe(ArgumentMatchers.notNull());
+                i.getArguments()[0] = subscriber;
+                i.callRealMethod();
+                return null;
+            }).given(publisher).subscribe(ArgumentMatchers.notNull());
             final var multi = Multi.createFrom().publisher(publisher);
             // -------------------------------------------------------------------------------- when
             new AlienService() {
             }.doWithMulti(multi);
+            _HelloWorldTestUtils.awaitForOneSecond();
+            // -------------------------------------------------------------------------------- then
+            final var subscriberCaptor = ArgumentCaptor.forClass(Flow.Subscriber.class);
+            // verify, publisher.subscribe(subscriber) invoked, once
+            Mockito.verify(publisher, Mockito.times(1)).subscribe(subscriberCaptor.capture());
+            final var subscriber = subscriberCaptor.getValue();
+            final var subscriptionCaptor = ArgumentCaptor.forClass(Flow.Subscription.class);
+            // verify, subscriber.onSubscribe(subscription) invoked, once
+            Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(subscriptionCaptor.capture());
+            final var subscription = subscriptionCaptor.getValue();
+            // verify, subscription.request(Long.MAX_VALUE) invoked, once
+            Mockito.verify(subscription, Mockito.times(1)).request(Long.MAX_VALUE);
+        }
+
+        @Test
+        void __array() {
+            interface AlienService { // @formatter:off
+                default void doWithMulti(final Multi<? extends byte[]> multi) {
+                    final var cancellable = multi.select().first(3).subscribe().with(i -> {
+                        log.debug("item: {}", i);
+                    });
+                    _HelloWorldTestUtils.awaitForOneSecond();
+                    cancellable.cancel();
+                }
+            } // @formatter:on
+            // ------------------------------------------------------------------------------- given
+            final var service = service();
+            final var publisher = Mockito.spy(
+                    new HelloWorldFlow.HelloWorldPublisher.OfArray(service, EXECUTOR)
+            );
+            BDDMockito.willAnswer(i -> {
+                final var subscriber = Mockito.spy(i.getArgument(0, Flow.Subscriber.class));
+                BDDMockito.willAnswer(j -> {
+                    final var subscription = Mockito.spy(j.getArgument(0, Flow.Subscription.class));
+                    j.getArguments()[0] = subscription;
+                    j.callRealMethod();
+                    return null;
+                }).given(subscriber).onSubscribe(ArgumentMatchers.notNull());
+                i.getArguments()[0] = subscriber;
+                i.callRealMethod();
+                return null;
+            }).given(publisher).subscribe(ArgumentMatchers.notNull());
+            final var multi = Multi.createFrom().publisher(publisher);
+            // -------------------------------------------------------------------------------- when
+            new AlienService() {
+            }.doWithMulti(multi);
+            // -------------------------------------------------------------------------------- then
+            final var subscriberCaptor = ArgumentCaptor.forClass(Flow.Subscriber.class);
+            // verify, publisher.subscribe(subscriber) invoked, once
+            Mockito.verify(publisher, Mockito.times(1)).subscribe(subscriberCaptor.capture());
+            final var subscriber = subscriberCaptor.getValue();
+            final var subscriptionCaptor = ArgumentCaptor.forClass(Flow.Subscription.class);
+            // verify, subscriber.onSubscribe(subscription) invoked, once
+            Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(subscriptionCaptor.capture());
+            final var subscription = subscriptionCaptor.getValue();
+            // verify, subscription.request(Long.MAX_VALUE) invoked, once
+            Mockito.verify(subscription, Mockito.times(1)).request(Long.MAX_VALUE);
+        }
+
+        @Test
+        void __buffer() {
+            interface AlienService { // @formatter:off
+                default void doWithMulti(final Multi<? extends ByteBuffer> multi) {
+                    final var cancellable = multi.select().first(3).subscribe().with(i -> {
+                        log.debug("item: {}", i);
+                    });
+                    _HelloWorldTestUtils.awaitForOneSecond();
+                    cancellable.cancel();
+                }
+            } // @formatter:on
+            // ------------------------------------------------------------------------------- given
+            final var service = service();
+            final var publisher = Mockito.spy(
+                    new HelloWorldFlow.HelloWorldPublisher.OfBuffer(service, EXECUTOR)
+            );
+            BDDMockito.willAnswer(i -> {
+                final var subscriber = Mockito.spy(i.getArgument(0, Flow.Subscriber.class));
+                BDDMockito.willAnswer(j -> {
+                    final var subscription = Mockito.spy(j.getArgument(0, Flow.Subscription.class));
+                    j.getArguments()[0] = subscription;
+                    j.callRealMethod();
+                    return null;
+                }).given(subscriber).onSubscribe(ArgumentMatchers.notNull());
+                i.getArguments()[0] = subscriber;
+                i.callRealMethod();
+                return null;
+            }).given(publisher).subscribe(ArgumentMatchers.notNull());
+            final var multi = Multi.createFrom().publisher(publisher);
+            // -------------------------------------------------------------------------------- when
+            new AlienService() {
+            }.doWithMulti(multi);
+            // -------------------------------------------------------------------------------- then
+            final var subscriberCaptor = ArgumentCaptor.forClass(Flow.Subscriber.class);
+            // verify, publisher.subscribe(subscriber) invoked, once
+            Mockito.verify(publisher, Mockito.times(1)).subscribe(subscriberCaptor.capture());
+            final var subscriber = subscriberCaptor.getValue();
+            final var subscriptionCaptor = ArgumentCaptor.forClass(Flow.Subscription.class);
+            // verify, subscriber.onSubscribe(subscription) invoked, once
+            Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(subscriptionCaptor.capture());
+            final var subscription = subscriptionCaptor.getValue();
+            // verify, subscription.request(Long.MAX_VALUE) invoked, once
+            Mockito.verify(subscription, Mockito.times(1)).request(Long.MAX_VALUE);
         }
 
         @Test
         void __string() {
-            interface AlienService { // @formatter:off
-                default void doWithMulti(final Multi<? extends String> multi) {
-                    multi.select().first(3).subscribe().with(i -> {
-                        log.debug("item: {}", i);
-                    });
-                }
-            } // @formatter:on
-            // ------------------------------------------------------------------------------- given
-            final var service = service();
-            final var publisher =
-                    new HelloWorldFlow.HelloWorldPublisher.OfString(service, EXECUTOR);
-            final var multi = Multi.createFrom().publisher(publisher);
-            // -------------------------------------------------------------------------------- when
-            new AlienService() {
-            }.doWithMulti(multi);
+            // TODO: test!
         }
     }
 }

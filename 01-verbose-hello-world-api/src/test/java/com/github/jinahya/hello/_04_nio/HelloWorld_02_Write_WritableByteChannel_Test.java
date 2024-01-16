@@ -29,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
@@ -98,10 +99,11 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends _HelloWorldTest {
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(channel);
         // ------------------------------------------------------------------------------------ then
-        Mockito.verify(service, Mockito.times(1)).put(bufferCaptor().capture()); // <1>
-        final var buffer = bufferCaptor().getValue();                            // <2>
-        Assertions.assertNotNull(buffer);                                        // <3>
-        Assertions.assertEquals(BYTES, buffer.capacity());                       // <4>
+        final var bufferCaptor = ArgumentCaptor.forClass(ByteBuffer.class);
+        Mockito.verify(service, Mockito.times(1)).put(bufferCaptor.capture()); // <1>
+        final var buffer = bufferCaptor.getValue();                            // <2>
+        Assertions.assertNotNull(buffer);                                      // <3>
+        Assertions.assertEquals(BYTES, buffer.capacity());                     // <4>
         // TODO: verify, channel.write(buffer) invoked, at least once.
         // TODO: assert, buffer has no remaining.
         // TODO: assert, writtenSoFar.intValue() is equal to HelloWorld.BYTES.

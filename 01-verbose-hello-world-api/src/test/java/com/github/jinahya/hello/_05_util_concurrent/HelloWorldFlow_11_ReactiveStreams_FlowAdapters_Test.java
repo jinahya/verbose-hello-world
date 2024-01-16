@@ -31,6 +31,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.reactivestreams.FlowAdapters;
+import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
 import java.nio.ByteBuffer;
@@ -45,10 +46,9 @@ import java.util.concurrent.ThreadLocalRandom;
 class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlowTest {
 
     /**
-     * A simple subscriber which requests {@value HelloWorld#BYTES} items on its
-     * {@link org.reactivestreams.Subscriber#onSubscribe(Subscription) onSubscribe(subscription)}
-     * method and {@link Subscription#cancel() cancels} the subscription on the
-     * {@value HelloWorld#BYTES}th item.
+     * A simple subscriber which requests {@value HelloWorld#BYTES} or fewer items on its
+     * {@link Subscriber#onSubscribe(Subscription) onSubscribe(subscription)} method, and
+     * {@link Subscription#cancel() cancels} the subscription on the last item.
      *
      * @param <T> item type parameter
      */
@@ -58,7 +58,7 @@ class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlo
         @Override public String toString() {
             return String.format("[reactive-streams-subscriber@%1$08x]", hashCode());
         }
-        @Override public void onSubscribe(final org.reactivestreams.Subscription s) {
+        @Override public void onSubscribe(final Subscription s) {
             log.debug("{}.onSubscribe({})", this, s);
             this.s = Mockito.spy(s);
             i = 0;
@@ -69,6 +69,7 @@ class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlo
         @Override public void onNext(final T t) {
             log.debug("{}.onNext({})", this, t);
             if (++i == n) {
+                log.debug("  - cancelling the subscription...");
                 this.s.cancel();
             }
         }
@@ -78,7 +79,7 @@ class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlo
         @Override public void onComplete() {
             log.debug("{}.onComplete()", this);
         }
-        private org.reactivestreams.Subscription s;
+        private Subscription s;
         private int n;
         private int i;
     } // @formatter:on
@@ -92,67 +93,69 @@ class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlo
         void __byte() {
             // ------------------------------------------------------------------------------- given
             final var service = service();
-            final var flowPublisher =
-                    new HelloWorldFlow.HelloWorldPublisher.OfByte(service, EXECUTOR);
-            final var reactiveStreamsPublisher = FlowAdapters.toPublisher(flowPublisher);
-            final var reactiveStreamsSubscriber =
-                    Mockito.spy(new ReactiveStreamsSubscriber<Byte>());
+            final var publisher = FlowAdapters.toPublisher(
+                    new HelloWorldFlow.HelloWorldPublisher.OfByte(service, EXECUTOR)
+            );
+            final var subscriber = Mockito.spy(new ReactiveStreamsSubscriber<Byte>());
             // -------------------------------------------------------------------------------- when
-            reactiveStreamsPublisher.subscribe(reactiveStreamsSubscriber);
-            // -------------------------------------------------------------------------------- then
+            publisher.subscribe(subscriber);
             _HelloWorldTestUtils.awaitForOneSecond();
-            Mockito.verify(reactiveStreamsSubscriber, Mockito.times(1))
-                    .onSubscribe(ArgumentMatchers.notNull());
-            Mockito.verify(reactiveStreamsSubscriber.s, Mockito.atLeast(1))
-                    .request(ArgumentMatchers.longThat(v -> v > 0L));
-            Mockito.verify(reactiveStreamsSubscriber, Mockito.atMost(HelloWorld.BYTES))
+            // -------------------------------------------------------------------------------- then
+            // verify, subscriber.onSubscribe(subscription) invoked, once
+            Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(ArgumentMatchers.notNull());
+            // verify, subscription.request(n), once
+            Mockito.verify(subscriber.s, Mockito.times(1)).request(subscriber.n);
+            // verify, subscriber.onNext(nonNull()) invokes, n-times
+            Mockito.verify(subscriber, Mockito.times(subscriber.n))
                     .onNext(ArgumentMatchers.notNull());
-            Mockito.verify(reactiveStreamsSubscriber.s, Mockito.times(1))
-                    .cancel();
+            // verify, subscription.cancel() invoked, once
+            Mockito.verify(subscriber.s, Mockito.times(1)).cancel();
         }
 
         @Test
         void __array() {
             // ------------------------------------------------------------------------------- given
             final var service = service();
-            final var flowPublisher = new HelloWorldPublisher.OfArray(service, EXECUTOR);
-            final var reactiveStreamsPublisher = FlowAdapters.toPublisher(flowPublisher);
-            final var reactiveStreamsSubscriber =
-                    Mockito.spy(new ReactiveStreamsSubscriber<byte[]>());
+            final var publisher = FlowAdapters.toPublisher(
+                    new HelloWorldPublisher.OfArray(service, EXECUTOR)
+            );
+            final var subscriber = Mockito.spy(new ReactiveStreamsSubscriber<byte[]>());
             // -------------------------------------------------------------------------------- when
-            reactiveStreamsPublisher.subscribe(reactiveStreamsSubscriber);
-            // -------------------------------------------------------------------------------- then
+            publisher.subscribe(subscriber);
             _HelloWorldTestUtils.awaitForOneSecond();
-            Mockito.verify(reactiveStreamsSubscriber, Mockito.times(1))
-                    .onSubscribe(ArgumentMatchers.notNull());
-            Mockito.verify(reactiveStreamsSubscriber.s, Mockito.atLeast(1))
-                    .request(ArgumentMatchers.longThat(v -> v > 0L));
-            Mockito.verify(reactiveStreamsSubscriber, Mockito.atMost(HelloWorld.BYTES))
+            // -------------------------------------------------------------------------------- then
+            // verify, subscriber.onSubscribe(subscription) invoked, once
+            Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(ArgumentMatchers.notNull());
+            // verify, subscription.request(n), once
+            Mockito.verify(subscriber.s, Mockito.times(1)).request(subscriber.n);
+            // verify, subscriber.onNext(nonNull()) invokes, n-times
+            Mockito.verify(subscriber, Mockito.times(subscriber.n))
                     .onNext(ArgumentMatchers.notNull());
-            Mockito.verify(reactiveStreamsSubscriber.s, Mockito.times(1))
-                    .cancel();
+            // verify, subscription.cancel() invoked, once
+            Mockito.verify(subscriber.s, Mockito.times(1)).cancel();
         }
 
         @Test
         void __buffer() {
             // ------------------------------------------------------------------------------- given
             final var service = service();
-            final var flowPublisher = new HelloWorldPublisher.OfBuffer(service, EXECUTOR);
-            final var reactiveStreamsPublisher = FlowAdapters.toPublisher(flowPublisher);
-            final var reactiveStreamsSubscriber =
-                    Mockito.spy(new ReactiveStreamsSubscriber<ByteBuffer>());
+            final var publisher = FlowAdapters.toPublisher(
+                    new HelloWorldPublisher.OfBuffer(service, EXECUTOR)
+            );
+            final var subscriber = Mockito.spy(new ReactiveStreamsSubscriber<ByteBuffer>());
             // -------------------------------------------------------------------------------- when
-            reactiveStreamsPublisher.subscribe(reactiveStreamsSubscriber);
-            // -------------------------------------------------------------------------------- then
+            publisher.subscribe(subscriber);
             _HelloWorldTestUtils.awaitForOneSecond();
-            Mockito.verify(reactiveStreamsSubscriber, Mockito.times(1))
-                    .onSubscribe(ArgumentMatchers.notNull());
-            Mockito.verify(reactiveStreamsSubscriber.s, Mockito.atLeast(1))
-                    .request(ArgumentMatchers.longThat(v -> v > 0L));
-            Mockito.verify(reactiveStreamsSubscriber, Mockito.atMost(HelloWorld.BYTES))
+            // -------------------------------------------------------------------------------- then
+            // verify, subscriber.onSubscribe(subscription) invoked, once
+            Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(ArgumentMatchers.notNull());
+            // verify, subscription.request(n), once
+            Mockito.verify(subscriber.s, Mockito.times(1)).request(subscriber.n);
+            // verify, subscriber.onNext(nonNull()) invokes, n-times
+            Mockito.verify(subscriber, Mockito.times(subscriber.n))
                     .onNext(ArgumentMatchers.notNull());
-            Mockito.verify(reactiveStreamsSubscriber.s, Mockito.times(1))
-                    .cancel();
+            // verify, subscription.cancel() invoked, once
+            Mockito.verify(subscriber.s, Mockito.times(1)).cancel();
         }
 
         @Test
@@ -169,66 +172,66 @@ class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlo
         void __byte() {
             // ------------------------------------------------------------------------------- given
             final var service = service();
-            final var reactiveStreamsSubscriber =
-                    Mockito.spy(new ReactiveStreamsSubscriber<Byte>());
-            final var flowSubscriber = FlowAdapters.toFlowSubscriber(reactiveStreamsSubscriber);
+            final var subscriber = Mockito.spy(new ReactiveStreamsSubscriber<Byte>());
+            final var flowSubscriber = FlowAdapters.toFlowSubscriber(subscriber);
             final var flowPublisher = new HelloWorldPublisher.OfByte(service, EXECUTOR);
             // -------------------------------------------------------------------------------- when
             flowPublisher.subscribe(flowSubscriber);
             _HelloWorldTestUtils.awaitForOneSecond();
             // -------------------------------------------------------------------------------- then
-            Mockito.verify(reactiveStreamsSubscriber, Mockito.times(1))
-                    .onSubscribe(ArgumentMatchers.notNull());
-            Mockito.verify(reactiveStreamsSubscriber.s, Mockito.atLeast(1))
-                    .request(ArgumentMatchers.longThat(v -> v > 0L));
-            Mockito.verify(reactiveStreamsSubscriber, Mockito.atMost(HelloWorld.BYTES))
+            // verify, subscriber.onSubscribe(subscription) invoked, once
+            Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(ArgumentMatchers.notNull());
+            // verify, subscription.request(n) invoked, once
+            Mockito.verify(subscriber.s, Mockito.times(1)).request(subscriber.n);
+            // verify, subscriber.onNext(item) invoked, n-times
+            Mockito.verify(subscriber, Mockito.times(subscriber.n))
                     .onNext(ArgumentMatchers.notNull());
-            Mockito.verify(reactiveStreamsSubscriber.s, Mockito.times(1))
-                    .cancel();
+            // verify, subscription.cancel() invoked, once
+            Mockito.verify(subscriber.s, Mockito.times(1)).cancel();
         }
 
         @Test
         void __array() {
             // ------------------------------------------------------------------------------- given
             final var service = service();
-            final var reactiveStreamsSubscriber =
-                    Mockito.spy(new ReactiveStreamsSubscriber<byte[]>());
-            final var flowSubscriber = FlowAdapters.toFlowSubscriber(reactiveStreamsSubscriber);
+            final var subscriber = Mockito.spy(new ReactiveStreamsSubscriber<byte[]>());
+            final var flowSubscriber = FlowAdapters.toFlowSubscriber(subscriber);
             final var flowPublisher = new HelloWorldPublisher.OfArray(service, EXECUTOR);
             // -------------------------------------------------------------------------------- when
             flowPublisher.subscribe(flowSubscriber);
             _HelloWorldTestUtils.awaitForOneSecond();
             // -------------------------------------------------------------------------------- then
-            Mockito.verify(reactiveStreamsSubscriber, Mockito.times(1))
-                    .onSubscribe(ArgumentMatchers.notNull());
-            Mockito.verify(reactiveStreamsSubscriber.s, Mockito.atLeast(1))
-                    .request(ArgumentMatchers.longThat(v -> v > 0L));
-            Mockito.verify(reactiveStreamsSubscriber, Mockito.atMost(HelloWorld.BYTES))
+            // verify, subscriber.onSubscribe(subscription) invoked, once
+            Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(ArgumentMatchers.notNull());
+            // verify, subscription.request(n) invoked, once
+            Mockito.verify(subscriber.s, Mockito.times(1)).request(subscriber.n);
+            // verify, subscriber.onNext(item) invoked, n-times
+            Mockito.verify(subscriber, Mockito.times(subscriber.n))
                     .onNext(ArgumentMatchers.notNull());
-            Mockito.verify(reactiveStreamsSubscriber.s, Mockito.times(1))
-                    .cancel();
+            // verify, subscription.cancel() invoked, once
+            Mockito.verify(subscriber.s, Mockito.times(1)).cancel();
         }
 
         @Test
         void __buffer() {
             // ------------------------------------------------------------------------------- given
             final var service = service();
-            final var reactiveStreamsSubscriber =
-                    Mockito.spy(new ReactiveStreamsSubscriber<ByteBuffer>());
-            final var flowSubscriber = FlowAdapters.toFlowSubscriber(reactiveStreamsSubscriber);
+            final var subscriber = Mockito.spy(new ReactiveStreamsSubscriber<ByteBuffer>());
+            final var flowSubscriber = FlowAdapters.toFlowSubscriber(subscriber);
             final var flowPublisher = new HelloWorldPublisher.OfBuffer(service, EXECUTOR);
             // -------------------------------------------------------------------------------- when
             flowPublisher.subscribe(flowSubscriber);
             _HelloWorldTestUtils.awaitForOneSecond();
             // -------------------------------------------------------------------------------- then
-            Mockito.verify(reactiveStreamsSubscriber, Mockito.times(1))
-                    .onSubscribe(ArgumentMatchers.notNull());
-            Mockito.verify(reactiveStreamsSubscriber.s, Mockito.atLeast(1))
-                    .request(ArgumentMatchers.longThat(v -> v > 0L));
-            Mockito.verify(reactiveStreamsSubscriber, Mockito.atMost(HelloWorld.BYTES))
+            // verify, subscriber.onSubscribe(subscription) invoked, once
+            Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(ArgumentMatchers.notNull());
+            // verify, subscription.request(n) invoked, once
+            Mockito.verify(subscriber.s, Mockito.times(1)).request(subscriber.n);
+            // verify, subscriber.onNext(item) invoked, n-times
+            Mockito.verify(subscriber, Mockito.times(subscriber.n))
                     .onNext(ArgumentMatchers.notNull());
-            Mockito.verify(reactiveStreamsSubscriber.s, Mockito.times(1))
-                    .cancel();
+            // verify, subscription.cancel() invoked, once
+            Mockito.verify(subscriber.s, Mockito.times(1)).cancel();
         }
 
         @Test

@@ -20,8 +20,16 @@ package com.github.jinahya.hello._05_util_concurrent;
  * #L%
  */
 
+import com.github.jinahya.hello.HelloWorld;
+import com.github.jinahya.hello.HelloWorldFlow;
+import com.github.jinahya.hello._HelloWorldTestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import reactor.adapter.JdkFlowAdapter;
+
+import java.nio.charset.StandardCharsets;
 
 @DisplayName("JdkFlowAdapter")
 @Slf4j
@@ -29,50 +37,68 @@ class HelloWorldFlow_13_Reactor_JdkFlowAdapter_Test extends _HelloWorldFlowTest 
 
     // -----------------------------------------------------------------------------------------------------------------
 
-//    @DisplayName("flowPublisherToFlux(publisher)")
-//    @Nested
-//    class FlowPublisherToFluxTest {
-//
-//        @Test
-//        void _take_bytes() {
-//            final var publisher = HelloWorldFlow.newPublisherForBytes(service(), EXECUTOR);
-//            JdkFlowAdapter
-//                    .flowPublisherToFlux(publisher)
-//                    .doOnNext(v -> log.debug("value: {}", (char) v.byteValue()))
-//                    .take(HelloWorld.BYTES)
-//                    .blockLast();
-//        }
-//
-//        @Test
-//        void _reduce_bytes() {
-//            final var publisher = HelloWorldFlow.newPublisherForBytes(service(), EXECUTOR);
-//            final var reduced = JdkFlowAdapter
-//                    .flowPublisherToFlux(publisher)
-//                    .reduce(new StringBuilder(), (b, v) -> b.append((char) v.byteValue()))
-//                    .block();
-//            log.debug("reduced: {}", reduced);
-//        }
-//
-//        @Test
-//        void __arrays() {
-//            final var publisher = HelloWorldFlow.newPublisherForArrays(service(), EXECUTOR);
-//            JdkFlowAdapter
-//                    .flowPublisherToFlux(publisher)
-//                    .map(v -> new String(v, StandardCharsets.US_ASCII))
-//                    .doOnNext(v -> log.debug("value: {}", v))
-//                    .take(HelloWorld.BYTES)
-//                    .blockLast();
-//        }
-//
-//        @Test
-//        void __buffers() {
-//            final var publisher = HelloWorldFlow.newPublisherForBuffers(service(), EXECUTOR);
-//            JdkFlowAdapter
-//                    .flowPublisherToFlux(publisher)
-//                    .map(StandardCharsets.US_ASCII::decode)
-//                    .doOnNext(v -> log.debug("value: {}", v))
-//                    .take(HelloWorld.BYTES)
-//                    .blockLast();
-//        }
-//    }
+    @DisplayName("flowPublisherToFlux(publisher)")
+    @Nested
+    class FlowPublisherToFluxTest {
+
+        @Test
+        void _byte() {
+            final var service = service();
+            final var publisher = new HelloWorldFlow.HelloWorldPublisher.OfByte(service, EXECUTOR);
+            final var disposable = JdkFlowAdapter
+                    .flowPublisherToFlux(publisher)
+                    .doOnNext(v -> log.debug("byte: {}", (char) v.byteValue()))
+                    .take(HelloWorld.BYTES)
+                    .reduce(new StringBuilder(), (b, v) -> b.append((char) v.byteValue()))
+                    .doOnNext(v -> log.debug("reduced: {}", v))
+                    .subscribe();
+            _HelloWorldTestUtils.awaitForOneSecond();
+            disposable.dispose();
+        }
+
+        @Test
+        void _array() {
+            final var service = service();
+            final var publisher = new HelloWorldFlow.HelloWorldPublisher.OfArray(service, EXECUTOR);
+            final var disposable = JdkFlowAdapter
+                    .flowPublisherToFlux(publisher)
+                    .doOnNext(a -> log.debug("array: {}", a))
+                    .map(a -> new String(a, StandardCharsets.US_ASCII))
+                    .doOnNext(s -> log.debug("string: {}", s))
+                    .take(HelloWorld.BYTES)
+                    .subscribe();
+            _HelloWorldTestUtils.awaitForOneSecond();
+            disposable.dispose();
+        }
+
+        @Test
+        void _buffer() {
+            final var service = service();
+            final var publisher =
+                    new HelloWorldFlow.HelloWorldPublisher.OfBuffer(service, EXECUTOR);
+            final var disposable = JdkFlowAdapter
+                    .flowPublisherToFlux(publisher)
+                    .doOnNext(b -> log.debug("buffer: {}", b))
+                    .map(b -> StandardCharsets.US_ASCII.decode(b).toString())
+                    .doOnNext(s -> log.debug("string: {}", s))
+                    .take(HelloWorld.BYTES)
+                    .subscribe();
+            _HelloWorldTestUtils.awaitForOneSecond();
+            disposable.dispose();
+        }
+
+        @Test
+        void _string() {
+            final var service = service();
+            final var publisher =
+                    new HelloWorldFlow.HelloWorldPublisher.OfString(service, EXECUTOR);
+            final var disposable = JdkFlowAdapter
+                    .flowPublisherToFlux(publisher)
+                    .doOnNext(v -> log.debug("string: {}", v))
+                    .take(HelloWorld.BYTES)
+                    .subscribe();
+            _HelloWorldTestUtils.awaitForOneSecond();
+            disposable.dispose();
+        }
+    }
 }

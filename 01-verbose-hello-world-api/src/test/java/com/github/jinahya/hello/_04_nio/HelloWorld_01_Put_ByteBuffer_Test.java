@@ -32,6 +32,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
+import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
@@ -194,8 +195,9 @@ class HelloWorld_01_Put_ByteBuffer_Test extends _HelloWorldTest {
         // ------------------------------------------------------------------------------------ when
         final var result = service.put(buffer);
         // ------------------------------------------------------------------------------------ then
-        Mockito.verify(service, Mockito.times(1)).set(arrayCaptor().capture());
-        final var array = arrayCaptor().getValue();
+        final var arrayCaptor = ArgumentCaptor.forClass(byte[].class);
+        Mockito.verify(service, Mockito.times(1)).set(arrayCaptor.capture());
+        final var array = arrayCaptor.getValue();
         Assertions.assertNotNull(array);
         Assertions.assertEquals(HelloWorld.BYTES, array.length);
         // TODO: verify, buffer.put(array) invoked, once

@@ -143,7 +143,6 @@ public final class _HelloWorldTestUtils {
     public static void write_invokeHandlerCompleted(final AsynchronousByteChannel channel,
                                                     final LongAdder adder) {
         requireMock(channel);
-
     }
 
     @SuppressWarnings({"unchecked"})
@@ -177,7 +176,6 @@ public final class _HelloWorldTestUtils {
     public static void writeBuffer_willWriteSome(final AsynchronousFileChannel channel,
                                                  final LongAdder adder) {
         requireMock(channel);
-
     }
 
     /**

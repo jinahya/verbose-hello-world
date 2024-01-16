@@ -27,12 +27,20 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.AsynchronousFileChannel;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -66,5 +74,43 @@ class _HelloWorldExecutor_01_ExecuteAsync_Test extends __HelloWorldExecutorTest 
         // ------------------------------------------------------------------------------------ when
         Mockito.verify(service, Mockito.times(1)).set(array);
         Assertions.assertEquals(array, result);
+    }
+
+    @DisplayName("write(AsynchronousFileChannel)")
+    @Test
+    void __WriteAsynchronousFileChannel(@TempDir final Path tempDir)
+            throws IOException, ExecutionException, InterruptedException {
+        // ----------------------------------------------------------------------------------- given
+        final var service = service();
+        BDDMockito.willAnswer(i -> {
+                    final var buffer = i.getArgument(0, ByteBuffer.class);
+                    buffer.position(buffer.position() + HelloWorld.BYTES);
+                    return buffer;
+                })
+                .given(service)
+                .put(ArgumentMatchers.argThat(b -> b != null && b.remaining() >= HelloWorld.BYTES));
+        final var executor = executor();
+        final var file = Files.createTempFile(tempDir, null, null);
+        final var position = ThreadLocalRandom.current().nextLong(8L);
+        // ------------------------------------------------------------------------------------ when
+        try (final var channel = AsynchronousFileChannel.open(file, StandardOpenOption.WRITE)) {
+            final var result = executor.executeAsync(
+                    () -> service,
+                    s -> {
+                        try {
+                            return s.write(channel, position);
+                        } catch (final InterruptedException ie) {
+                            Thread.currentThread().interrupt();
+                            throw new RuntimeException(ie);
+                        } catch (final ExecutionException ee) {
+                            throw new RuntimeException(ee);
+                        }
+                    },
+                    EXECUTOR
+            ).get();
+            Assertions.assertEquals(channel, result);
+        }
+        // ------------------------------------------------------------------------------------ when
+        Assertions.assertEquals(position + HelloWorld.BYTES, Files.size(file));
     }
 }

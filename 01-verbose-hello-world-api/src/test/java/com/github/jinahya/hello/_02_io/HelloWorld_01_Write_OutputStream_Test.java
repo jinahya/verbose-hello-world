@@ -28,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
@@ -90,8 +91,9 @@ class HelloWorld_01_Write_OutputStream_Test extends _HelloWorldTest {
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(stream);
         // ------------------------------------------------------------------------------------ then
-        Mockito.verify(service, Mockito.times(1)).set(arrayCaptor().capture());
-        final var array = arrayCaptor().getValue();
+        final var arrayCaptor = ArgumentCaptor.forClass(byte[].class);
+        Mockito.verify(service, Mockito.times(1)).set(arrayCaptor.capture());
+        final var array = arrayCaptor.getValue();
         Assertions.assertNotNull(array);
         Assertions.assertEquals(HelloWorld.BYTES, array.length);
         // TODO: verify, stream.write(array) invoked, once
