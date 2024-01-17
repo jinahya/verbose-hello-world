@@ -36,7 +36,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
 
-
 /**
  * A class for testing {@link HelloWorld#send(Socket) send(socket)} method.
  *

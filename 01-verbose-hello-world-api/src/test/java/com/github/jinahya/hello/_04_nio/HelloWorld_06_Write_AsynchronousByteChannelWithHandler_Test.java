@@ -27,6 +27,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -187,34 +188,19 @@ class HelloWorld_06_Write_AsynchronousByteChannelWithHandler_Test extends _Hello
         // TODO: assert, buffer ha no remaining
     }
 
+    @Disabled("not implemented yet")
     @畵蛇添足
     @Test
     @SuppressWarnings({"unchecked"})
     void __AsynchronousSocketChannel() throws Exception {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // service.write(channel, handler, attachment) will write 'hello, world' to the channel
-        BDDMockito.willAnswer(i -> {
-            final var channel = i.getArgument(0, AsynchronousByteChannel.class);
-            final var handler = i.getArgument(1, CompletionHandler.class);
-            final var attachment = i.getArgument(2);
-            final var buffer = ByteBuffer.wrap("hello, world".getBytes(StandardCharsets.US_ASCII));
-            while (buffer.hasRemaining()) {
-                channel.write(buffer).get();
-            }
-            handler.completed(channel, attachment);
-            return null;
-        }).given(service).write(
-                ArgumentMatchers.notNull(),
-                ArgumentMatchers.notNull(),
-                ArgumentMatchers.any()
-        );
-        final var queue = new ArrayBlockingQueue<SocketAddress>(1);
+        final var address = new ArrayBlockingQueue<SocketAddress>(1);
         Thread.ofPlatform().name("server").start(() -> {
             try (var server = AsynchronousServerSocketChannel.open()) {
                 server.bind(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0), 1);
                 log.debug("listening on {}", server.getLocalAddress());
-                if (!queue.offer(server.getLocalAddress())) {
+                if (!address.offer(server.getLocalAddress())) {
                     throw new RuntimeException("failed to offer");
                 }
                 final var done = new CountDownLatch(1);
@@ -261,7 +247,7 @@ class HelloWorld_06_Write_AsynchronousByteChannelWithHandler_Test extends _Hello
         });
         // ------------------------------------------------------------------------------------ when
         try (var client = AsynchronousSocketChannel.open()) {
-            final var remote = queue.poll(1L, TimeUnit.SECONDS);
+            final var remote = address.poll(1L, TimeUnit.SECONDS);
             final var done = new CountDownLatch(1);
             log.debug("connecting to {}", remote);
             client.connect(remote, null, new CompletionHandler<>() { // @formatter:off

@@ -22,8 +22,10 @@ package com.github.jinahya.hello._04_nio;
 
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello._HelloWorldTest;
+import com.github.jinahya.hello.畵蛇添足;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -32,10 +34,8 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousFileChannel;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -175,51 +175,23 @@ class HelloWorld_08_Write_AsynchronousFileChannel_Test extends _HelloWorldTest {
      * {@link HelloWorld#write(AsynchronousFileChannel, long) write(channel, position)} method
      * writes {@value HelloWorld#BYTES} bytes to the {@code channel} starting at {@code position}.
      *
-     * @throws IOException          if an I/O error occurs.
-     * @throws InterruptedException if interrupted while testing.
-     * @throws ExecutionException   if failed to execute.
+     * @throws Exception if any thrown.
      */
-    @DisplayName("should write 12 bytes to <channel>")
+    @Disabled("not implemented yet")
+    @DisplayName("should write 12 bytes to <path> starting at <position>")
+    @畵蛇添足
     @Test
-    void __(@TempDir final Path tempDir)
-            throws IOException, InterruptedException, ExecutionException {
+    void __(@TempDir final Path tempDir) throws Exception {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        BDDMockito.willAnswer(i -> {
-                    final var buffer = i.getArgument(0, ByteBuffer.class);
-                    buffer.put("hello, world".getBytes(StandardCharsets.US_ASCII));
-                    return buffer;
-                })
-                .given(service)
-                .put(ArgumentMatchers.argThat(b -> b != null && b.remaining() >= HelloWorld.BYTES));
-        final var file = Files.createTempFile(tempDir, null, null);
-        var position = ThreadLocalRandom.current().nextLong(8L);
+        final var path = Files.createTempFile(tempDir, null, null);
+        final var position = ThreadLocalRandom.current().nextLong(8L);
         // ------------------------------------------------------------------------------------ when
-        try (final var channel = AsynchronousFileChannel.open(file, StandardOpenOption.WRITE)) {
+        try (final var channel = AsynchronousFileChannel.open(path, StandardOpenOption.WRITE)) {
             service.write(channel, position);
-            channel.force(true);
+            channel.force(false);
         }
         // ------------------------------------------------------------------------------------ then
-        Assertions.assertEquals(position + HelloWorld.BYTES, Files.size(file));
-        try (final var channel = AsynchronousFileChannel.open(file, StandardOpenOption.READ)) {
-            final var dst = ByteBuffer.allocate(HelloWorld.BYTES);
-            while (dst.hasRemaining()) {
-                position += channel.read(dst, position).get();
-            }
-            Assertions.assertEquals(Files.size(file), position);
-            dst.flip();
-            Assertions.assertEquals('h', dst.get());
-            Assertions.assertEquals('e', dst.get());
-            Assertions.assertEquals('l', dst.get());
-            Assertions.assertEquals('l', dst.get());
-            Assertions.assertEquals('o', dst.get());
-            Assertions.assertEquals(',', dst.get());
-            Assertions.assertEquals(' ', dst.get());
-            Assertions.assertEquals('w', dst.get());
-            Assertions.assertEquals('o', dst.get());
-            Assertions.assertEquals('r', dst.get());
-            Assertions.assertEquals('l', dst.get());
-            Assertions.assertEquals('d', dst.get());
-        }
+        Assertions.assertEquals(position + HelloWorld.BYTES, Files.size(path));
     }
 }

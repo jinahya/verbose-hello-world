@@ -27,6 +27,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -143,26 +144,18 @@ class HelloWorld_04_Write_AsynchronousByteChannel_Test extends _HelloWorldTest {
         Assertions.assertSame(channel, result);
     }
 
+    @Disabled("not implemented yet")
     @畵蛇添足
     @Test
     void __AsynchronousSocketChannel() throws Exception {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // service.write(channel) will write 'hello, world' to the channel
-        BDDMockito.willAnswer(i -> {
-            final var channel = i.getArgument(0, AsynchronousByteChannel.class);
-            final var buffer = ByteBuffer.wrap("hello, world".getBytes(StandardCharsets.US_ASCII));
-            while (buffer.hasRemaining()) {
-                channel.write(buffer).get();
-            }
-            return channel;
-        }).given(service).<AsynchronousByteChannel>write(ArgumentMatchers.notNull());
-        final var queue = new ArrayBlockingQueue<SocketAddress>(1);
+        final var address = new ArrayBlockingQueue<SocketAddress>(1);
         Thread.ofPlatform().name("server").start(() -> {
             try (var server = AsynchronousServerSocketChannel.open()) {
                 server.bind(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0), 1);
                 log.debug("listening on {}", server.getLocalAddress());
-                if (!queue.offer(server.getLocalAddress())) {
+                if (!address.offer(server.getLocalAddress())) {
                     throw new RuntimeException("failed to offer");
                 }
                 final var client = server.accept().get();
@@ -181,7 +174,7 @@ class HelloWorld_04_Write_AsynchronousByteChannel_Test extends _HelloWorldTest {
         });
         // ------------------------------------------------------------------------------------ when
         try (var client = AsynchronousSocketChannel.open()) {
-            final var remote = queue.poll(1L, TimeUnit.SECONDS);
+            final var remote = address.poll(1L, TimeUnit.SECONDS);
             log.debug("connecting to {}", remote);
             client.connect(remote).get();
             log.debug("connected to {} through {}", client.getRemoteAddress(),

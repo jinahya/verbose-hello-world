@@ -22,21 +22,28 @@ package com.github.jinahya.hello._04_nio;
 
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello._HelloWorldTest;
+import com.github.jinahya.hello.畵蛇添足;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
+import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * A class for testing {@link HelloWorld#append(Path) append(path)} method.
@@ -94,5 +101,29 @@ class HelloWorld_03_Append_Path_Test extends _HelloWorldTest {
             // TODO: verify, channel.close() invoked, once.
             Assertions.assertSame(path, result);
         }
+    }
+
+    @Disabled("not implemented yet")
+    @DisplayName("path's size should be increased by HelloWorld.BYTES")
+    @畵蛇添足
+    @Test
+    void _PathSizeIncreasedBy12_(@TempDir final Path tempDir) throws Exception {
+        // ----------------------------------------------------------------------------------- given
+        final var service = service();
+        final var path = Files.createTempFile(tempDir, null, null);
+        try (var channel = FileChannel.open(path, StandardOpenOption.WRITE)) {
+            final var buffer = ByteBuffer.allocate(ThreadLocalRandom.current().nextInt(1024));
+            while (buffer.hasRemaining()) {
+                final var w = channel.write(buffer);
+                assert w >= 0;
+            }
+            channel.force(false);
+        }
+        final var size = Files.size(path);
+        // ------------------------------------------------------------------------------------ when
+        service.append(path);
+        // ------------------------------------------------------------------------------------ then
+        // verify, path's size increased by HelloWorld.BYTES
+        Assertions.assertEquals(size + HelloWorld.BYTES, Files.size(path));
     }
 }

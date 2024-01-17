@@ -22,10 +22,13 @@ package com.github.jinahya.hello._04_nio;
 
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello._HelloWorldTest;
+import com.github.jinahya.hello.畵蛇添足;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
@@ -34,6 +37,10 @@ import org.mockito.Mockito;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.CompletionHandler;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.LongAdder;
@@ -183,5 +190,48 @@ class HelloWorld_10_Write_AsynchronousFileChannelWithHandler_Test extends _Hello
                 .completed(channel, attachment);
         // assert, writtenSoFar.intValue() equals to HelloWorld.BYTES
         Assertions.assertEquals(HelloWorld.BYTES, writtenSoFar.intValue());
+    }
+
+    /**
+     * Verifies that the
+     * {@link HelloWorld#write(AsynchronousFileChannel, long, CompletionHandler, Object)
+     * write(channel, position, handler, attachment)} method writes {@value HelloWorld#BYTES} bytes
+     * to the {@code channel} starting at {@code position}.
+     *
+     * @throws Exception if any thrown.
+     */
+    @Disabled("not implemented yet")
+    @DisplayName("should write 12 bytes to <path> starting at <position>")
+    @畵蛇添足
+    @Test
+    void __(@TempDir final Path tempDir) throws Exception {
+        // ----------------------------------------------------------------------------------- given
+        final var service = service();
+        final var path = Files.createTempFile(tempDir, null, null);
+        final var position = ThreadLocalRandom.current().nextLong(8L);
+        // ------------------------------------------------------------------------------------ when
+        final var latch = new CountDownLatch(1);
+        try (final var channel = AsynchronousFileChannel.open(path, StandardOpenOption.WRITE)) {
+            service.write(
+                    channel,
+                    position,
+                    new CompletionHandler<>() { // @formatter:off
+                        @Override
+                        public void completed(final AsynchronousFileChannel result,
+                                              final Object attachment) {
+                            latch.countDown();
+                        }
+                        @Override
+                        public void failed(final Throwable exc, final Object attachment) {
+                            log.error("failed to write", exc);
+                            latch.countDown();
+                        } // @formatter:on
+                    },
+                    null
+            );
+        }
+        latch.await();
+        // ------------------------------------------------------------------------------------ then
+        Assertions.assertEquals(position + HelloWorld.BYTES, Files.size(path));
     }
 }
