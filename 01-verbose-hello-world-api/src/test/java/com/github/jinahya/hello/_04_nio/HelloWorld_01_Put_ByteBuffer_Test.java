@@ -42,8 +42,6 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
 
-import static org.mockito.Mockito.spy;
-
 /**
  * A class for testing {@link HelloWorld#put(ByteBuffer)} method.
  *
@@ -135,7 +133,7 @@ class HelloWorld_01_Put_ByteBuffer_Test extends _HelloWorldTest {
             final var index = ThreadLocalRandom.current().nextInt(HelloWorld.BYTES + 1);
             final var length = HelloWorld.BYTES + ThreadLocalRandom.current()
                     .nextInt(HelloWorld.BYTES - index + 1);
-            buffer = spy(b.slice(index, length));
+            buffer = Mockito.spy(b.slice(index, length));
         }
         buffer.position(
                 buffer.position() +
@@ -186,7 +184,7 @@ class HelloWorld_01_Put_ByteBuffer_Test extends _HelloWorldTest {
             b.position(ThreadLocalRandom.current().nextInt(HelloWorld.BYTES + 1));
             b.limit(b.limit() - ThreadLocalRandom.current()
                     .nextInt(b.remaining() - HelloWorld.BYTES + 1));
-            buffer = spy(b);
+            buffer = Mockito.spy(b);
         }
         ByteBufferUtils.printBuffer(buffer);
         assert !buffer.hasArray();

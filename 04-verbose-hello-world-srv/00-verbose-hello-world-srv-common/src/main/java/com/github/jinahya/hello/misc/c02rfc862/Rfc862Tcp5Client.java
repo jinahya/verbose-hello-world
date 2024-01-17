@@ -123,8 +123,7 @@ class Rfc862Tcp5Client {
         );
     }
 
-    public static void main(final String... args)
-            throws IOException, InterruptedException {
+    public static void main(final String... args) throws Exception {
         final var latch = new CountDownLatch(1);
         // ------------------------------------------------------------------------------------ open
         try (var client = AsynchronousSocketChannel.open()) {

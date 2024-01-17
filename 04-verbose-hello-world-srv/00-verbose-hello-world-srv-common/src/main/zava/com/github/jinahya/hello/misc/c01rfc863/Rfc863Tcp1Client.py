@@ -41,8 +41,8 @@ sys.addaudithook(hook)
 
 
 # https://stackoverflow.com/a/77426018/330457
-def randomize(array):
-    array[:] = random.randbytes(len(array))
+def randomize(a):
+    a[:] = random.randbytes(len(a))
 
 
 with closing(socket.socket(FAMILY, socket.SOCK_STREAM)) as s:
@@ -53,18 +53,18 @@ with closing(socket.socket(FAMILY, socket.SOCK_STREAM)) as s:
     # ----------------------------------------------------------------- connect
     s.connect((HOST, PORT))
     print(f'connected to {s.getpeername()}')
-    bytes = random.randint(0, 65536)
-    print(f'sending {bytes} byte(s)')
+    numberOfBytes = random.randint(0, 65536)
+    print(f'sending {numberOfBytes} byte(s)')
     array = bytearray(random.randint(1, 8192))
     print(f'array.length: {len(array)}')
-    hash = hashlib.sha1()
-    while bytes > 0:
+    sha1 = hashlib.sha1()
+    while numberOfBytes > 0:
         # random.shuffle(array)
         randomize(array)
-        if bytes < len(array):
-            array = array[0:bytes]
+        if numberOfBytes < len(array):
+            array = array[0:numberOfBytes]
         # ---------------------------------------------------------------- send
         w = s.send(array)
-        hash.update(array)
-        bytes -= w
-    print(f'digest: {hash.hexdigest()}')
+        sha1.update(array)
+        numberOfBytes -= w
+    print(f'digest: {sha1.hexdigest()}')

@@ -25,6 +25,9 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Optional;
 
 @Slf4j
+@SuppressWarnings({
+        "java:S101"
+})
 final class _ChatConstants {
 
     static final int PORT = 7 + 40000;

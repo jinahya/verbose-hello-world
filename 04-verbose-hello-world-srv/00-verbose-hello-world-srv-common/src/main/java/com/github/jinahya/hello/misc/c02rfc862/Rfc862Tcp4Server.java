@@ -26,16 +26,12 @@ import com.github.jinahya.hello.util.JavaSecurityUtils;
 import com.github.jinahya.hello.util._TcpUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.nio.channels.AsynchronousServerSocketChannel;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 
 @Slf4j
 class Rfc862Tcp4Server {
 
-    public static void main(final String... args)
-            throws IOException, ExecutionException, InterruptedException, TimeoutException {
+    public static void main(final String... args) throws Exception {
         // ------------------------------------------------------------------------------------ open
         try (var server = AsynchronousServerSocketChannel.open()) {
             // -------------------------------------------------------------------------------- bind

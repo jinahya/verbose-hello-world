@@ -138,8 +138,7 @@ class CalcTcp3Client {
         }
     }
 
-    public static void main(final String... args)
-            throws IOException {
+    public static void main(final String... args) throws IOException {
         try (var selector = Selector.open()) {
             sub(selector);
         }

@@ -27,7 +27,6 @@ import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obv
 import com.github.jinahya.hello.util._TcpUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.ThreadLocalRandom;
@@ -38,8 +37,7 @@ import java.util.concurrent.ThreadLocalRandom;
 })
 class Rfc863Tcp2Client {
 
-    public static void main(final String... args)
-            throws IOException {
+    public static void main(final String... args) throws Exception {
         try (var client = SocketChannel.open()) {
             // ---------------------------------------------------------------------------- blocking
             assert client.isBlocking();

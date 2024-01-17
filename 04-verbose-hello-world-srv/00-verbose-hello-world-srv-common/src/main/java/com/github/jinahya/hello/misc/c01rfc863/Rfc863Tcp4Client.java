@@ -37,8 +37,7 @@ import java.util.concurrent.ThreadLocalRandom;
 })
 class Rfc863Tcp4Client {
 
-    public static void main(final String... args)
-            throws Exception {
+    public static void main(final String... args) throws Exception {
         try (var client = AsynchronousSocketChannel.open()) {
             // -------------------------------------------------------------------------------- bind
             if (ThreadLocalRandom.current().nextBoolean()) {

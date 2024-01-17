@@ -26,7 +26,6 @@ import com.github.jinahya.hello.util._TcpUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.EOFException;
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.concurrent.ThreadLocalRandom;
@@ -34,8 +33,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @Slf4j
 class Rfc862Tcp0Client {
 
-    public static void main(final String... args)
-            throws IOException {
+    public static void main(final String... args) throws Exception {
         try (var client = new Socket()) {
             // -------------------------------------------------------------------------------- bind
             if (ThreadLocalRandom.current().nextBoolean()) {

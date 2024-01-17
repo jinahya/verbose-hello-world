@@ -71,8 +71,7 @@ class CalcTcp1Server {
         }
     }
 
-    public static void main(final String... args)
-            throws IOException {
+    public static void main(final String... args) throws IOException {
         try (var server = new ServerSocket()) {
             server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
             server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);

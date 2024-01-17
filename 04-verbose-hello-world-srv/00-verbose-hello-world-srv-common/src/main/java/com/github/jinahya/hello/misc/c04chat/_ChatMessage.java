@@ -38,6 +38,9 @@ import java.util.function.LongSupplier;
 import java.util.function.ToLongFunction;
 
 @Slf4j
+@SuppressWarnings({
+        "java:S101"
+})
 class _ChatMessage {
 
     private static final int TIMESTAMP_OFFSET = 0;

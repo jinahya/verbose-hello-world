@@ -35,6 +35,9 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.util.concurrent.ThreadLocalRandom;
 
+@SuppressWarnings({
+        "java:S2245"
+})
 @Slf4j
 class Rfc862Udp2Client {
 

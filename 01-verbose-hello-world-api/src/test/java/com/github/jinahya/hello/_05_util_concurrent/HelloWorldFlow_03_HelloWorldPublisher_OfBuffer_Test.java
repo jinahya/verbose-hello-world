@@ -20,10 +20,16 @@ package com.github.jinahya.hello._05_util_concurrent;
  * #L%
  */
 
+import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello.HelloWorldFlow;
+import com.github.jinahya.hello._HelloWorldTestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
+import org.mockito.BDDMockito;
+import org.mockito.Mockito;
 
 import java.nio.ByteBuffer;
 import java.util.concurrent.Flow;
@@ -37,22 +43,44 @@ class HelloWorldFlow_03_HelloWorldPublisher_OfBuffer_Test extends _HelloWorldFlo
     void __() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        final var publisher = new HelloWorldFlow.HelloWorldPublisher.OfBuffer(service, EXECUTOR);
-        final var subscriber = new HelloWorldFlow.HelloWorldSubscriber.OfBuffer() { // @formatter:off
-            @Override public void onSubscribe(final Flow.Subscription subscription) {
-                super.onSubscribe(subscription);
-                subscription.request(n);
-            }
-            @Override public void onNext(final ByteBuffer item) {
-                super.onNext(item);
-                if (++i == n) {
-                    subscription().cancel();
-                }
-            }
-            private int n = ThreadLocalRandom.current().nextInt(1, 4);
-            private int i = 0;
-        }; // @formatter:on
+        final var publisher = Mockito.spy(
+                new HelloWorldFlow.HelloWorldPublisher.OfBuffer(service, EXECUTOR)
+        );
+        final var n = ThreadLocalRandom.current().nextInt(HelloWorld.BYTES >> 1) + 1;
+        final var subscriber = Mockito.spy(
+                new HelloWorldFlow.HelloWorldSubscriber.OfBuffer() { // @formatter:off
+                    @Override public void onSubscribe(final Flow.Subscription subscription) {
+                        super.onSubscribe(subscription);
+                        subscription.request(n);
+                    }
+                    @Override public void onNext(final ByteBuffer item) {
+                        super.onNext(item);
+                        if (++i == n) {
+                            subscription().cancel();
+                        }
+                    }
+                    private int i = 0;
+                } // @formatter:on
+        );
+        // intercept, subscriber.onSubscribe(subscription), to wrap the subscription as a spy
+        BDDMockito.willAnswer(i -> {
+            i.getRawArguments()[0] = Mockito.spy(i.getArgument(0, Flow.Subscription.class));
+            return i.callRealMethod();
+        }).given(subscriber).onSubscribe(ArgumentMatchers.notNull());
         // ------------------------------------------------------------------------------- when/then
         publisher.subscribe(subscriber);
+        // ------------------------------------------------------------------------------------ then
+        // verify, subscriber.onSubscribe(subscription) invoked, once
+        final var subscriptionCaptor = ArgumentCaptor.forClass(Flow.Subscription.class);
+        Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(subscriptionCaptor.capture());
+        final var subscription = subscriptionCaptor.getValue();
+        // verify, subscription.request(n) invoked, once
+        Mockito.verify(subscription, Mockito.times(1)).request(n);
+        // await, for a second
+        _HelloWorldTestUtils.awaitForOneSecond();
+        // verify, subscriber.onNext(item) invoked, n-times
+        Mockito.verify(subscriber, Mockito.times(n)).onNext(ArgumentMatchers.notNull());
+        // verify, subscription.cancel() invoked, once
+        Mockito.verify(subscription, Mockito.times(1)).cancel();
     }
 }

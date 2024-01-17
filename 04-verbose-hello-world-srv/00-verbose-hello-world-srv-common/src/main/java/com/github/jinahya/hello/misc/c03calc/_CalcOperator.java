@@ -36,8 +36,7 @@ import java.util.function.IntBinaryOperator;
  * 나누기</a> (Wikipedia)
  * @see <a href="https://en.wikipedia.org/wiki/Division_by_zero">Division by zero</a> (Wikipedia)
  */
-enum _CalcOperator
-        implements IntBinaryOperator {
+enum _CalcOperator implements IntBinaryOperator {
 
     ADD() {
         @Override

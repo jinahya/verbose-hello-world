@@ -27,7 +27,6 @@ import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obv
 import com.github.jinahya.hello.util._TcpUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.net.StandardSocketOptions;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -37,8 +36,7 @@ import java.nio.channels.SocketChannel;
 @Slf4j
 class Rfc863Tcp3Server {
 
-    public static void main(final String... args)
-            throws IOException {
+    public static void main(final String... args) throws Exception {
         try (var selector = Selector.open();
              var server = ServerSocketChannel.open()) {
             // ------------------------------------------------------------------------------- reuse

@@ -42,11 +42,11 @@ class ChatTcp3Client {
 
     // @formatter:off
     private static class ChatTcp3ClientAttachment extends ChatTcp3Server.ChatTcp3ServerAttachment {
-        public ChatTcp3ClientAttachment(AsynchronousSocketChannel client,
-                                        SubmissionPublisher<ByteBuffer> publisher) {
+        public ChatTcp3ClientAttachment(final AsynchronousSocketChannel client,
+                                        final SubmissionPublisher<ByteBuffer> publisher) {
             super(client, publisher);
         }
-        @Override public void onNext(ByteBuffer item) {
+        @Override public void onNext(final ByteBuffer item) {
             Objects.requireNonNull(item, "item is null");
             Objects.requireNonNull(item, "item is null");
             buffers.add(item);
@@ -56,13 +56,14 @@ class ChatTcp3Client {
                 // empty
             }
         }
-    };
+    }
     // @formatter:on
 
     // @formatter:off
     private static final
     CompletionHandler<Integer, ChatTcp3ClientAttachment> W_HANDLER = new CompletionHandler<>() {
-        @Override public void completed(Integer result, ChatTcp3ClientAttachment attachment) {
+        @Override
+        public void completed(final Integer result, final ChatTcp3ClientAttachment attachment) {
             assert !attachment.buffers.isEmpty();
             var buffer = attachment.buffers.get(0);
             if (!buffer.hasRemaining()) {
@@ -76,7 +77,8 @@ class ChatTcp3Client {
                 );
             }
         }
-        @Override public void failed(Throwable exc, ChatTcp3ClientAttachment attachment) {
+        @Override
+        public void failed(final Throwable exc, final ChatTcp3ClientAttachment attachment) {
             log.error("failed to write", exc);
             attachment.closeUnchecked();
         }
@@ -86,7 +88,8 @@ class ChatTcp3Client {
     // @formatter:off
     private static final
     CompletionHandler<Integer, ChatTcp3ClientAttachment> R_HANDLER = new CompletionHandler<>() {
-        @Override public void completed(Integer result, ChatTcp3ClientAttachment attachment) {
+        @Override public void completed(final Integer result,
+                                        final ChatTcp3ClientAttachment attachment) {
             if (result == -1) {
                 attachment.closeUnchecked();
                 return;
@@ -97,77 +100,72 @@ class ChatTcp3Client {
             }
             attachment.client.read(attachment.buffer, attachment, this);
         }
-        @Override public void failed(Throwable exc, ChatTcp3ClientAttachment attachment) {
+        @Override public void failed(final Throwable exc,
+                                     final ChatTcp3ClientAttachment attachment) {
             log.error("failed to read", exc);
             attachment.closeUnchecked();
         }
     };
     // @formatter:on
 
-    public static void main(String... args)
-            throws Exception {
+    // @formatter:off
+    public static void main(String... args) throws Exception {
         InetAddress addr;
         try {
             addr = InetAddress.getByName(args[0]);
         } catch (ArrayIndexOutOfBoundsException aioobe) {
             addr = InetAddress.getLoopbackAddress();
         }
-        var group = AsynchronousChannelGroup.withThreadPool(
-                Executors.newCachedThreadPool());
+        final var group = AsynchronousChannelGroup.withThreadPool(Executors.newCachedThreadPool());
         try (var client = AsynchronousSocketChannel.open();
-             var publisher = new SubmissionPublisher<ByteBuffer>()) {
+             final var publisher = new SubmissionPublisher<ByteBuffer>()) {
             client.connect(
                     new InetSocketAddress(addr, _ChatConstants.PORT),
                     new ChatTcp3ClientAttachment(client, publisher),
-                    new CompletionHandler<>() { // @formatter:on
+                    new CompletionHandler<>() {
                         @Override
-                        public void completed(Void result,
-                                              ChatTcp3ClientAttachment attachment) {
+                        public void completed(final Void result,
+                                              final ChatTcp3ClientAttachment attachment) {
                             try {
                                 log.debug("connected to {}, through {}",
                                           attachment.client.getRemoteAddress(),
                                           attachment.client.getLocalAddress());
                             } catch (IOException ioe) {
-                                log.error("failed to get addresses from {}",
-                                          attachment.client,
+                                log.error("failed to get addresses from {}", attachment.client,
                                           ioe);
                             }
                             JavaLangUtils.readLinesAndCallWhenTests(
-                                    HelloWorldServerUtils::isQuit,
-                                    // <predicate>
+                                    HelloWorldServerUtils::isQuit, // <predicate>
                                     () -> {                        // <callable>
                                         group.shutdownNow();
                                         return null;
                                     },
                                     l -> {                         // <consumer>
-                                        var message = _ChatUtils.prependUsername(
-                                                l);
-                                        var buffer = _ChatMessage.OfBuffer.of(
-                                                message);
+                                        final var message = _ChatUtils.prependUsername(l);
+                                        final var buffer = _ChatMessage.OfBuffer.of(message);
                                         attachment.publisher.submit(buffer);
                                     }
                             );
                             attachment.publisher.subscribe(attachment);
-                            attachment.client.read(attachment.buffer,
-                                                   attachment, R_HANDLER);
+                            attachment.client.read(attachment.buffer, attachment, R_HANDLER);
                         }
-
                         @Override
-                        public void failed(Throwable exc,
-                                           ChatTcp3ClientAttachment attachment) {
+                        public void failed(final Throwable exc,
+                                           final ChatTcp3ClientAttachment attachment) {
                             log.error("failed to accept", exc);
                             try {
                                 group.shutdownNow();
                             } catch (IOException ioe) {
                                 log.error("failed shutdown " + group, ioe);
                             }
-                        } // @formatter:off
+                        }
                     });
             while (!group.awaitTermination(8L, TimeUnit.SECONDS)) {
                 // does nothing but just waiting...
             }
         }
     }
+    // @formatter:off
 
     private ChatTcp3Client() {
         throw new AssertionError("instantiation is not allowed");

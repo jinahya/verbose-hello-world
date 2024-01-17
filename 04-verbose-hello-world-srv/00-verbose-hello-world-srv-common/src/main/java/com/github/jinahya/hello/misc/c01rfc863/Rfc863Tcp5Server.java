@@ -56,8 +56,7 @@ class Rfc863Tcp5Server {
         }
     }
 
-    public static void main(final String... args)
-            throws Exception {
+    public static void main(final String... args) throws Exception { // @formatter:off
         try (var server = AsynchronousServerSocketChannel.open()) {
             // ------------------------------------------------------------------------------- REUSE
             server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
@@ -67,66 +66,62 @@ class Rfc863Tcp5Server {
             // ----------------------------------------------------------------------------- RECEIVE
             final var latch = new CountDownLatch(1);
             // ------------------------------------------------------------------------------ accept
-            server.<Void>accept(
-                    null,                       // <attachment>
-                    new CompletionHandler<>() { // <handler>
-                        @Override // @formatter:off
-                        public void completed(final AsynchronousSocketChannel result,
-                                              final Void a) {
-                            _TcpUtils.logAcceptedUnchecked(result);
-                            final var digest = _Rfc863Utils.newDigest();
-                            final var bytes = new long[1];
-                            final var buffer = _Rfc86_Utils.newBuffer();
-                            // ---------------------------------------------------------------- read
-                            result.<Void>read(
-                                    buffer,                             // <dst>
-                                    _Rfc86_Constants.READ_TIMEOUT,      // <timeout>
-                                    _Rfc86_Constants.READ_TIMEOUT_UNIT, // <unit>
-                                    null,                               // <attachment>
-                                    new CompletionHandler<>() {         // <handler>
-                                        @Override
-                                        public void completed(final Integer r, final Void a) {
-                                            if (r == -1) {
-                                                _Rfc863Utils.logServerBytes(bytes[0]);
-                                                _Rfc863Utils.logDigest(digest);
-                                                closeAndCountDown(result, latch);
-                                                return;
-                                            }
-                                            JavaSecurityUtils.updateDigest(digest, buffer, r);
-                                            bytes[0] += r;
-                                            // ------------------------------------------------ read
-                                            if (!buffer.hasRemaining()) {
-                                                buffer.clear();
-                                            }
-                                            result.read(
-                                                    buffer,                             // <dst>
-                                                    _Rfc86_Constants.READ_TIMEOUT,      // <timeout>
-                                                    _Rfc86_Constants.READ_TIMEOUT_UNIT, // <unit>
-                                                    null,                            // <attachment>
-                                                    this                                // <handler>
-                                            );
-                                        }
-                                        @_ExcludeFromCoverage_FailingCase
-                                        @Override
-                                        public void failed(final Throwable exc, final Void a) {
-                                            log.error("failed to read", exc);
-                                            closeAndCountDown(result, latch);
-                                        }
+            server.<Void>accept(null, new CompletionHandler<>() {
+                @Override
+                public void completed(final AsynchronousSocketChannel result, final Void a) {
+                    _TcpUtils.logAcceptedUnchecked(result);
+                    final var digest = _Rfc863Utils.newDigest();
+                    final var bytes = new long[1];
+                    final var buffer = _Rfc86_Utils.newBuffer();
+                    // ------------------------------------------------------------------------ read
+                    result.<Void>read(
+                            buffer,                             // <dst>
+                            _Rfc86_Constants.READ_TIMEOUT,      // <timeout>
+                            _Rfc86_Constants.READ_TIMEOUT_UNIT, // <unit>
+                            null,                               // <attachment>
+                            new CompletionHandler<>() {         // <handler>
+                                @Override
+                                public void completed(final Integer r, final Void a) {
+                                    if (r == -1) {
+                                        _Rfc863Utils.logServerBytes(bytes[0]);
+                                        _Rfc863Utils.logDigest(digest);
+                                        closeAndCountDown(result, latch);
+                                        return;
                                     }
-                            );
-                        }
-                        @_ExcludeFromCoverage_FailingCase
-                        @Override
-                        public void failed(final Throwable exc, final Void attachment) {
-                            log.error("failed to accept", exc);
-                        } // @formatter:on
-                    }
-            );
+                                    JavaSecurityUtils.updateDigest(digest, buffer, r);
+                                    bytes[0] += r;
+                                    // -------------------------------------------------------- read
+                                    if (!buffer.hasRemaining()) {
+                                        buffer.clear();
+                                    }
+                                    result.read(
+                                            buffer,                             // <dst>
+                                            _Rfc86_Constants.READ_TIMEOUT,      // <timeout>
+                                            _Rfc86_Constants.READ_TIMEOUT_UNIT, // <unit>
+                                            null,                               // <attachment>
+                                            this                                // <handler>
+                                    );
+                                }
+                                @_ExcludeFromCoverage_FailingCase
+                                @Override
+                                public void failed(final Throwable exc, final Void a) {
+                                    log.error("failed to read", exc);
+                                    closeAndCountDown(result, latch);
+                                }
+                            }
+                    );
+                }
+                @_ExcludeFromCoverage_FailingCase
+                @Override
+                public void failed(final Throwable exc, final Void attachment) {
+                    log.error("failed to accept", exc);
+                }
+            });
             final var terminated = latch.await(_Rfc86_Constants.ACCEPT_TIMEOUT,
                                                _Rfc86_Constants.ACCEPT_TIMEOUT_UNIT);
             assert terminated : "latch hasn't been broken";
         }
-    }
+    } // @formatter:on
 
     @_ExcludeFromCoverage_PrivateConstructor_Obviously
     private Rfc863Tcp5Server() {

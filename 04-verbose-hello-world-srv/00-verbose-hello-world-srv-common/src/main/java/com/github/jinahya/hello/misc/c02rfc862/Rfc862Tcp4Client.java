@@ -27,12 +27,9 @@ import com.github.jinahya.hello.util._TcpUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.EOFException;
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.AsynchronousSocketChannel;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeoutException;
 
 @Slf4j
 @SuppressWarnings({
@@ -40,11 +37,10 @@ import java.util.concurrent.TimeoutException;
 })
 class Rfc862Tcp4Client {
 
-    public static void main(final String... args)
-            throws IOException, ExecutionException, InterruptedException, TimeoutException {
+    public static void main(final String... args) throws Exception {
         // ------------------------------------------------------------------------------------ open
         try (var client = AsynchronousSocketChannel.open()) {
-            // ---------------------------------------------------------------------- bind(optional)
+            // -------------------------------------------------------------------------------- bind
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(_Rfc862Constants.ADDR.getAddress(), 0));
                 _TcpUtils.logBound(client);

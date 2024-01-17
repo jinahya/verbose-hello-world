@@ -30,13 +30,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
+import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
 
-import static org.mockito.BDDMockito.willAnswer;
-import static org.mockito.Mockito.mock;
 
 /**
  * A class for testing {@link HelloWorld#send(Socket) send(socket)} method.
@@ -81,17 +80,18 @@ class HelloWorld_01_Send_Socket_Test extends _HelloWorldTest {
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        willAnswer(i -> i.getArgument(0, OutputStream.class))
+        BDDMockito.willAnswer(i -> i.getArgument(0, OutputStream.class))
                 .given(service)
                 .write(ArgumentMatchers.any(OutputStream.class));
-        final var socket = mock(Socket.class);              // <1>
-        final var stream = mock(OutputStream.class);        // <2>
-        BDDMockito.given(socket.getOutputStream()).willReturn(stream); // <3>
+        final var socket = Mockito.mock(Socket.class);                 // <1>
+        final var stream = Mockito.mock(OutputStream.class);           // <2>
+        BDDMockito.willReturn(stream).given(socket).getOutputStream(); // <3>
         // ------------------------------------------------------------------------------------ when
         final var result = service.send(socket);
         // ------------------------------------------------------------------------------------ then
         // TODO: verify, socket.getOutputStream() invoked, once
         // TODO: verify, service.write(stream) invoked, once
+        // verify, service.send(socket) returns the socket
         Assertions.assertSame(socket, result);
     }
 }

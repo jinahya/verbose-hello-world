@@ -32,8 +32,7 @@ import java.net.ServerSocket;
 })
 class Rfc862Tcp0Server {
 
-    public static void main(final String... args)
-            throws Exception {
+    public static void main(final String... args) throws Exception {
         try (var server = new ServerSocket()) {
             // -------------------------------------------------------------------------------- bind
             server.bind(_Rfc862Constants.ADDR, 1);

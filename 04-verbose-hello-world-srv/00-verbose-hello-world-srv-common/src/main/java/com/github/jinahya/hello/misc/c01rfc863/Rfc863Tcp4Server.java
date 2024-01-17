@@ -33,8 +33,7 @@ import java.nio.channels.AsynchronousServerSocketChannel;
 @Slf4j
 class Rfc863Tcp4Server {
 
-    public static void main(final String... args)
-            throws Exception {
+    public static void main(final String... args) throws Exception {
         try (var server = AsynchronousServerSocketChannel.open()) {
             // -------------------------------------------------------------------------------- bind
             server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);

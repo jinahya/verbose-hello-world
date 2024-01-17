@@ -25,15 +25,13 @@ import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obv
 import com.github.jinahya.hello.util._UdpUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 
 @Slf4j
 class Rfc863Udp1Server {
 
-    public static void main(final String... args)
-            throws IOException {
+    public static void main(final String... args) throws Exception {
         try (var server = new DatagramSocket(null)) {
             // -------------------------------------------------------------------------------- bind
             server.bind(_Rfc863Constants.ADDR);

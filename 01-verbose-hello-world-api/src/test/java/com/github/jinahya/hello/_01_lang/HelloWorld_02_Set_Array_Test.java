@@ -28,9 +28,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 
-import static com.github.jinahya.hello.HelloWorld.BYTES;
-import static java.util.concurrent.ThreadLocalRandom.current;
-import static org.mockito.ArgumentMatchers.anyInt;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * A class for unit-testing {@link HelloWorld#set(byte[])} method.
@@ -50,7 +48,7 @@ class HelloWorld_02_Set_Array_Test extends _HelloWorldTest {
      */
     @DisplayName("""
             should throw a NullPointerException
-            when the array argument is null"""
+            when the <array> argument is <null>"""
     )
     @Test
     void _ThrowNullPointerException_ArrayIsNull() {
@@ -68,14 +66,14 @@ class HelloWorld_02_Set_Array_Test extends _HelloWorldTest {
      */
     @DisplayName("""
             should throw an ArrayIndexOutOfBoundsException
-            when array.length is less than HelloWorld.BYTES"""
+            when <array.length> is less than HelloWorld.BYTES"""
     )
     @Test
     void _ThrowArrayIndexOutOfBoundsException_ArrayLengthIsLessThan12() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        final var array = new byte[current().nextInt(BYTES)];
-        assert array.length < BYTES;
+        final var array = new byte[ThreadLocalRandom.current().nextInt(HelloWorld.BYTES)];
+        assert array.length < HelloWorld.BYTES;
         // ------------------------------------------------------------------------------- when/then
         // TODO: assert, service.set(array) throws an ArrayIndexOutOfBoundsException.
     }
@@ -85,15 +83,19 @@ class HelloWorld_02_Set_Array_Test extends _HelloWorldTest {
      * {@link HelloWorld#set(byte[], int) set(array, index)} method with given {@code array} and
      * {@code 0}, and returns the {@code array}.
      */
-    @DisplayName("-> set(array, 0)")
+    @DisplayName("""
+            should invoke set(array, 0)
+            and returns the array"""
+    )
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
+        // service.set(array, index) will just return the array
         BDDMockito.willAnswer(i -> i.getArgument(0, byte[].class))
                 .given(service)
-                .set(ArgumentMatchers.any(byte[].class), anyInt());
-        final var array = new byte[BYTES];
+                .set(ArgumentMatchers.any(byte[].class), ArgumentMatchers.anyInt());
+        final var array = new byte[HelloWorld.BYTES];
         // ------------------------------------------------------------------------------------ when
         final var result = service.set(array);
         // ------------------------------------------------------------------------------------ then

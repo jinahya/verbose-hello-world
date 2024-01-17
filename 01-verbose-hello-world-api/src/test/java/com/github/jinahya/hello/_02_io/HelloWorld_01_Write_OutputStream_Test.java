@@ -29,13 +29,12 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.io.OutputStream;
-
-import static org.mockito.ArgumentMatchers.any;
 
 /**
  * A class for testing {@link HelloWorld#write(OutputStream) write(stream)} method.
@@ -71,32 +70,39 @@ class HelloWorld_01_Write_OutputStream_Test extends _HelloWorldTest {
     /**
      * Asserts {@link HelloWorld#write(OutputStream) write(stream)} method invokes
      * {@link HelloWorld#set(byte[]) set(array)} method with an array of {@value HelloWorld#BYTES}
-     * bytes, invokes {@link OutputStream#write(byte[])} method on {@code stream} with the
-     * {@code array}, and returns the {@code stream}.
+     * bytes, {@link OutputStream#write(byte[]) writes} the {@code array} to the {@code stream}, and
+     * returns the {@code stream}.
      *
      * @throws IOException if an I/O error occurs.
      */
     @DisplayName("""
-            -> set[array[12])
-            -> stream.write(array)"""
+            should invoke set[array[12])
+            and writes the <array> to the <stream>"""
     )
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
+        // service.set(array) will return the array
         BDDMockito.willAnswer(i -> i.getArgument(0, byte[].class))
                 .given(service)
-                .set(any());
+                .set(ArgumentMatchers.any());
         final var stream = Mockito.mock(OutputStream.class);
+        if (false) { // redundant!
+            BDDMockito.willDoNothing()
+                    .given(stream)
+                    .write(ArgumentMatchers.any());
+        }
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(stream);
         // ------------------------------------------------------------------------------------ then
-        final var arrayCaptor = ArgumentCaptor.forClass(byte[].class);
-        Mockito.verify(service, Mockito.times(1)).set(arrayCaptor.capture());
-        final var array = arrayCaptor.getValue();
-        Assertions.assertNotNull(array);
-        Assertions.assertEquals(HelloWorld.BYTES, array.length);
+        final var arrayCaptor = ArgumentCaptor.forClass(byte[].class);        // <1>
+        Mockito.verify(service, Mockito.times(1)).set(arrayCaptor.capture()); // <2>
+        final var array = arrayCaptor.getValue();                             // <3>
+        Assertions.assertNotNull(array);                                      // <4>
+        Assertions.assertEquals(HelloWorld.BYTES, array.length);              // <5>
         // TODO: verify, stream.write(array) invoked, once
+        // verify, service.write(stream) returns the stream
         Assertions.assertSame(stream, result);
     }
 }

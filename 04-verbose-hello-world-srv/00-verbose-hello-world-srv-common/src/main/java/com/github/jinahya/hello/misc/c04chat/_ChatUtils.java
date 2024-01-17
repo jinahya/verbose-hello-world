@@ -25,9 +25,9 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Objects;
 
 @Slf4j
-class _ChatUtils {
+final class _ChatUtils {
 
-    static String prependUsername(String message) {
+    static String prependUsername(final String message) {
         Objects.requireNonNull(message, "message is null");
         return '[' + _ChatConstants.USER_NAME + "] " + message;
     }

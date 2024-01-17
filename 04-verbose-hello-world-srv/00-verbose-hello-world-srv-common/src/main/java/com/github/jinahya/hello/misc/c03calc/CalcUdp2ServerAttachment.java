@@ -34,8 +34,7 @@ final class CalcUdp2ServerAttachment {
         super();
     }
 
-    void receiveRequest(final DatagramChannel channel)
-            throws IOException {
+    void receiveRequest(final DatagramChannel channel) throws IOException {
         messages.add(
                 _CalcMessage.newInstanceForServer()
                         .receiveRequest(channel)
@@ -44,8 +43,7 @@ final class CalcUdp2ServerAttachment {
         );
     }
 
-    void sendResult(final DatagramChannel channel)
-            throws IOException {
+    void sendResult(final DatagramChannel channel) throws IOException {
         for (final var i = messages.iterator(); i.hasNext(); ) {
             final var message = i.next();
             message.sendResult(channel);

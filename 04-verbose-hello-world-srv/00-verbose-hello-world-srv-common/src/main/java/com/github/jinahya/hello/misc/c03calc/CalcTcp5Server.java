@@ -94,8 +94,7 @@ class CalcTcp5Server {
         );
     }
 
-    public static void main(final String... args)
-            throws IOException {
+    public static void main(final String... args) throws IOException {
         final var group = _CalcUtils.newChannelGroupForServer();
         try (var server = AsynchronousServerSocketChannel.open(group)) {
             // ------------------------------------------------------------------------------- reuse

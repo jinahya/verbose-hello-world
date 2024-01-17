@@ -43,8 +43,8 @@ sys.addaudithook(hook)
 
 
 # https://stackoverflow.com/a/77426018/330457
-def randomize(array):
-    array[:] = random.randbytes(len(array))
+def randomize(a):
+    a[:] = random.randbytes(len(a))
 
 
 with closing(socket.socket(FAMILY, socket.SOCK_STREAM)) as s:

@@ -32,8 +32,7 @@ import java.nio.file.Path;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-public interface HelloWorldServer
-        extends Closeable {
+public interface HelloWorldServer extends Closeable {
 
     /**
      * Opens this server binding to specified socket address and writes the port number, on which
@@ -46,8 +45,7 @@ public interface HelloWorldServer
      * @see #open(SocketAddress)
      * @see HelloWorldServerUtils#readPortNumber(Path)
      */
-    void open(SocketAddress endpoint, Path dir)
-            throws IOException;
+    void open(SocketAddress endpoint, Path dir) throws IOException;
 
     /**
      * Opens this server binding to specified socket address.
@@ -56,8 +54,7 @@ public interface HelloWorldServer
      * @throws IOException if an I/O error occurs.
      * @see #open(SocketAddress, Path)
      */
-    default void open(SocketAddress endpoint)
-            throws IOException {
+    default void open(SocketAddress endpoint) throws IOException {
         open(endpoint, null);
     }
 

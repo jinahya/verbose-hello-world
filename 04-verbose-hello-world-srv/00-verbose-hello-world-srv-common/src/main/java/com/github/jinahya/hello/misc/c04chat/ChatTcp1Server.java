@@ -43,8 +43,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 class ChatTcp1Server {
 
-    private record Receiver(Socket client, Queue<? super byte[]> queue)
-            implements Runnable {
+    private record Receiver(Socket client, Queue<? super byte[]> queue) implements Runnable {
 
         private Receiver {
             Objects.requireNonNull(client, "client is null");
@@ -122,8 +121,7 @@ class ChatTcp1Server {
         }
     }
 
-    public static void main(String... args)
-            throws Exception {
+    public static void main(String... args) throws Exception {
         var executor = Executors.newCachedThreadPool();
         var futures = new ArrayList<Future<?>>();
         var clients = Collections.synchronizedList(new ArrayList<Socket>());

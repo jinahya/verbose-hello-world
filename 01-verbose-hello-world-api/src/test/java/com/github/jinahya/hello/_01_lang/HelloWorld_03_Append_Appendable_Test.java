@@ -35,8 +35,6 @@ import org.mockito.Mockito;
 
 import java.io.IOException;
 
-import static org.mockito.Mockito.mock;
-
 /**
  * A class for testing {@link HelloWorld#append(Appendable) append(appendable)} method.
  *
@@ -87,7 +85,7 @@ class HelloWorld_03_Append_Appendable_Test extends _HelloWorldTest {
             }
             return array;
         }).given(service).set(ArgumentMatchers.any(byte[].class));
-        final var appendable = mock(Appendable.class);
+        final var appendable = Mockito.mock(Appendable.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.append(appendable);
         // ------------------------------------------------------------------------------------ then

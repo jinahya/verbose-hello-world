@@ -42,6 +42,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.LongAccumulator;
 
 /**
@@ -94,21 +95,22 @@ public interface HelloWorld {
 
     /**
      * Sets the <a href="#hello-world-bytes">hello-world-bytes</a> on specified array starting at
-     * specified position.
+     * specified index.
      * <p>
      * The elements in the array, on successful return, will be set as follows.
      * <pre>
-     *  0   &lt;= index            index+12     &lt;= array.length
-     *  ↓      ↓                       ↓        ↓
-     * | |....|h|e|l|l|o|,| |w|o|r|l|d| |....| |
+     *  0  &lt;= index            index+12    &lt;= array.length
+     *  ↓     ↓                       ↓       ↓
+     * | |...|h|e|l|l|o|,| |w|o|r|l|d| |...| |
      * </pre>
      *
      * @param array the array on which bytes are set.
-     * @param index the starting index of the {@code array}.
+     * @param index the starting index of the {@code array} to which bytes are set.
      * @return given {@code array}.
      * @throws NullPointerException      if {@code array} is {@code null}.
      * @throws IndexOutOfBoundsException if {@code index} is negative or {@code array.length} is
-     *                                   less than or equal to ({@code index} + {@value #BYTES}).
+     *                                   less than ({@code index} +
+     *                                   {@link #BYTES}({@value #BYTES})).
      */
     public   // redundant
     abstract // discouraged
@@ -128,9 +130,10 @@ public interface HelloWorld {
      * @param array the array on which bytes are set.
      * @return given {@code array}.
      * @throws NullPointerException           if {@code array} is {@code null}.
-     * @throws ArrayIndexOutOfBoundsException if {@code array.length} is less than {@link #BYTES}.
+     * @throws ArrayIndexOutOfBoundsException if {@code array.length} is less than
+     *                                        {@link #BYTES}({@value #BYTES}).
      * @implSpec The default implementation invokes {@link #set(byte[], int) set(array, index)}
-     * method with {@code array} and {@code 0}, and returns the result.
+     * method with {@code array} and {@code 0}, and returns the {@code array}.
      * @see #set(byte[], int)
      */
     default byte[] set(final byte[] array) {
@@ -323,19 +326,19 @@ public interface HelloWorld {
      * <pre>
      * Given,
      *
-     *          4                                        25          31
-     *  0    &lt;= position                           &lt;= limit &lt;= capacity
-     *  ↓       ↓                                         ↓           ↓
-     * | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |
+     *          4                                        25            31
+     *  0    &lt;= position                           &lt;= limit   &lt;= capacity
+     *  ↓       ↓                                         ↓             ↓
+     * | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |
      *         |--------------- remaining ---------------|
      *                                 21
      *
      * Then, on successful return,
      *
-     *                                 16                25          31
-     *  0                     &lt;= position          &lt;= limit &lt;= capacity
-     *  ↓                               ↓                 ↓           ↓
-     * | | | | |h|e|l|l|o|,| |w|o|r|l|d| | | | | | | | | | | | | | | |
+     *                                 16                25            31
+     *  0                     &lt;= position          &lt;= limit   &lt;= capacity
+     *  ↓                               ↓                 ↓             ↓
+     * | | | | |h|e|l|l|o|,| |w|o|r|l|d| | | | | | | | | | | | | | | | |
      *                                 |--- remaining ---|
      *                                              9
      * </pre>
@@ -391,7 +394,7 @@ public interface HelloWorld {
      * @implSpec The default implementation invokes {@link #put(ByteBuffer)} method with a buffer of
      * {@value #BYTES} bytes, {@link ByteBuffer#flip() flips} it, writes the buffer to
      * {@code channel}, by continuously invoking
-     * {@link WritableByteChannel#write(ByteBuffer) channel.write(buffer)}, while the buffer has
+     * {@link WritableByteChannel#write(ByteBuffer) channel.write(buffer)} while the buffer has
      * remaining, and returns the {@code channel}.
      * @see #put(ByteBuffer)
      * @see ByteBuffer#flip()
@@ -403,7 +406,7 @@ public interface HelloWorld {
         final var buffer = ByteBuffer.allocate(BYTES);
         put(buffer);
         buffer.flip();
-        // TODO: invoke channel.write(buffer)+ while buffer.hasRemaining()
+        // TODO: invoke channel.write(buffer) while buffer.hasRemaining()
         return channel;
     }
 
@@ -451,8 +454,8 @@ public interface HelloWorld {
      * @implSpec The default implementation invokes {@link #put(ByteBuffer) put(buffer)} method with
      * a byte buffer of {@value #BYTES} bytes, flips it, and writes the buffer to the
      * {@code channel} by, while the {@code buffer} {@link ByteBuffer#hasRemaining() has remaining},
-     * continuously invoking {@link AsynchronousByteChannel#write(ByteBuffer)} method with the
-     * {@code buffer}.
+     * continuously invoking and {@link Future#get() getting the result} of
+     * {@link AsynchronousByteChannel#write(ByteBuffer)} method with the {@code buffer}.
      * @see #put(ByteBuffer)
      * @see AsynchronousByteChannel#write(ByteBuffer)
      */

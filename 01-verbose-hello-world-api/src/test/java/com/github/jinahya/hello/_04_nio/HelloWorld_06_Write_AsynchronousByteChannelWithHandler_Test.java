@@ -22,6 +22,7 @@ package com.github.jinahya.hello._04_nio;
 
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello._HelloWorldTest;
+import com.github.jinahya.hello.畵蛇添足;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,10 +34,20 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
+import java.nio.channels.AsynchronousServerSocketChannel;
+import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.LongAdder;
 
@@ -174,5 +185,114 @@ class HelloWorld_06_Write_AsynchronousByteChannelWithHandler_Test extends _Hello
         // TODO: verify, channel.write(buffer, attachment, a-handler) invoked, at least once.
         // TODO: assert, writtenSoFar.intValue() is equal to BYTES
         // TODO: assert, buffer ha no remaining
+    }
+
+    @畵蛇添足
+    @Test
+    @SuppressWarnings({"unchecked"})
+    void __AsynchronousSocketChannel() throws Exception {
+        // ----------------------------------------------------------------------------------- given
+        final var service = service();
+        // service.write(channel, handler, attachment) will write 'hello, world' to the channel
+        BDDMockito.willAnswer(i -> {
+            final var channel = i.getArgument(0, AsynchronousByteChannel.class);
+            final var handler = i.getArgument(1, CompletionHandler.class);
+            final var attachment = i.getArgument(2);
+            final var buffer = ByteBuffer.wrap("hello, world".getBytes(StandardCharsets.US_ASCII));
+            while (buffer.hasRemaining()) {
+                channel.write(buffer).get();
+            }
+            handler.completed(channel, attachment);
+            return null;
+        }).given(service).write(
+                ArgumentMatchers.notNull(),
+                ArgumentMatchers.notNull(),
+                ArgumentMatchers.any()
+        );
+        final var queue = new ArrayBlockingQueue<SocketAddress>(1);
+        Thread.ofPlatform().name("server").start(() -> {
+            try (var server = AsynchronousServerSocketChannel.open()) {
+                server.bind(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0), 1);
+                log.debug("listening on {}", server.getLocalAddress());
+                if (!queue.offer(server.getLocalAddress())) {
+                    throw new RuntimeException("failed to offer");
+                }
+                final var done = new CountDownLatch(1);
+                server.accept(null, new CompletionHandler<>() { // @formatter:off
+                    @Override
+                    public void completed(final AsynchronousSocketChannel client,
+                                          final Object attachment) {
+                        try {
+                            log.debug("accepted from {} through {}", client.getRemoteAddress(),
+                                      client.getLocalAddress());
+                        } catch (final IOException ioe) {
+                            throw new RuntimeException(ioe);
+                        }
+                        final var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
+                        log.debug("[server] reading {} bytes...", buffer.remaining());
+                        client.read(buffer, null, new CompletionHandler<>() {
+                            @Override
+                            public void completed(final Integer read, Object attachment) {
+                                if (!buffer.hasRemaining()) {
+                                    log.debug("[server] all read");
+                                    buffer.flip();
+                                    log.debug("[server] decoded: {}",
+                                              StandardCharsets.US_ASCII.decode(buffer));
+                                    done.countDown();
+                                    return;
+                                }
+                                client.read(buffer, null, this);
+                            }
+                            @Override
+                            public void failed(final Throwable exc, final Object attachment) {
+                                log.debug("[server] failed to read", exc);
+                            }
+                        });
+                    }
+                    @Override
+                    public void failed(final Throwable exc, final Object attachment) {
+                        log.error("[server] failed to accept", exc);
+                    } // @formatter:on
+                });
+                done.await();
+            } catch (final Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+        // ------------------------------------------------------------------------------------ when
+        try (var client = AsynchronousSocketChannel.open()) {
+            final var remote = queue.poll(1L, TimeUnit.SECONDS);
+            final var done = new CountDownLatch(1);
+            log.debug("connecting to {}", remote);
+            client.connect(remote, null, new CompletionHandler<>() { // @formatter:off
+                @Override public void completed(final Void result, final Object attachment) {
+                    try {
+                        log.debug("[client] connected to {} through {}", client.getRemoteAddress(),
+                                  client.getLocalAddress());
+                        log.debug("[client] writing...");
+                        service.write(client, new CompletionHandler<>() {
+                            @Override
+                            public void completed(final AsynchronousSocketChannel result,
+                                                  final Object attachment) {
+                                log.debug("[client] all written");
+                                done.countDown();
+                            }
+                            @Override
+                            public void failed(final Throwable exc, final Object attachment) {
+                                log.error("[client] failed to write", exc);
+                            }
+                        }, null);
+                    } catch (final Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                @Override public void failed(final Throwable exc, final Object attachment) {
+                    log.error("[client] failed to connect", exc);
+                } // @formatter:on
+            });
+            done.await();
+        }
+        // ------------------------------------------------------------------------------------ then
+        // empty
     }
 }

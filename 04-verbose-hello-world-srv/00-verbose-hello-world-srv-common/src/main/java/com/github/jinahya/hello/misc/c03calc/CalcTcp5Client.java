@@ -100,8 +100,7 @@ class CalcTcp5Client {
         group.shutdown();
     }
 
-    public static void main(final String... args)
-            throws IOException {
+    public static void main(final String... args) throws IOException {
         sub(_CalcUtils.newChannelGroupForServer());
     }
 }

@@ -59,8 +59,7 @@ class ChatUdp1Client {
      *
      * @param socket the socket from which messages are received.
      */
-    private record Receiver(DatagramSocket socket)
-            implements Runnable {
+    private record Receiver(DatagramSocket socket) implements Runnable {
 
         private Receiver {
             Objects.requireNonNull(socket, "socket is null");
@@ -126,8 +125,7 @@ class ChatUdp1Client {
         }
     }
 
-    public static void main(String... args)
-            throws Exception {
+    public static void main(String... args) throws Exception {
         InetAddress addr;
         try {
             addr = InetAddress.getByName(args[0]);

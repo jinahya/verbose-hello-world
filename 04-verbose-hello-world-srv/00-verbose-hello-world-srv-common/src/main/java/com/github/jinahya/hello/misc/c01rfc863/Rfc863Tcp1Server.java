@@ -26,7 +26,6 @@ import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obv
 import com.github.jinahya.hello.util._TcpUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.StandardSocketOptions;
 import java.util.concurrent.ThreadLocalRandom;
@@ -37,8 +36,7 @@ import java.util.concurrent.ThreadLocalRandom;
 })
 class Rfc863Tcp1Server {
 
-    public static void main(final String... args)
-            throws IOException {
+    public static void main(final String... args) throws Exception {
         try (var server = new ServerSocket()) {
             // -------------------------------------------------------------------------------- bind
             if (ThreadLocalRandom.current().nextBoolean()) {

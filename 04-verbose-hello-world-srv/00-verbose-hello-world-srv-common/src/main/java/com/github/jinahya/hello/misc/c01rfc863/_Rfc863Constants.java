@@ -26,8 +26,7 @@ import java.net.InetSocketAddress;
 import java.util.HexFormat;
 import java.util.function.Function;
 
-final class _Rfc863Constants
-        extends _Rfc86_Constants {
+final class _Rfc863Constants extends _Rfc86_Constants {
 
     // ---------------------------------------------------------------------------------------- addr
 
@@ -43,7 +42,7 @@ final class _Rfc863Constants
 
     static final String ALGORITHM = "SHA-1";
 
-    static Function<? super byte[], ? extends CharSequence> PRINTER =
+    static final Function<? super byte[], ? extends CharSequence> PRINTER =
             b -> HexFormat.of().formatHex(b);
 
     // ---------------------------------------------------------------------------------------------

@@ -43,14 +43,11 @@ class ChatUdp2Server {
 
     static final Duration DURATION_TO_KEEP_ADDRESSES = ChatUdp1Server.DURATION_TO_KEEP_ADDRESSES;
 
-    public static void main(String... args)
-            throws Exception {
+    public static void main(String... args) throws Exception {
         try (var selector = Selector.open();
              var server = DatagramChannel.open()) {
-            log.debug("[S]: SO_RCVBUF: {}",
-                      server.getOption(StandardSocketOptions.SO_RCVBUF));
-            log.debug("[S]: SO_SNFBUD: {}",
-                      server.getOption(StandardSocketOptions.SO_SNDBUF));
+            log.debug("[S]: SO_RCVBUF: {}", server.getOption(StandardSocketOptions.SO_RCVBUF));
+            log.debug("[S]: SO_SNFBUD: {}", server.getOption(StandardSocketOptions.SO_SNDBUF));
             server.bind(new InetSocketAddress(
                     InetAddress.getByName("0.0.0.0"), _ChatConstants.PORT
             ));

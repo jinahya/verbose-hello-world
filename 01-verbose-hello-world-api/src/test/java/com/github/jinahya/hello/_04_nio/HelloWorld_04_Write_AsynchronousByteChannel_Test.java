@@ -22,6 +22,7 @@ package com.github.jinahya.hello._04_nio;
 
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello._HelloWorldTest;
+import com.github.jinahya.hello.畵蛇添足;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,11 +34,19 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
+import java.nio.channels.AsynchronousServerSocketChannel;
+import java.nio.channels.AsynchronousSocketChannel;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.LongAdder;
 
@@ -110,6 +119,7 @@ class HelloWorld_04_Write_AsynchronousByteChannel_Test extends _HelloWorldTest {
             final var src = w.getArgument(0, ByteBuffer.class);
             @SuppressWarnings({"unchecked"})
             final var future = (Future<Integer>) Mockito.mock(Future.class);
+            // future.get() will increase buffer's position by random value
             BDDMockito.willAnswer(g -> {
                 final var result = ThreadLocalRandom.current().nextInt(src.remaining()) + 1;
                 src.position(src.position() + result);
@@ -125,9 +135,62 @@ class HelloWorld_04_Write_AsynchronousByteChannel_Test extends _HelloWorldTest {
         final var bufferCaptor = ArgumentCaptor.forClass(ByteBuffer.class);
         Mockito.verify(service, Mockito.times(1)).put(bufferCaptor.capture());
         final var buffer = bufferCaptor.getValue();
+        Assertions.assertNotNull(buffer);
         Assertions.assertEquals(HelloWorld.BYTES, buffer.capacity());
-        // TODO: verify, channel.write(buffer), invoked, at least once
+        // TODO: verify, channel.write(buffer) invoked, at least once
         // TODO: assert, writtenSoFar.intValue() is equal to HelloWorld.BYTES
+        // verify service.write(channel) returned the channel
         Assertions.assertSame(channel, result);
+    }
+
+    @畵蛇添足
+    @Test
+    void __AsynchronousSocketChannel() throws Exception {
+        // ----------------------------------------------------------------------------------- given
+        final var service = service();
+        // service.write(channel) will write 'hello, world' to the channel
+        BDDMockito.willAnswer(i -> {
+            final var channel = i.getArgument(0, AsynchronousByteChannel.class);
+            final var buffer = ByteBuffer.wrap("hello, world".getBytes(StandardCharsets.US_ASCII));
+            while (buffer.hasRemaining()) {
+                channel.write(buffer).get();
+            }
+            return channel;
+        }).given(service).<AsynchronousByteChannel>write(ArgumentMatchers.notNull());
+        final var queue = new ArrayBlockingQueue<SocketAddress>(1);
+        Thread.ofPlatform().name("server").start(() -> {
+            try (var server = AsynchronousServerSocketChannel.open()) {
+                server.bind(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0), 1);
+                log.debug("listening on {}", server.getLocalAddress());
+                if (!queue.offer(server.getLocalAddress())) {
+                    throw new RuntimeException("failed to offer");
+                }
+                final var client = server.accept().get();
+                log.debug("accepted from {} through {}", client.getRemoteAddress(),
+                          client.getLocalAddress());
+                log.debug("reading {} bytes...", HelloWorld.BYTES);
+                final var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
+                while (buffer.hasRemaining()) {
+                    client.read(buffer).get();
+                }
+                buffer.flip();
+                log.debug("decoded: {}", StandardCharsets.US_ASCII.decode(buffer));
+            } catch (final Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+        // ------------------------------------------------------------------------------------ when
+        try (var client = AsynchronousSocketChannel.open()) {
+            final var remote = queue.poll(1L, TimeUnit.SECONDS);
+            log.debug("connecting to {}", remote);
+            client.connect(remote).get();
+            log.debug("connected to {} through {}", client.getRemoteAddress(),
+                      client.getLocalAddress());
+            log.debug("writing {} bytes...", HelloWorld.BYTES);
+            final var result = service.write(client);
+            assert result == client;
+        }
+        // ------------------------------------------------------------------------------------ then
+        // empty
     }
 }

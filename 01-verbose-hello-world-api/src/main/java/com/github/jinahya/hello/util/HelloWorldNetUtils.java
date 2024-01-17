@@ -66,7 +66,7 @@ public final class HelloWorldNetUtils {
             try {
                 value = (SocketOption<?>) field.get(null);
             } catch (final IllegalAccessException iae) {
-                iae.printStackTrace();
+                log.info("failed to get value of {}", field, iae);
                 continue;
             }
             consumer.accept(value);

@@ -53,44 +53,46 @@ class Rfc862TcpTest {
             Rfc862Tcp5Client.class
     );
 
-    private static Stream<Arguments> getClassesArgumentsList() {
-        return SERVER_CLASSES.stream()
-                .flatMap(sc -> CLIENT_CLASSES.stream()
-                        .map(cc -> Arguments.of(Named.of(sc.getSimpleName(), sc),
-                                                Named.of(cc.getSimpleName(), cc))));
+    private static Stream<Arguments> getClassesArgumentsStream() {
+        return SERVER_CLASSES.stream().flatMap(sc -> {
+            return CLIENT_CLASSES.stream().map(cc -> {
+                return Arguments.of(Named.of(sc.getSimpleName(), sc),
+                                    Named.of(cc.getSimpleName(), cc));
+            });
+        });
     }
 
-    @MethodSource({"getClassesArgumentsList"})
+    @MethodSource({"getClassesArgumentsStream"})
     @ParameterizedTest
-    void __(Class<?> serverClass, Class<?> clientClass)
-            throws Exception {
+    void __(Class<?> serverClass, Class<?> clientClass) throws Exception {
         log.debug("server: {}", serverClass.getSimpleName());
         log.debug("client: {}", clientClass.getSimpleName());
         serverClass.getClassLoader().setDefaultAssertionStatus(true);
         clientClass.getClassLoader().setDefaultAssertionStatus(true);
-        var executor = Executors.newFixedThreadPool(2);
-        var server = executor.submit(() -> {
-            try {
-                serverClass.getMethod("main", String[].class)
-                        .invoke(null, new Object[] {new String[0]});
-            } catch (final Exception e) {
-                throw new RuntimeException(e);
-            }
-        });
-        Awaitility.await().pollDelay(Duration.ofMillis(100L))
-                .untilAsserted(() -> Assertions.assertTrue(true));
-        var client = executor.submit(() -> {
-            try {
-                clientClass.getMethod("main", String[].class)
-                        .invoke(null, new Object[] {new String[0]});
-            } catch (final Exception e) {
-                throw new RuntimeException(e);
-            }
-        });
-        client.get(_Rfc86_Constants.CLIENT_PROGRAM_TIMEOUT,
-                   _Rfc86_Constants.CLIENT_PROGRAM_TIMEOUT_UNIT);
-        server.get(_Rfc86_Constants.SERVER_PROGRAM_TIMEOUT,
-                   _Rfc86_Constants.SERVER_PROGRAM_TIMEOUT_UNIT);
-        executor.shutdown();
+        try (final var executor = Executors.newFixedThreadPool(2)) {
+            final var server = executor.submit(() -> {
+                try {
+                    serverClass.getMethod("main", String[].class)
+                            .invoke(null, new Object[] {new String[0]});
+                } catch (final Exception e) {
+                    throw new RuntimeException(e);
+                }
+            });
+            Awaitility.await().pollDelay(Duration.ofMillis(100L))
+                    .untilAsserted(() -> Assertions.assertTrue(true));
+            final var client = executor.submit(() -> {
+                try {
+                    clientClass.getMethod("main", String[].class)
+                            .invoke(null, new Object[] {new String[0]});
+                } catch (final Exception e) {
+                    throw new RuntimeException(e);
+                }
+            });
+            client.get(_Rfc86_Constants.CLIENT_PROGRAM_TIMEOUT,
+                       _Rfc86_Constants.CLIENT_PROGRAM_TIMEOUT_UNIT);
+            server.get(_Rfc86_Constants.SERVER_PROGRAM_TIMEOUT,
+                       _Rfc86_Constants.SERVER_PROGRAM_TIMEOUT_UNIT);
+            executor.shutdown();
+        }
     }
 }
