@@ -20,6 +20,7 @@ package com.github.jinahya.hello._05_util_concurrent;
  * #L%
  */
 
+import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello.HelloWorldFlow;
 import com.github.jinahya.hello._HelloWorldTestUtils;
 import io.smallrye.mutiny.Multi;
@@ -33,70 +34,56 @@ import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Flow;
 
 @DisplayName("MultiCreate")
 @Slf4j
-class HelloWorldFlow_14_Munity_MultiCreate_Test extends _HelloWorldFlowTest {
+class HelloWorldFlow_14_Mutiny_MultiCreate_Test extends _HelloWorldFlowTest {
 
     @DisplayName("publisher(Flow.Publisher)")
     @Nested
     class PublisherTest {
 
         @Test
-        void __() {
-            // ------------------------------------------------------------------------------- given
-            final var service = service();
-            final var publisher = Mockito.spy(
-                    new HelloWorldFlow.HelloWorldPublisher.OfByte(service, EXECUTOR)
-            );
-            final var multi = Multi.createFrom().publisher(publisher);
-            // -------------------------------------------------------------------------------- when
-            final var cancellable = multi
-                    .subscribe()
-                    .with(i -> {
-                        log.debug("item: {}", (char) i.byteValue());
-                    });
-            _HelloWorldTestUtils.awaitForOneSecond();
-            // -------------------------------------------------------------------------------- then
-            // verify, publisher.subscribe(non-null) invoked, once
-            Mockito.verify(publisher, Mockito.times(1)).subscribe(ArgumentMatchers.notNull());
-            cancellable.cancel();
-        }
-
-        @Test
         @SuppressWarnings({"unchecked"})
         void __byte() {
+            // ------------------------------------------------------------------------------- given
             interface AlienService { // @formatter:off
-                default void doWithMulti(final Multi<? extends Byte> multi) {
-                    final var cancellable = multi.subscribe().with(i -> {
-                        log.debug("item: {}", (char) i.byteValue());
-                    });
+                default void doSome(final Multi<? extends Byte> multi) {
+                    final var cancellable = multi
+                            .onItem().invoke(i -> {
+                                log.debug("item: {}", (char) i.byteValue());
+                            })
+                            .map(i -> (char) i.byteValue())
+                            .collect().in(StringBuilder::new, StringBuilder::append)
+                            .subscribe()
+                            .with(i -> {
+                                log.debug("item: {}", i);
+                            });
                     _HelloWorldTestUtils.awaitForOneSecond();
-                    cancellable.cancel();
+                    cancellable.cancel(); // do we have log for this?
                 }
             } // @formatter:on
-            // ------------------------------------------------------------------------------- given
             final var service = service();
             final var publisher = Mockito.spy(
                     new HelloWorldFlow.HelloWorldPublisher.OfByte(service, EXECUTOR)
             );
+            // intercept, publisher.subscribe(subscriber) to wrap the subscriber as a spy
             BDDMockito.willAnswer(i -> {
                 final var subscriber = Mockito.spy(i.getArgument(0, Flow.Subscriber.class));
+                // intercept, subscriber.onSubscribe(subscription) to wrap the subscription as a spy
                 BDDMockito.willAnswer(j -> {
                     final var subscription = Mockito.spy(j.getArgument(0, Flow.Subscription.class));
                     j.getArguments()[0] = subscription;
-                    j.callRealMethod();
-                    return null;
-                }).given(subscriber).onSubscribe(ArgumentMatchers.notNull());
+                    return j.callRealMethod();
+                }).given(subscriber).onSubscribe(ArgumentMatchers.any());
                 i.getArguments()[0] = subscriber;
-                i.callRealMethod();
-                return null;
-            }).given(publisher).subscribe(ArgumentMatchers.notNull());
-            final var multi = Multi.createFrom().publisher(publisher);
+                return i.callRealMethod();
+            }).given(publisher).subscribe(ArgumentMatchers.any());
             // -------------------------------------------------------------------------------- when
             new AlienService() {
-            }.doWithMulti(multi);
+            }.doSome(Multi.createFrom().publisher(publisher));
             _HelloWorldTestUtils.awaitForOneSecond();
             // -------------------------------------------------------------------------------- then
             final var subscriberCaptor = ArgumentCaptor.forClass(Flow.Subscriber.class);
@@ -109,17 +96,31 @@ class HelloWorldFlow_14_Munity_MultiCreate_Test extends _HelloWorldFlowTest {
             final var subscription = subscriptionCaptor.getValue();
             // verify, subscription.request(Long.MAX_VALUE) invoked, once
             Mockito.verify(subscription, Mockito.times(1)).request(Long.MAX_VALUE);
+            // verify, subscriber.onNext(nonnull) invoked, HelloWorld.BYTES-times
+            Mockito.verify(subscriber, Mockito.times(HelloWorld.BYTES))
+                    .onNext(ArgumentMatchers.notNull());
+            // verify, subscriber.onComplete() invoked, once
+            Mockito.verify(subscriber, Mockito.times(1)).onComplete();
+            // verify, subscription.cancel() invoked, once
+            Mockito.verify(subscription, Mockito.never()).cancel(); // do we have log for this?
         }
 
         @Test
+        @SuppressWarnings({"unchecked"})
         void __array() {
             interface AlienService { // @formatter:off
-                default void doWithMulti(final Multi<? extends byte[]> multi) {
-                    final var cancellable = multi.select().first(3).subscribe().with(i -> {
-                        log.debug("item: {}", i);
-                    });
+                default void doSome(final Multi<? extends byte[]> multi) {
+                    final var cancellable = multi
+                            .select().first(3)
+                            .onItem().invoke(i -> {
+                                log.debug("item: {}", i);
+                            })
+                            .map(i -> new String(i, StandardCharsets.US_ASCII))
+                            .subscribe().with(i -> {
+                                log.debug("item: {}", i);
+                            });
                     _HelloWorldTestUtils.awaitForOneSecond();
-                    cancellable.cancel();
+                    // not cancelling the cancellable!
                 }
             } // @formatter:on
             // ------------------------------------------------------------------------------- given
@@ -132,17 +133,15 @@ class HelloWorldFlow_14_Munity_MultiCreate_Test extends _HelloWorldFlowTest {
                 BDDMockito.willAnswer(j -> {
                     final var subscription = Mockito.spy(j.getArgument(0, Flow.Subscription.class));
                     j.getArguments()[0] = subscription;
-                    j.callRealMethod();
-                    return null;
+                    return j.callRealMethod();
                 }).given(subscriber).onSubscribe(ArgumentMatchers.notNull());
                 i.getArguments()[0] = subscriber;
-                i.callRealMethod();
-                return null;
+                return i.callRealMethod();
             }).given(publisher).subscribe(ArgumentMatchers.notNull());
             final var multi = Multi.createFrom().publisher(publisher);
             // -------------------------------------------------------------------------------- when
             new AlienService() {
-            }.doWithMulti(multi);
+            }.doSome(multi);
             // -------------------------------------------------------------------------------- then
             final var subscriberCaptor = ArgumentCaptor.forClass(Flow.Subscriber.class);
             // verify, publisher.subscribe(subscriber) invoked, once
@@ -154,17 +153,26 @@ class HelloWorldFlow_14_Munity_MultiCreate_Test extends _HelloWorldFlowTest {
             final var subscription = subscriptionCaptor.getValue();
             // verify, subscription.request(Long.MAX_VALUE) invoked, once
             Mockito.verify(subscription, Mockito.times(1)).request(Long.MAX_VALUE);
+            // verify, subscription.cancel() invoked, once
+            Mockito.verify(subscription, Mockito.times(1)).cancel(); // why?
         }
 
         @Test
+        @SuppressWarnings({"unchecked"})
         void __buffer() {
             interface AlienService { // @formatter:off
-                default void doWithMulti(final Multi<? extends ByteBuffer> multi) {
-                    final var cancellable = multi.select().first(3).subscribe().with(i -> {
-                        log.debug("item: {}", i);
-                    });
+                default void doSome(final Multi<? extends ByteBuffer> multi) {
+                    final var cancellable = multi
+                            .select().first(3)
+                            .onItem().invoke(i -> {
+                                log.debug("item: {}", i);
+                            })
+                            .map(StandardCharsets.US_ASCII::decode)
+                            .subscribe().with(i -> {
+                                log.debug("item: {}", i);
+                            });
                     _HelloWorldTestUtils.awaitForOneSecond();
-                    cancellable.cancel();
+                    // not cancelling the cancellable
                 }
             } // @formatter:on
             // ------------------------------------------------------------------------------- given
@@ -177,17 +185,15 @@ class HelloWorldFlow_14_Munity_MultiCreate_Test extends _HelloWorldFlowTest {
                 BDDMockito.willAnswer(j -> {
                     final var subscription = Mockito.spy(j.getArgument(0, Flow.Subscription.class));
                     j.getArguments()[0] = subscription;
-                    j.callRealMethod();
-                    return null;
+                    return j.callRealMethod();
                 }).given(subscriber).onSubscribe(ArgumentMatchers.notNull());
                 i.getArguments()[0] = subscriber;
-                i.callRealMethod();
-                return null;
+                return i.callRealMethod();
             }).given(publisher).subscribe(ArgumentMatchers.notNull());
             final var multi = Multi.createFrom().publisher(publisher);
             // -------------------------------------------------------------------------------- when
             new AlienService() {
-            }.doWithMulti(multi);
+            }.doSome(multi);
             // -------------------------------------------------------------------------------- then
             final var subscriberCaptor = ArgumentCaptor.forClass(Flow.Subscriber.class);
             // verify, publisher.subscribe(subscriber) invoked, once
@@ -199,6 +205,8 @@ class HelloWorldFlow_14_Munity_MultiCreate_Test extends _HelloWorldFlowTest {
             final var subscription = subscriptionCaptor.getValue();
             // verify, subscription.request(Long.MAX_VALUE) invoked, once
             Mockito.verify(subscription, Mockito.times(1)).request(Long.MAX_VALUE);
+            // verify, subscription.cancel() invoked, once
+            Mockito.verify(subscription, Mockito.times(1)).cancel(); // why?
         }
 
         @Test

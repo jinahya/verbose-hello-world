@@ -23,7 +23,6 @@ package com.github.jinahya.hello;
 import lombok.extern.slf4j.Slf4j;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Assertions;
-import org.mockito.Mockito;
 
 import java.time.Duration;
 
@@ -44,6 +43,13 @@ public final class _HelloWorldTestUtils {
 
     public static void awaitForOneSecond() {
         await(Duration.ofSeconds(1L));
+    }
+
+    public static void awaitFor(final long seconds) {
+        if (seconds <= 0L) {
+            throw new IllegalArgumentException("seconds(" + seconds + ") <= 0L");
+        }
+        await(Duration.ofSeconds(seconds));
     }
 
     // ---------------------------------------------------------------------------------------------
