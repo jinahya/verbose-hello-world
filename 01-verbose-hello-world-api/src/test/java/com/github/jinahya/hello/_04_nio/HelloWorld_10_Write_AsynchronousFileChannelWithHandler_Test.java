@@ -200,7 +200,7 @@ class HelloWorld_10_Write_AsynchronousFileChannelWithHandler_Test extends _Hello
      *
      * @throws Exception if any thrown.
      */
-    @Disabled("not implemented yet")
+    @Disabled("enable when the put(buffer) method implemented")
     @DisplayName("should write 12 bytes to <path> starting at <position>")
     @畵蛇添足
     @Test
@@ -210,28 +210,29 @@ class HelloWorld_10_Write_AsynchronousFileChannelWithHandler_Test extends _Hello
         final var path = Files.createTempFile(tempDir, null, null);
         final var position = ThreadLocalRandom.current().nextLong(8L);
         // ------------------------------------------------------------------------------------ when
-        final var latch = new CountDownLatch(1);
         try (final var channel = AsynchronousFileChannel.open(path, StandardOpenOption.WRITE)) {
+            final var completed = new CountDownLatch(1); // @formatter:off
             service.write(
-                    channel,
-                    position,
-                    new CompletionHandler<>() { // @formatter:off
+                    channel,                    // <channel>
+                    position,                   // <position>
+                    new CompletionHandler<>() { // <handler>
                         @Override
                         public void completed(final AsynchronousFileChannel result,
                                               final Object attachment) {
-                            latch.countDown();
+                            completed.countDown();
                         }
                         @Override
                         public void failed(final Throwable exc, final Object attachment) {
                             log.error("failed to write", exc);
-                            latch.countDown();
-                        } // @formatter:on
+                            completed.countDown();
+                        }
                     },
-                    null
+                    null                        // <attachment>
             );
+            completed.await(); // @formatter:on
         }
-        latch.await();
         // ------------------------------------------------------------------------------------ then
+        // verify, file.size is equal to <position> + HelloWorld.BYTES
         Assertions.assertEquals(position + HelloWorld.BYTES, Files.size(path));
     }
 }
