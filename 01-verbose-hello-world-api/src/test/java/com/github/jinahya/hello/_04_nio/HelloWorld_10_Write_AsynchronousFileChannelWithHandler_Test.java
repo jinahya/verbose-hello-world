@@ -25,7 +25,6 @@ import com.github.jinahya.hello._HelloWorldTest;
 import com.github.jinahya.hello.畵蛇添足;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -147,7 +146,7 @@ class HelloWorld_10_Write_AsynchronousFileChannelWithHandler_Test extends _Hello
     void __() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // service.put(buffer) will increase the buffer's position by HelloWorld.BYTES
+        // DONE: service.put(buffer) will increase the buffer's position by HelloWorld.BYTES
         BDDMockito.willAnswer(i -> {
                     final var buffer = i.getArgument(0, ByteBuffer.class);
                     buffer.position(buffer.position() + HelloWorld.BYTES);
@@ -157,6 +156,7 @@ class HelloWorld_10_Write_AsynchronousFileChannelWithHandler_Test extends _Hello
                 .put(ArgumentMatchers.argThat(b -> b != null && b.remaining() >= HelloWorld.BYTES));
         final var writtenSoFar = new LongAdder();
         final var channel = Mockito.mock(AsynchronousFileChannel.class);
+        // DONE: channel.write(src, position, attachment, handler) will invoke handler.completed
         BDDMockito.willAnswer(i -> {
             final var src = i.getArgument(0, ByteBuffer.class);
             final var position = i.getArgument(1, Long.class);
@@ -179,16 +179,16 @@ class HelloWorld_10_Write_AsynchronousFileChannelWithHandler_Test extends _Hello
         // ------------------------------------------------------------------------------------ when
         service.write(channel, position, handler, attachment);
         // ------------------------------------------------------------------------------------ then
-        // verify, put(buffer[12]) invoked
+        // DONE: verify, put(buffer[12]) invoked
         final var bufferCaptor = ArgumentCaptor.forClass(ByteBuffer.class);
         Mockito.verify(service, Mockito.times(1)).put(bufferCaptor.capture());
         final var buffer = bufferCaptor.getValue();
         Assertions.assertNotNull(buffer);
         Assertions.assertEquals(HelloWorld.BYTES, buffer.capacity());
-        // await, handler to be completed(channel, attachment)
+        // DONE: await, handler to be completed(channel, attachment)
         Mockito.verify(handler, Mockito.timeout(TimeUnit.SECONDS.toMillis(8L)).times(1))
                 .completed(channel, attachment);
-        // assert, writtenSoFar.intValue() equals to HelloWorld.BYTES
+        // DONE: assert, writtenSoFar.intValue() equals to HelloWorld.BYTES
         Assertions.assertEquals(HelloWorld.BYTES, writtenSoFar.intValue());
     }
 
@@ -200,39 +200,93 @@ class HelloWorld_10_Write_AsynchronousFileChannelWithHandler_Test extends _Hello
      *
      * @throws Exception if any thrown.
      */
-    @Disabled("enable when the put(buffer) method implemented")
     @DisplayName("should write 12 bytes to <path> starting at <position>")
     @畵蛇添足
     @Test
-    void __(@TempDir final Path tempDir) throws Exception {
+    void __(@TempDir final Path tempDir) throws Exception { // @formatter:off
         // ----------------------------------------------------------------------------------- given
         final var service = service();
+        // DONE: service.put(buffer) will increase the buffer's position by HelloWorld.BYTES
+        BDDMockito.willAnswer(i -> {
+                    log.debug("\tservice.put({})", (Object) i.getArgument(0));
+                    final var buffer = i.getArgument(0, ByteBuffer.class);
+                    buffer.position(buffer.position() + HelloWorld.BYTES);
+                    return buffer;
+                })
+                .given(service)
+                .put(ArgumentMatchers.argThat(b -> b != null && b.remaining() >= HelloWorld.BYTES));
+        // DONE: service.write(channel, position, handler, attachment) will call real method
+        BDDMockito.willAnswer(i -> {
+            log.debug("service.write({}, {}, {}, {})", i.getArgument(0), i.getArgument(1),
+                      i.getArgument(2), i.getArgument(3));
+            return i.callRealMethod();
+        }).given(service).write(
+                ArgumentMatchers.notNull(), // <channel>
+                ArgumentMatchers.anyLong(), // <position>
+                ArgumentMatchers.notNull(), // <handler>
+                ArgumentMatchers.any()      // <attachment>
+        );
         final var path = Files.createTempFile(tempDir, null, null);
+        log.debug("path: {} ({})", path, Files.size(path));
         final var position = ThreadLocalRandom.current().nextLong(8L);
+        log.debug("position: {}", position);
         // ------------------------------------------------------------------------------------ when
-        try (final var channel = AsynchronousFileChannel.open(path, StandardOpenOption.WRITE)) {
-            final var completed = new CountDownLatch(1); // @formatter:off
-            service.write(
-                    channel,                    // <channel>
-                    position,                   // <position>
-                    new CompletionHandler<>() { // <handler>
-                        @Override
-                        public void completed(final AsynchronousFileChannel result,
-                                              final Object attachment) {
-                            completed.countDown();
-                        }
-                        @Override
-                        public void failed(final Throwable exc, final Object attachment) {
-                            log.error("failed to write", exc);
-                            completed.countDown();
-                        }
-                    },
-                    null                        // <attachment>
+        try (final var channel =
+                     Mockito.spy(AsynchronousFileChannel.open(path, StandardOpenOption.WRITE))) {
+            BDDMockito.willAnswer(i -> String.format("channel@%08x", hashCode()))
+                    .given(channel).toString();
+            // DONE: channel.write(src, position, attachment, handler) will log
+            BDDMockito.willAnswer(i -> {
+                @SuppressWarnings({"unchecked"})
+                final var handler = (CompletionHandler<Integer, Object>)
+                        Mockito.spy(i.getArgument(3, CompletionHandler.class));
+                BDDMockito.willReturn(String.format("handler@%08x", handler.hashCode()))
+                        .given(handler).toString();
+                // DONE: handler.completed(result, attachment) will log
+                BDDMockito.willAnswer(j -> {
+                            log.debug("{}.onComplete({}, {})", handler,
+                                      j.getArgument(0), j.getArgument(1));
+                            return j.callRealMethod();
+                        }).given(handler)
+                        .completed(ArgumentMatchers.any(), ArgumentMatchers.any());
+                i.getArguments()[3] = handler;
+                log.debug("\t{}.write({}, {}, {}, {})", channel,
+                          i.getArgument(0), i.getArgument(1), i.getArgument(2), i.getArgument(3));
+                return i.callRealMethod();
+            }).given(channel).write(
+                    ArgumentMatchers.argThat(b -> b != null && b.hasRemaining()), // <src>
+                    ArgumentMatchers.longThat(p -> p >= 0L),                      // <position>
+                    ArgumentMatchers.any(),                                       // <attachment>
+                    ArgumentMatchers.notNull()                                    // <handler>
             );
-            completed.await(); // @formatter:on
+            final var handled = new CountDownLatch(1);
+            final var handler = Mockito.spy(
+                    new CompletionHandler<AsynchronousFileChannel, Object>() {
+                        @Override public String toString() {
+                            return String.format("handler@%08x", hashCode());
+                        }
+                        @Override public void completed(final AsynchronousFileChannel result,
+                                                        final Object attachment) {
+                            log.debug("\t{}.completed({}, {})", this, result,
+                                      attachment);
+                            handled.countDown();
+                        }
+                        @Override public void failed(final Throwable exc, final Object attachment) {
+                            log.error("failed to write", exc);
+                            handled.countDown();
+                        }
+                    }
+            );
+            service.write(
+                    channel,  // <channel>
+                    position, // <position>
+                    handler,  // <handler>
+                    null      // <attachment>
+            );
+            handled.await();
         }
         // ------------------------------------------------------------------------------------ then
         // verify, file.size is equal to <position> + HelloWorld.BYTES
         Assertions.assertEquals(position + HelloWorld.BYTES, Files.size(path));
-    }
+    } // @formatter:on
 }

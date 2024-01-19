@@ -25,7 +25,6 @@ import com.github.jinahya.hello._HelloWorldTest;
 import com.github.jinahya.hello.畵蛇添足;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -177,20 +176,41 @@ class HelloWorld_08_Write_AsynchronousFileChannel_Test extends _HelloWorldTest {
      *
      * @throws Exception if any thrown.
      */
-    @Disabled("not implemented yet")
     @DisplayName("should write 12 bytes to <path> starting at <position>")
     @畵蛇添足
     @Test
     void __(@TempDir final Path tempDir) throws Exception {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
+        // service.put(buffer) will increase the buffer's position by HelloWorld.BYTES
+        BDDMockito.willAnswer(i -> {
+                    log.debug("{}.put({})", service, i.getArguments()[0]);
+                    final var buffer = i.getArgument(0, ByteBuffer.class);
+                    buffer.position(buffer.position() + HelloWorld.BYTES);
+                    return buffer;
+                })
+                .given(service)
+                .put(ArgumentMatchers.argThat(b -> b != null && b.remaining() >= HelloWorld.BYTES));
+        // service.write(channel, position) will log and call real method
+        BDDMockito.willAnswer(i -> {
+                    log.debug("{}.write({}, {})", service, i.getArguments()[0], i.getArguments()[1]);
+                    return i.callRealMethod();
+                })
+                .given(service)
+                .write(ArgumentMatchers.notNull(), ArgumentMatchers.longThat(p -> p >= 0L));
+        // create a new empty file in the tempDir
         final var path = Files.createTempFile(tempDir, null, null);
+        log.debug("path: {}({})", path, Files.size(path));
+        // select a random position
         final var position = ThreadLocalRandom.current().nextLong(8L);
+        log.debug("position: {}", position);
         // ------------------------------------------------------------------------------------ when
-        try (final var channel = AsynchronousFileChannel.open(path, StandardOpenOption.WRITE)) {
+        try (var channel = AsynchronousFileChannel.open(path, StandardOpenOption.WRITE)) {
             service.write(channel, position);
             channel.force(false);
+            log.debug("channel.size: {} ?= {} + {}", channel.size(), position, HelloWorld.BYTES);
         }
+        log.debug("path.size: {} ?= {} + {}", Files.size(path), position, HelloWorld.BYTES);
         // ------------------------------------------------------------------------------------ then
         Assertions.assertEquals(position + HelloWorld.BYTES, Files.size(path));
     }

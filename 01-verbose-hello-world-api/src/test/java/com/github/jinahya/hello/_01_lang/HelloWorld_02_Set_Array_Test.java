@@ -56,7 +56,7 @@ class HelloWorld_02_Set_Array_Test extends _HelloWorldTest {
         final var service = service();
         final var array = (byte[]) null;
         // ------------------------------------------------------------------------------- when/then
-        // TODO: assert, service.set(array) throws a NullPointerException.
+        // TODO: verify, service.set(array) throws a NullPointerException.
     }
 
     /**
@@ -73,9 +73,8 @@ class HelloWorld_02_Set_Array_Test extends _HelloWorldTest {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var array = new byte[ThreadLocalRandom.current().nextInt(HelloWorld.BYTES)];
-        assert array.length < HelloWorld.BYTES;
         // ------------------------------------------------------------------------------- when/then
-        // TODO: assert, service.set(array) throws an ArrayIndexOutOfBoundsException.
+        // TODO: verify, service.set(array) throws an ArrayIndexOutOfBoundsException.
     }
 
     /**
@@ -91,15 +90,15 @@ class HelloWorld_02_Set_Array_Test extends _HelloWorldTest {
     void __() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // service.set(array, index) will just return the array
-        BDDMockito.willAnswer(i -> i.getArgument(0, byte[].class))
+        // DONE: service.set(array, index) will just return the <array>
+        BDDMockito.willAnswer(i -> i.getArgument(0))
                 .given(service)
-                .set(ArgumentMatchers.any(byte[].class), ArgumentMatchers.anyInt());
+                .set(ArgumentMatchers.any(), ArgumentMatchers.anyInt());
         final var array = new byte[HelloWorld.BYTES];
         // ------------------------------------------------------------------------------------ when
         final var result = service.set(array);
         // ------------------------------------------------------------------------------------ then
         // TODO: verify, service.set(array, 0) invoked, once
-        // TODO: assert, result is same as array
+        // TODO: verify, result is same as array
     }
 }

@@ -43,7 +43,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.atomic.LongAccumulator;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * An interface for generating <a href="#hello-world-bytes">hello-world-bytes</a> to various
@@ -166,9 +166,9 @@ public interface HelloWorld {
      * }
      * final var array = new byte[BYTES];
      * set(array);
-     * for (final var b : array) {
-     *     appendable.append((char) b); // @highlight regex='\(char\) b'
-     * }
+     * for (final var b : array) { // @highlight region
+     *     appendable.append((char) b);
+     * } // @end
      * return appendable;
      *}
      *
@@ -203,8 +203,7 @@ public interface HelloWorld {
      * if (stream == null) {
      *     throw new NullPointerException("stream is null");
      * }
-     * final var array = new byte[BYTES];
-     * set(array);
+     * final var array = set(new byte[BYTES]);
      * stream.write(array); // @highlight
      * return stream;
      *}
@@ -226,8 +225,7 @@ public interface HelloWorld {
         if (stream == null) {
             throw new NullPointerException("stream is null");
         }
-        final var array = new byte[BYTES];
-        set(array);
+        final var array = set(new byte[BYTES]);
         // TODO: write the array to the stream
         return stream;
     }
@@ -240,10 +238,10 @@ public interface HelloWorld {
      * if (file == null) {
      *     throw new NullPointerException("file is null");
      * }
-     * try (var stream = new FileOutputStream(file, true)) { // @highlight regex='true'
-     *     write(stream); // @highlight regex='write\(stream\)'
-     *     stream.flush(); // @highlight regex='flush\(\)'
-     * }
+     * try (var stream = new FileOutputStream(file, true)) { // @highlight region
+     *     write(stream);
+     *     stream.flush();
+     * } // @end
      * return file;
      *}
      *
@@ -264,10 +262,9 @@ public interface HelloWorld {
         if (file == null) {
             throw new NullPointerException("file is null");
         }
-        // TODO: create a new FileOutputStream with <file> and true
-        // TODO: invoke write(stream) method with it.
-        // TODO: flush the stream.
-        // TODO: close the stream.
+        // TODO: create a new FileOutputStream with file and true
+        // TODO: invoke write(stream) method with it
+        // TODO: flush (and close) the stream
         return file;
     }
 
@@ -275,7 +272,7 @@ public interface HelloWorld {
      * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified data output.
      * <p>
      * Default implementation would look like,
-     * {@snippet lang = "java" :
+     * {@snippet lang = "java":
      * if (output == null) {
      *     throw new NullPointerException("output is null");
      * }
@@ -301,9 +298,8 @@ public interface HelloWorld {
         if (output == null) {
             throw new NullPointerException("output is null");
         }
-        final var array = new byte[BYTES];
-        set(array);
-        // TODO: write <array> to data
+        final var array = set(new byte[BYTES]);
+        // TODO: write array to data
         return output;
     }
 
@@ -338,9 +334,8 @@ public interface HelloWorld {
         if (file == null) {
             throw new NullPointerException("file is null");
         }
-        final var array = new byte[BYTES];
-        set(array);
-        // TODO: write <array> to file
+        final var array = set(new byte[BYTES]);
+        // TODO: write array to file
         return file;
     }
 
@@ -369,7 +364,7 @@ public interface HelloWorld {
         if (writer == null) {
             throw new NullPointerException("writer is null");
         }
-        // TODO: invoke append(<writer>)
+        // TODO: invoke append(writer)
         return writer;
     }
 
@@ -432,7 +427,7 @@ public interface HelloWorld {
      * </pre>
      * <p>
      * Default implementation would look like,
-     * {@snippet lang = "java" :
+     * {@snippet lang = "java":
      * Objects.requireNonNull(buffer, "buffer is null");
      * if (buffer.remaining() < BYTES) {
      *     throw new BufferOverflowException();
@@ -481,8 +476,7 @@ public interface HelloWorld {
             // TODO: invoke set(buffer.array(), (buffer.arrayOffset() + buffer.position())
             // TODO: increment buffer.position by BYTES
         } else {
-            final var array = new byte[BYTES];
-            set(array);
+            final var array = set(new byte[BYTES]);
             // TODO: put <array> to the <buffer>
         }
         return buffer;
@@ -492,7 +486,7 @@ public interface HelloWorld {
      * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified channel.
      * <p>
      * Default implementation would look like,
-     * {@snippet lang = "java" :
+     * {@snippet lang = "java":
      * Objects.requireNonNull(channel, "channel is null");
      * final var buffer = ByteBuffer.allocate(BYTES);
      * put(buffer);
@@ -532,6 +526,17 @@ public interface HelloWorld {
      * Appends the <a href="#hello-world-bytes">hello-world-bytes</a> to the end of specified path
      * to a file. The {@link java.nio.file.Files#size(Path) size} of the {@code path}, on successful
      * return, is increased by {@value #BYTES}.
+     * <p>
+     * Default implementation would look like,
+     * {@snippet lang = "java":
+     * Objects.requireNonNull(path, "path is null");
+     * try (var channel = FileChannel.open(path, StandardOpenOption.CREATE, // @highlight region
+     *                                     StandardOpenOption.WRITE, StandardOpenOption.APPEND)) {
+     *     write(channel);
+     *     channel.force(true);
+     * } // @end
+     * return path;
+     *}
      *
      * @param <T>  path type parameter
      * @param path the path a file to which bytes are appended.
@@ -542,7 +547,7 @@ public interface HelloWorld {
      * {@link StandardOpenOption#CREATE CREATE}, {@link StandardOpenOption#WRITE WRITE}, and
      * {@link StandardOpenOption#APPEND APPEND}, invokes
      * {@link #write(WritableByteChannel) write(channel)} method with it,
-     * {@link FileChannel#force(boolean) forces the channel for both content and metadata},
+     * {@link FileChannel#force(boolean) forces channel including metadata},
      * {@link WritableByteChannel#close() closes} the channel, and returns the {@code path}.
      * @see FileChannel#open(Path, OpenOption...)
      * @see StandardOpenOption#CREATE
@@ -550,16 +555,17 @@ public interface HelloWorld {
      * @see StandardOpenOption#APPEND
      * @see #write(WritableByteChannel)
      * @see FileChannel#force(boolean)
+     * @see <a
+     * href="https://docs.oracle.com/javase/specs/jls/se21/html/jls-14.html#jls-14.20.3">14.20.3.
+     * try-with-resources</a> (The Java® Language Specification /  Java SE 21 Edition)
      */
     default <T extends Path> T append(final T path) throws IOException {
         Objects.requireNonNull(path, "path is null");
-        // TODO: open a file channel with path,
-        //       StandardOpenOption.WRITE,
-        //       StandardOpenOption.CREATE, and
-        //       StandardOpenOption.APPEND
+        // TODO: open a file channel with path, StandardOpenOption.WRITE,
+        //       StandardOpenOption.CREATE, and StandardOpenOption.APPEND
+        //       ; use the try-with-resources statement
         // TODO: invoke write(channel) method with it
-        // TODO: force the channel with true
-        // TODO: close the channel
+        // TODO: force changes to both the file's content and metadata
         return path;
     }
 
@@ -567,7 +573,7 @@ public interface HelloWorld {
      * Writes the <a href="hello-world-bytes">hello-world-bytes</a> to specified channel.
      * <p>
      * Default implementation would look like,
-     * {@snippet lang = "java" :
+     * {@snippet lang = "java":
      * Objects.requireNonNull(channel, "channel is null");
      * final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
      * while (buffer.hasRemaining()) { // @highlight region
@@ -600,12 +606,12 @@ public interface HelloWorld {
     }
 
     /**
-     * Writes the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to specified
-     * channel, and notifies a completion (or a failure) to specified handler with specified
-     * attachment.
+     * Writes, <em>asynchronously</em>, the <a
+     * href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to specified channel, and
+     * notifies a completion (or a failure) to specified handler with specified attachment.
      * <p>
      * Default implementation would look like,
-     * {@snippet lang = "java" :
+     * {@snippet lang = "java":
      * Objects.requireNonNull(channel, "channel is null");
      * Objects.requireNonNull(handler, "handler is null");
      * final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
@@ -647,7 +653,7 @@ public interface HelloWorld {
         Objects.requireNonNull(handler, "handler is null");
         final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
         // TODO: keep invoking channel.write(buffer, attachment, a-handler)
-        // TODO: while buffer has remaining
+        //       while buffer has remaining
         // TODO: and, eventually, invoke handler.complete(channel, attachment)
     }
 
@@ -667,11 +673,11 @@ public interface HelloWorld {
      *
      * Then, in an intermediate state, possibly,
      *
-     *                        p(n)
+     *                        p(3)
      *                        ↓
      * &lt;buffer&gt;:       |h|e|l|l|o|,| |w|o|r|l|d|
      *
-     *                       &lt;position&gt; + n
+     *                       &lt;position&gt; + 3
      *                        ↓
      * &lt;channel&gt;: ...| |h|e|l| | | | | | | | | | |...
      *
@@ -685,21 +691,6 @@ public interface HelloWorld {
      *                                          ↓
      * &lt;channel&gt;: ...| |h|e|l|l|o|,| |w|o|r|l|d| |...
      * </pre>
-     * Default implementation would look like,
-     * {@snippet lang = "java" :
-     * Objects.requireNonNull(channel, "channel is null");
-     * if (position < 0L) {
-     *     throw new IllegalArgumentException("position(" + position + ") is negative");
-     * }
-     * final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
-     * while (buffer.hasRemaining()) { // @highlight region
-     *     final var future = channel.write(buffer, position);
-     *     final var written = future.get();
-     *     assert written > 0; // why?
-     *     position += written;
-     * } // @end
-     * return channel;
-     *}
      *
      * @param <T>      channel type parameter
      * @param channel  the file channel to which bytes are written.
@@ -737,58 +728,21 @@ public interface HelloWorld {
      * Writes, asynchronously, the <a href="hello-world-bytes">hello-world-bytes</a> to specified
      * channel, starting at specified position, and notifies a completion (or a failure) to
      * specified handler.
-     * Default implementation would look like,
-     * {@snippet lang = "java" :
-     * Objects.requireNonNull(channel, "channel is null");
-     * if (position < 0L) {
-     *     throw new IllegalArgumentException("position(" + position + ") is negative");
-     * }
-     * Objects.requireNonNull(handler, "handler is null");
-     * final var buffer = ByteBuffer.allocate(BYTES);
-     * put(buffer);
-     * buffer.flip();
-     * channel.write( // @highlight region
-     *         buffer,                                   // <src>
-     *         position,                                 // <position>
-     *         new LongAccumulator(Long::sum, position), // <attachment>
-     *         new CompletionHandler<>() {               // <handler>
-     *             @Override
-     *             public void completed(final Integer result, final LongAccumulator accumulator) {
-     *                 assert result > 0; // why?
-     *                 if (!buffer.hasRemaining()) {
-     *                     handler.completed(channel, attachment);
-     *                     return;
-     *                 }
-     *                 accumulator.accumulate(result);
-     *                 channel.write(
-     *                         buffer,            // <src>
-     *                         accumulator.get(), // <position>
-     *                         accumulator,       // <attachment>
-     *                         this               // <handler>
-     *                 );
-     *             }
-     *             @Override
-     *             public void failed(final Throwable exc, final LongAccumulator accumulator) {
-     *                 handler.failed(exc, attachment);
-     *             }
-     *         }
-     * ); // @end
-     *}
      *
      * @param <T>        channel type parameter
      * @param <A>        attachment type parameter
      * @param channel    the file channel to which bytes are written.
      * @param position   the file position at which the transfer is to begin; must be non-negative.
      * @param handler    the handler.
-     * @param attachment an attachment; may be {@code null}.
-     * @throws NullPointerException  either {@code channel} or {@code handler} is {@code null}.
+     * @param attachment an attachment for the {@code handler}; may be {@code null}.
+     * @throws NullPointerException  if either {@code channel} or {@code handler} is {@code null}.
      * @throws IllegalStateException if {@code position} is negative.
      * @see AsynchronousFileChannel#write(ByteBuffer, long, Object, CompletionHandler)
      */
     @SuppressWarnings({
             "java:S117" // attachment_
     })
-    default <T extends AsynchronousFileChannel, A> void write(
+    default <T extends AsynchronousFileChannel, A> void write( // @formatter:on
             final T channel, final long position,
             final CompletionHandler<? super T, ? super A> handler, final A attachment) {
         Objects.requireNonNull(channel, "channel is null");
@@ -796,34 +750,30 @@ public interface HelloWorld {
             throw new IllegalArgumentException("position(" + position + ") is negative");
         }
         Objects.requireNonNull(handler, "handler is null");
-        final var buffer = ByteBuffer.allocate(BYTES);
-        put(buffer);
-        buffer.flip(); // limit -> position, position -> zero
+        final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
+        final var cursor = new AtomicLong(position);
         channel.write(
-                buffer,                                   // <src>
-                position,                                 // <position>
-                new LongAccumulator(Long::sum, position), // <attachment>
-                new CompletionHandler<>() {               // <handler>
-                    @Override // @formatter:off
-                    public void completed(final Integer result, final LongAccumulator accumulator) {
+                buffer,                     // <src>
+                position,                   // <position>
+                attachment,                 // <attachment>
+                new CompletionHandler<>() { // <handler>
+                    @Override public void completed(final Integer result, final A attachment) {
                         assert result > 0; // why?
                         if (!buffer.hasRemaining()) {
                             handler.completed(channel, attachment);
                             return;
                         }
-                        accumulator.accumulate(result);
                         channel.write(
-                                buffer,            // <src>
-                                accumulator.get(), // <position>
-                                accumulator,       // <attachment>
-                                this               // <handler>
+                                buffer,                   // <src>
+                                cursor.addAndGet(result), // <position>
+                                attachment,               // <attachment>
+                                this                      // <handler>
                         );
                     }
-                    @Override
-                    public void failed(final Throwable exc, final LongAccumulator accumulator) {
+                    @Override public void failed(final Throwable exc, final A attachment) {
                         handler.failed(exc, attachment);
                     }
                 }
         );
-    }
+    } // @formatter:off
 }

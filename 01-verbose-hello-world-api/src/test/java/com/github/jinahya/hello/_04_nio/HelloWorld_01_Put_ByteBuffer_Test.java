@@ -39,7 +39,10 @@ import org.mockito.Mockito;
 
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
+import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Function;
+import java.util.function.IntFunction;
 import java.util.stream.Stream;
 
 /**
@@ -52,6 +55,34 @@ import java.util.stream.Stream;
 @Slf4j
 @SuppressWarnings({"java:S101"})
 class HelloWorld_01_Put_ByteBuffer_Test extends _HelloWorldTest {
+
+    private static <R> R adjust(
+            final ByteBuffer buffer,
+            final Function<
+                    ? super ByteBuffer, ? extends IntFunction<
+                    ? extends IntFunction<? extends R>>> function) {
+        if (Objects.requireNonNull(buffer, "buffer is null").remaining() < HelloWorld.BYTES) {
+            throw new IllegalArgumentException(
+                    "buffer.remaining(" + buffer.remaining() + ") < " + HelloWorld.BYTES
+            );
+        }
+        Objects.requireNonNull(function, "function is null");
+        final var p = ThreadLocalRandom.current().nextInt(
+                buffer.remaining() - HelloWorld.BYTES + 1
+        );
+        final var l = ThreadLocalRandom.current().nextInt(
+                buffer.remaining() - HelloWorld.BYTES - p + 1
+        );
+        assert buffer.limit() - l - p >= HelloWorld.BYTES;
+        return function.apply(buffer).apply(p).apply(l);
+    }
+
+    private static ByteBuffer adjust(final ByteBuffer buffer) {
+        return adjust(
+                buffer,
+                b -> p -> l -> b.position(b.position() + p).limit(b.limit() - l)
+        );
+    }
 
     /**
      * Verifies that the {@link HelloWorld#put(ByteBuffer) put(buffer)} method throws a
@@ -87,12 +118,12 @@ class HelloWorld_01_Put_ByteBuffer_Test extends _HelloWorldTest {
     Stream<DynamicTest> _ThrowBufferOverflowException_BufferRemainingIsLessThanHelloWorldBytes() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
+        // ------------------------------------------------------------------------------- when/then
         return Stream.of(
                 ByteBuffer.allocate(ThreadLocalRandom.current().nextInt(HelloWorld.BYTES)),
                 ByteBuffer.allocateDirect(ThreadLocalRandom.current().nextInt(HelloWorld.BYTES))
         ).map(b -> DynamicTest.dynamicTest(
                 "should throw a BufferOverflowException for " + b,
-                // ----------------------------------------------------------------------- when/then
                 () -> {
                     Assertions.assertThrows(
                             BufferOverflowException.class,
@@ -118,30 +149,14 @@ class HelloWorld_01_Put_ByteBuffer_Test extends _HelloWorldTest {
     void __BufferHasBackingArray() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        if (false) {
+        if (false) { // not required actually
             BDDMockito.willAnswer(i -> i.getArgument(0, byte[].class))
                     .given(service)
                     .set(ArgumentMatchers.any(), ArgumentMatchers.anyInt());
         }
-        final ByteBuffer buffer;
-        {
-            final var b = ByteBuffer.allocate(HelloWorld.BYTES << 1);
-            assert b.position() == 0;
-            assert b.limit() == b.capacity();
-            assert b.hasArray();
-            assert b.arrayOffset() == 0;
-            final var index = ThreadLocalRandom.current().nextInt(HelloWorld.BYTES + 1);
-            final var length = HelloWorld.BYTES + ThreadLocalRandom.current()
-                    .nextInt(HelloWorld.BYTES - index + 1);
-            buffer = Mockito.spy(b.slice(index, length));
-        }
-        buffer.position(
-                buffer.position() +
-                ThreadLocalRandom.current().nextInt(buffer.remaining() - HelloWorld.BYTES + 1)
-        );
-        buffer.limit(
-                buffer.limit() -
-                ThreadLocalRandom.current().nextInt(buffer.remaining() - HelloWorld.BYTES + 1)
+        final ByteBuffer buffer = adjust(
+                ByteBuffer.allocate(HelloWorld.BYTES << 1),
+                b -> p -> r -> b.slice(p, b.limit() - p - r)
         );
         ByteBufferUtils.printBuffer(buffer);
         assert buffer.hasArray();
@@ -150,8 +165,9 @@ class HelloWorld_01_Put_ByteBuffer_Test extends _HelloWorldTest {
         // ------------------------------------------------------------------------------------ when
         final var result = service.put(buffer);
         // ------------------------------------------------------------------------------------ then
-        // TODO: verify, set(buffer.array(), buffer.arrayOffset() + <position>) invoked, once
-        // TODO: assert, buffer.position() is equal to (<position> + HelloWorld.BYTES)
+        // TODO: verify, set(buffer.array(), buffer.arrayOffset() + position) invoked, once
+        // TODO: verify, buffer's position increased by HelloWorld.BYTES
+        // DONE: verify, result is same as buffer
         Assertions.assertSame(buffer, result);
     }
 
@@ -162,43 +178,34 @@ class HelloWorld_01_Put_ByteBuffer_Test extends _HelloWorldTest {
      * bytes, puts the array to {@code buffer}, and returns the {@code buffer}.
      */
     @DisplayName("""
-            -> set(array[HelloWorld.BYTES])
-            -> put the array to the buffer"""
+            should invoke set(array[HelloWorld.BYTES]),
+            and put the array to the buffer"""
     )
     @Test
     void __BufferDoesNotHaveBackingArray() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        BDDMockito.willAnswer(i -> i.getArgument(0, byte[].class))
+        // DONE: service.set(array) will return given array
+        BDDMockito.willAnswer(i -> i.getArgument(0))
                 .given(service)
                 .set(ArgumentMatchers.any());
-        final ByteBuffer buffer;
-        {
-            final var b = ByteBuffer.allocateDirect(HelloWorld.BYTES << 1);
-            assert b.position() == 0;
-            assert b.limit() == b.capacity();
-            Assumptions.assumeFalse(
-                    b.hasArray(),
-                    "failed to assume that a direct buffer does not has a backing array"
-            );
-            b.position(ThreadLocalRandom.current().nextInt(HelloWorld.BYTES + 1));
-            b.limit(b.limit() - ThreadLocalRandom.current()
-                    .nextInt(b.remaining() - HelloWorld.BYTES + 1));
-            buffer = Mockito.spy(b);
-        }
+        final ByteBuffer buffer = adjust(ByteBuffer.allocateDirect(HelloWorld.BYTES << 1));
         ByteBufferUtils.printBuffer(buffer);
-        assert !buffer.hasArray();
-        assert buffer.remaining() >= HelloWorld.BYTES;
-        final var position = buffer.position();
+        Assumptions.assumeFalse(
+                buffer.hasArray(),
+                "failed to assume that a direct buffer does not has a backing array"
+        );
         // ------------------------------------------------------------------------------------ when
         final var result = service.put(buffer);
         // ------------------------------------------------------------------------------------ then
+        // DONE: verify, service.set(array[12]) invoked, once
         final var arrayCaptor = ArgumentCaptor.forClass(byte[].class);
         Mockito.verify(service, Mockito.times(1)).set(arrayCaptor.capture());
         final var array = arrayCaptor.getValue();
         Assertions.assertNotNull(array);
         Assertions.assertEquals(HelloWorld.BYTES, array.length);
         // TODO: verify, buffer.put(array) invoked, once
-        Assertions.assertSame(result, buffer);
+        // DONE: verify, result is same as buffer
+        Assertions.assertSame(buffer, result);
     }
 }

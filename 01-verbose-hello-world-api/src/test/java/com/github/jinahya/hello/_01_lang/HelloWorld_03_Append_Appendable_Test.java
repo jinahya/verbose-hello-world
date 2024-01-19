@@ -67,34 +67,40 @@ class HelloWorld_03_Append_Appendable_Test extends _HelloWorldTest {
     }
 
     /**
-     * Verifies {@link HelloWorld#append(Appendable) append(appendable)} method invokes
+     * Verifies that the {@link HelloWorld#append(Appendable) append(appendable)} method invokes
      * {@link HelloWorld#set(byte[]) set(array)} method with an array of {@value HelloWorld#BYTES}
      * bytes, appends each byte to {@code appendable}, and returns the {@code appendable}.
      */
-    @DisplayName("-> set(array[12]) -> appendable.append((char) b)")
+    @DisplayName("""
+            should invoke set(array[12]),
+            and append each byte in array to appendable"""
+    )
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
+        // DONE: service.set(array) will return given <array>
         BDDMockito.willAnswer(i -> {
             final var array = i.getArgument(0, byte[].class);
             if (array != null) {
-                for (int j = 0; j < array.length; j++) {
+                for (int j = 0; j < HelloWorld.BYTES; j++) {
                     array[j] = (byte) j;
                 }
             }
             return array;
-        }).given(service).set(ArgumentMatchers.any(byte[].class));
+        }).given(service).set(ArgumentMatchers.any());
         final var appendable = Mockito.mock(Appendable.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.append(appendable);
         // ------------------------------------------------------------------------------------ then
+        // DONE: verify, service.set(array[12]) invoked, once
         final var arrayCaptor = ArgumentCaptor.forClass(byte[].class);
         Mockito.verify(service, Mockito.times(1)).set(arrayCaptor.capture());
         final var array = arrayCaptor.getValue();
         Assertions.assertNotNull(array);
         Assertions.assertEquals(HelloWorld.BYTES, array.length);
-        // TODO: verify each byte in <array> has been appended to <appendable>
+        // TODO: verify, each byte in <array> has been appended to <appendable>
+        // DONE: verify, service.append(appendable) returns given <appendable>
         Assertions.assertSame(appendable, result);
     }
 }
