@@ -79,6 +79,7 @@ class HelloWorld_01_Send_Socket_Test extends _HelloWorldTest {
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
+        // DONE: service.write(stream) will return the stream
         BDDMockito.willAnswer(i -> i.getArgument(0, OutputStream.class))
                 .given(service)
                 .write(ArgumentMatchers.any(OutputStream.class));
@@ -90,7 +91,7 @@ class HelloWorld_01_Send_Socket_Test extends _HelloWorldTest {
         // ------------------------------------------------------------------------------------ then
         // TODO: verify, socket.getOutputStream() invoked, once
         // TODO: verify, service.write(stream) invoked, once
-        // verify, service.send(socket) returns the socket
+        // DONE: verify, service.send(socket) returns the socket
         Assertions.assertSame(socket, result);
     }
 }

@@ -81,12 +81,14 @@ class HelloWorld_03_Append_Path_Test extends _HelloWorldTest {
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
+        // DONE: service.write(channel) will return the channel
         BDDMockito.willAnswer(i -> i.getArgument(0, WritableByteChannel.class))
                 .given(service)
                 .write(ArgumentMatchers.any(WritableByteChannel.class));
         final var path = Mockito.mock(Path.class);
         final var channel = Mockito.mock(FileChannel.class);
         try (var mockStatic = Mockito.mockStatic(FileChannel.class)) {
+            // DONE: FileChannel.open(path, arguments) will return the channel
             mockStatic.when(() -> FileChannel.open(ArgumentMatchers.same(path),
                                                    ArgumentMatchers.any(OpenOption[].class)))
                     .thenReturn(channel);
@@ -99,11 +101,12 @@ class HelloWorld_03_Append_Path_Test extends _HelloWorldTest {
             // TODO: verify, write(channel) invoked, once.
             // TODO: verify, channel.force(true) invoked, once.
             // TODO: verify, channel.close() invoked, once.
+            // DONE: result is same as path
             Assertions.assertSame(path, result);
         }
     }
 
-    @Disabled("not implemented yet")
+    @Disabled("enable when HelloWorld#append(path) implemented")
     @DisplayName("path's size should be increased by HelloWorld.BYTES")
     @畵蛇添足
     @Test
@@ -111,19 +114,23 @@ class HelloWorld_03_Append_Path_Test extends _HelloWorldTest {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var path = Files.createTempFile(tempDir, null, null);
+        log.debug("path: {}", path);
+        // DONE: write some random number of random bytes to path
         try (var channel = FileChannel.open(path, StandardOpenOption.WRITE)) {
-            final var buffer = ByteBuffer.allocate(ThreadLocalRandom.current().nextInt(1024));
+            final var buffer = ByteBuffer.allocate(ThreadLocalRandom.current().nextInt(128));
+            ThreadLocalRandom.current().nextBytes(buffer.array());
             while (buffer.hasRemaining()) {
-                final var w = channel.write(buffer);
-                assert w >= 0;
+                final var written = channel.write(buffer);
+                assert written >= 0;
             }
             channel.force(false);
         }
         final var size = Files.size(path);
+        log.debug("size: {}", size);
         // ------------------------------------------------------------------------------------ when
         service.append(path);
         // ------------------------------------------------------------------------------------ then
-        // verify, path's size increased by HelloWorld.BYTES
+        // DONE: verify, path's size increased by HelloWorld.BYTES
         Assertions.assertEquals(size + HelloWorld.BYTES, Files.size(path));
     }
 }

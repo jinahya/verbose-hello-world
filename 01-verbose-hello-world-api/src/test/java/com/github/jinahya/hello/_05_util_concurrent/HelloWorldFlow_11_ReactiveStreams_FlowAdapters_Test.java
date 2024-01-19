@@ -112,10 +112,10 @@ class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlo
             final Flow.Publisher<Byte> publisher = Mockito.spy(
                     new HelloWorldFlow.HelloWorldPublisher.OfByte(service, EXECUTOR)
             );
-            // intercept, publisher.subscribe(subscriber) to wrap the subscriber as a spy
+            // DONE: intercept, publisher.subscribe(subscriber) to wrap the subscriber as a spy
             BDDMockito.willAnswer(i -> {
                 final var subscriber = Mockito.spy(i.getArgument(0, Flow.Subscriber.class));
-                // intercept, subscriber.onSubscribe(subscription) to wrap the subscription as a spy
+                // DONE: intercept, subscriber.onSubscribe(subscription) to wrap the subscription as a spy
                 BDDMockito.willAnswer(j -> {
                     final var subscription = Mockito.spy(j.getArgument(0, Flow.Subscription.class));
                     j.getArguments()[0] = subscription;
@@ -129,25 +129,25 @@ class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlo
             }.doSome(FlowAdapters.toPublisher(publisher));
             _HelloWorldTestUtils.awaitForOneSecond();
             // -------------------------------------------------------------------------------- then
-            // verify, publisher.subscribe(subscriber) invoked, once
+            // DONE: verify, publisher.subscribe(subscriber) invoked, once
             final var subscriberCaptor = ArgumentCaptor.forClass(Flow.Subscriber.class);
             Mockito.verify(publisher, Mockito.times(1)).subscribe(subscriberCaptor.capture());
             final var subscriber = subscriberCaptor.getValue();
-            // verify, subscriber.onSubscribe(subscription) invoked, once
+            // DONE: verify, subscriber.onSubscribe(subscription) invoked, once
             final var subscriptionCaptor = ArgumentCaptor.forClass(Flow.Subscription.class);
             Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(subscriptionCaptor.capture());
             final var subscription = subscriptionCaptor.getValue();
-            // verify, subscription.request(n) invoked, once
+            // DONE: verify, subscription.request(n) invoked, once
             final var nCaptor = ArgumentCaptor.forClass(long.class);
             Mockito.verify(subscription, Mockito.times(1)).request(nCaptor.capture());
             final var n = Math.toIntExact(nCaptor.getValue());
-            // verify, subscriber.onNext(item) invoked, n-times
+            // DONE: verify, subscriber.onNext(item) invoked, n-times
             Mockito.verify(subscriber, Mockito.atMost(n)).onNext(ArgumentMatchers.notNull());
             if (n < HelloWorld.BYTES) {
-                // verify, subscription.cancel() invoked, once
+                // DONE: verify, subscription.cancel() invoked, once
                 Mockito.verify(subscription, Mockito.times(1)).cancel();
             } else {
-                // verify, subscriber.onComplete() invoked, once
+                // DONE: verify, subscriber.onComplete() invoked, once
                 Mockito.verify(subscriber, Mockito.times(1)).onComplete();
             }
         }

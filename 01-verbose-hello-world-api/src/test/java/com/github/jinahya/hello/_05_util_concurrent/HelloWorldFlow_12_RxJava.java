@@ -68,10 +68,10 @@ class HelloWorldFlow_12_RxJava extends _HelloWorldFlowTest {
         final Flow.Publisher<Byte> publisher = Mockito.spy(
                 new HelloWorldFlow.HelloWorldPublisher.OfByte(service, EXECUTOR)
         );
-        // intercept, publisher.subscribe(subscriber) to wrap the subscriber as a spy
+        // DONE: intercept, publisher.subscribe(subscriber) to wrap the subscriber as a spy
         BDDMockito.willAnswer(i -> {
             final var subscriber = Mockito.spy(i.getArgument(0, Flow.Subscriber.class));
-            // intercept, subscriber.onSubscribe(subscription) to wrap the subscription as a spy
+            // DONE: intercept, subscriber.onSubscribe(subscription) to wrap the subscription as a spy
             BDDMockito.willAnswer(j -> {
                 final var subscription = Mockito.spy(j.getArgument(0, Flow.Subscription.class));
                 j.getArguments()[0] = subscription;
@@ -89,27 +89,27 @@ class HelloWorldFlow_12_RxJava extends _HelloWorldFlowTest {
         }.doWith(observable);
         _HelloWorldTestUtils.awaitForOneSecond();
         // ------------------------------------------------------------------------------------ then
-        // verify, publisher.subscribe(subscriber) invoked, once
+        // DONE: verify, publisher.subscribe(subscriber) invoked, once
         final var subscriberCaptor = ArgumentCaptor.forClass(Flow.Subscriber.class);
         Mockito.verify(publisher, Mockito.times(1)).subscribe(subscriberCaptor.capture());
         final var subscriber = subscriberCaptor.getValue();
-        // verify subscriber.onSubscribe(subscription) invoked, once
+        // DONE: verify subscriber.onSubscribe(subscription) invoked, once
         final var subscriptionCaptor = ArgumentCaptor.forClass(Flow.Subscription.class);
         Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(subscriptionCaptor.capture());
         final var subscription = subscriptionCaptor.getValue();
-        // verify subscription.request(Long.MAX_VALUE) invoked, once
+        // DONE: verify subscription.request(Long.MAX_VALUE) invoked, once
         Mockito.verify(subscription, Mockito.times(1)).request(Long.MAX_VALUE);
-        // verify, subscriber.onNext(item) invoked, at most HelloWorld.BYTES
+        // DONE: verify, subscriber.onNext(item) invoked, at most HelloWorld.BYTES
         Mockito.verify(subscriber, Mockito.atMost(HelloWorld.BYTES))
                 .onNext(ArgumentMatchers.notNull());
         if (AlienService.countRef.get() >= HelloWorld.BYTES) {
-            // verify, subscriber.onComplete() invoked, once
+            // DONE: verify, subscriber.onComplete() invoked, once
             Mockito.verify(subscriber, Mockito.times(1)).onComplete();
         } else {
-            // verify, subscriber.onComplete() invoked, never
+            // DONE: verify, subscriber.onComplete() invoked, never
             Mockito.verify(subscriber, Mockito.never()).onComplete();
         }
-        // verify, subscription.cancel() invoked, once
+        // DONE: verify, subscription.cancel() invoked, once
         Mockito.verify(subscription, Mockito.times(1)).cancel();
     }
 }

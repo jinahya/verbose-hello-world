@@ -34,22 +34,30 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * An abstract class for testing interfaces defined in
+ * {@link com.github.jinahya.hello.HelloWorldFlow} class.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 abstract class _HelloWorldFlowTest extends _HelloWorldTest {
 
+    /**
+     * An executor uses a single worker thread.
+     */
     static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor(
             Thread.ofVirtual().name("executor-", 0L).factory()
     );
 
     @BeforeEach
     void _PutHelloWorldBytesToTheBuffer_putBuffer() {
+        // DONE: service.put(buffer) will put 'hello, world' to the buffer
         BDDMockito.willAnswer(i -> {
-                    final var buffer = i.getArgument(0, ByteBuffer.class);
-                    buffer.put("hello, world".getBytes(StandardCharsets.US_ASCII));
-                    return buffer;
-                })
-                .given(service())
+                    return i.getArgument(0, ByteBuffer.class)
+                            .put("hello, world".getBytes(StandardCharsets.US_ASCII));
+                }).given(service())
                 .put(ArgumentMatchers.argThat(b -> b != null && b.remaining() >= HelloWorld.BYTES));
     }
 }

@@ -39,8 +39,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 
 /**
- * Interrelated classes for establishing flow-controlled components based on interfaces defined in
- * {@link Flow} class.
+ * Interrelated classes for establishing flow-controlled <em>hello-world</em> components based on
+ * interfaces defined in {@link Flow} class.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */

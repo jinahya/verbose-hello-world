@@ -192,9 +192,9 @@ class HelloWorld_06_Write_AsynchronousByteChannelWithHandler_Test extends _Hello
     void __AsynchronousSocketChannel() throws Exception {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // service.write(channel, handler, attachment)
-        //     will start a thread which writes 'hello, world' to the channel,
-        //     and invokes handler.completed(channel, attachment)
+        // DONE: service.write(channel, handler, attachment) will start a thread which
+        //           writes 'hello, world' to the channel,
+        //           and invokes handler.completed(channel, attachment)
         BDDMockito.willAnswer(i -> {
             final var channel = i.getArgument(0, AsynchronousByteChannel.class);
             final var handler = i.getArgument(1, CompletionHandler.class);
@@ -225,10 +225,10 @@ class HelloWorld_06_Write_AsynchronousByteChannelWithHandler_Test extends _Hello
         );
         final var addr = InetAddress.getLoopbackAddress();
         final var port = new ArrayBlockingQueue<Integer>(1);
-        // start a server thread which
-        //     binds on a random port,
-        //     accepts a client,
-        //     and reads 12 bytes
+        // DONE: start a server thread which
+        //           binds on a random port,
+        //           accepts a client,
+        //           and reads 12 bytes
         Thread.ofPlatform().name("server").start(() -> {
             try (var server = AsynchronousServerSocketChannel.open()) {
                 server.bind(new InetSocketAddress(addr, 0), 1);
@@ -249,8 +249,7 @@ class HelloWorld_06_Write_AsynchronousByteChannelWithHandler_Test extends _Hello
             }
         });
         // ------------------------------------------------------------------------------------ when
-        // connect to the server
-        // and send 12 bytes to the server
+        // DONE: connect to the server, and send 12 bytes to the server
         Thread.currentThread().setName("client");
         try (var client = AsynchronousSocketChannel.open()) {
             final var remote = new InetSocketAddress(addr, port.take());

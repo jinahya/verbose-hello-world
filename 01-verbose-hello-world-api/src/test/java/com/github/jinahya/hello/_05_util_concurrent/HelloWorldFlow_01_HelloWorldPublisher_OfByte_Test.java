@@ -45,7 +45,7 @@ class HelloWorldFlow_01_HelloWorldPublisher_OfByte_Test extends _HelloWorldFlowT
         final var publisher = Mockito.spy(
                 new HelloWorldFlow.HelloWorldPublisher.OfByte(service, EXECUTOR)
         );
-        final var n = ThreadLocalRandom.current().nextInt(HelloWorld.BYTES) + HelloWorld.BYTES;
+        final var n = ThreadLocalRandom.current().nextInt(HelloWorld.BYTES << 1) + 1;
         final var subscriber = Mockito.spy(new HelloWorldFlow.HelloWorldSubscriber.OfByte() {
             @Override
             public void onSubscribe(final Flow.Subscription subscription) {
@@ -53,7 +53,7 @@ class HelloWorldFlow_01_HelloWorldPublisher_OfByte_Test extends _HelloWorldFlowT
                 subscription.request(n);
             }
         });
-        // intercept, subscriber.onSubscribe(subscription), to wrap the subscription as a spy
+        // DONE: intercept, subscriber.onSubscribe(subscription), to wrap the subscription as a spy
         BDDMockito.willAnswer(i -> {
             i.getRawArguments()[0] = Mockito.spy(i.getArgument(0, Flow.Subscription.class));
             return i.callRealMethod();
@@ -61,18 +61,23 @@ class HelloWorldFlow_01_HelloWorldPublisher_OfByte_Test extends _HelloWorldFlowT
         // ------------------------------------------------------------------------------------ when
         publisher.subscribe(subscriber);
         // ------------------------------------------------------------------------------------ then
-        // verify, subscriber.onSubscribe(subscription) invoked, once
+        // DONE: verify, subscriber.onSubscribe(subscription) invoked, once
         final var subscriptionCaptor = ArgumentCaptor.forClass(Flow.Subscription.class);
         Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(subscriptionCaptor.capture());
         final var subscription = subscriptionCaptor.getValue();
-        // verify, subscription.request(n) invoked, once
+        // DONE: verify, subscription.request(n) invoked, once
         Mockito.verify(subscription, Mockito.times(1)).request(n);
-        // await, for a second
+        // DONE: await, for a second
         _HelloWorldTestUtils.awaitForOneSecond();
-        // verify, subscriber.onNext(item) invoked, at most HelloWorld.BYTES times
-        Mockito.verify(subscriber, Mockito.atMost(HelloWorld.BYTES))
-                .onNext(ArgumentMatchers.notNull());
-        // verify, subscriber.onComplete() invoked, once
-        Mockito.verify(subscriber, Mockito.times(1)).onComplete();
+        if (n < HelloWorld.BYTES) {
+            // DONE: verify, subscriber.onNext(item) invoked, n-times
+            Mockito.verify(subscriber, Mockito.times(n)).onNext(ArgumentMatchers.notNull());
+        } else {
+            // DONE: verify, subscriber.onNext(item) invoked, at most HelloWorld.BYTES times
+            Mockito.verify(subscriber, Mockito.atMost(HelloWorld.BYTES))
+                    .onNext(ArgumentMatchers.notNull());
+            // DONE: verify, subscriber.onComplete() invoked, once
+            Mockito.verify(subscriber, Mockito.times(1)).onComplete();
+        }
     }
 }
