@@ -20,8 +20,6 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import com.github.jinahya.hello.util.HelloWorldServerUtils;
-
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.SocketAddress;
@@ -43,7 +41,6 @@ public interface HelloWorldServer extends Closeable {
      *                 the file will not be written.
      * @throws IOException if an I/O error occurs.
      * @see #open(SocketAddress)
-     * @see HelloWorldServerUtils#readPortNumber(Path)
      */
     void open(SocketAddress endpoint, Path dir) throws IOException;
 

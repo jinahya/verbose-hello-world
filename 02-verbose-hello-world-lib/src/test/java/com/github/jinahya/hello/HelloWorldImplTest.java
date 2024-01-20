@@ -34,7 +34,7 @@ import java.util.concurrent.ThreadLocalRandom;
 class HelloWorldImplTest {
 
     /**
-     * Verifies that {@link HelloWorldImpl#set(byte[], int)} method throws
+     * Verifies that the {@link HelloWorldImpl#set(byte[], int)} method throws
      * {@link NullPointerException} when the {@code array} argument is {@code null}.
      */
     @DisplayName("set(null, ) -> NullPointerException")
@@ -52,43 +52,37 @@ class HelloWorldImplTest {
     }
 
     /**
-     * Verifies that {@link HelloWorldImpl#set(byte[], int)} method throws
-     * {@link IndexOutOfBoundsException} when the {@code index} argument is negative.
+     * Verifies that the {@link HelloWorldImpl#set(byte[], int)} method throws
+     * {@link ArrayIndexOutOfBoundsException} when the {@code index} argument is negative.
      */
     @DisplayName("set(, negative) -> IndexOutOfBoundsException")
     @Test
-    void set_IndexOutOfBoundsException_IndexIsNegative() {
+    void set_ArrayIndexOutOfBoundsException_IndexIsNegative() {
         // ----------------------------------------------------------------------------------- given
         final var instance = new HelloWorldImpl();
         final var array = new byte[0];
         final var index = ThreadLocalRandom.current().nextInt() | Integer.MIN_VALUE;
         // ------------------------------------------------------------------------------- when/then
         Assertions.assertThrows(
-                IndexOutOfBoundsException.class,
+                ArrayIndexOutOfBoundsException.class,
                 () -> instance.set(array, index)
         );
     }
 
     /**
-     * Verifies that {@link HelloWorldImpl#set(byte[], int)} method throws
-     * {@link IndexOutOfBoundsException} when the {@code index} argument is greater than
+     * Verifies that the {@link HelloWorldImpl#set(byte[], int)} method throws
+     * {@link ArrayIndexOutOfBoundsException} when the {@code index} argument is greater than
      * ({@code array.length - }{@value HelloWorld#BYTES}).
      */
     @DisplayName("set(, negative) -> IndexOutOfBoundsException")
     @Test
-    void set_IndexOutOfBoundsException_IndexIsGreaterThanArraySizeMinus12() {
+    void set_ArrayIndexOutOfBoundsException_IndexIsGreaterThanArraySizeMinus12() {
         // ----------------------------------------------------------------------------------- given
         final var instance = new HelloWorldImpl();
-        final byte[] array;
-        {
-            final var length = ThreadLocalRandom.current().nextInt(
-                    HelloWorld.BYTES, HelloWorld.BYTES << 1
-            );
-            array = new byte[length];
-        }
+        final var array = new byte[ThreadLocalRandom.current().nextInt(HelloWorld.BYTES << 1)];
         final var index = ThreadLocalRandom.current().nextInt(
-                array.length - HelloWorld.BYTES + 1,
-                array.length << 1
+                Math.max(0, array.length - HelloWorld.BYTES + 1),
+                HelloWorld.BYTES << 2
         );
         // ------------------------------------------------------------------------------- when/then
         Assertions.assertThrows(

@@ -22,12 +22,10 @@ package com.github.jinahya.hello.util;
 
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello.HelloWorldServerConstants;
-import com.sun.nio.file.SensitivityWatchEventModifier;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
 import java.io.Closeable;
-import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PipedInputStream;
@@ -39,13 +37,10 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
-import java.nio.file.StandardWatchEventKinds;
-import java.nio.file.WatchEvent;
 import java.util.Objects;
 import java.util.ServiceLoader;
 import java.util.concurrent.Callable;
@@ -58,7 +53,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.function.IntConsumer;
 import java.util.function.IntFunction;
 
 /**
@@ -336,8 +330,6 @@ public final class HelloWorldServerUtils {
      * @param dir  the directory in which a new file is created.
      * @param port the port number to be written.
      * @throws IOException if an I/O error occurs.
-     * @see #readPortNumber(Path)
-     * @see #readPortNumber(Path, IntConsumer)
      */
     public static void writePortNumber(Path dir, int port)
             throws IOException {
@@ -357,107 +349,6 @@ public final class HelloWorldServerUtils {
             channel.force(false);
         }
         var path = Files.move(tmp, dir.resolve(PORT_TXT), StandardCopyOption.ATOMIC_MOVE);
-    }
-
-    /**
-     * Starts watching specified directory and returns a port number when it's written on a file of
-     * predefined name.
-     *
-     * @param dir the directory to watch.
-     * @return a port number read.
-     * @throws IOException          if an I/O error occurs.
-     * @throws InterruptedException if interrupted while polling.
-     * @see #writePortNumber(Path, int)
-     */
-    public static int readPortNumber(Path dir)
-            throws IOException, InterruptedException {
-        if (!Files.isDirectory(Objects.requireNonNull(dir, "dir is null"))) {
-            throw new IllegalArgumentException("not a directory: " + dir);
-        }
-        try (var service = FileSystems.getDefault().newWatchService()) {
-            dir.register(service, new WatchEvent.Kind[] {
-                                 StandardWatchEventKinds.ENTRY_CREATE},
-                         SensitivityWatchEventModifier.HIGH);
-            while (!Thread.currentThread().isInterrupted()) {
-                var key = service.poll(1L, TimeUnit.SECONDS);
-                if (key == null) {
-                    continue;
-                }
-                assert key.isValid();
-                boolean created = false;
-                for (var event : key.pollEvents()) {
-                    assert event.kind() == StandardWatchEventKinds.ENTRY_CREATE;
-                    Path context = (Path) event.context();
-                    if (PORT_TXT.equals(context.getFileName().toString())) {
-                        created = true;
-                        break;
-                    }
-                }
-                if (created) {
-                    break;
-                }
-            } // end-of-while
-            var path = dir.resolve(PORT_TXT);
-            assert Files.isRegularFile(path);
-            try (var channel = FileChannel.open(path, StandardOpenOption.READ)) {
-                var buffer = ByteBuffer.allocate(Short.BYTES);
-                while (buffer.hasRemaining()) {
-                    if (channel.read(buffer) == -1) {
-                        throw new EOFException("unexpected eof");
-                    }
-                }
-                buffer.flip();
-                return buffer.asShortBuffer().get() & 0xFFFF;
-            }
-        } // end-of-try-with-resources; WatchService
-    }
-
-    /**
-     * Reads a port number from a file of predefined name written in specified directory and accepts
-     * the port number to specified consumer.
-     *
-     * @param dir      the directory from which a port number is read.
-     * @param consumer the consumer accepts the port number.
-     * @see #readPortNumber(Path)
-     */
-    static void readPortNumber(Path dir, IntConsumer consumer) {
-        try {
-            var port = readPortNumber(dir);
-            consumer.accept(port);
-        } catch (IOException ioe) {
-            log.error("failed to read port number", ioe);
-        } catch (InterruptedException ie) {
-            log.error("interrupted while reading port number", ie);
-            Thread.currentThread().interrupt();
-        }
-    }
-
-    /**
-     * Starts a thread which reads a port number from a file created in specified directory and
-     * accept the port number to specified consumer.
-     *
-     * @param dir      the directory from which a port number is read.
-     * @param consumer the consumer accepts the port number.
-     * @see #readPortNumber(Path)
-     */
-    public static Thread startReadingPortNumber(Path dir, IntConsumer consumer) {
-        if (!Files.isDirectory(Objects.requireNonNull(dir, "dir is null"))) {
-            throw new IllegalArgumentException("not a directory: " + dir);
-        }
-        Objects.requireNonNull(consumer, "consumer is null");
-        var thread = new Thread(() -> {
-            try {
-                var port = readPortNumber(dir);
-                consumer.accept(port);
-            } catch (IOException ioe) {
-                log.error("failed to read port number in " + dir, ioe);
-            } catch (InterruptedException ie) {
-                log.error("interrupted while reading port number in " + dir, ie);
-                Thread.currentThread().interrupt();
-            }
-        });
-        thread.start();
-        return thread;
     }
 
     /**
