@@ -162,6 +162,7 @@ public final class HelloWorldNetUtils {
         });
     }
 
+    @_ExcludeFromCoverage_PrivateConstructor_Obviously
     private HelloWorldNetUtils() {
         throw new AssertionError("instantiation is not allowed");
     }

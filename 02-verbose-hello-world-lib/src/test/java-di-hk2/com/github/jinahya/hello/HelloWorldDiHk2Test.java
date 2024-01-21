@@ -33,16 +33,12 @@ import org.junit.jupiter.api.BeforeEach;
  */
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorldDiHk2Test
-        extends HelloWorldDiTest {
+class HelloWorldDiHk2Test extends HelloWorldDiTest {
 
     @BeforeEach
     void inject() {
         final var hk2Binder = new HelloWorldDiHk2Binder();
-        log.debug("hk2Binder: {}", hk2Binder);
         final var serviceLocator = ServiceLocatorUtilities.bind(hk2Binder);
-        log.debug("serviceLocator: {}", serviceLocator);
         serviceLocator.inject(this);
-        log.debug("injected: {}", this);
     }
 }

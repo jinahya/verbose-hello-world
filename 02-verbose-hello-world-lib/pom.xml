@@ -15,33 +15,12 @@
   <description>Verbose Hello World Lib</description>
 
   <dependencies>
-    <!--    <dependency>-->
-    <!--      <groupId>ch.qos.logback</groupId>-->
-    <!--      <artifactId>logback-classic</artifactId>-->
-    <!--      <scope>test</scope>-->
-    <!--    </dependency>-->
     <dependency>
       <groupId>com.github.jinahya</groupId>
       <artifactId>verbose-hello-world-api</artifactId>
       <version>${project.parent.version}</version>
       <scope>compile</scope>
     </dependency>
-    <dependency>
-      <groupId>com.google.dagger</groupId>
-      <artifactId>dagger</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.google.dagger</groupId>
-      <artifactId>dagger-compiler</artifactId>
-    </dependency>
-    <!--    <dependency>-->
-    <!--      <groupId>com.google.inject</groupId>-->
-    <!--      <artifactId>guice</artifactId>-->
-    <!--    </dependency>-->
-    <!--    <dependency>-->
-    <!--      <groupId>com.guicedee.services</groupId>-->
-    <!--      <artifactId>guice</artifactId>-->
-    <!--    </dependency>-->
     <dependency>
       <groupId>jakarta.enterprise</groupId>
       <artifactId>jakarta.enterprise.cdi-api</artifactId>
@@ -492,6 +471,5 @@
         </plugins>
       </build>
     </profile>
-
   </profiles>
 </project>

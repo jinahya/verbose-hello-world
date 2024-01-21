@@ -20,13 +20,17 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /**
- * A marker annotation for superfluous codes.
+ * A marker annotation for superfluous/unnecessary codes.
  *
  * @author Jin Kwon &lt;onacit_at_wemakeprice.com&gt;
- * @see <a href="https://zh.wiktionary.org/wiki/%E7%94%BB%E8%9B%87%E6%B7%BB%E8%B6%B3">画蛇添足</a>
+ * @see <a href="https://en.wiktionary.org/wiki/%E7%95%AB%E8%9B%87%E6%B7%BB%E8%B6%B3">畫蛇添足</a>
  * @see <a href="https://en.wiktionary.org/wiki/%EC%82%AC%EC%A1%B1">사족</a>
  */
+@Retention(RetentionPolicy.SOURCE)
 public @interface 畵蛇添足 {
 
     String value() default "";

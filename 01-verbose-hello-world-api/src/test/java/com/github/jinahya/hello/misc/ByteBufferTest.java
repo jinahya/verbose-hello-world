@@ -21,7 +21,7 @@ package com.github.jinahya.hello.misc;
  */
 
 import com.github.jinahya.hello.HelloWorld;
-import com.github.jinahya.hello.util.java.nio.ByteBufferUtils;
+import com.github.jinahya.hello.util.JavaNioByteBufferUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -116,9 +116,9 @@ class ByteBufferTest {
     @Test
     void printDocumented() {
         var buffer = ByteBuffer.allocateDirect(31).position(4).limit(25);
-        ByteBufferUtils.printBuffer(buffer);
+        JavaNioByteBufferUtils.printBuffer(buffer);
         buffer.position(buffer.position() + HelloWorld.BYTES);
         assert buffer.position() == 16;
-        ByteBufferUtils.printBuffer(buffer);
+        JavaNioByteBufferUtils.printBuffer(buffer);
     }
 }

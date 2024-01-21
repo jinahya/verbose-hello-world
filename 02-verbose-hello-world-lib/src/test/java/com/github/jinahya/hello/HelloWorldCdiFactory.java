@@ -59,7 +59,7 @@ class HelloWorldCdiFactory {
     void disposeNamedDemo(
             @Named(HelloWorldDiConstants._NAME_DEMO) @Disposes final HelloWorld bean) {
         log.debug("disposing {}", bean);
-        Assertions.assertTrue(bean instanceof HelloWorldDemo);
+        Assertions.assertInstanceOf(HelloWorldDemo.class, bean);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -88,18 +88,18 @@ class HelloWorldCdiFactory {
     void disposeNamedImpl(
             @Named(HelloWorldDiConstants._NAME_IMPL) @Disposes final HelloWorld bean) {
         log.debug("disposing {}", bean);
-        Assertions.assertTrue(bean instanceof HelloWorldImpl);
+        Assertions.assertInstanceOf(HelloWorldImpl.class, bean);
     }
 
     // ---------------------------------------------------------------------------------------------
 
     /**
-     * Produces an instance of {@link HelloWorld} qualified with {@link _QualifiedDemo}.
+     * Produces an instance of {@link HelloWorld} qualified with {@link __QualifiedDemo}.
      *
      * @param injectionPoint the injection point
      * @return an instance of {@link HelloWorld}
      */
-    @_QualifiedDemo
+    @__QualifiedDemo
     @Produces
     HelloWorld produceQualifiedDemo(final InjectionPoint injectionPoint) {
         final var bean = new HelloWorldDemo();
@@ -108,24 +108,24 @@ class HelloWorldCdiFactory {
     }
 
     /**
-     * Disposes specified {@link HelloWorld} instance qualified with {@link _QualifiedDemo}.
+     * Disposes specified {@link HelloWorld} instance qualified with {@link __QualifiedDemo}.
      *
      * @param bean the {@link HelloWorld} instance to dispose
      */
-    void disposeQualifiedDemo(@_QualifiedDemo @Disposes final HelloWorld bean) {
+    void disposeQualifiedDemo(@__QualifiedDemo @Disposes final HelloWorld bean) {
         log.debug("disposing {}", bean);
-        Assertions.assertTrue(bean instanceof HelloWorldDemo);
+        Assertions.assertInstanceOf(HelloWorldDemo.class, bean);
     }
 
     // ---------------------------------------------------------------------------------------------
 
     /**
-     * Produces an instance of {@link HelloWorld} qualified with {@link _QualifiedImpl}.
+     * Produces an instance of {@link HelloWorld} qualified with {@link __QualifiedImpl}.
      *
      * @param injectionPoint the injection point
      * @return an instance of {@link HelloWorld}
      */
-    @_QualifiedImpl
+    @__QualifiedImpl
     @Produces
     HelloWorld produceQualifiedImpl(final InjectionPoint injectionPoint) {
         final var bean = new HelloWorldImpl();
@@ -134,12 +134,12 @@ class HelloWorldCdiFactory {
     }
 
     /**
-     * Disposes specified {@link HelloWorld} instance qualified with {@link _QualifiedImpl}.
+     * Disposes specified {@link HelloWorld} instance qualified with {@link __QualifiedImpl}.
      *
      * @param bean the {@link HelloWorld} instance to dispose
      */
-    void disposeQualifiedImpl(@_QualifiedImpl @Disposes final HelloWorld bean) {
+    void disposeQualifiedImpl(@__QualifiedImpl @Disposes final HelloWorld bean) {
         log.debug("disposing {}", bean);
-        Assertions.assertTrue(bean instanceof HelloWorldImpl);
+        Assertions.assertInstanceOf(HelloWorldImpl.class, bean);
     }
 }

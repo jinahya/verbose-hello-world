@@ -20,13 +20,14 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import com.google.inject.Guice;
 import jakarta.inject.Inject;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Stream;
 
 /**
  * A test class injects using Guice.
@@ -42,18 +43,18 @@ class HelloWorldDiGuiceTest
     @BeforeEach
     void _beforeEach() {
         final var injector = Guice.createInjector(new HelloWorldDiGuiceModule());
-        log.debug("injector: {}", injector);
         injector.injectMembers(this);
-        log.debug("members injected: {}", this);
     }
 
     @Override
-    HelloWorld service() {
-        return switch (ThreadLocalRandom.current().nextInt(6)) {
-            case 4 -> bindingQualifiedDemo;
-            case 5 -> bindingQualifiedImpl;
-            default -> super.service();
-        };
+    Stream<HelloWorld> services() {
+        return Stream.concat(
+                super.services(),
+                Stream.of(
+                        bindingQualifiedDemo,
+                        bindingQualifiedImpl
+                )
+        );
     }
 
     @_BindingQualifiedDemo

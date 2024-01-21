@@ -61,6 +61,9 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @FunctionalInterface
+@SuppressWarnings({
+        "java:S4274" // assert ...
+})
 public interface HelloWorld {
 
     // ---------------------------------------------------------------------------------- log/logger
@@ -88,7 +91,7 @@ public interface HelloWorld {
     /**
      * The length of the <a href="#hello-world-bytes">hello-world-bytes</a> which is {@value}.
      */
-    public static final // redundant
+    public static final // redundant // TODO: remove!
             int BYTES = 12;
 
     // ----------------------------------------------------------------------------------- java.lang
@@ -107,13 +110,13 @@ public interface HelloWorld {
      * @param array the array on which bytes are set.
      * @param index the starting index of the {@code array} to which bytes are set.
      * @return given {@code array}.
-     * @throws NullPointerException           if {@code array} is {@code null}.
-     * @throws ArrayIndexOutOfBoundsException if {@code index} is negative or {@code array.length}
-     *                                        is less than ({@code index} +
-     *                                        {@link #BYTES}({@value #BYTES})).
+     * @throws NullPointerException      if {@code array} is {@code null}.
+     * @throws IndexOutOfBoundsException if {@code index} is negative, or {@code array.length} is
+     *                                   less than ({@code index} +
+     *                                   {@link #BYTES}({@value #BYTES})).
      */
-    public   // redundant
-    abstract // discouraged
+    public   // redundant // TODO: remove!
+    abstract // discouraged // TODO: remove!
     byte[] set(byte[] array, int index);
 
     /**
@@ -133,7 +136,7 @@ public interface HelloWorld {
      *     throw new NullPointerException("array is null");
      * }
      * if (array.length < BYTES) {
-     *     throw new ArrayIndexOutOfBoundsException("array.length(" + array.length +") < " + BYTES);
+     *     throw new IndexOutOfBoundsException("array.length(" + array.length +") < " + BYTES);
      * }
      * set(array, 0); // @highlight
      * return array;
@@ -141,16 +144,16 @@ public interface HelloWorld {
      *
      * @param array the array on which bytes are set.
      * @return given {@code array}.
-     * @throws NullPointerException           if {@code array} is {@code null}.
-     * @throws ArrayIndexOutOfBoundsException if {@code array.length} is less than
-     *                                        {@link #BYTES}({@value #BYTES}).
+     * @throws NullPointerException      if {@code array} is {@code null}.
+     * @throws IndexOutOfBoundsException if {@code array.length} is less than
+     *                                   {@link #BYTES}({@value #BYTES}).
      * @implSpec The default implementation invokes {@link #set(byte[], int) set(array, index)}
      * method with {@code array} and {@code 0}, and returns the {@code array}.
      * @see #set(byte[], int)
      */
     default byte[] set(final byte[] array) {
         // TODO: throw a NullPointerException when array is null
-        // TODO: throw a ArrayIndexOutOfBoundsException when array.length is less than BYTES
+        // TODO: throw an IndexOutOfBoundsException when array.length is less than BYTES
         // TODO: invoke set(array, 0);
         // TODO: return array
         return null;
@@ -396,7 +399,8 @@ public interface HelloWorld {
         if (socket == null) {
             throw new NullPointerException("socket is null");
         }
-        // TODO: invoke write(socket.getOutputStream())
+        final var stream = socket.getOutputStream();
+        // TODO: invoke write(stream)
         return socket;
     }
 
@@ -642,13 +646,13 @@ public interface HelloWorld {
      *
      * @param <T>        channel type parameter
      * @param channel    the channel to which bytes are written.
-     * @param handler    the completion handler.
      * @param attachment the attachment for the {@code handler}; may be {@code null}.
+     * @param handler    the completion handler.
      * @see AsynchronousByteChannel#write(ByteBuffer, Object, CompletionHandler)
      */
     default <T extends AsynchronousByteChannel, A> void write(
-            final T channel, final CompletionHandler<? super T, ? super A> handler,
-            final A attachment) {
+            final T channel, final A attachment,
+            final CompletionHandler<? super T, ? super A> handler) {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(handler, "handler is null");
         final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
@@ -733,18 +737,16 @@ public interface HelloWorld {
      * @param <A>        attachment type parameter
      * @param channel    the file channel to which bytes are written.
      * @param position   the file position at which the transfer is to begin; must be non-negative.
-     * @param handler    the handler.
      * @param attachment an attachment for the {@code handler}; may be {@code null}.
+     * @param handler    the handler.
      * @throws NullPointerException  if either {@code channel} or {@code handler} is {@code null}.
      * @throws IllegalStateException if {@code position} is negative.
      * @see AsynchronousFileChannel#write(ByteBuffer, long, Object, CompletionHandler)
      */
-    @SuppressWarnings({
-            "java:S117" // attachment_
-    })
-    default <T extends AsynchronousFileChannel, A> void write( // @formatter:on
-            final T channel, final long position,
-            final CompletionHandler<? super T, ? super A> handler, final A attachment) {
+    // @formatter:off
+    default <T extends AsynchronousFileChannel, A> void write(
+            final T channel, final long position, final A attachment,
+            final CompletionHandler<? super T, ? super A> handler) {
         Objects.requireNonNull(channel, "channel is null");
         if (position < 0L) {
             throw new IllegalArgumentException("position(" + position + ") is negative");
@@ -775,5 +777,6 @@ public interface HelloWorld {
                     }
                 }
         );
-    } // @formatter:off
+    }
+    // @formatter:off
 }

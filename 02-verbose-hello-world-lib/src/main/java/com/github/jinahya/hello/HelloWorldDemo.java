@@ -20,6 +20,8 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import com.github.jinahya.hello.util.JavaLangObjectUtils;
+
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -27,18 +29,22 @@ import java.nio.charset.StandardCharsets;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-public class HelloWorldDemo
-        implements HelloWorld {
+public class HelloWorldDemo implements HelloWorld {
+
+    @Override
+    public String toString() {
+        return JavaLangObjectUtils.toSimpleString(this);
+    }
 
     @Override
     public byte[] set(final byte[] array, final int index) {
         final var src = "hello, world".getBytes(StandardCharsets.US_ASCII);
         System.arraycopy(
-                src,
-                0,
-                array,
-                index,
-                src.length
+                src,       // <src>
+                0,         // <srcPos>
+                array,     // <dest>
+                index,     // <destPos>
+                src.length // <length>
         );
         return array;
     }

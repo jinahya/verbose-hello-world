@@ -30,7 +30,6 @@ import org.jboss.weld.junit5.auto.EnableAutoWeld;
 @EnableAutoWeld
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorldCdiSeWeldJunit5Test
-        extends HelloWorldDiTest {
+class HelloWorldCdiSeWeldJunit5Test extends HelloWorldDiTest {
 
 }

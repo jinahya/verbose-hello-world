@@ -24,32 +24,28 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Stream;
 
 /**
  * An abstract class for testing {@link HelloWorld} implementations using Dependency Injection.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@ToString
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-abstract class HelloWorldDiTest extends __HelloWorldTest {
+@Slf4j
+abstract class HelloWorldDiTest extends _HelloWorldTest {
 
     // ---------------------------------------------------------------------------------------------
     @Override
-    HelloWorld service() {
-        assert namedDemo instanceof HelloWorldDemo;
-        assert namedImpl instanceof HelloWorldImpl;
-        assert qualifiedDemo instanceof HelloWorldDemo;
-        assert qualifiedImpl instanceof HelloWorldImpl;
-        return switch (ThreadLocalRandom.current().nextInt(4)) {
-            case 0 -> namedDemo;
-            case 1 -> namedImpl;
-            case 2 -> qualifiedDemo;
-            default -> qualifiedImpl;
-        };
+    Stream<HelloWorld> services() {
+        return Stream.of(
+                namedDemo,
+                namedImpl,
+                qualifiedDemo,
+                qualifiedImpl
+        );
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -61,11 +57,11 @@ abstract class HelloWorldDiTest extends __HelloWorldTest {
     @Inject
     HelloWorld namedImpl;
 
-    @_QualifiedDemo
+    @__QualifiedDemo
     @Inject
     HelloWorld qualifiedDemo;
 
-    @_QualifiedImpl
+    @__QualifiedImpl
     @Inject
     HelloWorld qualifiedImpl;
 }

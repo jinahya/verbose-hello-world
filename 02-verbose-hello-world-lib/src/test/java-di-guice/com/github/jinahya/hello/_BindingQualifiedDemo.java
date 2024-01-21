@@ -34,7 +34,7 @@ import java.lang.annotation.Target;
  */
 @BindingAnnotation
 @_QualifiedDemo
-@Retention(RetentionPolicy.RUNTIAME)
+@Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE,
          ElementType.ANNOTATION_TYPE})
 @interface _BindingQualifiedDemo {

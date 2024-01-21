@@ -8,15 +8,22 @@ import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.io.Writer;
 import java.net.Socket;
+import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.channels.WritableByteChannel;
 import java.nio.file.Path;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicLong;
 
+/**
+ * Just a revisited implementation.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 interface HelloWorldRevisited extends HelloWorld {
 
     @Override
@@ -70,6 +77,9 @@ interface HelloWorldRevisited extends HelloWorld {
 
     @Override
     default <T extends ByteBuffer> T put(final T buffer) {
+        if (Objects.requireNonNull(buffer, "buffer is null").remaining() < BYTES) {
+            throw new BufferOverflowException();
+        }
         if (buffer.hasArray()) {
             set(buffer.array(), (buffer.arrayOffset() + buffer.position()));
             buffer.position(buffer.position() + HelloWorld.BYTES);
@@ -81,6 +91,7 @@ interface HelloWorldRevisited extends HelloWorld {
 
     @Override
     default <T extends WritableByteChannel> T write(final T channel) throws IOException {
+        Objects.requireNonNull(channel, "channel is null");
         for (final var b = put(ByteBuffer.allocate(BYTES)).flip(); b.hasRemaining(); ) {
             channel.write(b);
         }
@@ -95,6 +106,7 @@ interface HelloWorldRevisited extends HelloWorld {
     @Override
     default <T extends AsynchronousByteChannel> T write(final T channel)
             throws InterruptedException, ExecutionException {
+        Objects.requireNonNull(channel, "channel is null");
         for (final var b = put(ByteBuffer.allocate(BYTES)).flip(); b.hasRemaining(); ) {
             channel.write(b).get();
         }
@@ -103,8 +115,9 @@ interface HelloWorldRevisited extends HelloWorld {
 
     @Override
     default <T extends AsynchronousByteChannel, A> void write(
-            final T channel, final CompletionHandler<? super T, ? super A> handler,
-            final A attachment) { // @formatter:off
+            final T channel, final A attachment, final CompletionHandler<? super T, ? super A> handler) { // @formatter:off
+        Objects.requireNonNull(channel, "channel is null");
+        Objects.requireNonNull(handler, "handler is null");
         final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
         channel.write(buffer, attachment, new CompletionHandler<>() {
             @Override public void completed(final Integer result, final A attachment) {
@@ -123,8 +136,8 @@ interface HelloWorldRevisited extends HelloWorld {
     @Override
     default <T extends AsynchronousFileChannel> T write(final T channel, long position)
             throws InterruptedException, ExecutionException {
-        for (final var buffer = put(ByteBuffer.allocate(BYTES)).flip(); buffer.hasRemaining(); ) {
-            position += channel.write(buffer, position).get();
+        for (final var b = put(ByteBuffer.allocate(BYTES)).flip(); b.hasRemaining(); ) {
+            position += channel.write(b, position).get();
         }
         return channel;
     }
@@ -132,18 +145,19 @@ interface HelloWorldRevisited extends HelloWorld {
     @Override
     default <T extends AsynchronousFileChannel, A> void write(
             final T channel, final long position,
-            final CompletionHandler<? super T, ? super A> handler,
-            final A attachment) { // @formatter:on
+            final A attachment, final CompletionHandler<? super T, ? super A> handler) { // @formatter:off
         final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
         channel.write(buffer, position, new AtomicLong(position), new CompletionHandler<>() {
-            @Override public void completed(final Integer result, final AtomicLong cursor) {
+            @Override
+            public void completed(final Integer result, final AtomicLong cursor) {
                 if (!buffer.hasRemaining()) {
                     handler.completed(channel, attachment);
                     return;
                 }
                 channel.write(buffer, cursor.addAndGet(result), cursor, this);
             }
-            @Override public void failed(final Throwable exc, final AtomicLong cursor) {
+            @Override
+            public void failed(final Throwable exc, final AtomicLong cursor) {
                 handler.failed(exc, attachment);
             }
         }); // @formatter:on

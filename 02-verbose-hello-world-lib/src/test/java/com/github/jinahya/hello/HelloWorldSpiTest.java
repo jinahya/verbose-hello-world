@@ -25,6 +25,10 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ServiceLoader;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * A class for testing {@link HelloWorldImpl} using Service Provider Interface.
@@ -33,12 +37,17 @@ import java.util.ServiceLoader;
  */
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorldSpiTest
-        extends __HelloWorldTest {
+class HelloWorldSpiTest extends _HelloWorldTest {
 
     @Override
-    HelloWorld service() {
-        // TODO: Switch implementation in /META-INF/services/com.github.jinahya.hello.HelloWorld
-        return ServiceLoader.load(HelloWorld.class).iterator().next();
+    Stream<HelloWorld> services() {
+        // uncomment elements in /META-INF/services/com.github.jinahya.hello.HelloWorld
+        return StreamSupport.stream(
+                Spliterators.spliteratorUnknownSize(
+                        ServiceLoader.load(HelloWorld.class).iterator(),
+                        Spliterator.ORDERED
+                ),
+                false
+        );
     }
 }

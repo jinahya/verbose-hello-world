@@ -21,6 +21,7 @@ package com.github.jinahya.hello;
  */
 
 import com.google.inject.AbstractModule;
+import com.google.inject.name.Names;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,10 +39,10 @@ class HelloWorldDiGuiceModule extends AbstractModule {
     protected void configure() {
         // -----------------------------------------------------------------------------------------
         bind(HelloWorld.class)
-                .annotatedWith(named(HelloWorldDiConstants._NAME_DEMO))
+                .annotatedWith(Names.named(HelloWorldDiConstants._NAME_DEMO))
                 .to(HelloWorldDemo.class);
         bind(HelloWorld.class)
-                .annotatedWith(named(HelloWorldDiConstants._NAME_IMPL))
+                .annotatedWith(Names.named(HelloWorldDiConstants._NAME_IMPL))
                 .to(HelloWorldImpl.class);
         // -----------------------------------------------------------------------------------------
         bind((HelloWorld.class))
