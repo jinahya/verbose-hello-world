@@ -39,28 +39,33 @@ class Rfc862Tcp1Server {
             server.setSoTimeout((int) _Rfc86_Constants.ACCEPT_TIMEOUT_MILLIS);
             try (var client = server.accept()) {
                 _TcpUtils.logAccepted(client);
-                client.setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_MILLIS);
+//                client.setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_MILLIS);
                 // ------------------------------------------------------------------------- prepare
                 final var digest = _Rfc862Utils.newDigest();
                 var bytes = 0L;
                 final var array = _Rfc86_Utils.newArray();
                 assert array.length > 0;
-                // ---------------------------------------------------------------------------- loop
-                for (int r; ; bytes += r) {
+                // ---------------------------------------------------------------------- read/write
+                while (true) {
                     // ------------------------------------------------------------------------ read
-                    r = client.getInputStream().read(array);
+                    final int r = client.getInputStream().read(array);
                     if (r == -1) {
                         break;
                     }
+                    bytes += r;
+                    digest.update(array, 0, r);
                     // ----------------------------------------------------------------------- write
                     client.getOutputStream().write(array, 0, r);
-                    client.getOutputStream().flush();
-                    digest.update(array, 0, r);
                 }
+                client.getOutputStream().flush();
+                client.shutdownOutput();
                 _Rfc862Utils.logServerBytes(bytes);
                 _Rfc862Utils.logDigest(digest);
+                log.debug("[server] closing the client...");
             }
+            log.debug("[server] closing the server...");
         }
+        log.debug("[server] end-of-main");
     }
 
     private Rfc862Tcp1Server() {

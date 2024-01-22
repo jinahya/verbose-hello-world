@@ -49,20 +49,21 @@ class Rfc862Tcp0Client {
             var bytes = _Rfc86_Utils.newRandomBytes();
             _Rfc862Utils.logClientBytes(bytes);
             // -------------------------------------------------------------------------------- loop
-            for (int b; bytes > 0; bytes--) {
+            for (; bytes > 0; bytes--) {
                 // --------------------------------------------------------------------------- write
-                b = ThreadLocalRandom.current().nextInt();
+                int b = ThreadLocalRandom.current().nextInt();
                 client.getOutputStream().write(b);
                 client.getOutputStream().flush();
                 digest.update((byte) b);
                 // ---------------------------------------------------------------------------- read
-                b = client.getInputStream().read();
-                if (b == -1) {
+                if (client.getInputStream().read() == -1) {
                     throw new EOFException("unexpected eof");
                 }
             }
             _Rfc862Utils.logDigest(digest);
+            log.debug("[client] closing client...");
         }
+        log.debug("[client] end-of-main");
     }
 
     private Rfc862Tcp0Client() {

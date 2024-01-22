@@ -32,6 +32,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -64,12 +65,13 @@ class Rfc862TcpTest {
 
     @MethodSource({"getClassesArgumentsStream"})
     @ParameterizedTest
-    void __(Class<?> serverClass, Class<?> clientClass) throws Exception {
+    void __(final Class<?> serverClass, final Class<?> clientClass) throws Exception {
         log.debug("server: {}", serverClass.getSimpleName());
         log.debug("client: {}", clientClass.getSimpleName());
         serverClass.getClassLoader().setDefaultAssertionStatus(true);
         clientClass.getClassLoader().setDefaultAssertionStatus(true);
-        try (final var executor = Executors.newFixedThreadPool(2)) {
+//        try (final var executor = Execut;ors.newFixedThreadPool(2)) {
+        try (final var executor = Executors.newCachedThreadPool()) {
             final var server = executor.submit(() -> {
                 try {
                     serverClass.getMethod("main", String[].class)
@@ -93,6 +95,10 @@ class Rfc862TcpTest {
             server.get(_Rfc86_Constants.SERVER_PROGRAM_TIMEOUT,
                        _Rfc86_Constants.SERVER_PROGRAM_TIMEOUT_UNIT);
             executor.shutdown();
+            final var terminated = executor.awaitTermination(4L, TimeUnit.SECONDS);
+            if (!terminated) {
+                log.error("executor not terminated");
+            }
         }
     }
 }

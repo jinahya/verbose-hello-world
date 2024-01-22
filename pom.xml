@@ -122,11 +122,6 @@
         <artifactId>guice</artifactId>
         <version>7.0.0</version>
       </dependency>
-      <!--      <dependency>-->
-      <!--        <groupId>com.madgag.spongycastle</groupId>-->
-      <!--        <artifactId>prov</artifactId>-->
-      <!--        <version>1.58.0.0</version>-->
-      <!--      </dependency>-->
       <dependency>
         <groupId>io.projectreactor</groupId>
         <artifactId>reactor-core</artifactId>
@@ -144,11 +139,6 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
-<!--      <dependency>-->
-<!--        <groupId>io.smallrye.reactive</groupId>-->
-<!--        <artifactId>mutiny</artifactId>-->
-<!--        <version>2.5.3</version>-->
-<!--      </dependency>-->
       <dependency>
         <groupId>io.vertx</groupId>
         <artifactId>vertx-reactive-streams</artifactId>

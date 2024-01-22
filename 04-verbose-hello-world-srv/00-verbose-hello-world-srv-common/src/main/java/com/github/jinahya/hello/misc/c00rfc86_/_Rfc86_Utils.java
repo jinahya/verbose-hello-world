@@ -44,11 +44,11 @@ public final class _Rfc86_Utils {
     // -------------------------------------------------------------------------------- array/buffer
     private static final int MIN_ARRAY_LENGTH = 1;
 
-    private static final int MAX_ARRAY_LENGTH = 8192;
+    private static final int MAX_ARRAY_LENGTH = 1024;
 
     private static byte[] array() {
         return new byte[
-                ThreadLocalRandom.current().nextInt(MIN_ARRAY_LENGTH, MAX_ARRAY_LENGTH + 1)
+                ThreadLocalRandom.current().nextInt(MAX_ARRAY_LENGTH) + 1
                 ];
     }
 
@@ -75,14 +75,11 @@ public final class _Rfc86_Utils {
     public static ByteBuffer newBuffer() {
         final var buffer = ByteBuffer.wrap(array());
         log.debug("buffer.capacity: {}", buffer.capacity());
-        assert buffer.arrayOffset() == 0;
-        assert buffer.capacity() >= MIN_ARRAY_LENGTH;
-        assert buffer.capacity() <= MAX_ARRAY_LENGTH;
         return buffer;
     }
 
     // --------------------------------------------------------------------------------------- bytes
-    private static final int BOUND_RANDOM_BYTES = 65536;
+    private static final int BOUND_RANDOM_BYTES = 8192;
 
     /**
      * Returns a new {@code int} between {@code 0}(inclusive) and

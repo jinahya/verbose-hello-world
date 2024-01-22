@@ -134,7 +134,9 @@ class Rfc862Tcp2Client {
             }
             // -------------------------------------------------------------------------- log-digest
             _Rfc862Utils.logDigest(digest);
+            log.debug("[client] closing client...");
         }
+        log.debug("[client] end-of-main");
     }
 
     @_ExcludeFromCoverage_PrivateConstructor_Obviously

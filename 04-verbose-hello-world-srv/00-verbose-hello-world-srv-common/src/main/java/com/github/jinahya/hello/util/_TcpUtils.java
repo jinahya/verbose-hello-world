@@ -23,7 +23,6 @@ package com.github.jinahya.hello.util;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.channels.AsynchronousServerSocketChannel;
@@ -59,20 +58,26 @@ public final class _TcpUtils {
     }
 
     @SuppressWarnings({"unchecked"})
-    public static <T extends ServerSocketChannel> T logBound(final T server)
-            throws IOException {
+    public static <T extends ServerSocketChannel> T logBound(final T server) {
         Objects.requireNonNull(server, "server is null");
         if (ThreadLocalRandom.current().nextBoolean()) {
             return (T) logBound(server.socket()).getChannel();
         }
-        log.info(LOG_FORMAT_BOUND, server.getLocalAddress());
+        try {
+            log.info(LOG_FORMAT_BOUND, server.getLocalAddress());
+        } catch (final IOException ioe) {
+            throw new RuntimeException(ioe);
+        }
         return server;
     }
 
-    public static <T extends AsynchronousServerSocketChannel> T logBound(final T server)
-            throws IOException {
+    public static <T extends AsynchronousServerSocketChannel> T logBound(final T server) {
         Objects.requireNonNull(server, "server is null");
-        log.info(LOG_FORMAT_BOUND, server.getLocalAddress());
+        try {
+            log.info(LOG_FORMAT_BOUND, server.getLocalAddress());
+        } catch (final IOException ioe) {
+            throw new RuntimeException(ioe);
+        }
         return server;
     }
 
@@ -86,20 +91,26 @@ public final class _TcpUtils {
     }
 
     @SuppressWarnings({"unchecked"})
-    public static <T extends SocketChannel> T logBound(final T channel)
-            throws IOException {
+    public static <T extends SocketChannel> T logBound(final T channel) {
         Objects.requireNonNull(channel, "channel is null");
         if (ThreadLocalRandom.current().nextBoolean()) {
             return (T) logBound(channel.socket()).getChannel();
         }
-        log.info(LOG_FORMAT_BOUND, channel.getLocalAddress());
+        try {
+            log.info(LOG_FORMAT_BOUND, channel.getLocalAddress());
+        } catch (final IOException ioe) {
+            throw new RuntimeException(ioe);
+        }
         return channel;
     }
 
-    public static <T extends AsynchronousSocketChannel> T logBound(final T channel)
-            throws IOException {
+    public static <T extends AsynchronousSocketChannel> T logBound(final T channel) {
         Objects.requireNonNull(channel, "channel is null");
-        log.info(LOG_FORMAT_BOUND, channel.getLocalAddress());
+        try {
+            log.info(LOG_FORMAT_BOUND, channel.getLocalAddress());
+        } catch (final IOException ioe) {
+            throw new RuntimeException(ioe);
+        }
         return channel;
     }
 
@@ -112,29 +123,31 @@ public final class _TcpUtils {
     }
 
     @SuppressWarnings({"unchecked"})
-    public static <T extends SocketChannel> T logAccepted(final T client)
-            throws IOException {
+    public static <T extends SocketChannel> T logAccepted(final T client) {
         Objects.requireNonNull(client, "client is null");
         if (ThreadLocalRandom.current().nextBoolean()) {
             return (T) logAccepted(client.socket()).getChannel();
         }
-        log.info(LOG_FORMAT_ACCEPTED, client.getRemoteAddress(), client.getLocalAddress());
+        try {
+            log.info(LOG_FORMAT_ACCEPTED, client.getRemoteAddress(), client.getLocalAddress());
+        } catch (final IOException ioe) {
+            throw new RuntimeException(ioe);
+        }
         return client;
     }
 
-    public static <T extends AsynchronousSocketChannel> T logAccepted(final T client)
-            throws IOException {
+    public static <T extends AsynchronousSocketChannel> T logAccepted(final T client) {
         Objects.requireNonNull(client, "client is null");
-        log.info(LOG_FORMAT_ACCEPTED, client.getRemoteAddress(), client.getLocalAddress());
+        try {
+            log.info(LOG_FORMAT_ACCEPTED, client.getRemoteAddress(), client.getLocalAddress());
+        } catch (final IOException ioe) {
+            throw new RuntimeException(ioe);
+        }
         return client;
     }
 
     public static <T extends AsynchronousSocketChannel> T logAcceptedUnchecked(final T client) {
-        try {
-            return logAccepted(client);
-        } catch (final IOException ioe) {
-            throw new UncheckedIOException("failed to log accepted for " + client, ioe);
-        }
+        return logAccepted(client);
     }
 
     // ----------------------------------------------------------------------------------- connected
@@ -146,29 +159,31 @@ public final class _TcpUtils {
     }
 
     @SuppressWarnings({"unchecked"})
-    public static <T extends SocketChannel> T logConnected(final T client)
-            throws IOException {
+    public static <T extends SocketChannel> T logConnected(final T client) {
         Objects.requireNonNull(client, "client is null");
         if (ThreadLocalRandom.current().nextBoolean()) {
             return (T) logConnected(client.socket()).getChannel();
         }
-        log.info(LOG_FORMAT_CONNECTED, client.getRemoteAddress(), client.getLocalAddress());
+        try {
+            log.info(LOG_FORMAT_CONNECTED, client.getRemoteAddress(), client.getLocalAddress());
+        } catch (final IOException ioe) {
+            throw new RuntimeException(ioe);
+        }
         return client;
     }
 
-    public static <T extends AsynchronousSocketChannel> T logConnected(final T client)
-            throws IOException {
+    public static <T extends AsynchronousSocketChannel> T logConnected(final T client) {
         Objects.requireNonNull(client, "client is null");
-        log.info(LOG_FORMAT_CONNECTED, client.getRemoteAddress(), client.getLocalAddress());
+        try {
+            log.info(LOG_FORMAT_CONNECTED, client.getRemoteAddress(), client.getLocalAddress());
+        } catch (final IOException ioe) {
+            throw new RuntimeException(ioe);
+        }
         return client;
     }
 
     public static <T extends AsynchronousSocketChannel> T logConnectedUnchecked(final T client) {
-        try {
-            return logConnected(client);
-        } catch (final IOException ioe) {
-            throw new UncheckedIOException("failed to log connected for " + client, ioe);
-        }
+        return logConnected(client);
     }
 
     // ---------------------------------------------------------------------------------------------

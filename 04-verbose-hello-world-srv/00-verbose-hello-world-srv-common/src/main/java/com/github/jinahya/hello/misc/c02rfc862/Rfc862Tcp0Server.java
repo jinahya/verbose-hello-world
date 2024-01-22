@@ -38,31 +38,34 @@ class Rfc862Tcp0Server {
             server.bind(_Rfc862Constants.ADDR, 1);
             _TcpUtils.logBound(server);
             // --------------------------------------------------------------------------- configure
-            server.setSoTimeout((int) _Rfc86_Constants.ACCEPT_TIMEOUT_MILLIS);
+//            server.setSoTimeout((int) _Rfc86_Constants.ACCEPT_TIMEOUT_MILLIS);
             // ------------------------------------------------------------------------------ accept
             try (var client = server.accept()) {
                 _TcpUtils.logAccepted(client);
                 // ----------------------------------------------------------------------- configure
-                client.setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_MILLIS);
+//                client.setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_MILLIS);
                 // ------------------------------------------------------------------------- prepare
                 final var digest = _Rfc862Utils.newDigest();
                 var bytes = 0L;
-                for (int b; ; bytes++) {
+                while (true) {
                     // ------------------------------------------------------------------------ read
-                    b = client.getInputStream().read();
+                    final int b = client.getInputStream().read();
                     if (b == -1) {
                         break;
                     }
                     bytes++;
+                    digest.update((byte) b);
                     // ----------------------------------------------------------------------- write
                     client.getOutputStream().write(b);
                     client.getOutputStream().flush();
-                    digest.update((byte) b);
                 }
                 _Rfc862Utils.logServerBytes(bytes);
                 _Rfc862Utils.logDigest(digest);
+                log.debug("[server] closing the client...");
             }
+            log.debug("[server] closing the server...");
         }
+        log.debug("[server] end-of-main");
     }
 
     private Rfc862Tcp0Server() {

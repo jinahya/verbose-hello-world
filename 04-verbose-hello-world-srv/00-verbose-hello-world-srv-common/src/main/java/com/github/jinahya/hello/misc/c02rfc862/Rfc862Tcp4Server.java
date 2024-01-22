@@ -45,45 +45,40 @@ class Rfc862Tcp4Server {
                 final var digest = _Rfc862Utils.newDigest();
                 var bytes = 0L;
                 final var buffer = _Rfc86_Utils.newBuffer();
-                assert buffer.capacity() > 0;
-                // -------------------------------------------------------------------- receive/send
-                for (int r, w; ; bytes += r) {
+                // ---------------------------------------------------------------------- read/write
+                while (true) {
                     // ------------------------------------------------------------------------ read
                     if (!buffer.hasRemaining()) {
                         buffer.clear();
                     }
-                    assert buffer.hasRemaining();
-                    r = client.read(buffer)
-                            .get(_Rfc86_Constants.READ_TIMEOUT, _Rfc86_Constants.READ_TIMEOUT_UNIT);
-                    assert r >= -1;
+                    final int r = client.read(buffer).get(_Rfc86_Constants.READ_TIMEOUT,
+                                                          _Rfc86_Constants.READ_TIMEOUT_UNIT);
                     if (r == -1) {
                         break;
                     }
-                    assert r > 0; // why?
+                    bytes += r;
                     // ----------------------------------------------------------------------- write
                     buffer.flip();
-                    assert buffer.hasRemaining(); // why?
-                    w = client.write(buffer)
-                            .get(_Rfc86_Constants.WRITE_TIMEOUT,
-                                 _Rfc86_Constants.WRITE_TIMEOUT_UNIT);
-                    assert w > 0; // why?
+                    final int w = client.write(buffer).get(_Rfc86_Constants.WRITE_TIMEOUT,
+                                                           _Rfc86_Constants.WRITE_TIMEOUT_UNIT);
                     JavaSecurityUtils.updateDigest(digest, buffer, w);
                     buffer.compact();
                 }
-                // ---------------------------------------------------------------- write-to-the-end
-                buffer.flip();
-                for (int w; buffer.hasRemaining(); ) {
-                    w = client.write(buffer)
-                            .get(_Rfc86_Constants.WRITE_TIMEOUT,
-                                 _Rfc86_Constants.WRITE_TIMEOUT_UNIT);
-                    assert w > 0; // why?
+                // ----------------------------------------------------------------- write-remaining
+                for (buffer.flip(); buffer.hasRemaining(); ) {
+                    final int w = client.write(buffer).get(_Rfc86_Constants.WRITE_TIMEOUT,
+                                                           _Rfc86_Constants.WRITE_TIMEOUT_UNIT);
                     JavaSecurityUtils.updateDigest(digest, buffer, w);
                 }
-                // ------------------------------------------------------------------------- logging
+                client.shutdownOutput();
+                // ----------------------------------------------------------------------------- log
                 _Rfc862Utils.logServerBytes(bytes);
                 _Rfc862Utils.logDigest(digest);
+                log.debug("[server] closing client...");
             }
+            log.debug("[server] closing server...");
         }
+        log.debug("[server] end-of-main");
     }
 
     private Rfc862Tcp4Server() {

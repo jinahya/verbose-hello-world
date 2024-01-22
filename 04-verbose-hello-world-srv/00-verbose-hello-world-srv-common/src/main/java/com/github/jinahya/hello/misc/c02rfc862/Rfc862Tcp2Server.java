@@ -35,7 +35,7 @@ class Rfc862Tcp2Server {
 
     public static void main(final String... args) throws Exception {
         try (var server = ServerSocketChannel.open()) {
-            assert server.isBlocking(); // ----------------------------------------------------- !!!
+            assert server.isBlocking(); // !!!
             // -------------------------------------------------------------------------------- bind
             server.bind(_Rfc862Constants.ADDR, 1);
             _TcpUtils.logBound(server);
@@ -49,7 +49,7 @@ class Rfc862Tcp2Server {
                 client = server.accept();
             }
             _TcpUtils.logAccepted(client);
-            assert client.isBlocking(); // ----------------------------------------------------- !!!
+            assert client.isBlocking(); // !!!
             client.socket().setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_MILLIS);
             try (client) {
                 // ------------------------------------------------------------------------- prepare
@@ -100,16 +100,18 @@ class Rfc862Tcp2Server {
                     assert buffer.limit() == buffer.capacity();
                 }
                 // ------------------------------------------------------------------ write-remained
-                buffer.flip();
-                assert !buffer.hasRemaining(); // why?
-                while (buffer.hasRemaining()) {
+                for (buffer.flip(); buffer.hasRemaining(); ) {
                     client.write(buffer);
                 }
+                client.shutdownOutput();
                 // ------------------------------------------------------------------------- logging
                 _Rfc862Utils.logServerBytes(bytes);
                 _Rfc862Utils.logDigest(digest);
+                log.debug("[server] closing client...");
             }
+            log.debug("[server] closing server...");
         }
+        log.debug("[server] end-of-main");
     }
 
     private Rfc862Tcp2Server() {

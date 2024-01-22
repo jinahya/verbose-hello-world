@@ -135,7 +135,6 @@ class Rfc862Tcp5Client {
             // ----------------------------------------------------------------------------- prepare
             final var digest = _Rfc862Utils.newDigest();
             var bytes = new int[] {_Rfc86_Utils.newRandomBytes()};
-            assert bytes[0] >= 0;
             _Rfc862Utils.logClientBytes(bytes[0]);
             final var buffer = _Rfc86_Utils.newBuffer();
             assert buffer.hasArray();

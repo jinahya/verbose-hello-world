@@ -22,6 +22,7 @@ package com.github.jinahya.hello.misc.c02rfc862;
 
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils;
+import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 import com.github.jinahya.hello.util._TcpUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -43,49 +44,44 @@ class Rfc862Tcp1Client {
             // ----------------------------------------------------------------------------- connect
             client.connect(_Rfc862Constants.ADDR, (int) _Rfc86_Constants.CONNECT_TIMEOUT_MILLIS);
             _TcpUtils.logConnected(client);
-            client.setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_MILLIS);
             // ----------------------------------------------------------------------------- prepare
             final var digest = _Rfc862Utils.newDigest();
             var bytes = _Rfc86_Utils.newRandomBytes();
             _Rfc862Utils.logClientBytes(bytes);
             final var array = _Rfc86_Utils.newArray();
-            // -------------------------------------------------------------------------------- loop
-            for (int l, r; bytes > 0; bytes -= l) {
+            assert array.length > 0;
+            // -------------------------------------------------------------------------- write/read
+            while (bytes > 0) {
                 // --------------------------------------------------------------------------- write
                 ThreadLocalRandom.current().nextBytes(array);
-                l = Math.min(array.length, bytes);
-                client.getOutputStream().write(
-                        array, // <b>
-                        0,     // <off>
-                        l      // <len>
-                );
-                client.getOutputStream().flush();
+                final int l = Math.min(array.length, bytes);
+                client.getOutputStream().write(array, 0, l);
+                bytes -= l;
                 digest.update(array, 0, l);
                 // ---------------------------------------------------------------------------- read
-                r = client.getInputStream().read(
-                        array, // <b>
-                        0,     // <off>
-                        l      // <len>
-                );
-                if (r == -1) {
+                if (client.getInputStream().read(array, 0, l) == -1) {
                     throw new EOFException("unexpected eof");
                 }
             }
-            // --------------------------------------------------------------------- shutdown-output
+            // ---------------------------------------------------------------------- flush/shutdown
+            log.debug("flushing client.outputstream...");
+            client.getOutputStream().flush();
+            log.debug("shutting down client.output...");
             client.shutdownOutput();
             // --------------------------------------------------------------------- read-to-the-end
-            for (int r; ; ) {
-                r = client.getInputStream().read(
-                        array // <b>
-                );
-                if (r == -1) {
-                    break;
-                }
+            log.debug("[client] reading to the end...");
+            for (int r; (r = client.getInputStream().read(array)) != -1; ) {
+                log.debug("r: {}", r);
+                // empty
             }
+            // --------------------------------------------------------------------------------- log
             _Rfc862Utils.logDigest(digest);
+            log.debug("[client] closing the client...");
         }
+        log.debug("[client] end-of-main");
     }
 
+    @_ExcludeFromCoverage_PrivateConstructor_Obviously
     private Rfc862Tcp1Client() {
         throw new AssertionError("instantiation is not allowed");
     }
