@@ -20,10 +20,7 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
-import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
-import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils;
 import com.github.jinahya.hello.util.JavaSecurityMessageDigestUtils;
-import com.github.jinahya.hello.util._TcpUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.EOFException;
@@ -35,24 +32,21 @@ import java.util.concurrent.ThreadLocalRandom;
 @SuppressWarnings({
         "java:S127" // loop counter assigned in the loop body
 })
-class Rfc862Tcp4Client {
+class Rfc862Tcp4Client extends _Rfc862Tcp {
 
     public static void main(final String... args) throws Exception {
-        // ------------------------------------------------------------------------------------ open
         try (var client = AsynchronousSocketChannel.open()) {
-            // -------------------------------------------------------------------------------- bind
+            // ---------------------------------------------------------------------- bind(optional)
             if (ThreadLocalRandom.current().nextBoolean()) {
-                client.bind(new InetSocketAddress(_Rfc862Constants.ADDR.getAddress(), 0));
-                _TcpUtils.logBound(client);
+                logBound(client.bind(new InetSocketAddress(HOST, 0)));
             }
             // ----------------------------------------------------------------------------- connect
-            client.connect(_Rfc862Constants.ADDR)
-                    .get(_Rfc86_Constants.CONNECT_TIMEOUT, _Rfc86_Constants.CONNECT_TIMEOUT_UNIT);
-            _TcpUtils.logConnected(client);
+            client.connect(ADDR).get();
+            logConnected(client);
             // ----------------------------------------------------------------------------- prepare
-            final var digest = _Rfc862Utils.newDigest();
-            var bytes = _Rfc862Utils.logClientBytes(_Rfc86_Utils.newRandomBytes());
-            final var buffer = _Rfc86_Utils.newBuffer();
+            final var digest = newDigest();
+            var bytes = logClientBytes(newRandomBytes());
+            final var buffer = newBuffer();
             buffer.position(buffer.limit()); // for what?
             // -------------------------------------------------------------------------- write/read
             while (bytes > 0) {
@@ -62,29 +56,27 @@ class Rfc862Tcp4Client {
                     buffer.clear().limit(Math.min(buffer.limit(), bytes));
                 }
                 assert buffer.hasRemaining();
-                final int w = client.write(buffer).get(_Rfc86_Constants.WRITE_TIMEOUT,
-                                                       _Rfc86_Constants.WRITE_TIMEOUT_UNIT);
+                final int w = client.write(buffer).get();
+                assert w > 0; // why?
                 bytes -= w;
                 JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, w);
                 // ---------------------------------------------------------------------------- read
                 final var limit = buffer.limit();
                 buffer.flip(); // limit -> position, position -> zero
-                final int r = client.read(buffer).get(_Rfc86_Constants.READ_TIMEOUT,
-                                                      _Rfc86_Constants.READ_TIMEOUT_UNIT);
+                final int r = client.read(buffer).get();
                 if (r == -1) {
                     throw new EOFException("unexpected eof");
                 }
+                assert r > 0; // why?
                 buffer.position(buffer.limit()).limit(limit);
             }
-            _Rfc862Utils.logDigest(digest);
             client.shutdownOutput();
-            // --------------------------------------------------------------------- read-to-the-end
+            logDigest(digest);
+            // ---------------------------------------------------------------------- read-remaining
             while (client.read(buffer.clear()).get() != -1) {
                 // empty
             }
-            log.debug("[client] closing client...");
         }
-        log.debug("[client] end-of-main");
     }
 
     private Rfc862Tcp4Client() {

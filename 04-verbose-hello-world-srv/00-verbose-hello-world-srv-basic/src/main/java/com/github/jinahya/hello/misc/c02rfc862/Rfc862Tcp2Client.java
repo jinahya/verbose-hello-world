@@ -73,7 +73,13 @@ class Rfc862Tcp2Client extends _Rfc862Tcp {
                     );
                     client.socket().getOutputStream().flush();
                     bytes -= buffer.remaining();
-                    digest.update(buffer);
+                    if (ThreadLocalRandom.current().nextBoolean()) {
+                        digest.update(buffer.array(), buffer.arrayOffset() + buffer.position(),
+                                      buffer.remaining());
+                        buffer.position(buffer.limit());
+                    } else {
+                        digest.update(buffer); // effectively, position -> limit
+                    }
                 } else {
                     final var w = client.write(buffer);
                     assert !buffer.hasRemaining();
@@ -95,7 +101,7 @@ class Rfc862Tcp2Client extends _Rfc862Tcp {
                         throw new EOFException("unexpected eof");
                     }
                     assert r > 0; // why?
-                    buffer.position(buffer.position() + r);
+                    buffer.position(buffer.limit());
                 } else {
                     final int r = client.read(buffer);
                     if (r == -1) {
@@ -107,27 +113,9 @@ class Rfc862Tcp2Client extends _Rfc862Tcp {
             }
             // --------------------------------------------------------------------- shutdown-output
             client.shutdownOutput();
-            // ----------------------------------------------------------- read-to-the-end-of-stream
-            while (true) {
-                if (!buffer.hasRemaining()) {
-                    buffer.clear();
-                }
-                if (ThreadLocalRandom.current().nextBoolean()) {
-                    final var r = client.socket().getInputStream().read(
-                            buffer.array(),
-                            buffer.arrayOffset() + buffer.position(),
-                            buffer.remaining()
-                    );
-                    if (r == -1) {
-                        break;
-                    }
-                    buffer.position(buffer.position() + r);
-                } else {
-                    final var r = client.read(buffer);
-                    if (r == -1) {
-                        break;
-                    }
-                }
+            // ---------------------------------------------------------------------- read-remaining
+            while ((client.read(buffer.clear())) != -1) {
+                // empty
             }
             // --------------------------------------------------------------------------------- log
             logDigest(digest);

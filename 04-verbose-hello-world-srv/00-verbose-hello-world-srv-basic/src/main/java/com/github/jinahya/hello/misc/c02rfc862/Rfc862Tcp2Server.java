@@ -29,11 +29,12 @@ import java.nio.channels.SocketChannel;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
+@SuppressWarnings({"java:S127"})
 class Rfc862Tcp2Server extends _Rfc862Tcp {
 
     public static void main(final String... args) throws Exception {
         try (var server = ServerSocketChannel.open()) {
-            assert server.isBlocking(); // !!!
+            assert server.isBlocking(); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             // -------------------------------------------------------------------------------- bind
             logBound(server.bind(ADDR, 1));
             // -------------------------------------------------------------------- accept/configure
@@ -44,27 +45,28 @@ class Rfc862Tcp2Server extends _Rfc862Tcp {
                 client = server.accept();
             }
             logAccepted(client);
-            assert client.isBlocking(); // !!!
-            // ------------------------------------------------------------------------ read / write
+            assert client.isBlocking(); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            // -------------------------------------------------------------------------- read/write
             try (client) {
                 // ------------------------------------------------------------------------- prepare
                 final var digest = newDigest();
                 var bytes = 0L;
                 final var buffer = newBuffer();
-                while (true) {
+                for (int r, w; ; ) {
                     // ------------------------------------------------------------------------ read
                     if (ThreadLocalRandom.current().nextBoolean()) {
-                        final var r = client.socket().getInputStream().read(
+                        r = client.socket().getInputStream().read(
                                 buffer.array(),
                                 buffer.arrayOffset() + buffer.position(),
                                 buffer.remaining()
                         );
-                        if (r != -1) {
-                            buffer.position(buffer.position() + r);
-                            bytes += r;
+                        if (r == -1) {
+                            break;
                         }
+                        buffer.position(buffer.position() + r);
+                        bytes += r;
                     } else {
-                        final var r = client.read(buffer);
+                        r = client.read(buffer);
                         if (r == -1) {
                             break;
                         }
@@ -79,19 +81,21 @@ class Rfc862Tcp2Server extends _Rfc862Tcp {
                                 buffer.remaining()
                         );
                         client.socket().getOutputStream().flush();
-                        digest.update(buffer);
+                        if (ThreadLocalRandom.current().nextBoolean()) {
+                            digest.update(buffer.array(), buffer.arrayOffset() + buffer.position(),
+                                          buffer.remaining());
+                            buffer.position(buffer.limit());
+                        } else {
+                            digest.update(buffer);
+                        }
                     } else {
-                        final var w = client.write(buffer);
+                        w = client.write(buffer);
                         JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, w);
                     }
                     assert !buffer.hasRemaining(); // why?
-                    buffer.compact();
+                    buffer.compact(); // effectively, position -> zero, limit -> capacity
                     assert buffer.position() == 0; // why?
                     assert buffer.limit() == buffer.capacity(); // why?
-                }
-                // ------------------------------------------------------------------ write-remained
-                for (buffer.flip(); buffer.hasRemaining(); ) {
-                    client.write(buffer);
                 }
                 // ----------------------------------------------------------------------------- log
                 logServerBytes(bytes);

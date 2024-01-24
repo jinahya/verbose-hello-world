@@ -20,14 +20,10 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
-import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
-import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils;
 import com.github.jinahya.hello.util.JavaSecurityMessageDigestUtils;
 import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
-import com.github.jinahya.hello.util._TcpUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
@@ -37,111 +33,81 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.LongAdder;
 
 @Slf4j
-class Rfc862Tcp5Server {
-
-    private static void write(final AsynchronousSocketChannel client, final ByteBuffer buffer,
-                              final LongAdder adder, final MessageDigest digest,
-                              final CountDownLatch latch) {
-        client.<Void>write(
-                buffer,                              // <src>
-                _Rfc86_Constants.WRITE_TIMEOUT,      // <timeout>
-                _Rfc86_Constants.WRITE_TIMEOUT_UNIT, // <unit>
-                null,                                // <attachment>
-                new CompletionHandler<>() {          // <handler>
-                    @Override // @formatter:off
-                    public void completed(final Integer result, final Void attachment) {
-                        JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, result);
-                        if (latch.getCount() == 2L) {
-                            read(client, buffer.compact(), adder, digest, latch);
-                            return;
-                        }
-                        assert latch.getCount() == 1L;
-                        if (!buffer.hasRemaining()) {
-                            log.debug("[server] closing client...");
-                            try {
-                                client.close();
-                            } catch (final IOException ioe) {
-                                throw new RuntimeException("failed to close " + client, ioe);
-                            }
-                            latch.countDown();
-                            return;
-                        }
-                        write(client, buffer, adder, digest, latch);
-                    }
-                    @Override
-                    public void failed(final Throwable exc, final Void attachment) {
-                        log.error("failed to write", exc);
-                        while (latch.getCount() > 0L) {
-                            latch.countDown();
-                        }
-                    } // @formatter:on
-                }
-        );
-    }
+class Rfc862Tcp5Server extends _Rfc862Tcp {
 
     private static void read(final AsynchronousSocketChannel client, final ByteBuffer buffer,
-                             final LongAdder adder, final MessageDigest digest,
+                             final LongAdder bytes, final MessageDigest digest,
                              final CountDownLatch latch) {
-        client.<Void>read(
-                buffer,                             // <dst>
-                _Rfc86_Constants.READ_TIMEOUT,      // <timeout>
-                _Rfc86_Constants.READ_TIMEOUT_UNIT, // <unit>
-                null,                               // <attachment>
-                new CompletionHandler<>() {         // <handler
-                    @Override // @formatter:off
-                    public void completed(final Integer result, final Void a) {
-                        if (result == -1) {
-                            log.debug("reached to an eof");
-                            latch.countDown();
-                        } else {
-                            adder.add(result);
-                        }
-                        write(client, buffer.flip(), adder, digest, latch);
-                    }
-                    @Override
-                    public void failed(final Throwable exc, final Void a) {
-                        log.error("failed to read", exc);
-                        while (latch.getCount() > 0L) {
-                            latch.countDown();
-                        }
-                    } // @formatter:on
+        assert buffer.capacity() > 0;
+        if (!buffer.hasRemaining()) {
+            buffer.clear();
+        }
+        assert buffer.hasRemaining();
+        client.<Void>read(buffer, null, new CompletionHandler<>() { // @formatter:off
+            @Override public void completed(final Integer result, final Void attachment) {
+                if (result == -1) {
+                    logServerBytes(bytes.longValue());
+                    latch.countDown();
+                    return;
                 }
-        );
+                assert result > 0; // why?
+                bytes.add(result);
+                // write all bytes back to the client
+                if (buffer.position() > 0) {
+                    write(client, buffer.flip(), bytes, digest, latch);
+                    return;
+                }
+                // keep reading
+                client.read(buffer, attachment, this);
+            }
+            @Override public void failed(final Throwable exc, final Void attachment) {
+                log.error("failed to read", exc);
+                latch.countDown();
+            } // @formatter:on
+        });
+    }
+
+    private static void write(final AsynchronousSocketChannel client, final ByteBuffer buffer,
+                              final LongAdder bytes, final MessageDigest digest,
+                              final CountDownLatch latch) {
+        assert buffer.hasRemaining();
+        client.<Void>write(buffer, null, new CompletionHandler<>() { // @formatter:off
+            @Override public void completed(final Integer result, final Void attachment) {
+                assert result > 0; // why?
+                JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, result);
+                // keep writing while buffer has remaining
+                if (buffer.hasRemaining()) {
+                    client.write(buffer, attachment, this);
+                    return;
+                }
+                read(client, buffer, bytes, digest, latch);
+            }
+            @Override public void failed(final Throwable exc, final Void attachment) {
+                log.error("failed to write", exc);
+                latch.countDown();
+            } // @formatter:on
+        });
     }
 
     public static void main(final String... args) throws Exception {
-        // ------------------------------------------------------------------------------------ open
         try (var server = AsynchronousServerSocketChannel.open()) {
             // -------------------------------------------------------------------------------- bind
-            server.bind(_Rfc862Constants.ADDR, 0);
-            _TcpUtils.logBound(server);
-            // ----------------------------------------------------------------------------- prepare
-            final var digest = _Rfc862Utils.newDigest();
-            final var bytes = new LongAdder();
-            final var buffer = _Rfc86_Utils.newBuffer();
-            assert buffer.capacity() > 0;
+            logBound(server.bind(ADDR, 0));
             // ------------------------------------------------------------------------------ accept
-            final var latch = new CountDownLatch(2);
-            server.<Void>accept(null, new CompletionHandler<>() { // @formatter:off
-                @Override public void completed(final AsynchronousSocketChannel client, final Void a) {
-                    read(_TcpUtils.logAccepted(client), buffer, bytes, digest, latch);
+            final var latch = new CountDownLatch(1);
+            server.accept(newBuffer(), new CompletionHandler<>() { // @formatter:off
+                @Override public void completed(final AsynchronousSocketChannel client,
+                                                final ByteBuffer attachment) {
+                    read(logAccepted(client), attachment, new LongAdder(), newDigest(), latch);
                 }
-                @Override public void failed(final Throwable exc, final Void a) {
+                @Override public void failed(final Throwable exc, final ByteBuffer attachment) {
                     log.error("failed to accept", exc);
                     latch.countDown();
                 } // @formatter:on
             });
             // ------------------------------------------------------------------------------- await
-            final var broken = latch.await(_Rfc86_Constants.SERVER_PROGRAM_TIMEOUT,
-                                           _Rfc86_Constants.SERVER_PROGRAM_TIMEOUT_UNIT);
-            if (!broken) {
-                log.error("latch hasn't been broken");
-            }
-            _Rfc862Utils.logServerBytes(bytes.longValue());
-            _Rfc862Utils.logDigest(digest);
-            log.debug("[server] closing server...");
+            latch.await();
         }
-        log.debug("[server] end-of-main");
     }
 
     @_ExcludeFromCoverage_PrivateConstructor_Obviously

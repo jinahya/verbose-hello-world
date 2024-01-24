@@ -20,6 +20,7 @@ package com.github.jinahya.hello.misc.c04chat;
  * #L%
  */
 
+import com.github.jinahya.hello.HelloWorldServerConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.RandomStringGenerator;
 import org.junit.jupiter.api.Disabled;

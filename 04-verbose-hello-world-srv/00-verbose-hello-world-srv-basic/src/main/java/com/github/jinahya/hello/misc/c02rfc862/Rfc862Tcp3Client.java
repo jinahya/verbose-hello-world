@@ -22,6 +22,7 @@ package com.github.jinahya.hello.misc.c02rfc862;
 
 import com.github.jinahya.hello.util.JavaNioByteBufferUtils;
 import com.github.jinahya.hello.util.JavaSecurityMessageDigestUtils;
+import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.EOFException;
@@ -42,23 +43,21 @@ class Rfc862Tcp3Client extends _Rfc862Tcp {
             client.configureBlocking(false);
             // ---------------------------------------------------------------------- bind(optional)
             if (ThreadLocalRandom.current().nextBoolean()) {
-                client.bind(new InetSocketAddress(HOST, 0));
-                logBound(client);
+                logBound(client.bind(new InetSocketAddress(HOST, 0)));
             }
             // ------------------------------------------------------------------------ connect(try)
             final SelectionKey clientKey;
             if (client.connect(ADDR)) {
-                assert client.isConnected();
                 logConnected(client);
                 clientKey = client.register(
-                        selector,
-                        SelectionKey.OP_WRITE,
-                        JavaNioByteBufferUtils.randomize(newBuffer())
+                        selector,              // <sel>
+                        SelectionKey.OP_WRITE, // <ops>
+                        newBuffer().limit(0)   // <att>
                 );
             } else {
                 clientKey = client.register(
-                        selector,
-                        SelectionKey.OP_CONNECT
+                        selector,               // <sel>
+                        SelectionKey.OP_CONNECT // <ops>
                 );
             }
             // ----------------------------------------------------------------------------- prepare
@@ -81,12 +80,11 @@ class Rfc862Tcp3Client extends _Rfc862Tcp {
                             logConnected(channel);
                             key.interestOpsAnd(~SelectionKey.OP_CONNECT);
                             key.interestOpsOr(SelectionKey.OP_WRITE);
-                            key.attach(JavaNioByteBufferUtils.randomize(newBuffer()));
+                            key.attach(newBuffer().limit(0));
                         }
                     }
                     // ----------------------------------------------------------------------- write
                     if (key.isWritable()) {
-                        assert bytes > 0;
                         final var channel = (SocketChannel) key.channel();
                         assert channel == client;
                         final var buffer = (ByteBuffer) key.attachment();
@@ -96,7 +94,7 @@ class Rfc862Tcp3Client extends _Rfc862Tcp {
                             );
                         }
                         final var w = channel.write(buffer);
-                        assert w >= 0;
+                        assert w >= 0; // why?
                         JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, w);
                         bytes -= w;
                         if (bytes == 0) {
@@ -104,39 +102,37 @@ class Rfc862Tcp3Client extends _Rfc862Tcp {
                             logDigest(digest);
                             channel.shutdownOutput();
                         }
-                        if (buffer.position() > 0) {
-                            key.interestOpsAnd(~SelectionKey.OP_WRITE);
-                            buffer.flip();
-                            key.interestOpsOr(SelectionKey.OP_READ);
-                        }
+                        key.interestOpsOr(SelectionKey.OP_READ);
+                        assert !key.isReadable();
                     }
                     // ------------------------------------------------------------------------ read
                     if (key.isReadable()) {
                         final var channel = (SocketChannel) key.channel();
                         assert channel == client;
                         final var buffer = (ByteBuffer) key.attachment();
-                        assert buffer.hasRemaining();
+                        final var limit = buffer.limit();
+                        buffer.flip();
                         final int r = channel.read(buffer);
                         if (r == -1) {
                             throw new EOFException("unexpected eof");
                         }
-                        assert r >= 0;
+                        assert r >= 0; // why?
                         if (!buffer.hasRemaining()) {
                             key.interestOpsAnd(~SelectionKey.OP_READ);
-                            if (bytes > 0) {
-                                buffer.position(buffer.limit()).limit(buffer.capacity());
-                                key.interestOpsOr(SelectionKey.OP_WRITE);
-                            } else {
+                            if ((key.interestOps() & SelectionKey.OP_WRITE) == 0) {
                                 channel.close();
                                 assert !key.isValid();
+                                return;
                             }
                         }
+                        buffer.position(buffer.limit()).limit(limit);
                     }
                 }
             }
         }
     }
 
+    @_ExcludeFromCoverage_PrivateConstructor_Obviously
     private Rfc862Tcp3Client() {
         throw new AssertionError("instantiation is not allowed");
     }

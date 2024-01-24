@@ -21,6 +21,7 @@ package com.github.jinahya.hello.misc.c02rfc862;
  */
 
 import com.github.jinahya.hello.util.JavaSecurityMessageDigestUtils;
+import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.ByteBuffer;
@@ -37,8 +38,8 @@ class Rfc862Tcp3Server extends _Rfc862Tcp {
              var server = ServerSocketChannel.open()) {
             // -------------------------------------------------------------------------------- bind
             logBound(server.bind(ADDR));
-            // ---------------------------------------------------------------- configure / register
-            server.configureBlocking(false);
+            // ------------------------------------------------------------------ configure/register
+            server.configureBlocking(false); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             final var serverKey = server.register(selector, SelectionKey.OP_ACCEPT);
             // ----------------------------------------------------------------------------- prepare
             final var digest = newDigest();
@@ -57,11 +58,11 @@ class Rfc862Tcp3Server extends _Rfc862Tcp {
                         final var channel = ((ServerSocketChannel) key.channel());
                         assert channel == server;
                         final var client = logAccepted(channel.accept());
-                        key.interestOpsAnd(~SelectionKey.OP_ACCEPT); // redundant
+                        key.interestOpsAnd(~SelectionKey.OP_ACCEPT); // redundant, why?
                         key.cancel();
                         assert !key.isValid();
-                        // ---------------------------------------------------- configure / register
-                        client.configureBlocking(false);
+                        // ------------------------------------------------------ configure/register
+                        client.configureBlocking(false); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                         final var clientKey = client.register(
                                 selector,             // <sel>
                                 SelectionKey.OP_READ, // <ops>
@@ -73,34 +74,31 @@ class Rfc862Tcp3Server extends _Rfc862Tcp {
                     if (key.isReadable()) {
                         final var channel = (SocketChannel) key.channel();
                         final var buffer = (ByteBuffer) key.attachment();
+                        if (!buffer.hasRemaining()) {
+                            buffer.clear();
+                        }
                         final var r = channel.read(buffer);
                         if (r == -1) {
                             key.interestOpsAnd(~SelectionKey.OP_READ);
-                            if (buffer.position() == 0) { // no bytes to write either
-                                channel.close();
-                                assert !key.isValid();
-                                continue;
-                            }
                         }
-                        assert r >= 0;
+                        assert r >= 0; // why?
                         bytes += r;
-                        if (buffer.position() > 0) {
-                            key.interestOpsOr(SelectionKey.OP_WRITE);
-                        }
+                        key.interestOpsOr(SelectionKey.OP_WRITE);
+                        assert !key.isWritable();
                     }
                     // ----------------------------------------------------------------------- write
                     if (key.isWritable()) {
                         final var channel = (SocketChannel) key.channel();
                         final var buffer = (ByteBuffer) key.attachment();
-                        assert buffer.position() > 0;
                         buffer.flip();
+                        assert buffer.hasRemaining();
                         final int w = channel.write(buffer);
-                        assert w >= 0;
+                        assert w >= 0; // why?
                         JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, w);
                         buffer.compact();
                         if (buffer.position() == 0) {
                             key.interestOpsAnd(~SelectionKey.OP_WRITE);
-                            if ((key.interestOps() & SelectionKey.OP_READ) == 0) {
+                            if ((key.interestOps() & SelectionKey.OP_READ) == 0) { // eof
                                 channel.close();
                                 assert !key.isValid();
                             }
@@ -108,11 +106,13 @@ class Rfc862Tcp3Server extends _Rfc862Tcp {
                     }
                 }
             }
+            // --------------------------------------------------------------------------------- log
             logServerBytes(bytes);
             logDigest(digest);
         }
     }
 
+    @_ExcludeFromCoverage_PrivateConstructor_Obviously
     private Rfc862Tcp3Server() {
         throw new AssertionError("instantiation is not allowed");
     }

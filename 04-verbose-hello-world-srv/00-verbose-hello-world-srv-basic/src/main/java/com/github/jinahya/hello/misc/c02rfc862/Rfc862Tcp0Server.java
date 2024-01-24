@@ -37,11 +37,11 @@ class Rfc862Tcp0Server extends _Rfc862Tcp {
             server.bind(ADDR, 1);
             logBound(server);
             // ------------------------------------------------------------------------------ accept
-            try (var client = server.accept()) {
-                logAccepted(client);
+            try (var client = logAccepted(server.accept())) {
                 // ------------------------------------------------------------------------- prepare
-                final var digest = newDigest();
                 var bytes = 0L;
+                final var digest = newDigest();
+                // -------------------------------------------------------------------- read / write
                 while (true) {
                     // ------------------------------------------------------------------------ read
                     final int b = client.getInputStream().read();
@@ -51,9 +51,10 @@ class Rfc862Tcp0Server extends _Rfc862Tcp {
                     bytes++;
                     // ----------------------------------------------------------------------- write
                     client.getOutputStream().write(b);
-                    digest.update((byte) b);
                     client.getOutputStream().flush();
+                    digest.update((byte) b);
                 }
+                // ----------------------------------------------------------------------------- log
                 logServerBytes(bytes);
                 logDigest(digest);
             }

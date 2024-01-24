@@ -23,64 +23,57 @@ package com.github.jinahya.hello.misc.c02rfc862;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils;
 import com.github.jinahya.hello.util.JavaSecurityMessageDigestUtils;
+import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 import com.github.jinahya.hello.util._TcpUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.channels.AsynchronousServerSocketChannel;
 
 @Slf4j
-class Rfc862Tcp4Server {
+class Rfc862Tcp4Server extends _Rfc862Tcp {
 
     public static void main(final String... args) throws Exception {
-        // ------------------------------------------------------------------------------------ open
         try (var server = AsynchronousServerSocketChannel.open()) {
             // -------------------------------------------------------------------------------- bind
-            server.bind(_Rfc862Constants.ADDR);
-            _TcpUtils.logBound(server);
+            logBound(server.bind(ADDR));
             // ------------------------------------------------------------------------------ accept
-            try (var client = server.accept().get(_Rfc86_Constants.ACCEPT_TIMEOUT,
-                                                  _Rfc86_Constants.ACCEPT_TIMEOUT_UNIT)) {
-                _TcpUtils.logAccepted(client);
+            try (var client = logAccepted(server.accept().get())) {
                 // ------------------------------------------------------------------------- prepare
-                final var digest = _Rfc862Utils.newDigest();
+                final var digest = newDigest();
                 var bytes = 0L;
-                final var buffer = _Rfc86_Utils.newBuffer();
+                final var buffer = newBuffer();
                 // ---------------------------------------------------------------------- read/write
                 while (true) {
                     // ------------------------------------------------------------------------ read
                     if (!buffer.hasRemaining()) {
                         buffer.clear();
                     }
-                    final int r = client.read(buffer).get(_Rfc86_Constants.READ_TIMEOUT,
-                                                          _Rfc86_Constants.READ_TIMEOUT_UNIT);
+                    final int r = client.read(buffer).get();
                     if (r == -1) {
                         break;
                     }
+                    assert r > 0; // why?
                     bytes += r;
                     // ----------------------------------------------------------------------- write
                     buffer.flip();
-                    final int w = client.write(buffer).get(_Rfc86_Constants.WRITE_TIMEOUT,
-                                                           _Rfc86_Constants.WRITE_TIMEOUT_UNIT);
+                    final int w = client.write(buffer).get();
+                    assert w > 0; // why?
                     JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, w);
                     buffer.compact();
                 }
                 // ----------------------------------------------------------------- write-remaining
                 for (buffer.flip(); buffer.hasRemaining(); ) {
-                    final int w = client.write(buffer).get(_Rfc86_Constants.WRITE_TIMEOUT,
-                                                           _Rfc86_Constants.WRITE_TIMEOUT_UNIT);
+                    final int w = client.write(buffer).get();
                     JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, w);
                 }
-                client.shutdownOutput();
                 // ----------------------------------------------------------------------------- log
-                _Rfc862Utils.logServerBytes(bytes);
-                _Rfc862Utils.logDigest(digest);
-                log.debug("[server] closing client...");
+                logServerBytes(bytes);
+                logDigest(digest);
             }
-            log.debug("[server] closing server...");
         }
-        log.debug("[server] end-of-main");
     }
 
+    @_ExcludeFromCoverage_PrivateConstructor_Obviously
     private Rfc862Tcp4Server() {
         throw new AssertionError("instantiation is not allowed");
     }

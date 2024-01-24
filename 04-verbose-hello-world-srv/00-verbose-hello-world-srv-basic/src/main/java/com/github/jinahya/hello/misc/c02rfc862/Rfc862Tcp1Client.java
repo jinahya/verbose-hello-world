@@ -20,8 +20,10 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
+import com.github.jinahya.hello.util.JavaLangArrayUtils;
 import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.io.EOFException;
 import java.net.InetSocketAddress;
@@ -48,8 +50,8 @@ class Rfc862Tcp1Client extends _Rfc862Tcp {
             // -------------------------------------------------------------------------- write/read
             for (var bytes = logClientBytes(newRandomBytes()); bytes > 0; ) {
                 // --------------------------------------------------------------------------- write
-                ThreadLocalRandom.current().nextBytes(array);
                 final int l = Math.min(array.length, bytes);
+                JavaLangArrayUtils.randomize(array, 0, l);
                 client.getOutputStream().write(array, 0, l);
                 digest.update(array, 0, l);
                 bytes -= l;

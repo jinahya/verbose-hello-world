@@ -20,10 +20,9 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
-import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
-import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils;
+import com.github.jinahya.hello.util.JavaNioByteBufferUtils;
 import com.github.jinahya.hello.util.JavaSecurityMessageDigestUtils;
-import com.github.jinahya.hello.util._TcpUtils;
+import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.EOFException;
@@ -36,137 +35,98 @@ import java.nio.channels.CompletionHandler;
 import java.security.MessageDigest;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
-class Rfc862Tcp5Client {
+class Rfc862Tcp5Client extends _Rfc862Tcp {
 
-    private static void read(final CountDownLatch latch, final AsynchronousSocketChannel client,
-                             final MessageDigest digest, final int[] bytes,
-                             final ByteBuffer buffer) {
-        assert bytes[0] >= 0;
-        final var limit = buffer.limit();
-        buffer.flip();
-        assert buffer.hasRemaining(); // why?
-        client.<Void>read(
-                buffer,
-                _Rfc86_Constants.READ_TIMEOUT,
-                _Rfc86_Constants.READ_TIMEOUT_UNIT,
-                null,
-                new CompletionHandler<>() {
-                    @Override
-                    public void completed(final Integer result, final Void attachment) {
-                        buffer.position(buffer.limit()).limit(limit);
-                        assert result >= -1;
-                        if (result == -1) {
-                            if (bytes[0] > 0) {
-                                throw new UncheckedIOException(new EOFException("unexpected eof"));
-                            }
-                            latch.countDown();
-                            return;
-                        }
-                        assert result > 0; // why?
-                        if (bytes[0] > 0) {
-                            write(latch, client, digest, bytes, buffer);
-                            return;
-                        }
-                        assert bytes[0] == 0;
-                        read(latch, client, digest, bytes, buffer);
-                    }
-
-                    @Override
-                    public void failed(final Throwable exc, final Void attachment) {
-                        log.error("failed to read", exc);
-                        latch.countDown();
+    private static void write(final AsynchronousSocketChannel client, final ByteBuffer buffer,
+                              final AtomicInteger bytes, final MessageDigest digest,
+                              final CountDownLatch latch) {
+        assert !buffer.hasRemaining();
+        JavaNioByteBufferUtils.randomize(
+                buffer.clear().limit(Math.min(buffer.limit(), bytes.get()))
+        );
+        assert buffer.hasRemaining() || bytes.get() == 0;
+        client.<Void>write(buffer, null, new CompletionHandler<>() { // @formatter:off
+            @Override public void completed(final Integer result, final Void attachment) {
+                JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, result);
+                // shutdown output when no bytes remained to write
+                if (bytes.addAndGet(-result) == 0) {
+                    logDigest(digest);
+                    try {
+                        client.shutdownOutput();
+                    } catch (final IOException ioe) {
+                        throw new UncheckedIOException("failed to shutdown output", ioe);
                     }
                 }
-        );
+                // read written bytes
+                if (buffer.position() > 0) {
+                    read(client, buffer.flip(), bytes, digest, latch);
+                }
+            }
+            @Override public void failed(final Throwable exc, final Void attachment) {
+                log.error("failed to write", exc);
+                latch.countDown();
+            } // @formatter:on
+        });
     }
 
-    private static void write(final CountDownLatch latch, final AsynchronousSocketChannel client,
-                              final MessageDigest digest, final int[] bytes,
-                              final ByteBuffer buffer) {
-        if (!buffer.hasRemaining()) {
-            ThreadLocalRandom.current().nextBytes(buffer.array());
-            buffer.clear().limit(Math.min(buffer.limit(), bytes[0]));
-        }
-        final var hasRemaining = buffer.hasRemaining();
-        assert hasRemaining || bytes[0] == 0;
-        client.<Void>write(
-                buffer,
-                _Rfc86_Constants.WRITE_TIMEOUT,
-                _Rfc86_Constants.WRITE_TIMEOUT_UNIT,
-                null,
-                new CompletionHandler<>() {
-                    @Override
-                    public void completed(final Integer result, final Void attachment) {
-                        assert result >= 0;
-                        assert result > 0 || !hasRemaining;
-                        JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, result);
-                        bytes[0] -= result;
-                        if (bytes[0] == 0) {
-                            _Rfc862Utils.logDigest(digest);
-                            try {
-                                client.shutdownOutput();
-                            } catch (final IOException ioe) {
-                                throw new UncheckedIOException("failed to shutdown output", ioe);
-                            }
-                        }
-                        read(latch, client, digest, bytes, buffer);
-                    }
-
-                    @Override
-                    public void failed(final Throwable exc, final Void attachment) {
-                        log.error("failed to write", exc);
-                        latch.countDown();
-                    }
+    private static void read(final AsynchronousSocketChannel client, final ByteBuffer buffer,
+                             final AtomicInteger bytes, final MessageDigest digest,
+                             final CountDownLatch latch) {
+        assert buffer.hasRemaining();
+        client.<Void>read(buffer, null, new CompletionHandler<>() { // @formatter:off
+            @Override public void completed(final Integer result, final Void attachment) {
+                if (result == -1) {
+                    throw new UncheckedIOException(new EOFException("unexpected eof"));
                 }
-        );
+                // keep reading until buffer has remaining
+                if (buffer.hasRemaining()) {
+                    client.read(buffer, null, this);
+                    return;
+                }
+                // write remaining byts to write
+                if (bytes.get() > 0) {
+                    write(client, buffer, bytes, digest, latch);
+                    return;
+                }
+                // no remaining bytes to read or write
+                latch.countDown();
+            }
+            @Override public void failed(final Throwable exc, final Void attachment) {
+                log.error("failed to read", exc);
+                latch.countDown();
+            } // @formatter:on
+        });
     }
 
     public static void main(final String... args) throws Exception {
-        final var latch = new CountDownLatch(1);
-        // ------------------------------------------------------------------------------------ open
         try (var client = AsynchronousSocketChannel.open()) {
             // ---------------------------------------------------------------------- bind(optional)
             if (ThreadLocalRandom.current().nextBoolean()) {
-                client.bind(new InetSocketAddress(_Rfc862Constants.ADDR.getAddress(), 0));
-                _TcpUtils.logBound(client);
+                logBound(client.bind(new InetSocketAddress(HOST, 0)));
             }
             // ----------------------------------------------------------------------------- prepare
-            final var digest = _Rfc862Utils.newDigest();
-            var bytes = new int[] {_Rfc86_Utils.newRandomBytes()};
-            _Rfc862Utils.logClientBytes(bytes[0]);
-            final var buffer = _Rfc86_Utils.newBuffer();
-            assert buffer.hasArray();
-            buffer.position(buffer.limit()); // for what?
-            assert !buffer.hasRemaining();
-            // ---------------------------------------------------------------------- connect(async)
-            client.<Void>connect(
-                    _Rfc862Constants.ADDR,
-                    null,
-                    new CompletionHandler<>() {
-                        @Override
-                        public void completed(final Void result, final Void attachment) {
-                            _TcpUtils.logConnected(client);
-                            write(latch, client, digest, bytes, buffer);
-                        }
-
-                        @Override
-                        public void failed(final Throwable exc, final Void attachment) {
-                            log.error("failed to connect", exc);
-                            latch.countDown();
-                        }
-                    }
-            );
-            // ------------------------------------------------------------------------- await-latch
-            final var broken = latch.await(_Rfc86_Constants.CLIENT_PROGRAM_TIMEOUT,
-                                           _Rfc86_Constants.CLIENT_PROGRAM_TIMEOUT_UNIT);
-            if (!broken) {
-                log.error("latch hasn't been broken");
-            }
+            final var digest = newDigest();
+            var bytes = new AtomicInteger(logClientBytes(newRandomBytes()));
+            // ----------------------------------------------------------------------------- connect
+            final var latch = new CountDownLatch(1);
+            client.connect(ADDR, newBuffer().limit(0), new CompletionHandler<>() { // @formatter:off
+                @Override public void completed(final Void result, final ByteBuffer attachment) {
+                    logConnected(client);
+                    write(client, attachment, bytes, digest, latch);
+                }
+                @Override public void failed(final Throwable exc, final ByteBuffer attachment) {
+                    log.error("failed to connect", exc);
+                    latch.countDown();
+                } // @formatter:on
+            });
+            latch.await();
         }
     }
 
+    @_ExcludeFromCoverage_PrivateConstructor_Obviously
     private Rfc862Tcp5Client() {
         throw new AssertionError("instantiation is not allowed");
     }

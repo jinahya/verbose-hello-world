@@ -20,6 +20,7 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
+import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.EOFException;
@@ -43,9 +44,8 @@ class Rfc862Tcp0Client extends _Rfc862Tcp {
             logConnected(client);
             // ----------------------------------------------------------------------------- prepare
             final var digest = newDigest();
-            var bytes = logClientBytes(newRandomBytes());
             // ------------------------------------------------------------------------ write / read
-            for (; bytes > 0; bytes--) {
+            for (var bytes = logClientBytes(newRandomBytes()); bytes > 0; bytes--) {
                 // --------------------------------------------------------------------------- write
                 final int b = ThreadLocalRandom.current().nextInt();
                 client.getOutputStream().write(b);
@@ -61,6 +61,7 @@ class Rfc862Tcp0Client extends _Rfc862Tcp {
         }
     }
 
+    @_ExcludeFromCoverage_PrivateConstructor_Obviously
     private Rfc862Tcp0Client() {
         throw new AssertionError("instantiation is not allowed");
     }
