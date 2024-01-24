@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.github.jinahya</groupId>
+    <artifactId>verbose-hello-world-srv</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>verbose-hello-world-srv-basic</artifactId>
+  <packaging>jar</packaging>
+
+  <name>${project.artifactId}</name>
+  <description>Verbose Hello World Srv Common</description>
+
+  <properties>
+    <generateExecutables>false</generateExecutables>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-text</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>

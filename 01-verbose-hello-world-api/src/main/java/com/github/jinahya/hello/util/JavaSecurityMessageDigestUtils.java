@@ -25,7 +25,7 @@ import java.security.MessageDigest;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
-public final class JavaSecurityUtils {
+public final class JavaSecurityMessageDigestUtils {
 
     // ------------------------------------------------------------------------------- MessageDigest
 
@@ -36,7 +36,8 @@ public final class JavaSecurityUtils {
      * @param digest the message digest to update.
      * @param buffer the byte buffer whose bytes are updated to the {@code digest}.
      * @param bytes  the number of bytes preceding the {@code buffer}'s current {@code position} to
-     *               be updated to the {@code digest}.
+     *               be updated to the {@code digest}; must be not negative nor greater than
+     *               {@code buffer.position}.
      */
     public static void updateDigest(final MessageDigest digest, final ByteBuffer buffer,
                                     final int bytes) {
@@ -49,19 +50,26 @@ public final class JavaSecurityUtils {
             throw new IllegalArgumentException(
                     "bytes(" + bytes + ") > buffer.position(" + buffer.position() + ")");
         }
+        if (buffer.hasArray()) {
+            digest.update(
+                    buffer.array(),
+                    buffer.arrayOffset() + buffer.position() - bytes,
+                    bytes
+            );
+            return;
+        }
         if (ThreadLocalRandom.current().nextBoolean()) {
             digest.update(buffer.slice(buffer.position() - bytes, bytes));
             return;
         }
-        final var position = buffer.position();
         final var limit = buffer.limit();
-        buffer.position(position - bytes).limit(position);
+        buffer.limit(buffer.position()).position(buffer.position() - bytes);
         digest.update(buffer);
-        buffer.position(position).limit(limit);
+        buffer.position(buffer.limit()).limit(limit);
     }
 
     // ---------------------------------------------------------------------------------------------
-    private JavaSecurityUtils() {
+    private JavaSecurityMessageDigestUtils() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

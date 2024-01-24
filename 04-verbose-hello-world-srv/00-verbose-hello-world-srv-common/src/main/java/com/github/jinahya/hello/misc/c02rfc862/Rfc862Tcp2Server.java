@@ -22,7 +22,7 @@ package com.github.jinahya.hello.misc.c02rfc862;
 
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils;
-import com.github.jinahya.hello.util.JavaSecurityUtils;
+import com.github.jinahya.hello.util.JavaSecurityMessageDigestUtils;
 import com.github.jinahya.hello.util._TcpUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -94,7 +94,7 @@ class Rfc862Tcp2Server {
                     }
                     assert w > 0; // why?
                     assert !buffer.hasRemaining(); // why?
-                    JavaSecurityUtils.updateDigest(digest, buffer, w);
+                    JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, w);
                     buffer.compact();
                     assert buffer.position() == 0; // why?
                     assert buffer.limit() == buffer.capacity();

@@ -70,8 +70,7 @@ class Rfc862Tcp1Client {
             client.shutdownOutput();
             // --------------------------------------------------------------------- read-to-the-end
             log.debug("[client] reading to the end...");
-            for (int r; (r = client.getInputStream().read(array)) != -1; ) {
-                log.debug("r: {}", r);
+            while (client.getInputStream().read(array) != -1) {
                 // empty
             }
             // --------------------------------------------------------------------------------- log

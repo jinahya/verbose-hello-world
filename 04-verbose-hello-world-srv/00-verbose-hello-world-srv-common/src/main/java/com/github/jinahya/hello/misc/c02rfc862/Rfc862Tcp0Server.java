@@ -20,7 +20,6 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
-import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
 import com.github.jinahya.hello.util._TcpUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,20 +29,16 @@ import java.net.ServerSocket;
 @SuppressWarnings({
         "java:S127" // assign loop counter within body
 })
-class Rfc862Tcp0Server {
+class Rfc862Tcp0Server extends _Rfc862Tcp {
 
     public static void main(final String... args) throws Exception {
         try (var server = new ServerSocket()) {
             // -------------------------------------------------------------------------------- bind
-            server.bind(_Rfc862Constants.ADDR, 1);
+            server.bind(ADDR, 1);
             _TcpUtils.logBound(server);
-            // --------------------------------------------------------------------------- configure
-//            server.setSoTimeout((int) _Rfc86_Constants.ACCEPT_TIMEOUT_MILLIS);
             // ------------------------------------------------------------------------------ accept
             try (var client = server.accept()) {
                 _TcpUtils.logAccepted(client);
-                // ----------------------------------------------------------------------- configure
-//                client.setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_MILLIS);
                 // ------------------------------------------------------------------------- prepare
                 final var digest = _Rfc862Utils.newDigest();
                 var bytes = 0L;
@@ -61,11 +56,8 @@ class Rfc862Tcp0Server {
                 }
                 _Rfc862Utils.logServerBytes(bytes);
                 _Rfc862Utils.logDigest(digest);
-                log.debug("[server] closing the client...");
             }
-            log.debug("[server] closing the server...");
         }
-        log.debug("[server] end-of-main");
     }
 
     private Rfc862Tcp0Server() {

@@ -160,7 +160,7 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
                 ByteBuffer.allocate(HelloWorld.BYTES << 1),
                 b -> p -> r -> b.slice(p, b.limit() - p - r)
         );
-        JavaNioByteBufferUtils.printBuffer(buffer);
+        JavaNioByteBufferUtils.print(buffer);
         assert buffer.hasArray();
         assert buffer.remaining() >= HelloWorld.BYTES;
         final var position = buffer.position();
@@ -192,7 +192,7 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
                 .given(service)
                 .set(ArgumentMatchers.any());
         final ByteBuffer buffer = adjust(ByteBuffer.allocateDirect(HelloWorld.BYTES << 1));
-        JavaNioByteBufferUtils.printBuffer(buffer);
+        JavaNioByteBufferUtils.print(buffer);
         Assumptions.assumeFalse(
                 buffer.hasArray(),
                 "failed to assume that a direct buffer does not has a backing array"

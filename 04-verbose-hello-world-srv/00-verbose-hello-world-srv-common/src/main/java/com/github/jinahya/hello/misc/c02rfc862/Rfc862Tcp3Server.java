@@ -22,7 +22,7 @@ package com.github.jinahya.hello.misc.c02rfc862;
 
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils;
-import com.github.jinahya.hello.util.JavaSecurityUtils;
+import com.github.jinahya.hello.util.JavaSecurityMessageDigestUtils;
 import com.github.jinahya.hello.util._TcpUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -97,7 +97,7 @@ class Rfc862Tcp3Server {
                         buffer.flip();
                         final int w = channel.write(buffer);
                         assert w >= 0;
-                        JavaSecurityUtils.updateDigest(digest, buffer, w);
+                        JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, w);
                         buffer.compact();
                         if (buffer.position() == 0) {
                             selectedKey.interestOpsAnd(~SelectionKey.OP_WRITE);

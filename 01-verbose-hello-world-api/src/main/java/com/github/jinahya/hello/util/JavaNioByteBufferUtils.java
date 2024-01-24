@@ -25,7 +25,43 @@ import java.util.Objects;
 
 public final class JavaNioByteBufferUtils {
 
-    public static <T extends ByteBuffer> T printBuffer(final T buffer) {
+    /**
+     * Randomizes specified buffer's content between its {@link ByteBuffer#position() position} and
+     * {@link ByteBuffer#limit() limit} without modifying the {@link ByteBuffer#position() position}
+     * and the {@link ByteBuffer#limit() limit}.
+     *
+     * @param buffer the byte buffer whose content randomized.
+     * @param <T>    buffer type parameter
+     * @return given {@code buffer}.
+     */
+    @SuppressWarnings({"unchecked"})
+    public static <T extends ByteBuffer> T randomize(final T buffer) {
+        Objects.requireNonNull(buffer, "buffer is null");
+        if (buffer.remaining() == 0) {
+            return buffer;
+        }
+        if (buffer.hasArray()) {
+            JavaLangArrayUtils.randomize(
+                    buffer.array(),
+                    buffer.arrayOffset() + buffer.position(),
+                    buffer.remaining()
+            );
+            return buffer;
+        }
+        final var remaining = buffer.remaining();
+        return (T) buffer
+                .put(JavaLangArrayUtils.randomize(new byte[remaining]))
+                .position(buffer.position() - remaining);
+    }
+
+    /**
+     * Prints out specified byte buffer's status.
+     *
+     * @param buffer the byte buffer.
+     * @param <T>    buffer type parameter
+     * @return given {@code buffer}.
+     */
+    public static <T extends ByteBuffer> T print(final T buffer) {
         Objects.requireNonNull(buffer, "buffer is null");
         var padding = 11;
         System.out.println(
@@ -92,6 +128,7 @@ public final class JavaNioByteBufferUtils {
         return buffer;
     }
 
+    // ---------------------------------------------------------------------------------------------
     @_ExcludeFromCoverage_PrivateConstructor_Obviously
     private JavaNioByteBufferUtils() {
         throw new AssertionError("instantiation is not allowed");

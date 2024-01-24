@@ -21,30 +21,43 @@ package com.github.jinahya.hello.util;
  */
 
 import java.util.Objects;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public final class JavaLangArrayUtils {
 
-    public static byte[] randomize(final byte[] array, final int offset, final int length,
-                                   final Random random) {
+    public static byte[] randomize(final byte[] array, final int offset, final int length) {
         Objects.requireNonNull(array, "array is null");
         if (offset < 0) {
-            throw new IllegalArgumentException("negative offset: " + offset);
+            throw new IllegalArgumentException("offset(" + offset + ") < 0");
+        }
+        if (length < 0) {
+            throw new IllegalArgumentException("length(" + length + ") < 0");
         }
         if (length > array.length - offset) {
             throw new IllegalArgumentException(
-                    "length(" + length + ")" +
-                    " > " +
-                    "array.length(" + array.length + ") - offset(" + offset + ")");
+                    "length(" + length + ") > " +
+                    "array.length(" + array.length + ") + offset(" + offset + ")"
+            );
         }
-        Objects.requireNonNull(random, "random is null");
-        final var limit = offset + length;
-        for (int i = offset; i < limit; i++) {
-            array[i] = (byte) random.nextInt();
-        }
+        final var src = new byte[length];
+        ThreadLocalRandom.current().nextBytes(src);
+        System.arraycopy(src, 0, array, offset, length);
         return array;
     }
 
+    public static byte[] randomize(final byte[] array, final int offset) {
+        return randomize(
+                Objects.requireNonNull(array, "array is null"),
+                offset,
+                array.length - offset
+        );
+    }
+
+    public static byte[] randomize(final byte[] array) {
+        return randomize(array, 0);
+    }
+
+    @_ExcludeFromCoverage_PrivateConstructor_Obviously
     private JavaLangArrayUtils() {
         throw new AssertionError("instantiation is not allowed");
     }

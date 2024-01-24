@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.misc.c01rfc863;
+package com.github.jinahya.hello.misc.c02rfc862;
 
 /*-
  * #%L
@@ -23,30 +23,28 @@ package com.github.jinahya.hello.misc.c01rfc863;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
 
 import java.net.InetSocketAddress;
-import java.util.HexFormat;
+import java.util.Base64;
 import java.util.function.Function;
 
-final class _Rfc863Constants extends _Rfc86_Constants {
+final class _Rfc862Constants
+        extends _Rfc86_Constants {
 
-    // ---------------------------------------------------------------------------------------- addr
+    private static final int RFC862_PORT = 7;
 
-    private static final int RFC863_PORT = 9;
-
-    private static final int PORT = RFC863_PORT + 50000;
+    private static final int PORT = RFC862_PORT + 50000;
 
     static final InetSocketAddress ADDR = new InetSocketAddress(HOST, PORT);
 
     // ------------------------------------------------------------------------------------- timeout
 
     // -------------------------------------------------------------------------------------- digest
-
-    static final String ALGORITHM = "SHA-1";
+    static final String ALGORITHM = "SHA-256";
 
     static final Function<? super byte[], ? extends CharSequence> PRINTER =
-            b -> HexFormat.of().formatHex(b);
+            b -> Base64.getEncoder().encodeToString(b);
 
     // ---------------------------------------------------------------------------------------------
-    private _Rfc863Constants() {
+    private _Rfc862Constants() {
         super();
         throw new AssertionError("instantiation is not allowed");
     }

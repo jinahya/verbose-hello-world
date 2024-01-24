@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.misc.c01rfc863;
+package com.github.jinahya.hello.misc.c02rfc862;
 
 /*-
  * #%L
@@ -29,77 +29,84 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
-@SuppressWarnings({
-        "java:S101" // _Rfc863...
-})
-abstract class _Rfc863Attachment
+abstract class _Rfc862Attachment
         extends _Rfc86_Attachment {
 
     abstract static class Client
-            extends _Rfc863Attachment {
+            extends _Rfc862Attachment {
 
         Client() {
-            super(_Rfc86_Utils.newRandomBytes());
-            _Rfc863Utils.logClientBytes(getBytes());
+            super(_Rfc862Utils.logClientBytes(_Rfc86_Utils.newRandomBytes()));
             buffer.position(buffer.limit());
         }
 
+        @Override
+        final ByteBuffer getBufferForReading() {
+            return buffer.flip();
+        }
+
+        @Override
         final ByteBuffer getBufferForWriting() {
             if (!buffer.hasRemaining()) {
                 ThreadLocalRandom.current().nextBytes(buffer.array());
                 buffer.clear().limit(Math.min(buffer.limit(), getBytes()));
-            }
-            assert buffer.hasRemaining() || getBytes() == 0;
-            return buffer;
-        }
-    }
-
-    abstract static class Server
-            extends _Rfc863Attachment {
-
-        Server() {
-            super(0);
-        }
-
-        /**
-         * {@inheritDoc}
-         *
-         * @throws IOException {@inheritDoc}
-         */
-        @Override
-        public void close()
-                throws IOException {
-            _Rfc863Utils.logServerBytes(getBytes());
-            super.close();
-        }
-
-        /**
-         * Returns the {@code buffer} configured for reading.
-         *
-         * @return the {@code buffer} whose {@link ByteBuffer#remaining() remaining} is not zero.
-         */
-        final ByteBuffer getBufferForReading() {
-            if (!buffer.hasRemaining()) {
-                buffer.clear();
             }
             assert buffer.hasRemaining();
             return buffer;
         }
     }
 
-    private _Rfc863Attachment(final int bytes) {
-        super(bytes, _Rfc863Constants.ALGORITHM, _Rfc863Constants.PRINTER);
+    abstract static class Server
+            extends _Rfc862Attachment {
+
+        Server() {
+            super(0);
+        }
+
+        @Override
+        public void close()
+                throws IOException {
+            _Rfc862Utils.logServerBytes(getBytes());
+            super.close();
+        }
+
+        @Override
+        final ByteBuffer getBufferForReading() {
+            return buffer;
+        }
+
+        @Override
+        final ByteBuffer getBufferForWriting() {
+            return buffer.flip();
+        }
     }
 
+    // ---------------------------------------------------------------------------------------------
+
     /**
-     * {@inheritDoc}
-     *
-     * @throws IOException {@inheritDoc}.
+     * Creates a new instance.
      */
+    private _Rfc862Attachment(final int bytes) {
+        super(bytes, _Rfc862Constants.ALGORITHM, _Rfc862Constants.PRINTER);
+    }
+
+    // --------------------------------------------------------------------------- java.io.Closeable
+
     @Override
     public void close()
             throws IOException {
         logDigest();
         super.close();
     }
+
+    // --------------------------------------------------------------------------------------- bytes
+
+    // -------------------------------------------------------------------------------------- buffer
+
+    abstract ByteBuffer getBufferForReading();
+
+    //
+    abstract ByteBuffer getBufferForWriting();
+
+    // -------------------------------------------------------------------------------------- digest
 }

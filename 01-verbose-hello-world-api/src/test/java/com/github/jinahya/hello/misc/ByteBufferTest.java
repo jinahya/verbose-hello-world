@@ -116,9 +116,9 @@ class ByteBufferTest {
     @Test
     void printDocumented() {
         var buffer = ByteBuffer.allocateDirect(31).position(4).limit(25);
-        JavaNioByteBufferUtils.printBuffer(buffer);
+        JavaNioByteBufferUtils.print(buffer);
         buffer.position(buffer.position() + HelloWorld.BYTES);
         assert buffer.position() == 16;
-        JavaNioByteBufferUtils.printBuffer(buffer);
+        JavaNioByteBufferUtils.print(buffer);
     }
 }

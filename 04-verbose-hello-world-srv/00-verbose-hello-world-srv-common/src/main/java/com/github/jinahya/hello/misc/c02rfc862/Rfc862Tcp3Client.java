@@ -22,7 +22,7 @@ package com.github.jinahya.hello.misc.c02rfc862;
 
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils;
-import com.github.jinahya.hello.util.JavaSecurityUtils;
+import com.github.jinahya.hello.util.JavaSecurityMessageDigestUtils;
 import com.github.jinahya.hello.util._TcpUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -98,7 +98,7 @@ class Rfc862Tcp3Client {
                         }
                         assert buffer.hasRemaining() || bytes == 0;
                         final var w = channel.write(buffer);
-                        JavaSecurityUtils.updateDigest(digest, buffer, w);
+                        JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, w);
                         bytes -= w;
                         if (bytes == 0) {
                             _Rfc862Utils.logDigest(digest);
