@@ -20,65 +20,60 @@ package com.github.jinahya.hello.misc.c03calc;
  * #L%
  */
 
-import com.github.jinahya.hello.util.HelloWorldServerUtils;
 import com.github.jinahya.hello.util.JavaLangUtils;
-import com.github.jinahya.hello.util._TcpUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.StandardSocketOptions;
-import java.util.Objects;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
-class CalcTcp1Server {
+class CalcTcp1Server extends _CalcTcp {
 
-    private static void sub(final ServerSocket server) {
-        Objects.requireNonNull(server, "server is null");
-        final var executor = _CalcUtils.newExecutorForServer();
-        while (!server.isClosed()) {
-            final Socket client;
-            try {
-                client = server.accept();
-            } catch (final IOException ioe) {
-                if (!server.isClosed()) {
-                    log.error("failed to accept", ioe);
-                }
-                continue;
-            }
-            executor.submit(() -> {
-                try (client) {
-                    client.setSoTimeout((int) _CalcConstants.READ_TIMEOUT_MILLIS);
-                    _CalcMessage.newInstanceForServer()
-                            .receiveRequest(client.getInputStream())
-                            .apply()
-                            .sendResult(client.getOutputStream());
-                }
-                return null;
-            });
-        }
-        executor.shutdown();
-        try {
-            final var terminated = executor.awaitTermination(
-                    _CalcConstants.SERVER_PROGRAM_TIMEOUT,
-                    _CalcConstants.SERVER_PROGRAM_TIMEOUT_UNIT
-            );
-            assert terminated : "executor hasn't been terminated";
-        } catch (final InterruptedException ie) {
-            log.error("interrupted while awaiting the executor to be terminated", ie);
-            Thread.currentThread().interrupt();
-        }
-    }
-
-    public static void main(final String... args) throws IOException {
-        try (var server = new ServerSocket()) {
+    public static void main(final String... args) throws IOException, InterruptedException {
+        try (var executor = Executors.newCachedThreadPool(
+                Thread.ofVirtual().name("server-", 0L).factory());
+             var server = new ServerSocket()) {
             server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
             server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
-            server.bind(_CalcConstants.ADDR, _CalcConstants.SERVER_BACKLOG);
-            _TcpUtils.logBound(server);
-            JavaLangUtils.readLinesAndCloseWhenTests(HelloWorldServerUtils::isQuit, server);
-            sub(server);
+            // -------------------------------------------------------------------------------- bind
+            server.bind(ADDR);
+            logBound(server);
+            // -------------------------------------------------------------------------------- run
+            JavaLangUtils.readLinesAndCloseWhenTests("quit!"::equalsIgnoreCase, server);
+            while (!server.isClosed()) {
+                final Socket client;
+                try {
+                    client = server.accept();
+                } catch (final IOException ioe) {
+                    if (server.isClosed()) {
+                        continue;
+                    }
+                    throw ioe;
+                }
+                executor.submit(() -> {
+                    try {
+                        client.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
+                        client.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
+//                    client.setOption(StandardSocketOptions.SO_LINGER, Boolean.FALSE);
+                        client.setSoTimeout((int) TimeUnit.SECONDS.toMillis(1L));
+                        __CalcMessage2.readInstance(client.getInputStream())
+                                .calculate()
+                                .write(client.getOutputStream());
+                        client.getOutputStream().flush();
+                        return null;
+                    } finally {
+                        client.close();
+                    }
+                });
+            }
+            executor.shutdown();
+            if (!executor.awaitTermination(1L, TimeUnit.SECONDS)) {
+                log.error("executor not terminated!");
+            }
         }
     }
 

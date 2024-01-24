@@ -26,7 +26,14 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 class _CalcOperatorTest {
+
+    static _CalcOperator newRandomValue() {
+        final var values = _CalcOperator.values();
+        return values[ThreadLocalRandom.current().nextInt(values.length)];
+    }
 
     @DisplayName("name()")
     @Nested

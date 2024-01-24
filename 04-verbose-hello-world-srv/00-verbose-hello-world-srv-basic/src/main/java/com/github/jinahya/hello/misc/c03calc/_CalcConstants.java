@@ -29,8 +29,7 @@ import java.util.concurrent.TimeUnit;
 @SuppressWarnings({
         "java:S101" // class _Calc...
 })
-final class _CalcConstants
-        extends _Rfc86_Constants {
+final class _CalcConstants extends _Rfc86_Constants {
 
     // ------------------------------------------------------------------------------------- NETWORK
     private static final InetAddress HOST = InetAddress.getLoopbackAddress();

@@ -22,7 +22,10 @@ package com.github.jinahya.hello.misc.c03calc;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.IntBinaryOperator;
 
 /**
@@ -83,10 +86,18 @@ enum _CalcOperator implements IntBinaryOperator {
         return valueOf(new String(bytes, CHARSET));
     }
 
+    private static final List<_CalcOperator> valueList = Arrays.asList(values());
+
+    static _CalcOperator randomValue() {
+        return valueList.get(ThreadLocalRandom.current().nextInt(valueList.size()));
+    }
+
+    // ---------------------------------------------------------------------------------------------
     _CalcOperator() {
         // empty
     }
 
+    // ---------------------------------------------------------------------------------------------
     byte[] bytes() {
         return name().getBytes(CHARSET);
     }
