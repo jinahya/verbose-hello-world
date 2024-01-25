@@ -20,6 +20,7 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
+import com.github.jinahya.hello.util.JavaNioByteBufferUtils;
 import com.github.jinahya.hello.util.JavaSecurityMessageDigestUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -45,21 +46,20 @@ class Rfc862Tcp4Client extends _Rfc862Tcp {
             logConnected(client);
             // ----------------------------------------------------------------------------- prepare
             final var digest = newDigest();
-            var bytes = logClientBytes(newRandomBytes());
-            final var buffer = newBuffer();
-            buffer.position(buffer.limit()); // for what?
+            final var buffer = newBuffer().limit(0);
             // -------------------------------------------------------------------------- write/read
-            while (bytes > 0) {
+            for (var bytes = logClientBytes(newRandomBytes()); bytes > 0; ) {
                 // --------------------------------------------------------------------------- write
                 if (!buffer.hasRemaining()) {
-                    ThreadLocalRandom.current().nextBytes(buffer.array());
-                    buffer.clear().limit(Math.min(buffer.limit(), bytes));
+                    JavaNioByteBufferUtils.randomize(
+                            buffer.clear().limit(Math.min(buffer.limit(), bytes))
+                    );
                 }
                 assert buffer.hasRemaining();
                 final int w = client.write(buffer).get();
                 assert w > 0; // why?
-                bytes -= w;
                 JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, w);
+                bytes -= w;
                 // ---------------------------------------------------------------------------- read
                 final var limit = buffer.limit();
                 buffer.flip(); // limit -> position, position -> zero
@@ -70,12 +70,14 @@ class Rfc862Tcp4Client extends _Rfc862Tcp {
                 assert r > 0; // why?
                 buffer.position(buffer.limit()).limit(limit);
             }
+            // --------------------------------------------------------------------- shutdown-output
             client.shutdownOutput();
-            logDigest(digest);
             // ---------------------------------------------------------------------- read-remaining
             while (client.read(buffer.clear()).get() != -1) {
                 // empty
             }
+            // --------------------------------------------------------------------------------- log
+            logDigest(digest);
         }
     }
 

@@ -20,11 +20,8 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
-import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
-import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils;
 import com.github.jinahya.hello.util.JavaSecurityMessageDigestUtils;
 import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
-import com.github.jinahya.hello.util._TcpUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.channels.AsynchronousServerSocketChannel;
@@ -64,6 +61,7 @@ class Rfc862Tcp4Server extends _Rfc862Tcp {
                 // ----------------------------------------------------------------- write-remaining
                 for (buffer.flip(); buffer.hasRemaining(); ) {
                     final int w = client.write(buffer).get();
+                    assert w >= 0; // why?
                     JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, w);
                 }
                 // ----------------------------------------------------------------------------- log

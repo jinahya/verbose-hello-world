@@ -39,7 +39,7 @@ class Rfc862Tcp3Server extends _Rfc862Tcp {
             // -------------------------------------------------------------------------------- bind
             logBound(server.bind(ADDR));
             // ------------------------------------------------------------------ configure/register
-            server.configureBlocking(false); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            server.configureBlocking(false); // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
             final var serverKey = server.register(selector, SelectionKey.OP_ACCEPT);
             // ----------------------------------------------------------------------------- prepare
             final var digest = newDigest();
@@ -62,7 +62,7 @@ class Rfc862Tcp3Server extends _Rfc862Tcp {
                         key.cancel();
                         assert !key.isValid();
                         // ------------------------------------------------------ configure/register
-                        client.configureBlocking(false); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                        client.configureBlocking(false); // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
                         final var clientKey = client.register(
                                 selector,             // <sel>
                                 SelectionKey.OP_READ, // <ops>
