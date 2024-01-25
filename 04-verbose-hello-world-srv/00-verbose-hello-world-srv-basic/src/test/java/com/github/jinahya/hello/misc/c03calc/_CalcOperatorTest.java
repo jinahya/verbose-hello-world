@@ -20,14 +20,17 @@ package com.github.jinahya.hello.misc.c03calc;
  * #L%
  */
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+@Slf4j
 class _CalcOperatorTest {
 
     static _CalcOperator newRandomValue() {
@@ -52,6 +55,16 @@ class _CalcOperatorTest {
         void _IsEqualToNameBytes_NameBytesLength(final _CalcOperator value) {
             Assertions.assertEquals(_CalcOperator.BYTES,
                                     value.name().getBytes(_CalcOperator.CHARSET).length);
+        }
+    }
+
+    @Nested
+    class RandomValueTest {
+
+        @Test
+        void __() {
+            final var randomValue = _CalcOperator.randomValue();
+            log.debug("randomValue: {}", randomValue);
         }
     }
 }

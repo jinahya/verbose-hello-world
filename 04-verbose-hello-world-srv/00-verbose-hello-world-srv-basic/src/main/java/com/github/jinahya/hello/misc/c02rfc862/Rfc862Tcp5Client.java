@@ -58,12 +58,16 @@ class Rfc862Tcp5Client extends _Rfc862Tcp {
             if (Objects.requireNonNull(buffer, "buffer is null").capacity() == 0) {
                 throw new IllegalArgumentException("buffer.capacity is zero");
             }
-            Objects.requireNonNull(bytes, "bytes is null");
+            if (Objects.requireNonNull(bytes, "bytes is null").get() < 0) {
+                throw new IllegalArgumentException("bytes(" + bytes.get() + ") < 0");
+            }
             Objects.requireNonNull(digest, "digest is null");
-            Objects.requireNonNull(latch, "latch is null");
+            if (Objects.requireNonNull(latch, "latch is null").getCount() != 1) {
+                throw new IllegalArgumentException("latch.count != 1");
+            }
         }
 
-        // -----------------------------------------------------------------------------------------
+        // ----------------------------------------------------- java.nio.channels.CompletionHandler
         @Override
         public void completed(final Integer result, final Mode attachment) {
             if (attachment == Mode.WRITE) {
@@ -76,11 +80,9 @@ class Rfc862Tcp5Client extends _Rfc862Tcp {
 
         @Override
         public void failed(final Throwable exc, final Mode attachment) {
-            log.error("failed to handle", exc);
-            assert latch.getCount() > 0;
-            do {
-                latch.countDown();
-            } while (latch.getCount() > 0);
+            log.error("failed to handle; mode: " + attachment, exc);
+            assert latch.getCount() == 1L;
+            latch.countDown();
         }
 
         // ----------------------------------------------------------------------------------- write
@@ -90,6 +92,7 @@ class Rfc862Tcp5Client extends _Rfc862Tcp {
                         buffer.clear().limit(Math.min(buffer.remaining(), bytes.get()))
                 );
             }
+            assert buffer.hasRemaining() || bytes.get() == 0;
             client.write(
                     buffer,     // <src>
                     Mode.WRITE, // <attachment>
@@ -98,48 +101,64 @@ class Rfc862Tcp5Client extends _Rfc862Tcp {
         }
 
         private void writeCompleted(final int w) {
-            log.debug("writeCompleted({})", w);
-            assert w >= 0;
+            assert w >= 0; // wny?
+            assert w > 0 || bytes.get() == 0;
             JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, w);
-            if (bytes.addAndGet(-w) == 0) { // all bytes written
-                log.debug("all written");
+            if (bytes.addAndGet(-w) == 0) { // no more bytes to write
                 logDigest(digest);
-                assert latch.getCount() == 2L;
-                latch.countDown(); // 2 -> 1
+                if (buffer.position() == 0) { // no more bytes to read, either
+                    assert latch.getCount() == 1L;
+                    latch.countDown();
+                    return;
+                }
             }
+            assert bytes.get() > 0 || buffer.position() > 0;
+            if (buffer.position() == 0) { // no bytes to read; keep writing
+                write();
+                return;
+            }
+            assert buffer.position() > 0; // read bytes
+            buffer.flip();
             read();
         }
 
         // ------------------------------------------------------------------------------------ read
         private void read() {
+            assert buffer.hasRemaining();
             client.read(
-                    buffer.flip(), // <dst>
-                    Mode.READ,     // <attachment>
-                    this           // <handler>
+                    buffer,    // <dst>
+                    Mode.READ, // <attachment>
+                    this       // <handler>
             );
         }
 
         private void readCompleted(final int r) {
-            log.debug("readCompleted({})", r);
             assert r >= -1;
-            buffer.position(buffer.limit())
-                    .limit(buffer.position() + Math.min(buffer.capacity() - buffer.position(),
-                                                        bytes.get()));
-            if (r == -1) { // reached to an eof
-                if (bytes.get() > 0) { // not all bytes has been written, yet
-                    failed(new EOFException("unexpected eof"), Mode.READ);
-                    return;
-                }
-                assert bytes.get() == 0;
-                assert latch.getCount() == 1L;
-                latch.countDown(); // 1 -> 0
+            if (r == -1) {
+                failed(new EOFException("unexpected eof"), Mode.READ);
                 return;
             }
-            // ------------------------------------------------------------------------------- write
-            write();
+            assert r > 0; // why?
+            if (buffer.hasRemaining()) { // keep reading
+                read();
+                return;
+            }
+            assert buffer.position() == buffer.limit(); // !buffer.hasRemaining()
+            if (bytes.get() > 0) { // has bytes to write
+                buffer.limit(
+                        buffer.position() +
+                        Math.min(buffer.capacity() - buffer.position(), bytes.get())
+                );
+                write();
+                return;
+            }
+            assert bytes.get() == 0; // no bytes to write
+            assert latch.getCount() == 1L;
+            latch.countDown();
         }
     }
 
+    // ---------------------------------------------------------------------------------------------
     // @formatter:off
     public static void main(final String... args) throws Exception {
         try (var client = AsynchronousSocketChannel.open()) {
@@ -148,7 +167,7 @@ class Rfc862Tcp5Client extends _Rfc862Tcp {
                 logBound(client.bind(new InetSocketAddress(HOST, 0)));
             }
             // ----------------------------------------------------------------------------- connect
-            final var latch = new CountDownLatch(2); // <all-written> + <reached-to-an-eof>
+            final var latch = new CountDownLatch(1);
             client.<Void>connect(ADDR, null, new CompletionHandler<>() {
                 @Override public void completed(final Void result, final Void attachment) {
                     logConnected(client);
@@ -161,8 +180,7 @@ class Rfc862Tcp5Client extends _Rfc862Tcp {
                 }
                 @Override public void failed(final Throwable exc, final Void attachment) {
                     log.error("failed to connect", exc);
-                    assert latch.getCount() == 2L;
-                    do { latch.countDown(); } while (latch.getCount() > 0L);
+                    latch.countDown();
                 }
             });
             latch.await();
@@ -170,6 +188,7 @@ class Rfc862Tcp5Client extends _Rfc862Tcp {
     }
     // @formatter:on
 
+    // ---------------------------------------------------------------------------------------------
     @_ExcludeFromCoverage_PrivateConstructor_Obviously
     private Rfc862Tcp5Client() {
         throw new AssertionError("instantiation is not allowed");

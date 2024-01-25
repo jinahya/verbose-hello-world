@@ -22,125 +22,114 @@ package com.github.jinahya.hello.misc.c03calc;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
-class CalcTcp3Client {
+class CalcTcp3Client extends _CalcTcp {
 
-    private static void close(final SelectionKey key) {
-        final var channel = key.channel();
-        try {
-            channel.close();
-            assert !key.isValid();
-        } catch (final IOException ioe) {
-            log.error("failed to close {}", channel, ioe);
-            key.cancel();
-        }
-        assert !key.isValid();
-    }
-
-    private static void sub(final Selector selector) {
-        for (var c = 0; c < _CalcConstants.TOTAL_REQUESTS; c++) {
-            // ----------------------------------------------------------------------------- CONNECT
-            try {
-                final var client = SocketChannel.open();
-                client.configureBlocking(false);
-                final SelectionKey clientKey;
-                try {
-                    final var connectedImmediately = client.connect(_CalcConstants.ADDR);
-                    if (connectedImmediately) {
-                        clientKey = client.register(
-                                selector,                           // <sel>
-                                SelectionKey.OP_WRITE,              // <ops>
-                                _CalcMessage.newInstanceForClient() // <att>
-                        );
-                    } else {
-                        clientKey = client.register(
-                                selector,               // <sel>
-                                SelectionKey.OP_CONNECT // <ops>
-                        );
-                    }
-                    assert clientKey.isValid();
-                } catch (final IOException ioe) {
-                    log.error("failed to connect/register", ioe);
-                    client.close();
+    public static void main(final String... args) throws Exception {
+        try (var selector = Selector.open()) {
+            try (var executor = Executors.newFixedThreadPool(
+                    CLIENT_THREADS,
+                    Thread.ofVirtual().name("calc-tcp-3-client-", 0L).factory())) {
+                for (int i = 0; i < CLIENT_COUNT; i++) {
+                    executor.submit(() -> {
+                        var client = SocketChannel.open(); // no-try-with-resources
+                        // ---------------------------------------------------------- bind(optional)
+                        if (ThreadLocalRandom.current().nextBoolean()) {
+                            client.bind(new InetSocketAddress(HOST, 0));
+                        }
+                        // --------------------------------------------------------------- configure
+                        client.configureBlocking(false);
+                        // ------------------------------------------------------------ connect(try)
+                        if (client.connect(ADDR)) {
+                            return client.register(
+                                    selector,
+                                    SelectionKey.OP_WRITE,
+                                    __CalcMessage2.newRandomizedBuffer()
+                                            .limit(__CalcMessage2.INDEX_RESULT)
+                                            .position(__CalcMessage2.INDEX_OPERATOR)
+                            );
+                        } else {
+                            return client.register(selector, SelectionKey.OP_CONNECT);
+                        }
+                    }).get();
                 }
-            } catch (final IOException ioe) {
-                log.error("failed to open/close", ioe);
+                executor.shutdown();
+                final var terminated = executor.awaitTermination(1L, TimeUnit.SECONDS);
+                if (!terminated) {
+                    log.error("executor not terminated");
+                }
             }
-        }
-        // ---------------------------------------------------------------------------- RECEIVE/SEND
-        while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
-            // ------------------------------------------------------------------------------ select
-            try {
-                if (selector.select(_CalcConstants.SELECT_TIMEOUT_MILLIS) == 0) {
+            // ---------------------------------------------------------------------- selection-loop
+            while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
+                if (selector.select() == 0) {
                     continue;
                 }
-            } catch (final IOException ioe) {
-                log.error("failed to select", ioe);
-            }
-            // ------------------------------------------------------------------------------ handle
-            for (final var i = selector.selectedKeys().iterator(); i.hasNext(); ) {
-                final var selectedKey = i.next();
-                i.remove();
-                // ------------------------------------------------------------------ connect/finish
-                if (selectedKey.isConnectable()) {
-                    final var channel = (SocketChannel) selectedKey.channel();
-                    try {
-                        if (!channel.finishConnect()) {
+                // --------------------------------------------------------------- selectedKeys-loop
+                for (final var i = selector.selectedKeys().iterator(); i.hasNext(); ) {
+                    final var key = i.next();
+                    i.remove();
+                    // ------------------------------------------------------------- connect(finish)
+                    if (key.isConnectable()) {
+                        final var channel = (SocketChannel) key.channel();
+                        if (channel.finishConnect()) {
+                            key.attach(
+                                    __CalcMessage2.newRandomizedBuffer()
+                                            .limit(__CalcMessage2.INDEX_RESULT)
+                                            .position(__CalcMessage2.INDEX_OPERATOR)
+                            );
+                            key.interestOpsAnd(~SelectionKey.OP_CONNECT);
+                            key.interestOpsOr(SelectionKey.OP_WRITE);
+                            assert !key.isWritable();
+                        }
+                    }
+                    // ----------------------------------------------------------------------- write
+                    if (key.isWritable()) {
+                        final var channel = (SocketChannel) key.channel();
+                        final var buffer = (ByteBuffer) key.attachment();
+                        assert buffer.hasRemaining();
+                        final var w = channel.write(buffer);
+                        log.debug("w: {}", w);
+                        assert w >= 0;
+                        if (!buffer.hasRemaining()) {
+                            key.interestOpsAnd(~SelectionKey.OP_WRITE);
+                            assert buffer.position() == __CalcMessage2.INDEX_RESULT;
+                            buffer.limit(buffer.capacity());
+                            assert buffer.remaining() == 1;
+                            key.interestOpsOr(SelectionKey.OP_READ);
+                            assert !key.isReadable();
+                        }
+                    }
+                    // ------------------------------------------------------------------------ read
+                    if (key.isReadable()) {
+                        final var channel = (SocketChannel) key.channel();
+                        final var buffer = (ByteBuffer) key.attachment();
+                        assert buffer.hasRemaining();
+                        final var r = channel.read(buffer);
+                        log.debug("r: {}", r);
+                        if (r == -1) {
+                            log.error("premature eof");
+                            channel.close();
+                            assert !key.isValid();
                             continue;
                         }
-                    } catch (final IOException ioe) {
-                        log.error("failed to finish connecting", ioe);
-                        close(selectedKey);
-                        continue;
-                    }
-                    selectedKey.interestOpsAnd(~SelectionKey.OP_CONNECT);
-                    selectedKey.attach(_CalcMessage.newInstanceForClient());
-                    selectedKey.interestOps(SelectionKey.OP_WRITE);
-                }
-                // --------------------------------------------------------------------------- write
-                if (selectedKey.isWritable()) {
-                    final var channel = (SocketChannel) selectedKey.channel();
-                    final var attachment = (_CalcMessage) selectedKey.attachment();
-                    try {
-                        if (!attachment.write(channel).hasRemaining()) {
-                            selectedKey.interestOpsAnd(~SelectionKey.OP_WRITE);
-                            attachment.readyToReceiveResult();
-                            selectedKey.interestOpsOr(SelectionKey.OP_READ);
+                        assert r >= 0;
+                        if (!buffer.hasRemaining()) {
+                            __CalcMessage2.log(buffer);
+                            channel.close();
+                            assert !key.isValid();
                         }
-                    } catch (final IOException ioe) {
-                        log.error("failed to write", ioe);
-                        close(selectedKey);
-                        continue;
-                    }
-                }
-                // ---------------------------------------------------------------------------- read
-                if (selectedKey.isReadable()) {
-                    final var channel = (SocketChannel) selectedKey.channel();
-                    final var attachment = (_CalcMessage) selectedKey.attachment();
-                    try {
-                        if (!attachment.read(channel).hasRemaining()) {
-                            selectedKey.interestOpsAnd(~SelectionKey.OP_READ);
-                            attachment.log();
-                            close(selectedKey);
-                        }
-                    } catch (final IOException ioe) {
-                        log.error("failed to read from {}", channel, ioe);
-                        close(selectedKey);
-                        continue;
                     }
                 }
             }
-        }
-    }
-
-    public static void main(final String... args) throws IOException {
-        try (var selector = Selector.open()) {
-            sub(selector);
         }
     }
 }

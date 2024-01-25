@@ -23,6 +23,7 @@ package com.github.jinahya.hello.misc.c03calc;
 import com.github.jinahya.hello.util.JavaLangUtils;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -49,20 +50,25 @@ class CalcTcp1Server extends _CalcTcp {
                 try {
                     client = server.accept();
                 } catch (final IOException ioe) {
-                    if (server.isClosed()) {
-                        continue;
+                    if (!server.isClosed()) {
+                        log.error("failed to accept", ioe);
                     }
-                    throw ioe;
+                    continue;
                 }
                 executor.submit(() -> {
                     try {
-                        client.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
-                        client.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
-//                    client.setOption(StandardSocketOptions.SO_LINGER, Boolean.FALSE);
                         client.setSoTimeout((int) TimeUnit.SECONDS.toMillis(1L));
-                        __CalcMessage2.readInstance(client.getInputStream())
-                                .calculate()
-                                .write(client.getOutputStream());
+                        final var message = new byte[__CalcMessage2.BYTES];
+                        final int r = client.getInputStream().readNBytes(
+                                message,
+                                0,
+                                __CalcMessage2.INDEX_RESULT
+                        );
+                        if (r != __CalcMessage2.INDEX_RESULT) {
+                            throw new EOFException("premature eof");
+                        }
+                        __CalcMessage2.calculateResult(message);
+                        client.getOutputStream().write(message);
                         client.getOutputStream().flush();
                         return null;
                     } finally {

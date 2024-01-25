@@ -29,4 +29,6 @@ import lombok.NoArgsConstructor;
 })
 abstract class _CalcTcp extends _Calc {
 
+    // ------------------------------------------------------------------------------- server/client
+    static final int SERVER_BACKLOG = 50;
 }

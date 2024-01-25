@@ -45,11 +45,15 @@ import java.util.concurrent.ThreadLocalRandom;
 abstract class _Calc {
 
     // ------------------------------------------------------------------------------ host/port/addr
-    private static final InetAddress HOST = InetAddress.getLoopbackAddress();
+    static final InetAddress HOST = InetAddress.getLoopbackAddress();
 
     private static final int PORT = 30007;
 
     static final InetSocketAddress ADDR = new InetSocketAddress(HOST, PORT);
+
+    // ------------------------------------------------------------------------------- server/client
+    static final int CLIENT_THREADS = 8;
+    static final int CLIENT_COUNT = 8;
 
     // ----------------------------------------------------------------------------------------- log
 

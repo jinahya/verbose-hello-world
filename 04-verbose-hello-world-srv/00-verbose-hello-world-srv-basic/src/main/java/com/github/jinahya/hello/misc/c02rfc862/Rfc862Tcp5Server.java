@@ -24,6 +24,7 @@ import com.github.jinahya.hello.util.JavaSecurityMessageDigestUtils;
 import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
@@ -52,12 +53,16 @@ class Rfc862Tcp5Server extends _Rfc862Tcp {
         // -----------------------------------------------------------------------------------------
         private Handler {
             Objects.requireNonNull(client, "client is null");
-            if (Objects.requireNonNull(buffer, "buffer is null").capacity() == 0) {
-                throw new IllegalArgumentException("buffer.capacity is zero");
+            if (Objects.requireNonNull(buffer, "buffer is null").remaining() == 0) {
+                throw new IllegalArgumentException("buffer.remaining is zero");
             }
-            Objects.requireNonNull(bytes, "bytes is null");
+            if (Objects.requireNonNull(bytes, "bytes is null").longValue() != 0L) {
+                throw new IllegalArgumentException("bytes.value != 0");
+            }
             Objects.requireNonNull(digest, "digest is null");
-            Objects.requireNonNull(latch, "latch is null");
+            if (Objects.requireNonNull(latch, "latch is null").getCount() != 2L) {
+                throw new IllegalArgumentException("latch.count != 2");
+            }
         }
 
         // -----------------------------------------------------------------------------------------
@@ -73,7 +78,7 @@ class Rfc862Tcp5Server extends _Rfc862Tcp {
 
         @Override
         public void failed(final Throwable exc, final Mode attachment) {
-            log.error("failed to handle", exc);
+            log.error("failed to handle; mode: " + attachment, exc);
             assert latch.getCount() > 0;
             do {
                 latch.countDown();
@@ -111,6 +116,11 @@ class Rfc862Tcp5Server extends _Rfc862Tcp {
                 }
                 assert buffer.position() == 0; // no remaining bytes to write, either
                 // ----------------------------------------------------------------------------- log
+                try {
+                    client.close();
+                } catch (final IOException ioe) {
+                    log.error("failed to close " + client, ioe);
+                }
                 logServerBytes(bytes.longValue());
                 logDigest(digest);
                 assert latch.getCount() == 1L;
@@ -129,19 +139,21 @@ class Rfc862Tcp5Server extends _Rfc862Tcp {
             // -------------------------------------------------------------------------------- bind
             logBound(server.bind(ADDR, 0));
             // ------------------------------------------------------------------------------ accept
-            final var latch = new CountDownLatch(2); // reached-to-an-eof + all-echoed-back
+            final var latch = new CountDownLatch(2);
             server.<Void>accept(null, new CompletionHandler<>() {
-                @Override public void completed(final AsynchronousSocketChannel client,
+                @Override public void completed(final AsynchronousSocketChannel result,
                                                 final Void attachment) {
-                    logAccepted(client);
+                    logAccepted(result);
                     final var buffer = newBuffer();
                     final var bytes = new LongAdder();
                     final var digest = newDigest();
-                    new Handler(client, buffer, bytes, digest, latch).read();
+                    new Handler(result, buffer, bytes, digest, latch).read();
                 }
                 @Override public void failed(final Throwable exc, final Void attachment) {
                     log.error("failed to accept", exc);
-                    do { latch.countDown(); } while (latch.getCount() > 0L);
+                    assert latch.getCount() == 2L;
+                    latch.countDown();
+                    latch.countDown();
                 }
             });
             latch.await();

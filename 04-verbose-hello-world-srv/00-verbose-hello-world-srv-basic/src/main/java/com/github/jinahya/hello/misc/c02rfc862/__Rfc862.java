@@ -29,7 +29,6 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
@@ -41,34 +40,12 @@ import java.util.Base64;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Function;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 abstract class __Rfc862 {
 
-    // -------------------------------------------------------------------------- host / port / addr
-
-    public static final InetAddress HOST_IPv4;
-
-    static {
-        try {
-            HOST_IPv4 = InetAddress.getByName("127.0.0.1");
-        } catch (final UnknownHostException uhe) {
-            throw new RuntimeException(uhe);
-        }
-    }
-
-    public static final InetAddress HOST_IPv6;
-
-    static {
-        try {
-            HOST_IPv6 = InetAddress.getByName("::1");
-        } catch (final UnknownHostException uhe) {
-            throw new RuntimeException(uhe);
-        }
-    }
-
+    // ------------------------------------------------------------------------------ host/port/addr
     static final InetAddress HOST = InetAddress.getLoopbackAddress();
 
     private static final int RFC862_PORT = 7;
@@ -78,48 +55,6 @@ abstract class __Rfc862 {
     static final InetSocketAddress ADDR = new InetSocketAddress(HOST, PORT);
 
     // -------------------------------------------------------------------------------------- digest
-
-    /**
-     * Returns a new message digest object that implements the specified digest algorithm..
-     *
-     * @return the name of the algorithm.
-     */
-    static MessageDigest newDigest(final String algorithm) {
-        Objects.requireNonNull(algorithm, "algorithm is null");
-        try {
-            return MessageDigest.getInstance(algorithm);
-        } catch (final NoSuchAlgorithmException nsae) {
-            throw new IllegalArgumentException("algorithm is unknown: " + algorithm, nsae);
-        }
-    }
-
-    public static void logDigest(final MessageDigest digest,
-                                 final Function<? super byte[], ? extends CharSequence> printer) {
-        Objects.requireNonNull(digest, "digest is null");
-        Objects.requireNonNull(printer, "printer is null");
-        log.info("digest: {}", printer.apply(digest.digest()));
-    }
-
-    public static void logDigest(final String algorithm, final byte[] array, final int offset,
-                                 final int length,
-                                 final Function<? super byte[], ? extends CharSequence> printer) {
-        final var digest = newDigest(algorithm);
-        digest.update(
-                array,  // <input>
-                offset, // <offset>
-                length  // <len>
-        );
-        logDigest(digest, printer);
-    }
-
-    public static void logDigest(final String algorithm, final ByteBuffer buffer,
-                                 final Function<? super byte[], ? extends CharSequence> printer) {
-        final var digest = newDigest(algorithm);
-        digest.update(
-                buffer // input
-        );
-        logDigest(digest, printer);
-    }
 
     /**
      * Returns a new message digest implements {@code SHA-1} algorithm.
@@ -138,27 +73,13 @@ abstract class __Rfc862 {
         log.info("digest: {}", Base64.getEncoder().encodeToString(digest.digest()));
     }
 
-    static void logDigest(final byte[] array, final int offset, final int length) {
-        final var digest = newDigest();
-        digest.update(array, offset, length);
-        logDigest(digest);
-    }
-
-    static void logDigest(final ByteBuffer buffer) {
-        final var digest = newDigest();
-        digest.update(buffer);
-        logDigest(digest);
-    }
-
     // --------------------------------------------------------------------------------------- bytes
     private static final int BOUND_RANDOM_BYTES = 8192;
 
     /**
-     * Returns a new {@code int} between {@code 0}(inclusive) and
-     * {@value #BOUND_RANDOM_BYTES}(exclusive).
+     * Returns a new random number (of bytes) to send.
      *
-     * @return a new {@code int} between {@code 0}(inclusive) and
-     * {@value #BOUND_RANDOM_BYTES}(exclusive).
+     * @return a new random number (of bytes) to send.
      */
     static int newRandomBytes() {
         return ThreadLocalRandom.current().nextInt(BOUND_RANDOM_BYTES);
@@ -191,42 +112,38 @@ abstract class __Rfc862 {
     }
 
     // -------------------------------------------------------------------------------- array/buffer
-    private static final int MIN_ARRAY_LENGTH = 1;
-
-    private static final int MAX_ARRAY_LENGTH = 1024;
+    private static int length() {
+        return ThreadLocalRandom.current().nextInt(1024) + 1;
+    }
 
     private static byte[] array() {
-        return new byte[
-                ThreadLocalRandom.current().nextInt(MAX_ARRAY_LENGTH) + MIN_ARRAY_LENGTH
-                ];
+        return new byte[length()];
     }
 
     /**
-     * Returns a new array of random number of bytes.
+     * Returns a new <em>non-zero-length</em> array.
      *
-     * @return a new array of random number of bytes.
+     * @return a new array.
      */
-    public static byte[] newArray() {
+    static byte[] newArray() {
         final var array = array();
         log.debug("array.length: {}", array.length);
         return array;
     }
 
     /**
-     * Returns a new byte buffer {@link ByteBuffer#wrap(byte[]) wraps} the result of
-     * {@link #newArray()}.
+     * Returns a new byte buffer {@link ByteBuffer#wrap(byte[]) wraps} a <em>non-zero-length</em>
+     * array.
      *
-     * @return a new byte buffer {@link ByteBuffer#wrap(byte[]) wraps} the result of
-     * {@link #newArray()}.
-     * @see #newArray()
+     * @return a new byte buffer which {@link ByteBuffer#hasArray() has a backing array}.
      */
-    public static ByteBuffer newBuffer() {
+    static ByteBuffer newBuffer() {
         final var buffer = ByteBuffer.wrap(array());
         log.debug("buffer.capacity: {}", buffer.capacity());
         return buffer;
     }
 
-    // ----------------------------------------------------------------------------------------- log
+    // -------------------------------------------------------------------------------------- socket
     private static final String LOG_FORMAT_BOUND = "bound to {}";
 
     private static final String LOG_FORMAT_ACCEPTED = "accepted from {}, through {}";
