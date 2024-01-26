@@ -35,6 +35,7 @@ import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.CompletionHandler;
+import java.nio.channels.DatagramChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.charset.StandardCharsets;
@@ -258,7 +259,7 @@ abstract sealed class __CalcMessage3<T extends __CalcMessage3<T>>
             return applyBuffer(Buffer::remaining);
         }
 
-        OfBuffer readToWriteToServer() {
+        OfBuffer readyToWriteToServer() {
             return applyBuffer(b -> {
                 b.limit(INDEX_RESULT).position(INDEX_OPERATOR);
                 assert b.remaining() == INDEX_RESULT;
@@ -266,7 +267,7 @@ abstract sealed class __CalcMessage3<T extends __CalcMessage3<T>>
             });
         }
 
-        OfBuffer readToReadFromServer() {
+        OfBuffer readyToReadFromServer() {
             return applyBuffer(b -> {
                 b.limit(INDEX_RESULT + LENGTH_RESULT).position(INDEX_RESULT);
                 assert b.remaining() == LENGTH_RESULT;
@@ -275,11 +276,11 @@ abstract sealed class __CalcMessage3<T extends __CalcMessage3<T>>
         }
 
         OfBuffer readyToReadFromClient() {
-            return readToWriteToServer();
+            return readyToWriteToServer();
         }
 
         OfBuffer readyToWriteToClient() {
-            return readToReadFromServer();
+            return readyToReadFromServer();
         }
 
         int write(final WritableByteChannel channel) throws IOException {
@@ -314,10 +315,40 @@ abstract sealed class __CalcMessage3<T extends __CalcMessage3<T>>
             });
         }
 
+        OfBuffer sendToServer(final DatagramChannel channel, final SocketAddress address)
+                throws IOException {
+            readyToWriteToServer();
+            final int w = channel.send(buffer, address);
+            assert w == INDEX_RESULT;
+            return this;
+        }
+
+        OfBuffer receiveFromServer(final DatagramChannel channel) throws IOException {
+            readyToReadFromServer();
+            address = channel.receive(buffer);
+            return this;
+        }
+
+        OfBuffer receiveFromClient(final DatagramChannel channel) throws IOException {
+            readyToReadFromClient();
+            address = channel.receive(buffer);
+            assert address != null;
+            return this;
+        }
+
+        OfBuffer sendToClient(final DatagramChannel channel) throws IOException {
+            readyToWriteToClient();
+            final var w = channel.send(buffer, address);
+            assert w == LENGTH_RESULT;
+            return this;
+        }
+
         // -----------------------------------------------------------------------------------------
         private final OfArray ofArray = new OfArray();
 
         private final ByteBuffer buffer = ByteBuffer.wrap(ofArray.array);
+
+        private transient SocketAddress address;
     }
 
     // ---------------------------------------------------------------------------------------------

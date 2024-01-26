@@ -88,7 +88,7 @@ class CalcTcp3Client extends _CalcTcp {
                         final var channel = (SocketChannel) key.channel();
                         if (channel.finishConnect()) {
                             key.attach(
-                                    new __CalcMessage3.OfBuffer().randomize().readToWriteToServer()
+                                    new __CalcMessage3.OfBuffer().randomize().readyToWriteToServer()
                             );
                             key.interestOpsAnd(~SelectionKey.OP_CONNECT);
                             key.interestOpsOr(SelectionKey.OP_WRITE);
@@ -105,7 +105,7 @@ class CalcTcp3Client extends _CalcTcp {
                         assert w >= 0;
                         if (!message.hasRemaining()) {
                             key.interestOpsAnd(~SelectionKey.OP_WRITE);
-                            message.readToReadFromServer();
+                            message.readyToReadFromServer();
                             key.interestOpsOr(SelectionKey.OP_READ);
                             assert !key.isReadable();
                         }

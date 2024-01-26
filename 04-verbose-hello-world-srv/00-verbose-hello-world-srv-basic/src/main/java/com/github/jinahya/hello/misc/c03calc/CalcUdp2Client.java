@@ -27,39 +27,44 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 
 @Slf4j
-class CalcUdp2Client {
+class CalcUdp2Client extends _CalcUdp{
 
     public static void main(final String... args) throws Exception {
         try (var selector = Selector.open()) {
-            for (var c = 0; c < _CalcConstants.TOTAL_REQUESTS; c++) {
+            for (var i = 0; i < _CalcConstants.TOTAL_REQUESTS; i++) {
+                // ---------------------------------------------------------------------------- open
                 try (var client = DatagramChannel.open()) {
+                    // ------------------------------------------------------ configure-non-blocking
                     client.configureBlocking(false);
+                    // -------------------------------------------------------------------- register
                     final var clientKey = client.register(
                             selector,
                             SelectionKey.OP_WRITE,
-                            _CalcMessage.newInstanceForClient()
+                            new __CalcMessage3.OfBuffer().randomize()
                     );
+                    // --------------------------------------------------------------- selector-loop
                     while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
-                        if (selector.select(_CalcConstants.SELECT_TIMEOUT) == 0) {
+                        if (selector.select() == 0) {
                             continue;
                         }
-                        for (final var i = selector.selectedKeys().iterator(); i.hasNext(); ) {
-                            final var selectedKey = i.next();
-                            i.remove();
-                            if (selectedKey.isWritable()) {
-                                final var channel = (DatagramChannel) selectedKey.channel();
-                                final var attachment = (_CalcMessage) selectedKey.attachment();
-                                attachment.sendRequest(channel);
-                                selectedKey.interestOpsAnd(~SelectionKey.OP_WRITE);
-                                attachment.readyToReceiveResult();
-                                selectedKey.interestOpsOr(SelectionKey.OP_READ);
+                        for (final var j = selector.selectedKeys().iterator(); j.hasNext(); ) {
+                            final var key = j.next();
+                            j.remove();
+                            // --------------------------------------------------------------- write
+                            if (key.isWritable()) {
+                                final var channel = (DatagramChannel) key.channel();
+                                final var message = (__CalcMessage3.OfBuffer) key.attachment();
+                                message.sendToServer(channel, ADDR);
+                                key.interestOpsAnd(~SelectionKey.OP_WRITE);
+                                key.interestOpsOr(SelectionKey.OP_READ);
                             }
-                            if (selectedKey.isReadable()) {
-                                final var channel = (DatagramChannel) selectedKey.channel();
-                                final var attachment = (_CalcMessage) selectedKey.attachment();
-                                attachment.receiveResult(channel).log();
-                                selectedKey.interestOpsAnd(~SelectionKey.OP_READ);
-                                selectedKey.cancel();
+                            if (key.isReadable()) {
+                                final var channel = (DatagramChannel) key.channel();
+                                final var message = (__CalcMessage3.OfBuffer) key.attachment();
+                                message.receiveFromServer(channel).log();
+                                key.interestOpsAnd(~SelectionKey.OP_READ);
+                                key.cancel();
+                                assert !key.isValid();
                             }
                         }
                     }

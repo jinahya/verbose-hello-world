@@ -36,18 +36,6 @@ abstract class _CalcTcp extends _Calc {
     // -------------------------------------------------------------------------------------- server
     static final int SERVER_BACKLOG = 50;
 
-    /**
-     * Returns a new thread-pool that uses {@value #SERVER_THREADS} thread(s).
-     *
-     * @param namePrefix a thread name prefix.
-     * @return a new thread-pool that uses {@value #SERVER_THREADS} thread(s).
-     */
-    static ExecutorService newExecutorForServer(final String namePrefix) {
-        return Executors.newFixedThreadPool(
-                SERVER_THREADS,
-                Thread.ofVirtual().name(namePrefix, 0L).factory()
-        );
-    }
 
     // -------------------------------------------------------------------------------------- client
 

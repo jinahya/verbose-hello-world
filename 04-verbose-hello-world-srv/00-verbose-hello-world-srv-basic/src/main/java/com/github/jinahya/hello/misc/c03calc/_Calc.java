@@ -36,6 +36,8 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
@@ -52,10 +54,24 @@ abstract class _Calc {
 
     static final InetSocketAddress ADDR = new InetSocketAddress(HOST, PORT);
 
-    // ------------------------------------------------------------------------------- server/client
+    // -------------------------------------------------------------------------------------- server
 
     static final int SERVER_THREADS = 128;
 
+    /**
+     * Returns a new thread-pool that uses {@value #SERVER_THREADS} thread(s).
+     *
+     * @param namePrefix a thread name prefix.
+     * @return a new thread-pool that uses {@value #SERVER_THREADS} thread(s).
+     */
+    static ExecutorService newExecutorForServer(final String namePrefix) {
+        return Executors.newFixedThreadPool(
+                SERVER_THREADS,
+                Thread.ofVirtual().name(namePrefix, 0L).factory()
+        );
+    }
+
+    // -------------------------------------------------------------------------------------- client
     static final int CLIENT_THREADS = 8;
 
     static final int CLIENT_COUNT = 128;
