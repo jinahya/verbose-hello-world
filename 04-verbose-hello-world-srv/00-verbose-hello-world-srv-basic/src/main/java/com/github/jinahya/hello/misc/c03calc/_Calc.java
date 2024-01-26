@@ -25,6 +25,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
@@ -57,7 +58,7 @@ abstract class _Calc {
 
     static final int CLIENT_THREADS = 8;
 
-    static final int CLIENT_COUNT = 8;
+    static final int CLIENT_COUNT = 128;
 
     // ----------------------------------------------------------------------------------------- log
 
@@ -128,6 +129,12 @@ abstract class _Calc {
             throw new RuntimeException("failed to get localAddress from " + channel, ioe);
         }
         return channel;
+    }
+
+    public static <T extends DatagramSocket> T logBound(final T socket) {
+        Objects.requireNonNull(socket, "socket is null");
+        log.info(LOG_FORMAT_BOUND, socket.getLocalSocketAddress());
+        return socket;
     }
 
     static <T extends Socket> T logAccepted(final T client) {

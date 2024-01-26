@@ -20,9 +20,8 @@ package com.github.jinahya.hello.misc.c03calc;
  * #L%
  */
 
-import com.github.jinahya.hello.util.HelloWorldServerUtils;
 import com.github.jinahya.hello.util.JavaLangUtils;
-import com.github.jinahya.hello.util._UdpUtils;
+import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -30,21 +29,24 @@ import java.net.DatagramSocket;
 import java.net.StandardSocketOptions;
 
 @Slf4j
-class CalcUdp1Server {
+class CalcUdp1Server extends _CalcUdp {
 
     public static void main(final String... args) throws IOException {
         try (var server = new DatagramSocket(null)) {
             server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
             server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
+            // -------------------------------------------------------------------------------- bind
             server.bind(_CalcConstants.ADDR);
-            _UdpUtils.logBound(server);
-            JavaLangUtils.readLinesAndCloseWhenTests(HelloWorldServerUtils::isQuit, server);
+            logBound(server);
+            // -------------------------------------------------------------------------------------
+            JavaLangUtils.readLinesAndCloseWhenTests("quit!"::equalsIgnoreCase, server);
+            // -------------------------------------------------------------------------------------
             while (!server.isClosed()) {
                 try {
-                    _CalcMessage.newInstanceForServer()
-                            .receiveRequest(server)
-                            .apply()
-                            .sendResult(server);
+                    new __CalcMessage3.OfArray()
+                            .receiveFromClient(server)
+                            .calculateResult()
+                            .sendToClient(server);
                 } catch (final IOException ioe) {
                     if (!server.isClosed()) {
                         log.error("failed to receive/send", ioe);
@@ -54,6 +56,7 @@ class CalcUdp1Server {
         }
     }
 
+    @_ExcludeFromCoverage_PrivateConstructor_Obviously
     private CalcUdp1Server() {
         throw new AssertionError("instantiation is not allowed");
     }

@@ -26,50 +26,33 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.IntStream;
 
 @Slf4j
 class CalcTcp1Client extends _CalcTcp {
 
     public static void main(final String... args) throws Exception {
         try (var executor = newExecutorForClient("tcp-1-client-")) {
-            IntStream.range(0, CLIENT_COUNT).mapToObj(i -> executor.submit(() -> {
-                try (var client = new Socket()) {
-                    // -------------------------------------------------------------- bind(optional)
-                    if (ThreadLocalRandom.current().nextBoolean()) {
-                        client.bind(new InetSocketAddress(HOST, 0));
-                    }
-                    // --------------------------------------------------------------------- connect
-                    client.connect(ADDR);
-                    // ----------------------------------------------------------------------- write
-                    final var array = __CalcMessage2.newRandomizedArray();
-                    client.getOutputStream().write(array, 0, __CalcMessage2.INDEX_RESULT);
-                    client.getOutputStream().flush();
-                    // ------------------------------------------------------------------------ read
-                    log.debug("reading...");
-                    client.setSoTimeout((int) TimeUnit.SECONDS.toMillis(1L));
-                    for (var j = __CalcMessage2.LENGTH_RESULT; j > 0; ) {
-                        final var r = client.getInputStream().readNBytes(
-                                array,
-                                __CalcMessage2.INDEX_RESULT -j,
-                                j
-                        );
-                        log.debug("r: {}", r);
-                        if (r == -1) {
-                            log.error("premature eof");
-                            return;
+            for (int i = 0; i < CLIENT_COUNT; i++) {
+                executor.submit(() -> {
+                    try (var client = new Socket()) {
+                        // ---------------------------------------------------------- bind(optional)
+                        if (ThreadLocalRandom.current().nextBoolean()) {
+                            client.bind(new InetSocketAddress(HOST, 0));
                         }
-                        assert r > 0;
-                        j -= r;
+                        // ----------------------------------------------------------------- connect
+                        client.connect(ADDR, (int) CONNECT_TIMEOUT_UNIT.toMillis(CONNECT_TIMEOUT));
+                        client.setSoTimeout((int) TimeUnit.SECONDS.toMillis(1L));
+                        // ---------------------------------------------------------- write/read/log
+                        new __CalcMessage3.OfArray().randomize()
+                                .writeToServer(client.getOutputStream(), true)
+                                .readFromServer(client.getInputStream())
+                                .log();
+                    } catch (final Exception e) {
+                        log.error("failed to request", e);
                     }
-                    // ------------------------------------------------------------------------- log
-                    __CalcMessage2.log(array);
-                } catch (final Exception e) {
-                    log.error("failed to request", e);
-                }
-            })).forEach(f -> {
-            });
-            // ------------------------------------------------- shutdown-executor/await-termination
+                });
+            }
+            // ---------------------------------------------------------------------- shutdown/await
             executor.shutdown();
             if (!executor.awaitTermination(1L, TimeUnit.MINUTES)) {
                 log.error("executor not terminated");

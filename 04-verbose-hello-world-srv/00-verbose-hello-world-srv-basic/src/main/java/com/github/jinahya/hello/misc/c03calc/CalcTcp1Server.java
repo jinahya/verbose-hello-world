@@ -40,7 +40,7 @@ class CalcTcp1Server extends _CalcTcp {
             // -------------------------------------------------------------------------------- bind
             server.bind(ADDR, SERVER_BACKLOG);
             logBound(server);
-            // ---------------------------------------------------------------- read-quit!-and-close
+            // --------------------------------------------------------- read-quit!-and-close-server
             JavaLangUtils.readLinesAndCloseWhenTests("quit!"::equalsIgnoreCase, server);
             // -------------------------------------------------------------------------------- loop
             while (!server.isClosed()) {
@@ -53,32 +53,15 @@ class CalcTcp1Server extends _CalcTcp {
                     }
                     continue;
                 }
-                final var future = executor.submit(() -> {
+                executor.submit(() -> {
                     try {
                         try {
-//                            client.setSoTimeout((int) TimeUnit.SECONDS.toMillis(1L));
-                            final var array = __CalcMessage2.newArray();
-                            for (int i = __CalcMessage2.INDEX_RESULT; i > 0; ) {
-                                final int r = client.getInputStream().readNBytes(
-                                        array,
-                                        __CalcMessage2.INDEX_RESULT - i,
-                                        i
-                                );
-                                if (r == -1) {
-                                    log.error("premature eof");
-                                    client.close();
-                                }
-                                assert r > 0;
-                                i -= r;
-                            }
-                            __CalcMessage2.calculateResult(array);
-                            client.getOutputStream().write(
-                                    array,
-                                    __CalcMessage2.INDEX_RESULT,
-                                    __CalcMessage2.LENGTH_RESULT
-                            );
-                            client.getOutputStream().flush();
-                            log.debug("flushed");
+                            client.setSoTimeout((int) TimeUnit.SECONDS.toMillis(1L));
+                            // ------------------------------------------------ read/calculate/write
+                            new __CalcMessage3.OfArray()
+                                    .readFromClient(client.getInputStream())
+                                    .calculateResult()
+                                    .writeToClient(client.getOutputStream(), true);
                         } finally {
                             client.close();
                         }

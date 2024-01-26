@@ -25,6 +25,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @SuppressWarnings({
@@ -32,10 +33,15 @@ import java.util.concurrent.Executors;
 })
 abstract class _CalcTcp extends _Calc {
 
-    // ------------------------------------------------------------------------------- server/client
+    // -------------------------------------------------------------------------------------- server
     static final int SERVER_BACKLOG = 50;
 
-    // ---------------------------------------------------------------------------------------------
+    /**
+     * Returns a new thread-pool that uses {@value #SERVER_THREADS} thread(s).
+     *
+     * @param namePrefix a thread name prefix.
+     * @return a new thread-pool that uses {@value #SERVER_THREADS} thread(s).
+     */
     static ExecutorService newExecutorForServer(final String namePrefix) {
         return Executors.newFixedThreadPool(
                 SERVER_THREADS,
@@ -43,10 +49,22 @@ abstract class _CalcTcp extends _Calc {
         );
     }
 
+    // -------------------------------------------------------------------------------------- client
+
+    /**
+     * Returns a new thread-pool that uses {@value #CLIENT_THREADS} thread(s).
+     *
+     * @param namePrefix a thread name prefix.
+     * @return a new thread-pool that uses {@value #CLIENT_THREADS} thread(s).
+     */
     static ExecutorService newExecutorForClient(final String namePrefix) {
         return Executors.newFixedThreadPool(
                 CLIENT_THREADS,
                 Thread.ofVirtual().name(namePrefix, 0L).factory()
         );
     }
+
+    static final long CONNECT_TIMEOUT = 1L;
+
+    static final TimeUnit CONNECT_TIMEOUT_UNIT = TimeUnit.SECONDS;
 }

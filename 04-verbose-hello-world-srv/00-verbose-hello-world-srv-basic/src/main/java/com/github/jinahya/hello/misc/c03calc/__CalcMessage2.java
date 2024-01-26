@@ -132,7 +132,6 @@ final class __CalcMessage2 {
         log.debug("calculating result for {}, {}, and {}", operator, operand1, operand2);
         final var result = operator.applyAsInt(operand1, operand2);
         array[offset + INDEX_RESULT] = (byte) result;
-        log.debug("calculating done");
         return array;
     }
 
@@ -211,8 +210,7 @@ final class __CalcMessage2 {
         final var operand2 = getOperand2(buffer);
         log.debug("calculating result for {}, {}, and {}", operator, operand1, operand2);
         final var result = (byte) operator.applyAsInt(operand1, operand2);
-        log.debug("calculating done");
-        return buffer.put(INDEX_RESULT, result);
+        return buffer.limit(buffer.capacity()).put(INDEX_RESULT, result);
     }
 
     private static int getResult(final ByteBuffer buffer) {
@@ -287,6 +285,10 @@ final class __CalcMessage2 {
         return ByteBuffer.wrap(newArray());
     }
 
+    static ByteBuffer newBufferForServer() {
+        return newBuffer().limit(INDEX_RESULT);
+    }
+
     static ByteBuffer randomize(final ByteBuffer buffer) {
         if (buffer.hasArray()) {
             randomize(buffer.array(), buffer.arrayOffset());
@@ -310,6 +312,12 @@ final class __CalcMessage2 {
             return ByteBuffer.wrap(newRandomizedArray());
         }
         return randomize(ByteBuffer.allocateDirect(BYTES));
+    }
+
+    static ByteBuffer newRandomizedBufferForClient() {
+        return newRandomizedBuffer()
+                .limit(INDEX_RESULT)
+                .position(INDEX_OPERATOR);
     }
 
     // ---------------------------------------------------------------------------------------------

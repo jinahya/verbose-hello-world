@@ -131,7 +131,6 @@ class CalcTcp3Server extends _CalcTcp {
                                 key.interestOpsOr(SelectionKey.OP_WRITE);
                                 assert !key.isWritable();
                                 selector.wakeup();
-                                log.debug("woke up for {}", channel);
                                 return null;
                             });
                         }
@@ -144,7 +143,6 @@ class CalcTcp3Server extends _CalcTcp {
                         final var w = channel.write(buffer);
                         assert w >= 0;
                         if (!buffer.hasRemaining()) {
-                            log.debug("written");
                             key.interestOpsAnd(~SelectionKey.OP_WRITE); // redundant
                             cancel(key);
                         }
