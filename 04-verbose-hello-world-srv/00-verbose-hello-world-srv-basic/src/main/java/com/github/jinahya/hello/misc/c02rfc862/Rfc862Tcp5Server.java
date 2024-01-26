@@ -40,6 +40,8 @@ import java.util.concurrent.atomic.LongAdder;
 })
 class Rfc862Tcp5Server extends _Rfc862Tcp {
 
+    static int sent = 0; // TODO: remove!
+
     // @formatter:on
     private record Handler(AsynchronousSocketChannel client, ByteBuffer buffer, LongAdder bytes,
                            MessageDigest digest, CountDownLatch latch)
@@ -87,6 +89,7 @@ class Rfc862Tcp5Server extends _Rfc862Tcp {
 
         // ------------------------------------------------------------------------------------ read
         private void read() {
+            assert buffer.hasRemaining();
             client.read(buffer, Mode.READ, this);
         }
 
@@ -96,6 +99,7 @@ class Rfc862Tcp5Server extends _Rfc862Tcp {
                 assert latch.getCount() == 2L;
                 latch.countDown(); // 2 -> 1
             } else {
+                assert r > 0; // why?
                 bytes.add(r);
             }
             write();
@@ -103,26 +107,32 @@ class Rfc862Tcp5Server extends _Rfc862Tcp {
 
         // ----------------------------------------------------------------------------------- write
         private void write() {
-            client.write(buffer.flip(), Mode.WRITE, this);
+            buffer.flip();
+            client.write(buffer, Mode.WRITE, this);
         }
 
         private void writeCompleted(final int w) {
+            assert w >= 0;
+            sent += w;
             JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, w);
             buffer.compact();
+            if (buffer.position() > 0) { // has remaining bytes to write; keep writing
+                write();
+                return;
+            }
+            assert buffer.position() == 0;
             if (latch.getCount() == 1L) { // reached to an eof; no need to read anymore
-                if (buffer.position() > 0) { // has remaining bytes to write; keep writing
-                    write();
-                    return;
-                }
-                assert buffer.position() == 0; // no remaining bytes to write, either
                 // ----------------------------------------------------------------------------- log
+                log.debug("[server] closing client...");
                 try {
                     client.close();
+                    assert !client.isOpen();
                 } catch (final IOException ioe) {
                     log.error("failed to close " + client, ioe);
                 }
                 logServerBytes(bytes.longValue());
                 logDigest(digest);
+                log.debug("sent: {}", sent);
                 assert latch.getCount() == 1L;
                 latch.countDown(); // 1 -> 0
                 return;
@@ -157,7 +167,9 @@ class Rfc862Tcp5Server extends _Rfc862Tcp {
                 }
             });
             latch.await();
+            log.debug("[server] end-of-try");
         }
+        log.debug("[server] end-of-main");
     }
     // @formatter:on
 

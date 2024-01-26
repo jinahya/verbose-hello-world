@@ -25,31 +25,55 @@ import lombok.extern.slf4j.Slf4j;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.IntStream;
 
 @Slf4j
 class CalcTcp1Client extends _CalcTcp {
 
     public static void main(final String... args) throws Exception {
-        try (var client = new Socket()) {
-            // ---------------------------------------------------------------------- bind(optional)
-            if (ThreadLocalRandom.current().nextBoolean()) {
-                client.bind(new InetSocketAddress(HOST, 0));
-                logBound(client);
+        try (var executor = newExecutorForClient("tcp-1-client-")) {
+            IntStream.range(0, CLIENT_COUNT).mapToObj(i -> executor.submit(() -> {
+                try (var client = new Socket()) {
+                    // -------------------------------------------------------------- bind(optional)
+                    if (ThreadLocalRandom.current().nextBoolean()) {
+                        client.bind(new InetSocketAddress(HOST, 0));
+                    }
+                    // --------------------------------------------------------------------- connect
+                    client.connect(ADDR);
+                    // ----------------------------------------------------------------------- write
+                    final var array = __CalcMessage2.newRandomizedArray();
+                    client.getOutputStream().write(array, 0, __CalcMessage2.INDEX_RESULT);
+                    client.getOutputStream().flush();
+                    // ------------------------------------------------------------------------ read
+                    log.debug("reading...");
+                    client.setSoTimeout((int) TimeUnit.SECONDS.toMillis(1L));
+                    for (var j = __CalcMessage2.LENGTH_RESULT; j > 0; ) {
+                        final var r = client.getInputStream().readNBytes(
+                                array,
+                                __CalcMessage2.INDEX_RESULT -j,
+                                j
+                        );
+                        log.debug("r: {}", r);
+                        if (r == -1) {
+                            log.error("premature eof");
+                            return;
+                        }
+                        assert r > 0;
+                        j -= r;
+                    }
+                    // ------------------------------------------------------------------------- log
+                    __CalcMessage2.log(array);
+                } catch (final Exception e) {
+                    log.error("failed to request", e);
+                }
+            })).forEach(f -> {
+            });
+            // ------------------------------------------------- shutdown-executor/await-termination
+            executor.shutdown();
+            if (!executor.awaitTermination(1L, TimeUnit.MINUTES)) {
+                log.error("executor not terminated");
             }
-            // ----------------------------------------------------------------------------- connect
-            client.connect(ADDR);
-            logConnected(client);
-            // ------------------------------------------------------------------------------- write
-            final var array = new byte[__CalcMessage2.BYTES];
-            __CalcMessage2.setOperator(array, _CalcOperator.randomValue());
-            __CalcMessage2.setOperand1(array, ThreadLocalRandom.current().nextInt());
-            __CalcMessage2.setOperand2(array, ThreadLocalRandom.current().nextInt());
-            client.getOutputStream().write(array, 0, __CalcMessage2.INDEX_RESULT);
-            client.getOutputStream().flush();
-            // -------------------------------------------------------------------------------- read
-            client.getInputStream().readNBytes(array, 0, array.length);
-            // --------------------------------------------------------------------------------- log
-            __CalcMessage2.log(array);
         }
     }
 }

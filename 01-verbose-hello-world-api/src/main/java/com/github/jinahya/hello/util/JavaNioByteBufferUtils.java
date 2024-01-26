@@ -48,10 +48,9 @@ public final class JavaNioByteBufferUtils {
             );
             return buffer;
         }
-        final var remaining = buffer.remaining();
-        return (T) buffer
-                .put(JavaLangArrayUtils.randomize(new byte[remaining]))
-                .position(buffer.position() - remaining);
+        return (T) buffer.mark()
+                .put(JavaLangArrayUtils.randomize(new byte[buffer.remaining()]))
+                .reset();
     }
 
     /**

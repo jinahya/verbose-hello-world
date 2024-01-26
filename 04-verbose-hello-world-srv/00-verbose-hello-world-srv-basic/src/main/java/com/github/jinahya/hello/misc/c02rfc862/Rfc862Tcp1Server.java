@@ -35,8 +35,8 @@ class Rfc862Tcp1Server extends _Rfc862Tcp {
             // ------------------------------------------------------------------------------ accept
             try (var client = logAccepted(server.accept())) {
                 // ------------------------------------------------------------------------- prepare
-                var bytes = 0L;
                 final var digest = newDigest();
+                var bytes = 0L;
                 // ---------------------------------------------------------------------- read/write
                 for (final var array = newArray(); ; ) {
                     // ------------------------------------------------------------------------ read
@@ -50,11 +50,14 @@ class Rfc862Tcp1Server extends _Rfc862Tcp {
                     digest.update(array, 0, r);
                 }
                 // -------------------------------------------------------------------- flush-output
+                log.debug("[server] flushing output...");
                 client.getOutputStream().flush();
                 // ----------------------------------------------------------------------------- log
                 logServerBytes(bytes);
                 logDigest(digest);
+                log.debug("[server] closing client..");
             }
+            log.debug("[server] end-of-try");
         }
     }
 

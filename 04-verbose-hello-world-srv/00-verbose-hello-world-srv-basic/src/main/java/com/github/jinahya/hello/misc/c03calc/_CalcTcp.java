@@ -23,6 +23,9 @@ package com.github.jinahya.hello.misc.c03calc;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @SuppressWarnings({
         "java:S101" // class _Calc...
@@ -31,4 +34,19 @@ abstract class _CalcTcp extends _Calc {
 
     // ------------------------------------------------------------------------------- server/client
     static final int SERVER_BACKLOG = 50;
+
+    // ---------------------------------------------------------------------------------------------
+    static ExecutorService newExecutorForServer(final String namePrefix) {
+        return Executors.newFixedThreadPool(
+                SERVER_THREADS,
+                Thread.ofVirtual().name(namePrefix, 0L).factory()
+        );
+    }
+
+    static ExecutorService newExecutorForClient(final String namePrefix) {
+        return Executors.newFixedThreadPool(
+                CLIENT_THREADS,
+                Thread.ofVirtual().name(namePrefix, 0L).factory()
+        );
+    }
 }

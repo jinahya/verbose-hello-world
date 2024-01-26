@@ -52,7 +52,11 @@ abstract class _Calc {
     static final InetSocketAddress ADDR = new InetSocketAddress(HOST, PORT);
 
     // ------------------------------------------------------------------------------- server/client
+
+    static final int SERVER_THREADS = 128;
+
     static final int CLIENT_THREADS = 8;
+
     static final int CLIENT_COUNT = 8;
 
     // ----------------------------------------------------------------------------------------- log

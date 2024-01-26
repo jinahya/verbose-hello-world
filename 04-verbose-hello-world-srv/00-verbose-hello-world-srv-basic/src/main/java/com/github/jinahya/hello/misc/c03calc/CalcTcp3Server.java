@@ -23,7 +23,6 @@ package com.github.jinahya.hello.misc.c03calc;
 import com.github.jinahya.hello.util.JavaLangUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
@@ -31,19 +30,10 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
 class CalcTcp3Server extends _CalcTcp {
-
-    private static void closeUnchecked(final Closeable closeable) {
-        try {
-            closeable.close();
-        } catch (final IOException ioe) {
-            log.debug("failed to close {}", closeable, ioe);
-        }
-    }
 
     private static void cancel(final SelectionKey key) {
         try {
@@ -58,21 +48,22 @@ class CalcTcp3Server extends _CalcTcp {
     public static void main(final String... args) throws IOException, InterruptedException {
         try (var selector = Selector.open();
              var server = ServerSocketChannel.open();
-             var executor = Executors.newCachedThreadPool(
-                     Thread.ofVirtual().name("calc-tcp-3-server-", 0L).factory())) {
+             var executor = newExecutorForServer("tcp-3-server-")) {
+            // ------------------------------------------------------------------------------- reuse
             server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
             server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
             // -------------------------------------------------------------------------------- bind
-            logBound(server.bind(ADDR));
-            // ------------------------------------------------------------------ configure/register
-            server.configureBlocking(false);
-            final var serverKey = server.register(selector, SelectionKey.OP_ACCEPT);
-            // --------------------------------------------------------- read-quit!-and-close-server
+            logBound(server.bind(ADDR, SERVER_BACKLOG));
+            // ----------------------------------------------------- configure-non-blocking/register
+            final var serverKey = server.configureBlocking(false)
+                    .register(selector, SelectionKey.OP_ACCEPT);
+            // ---------------------------------------------------------------- read-quit!-and-close
             JavaLangUtils.readLinesAndCallWhenTests(
                     "quit!"::equalsIgnoreCase, // <predicate>
                     () -> {                    // <callable>
                         server.close();
                         assert !serverKey.isValid();
+                        selector.keys().forEach(SelectionKey::cancel);
                         selector.wakeup();
                         return null;
                     }
@@ -103,15 +94,19 @@ class CalcTcp3Server extends _CalcTcp {
                             continue;
                         }
                         try {
-                            client.configureBlocking(false).register(
+                            final var clientKey = client.configureBlocking(false).register(
                                     selector,
                                     SelectionKey.OP_READ,
-                                    ByteBuffer.allocate(__CalcMessage2.BYTES)
-                                            .limit(__CalcMessage2.INDEX_RESULT)
+                                    __CalcMessage2.newBuffer().limit(__CalcMessage2.INDEX_RESULT)
                             );
+                            assert !clientKey.isReadable();
                         } catch (final IOException ioe) {
                             log.error("failed to configure/register " + client, ioe);
-                            cancel(key);
+                            try {
+                                client.close();
+                            } catch (final IOException ioe2) {
+                                log.error("failed to close " + client, ioe2);
+                            }
                             continue;
                         }
                     }
@@ -119,6 +114,7 @@ class CalcTcp3Server extends _CalcTcp {
                     if (key.isReadable()) {
                         final var channel = (SocketChannel) key.channel();
                         final var buffer = (ByteBuffer) key.attachment();
+                        assert buffer.hasRemaining();
                         final var r = channel.read(buffer);
                         if (r == -1) {
                             log.error("premature eof");
@@ -133,7 +129,9 @@ class CalcTcp3Server extends _CalcTcp {
                                         .limit(buffer.capacity())
                                         .position(__CalcMessage2.INDEX_RESULT);
                                 key.interestOpsOr(SelectionKey.OP_WRITE);
+                                assert !key.isWritable();
                                 selector.wakeup();
+                                log.debug("woke up for {}", channel);
                                 return null;
                             });
                         }
@@ -142,18 +140,23 @@ class CalcTcp3Server extends _CalcTcp {
                     if (key.isWritable()) {
                         final var channel = (SocketChannel) key.channel();
                         final var buffer = (ByteBuffer) key.attachment();
+                        assert buffer.hasRemaining();
                         final var w = channel.write(buffer);
                         assert w >= 0;
                         if (!buffer.hasRemaining()) {
+                            log.debug("written");
                             key.interestOpsAnd(~SelectionKey.OP_WRITE); // redundant
                             cancel(key);
                         }
                     }
-                } // end-of-selectedKeys-loop
-            } // end-of-selection-loop
+                }
+            }
+            log.debug("out-of-loop");
+            // ------------------------------------------------- shutdown-executor/await-termination
             executor.shutdown();
-            final boolean terminated = executor.awaitTermination(10L, TimeUnit.SECONDS);
-            assert terminated : "executor hasn't been terminated";
+            if (!executor.awaitTermination(10L, TimeUnit.SECONDS)) {
+                log.error("executor not terminated");
+            }
         }
     }
 }

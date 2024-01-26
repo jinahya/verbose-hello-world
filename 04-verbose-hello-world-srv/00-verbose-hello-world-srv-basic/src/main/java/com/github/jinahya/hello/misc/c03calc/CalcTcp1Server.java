@@ -23,28 +23,26 @@ package com.github.jinahya.hello.misc.c03calc;
 import com.github.jinahya.hello.util.JavaLangUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.EOFException;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.StandardSocketOptions;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
 class CalcTcp1Server extends _CalcTcp {
 
     public static void main(final String... args) throws IOException, InterruptedException {
-        try (var executor = Executors.newCachedThreadPool(
-                Thread.ofVirtual().name("server-", 0L).factory());
+        try (var executor = newExecutorForServer("tcp1-server-");
              var server = new ServerSocket()) {
             server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
             server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
             // -------------------------------------------------------------------------------- bind
-            server.bind(ADDR);
+            server.bind(ADDR, SERVER_BACKLOG);
             logBound(server);
-            // -------------------------------------------------------------------------------- run
+            // ---------------------------------------------------------------- read-quit!-and-close
             JavaLangUtils.readLinesAndCloseWhenTests("quit!"::equalsIgnoreCase, server);
+            // -------------------------------------------------------------------------------- loop
             while (!server.isClosed()) {
                 final Socket client;
                 try {
@@ -55,29 +53,43 @@ class CalcTcp1Server extends _CalcTcp {
                     }
                     continue;
                 }
-                executor.submit(() -> {
+                final var future = executor.submit(() -> {
                     try {
-                        client.setSoTimeout((int) TimeUnit.SECONDS.toMillis(1L));
-                        final var message = new byte[__CalcMessage2.BYTES];
-                        final int r = client.getInputStream().readNBytes(
-                                message,
-                                0,
-                                __CalcMessage2.INDEX_RESULT
-                        );
-                        if (r != __CalcMessage2.INDEX_RESULT) {
-                            throw new EOFException("premature eof");
+                        try {
+//                            client.setSoTimeout((int) TimeUnit.SECONDS.toMillis(1L));
+                            final var array = __CalcMessage2.newArray();
+                            for (int i = __CalcMessage2.INDEX_RESULT; i > 0; ) {
+                                final int r = client.getInputStream().readNBytes(
+                                        array,
+                                        __CalcMessage2.INDEX_RESULT - i,
+                                        i
+                                );
+                                if (r == -1) {
+                                    log.error("premature eof");
+                                    client.close();
+                                }
+                                assert r > 0;
+                                i -= r;
+                            }
+                            __CalcMessage2.calculateResult(array);
+                            client.getOutputStream().write(
+                                    array,
+                                    __CalcMessage2.INDEX_RESULT,
+                                    __CalcMessage2.LENGTH_RESULT
+                            );
+                            client.getOutputStream().flush();
+                            log.debug("flushed");
+                        } finally {
+                            client.close();
                         }
-                        __CalcMessage2.calculateResult(message);
-                        client.getOutputStream().write(message);
-                        client.getOutputStream().flush();
-                        return null;
-                    } finally {
-                        client.close();
+                    } catch (final Exception e) {
+                        log.error("failed to serve for " + client, e);
                     }
                 });
             }
+            // ---------------------------------------------------------------------- shutdown/await
             executor.shutdown();
-            if (!executor.awaitTermination(1L, TimeUnit.SECONDS)) {
+            if (!executor.awaitTermination(4L, TimeUnit.SECONDS)) {
                 log.error("executor not terminated!");
             }
         }

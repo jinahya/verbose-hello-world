@@ -27,53 +27,53 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.IntStream;
 
 @Slf4j
 class CalcTcp3Client extends _CalcTcp {
 
     public static void main(final String... args) throws Exception {
         try (var selector = Selector.open()) {
-            try (var executor = Executors.newFixedThreadPool(
-                    CLIENT_THREADS,
-                    Thread.ofVirtual().name("calc-tcp-3-client-", 0L).factory())) {
-                for (int i = 0; i < CLIENT_COUNT; i++) {
-                    executor.submit(() -> {
-                        var client = SocketChannel.open(); // no-try-with-resources
-                        // ---------------------------------------------------------- bind(optional)
-                        if (ThreadLocalRandom.current().nextBoolean()) {
-                            client.bind(new InetSocketAddress(HOST, 0));
-                        }
-                        // --------------------------------------------------------------- configure
-                        client.configureBlocking(false);
-                        // ------------------------------------------------------------ connect(try)
-                        if (client.connect(ADDR)) {
-                            return client.register(
-                                    selector,
-                                    SelectionKey.OP_WRITE,
-                                    __CalcMessage2.newRandomizedBuffer()
-                                            .limit(__CalcMessage2.INDEX_RESULT)
-                                            .position(__CalcMessage2.INDEX_OPERATOR)
-                            );
-                        } else {
-                            return client.register(selector, SelectionKey.OP_CONNECT);
-                        }
-                    }).get();
-                }
+            try (var executor = newExecutorForClient("tcp-3-client-")) {
+                IntStream.range(0, CLIENT_COUNT).mapToObj(i -> executor.submit(() -> {
+                    // ------------------------------------------------------------------------ open
+                    var client = SocketChannel.open(); // no-try-with-resources
+                    // -------------------------------------------------------------- bind(optional)
+                    if (ThreadLocalRandom.current().nextBoolean()) {
+                        client.bind(new InetSocketAddress(HOST, 0));
+                    }
+                    // ------------------------------------------------------ configure-non-blocking
+                    client.configureBlocking(false);
+                    // ---------------------------------------------------------------- connect(try)
+                    if (client.connect(ADDR)) {
+                        final var clientKey = client.register(
+                                selector,
+                                SelectionKey.OP_WRITE,
+                                __CalcMessage2.newRandomizedBuffer()
+                                        .limit(__CalcMessage2.INDEX_RESULT)
+                                        .position(__CalcMessage2.INDEX_OPERATOR)
+                        );
+                    } else {
+                        final var clientKey = client.register(selector, SelectionKey.OP_CONNECT);
+                    }
+                    return null;
+                })).forEach(f -> {
+                });
                 executor.shutdown();
-                final var terminated = executor.awaitTermination(1L, TimeUnit.SECONDS);
-                if (!terminated) {
+                if (!executor.awaitTermination(1L, TimeUnit.SECONDS)) {
                     log.error("executor not terminated");
                 }
             }
-            // ---------------------------------------------------------------------- selection-loop
+            // ----------------------------------------------------------------------- selector-loop
             while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
+                // -------------------------------------------------------------------------- select
                 if (selector.select() == 0) {
+                    log.debug("zero selected; continuing..");
                     continue;
                 }
-                // --------------------------------------------------------------- selectedKeys-loop
+                // -------------------------------------------------------------------------- handle
                 for (final var i = selector.selectedKeys().iterator(); i.hasNext(); ) {
                     final var key = i.next();
                     i.remove();
@@ -93,11 +93,12 @@ class CalcTcp3Client extends _CalcTcp {
                     }
                     // ----------------------------------------------------------------------- write
                     if (key.isWritable()) {
+//                        log.debug("writable: {}", key.channel());
                         final var channel = (SocketChannel) key.channel();
                         final var buffer = (ByteBuffer) key.attachment();
                         assert buffer.hasRemaining();
                         final var w = channel.write(buffer);
-                        log.debug("w: {}", w);
+//                        log.debug("w: {}", w);
                         assert w >= 0;
                         if (!buffer.hasRemaining()) {
                             key.interestOpsAnd(~SelectionKey.OP_WRITE);
@@ -110,26 +111,31 @@ class CalcTcp3Client extends _CalcTcp {
                     }
                     // ------------------------------------------------------------------------ read
                     if (key.isReadable()) {
+//                        log.debug("readable: {}", key.channel());
                         final var channel = (SocketChannel) key.channel();
                         final var buffer = (ByteBuffer) key.attachment();
                         assert buffer.hasRemaining();
                         final var r = channel.read(buffer);
-                        log.debug("r: {}", r);
+//                        log.debug("r: {}", r);
                         if (r == -1) {
                             log.error("premature eof");
+                            key.interestOpsAnd(~SelectionKey.OP_READ); // redundant
                             channel.close();
                             assert !key.isValid();
                             continue;
                         }
                         assert r >= 0;
                         if (!buffer.hasRemaining()) {
-                            __CalcMessage2.log(buffer);
+                            key.interestOpsAnd(~SelectionKey.OP_READ); // redundant
                             channel.close();
                             assert !key.isValid();
+                            __CalcMessage2.log(buffer);
                         }
                     }
                 }
             }
+            log.debug("out-of-selector-loop");
         }
+        log.debug("out-of-try-with-resources");
     }
 }

@@ -20,7 +20,6 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
-import com.github.jinahya.hello.util._TcpUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.ServerSocket;
@@ -39,26 +38,30 @@ class Rfc862Tcp0Server extends _Rfc862Tcp {
             // ------------------------------------------------------------------------------ accept
             try (var client = logAccepted(server.accept())) {
                 // ------------------------------------------------------------------------- prepare
-                var bytes = 0L;
                 final var digest = newDigest();
+                var bytes = 0L;
                 // -------------------------------------------------------------------- read / write
-                while (true) {
+                for (int b; ; ) {
                     // ------------------------------------------------------------------------ read
-                    final int b = client.getInputStream().read();
+                    b = client.getInputStream().read();
                     if (b == -1) {
                         break;
                     }
                     bytes++;
                     // ----------------------------------------------------------------------- write
                     client.getOutputStream().write(b);
-                    client.getOutputStream().flush();
                     digest.update((byte) b);
                 }
+                log.debug("[server] flushing output");
+                client.getOutputStream().flush();
                 // ----------------------------------------------------------------------------- log
                 logServerBytes(bytes);
                 logDigest(digest);
+                log.debug("[server] closing client: " + client);
             }
+            log.debug("[server] end-of-try");
         }
+        log.debug("[server] end-of-main");
     }
 
     private Rfc862Tcp0Server() {

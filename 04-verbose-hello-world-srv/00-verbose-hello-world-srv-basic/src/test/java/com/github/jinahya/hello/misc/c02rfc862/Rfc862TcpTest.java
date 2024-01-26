@@ -90,12 +90,10 @@ class Rfc862TcpTest {
                     throw new RuntimeException(e);
                 }
             });
-            client.get(_Rfc86_Constants.CLIENT_PROGRAM_TIMEOUT,
-                       _Rfc86_Constants.CLIENT_PROGRAM_TIMEOUT_UNIT);
-            server.get(_Rfc86_Constants.SERVER_PROGRAM_TIMEOUT,
-                       _Rfc86_Constants.SERVER_PROGRAM_TIMEOUT_UNIT);
+            client.get(10L, TimeUnit.SECONDS);
+            server.get(10L, TimeUnit.SECONDS);
             executor.shutdown();
-            final var terminated = executor.awaitTermination(4L, TimeUnit.SECONDS);
+            final var terminated = executor.awaitTermination(1L, TimeUnit.SECONDS);
             if (!terminated) {
                 log.error("executor not terminated");
             }

@@ -38,9 +38,11 @@ final class __CalcMessage2 {
 
     static final int INDEX_OPERATOR = 0;
 
-    private static final int INDEX_OPERAND = 3;
+    private static final int INDEX_OPERAND = INDEX_OPERATOR + 3;
 
-    static final int INDEX_RESULT = 4;
+    static final int INDEX_RESULT = INDEX_OPERAND + 1;
+
+    static final int LENGTH_RESULT = BYTES - INDEX_RESULT;
 
     // ------------------------------------------------------------------------------------- operand
     private static int operand1(final byte operand) {
@@ -125,11 +127,12 @@ final class __CalcMessage2 {
 
     private static byte[] calculateResult(final byte[] array, final int offset) {
         final var operator = operator(array, offset);
-        final var result = operator.applyAsInt(
-                operand1(array, offset),
-                operand2(array, offset)
-        );
+        final var operand1 = operand1(array, offset);
+        final var operand2 = operand2(array, offset);
+        log.debug("calculating result for {}, {}, and {}", operator, operand1, operand2);
+        final var result = operator.applyAsInt(operand1, operand2);
         array[offset + INDEX_RESULT] = (byte) result;
+        log.debug("calculating done");
         return array;
     }
 
@@ -170,7 +173,7 @@ final class __CalcMessage2 {
         if (buffer.hasArray()) {
             return operand1(buffer.array(), buffer.arrayOffset());
         }
-        return operand1(buffer.get(INDEX_OPERAND));
+        return operand1(buffer.limit(INDEX_RESULT).get(INDEX_OPERAND));
     }
 
     static ByteBuffer setOperand1(final ByteBuffer buffer, final int operand1) {
@@ -186,8 +189,7 @@ final class __CalcMessage2 {
         if (buffer.hasArray()) {
             return operand2(buffer.array(), buffer.arrayOffset());
         }
-        assert buffer.limit() == buffer.capacity();
-        return operand2(buffer.get(INDEX_OPERAND));
+        return operand2(buffer.limit(INDEX_RESULT).get(INDEX_OPERAND));
     }
 
     static ByteBuffer setOperand2(final ByteBuffer buffer, final int operand2) {
@@ -207,7 +209,9 @@ final class __CalcMessage2 {
         final var operator = getOperator(buffer);
         final var operand1 = getOperand1(buffer);
         final var operand2 = getOperand2(buffer);
+        log.debug("calculating result for {}, {}, and {}", operator, operand1, operand2);
         final var result = (byte) operator.applyAsInt(operand1, operand2);
+        log.debug("calculating done");
         return buffer.put(INDEX_RESULT, result);
     }
 
@@ -215,17 +219,23 @@ final class __CalcMessage2 {
         if (buffer.hasArray()) {
             return result(buffer.array(), buffer.arrayOffset());
         }
-        return buffer.get(INDEX_RESULT);
+        return buffer.limit(BYTES).get(INDEX_RESULT);
     }
 
     // ---------------------------------------------------------------------------------------------
-    private static void log(final byte[] array, final int offset) {
-        log.debug("{} {} {} {}",
-                  operator(array, offset),
-                  String.format("%+2d", operand1(array, offset)),
-                  String.format("%+2d", operand2(array, offset)),
-                  String.format("%+3d", result(array, offset))
+    private static void log(final _CalcOperator operator, final int operand1, final int operand2,
+                            final int result) {
+        log.info("{} {} {} {}",
+                 operator,
+                 String.format("%+2d", operand1),
+                 String.format("%+2d", operand2),
+                 String.format("%+3d", result)
         );
+    }
+
+    private static void log(final byte[] array, final int offset) {
+        log(operator(array, offset), operand1(array, offset), operand2(array, offset),
+            result(array, offset));
     }
 
     static void log(final byte[] array) {
@@ -237,15 +247,14 @@ final class __CalcMessage2 {
             log(buffer.array(), buffer.arrayOffset());
             return;
         }
-        log.debug("{} {} {} {}",
-                  getOperator(buffer),
-                  String.format("%+2d", getOperand1(buffer)),
-                  String.format("%+2d", getOperand2(buffer)),
-                  String.format("%+3d", getResult(buffer))
-        );
+        log(getOperator(buffer), getOperand1(buffer), getOperand2(buffer), getResult(buffer));
     }
 
     // ---------------------------------------------------------------------------------------------
+    static byte[] newArray() {
+        return new byte[BYTES];
+    }
+
     private static byte[] randomize(final byte[] array, final int offset) {
         return
                 operand2(
@@ -269,6 +278,13 @@ final class __CalcMessage2 {
 
     static byte[] newRandomizedArray() {
         return randomize(new byte[BYTES]);
+    }
+
+    static ByteBuffer newBuffer() {
+        if (ThreadLocalRandom.current().nextBoolean()) {
+            return ByteBuffer.allocateDirect(BYTES);
+        }
+        return ByteBuffer.wrap(newArray());
     }
 
     static ByteBuffer randomize(final ByteBuffer buffer) {

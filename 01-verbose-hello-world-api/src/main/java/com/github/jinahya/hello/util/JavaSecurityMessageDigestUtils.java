@@ -25,6 +25,9 @@ import java.security.MessageDigest;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
+@SuppressWarnings({
+        "java:S4274" // > Replace this assert with a proper check.
+})
 public final class JavaSecurityMessageDigestUtils {
 
     // ------------------------------------------------------------------------------- MessageDigest
@@ -33,11 +36,11 @@ public final class JavaSecurityMessageDigestUtils {
      * Updates specified message digest with specified number of bytes preceding specified byte
      * buffer's current position.
      *
-     * @param digest the message digest to update.
+     * @param digest the message digest to be updated.
      * @param buffer the byte buffer whose bytes are updated to the {@code digest}.
      * @param bytes  the number of bytes preceding the {@code buffer}'s current {@code position} to
      *               be updated to the {@code digest}; must be not negative nor greater than
-     *               {@code buffer.position}.
+     *               {@code buffer}'s current position.
      */
     public static void updateDigest(final MessageDigest digest, final ByteBuffer buffer,
                                     final int bytes) {
@@ -58,14 +61,15 @@ public final class JavaSecurityMessageDigestUtils {
             );
             return;
         }
-        if (ThreadLocalRandom.current().nextBoolean()) {
+        if (ThreadLocalRandom.current().nextBoolean()) { // TODO: remove?
             digest.update(buffer.slice(buffer.position() - bytes, bytes));
             return;
         }
         final var limit = buffer.limit();
-        buffer.limit(buffer.position()).position(buffer.position() - bytes);
+        buffer.flip().position(buffer.limit() - bytes);
         digest.update(buffer);
-        buffer.position(buffer.limit()).limit(limit);
+        assert !buffer.hasRemaining(); // java:S4274
+        buffer.limit(limit);
     }
 
     // ---------------------------------------------------------------------------------------------

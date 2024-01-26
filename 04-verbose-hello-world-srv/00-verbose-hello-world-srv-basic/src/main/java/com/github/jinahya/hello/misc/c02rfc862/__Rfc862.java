@@ -74,7 +74,7 @@ abstract class __Rfc862 {
     }
 
     // --------------------------------------------------------------------------------------- bytes
-    private static final int BOUND_RANDOM_BYTES = 8192;
+    private static final int BOUND_RANDOM_BYTES = 1024;
 
     /**
      * Returns a new random number (of bytes) to send.
@@ -113,7 +113,7 @@ abstract class __Rfc862 {
 
     // -------------------------------------------------------------------------------- array/buffer
     private static int length() {
-        return ThreadLocalRandom.current().nextInt(1024) + 1;
+        return ThreadLocalRandom.current().nextInt(128) + 1;
     }
 
     private static byte[] array() {
@@ -135,7 +135,8 @@ abstract class __Rfc862 {
      * Returns a new byte buffer {@link ByteBuffer#wrap(byte[]) wraps} a <em>non-zero-length</em>
      * array.
      *
-     * @return a new byte buffer which {@link ByteBuffer#hasArray() has a backing array}.
+     * @return a new byte buffer which a <em>non-zero-length</em>
+     * {@link ByteBuffer#hasArray() backing array}.
      */
     static ByteBuffer newBuffer() {
         final var buffer = ByteBuffer.wrap(array());
