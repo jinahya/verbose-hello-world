@@ -56,7 +56,8 @@ class SocketOptionsViewer extends _AbstractViewer {
             HelloWorldNetUtils.acceptEachStandardSocketOption(so -> list.add(so.name()));
             model.addColumn("OPTION", list.toArray(Object[]::new));
         }
-        for (final Map.Entry<Class<?>, Callable<?>> e : SocketOptionsPrinter.CLASSES_AND_INITIALIZERS.entrySet()) {
+        for (final Map.Entry<Class<?>, Callable<?>> e
+                : SocketOptionsPrinter.CLASSES_AND_INITIALIZERS.entrySet()) {
             final var list = new ArrayList<>();
             HelloWorldNetUtils.acceptSocketOptionsHelper(
                     e.getKey(),

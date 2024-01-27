@@ -52,11 +52,11 @@ class SocketOptionsPrinter {
         final var m = new LinkedHashMap<Class<?>, Callable<?>>();
         m.put(Socket.class, Socket::new);
         m.put(ServerSocket.class, ServerSocket::new);
-        m.put(DatagramSocket.class, DatagramSocket::new);
         m.put(SocketChannel.class, SocketChannel::open);
         m.put(ServerSocketChannel.class, ServerSocketChannel::open);
-        m.put(DatagramChannel.class, DatagramChannel::open);
         m.put(AsynchronousSocketChannel.class, AsynchronousSocketChannel::open);
+        m.put(DatagramSocket.class, DatagramSocket::new);
+        m.put(DatagramChannel.class, DatagramChannel::open);
         m.put(AsynchronousServerSocketChannel.class, AsynchronousServerSocketChannel::open);
         CLASSES_AND_INITIALIZERS = Collections.unmodifiableMap(m);
     }
@@ -79,8 +79,7 @@ class SocketOptionsPrinter {
         print(clazz, () -> clazz.cast(initializer.call()));
     }
 
-    public static void main(String... args)
-            throws Exception {
+    public static void main(final String... args) throws Exception {
         for (final Map.Entry<Class<?>, Callable<?>> pair : CLASSES_AND_INITIALIZERS.entrySet()) {
             printHelper(pair.getKey().asSubclass(Closeable.class), pair.getValue());
         }
