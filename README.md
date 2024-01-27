@@ -73,7 +73,8 @@ See [dockerhub/maven](https://hub.docker.com/_/maven) for available tags.
 ### [JUnit](https://github.com/junit-team) (GitHub)
 
 #### [JUnit 5](https://github.com/junit-team/junit5)
-* 
+
+*
 * [TestInstanceFactory on enclosing class is not called for @Nested test class #1567](https://github.com/junit-team/junit5/issues/1567)
 
 ### [ReactiveX](https://github.com/ReactiveX) (GitHub)

@@ -40,11 +40,11 @@
       <artifactId>mutiny</artifactId>
       <scope>test</scope>
     </dependency>
-<!--    <dependency>-->
-<!--      <groupId>io.smallrye.reactive</groupId>-->
-<!--      <artifactId>rs-flow-adapters</artifactId>-->
-<!--      <scope>test</scope>-->
-<!--    </dependency>-->
+    <!--    <dependency>-->
+    <!--      <groupId>io.smallrye.reactive</groupId>-->
+    <!--      <artifactId>rs-flow-adapters</artifactId>-->
+    <!--      <scope>test</scope>-->
+    <!--    </dependency>-->
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-reactive-streams</artifactId>

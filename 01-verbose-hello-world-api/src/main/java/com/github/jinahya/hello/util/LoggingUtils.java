@@ -29,7 +29,7 @@ import java.util.Objects;
 
 @Slf4j
 // https://gist.github.com/nkcoder/cd74919fd80594c56e09b448a2d1ba31
-public final class LoggingUtils {
+final class LoggingUtils {
 
     private static final Class<?> CLASS_LOGGER_CONTEXT;
 
