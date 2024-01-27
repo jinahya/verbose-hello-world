@@ -94,6 +94,8 @@ class CalcTcp5Server extends CalcTcp {
                 newExecutorForServer("tcp-5-server-")
         );
         try (var server = AsynchronousServerSocketChannel.open(group)) {
+            server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
+//            server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
             // --------------------------------------------------------- read-quit!/count-down-latch
             final var latch = new CountDownLatch(1);
             JavaLangUtils.readLinesAndRunWhenTests(
@@ -101,8 +103,6 @@ class CalcTcp5Server extends CalcTcp {
                     latch::countDown
             );
             // -------------------------------------------------------------------------------- bind
-            server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
-            server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
             logBound(server.bind(ADDR, SERVER_BACKLOG));
             // ------------------------------------------------------------------------------ accept
             server.<Void>accept(null, new CompletionHandler<>() {

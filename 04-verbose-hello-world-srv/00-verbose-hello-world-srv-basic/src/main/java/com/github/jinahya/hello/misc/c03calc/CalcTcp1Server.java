@@ -37,7 +37,7 @@ class CalcTcp1Server extends CalcTcp {
         try (var executor = newExecutorForServer("tcp1-server-");
              var server = new ServerSocket()) {
             server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
-            server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
+//            server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
             // -------------------------------------------------------------------------------- bind
             server.bind(ADDR, SERVER_BACKLOG);
             logBound(server);

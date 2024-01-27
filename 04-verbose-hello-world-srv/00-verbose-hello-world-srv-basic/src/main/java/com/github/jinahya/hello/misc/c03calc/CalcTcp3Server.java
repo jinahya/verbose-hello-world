@@ -58,7 +58,7 @@ class CalcTcp3Server extends CalcTcp {
              var server = ServerSocketChannel.open();
              var executor = newExecutorForServer("tcp-3-server-")) {
             server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
-            server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
+//            server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
             // -------------------------------------------------------------------------------- bind
             logBound(server.bind(ADDR, SERVER_BACKLOG));
             // ----------------------------------------------------- configure-non-blocking/register
