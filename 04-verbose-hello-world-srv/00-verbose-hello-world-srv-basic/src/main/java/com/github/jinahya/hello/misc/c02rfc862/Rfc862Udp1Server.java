@@ -41,12 +41,11 @@ class Rfc862Udp1Server extends Rfc862Udp {
             final var packet = new DatagramPacket(array, array.length);
             // ----------------------------------------------------------------------------- receive
             server.receive(packet);
-            logReceived(packet);
             // -------------------------------------------------------------------------------- send
             server.send(packet);
             digest.update(packet.getData(), packet.getOffset(), packet.getLength());
-            logSent(packet);
-            // -------------------------------------------------------------------------------------
+            // --------------------------------------------------------------------------------- log
+            logServerBytes(packet.getLength());
             logDigest(digest);
         }
     }

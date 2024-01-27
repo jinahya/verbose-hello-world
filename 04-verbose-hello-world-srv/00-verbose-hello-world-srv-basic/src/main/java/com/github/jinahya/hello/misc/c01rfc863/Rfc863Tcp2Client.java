@@ -53,7 +53,7 @@ class Rfc863Tcp2Client extends Rfc863Tcp {
             }
             // ----------------------------------------------------------------------------- prepare
             final var digest = newDigest();
-            var bytes = logClientBytes(newRandomClientBytes());
+            var bytes = logClientBytes(newRandomBytes());
             // ------------------------------------------------------------------------------- write
             final var buffer = newBuffer();
             for (int w; bytes > 0; bytes -= w) {

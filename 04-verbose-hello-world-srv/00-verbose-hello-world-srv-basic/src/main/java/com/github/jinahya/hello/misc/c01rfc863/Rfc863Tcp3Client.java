@@ -55,7 +55,7 @@ class Rfc863Tcp3Client extends Rfc863Tcp {
             }
             // ----------------------------------------------------------------------------- prepare
             final var digest = newDigest();
-            var bytes = logClientBytes(newRandomClientBytes());
+            var bytes = logClientBytes(newRandomBytes());
             // ------------------------------------------------------------------------------ select
             while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
                 if (selector.select() == 0) {

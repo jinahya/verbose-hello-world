@@ -41,17 +41,15 @@ import java.util.concurrent.ThreadLocalRandom;
 abstract class Rfc863Tcp extends Rfc863 {
 
     // --------------------------------------------------------------------------------- clientBytes
-    private static final int BOUND_CLIENT_BYTES = 1024;
+    private static final int BOUND_BYTES = 1024;
 
     /**
-     * Returns a new {@code int} between {@code 0}(inclusive) and
-     * {@value #BOUND_CLIENT_BYTES}(exclusive).
+     * Returns a new {@code int} between {@code 0}(inclusive) and {@value #BOUND_BYTES}(exclusive).
      *
-     * @return a new {@code int} between {@code 0}(inclusive) and
-     * {@value #BOUND_CLIENT_BYTES}(exclusive).
+     * @return a new {@code int} between {@code 0}(inclusive) and {@value #BOUND_BYTES}(exclusive).
      */
-    static int newRandomClientBytes() {
-        return ThreadLocalRandom.current().nextInt(BOUND_CLIENT_BYTES);
+    static int newRandomBytes() {
+        return ThreadLocalRandom.current().nextInt(BOUND_BYTES);
     }
 
     // -------------------------------------------------------------------------------- array/buffer

@@ -44,7 +44,7 @@ class Rfc863Tcp4Client extends Rfc863Tcp {
             logConnected(client);
             // ----------------------------------------------------------------------------- prepare
             final var digest = newDigest();
-            var bytes = logClientBytes(newRandomClientBytes());
+            var bytes = logClientBytes(newRandomBytes());
             final var buffer = newBuffer().limit(0);
             // ------------------------------------------------------------------------------- write
             for (int w; bytes > 0; bytes -= w) {

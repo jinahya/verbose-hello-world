@@ -49,7 +49,7 @@ class Rfc863Tcp5Client extends Rfc863Tcp {
                 @Override public void completed(final Void result, final Void a) {
                     logConnected(client);
                     // --------------------------------------------------------------------- prepare
-                    final var bytes = new AtomicInteger(logClientBytes(newRandomClientBytes()));
+                    final var bytes = new AtomicInteger(logClientBytes(newRandomBytes()));
                     final var buffer = JavaNioByteBufferUtils.randomize(newBuffer());
                     buffer.limit(Math.min(buffer.limit(), bytes.get()));
                     // ----------------------------------------------------------------------- write

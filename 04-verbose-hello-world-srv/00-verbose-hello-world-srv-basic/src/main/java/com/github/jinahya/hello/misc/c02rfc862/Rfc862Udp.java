@@ -25,10 +25,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.SocketAddress;
-import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
@@ -37,150 +34,42 @@ import java.util.concurrent.ThreadLocalRandom;
 @Slf4j
 abstract class Rfc862Udp extends Rfc862 {
 
-    private static final String LOG_FORMAT_BOUND = "bound to {}";
-
-    private static final String LOG_FORMAT_CONNECTED = "connected to {}";
-
-    private static final String LOG_FORMAT_SENDING = "sending {} byte(s) to {}";
-
-    private static final String LOG_FORMAT_SENT = "{} byte(s) sent to {}";
-
-    private static final String LOG_FORMAT_RECEIVED = "{} byte(s) received from {}";
-
-    // --------------------------------------------------------------------------------------- bound
-    public static <T extends DatagramSocket> T logBound(final T socket) {
+    // ------------------------------------------------------------------------------------ logBound
+    static void logBound(final DatagramSocket socket) {
         Objects.requireNonNull(socket, "socket is null");
         if (!socket.isBound()) {
             throw new IllegalArgumentException("not found: " + socket);
         }
-        log.info(LOG_FORMAT_BOUND, socket.getLocalSocketAddress());
-        return socket;
+        logBound(socket.getLocalSocketAddress());
     }
 
-    @SuppressWarnings({"unchecked"})
-    public static <T extends DatagramChannel> T logBound(final T channel) throws IOException {
+    static void logBound(final DatagramChannel channel) throws IOException {
         Objects.requireNonNull(channel, "channel is null");
         if (ThreadLocalRandom.current().nextBoolean()) {
-            return (T) logBound(channel.socket()).getChannel();
+            logBound(channel.socket());
+            return;
         }
-        final var localAddress = channel.getLocalAddress();
-        if (localAddress == null) {
-            throw new IllegalArgumentException("not found: " + channel);
-        }
-        log.info(LOG_FORMAT_BOUND, localAddress);
-        return channel;
+        logBound(channel.getLocalAddress());
     }
 
-    // ----------------------------------------------------------------------------------- connected
-    public static <T extends DatagramSocket> T logConnected(final T socket) {
+    // -------------------------------------------------------------------------------- logConnected
+    static void logConnected(final DatagramSocket socket) {
         Objects.requireNonNull(socket, "socket is null");
         if (!socket.isConnected()) {
             throw new IllegalArgumentException("not connected: " + socket);
         }
-        log.info(LOG_FORMAT_CONNECTED, socket.getRemoteSocketAddress());
-        return socket;
+        logConnected(socket.getRemoteSocketAddress());
     }
 
-    @SuppressWarnings({"unchecked"})
-    public static <T extends DatagramChannel> T logConnected(final T channel) throws IOException {
+    static void logConnected(final DatagramChannel channel) throws IOException {
         Objects.requireNonNull(channel, "channel is null");
         if (!channel.isConnected()) {
             throw new IllegalArgumentException("not connected: " + channel);
         }
         if (ThreadLocalRandom.current().nextBoolean()) {
-            return (T) logConnected(channel.socket()).getChannel();
+            logConnected(channel.socket());
+            return;
         }
-        log.info(LOG_FORMAT_CONNECTED, channel.getLocalAddress());
-        return channel;
-    }
-
-    // ------------------------------------------------------------------------------------- sending
-    public static DatagramPacket logSending(final DatagramPacket packet) {
-        Objects.requireNonNull(packet, "packet is null");
-        log.info(LOG_FORMAT_SENDING, packet.getLength(), packet.getSocketAddress());
-        return packet;
-    }
-
-    public static <T extends DatagramChannel> T logSending(final T channel, final ByteBuffer buffer)
-            throws IOException {
-        if (!Objects.requireNonNull(channel, "channel is null").isConnected()) {
-            throw new IllegalArgumentException("channel is not connected");
-        }
-        Objects.requireNonNull(buffer, "buffer is null");
-        log.info(LOG_FORMAT_SENDING, buffer.remaining(), channel.getRemoteAddress());
-        return channel;
-    }
-
-    public static <T extends ByteBuffer> T logSending(final T buffer, final SocketAddress address) {
-        Objects.requireNonNull(buffer, "buffer is null");
-        Objects.requireNonNull(address, "address is null");
-        log.info(LOG_FORMAT_SENDING, buffer.remaining(), address);
-        return buffer;
-    }
-
-    // ---------------------------------------------------------------------------------------- sent
-
-    public static DatagramPacket logSent(final DatagramPacket packet) {
-        Objects.requireNonNull(packet, "packet is null");
-        log.info(LOG_FORMAT_SENT, packet.getLength(), packet.getSocketAddress());
-        return packet;
-    }
-
-    public static <T extends DatagramChannel> T logSent(final T channel, final ByteBuffer buffer)
-            throws IOException {
-        if (!Objects.requireNonNull(channel, "channel is null").isConnected()) {
-            throw new IllegalArgumentException("channel is not connected");
-        }
-        Objects.requireNonNull(buffer, "buffer is null");
-        log.info(LOG_FORMAT_SENT, buffer.position(), channel.getRemoteAddress());
-        return channel;
-    }
-
-    public static <T extends ByteBuffer> T logSent(final T buffer, final SocketAddress address) {
-        Objects.requireNonNull(buffer, "buffer is null");
-        Objects.requireNonNull(address, "address is null");
-        log.info(LOG_FORMAT_SENT, buffer.position(), address);
-        return buffer;
-    }
-
-    // ------------------------------------------------------------------------------------ received
-    public static DatagramPacket logReceived(final DatagramPacket packet) {
-        Objects.requireNonNull(packet, "packet is null");
-        log.info(LOG_FORMAT_RECEIVED, packet.getLength(), packet.getSocketAddress());
-        return packet;
-    }
-
-    public static <T extends DatagramChannel> T logReceived(final T channel,
-                                                            final ByteBuffer buffer)
-            throws IOException {
-        if (!Objects.requireNonNull(channel, "channel is null").isConnected()) {
-            throw new IllegalArgumentException("channel is not connected");
-        }
-        Objects.requireNonNull(buffer, "buffer is null");
-        log.info(LOG_FORMAT_RECEIVED, buffer.position(), channel.getRemoteAddress());
-        return channel;
-    }
-
-    public static <T extends ByteBuffer> T logReceived(final T buffer,
-                                                       final SocketAddress address) {
-        Objects.requireNonNull(buffer, "buffer is null");
-        Objects.requireNonNull(address, "address is null");
-        log.info(LOG_FORMAT_RECEIVED, buffer.position(), address);
-        return buffer;
-    }
-
-    // --------------------------------------------------------------------------------------- bytes
-    private static void logServerBytes(final int bytes, final SocketAddress address) {
-        log.info("{} bytes received from {}, (and discarded)", bytes, address);
-    }
-
-    static void logServerBytes(final ByteBuffer buffer, final SocketAddress address) {
-        Objects.requireNonNull(buffer, "buffer is null");
-        logServerBytes(buffer.position(), address);
-    }
-
-    static void logServerBytes(final DatagramPacket packet) {
-        Objects.requireNonNull(packet, "packet is null");
-        logServerBytes(packet.getLength(), packet.getSocketAddress());
+        logConnected(channel.getRemoteAddress());
     }
 }

@@ -42,7 +42,7 @@ class Rfc863Tcp0Client extends Rfc863Tcp {
             logConnected(client);
             // ----------------------------------------------------------------------------- prepare
             final var digest = newDigest();
-            var bytes = logClientBytes(newRandomClientBytes());
+            var bytes = logClientBytes(newRandomBytes());
             // ------------------------------------------------------------------------------- write
             for (; bytes > 0; bytes--) {
                 final var b = ThreadLocalRandom.current().nextInt(256); // [0..256)
