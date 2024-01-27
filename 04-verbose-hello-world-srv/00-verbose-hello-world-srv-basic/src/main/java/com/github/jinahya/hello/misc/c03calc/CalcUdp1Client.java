@@ -29,17 +29,19 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
-class CalcUdp1Client extends _CalcUdp {
+class CalcUdp1Client extends CalcUdp {
 
     public static void main(final String... args) throws IOException {
         try (var client = new DatagramSocket(null)) {
+            // --------------------------------------------------------------------------- configure
+            client.setSoTimeout((int) SO_TIMEOUT_MILLIS);
             // ---------------------------------------------------------------------- bind(optional)
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(HOST, 0));
             }
-            // -------------------------------------------------------------------------------- send
+            // -------------------------------------------------------------------- send/receive/log
             for (var i = 0; i < CLIENT_COUNT; i++) {
-                new __CalcMessage3.OfArray()
+                new _Message.OfArray()
                         .randomize()
                         .sendToServer(client, ADDR)
                         .receiveFromServer(client)

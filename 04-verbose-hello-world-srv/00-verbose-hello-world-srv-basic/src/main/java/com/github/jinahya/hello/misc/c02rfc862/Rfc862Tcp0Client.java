@@ -30,7 +30,7 @@ import java.net.Socket;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
-class Rfc862Tcp0Client extends _Rfc862Tcp {
+class Rfc862Tcp0Client extends Rfc862Tcp {
 
     public static void main(final String... args) throws IOException {
         try (var client = new Socket()) {

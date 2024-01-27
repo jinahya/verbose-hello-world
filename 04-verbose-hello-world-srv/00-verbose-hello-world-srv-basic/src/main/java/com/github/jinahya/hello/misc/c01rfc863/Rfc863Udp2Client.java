@@ -20,6 +20,7 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
+import com.github.jinahya.hello.util.JavaSecurityMessageDigestUtils;
 import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,52 +32,56 @@ import java.nio.channels.DatagramChannel;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
-class Rfc863Udp2Client extends _Rfc863Udp {
+class Rfc863Udp2Client extends Rfc863Udp {
 
     public static void main(final String... args) throws Exception {
         try (var client = DatagramChannel.open()) {
-            assert client.isBlocking();
+            assert client.isBlocking(); // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
             // ---------------------------------------------------------------------- bind(optional)
             if (ThreadLocalRandom.current().nextBoolean()) {
-                client.bind(new InetSocketAddress(HOST, 0));
-                logBound(client);
+                logBound(client.bind(new InetSocketAddress(HOST, 0)));
             }
-            // ----------------------------------------------------------------------------- connect
-            final var connect = ThreadLocalRandom.current().nextBoolean();
-            if (connect) {
+            // ------------------------------------------------------------------- connect(optional)
+            if (ThreadLocalRandom.current().nextBoolean()) {
                 client.connect(ADDR);
                 logConnected(client);
             }
-            // -------------------------------------------------------------------------------- send
-            final var buffer = ByteBuffer.allocate(
-                    ThreadLocalRandom.current().nextInt(
-                            client.getOption(StandardSocketOptions.SO_SNDBUF) >> 1
-                    )
-            );
+            // ----------------------------------------------------------------------------- prepare
+            final var digest = newDigest();
+            final var buffer = ByteBuffer.allocate(ThreadLocalRandom.current().nextInt(
+                    (client.getOption(StandardSocketOptions.SO_SNDBUF) >> 1) + 1
+            ));
             ThreadLocalRandom.current().nextBytes(buffer.array());
             logClientBytes(buffer.remaining());
+            // -------------------------------------------------------------------------------- send
             if (ThreadLocalRandom.current().nextBoolean()) {
                 final var packet = new DatagramPacket(
                         buffer.array(),                           // <buf>
                         buffer.arrayOffset() + buffer.position(), // <offset>
-                        buffer.remaining(),                       // <length>
-                        ADDR                                      // <address>
+                        buffer.remaining()                        // <length>
                 );
+                if (!client.isConnected()) {
+                    packet.setSocketAddress(ADDR);
+                }
                 client.socket().send(packet);
                 buffer.position(buffer.position() + packet.getLength());
+                JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, packet.getLength());
             } else {
-                if (connect) {
+                if (client.isConnected()) {
                     final var w = client.write(buffer);
-                    assert w == buffer.position();
+                    assert !buffer.hasRemaining(); // why?
+                    JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, w);
                 } else {
                     final var w = client.send(buffer, ADDR);
+                    assert !buffer.hasRemaining(); // why?
                     assert w == buffer.position();
+                    JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, w);
                 }
             }
-            assert !buffer.hasRemaining();
-            logDigest(buffer.flip());
+            // --------------------------------------------------------------------------------- log
+            logDigest(digest);
             // -------------------------------------------------------------------------- disconnect
-            if (connect) {
+            if (client.isConnected()) {
                 client.disconnect();
             }
         }

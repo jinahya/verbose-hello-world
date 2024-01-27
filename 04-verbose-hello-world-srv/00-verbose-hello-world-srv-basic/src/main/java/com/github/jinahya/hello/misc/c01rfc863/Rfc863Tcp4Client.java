@@ -30,7 +30,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
 @SuppressWarnings({"java:S127"})
-class Rfc863Tcp4Client extends _Rfc863Tcp {
+class Rfc863Tcp4Client extends Rfc863Tcp {
 
     public static void main(final String... args) throws Exception {
         try (var client = AsynchronousSocketChannel.open()) {
@@ -44,7 +44,7 @@ class Rfc863Tcp4Client extends _Rfc863Tcp {
             logConnected(client);
             // ----------------------------------------------------------------------------- prepare
             final var digest = newDigest();
-            var bytes = logClientBytes(newRandomBytes());
+            var bytes = logClientBytes(newRandomClientBytes());
             final var buffer = newBuffer().limit(0);
             // ------------------------------------------------------------------------------- write
             for (int w; bytes > 0; bytes -= w) {

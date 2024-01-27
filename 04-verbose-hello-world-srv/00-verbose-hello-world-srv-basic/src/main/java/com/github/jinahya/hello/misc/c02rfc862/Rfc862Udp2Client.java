@@ -22,7 +22,6 @@ package com.github.jinahya.hello.misc.c02rfc862;
 
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
 import com.github.jinahya.hello.util.JavaSecurityMessageDigestUtils;
-import com.github.jinahya.hello.util._UdpUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -39,7 +38,7 @@ import java.util.concurrent.ThreadLocalRandom;
         "java:S2245"
 })
 @Slf4j
-class Rfc862Udp2Client {
+class Rfc862Udp2Client extends Rfc862Udp {
 
     public static void main(final String... args)
             throws IOException {
@@ -48,17 +47,15 @@ class Rfc862Udp2Client {
              var client = DatagramChannel.open()) {
             // ---------------------------------------------------------------------- bind(optional)
             if (ThreadLocalRandom.current().nextBoolean()) {
-                client.bind(new InetSocketAddress(_Rfc862Constants.ADDR.getAddress(), 0));
-                _UdpUtils.logBound(client);
+                logBound(client.bind(new InetSocketAddress(HOST, 0)));
             }
             // ------------------------------------------------------------------- connect(optional)
             final var connect = ThreadLocalRandom.current().nextBoolean();
             if (connect) {
-                client.connect(_Rfc862Constants.ADDR);
-                _UdpUtils.logConnected(client);
+                logConnected(client.connect(ADDR));
             }
             // ----------------------------------------------------------------------------- prepare
-            final var digest = _Rfc862Utils.newDigest();
+            final var digest = newDigest();
             final var buffer = ByteBuffer.allocate(
                     ThreadLocalRandom.current().nextInt(
 //                            client.getOption(StandardSocketOptions.SO_SNDBUF) + 1
@@ -66,7 +63,7 @@ class Rfc862Udp2Client {
                     )
             );
             ThreadLocalRandom.current().nextBytes(buffer.array());
-            _Rfc862Utils.logClientBytes(buffer.remaining());
+            logClientBytes(buffer.remaining());
             // ------------------------------------------------------------------ configure/register
             client.configureBlocking(false);
             final var clientKey = client.register(selector, SelectionKey.OP_WRITE);
@@ -88,7 +85,7 @@ class Rfc862Udp2Client {
                         if (channel.isConnected()) {
                             w = channel.write(buffer);
                         } else {
-                            w = channel.send(buffer, _Rfc862Constants.ADDR);
+                            w = channel.send(buffer, ADDR);
                         }
                         assert w == remaining;
                         assert !buffer.hasRemaining();
@@ -112,7 +109,7 @@ class Rfc862Udp2Client {
                         if (r == -1 || buffer.hasRemaining()) {
                             throw new IllegalArgumentException("unexpected eof");
                         }
-                        _Rfc862Utils.logDigest(digest);
+                        logDigest(digest);
                         selectedKey.interestOpsAnd(~SelectionKey.OP_READ);
                         selectedKey.cancel();
                         assert !selectedKey.isValid();

@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.misc.c01rfc863;
+package com.github.jinahya.hello.misc.c02rfc862;
 
 /*-
  * #%L
@@ -20,15 +20,12 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
-import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-final class _Rfc863Utils {
+abstract class Rfc862Tcp extends Rfc862 {
 
-    // ---------------------------------------------------------------------------------------------
-    @_ExcludeFromCoverage_PrivateConstructor_Obviously
-    private _Rfc863Utils() {
-        throw new AssertionError("instantiation is not allowed");
-    }
 }

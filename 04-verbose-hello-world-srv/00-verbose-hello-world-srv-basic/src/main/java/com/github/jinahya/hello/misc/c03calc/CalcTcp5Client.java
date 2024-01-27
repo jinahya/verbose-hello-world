@@ -23,7 +23,6 @@ package com.github.jinahya.hello.misc.c03calc;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousChannelGroup;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
@@ -32,16 +31,17 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-class CalcTcp5Client extends _CalcTcp {
+class CalcTcp5Client extends CalcTcp {
 
     // @formatter:off
-    private static void read(final AsynchronousSocketChannel client, final ByteBuffer buffer,
-                             final CountDownLatch latch) {
-        client.<Void>read(buffer, null, new CompletionHandler<>() {
+    private static void read(final AsynchronousSocketChannel client,
+                             final _Message.OfBuffer message, final CountDownLatch latch) {
+        assert message.hasRemaining();
+        message.<Void>write(client, null, new CompletionHandler<>() {
             @Override public void completed(final Integer result, final Void attachment) {
-                assert result > 0;
-                assert !buffer.hasRemaining();
-                __CalcMessage2.log(buffer);
+                assert result > 0; // why?
+                assert !message.hasRemaining(); // why?
+                message.log();
                 latch.countDown();
             }
             @Override public void failed(final Throwable exc, final Void attachment) {
@@ -53,19 +53,19 @@ class CalcTcp5Client extends _CalcTcp {
     // @formatter:on
 
     // @formatter:off
-    private static void write(final AsynchronousSocketChannel client, final ByteBuffer buffer,
-                              final CountDownLatch latch) {
-        client.<Void>write(buffer, null, new CompletionHandler<>() {
+    private static void write(final AsynchronousSocketChannel client,
+                              final _Message.OfBuffer message, final CountDownLatch latch) {
+        assert message.hasRemaining();
+        message.<Void>write(client, null, new CompletionHandler<>() {
             @Override public void completed(final Integer result, final Void attachment) {
-                assert result > 0;
-                if (!buffer.hasRemaining()) {
-                    buffer.limit(buffer.capacity());
-                    assert buffer.remaining() == __CalcMessage2.LENGTH_RESULT;
+                assert result > 0; // why?
+                if (!message.hasRemaining()) {
+                    message.readyToReadFromServer();
                     // ------------------------------------------------------------------------ read
-                    read(client, buffer, latch);
+                    read(client, message, latch);
                     return;
                 }
-                client.write(buffer, null, this);
+                message.write(client, null, this);
             }
             @Override public void failed(final Throwable exc, final Void attachment) {
                 log.error("failed to write", exc);
@@ -75,7 +75,7 @@ class CalcTcp5Client extends _CalcTcp {
     }
     // @formatter:on
 
-    // @formatter:on
+    // @formatter:off
     public static void main(final String... args) throws Exception {
         final var executor = newExecutorForClient("tcp-5-client-");
         final var group = AsynchronousChannelGroup.withThreadPool(executor);
@@ -90,16 +90,16 @@ class CalcTcp5Client extends _CalcTcp {
                 final var latch = new CountDownLatch(1);
                 client.connect(
                         ADDR,
-                        __CalcMessage2.newRandomizedBufferForClient(),
+                        new _Message.OfBuffer().randomize().readyToWriteToServer(),
                         new CompletionHandler<>() {
                             @Override
-                            public void completed(final Void result, final ByteBuffer attachment) {
+                            public void completed(final Void result,
+                                                  final _Message.OfBuffer attachment) {
                                 // ----------------------------------------------------------- write
                                 write(client, attachment, latch);
                             }
-
-                            @Override
-                            public void failed(final Throwable exc, final ByteBuffer attachment) {
+                            @Override public void failed(final Throwable exc,
+                                                         final _Message.OfBuffer attachment) {
                                 log.error("failed to connect", exc);
                                 latch.countDown();
                             }

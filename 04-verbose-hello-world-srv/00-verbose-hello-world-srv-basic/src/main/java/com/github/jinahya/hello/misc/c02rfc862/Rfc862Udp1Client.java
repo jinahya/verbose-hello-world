@@ -30,23 +30,23 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
-class Rfc862Udp1Client {
+class Rfc862Udp1Client extends Rfc862Udp {
 
     public static void main(final String... args) throws Exception {
         // ---------------------------------------------------------------------------------- create
         try (var client = new DatagramSocket(null)) {
             // ---------------------------------------------------------------------- bind(optional)
             if (ThreadLocalRandom.current().nextBoolean()) {
-                client.bind(new InetSocketAddress(_Rfc862Constants.ADDR.getAddress(), 0));
-                _UdpUtils.logBound(client);
+                client.bind(new InetSocketAddress(HOST, 0));
+                logBound(client);
             }
             // --------------------------------------------------------------------------- configure
             client.setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_MILLIS);
             // ------------------------------------------------------------------- connect(optional)
             final var connect = ThreadLocalRandom.current().nextBoolean();
             if (connect) {
-                client.connect(_Rfc862Constants.ADDR);
-                _UdpUtils.logConnected(client);
+                client.connect(ADDR);
+                logConnected(client);
             }
             // ----------------------------------------------------------------------------- prepare
             final var array = new byte[
@@ -54,11 +54,11 @@ class Rfc862Udp1Client {
                     ThreadLocalRandom.current().nextInt((client.getSendBufferSize() >> 1) + 1)
                     ];
             ThreadLocalRandom.current().nextBytes(array);
-            final var packet = new DatagramPacket(array, array.length, _Rfc862Constants.ADDR);
-            _Rfc862Utils.logClientBytes(packet.getLength());
+            final var packet = new DatagramPacket(array, array.length, ADDR);
+            logClientBytes(packet.getLength());
             // -------------------------------------------------------------------------------- send
             client.send(packet);
-            _Rfc862Utils.logDigest(array, 0, packet.getLength());
+//            logDigest(array, 0, packet.getLength());
             // ----------------------------------------------------------------------------- receive
             client.receive(packet);
             _UdpUtils.logReceived(packet);

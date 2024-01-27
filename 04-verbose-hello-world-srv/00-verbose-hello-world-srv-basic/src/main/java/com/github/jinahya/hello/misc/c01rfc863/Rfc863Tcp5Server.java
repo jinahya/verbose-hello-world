@@ -20,7 +20,6 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
-import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Utils;
 import com.github.jinahya.hello.util.JavaSecurityMessageDigestUtils;
 import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +33,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Slf4j
-class Rfc863Tcp5Server extends _Rfc863Tcp {
+class Rfc863Tcp5Server extends Rfc863Tcp {
 
     public static void main(final String... args) throws Exception {
         try (var server = AsynchronousServerSocketChannel.open()) {
@@ -49,7 +48,7 @@ class Rfc863Tcp5Server extends _Rfc863Tcp {
                 public void completed(final AsynchronousSocketChannel client, final Void a) {
                     logAccepted(client);
                     final var bytes = new AtomicLong();
-                    final var buffer = _Rfc86_Utils.newBuffer();
+                    final var buffer = newBuffer();
                     // ------------------------------------------------------------------------ read
                     client.read(buffer, newDigest(), new CompletionHandler<>() {
                         @Override public void completed(final Integer r, final MessageDigest a) {

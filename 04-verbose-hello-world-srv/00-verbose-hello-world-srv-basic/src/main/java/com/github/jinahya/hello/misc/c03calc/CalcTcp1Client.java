@@ -28,7 +28,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-class CalcTcp1Client extends _CalcTcp {
+class CalcTcp1Client extends CalcTcp {
 
     public static void main(final String... args) throws Exception {
         try (var executor = newExecutorForClient("tcp-1-client-")) {
@@ -40,10 +40,10 @@ class CalcTcp1Client extends _CalcTcp {
                             client.bind(new InetSocketAddress(HOST, 0));
                         }
                         // ----------------------------------------------------------------- connect
-                        client.connect(ADDR, (int) CONNECT_TIMEOUT_UNIT.toMillis(CONNECT_TIMEOUT));
-                        client.setSoTimeout((int) TimeUnit.SECONDS.toMillis(1L));
+                        client.connect(ADDR, (int) CONNECT_TIMEOUT_MILLIS);
                         // ---------------------------------------------------------- write/read/log
-                        new __CalcMessage3.OfArray().randomize()
+                        client.setSoTimeout((int) SO_TIMEOUT_MILLIS);
+                        new _Message.OfArray().randomize()
                                 .writeToServer(client.getOutputStream(), true)
                                 .readFromServer(client.getInputStream())
                                 .log();

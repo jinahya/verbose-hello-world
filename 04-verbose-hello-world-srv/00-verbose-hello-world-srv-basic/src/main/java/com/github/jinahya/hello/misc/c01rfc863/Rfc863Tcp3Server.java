@@ -31,7 +31,7 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 
 @Slf4j
-class Rfc863Tcp3Server extends _Rfc863Tcp {
+class Rfc863Tcp3Server extends Rfc863Tcp {
 
     public static void main(final String... args) throws Exception {
         try (var selector = Selector.open();

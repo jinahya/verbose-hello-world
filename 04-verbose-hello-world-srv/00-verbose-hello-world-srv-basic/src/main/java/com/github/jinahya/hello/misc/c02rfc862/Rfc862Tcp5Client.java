@@ -40,7 +40,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @SuppressWarnings({
         "java:S4274" // > Replace this assert with a property check.
 })
-class Rfc862Tcp5Client extends _Rfc862Tcp {
+class Rfc862Tcp5Client extends Rfc862Tcp {
 
     // @formatter:on
     private record Handler(AsynchronousSocketChannel client, ByteBuffer buffer, AtomicInteger bytes,

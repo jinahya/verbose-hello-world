@@ -20,16 +20,13 @@ package com.github.jinahya.hello.misc.c03calc;
  * #L%
  */
 
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.IntBinaryOperator;
 
 /**
- * Constants of operators for calculator.
+ * Operators applied with two operands.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see <a href="https://ko.wikipedia.org/wiki/%EC%82%AC%EC%B9%99%EC%97%B0%EC%82%B0">사칙연산</a>
@@ -39,7 +36,7 @@ import java.util.function.IntBinaryOperator;
  * 나누기</a> (Wikipedia)
  * @see <a href="https://en.wikipedia.org/wiki/Division_by_zero">Division by zero</a> (Wikipedia)
  */
-enum _CalcOperator implements IntBinaryOperator {
+enum _Operator implements IntBinaryOperator {
 
     ADD() {
         @Override
@@ -73,32 +70,11 @@ enum _CalcOperator implements IntBinaryOperator {
     };
 
     // ---------------------------------------------------------------------------------------------
-    static final int LENGTH = 3;
+    static final int NAME_BYTES = 3;
 
-    static final int BYTES = LENGTH;
+    private static final List<_Operator> valueList = Arrays.asList(values());
 
-    static final Charset CHARSET = StandardCharsets.US_ASCII;
-
-    static _CalcOperator valueOf(final byte[] bytes) {
-        if (Objects.requireNonNull(bytes, "bytes is null").length != BYTES) {
-            throw new IllegalArgumentException("bytes.length(" + bytes.length + ") != " + BYTES);
-        }
-        return valueOf(new String(bytes, CHARSET));
-    }
-
-    private static final List<_CalcOperator> valueList = Arrays.asList(values());
-
-    static _CalcOperator randomValue() {
+    static _Operator randomValue() {
         return valueList.get(ThreadLocalRandom.current().nextInt(valueList.size()));
-    }
-
-    // ---------------------------------------------------------------------------------------------
-    _CalcOperator() {
-        // empty
-    }
-
-    // ---------------------------------------------------------------------------------------------
-    byte[] bytes() {
-        return name().getBytes(CHARSET);
     }
 }

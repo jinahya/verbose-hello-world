@@ -33,7 +33,7 @@ import java.nio.channels.SocketChannel;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
-class Rfc863Tcp3Client extends _Rfc863Tcp {
+class Rfc863Tcp3Client extends Rfc863Tcp {
 
     public static void main(final String... args) throws Exception {
         try (var selector = Selector.open();
@@ -55,7 +55,7 @@ class Rfc863Tcp3Client extends _Rfc863Tcp {
             }
             // ----------------------------------------------------------------------------- prepare
             final var digest = newDigest();
-            var bytes = logClientBytes(newRandomBytes());
+            var bytes = logClientBytes(newRandomClientBytes());
             // ------------------------------------------------------------------------------ select
             while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
                 if (selector.select() == 0) {

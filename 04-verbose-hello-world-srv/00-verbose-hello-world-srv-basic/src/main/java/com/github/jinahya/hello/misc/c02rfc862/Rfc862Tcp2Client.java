@@ -34,7 +34,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @SuppressWarnings({
         "java:S127"
 })
-class Rfc862Tcp2Client extends _Rfc862Tcp {
+class Rfc862Tcp2Client extends Rfc862Tcp {
 
     public static void main(final String... args) throws Exception {
         try (var client = SocketChannel.open()) {

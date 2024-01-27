@@ -30,7 +30,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
 @SuppressWarnings({"java:S127"})
-class Rfc862Tcp2Server extends _Rfc862Tcp {
+class Rfc862Tcp2Server extends Rfc862Tcp {
 
     public static void main(final String... args) throws Exception {
         try (var server = ServerSocketChannel.open()) {

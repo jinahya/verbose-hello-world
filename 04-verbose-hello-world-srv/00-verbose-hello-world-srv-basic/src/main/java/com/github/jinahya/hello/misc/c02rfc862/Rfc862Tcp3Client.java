@@ -34,7 +34,7 @@ import java.nio.channels.SocketChannel;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
-class Rfc862Tcp3Client extends _Rfc862Tcp {
+class Rfc862Tcp3Client extends Rfc862Tcp {
 
     public static void main(final String... args) throws Exception {
         try (var selector = Selector.open();

@@ -32,7 +32,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @SuppressWarnings({
         "java:S127"
 })
-class Rfc863Tcp2Client extends _Rfc863Tcp {
+class Rfc863Tcp2Client extends Rfc863Tcp {
 
     public static void main(final String... args) throws Exception {
         try (var client = SocketChannel.open()) {
@@ -53,7 +53,7 @@ class Rfc863Tcp2Client extends _Rfc863Tcp {
             }
             // ----------------------------------------------------------------------------- prepare
             final var digest = newDigest();
-            var bytes = logClientBytes(newRandomBytes());
+            var bytes = logClientBytes(newRandomClientBytes());
             // ------------------------------------------------------------------------------- write
             final var buffer = newBuffer();
             for (int w; bytes > 0; bytes -= w) {

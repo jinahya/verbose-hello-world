@@ -29,7 +29,7 @@ import java.net.ServerSocket;
 @SuppressWarnings({
         "java:S127"
 })
-class Rfc863Tcp0Server extends _Rfc863Tcp {
+class Rfc863Tcp0Server extends Rfc863Tcp {
 
     public static void main(final String... args) throws Exception {
         try (var server = new ServerSocket()) {

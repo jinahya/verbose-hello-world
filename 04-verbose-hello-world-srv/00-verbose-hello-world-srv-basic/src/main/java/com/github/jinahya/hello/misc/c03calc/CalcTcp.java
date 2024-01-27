@@ -31,13 +31,13 @@ import java.util.concurrent.TimeUnit;
 @SuppressWarnings({
         "java:S101" // class _Calc...
 })
-abstract class _CalcTcp extends _Calc {
+abstract class CalcTcp extends Calc {
 
     // -------------------------------------------------------------------------------------- server
     static final int SERVER_BACKLOG = 50;
 
-
     // -------------------------------------------------------------------------------------- client
+    static final int CLIENT_THREADS = 8;
 
     /**
      * Returns a new thread-pool that uses {@value #CLIENT_THREADS} thread(s).
@@ -52,7 +52,10 @@ abstract class _CalcTcp extends _Calc {
         );
     }
 
+    // ------------------------------------------------------------------------------------- timeout
     static final long CONNECT_TIMEOUT = 1L;
 
     static final TimeUnit CONNECT_TIMEOUT_UNIT = TimeUnit.SECONDS;
+
+    static final long CONNECT_TIMEOUT_MILLIS = CONNECT_TIMEOUT_UNIT.toMillis(CONNECT_TIMEOUT);
 }

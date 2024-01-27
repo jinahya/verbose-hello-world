@@ -27,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.nio.channels.AsynchronousServerSocketChannel;
 
 @Slf4j
-class Rfc862Tcp4Server extends _Rfc862Tcp {
+class Rfc862Tcp4Server extends Rfc862Tcp {
 
     public static void main(final String... args) throws Exception {
         try (var server = AsynchronousServerSocketChannel.open()) {

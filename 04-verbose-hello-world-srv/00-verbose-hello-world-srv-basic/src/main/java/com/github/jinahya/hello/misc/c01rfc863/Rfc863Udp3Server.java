@@ -30,42 +30,39 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 
 @Slf4j
-class Rfc863Udp3Server extends _Rfc863Udp {
+class Rfc863Udp3Server extends Rfc863Udp {
 
     public static void main(final String... args) throws Exception {
         try (var selector = Selector.open();
              var server = DatagramChannel.open()) {
             // -------------------------------------------------------------------------------- bind
-            server.bind(ADDR);
-            logBound(server);
-            // ---------------------------------------------------------------- configure / register
+            logBound(server.bind(ADDR));
+            // ------------------------------------------------------------------ configure/register
             server.configureBlocking(false);
             final var serverKey = server.register(selector, SelectionKey.OP_READ);
+            // ----------------------------------------------------------------------------- prepare
+            final var digest = newDigest();
+            final var buffer = ByteBuffer.allocate(
+                    server.getOption(StandardSocketOptions.SO_RCVBUF)
+            );
             // ------------------------------------------------------------------------------ select
-            while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
-                if (selector.select() == 0) {
-                    continue;
-                }
-                for (final var i = selector.selectedKeys().iterator(); i.hasNext(); ) {
-                    final var key = i.next();
-                    i.remove();
-                    // --------------------------------------------------------------------- receive
-                    if (key.isReadable()) {
-                        final var channel = (DatagramChannel) key.channel();
-                        assert channel == server;
-                        assert key == serverKey;
-                        final var buffer = ByteBuffer.allocate(
-                                channel.getOption(StandardSocketOptions.SO_RCVBUF)
-                        );
-                        final var address = channel.receive(buffer);
-                        assert address != null;
-                        logServerBytes(buffer, address);
-                        logDigest(buffer.flip());
-                        key.cancel();
-                        assert !key.isValid();
-                    }
-                }
-            }
+            final var k = selector.select();
+            assert k == 1;
+            final var key = selector.selectedKeys().iterator().next();
+            assert key == serverKey;
+            // ----------------------------------------------------------------------------- receive
+            assert key.isReadable();
+            final var channel = (DatagramChannel) key.channel();
+            assert channel == server;
+            final var address = channel.receive(buffer);
+            assert address != null;
+            digest.update(buffer.flip());
+            // ------------------------------------------------------------------------------ cancel
+            key.cancel();
+            assert !key.isValid();
+            // --------------------------------------------------------------------------------- log
+            logServerBytes(buffer.position());
+            logDigest(digest);
         }
     }
 

@@ -28,7 +28,7 @@ import java.net.Socket;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
-class Rfc863Tcp1Client extends _Rfc863Tcp {
+class Rfc863Tcp1Client extends Rfc863Tcp {
 
     public static void main(final String... args) throws Exception {
         try (var client = new Socket()) {
@@ -42,7 +42,7 @@ class Rfc863Tcp1Client extends _Rfc863Tcp {
             logConnected(client);
             // ----------------------------------------------------------------------------- prepare
             final var digest = newDigest();
-            var bytes = logClientBytes(newRandomBytes());
+            var bytes = logClientBytes(newRandomClientBytes());
             // ------------------------------------------------------------------------------- write
             for (final var array = newArray(); bytes > 0; ) {
                 ThreadLocalRandom.current().nextBytes(array);

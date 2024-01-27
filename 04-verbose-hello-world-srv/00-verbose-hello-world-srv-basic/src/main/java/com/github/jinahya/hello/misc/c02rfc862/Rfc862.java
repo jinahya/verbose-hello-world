@@ -43,7 +43,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-abstract class __Rfc862 {
+abstract class Rfc862 {
 
     // ------------------------------------------------------------------------------ host/port/addr
     static final InetAddress HOST = InetAddress.getLoopbackAddress();

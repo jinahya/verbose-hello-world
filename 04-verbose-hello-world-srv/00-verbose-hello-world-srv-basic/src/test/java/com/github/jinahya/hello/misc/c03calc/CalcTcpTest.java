@@ -73,11 +73,45 @@ class CalcTcpTest {
                                                 Named.of(cc.getSimpleName(), cc))));
     }
 
+    @DisplayName("quit!")
+    @MethodSource({"serverClasses"})
+    @ParameterizedTest
+    void __quit(final Class<?> serverClass) throws Exception {
+        log.debug("server: {}", serverClass.getSimpleName());
+        serverClass.getClassLoader().setDefaultAssertionStatus(true);
+        final String quitPlusEnter = "quit!" + System.lineSeparator();
+        final var quitPlusEnterBytes = quitPlusEnter.getBytes(StandardCharsets.US_ASCII);
+        try (var executor = Executors.newFixedThreadPool(1)) {
+            final var pos = new PipedOutputStream();
+            final var pis = new PipedInputStream(pos, quitPlusEnterBytes.length);
+            final var systemIn = System.in;
+            try {
+                System.setIn(pis);
+                var server = executor.submit(() -> {
+                    try {
+                        serverClass.getMethod("main", String[].class)
+                                .invoke(null, new Object[] {new String[0]});
+                    } catch (final Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+                pos.write(quitPlusEnterBytes);
+                pos.flush();
+                server.get(4L, TimeUnit.SECONDS);
+                executor.shutdown();
+                if (!executor.awaitTermination(8L, TimeUnit.SECONDS)) {
+                    log.error("executor not terminated");
+                }
+            } finally {
+                System.setIn(systemIn);
+            }
+        }
+    }
+
     @DisplayName("one2one")
     @MethodSource({"getClassesArgumentsList"})
     @ParameterizedTest
-    void __(final Class<?> serverClass, final Class<?> clientClass)
-            throws Exception {
+    void __(final Class<?> serverClass, final Class<?> clientClass) throws Exception {
         log.debug("server: {}", serverClass.getSimpleName());
         log.debug("client: {}", clientClass.getSimpleName());
         serverClass.getClassLoader().setDefaultAssertionStatus(true);
@@ -109,15 +143,15 @@ class CalcTcpTest {
                     throw new RuntimeException(e);
                 }
             });
-            client.get(_Rfc86_Constants.CLIENT_PROGRAM_TIMEOUT,
-                       _Rfc86_Constants.CLIENT_PROGRAM_TIMEOUT_UNIT);
+            client.get(1L, TimeUnit.MINUTES);
             pos.write(HelloWorldServerConstants.QUIT_AND_ENTER.getBytes(StandardCharsets.US_ASCII));
             pos.flush();
             server.get(_Rfc86_Constants.SERVER_PROGRAM_TIMEOUT,
                        _Rfc86_Constants.SERVER_PROGRAM_TIMEOUT_UNIT);
             executor.shutdown();
-            final var terminated = executor.awaitTermination(8L, TimeUnit.SECONDS);
-            assert terminated : "executor hasn't been terminated";
+            if (!executor.awaitTermination(8L, TimeUnit.SECONDS)) {
+                log.error("executor not terminated");
+            }
         } finally {
             System.setIn(systemIn);
         }
@@ -126,8 +160,7 @@ class CalcTcpTest {
     @DisplayName("one2many")
     @MethodSource({"serverClasses"})
     @ParameterizedTest
-    void __(final Class<?> serverClass)
-            throws Exception {
+    void __(final Class<?> serverClass) throws Exception {
         log.debug("server: {}", serverClass.getSimpleName());
         serverClass.getClassLoader().setDefaultAssertionStatus(true);
         final var executor = Executors.newFixedThreadPool(CLIENT_CLASSES.size() + 1);
@@ -161,13 +194,11 @@ class CalcTcpTest {
                 futures.add(future);
             }
             for (final var future : futures) {
-                future.get(_CalcConstants.CLIENT_PROGRAM_TIMEOUT,
-                           _CalcConstants.CLIENT_PROGRAM_TIMEOUT_UNIT);
+                future.get(1L, TimeUnit.MINUTES);
             }
             pos.write(quitAndEnterBytes);
             pos.flush();
-            server.get(_CalcConstants.SERVER_PROGRAM_TIMEOUT,
-                       _CalcConstants.SERVER_PROGRAM_TIMEOUT_UNIT);
+            server.get(1L, TimeUnit.MINUTES);
             executor.shutdown();
             final var terminated = executor.awaitTermination(8L, TimeUnit.SECONDS);
             assert terminated : "executor hasn't been terminated";

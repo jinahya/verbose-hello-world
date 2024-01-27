@@ -38,7 +38,7 @@ import java.util.concurrent.atomic.LongAdder;
 @SuppressWarnings({
         "java:S4274" // > Replace this assert with a proper check
 })
-class Rfc862Tcp5Server extends _Rfc862Tcp {
+class Rfc862Tcp5Server extends Rfc862Tcp {
 
     static int sent = 0; // TODO: remove!
 

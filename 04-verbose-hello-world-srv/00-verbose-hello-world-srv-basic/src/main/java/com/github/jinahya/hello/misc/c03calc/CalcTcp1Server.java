@@ -27,10 +27,11 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.StandardSocketOptions;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-class CalcTcp1Server extends _CalcTcp {
+class CalcTcp1Server extends CalcTcp {
 
     public static void main(final String... args) throws IOException, InterruptedException {
         try (var executor = newExecutorForServer("tcp1-server-");
@@ -41,7 +42,10 @@ class CalcTcp1Server extends _CalcTcp {
             server.bind(ADDR, SERVER_BACKLOG);
             logBound(server);
             // --------------------------------------------------------- read-quit!-and-close-server
-            JavaLangUtils.readLinesAndCloseWhenTests("quit!"::equalsIgnoreCase, server);
+            JavaLangUtils.readLinesAndCloseWhenTests(
+                    "quit!"::equalsIgnoreCase,
+                    server
+            );
             // -------------------------------------------------------------------------------- loop
             while (!server.isClosed()) {
                 final Socket client;
@@ -53,22 +57,28 @@ class CalcTcp1Server extends _CalcTcp {
                     }
                     continue;
                 }
-                executor.submit(() -> {
-                    try {
+                try {
+                    executor.submit(() -> {
                         try {
-                            client.setSoTimeout((int) TimeUnit.SECONDS.toMillis(1L));
-                            // ------------------------------------------------ read/calculate/write
-                            new __CalcMessage3.OfArray()
-                                    .readFromClient(client.getInputStream())
-                                    .calculateResult()
-                                    .writeToClient(client.getOutputStream(), true);
-                        } finally {
-                            client.close();
+                            try {
+                                client.setSoTimeout((int) TimeUnit.SECONDS.toMillis(1L));
+                                // -------------------------------------------- read/calculate/write
+                                new _Message.OfArray()
+                                        .readFromClient(client.getInputStream())
+                                        .calculateResult()
+                                        .writeToClient(client.getOutputStream(), true);
+                            } finally {
+                                client.close();
+                            }
+                        } catch (final Exception e) {
+                            log.error("failed to serve for " + client, e);
                         }
-                    } catch (final Exception e) {
-                        log.error("failed to serve for " + client, e);
+                    });
+                } catch (final RejectedExecutionException ree) {
+                    if (!executor.isShutdown()) {
+                        log.error("failed to submit task", ree);
                     }
-                });
+                }
             }
             // ---------------------------------------------------------------------- shutdown/await
             executor.shutdown();

@@ -27,20 +27,27 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 
 @Slf4j
-class Rfc863Udp1Server extends _Rfc863Udp {
+class Rfc863Udp1Server extends Rfc863Udp {
 
     public static void main(final String... args) throws Exception {
         try (var server = new DatagramSocket(null)) {
             // -------------------------------------------------------------------------------- bind
             server.bind(ADDR);
             logBound(server);
-            // ----------------------------------------------------------------------------- receive
+            // ----------------------------------------------------------------------------- prepare
+            final var digest = newDigest();
             final var array = new byte[server.getReceiveBufferSize()];
             final var packet = new DatagramPacket(array, array.length);
+            assert packet.getData() == array;
+            assert packet.getOffset() == 0;
+            assert packet.getLength() == array.length;
+            // ----------------------------------------------------------------------------- receive
             server.receive(packet);
-            logServerBytes(packet);
             assert packet.getLength() <= array.length;
-            logDigest(packet.getData(), 0, packet.getLength());
+            digest.update(packet.getData(), packet.getOffset(), packet.getLength());
+            // --------------------------------------------------------------------------------- log
+            logServerBytes(packet.getLength());
+            logDigest(digest);
         }
     }
 

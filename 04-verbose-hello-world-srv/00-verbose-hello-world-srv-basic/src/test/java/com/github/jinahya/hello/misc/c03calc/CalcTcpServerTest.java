@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.misc.c01rfc863;
+package com.github.jinahya.hello.misc.c03calc;
 
 /*-
  * #%L
@@ -20,12 +20,30 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
 @Slf4j
-abstract class _Rfc863Tcp extends __Rfc863 {
+class CalcTcpServerTest {
+
+    static final List<Class<?>> SERVER_CLASSES = List.of(
+            CalcTcp1Server.class,
+            CalcTcp3Server.class,
+            CalcTcp5Server.class
+    );
+
+    private static List<Class<?>> serverClasses() {
+        return SERVER_CLASSES;
+    }
+
 
 }

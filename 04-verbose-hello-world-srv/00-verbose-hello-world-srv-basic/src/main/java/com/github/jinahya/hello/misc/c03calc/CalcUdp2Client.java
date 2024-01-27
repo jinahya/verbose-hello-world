@@ -20,6 +20,7 @@ package com.github.jinahya.hello.misc.c03calc;
  * #L%
  */
 
+import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.channels.DatagramChannel;
@@ -27,52 +28,57 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 
 @Slf4j
-class CalcUdp2Client extends _CalcUdp{
+class CalcUdp2Client extends CalcUdp {
 
     public static void main(final String... args) throws Exception {
         try (var selector = Selector.open()) {
-            for (var i = 0; i < _CalcConstants.TOTAL_REQUESTS; i++) {
-                // ---------------------------------------------------------------------------- open
-                try (var client = DatagramChannel.open()) {
-                    // ------------------------------------------------------ configure-non-blocking
-                    client.configureBlocking(false);
-                    // -------------------------------------------------------------------- register
-                    final var clientKey = client.register(
-                            selector,
-                            SelectionKey.OP_WRITE,
-                            new __CalcMessage3.OfBuffer().randomize()
-                    );
-                    // --------------------------------------------------------------- selector-loop
-                    while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
-                        if (selector.select() == 0) {
-                            continue;
-                        }
-                        for (final var j = selector.selectedKeys().iterator(); j.hasNext(); ) {
-                            final var key = j.next();
-                            j.remove();
-                            // --------------------------------------------------------------- write
-                            if (key.isWritable()) {
-                                final var channel = (DatagramChannel) key.channel();
-                                final var message = (__CalcMessage3.OfBuffer) key.attachment();
-                                message.sendToServer(channel, ADDR);
-                                key.interestOpsAnd(~SelectionKey.OP_WRITE);
-                                key.interestOpsOr(SelectionKey.OP_READ);
-                            }
-                            if (key.isReadable()) {
-                                final var channel = (DatagramChannel) key.channel();
-                                final var message = (__CalcMessage3.OfBuffer) key.attachment();
-                                message.receiveFromServer(channel).log();
-                                key.interestOpsAnd(~SelectionKey.OP_READ);
-                                key.cancel();
-                                assert !key.isValid();
-                            }
-                        }
+            for (var c = 0; c < CLIENT_COUNT; c++) {
+                var client = DatagramChannel.open(); // not-using-try-with-resources
+                // ---------------------------------------------------------- configure-non-blocking
+                client.configureBlocking(false);
+                // ------------------------------------------------------------------------ register
+                final var clientKey = client.register(
+                        selector,
+                        SelectionKey.OP_WRITE,
+                        new _Message.OfBuffer().randomize()
+                );
+            }
+            // ----------------------------------------------------------------------- selector-loop
+            while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
+                // -------------------------------------------------------------------------- select
+                if (selector.select() == 0) {
+                    continue;
+                }
+                // ----------------------------------------------------------- process-selected-keys
+                for (final var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
+                    final var key = i.next();
+                    // ------------------------------------------------------------------------ send
+                    if (key.isWritable()) {
+                        final var channel = (DatagramChannel) key.channel();
+                        final var message = (_Message.OfBuffer) key.attachment();
+                        message.sendToServer(channel, ADDR);
+                        assert !message.hasRemaining();
+                        key.interestOpsAnd(~SelectionKey.OP_WRITE);
+                        assert key.isWritable(); // why?
+                        key.interestOpsOr(SelectionKey.OP_READ);
+                        assert !key.isReadable(); // why?
+                    }
+                    // --------------------------------------------------------------------- receive
+                    if (key.isReadable()) {
+                        final var channel = (DatagramChannel) key.channel();
+                        final var message = (_Message.OfBuffer) key.attachment();
+                        message.receiveFromServer(channel).log();
+                        key.interestOpsAnd(~SelectionKey.OP_READ);
+                        assert key.isReadable(); // why?
+                        channel.close();
+                        assert !key.isValid();
                     }
                 }
             }
         }
     }
 
+    @_ExcludeFromCoverage_PrivateConstructor_Obviously
     private CalcUdp2Client() {
         throw new AssertionError("instantiation is not allowed");
     }

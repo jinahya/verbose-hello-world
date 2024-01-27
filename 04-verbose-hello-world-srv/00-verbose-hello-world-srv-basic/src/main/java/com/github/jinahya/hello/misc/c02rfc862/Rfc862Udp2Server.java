@@ -33,20 +33,20 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 
 @Slf4j
-class Rfc862Udp2Server {
+class Rfc862Udp2Server extends Rfc862Udp {
 
     public static void main(final String... args) throws Exception {
         // ------------------------------------------------------------------------------------ open
         try (var selector = Selector.open();
              var server = DatagramChannel.open()) {
             // -------------------------------------------------------------------------------- bind
-            server.bind(_Rfc862Constants.ADDR);
+            server.bind(ADDR);
             _UdpUtils.logBound(server);
             // ------------------------------------------------------------------ configure/register
             server.configureBlocking(false);
             server.register(selector, SelectionKey.OP_READ);
             // ----------------------------------------------------------------------------- prepare
-            final var digest = _Rfc862Utils.newDigest();
+            final var digest = newDigest();
             final var buffer = ByteBuffer.allocate(
                     server.getOption(StandardSocketOptions.SO_RCVBUF)
             );
@@ -85,7 +85,7 @@ class Rfc862Udp2Server {
                     }
                 }
             }
-            _Rfc862Utils.logDigest(digest);
+            logDigest(digest);
         }
     }
 

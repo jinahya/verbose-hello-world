@@ -20,6 +20,7 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
+import com.github.jinahya.hello.util.JavaSecurityMessageDigestUtils;
 import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,7 +31,7 @@ import java.nio.channels.DatagramChannel;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
-class Rfc863Udp2Server extends _Rfc863Udp {
+class Rfc863Udp2Server extends Rfc863Udp {
 
     public static void main(final String... args) throws Exception {
         try (var server = DatagramChannel.open()) {
@@ -38,10 +39,12 @@ class Rfc863Udp2Server extends _Rfc863Udp {
             // -------------------------------------------------------------------------------- bind
             server.bind(ADDR);
             logBound(server);
-            // ----------------------------------------------------------------------------- receive
+            // ----------------------------------------------------------------------------- prepare
+            final var digest = newDigest();
             final var buffer = ByteBuffer.allocate(
                     server.getOption(StandardSocketOptions.SO_RCVBUF)
             );
+            // ----------------------------------------------------------------------------- receive
             if (ThreadLocalRandom.current().nextBoolean()) {
                 final var packet = new DatagramPacket(
                         buffer.array(),                           // <buf>
@@ -49,14 +52,15 @@ class Rfc863Udp2Server extends _Rfc863Udp {
                         buffer.remaining()                        // <length>
                 );
                 server.socket().receive(packet);
-                logServerBytes(packet);
+                assert packet.getSocketAddress() != null;
                 buffer.position(buffer.position() + packet.getLength());
             } else {
                 final var address = server.receive(buffer);
-                logServerBytes(buffer, address);
             }
+            JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, buffer.position());
             // --------------------------------------------------------------------------------- log
-            logDigest(buffer.flip());
+            logServerBytes(buffer.position());
+            logDigest(digest);
         }
     }
 

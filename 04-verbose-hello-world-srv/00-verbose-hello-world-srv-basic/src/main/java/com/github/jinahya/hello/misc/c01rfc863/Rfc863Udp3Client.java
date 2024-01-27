@@ -20,6 +20,7 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
+import com.github.jinahya.hello.util.JavaSecurityMessageDigestUtils;
 import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,59 +33,57 @@ import java.nio.channels.Selector;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
-class Rfc863Udp3Client extends _Rfc863Udp {
+class Rfc863Udp3Client extends Rfc863Udp {
 
     public static void main(final String... args) throws Exception {
         try (var selector = Selector.open();
              var client = DatagramChannel.open()) {
             // ---------------------------------------------------------------------- bind(optional)
             if (ThreadLocalRandom.current().nextBoolean()) {
-                client.bind(new InetSocketAddress(HOST, 0));
-                logBound(client);
+                logBound(client.bind(new InetSocketAddress(HOST, 0)));
             }
             // ------------------------------------------------------------------- connect(optional)
-            final var connect = ThreadLocalRandom.current().nextBoolean();
-            if (connect) {
-                client.connect(ADDR);
-                logConnected(client);
+            if (ThreadLocalRandom.current().nextBoolean()) {
+                logConnected(client.connect(ADDR));
             }
-            // ---------------------------------------------------------------- configure / register
-            client.configureBlocking(false);
-            final var clientKey = client.register(selector, SelectionKey.OP_WRITE);
+            // ------------------------------------------------------------------ configure/register
+            final var clientKey = client.configureBlocking(false).register(
+                    selector,
+                    SelectionKey.OP_WRITE
+            );
             // ------------------------------------------------------------------------------ select
-            while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
-                if (selector.select() == 0) {
-                    continue;
-                }
-                for (final var i = selector.selectedKeys().iterator(); i.hasNext(); ) {
-                    final var key = i.next();
-                    i.remove();
-                    // ------------------------------------------------------------------------ send
-                    if (key.isWritable()) {
-                        assert key == clientKey;
-                        final var channel = (DatagramChannel) key.channel();
-                        assert channel == client;
-                        final var buffer = ByteBuffer.allocate(ThreadLocalRandom.current().nextInt(
-                                (channel.getOption(StandardSocketOptions.SO_SNDBUF) >> 1) + 1
-                        ));
-                        ThreadLocalRandom.current().nextBytes(buffer.array());
-                        logClientBytes(buffer.remaining());
-                        if (connect) {
-                            final var w = channel.write(buffer);
-                            assert w == buffer.position();
-                        } else {
-                            final var w = channel.send(buffer, ADDR);
-                            assert w == buffer.position();
-                        }
-                        assert !buffer.hasRemaining();
-                        logDigest(buffer.flip());
-                        key.cancel();
-                        assert !key.isValid();
-                    }
-                }
+            final int k = selector.select();
+            assert k == 1;
+            // ----------------------------------------------------------------------------- process
+            final var key = selector.selectedKeys().iterator().next();
+            assert key == clientKey;
+            // ------------------------------------------------------------------------------- write
+            assert key.isWritable();
+            final var channel = (DatagramChannel) key.channel();
+            assert channel == client;
+            // ----------------------------------------------------------------------------- prepare
+            final var buffer = ByteBuffer.allocate(ThreadLocalRandom.current().nextInt(
+                    (client.getOption(StandardSocketOptions.SO_SNDBUF) >> 1) + 1
+            ));
+            ThreadLocalRandom.current().nextBytes(buffer.array());
+            logClientBytes(buffer.remaining());
+            final var digest = newDigest();
+            // -------------------------------------------------------------------------------- send
+            if (client.isConnected()) {
+                channel.write(buffer);
+            } else {
+                channel.send(buffer, ADDR);
             }
+            assert !buffer.hasRemaining(); // why?
+            JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, buffer.position());
+            assert !buffer.hasRemaining();
+            // ------------------------------------------------------------------------------ cancel
+            key.cancel();
+            assert !key.isValid();
+            // --------------------------------------------------------------------------------- log
+            logDigest(digest);
             // -------------------------------------------------------------------------- disconnect
-            if (connect) {
+            if (client.isConnected()) {
                 client.disconnect();
             }
         }

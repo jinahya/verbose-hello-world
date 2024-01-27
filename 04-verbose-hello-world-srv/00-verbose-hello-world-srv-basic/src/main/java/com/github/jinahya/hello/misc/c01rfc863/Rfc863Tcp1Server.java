@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.net.ServerSocket;
 
 @Slf4j
-class Rfc863Tcp1Server extends _Rfc863Tcp {
+class Rfc863Tcp1Server extends Rfc863Tcp {
 
     public static void main(final String... args) throws Exception {
         try (var server = new ServerSocket()) {

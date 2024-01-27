@@ -29,27 +29,36 @@ import java.net.DatagramSocket;
 import java.net.StandardSocketOptions;
 
 @Slf4j
-class CalcUdp1Server extends _CalcUdp {
+class CalcUdp1Server extends CalcUdp {
 
     public static void main(final String... args) throws IOException {
-        try (var server = new DatagramSocket(null)) {
+        try (var server = new DatagramSocket(null);
+             var executor = newExecutorForServer("udp-1-server-")) {
             server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
             server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
             // -------------------------------------------------------------------------------- bind
-            server.bind(_CalcConstants.ADDR);
+            server.bind(ADDR);
             logBound(server);
-            // -------------------------------------------------------------------------------------
-            JavaLangUtils.readLinesAndCloseWhenTests("quit!"::equalsIgnoreCase, server);
-            // -------------------------------------------------------------------------------------
+            // ------------------------------------------------------------- read-quit!/close-server
+            JavaLangUtils.readLinesAndCloseWhenTests(
+                    "quit!"::equalsIgnoreCase,
+                    server
+            );
+            // ----------------------------------------------------------------- read/calculate/send
             while (!server.isClosed()) {
                 try {
-                    new __CalcMessage3.OfArray()
+                    new _Message.OfArray()
                             .receiveFromClient(server)
-                            .calculateResult()
-                            .sendToClient(server);
+                            .calculateResult(executor, m -> {
+                                try {
+                                    m.sendToClient(server);
+                                } catch (final IOException ioe) {
+                                    log.error("failed to send to client", ioe);
+                                }
+                            });
                 } catch (final IOException ioe) {
                     if (!server.isClosed()) {
-                        log.error("failed to receive/send", ioe);
+                        log.error("failed to receive", ioe);
                     }
                 }
             }

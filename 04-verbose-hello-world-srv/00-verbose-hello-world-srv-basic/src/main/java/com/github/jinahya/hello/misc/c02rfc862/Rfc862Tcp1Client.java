@@ -23,7 +23,6 @@ package com.github.jinahya.hello.misc.c02rfc862;
 import com.github.jinahya.hello.util.JavaLangArrayUtils;
 import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ArrayUtils;
 
 import java.io.EOFException;
 import java.net.InetSocketAddress;
@@ -32,7 +31,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
 @SuppressWarnings({"java:S127"})
-class Rfc862Tcp1Client extends _Rfc862Tcp {
+class Rfc862Tcp1Client extends Rfc862Tcp {
 
     public static void main(final String... args) throws Exception {
         try (var client = new Socket()) {

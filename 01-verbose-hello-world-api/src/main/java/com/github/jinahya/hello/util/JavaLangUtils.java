@@ -148,6 +148,13 @@ public final class JavaLangUtils {
         );
     }
 
+    /**
+     * Reads lines from {@link System#in}, and closes specified closeable when a line tests with
+     * specified predicate.
+     *
+     * @param predicate the predicate tests each line.
+     * @param closeable the closeable to close.
+     */
     public static void readLinesAndCloseWhenTests(final Predicate<? super String> predicate,
                                                   final Closeable closeable) {
         readLinesAndCloseWhenTests(

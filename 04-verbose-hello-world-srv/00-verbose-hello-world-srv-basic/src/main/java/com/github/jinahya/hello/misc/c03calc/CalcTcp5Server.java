@@ -35,7 +35,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-class CalcTcp5Server extends _CalcTcp {
+class CalcTcp5Server extends CalcTcp {
 
     private static void closeUnchecked(final Closeable closeable) {
         try {
@@ -47,12 +47,16 @@ class CalcTcp5Server extends _CalcTcp {
 
     // @formatter:off
     private static void write(final AsynchronousSocketChannel client,
-                              final __CalcMessage3.OfBuffer message) {
+                              final _Message.OfBuffer message) {
+        assert message.hasRemaining();
         message.<Void>write(client, null, new CompletionHandler<>() {
             @Override public void completed(final Integer result, final Void attachment) {
                 assert result > 0; // why?
-                assert !message.hasRemaining();
-                closeUnchecked(client);
+                if (!message.hasRemaining()) {
+                    closeUnchecked(client);
+                    return;
+                }
+                message.write(client, null, this);
             }
             @Override public void failed(final Throwable exc, final Void attachment) {
                 log.error("failed to write", exc);
@@ -64,7 +68,8 @@ class CalcTcp5Server extends _CalcTcp {
 
     // @formatter:off
     private static void read(final AsynchronousSocketChannel client) {
-        final var message = new __CalcMessage3.OfBuffer().readyToReadFromClient();
+        final var message = new _Message.OfBuffer().readyToReadFromClient();
+        assert message.hasRemaining();
         message.<Void>read(client, null, new CompletionHandler<>() {
             @Override public void completed(final Integer result, final Void attachment) {
                 assert result > 0; // why?
@@ -89,16 +94,15 @@ class CalcTcp5Server extends _CalcTcp {
                 newExecutorForServer("tcp-5-server-")
         );
         try (var server = AsynchronousServerSocketChannel.open(group)) {
-            // ----------------------------------------------------- read-quit!-and-count-down-latch
+            // --------------------------------------------------------- read-quit!/count-down-latch
             final var latch = new CountDownLatch(1);
             JavaLangUtils.readLinesAndRunWhenTests(
                     "quit!"::equalsIgnoreCase,
                     latch::countDown
             );
-            // ------------------------------------------------------------------------- set-options
+            // -------------------------------------------------------------------------------- bind
             server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
             server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
-            // -------------------------------------------------------------------------------- bind
             logBound(server.bind(ADDR, SERVER_BACKLOG));
             // ------------------------------------------------------------------------------ accept
             server.<Void>accept(null, new CompletionHandler<>() {

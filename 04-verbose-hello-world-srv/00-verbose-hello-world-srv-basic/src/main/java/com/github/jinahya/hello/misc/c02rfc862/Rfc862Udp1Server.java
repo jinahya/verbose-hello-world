@@ -20,38 +20,38 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
-import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
-import com.github.jinahya.hello.util._UdpUtils;
+import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 
 @Slf4j
-class Rfc862Udp1Server {
+class Rfc862Udp1Server extends Rfc862Udp {
 
     public static void main(final String... args) throws Exception {
         // ---------------------------------------------------------------------------------- create
         try (var server = new DatagramSocket(null)) {
             // -------------------------------------------------------------------------------- bind
-            server.bind(_Rfc862Constants.ADDR);
-            _UdpUtils.logBound(server);
-            // --------------------------------------------------------------------------- configure
-            server.setSoTimeout((int) _Rfc86_Constants.ACCEPT_TIMEOUT_MILLIS);
+            server.bind(ADDR);
+            logBound(server);
             // ----------------------------------------------------------------------------- prepare
+            final var digest = newDigest();
             final var array = new byte[server.getReceiveBufferSize()];
             final var packet = new DatagramPacket(array, array.length);
             // ----------------------------------------------------------------------------- receive
             server.receive(packet);
-            _UdpUtils.logReceived(packet);
+            logReceived(packet);
             // -------------------------------------------------------------------------------- send
             server.send(packet);
-            _UdpUtils.logSent(packet);
+            digest.update(packet.getData(), packet.getOffset(), packet.getLength());
+            logSent(packet);
             // -------------------------------------------------------------------------------------
-            _Rfc862Utils.logDigest(array, 0, packet.getLength());
+            logDigest(digest);
         }
     }
 
+    @_ExcludeFromCoverage_PrivateConstructor_Obviously
     private Rfc862Udp1Server() {
         throw new AssertionError("instantiation is not allowed");
     }

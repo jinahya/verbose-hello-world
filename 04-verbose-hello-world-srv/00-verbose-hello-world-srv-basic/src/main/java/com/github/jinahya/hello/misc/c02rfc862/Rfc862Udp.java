@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.misc.c01rfc863;
+package com.github.jinahya.hello.misc.c02rfc862;
 
 /*-
  * #%L
@@ -35,7 +35,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-abstract class _Rfc863Udp extends __Rfc863 {
+abstract class Rfc862Udp extends Rfc862 {
 
     private static final String LOG_FORMAT_BOUND = "bound to {}";
 
@@ -92,6 +92,81 @@ abstract class _Rfc863Udp extends __Rfc863 {
         }
         log.info(LOG_FORMAT_CONNECTED, channel.getLocalAddress());
         return channel;
+    }
+
+    // ------------------------------------------------------------------------------------- sending
+    public static DatagramPacket logSending(final DatagramPacket packet) {
+        Objects.requireNonNull(packet, "packet is null");
+        log.info(LOG_FORMAT_SENDING, packet.getLength(), packet.getSocketAddress());
+        return packet;
+    }
+
+    public static <T extends DatagramChannel> T logSending(final T channel, final ByteBuffer buffer)
+            throws IOException {
+        if (!Objects.requireNonNull(channel, "channel is null").isConnected()) {
+            throw new IllegalArgumentException("channel is not connected");
+        }
+        Objects.requireNonNull(buffer, "buffer is null");
+        log.info(LOG_FORMAT_SENDING, buffer.remaining(), channel.getRemoteAddress());
+        return channel;
+    }
+
+    public static <T extends ByteBuffer> T logSending(final T buffer, final SocketAddress address) {
+        Objects.requireNonNull(buffer, "buffer is null");
+        Objects.requireNonNull(address, "address is null");
+        log.info(LOG_FORMAT_SENDING, buffer.remaining(), address);
+        return buffer;
+    }
+
+    // ---------------------------------------------------------------------------------------- sent
+
+    public static DatagramPacket logSent(final DatagramPacket packet) {
+        Objects.requireNonNull(packet, "packet is null");
+        log.info(LOG_FORMAT_SENT, packet.getLength(), packet.getSocketAddress());
+        return packet;
+    }
+
+    public static <T extends DatagramChannel> T logSent(final T channel, final ByteBuffer buffer)
+            throws IOException {
+        if (!Objects.requireNonNull(channel, "channel is null").isConnected()) {
+            throw new IllegalArgumentException("channel is not connected");
+        }
+        Objects.requireNonNull(buffer, "buffer is null");
+        log.info(LOG_FORMAT_SENT, buffer.position(), channel.getRemoteAddress());
+        return channel;
+    }
+
+    public static <T extends ByteBuffer> T logSent(final T buffer, final SocketAddress address) {
+        Objects.requireNonNull(buffer, "buffer is null");
+        Objects.requireNonNull(address, "address is null");
+        log.info(LOG_FORMAT_SENT, buffer.position(), address);
+        return buffer;
+    }
+
+    // ------------------------------------------------------------------------------------ received
+    public static DatagramPacket logReceived(final DatagramPacket packet) {
+        Objects.requireNonNull(packet, "packet is null");
+        log.info(LOG_FORMAT_RECEIVED, packet.getLength(), packet.getSocketAddress());
+        return packet;
+    }
+
+    public static <T extends DatagramChannel> T logReceived(final T channel,
+                                                            final ByteBuffer buffer)
+            throws IOException {
+        if (!Objects.requireNonNull(channel, "channel is null").isConnected()) {
+            throw new IllegalArgumentException("channel is not connected");
+        }
+        Objects.requireNonNull(buffer, "buffer is null");
+        log.info(LOG_FORMAT_RECEIVED, buffer.position(), channel.getRemoteAddress());
+        return channel;
+    }
+
+    public static <T extends ByteBuffer> T logReceived(final T buffer,
+                                                       final SocketAddress address) {
+        Objects.requireNonNull(buffer, "buffer is null");
+        Objects.requireNonNull(address, "address is null");
+        log.info(LOG_FORMAT_RECEIVED, buffer.position(), address);
+        return buffer;
     }
 
     // --------------------------------------------------------------------------------------- bytes

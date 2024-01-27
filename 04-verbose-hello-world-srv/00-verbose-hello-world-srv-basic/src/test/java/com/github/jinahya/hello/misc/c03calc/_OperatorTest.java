@@ -28,42 +28,33 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
-import java.util.concurrent.ThreadLocalRandom;
+import java.nio.charset.StandardCharsets;
 
 @Slf4j
-class _CalcOperatorTest {
-
-    static _CalcOperator newRandomValue() {
-        final var values = _CalcOperator.values();
-        return values[ThreadLocalRandom.current().nextInt(values.length)];
-    }
+class _OperatorTest {
 
     @DisplayName("name()")
     @Nested
     class NameTest {
 
-        @DisplayName("value.name().length() == NAME_LENGTH")
-        @EnumSource(_CalcOperator.class)
-        @ParameterizedTest
-        void _IsEqualToNameLength_NameLength(final _CalcOperator value) {
-            Assertions.assertEquals(_CalcOperator.LENGTH, value.name().length());
-        }
-
         @DisplayName("value.name().bytes(\"US_ASCII\").length == NAME_BYTES")
-        @EnumSource(_CalcOperator.class)
+        @EnumSource(_Operator.class)
         @ParameterizedTest
-        void _IsEqualToNameBytes_NameBytesLength(final _CalcOperator value) {
-            Assertions.assertEquals(_CalcOperator.BYTES,
-                                    value.name().getBytes(_CalcOperator.CHARSET).length);
+        void _IsEqualToBytes_NameBytesLength(final _Operator value) {
+            Assertions.assertEquals(
+                    _Operator.NAME_BYTES,
+                    value.name().getBytes(StandardCharsets.US_ASCII).length
+            );
         }
     }
 
+    @DisplayName("randomValue()")
     @Nested
     class RandomValueTest {
 
         @Test
         void __() {
-            final var randomValue = _CalcOperator.randomValue();
+            final var randomValue = _Operator.randomValue();
             log.debug("randomValue: {}", randomValue);
         }
     }

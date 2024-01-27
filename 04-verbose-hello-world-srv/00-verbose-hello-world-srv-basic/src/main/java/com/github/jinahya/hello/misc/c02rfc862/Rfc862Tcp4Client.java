@@ -37,7 +37,7 @@ import java.util.concurrent.TimeoutException;
 @SuppressWarnings({
         "java:S127" // loop counter assigned in the loop body
 })
-class Rfc862Tcp4Client extends _Rfc862Tcp {
+class Rfc862Tcp4Client extends Rfc862Tcp {
 
     public static void main(final String... args) throws Exception {
         try (var client = AsynchronousSocketChannel.open()) {

@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.misc.c02rfc862;
+package com.github.jinahya.hello.misc.c03calc;
 
 /*-
  * #%L
@@ -20,12 +20,18 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
-@Slf4j
-abstract class _Rfc862Tcp extends __Rfc862 {
+import java.nio.charset.StandardCharsets;
 
+@Slf4j
+final class CalcTestConstants {
+
+    static final String QUIT_PLUS_ENTER = "quit!" + System.lineSeparator();
+
+    static final byte[] quitPlusEnterBytes = QUIT_PLUS_ENTER.getBytes(StandardCharsets.US_ASCII);
+
+    private CalcTestConstants() {
+        throw new AssertionError("instantiation is not allowed");
+    }
 }

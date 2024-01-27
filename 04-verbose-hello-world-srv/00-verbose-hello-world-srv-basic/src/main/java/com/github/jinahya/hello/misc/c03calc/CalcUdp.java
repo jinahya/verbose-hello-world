@@ -35,7 +35,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @SuppressWarnings({
         "java:S101" // class _Calc...
 })
-abstract class _CalcUdp extends _Calc {
+abstract class CalcUdp extends Calc {
 
     private static final String LOG_FORMAT_BOUND = "bound to {}";
 

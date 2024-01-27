@@ -28,7 +28,7 @@ import java.net.ServerSocket;
 @SuppressWarnings({
         "java:S127" // assign loop counter within body
 })
-class Rfc862Tcp0Server extends _Rfc862Tcp {
+class Rfc862Tcp0Server extends Rfc862Tcp {
 
     public static void main(final String... args) throws Exception {
         try (var server = new ServerSocket()) {
