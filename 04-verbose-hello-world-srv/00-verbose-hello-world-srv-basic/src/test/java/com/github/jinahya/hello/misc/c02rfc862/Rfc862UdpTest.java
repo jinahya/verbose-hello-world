@@ -44,7 +44,8 @@ class Rfc862UdpTest {
 
     private static final List<Class<?>> CLIENT_CLASSES = List.of(
             Rfc862Udp1Client.class,
-            Rfc862Udp2Client.class
+            Rfc862Udp2Client.class,
+            Rfc862Udp3Client.class
     );
 
     private static Stream<Arguments> getClassesArgumentsList() {

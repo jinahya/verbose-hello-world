@@ -24,6 +24,7 @@ import com.github.jinahya.hello.util.JavaSecurityMessageDigestUtils;
 import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousServerSocketChannel;
@@ -143,6 +144,14 @@ class Rfc862Tcp5Server extends Rfc862Tcp {
     }
     // @formatter:on
 
+    private static void closeUnchecked(final Closeable closeable) {
+        try {
+            closeable.close();
+        } catch (final IOException ioe) {
+            log.error("failed to close " + closeable, ioe);
+        }
+    }
+
     // @formatter:off
     public static void main(final String... args) throws Exception {
         try (var server = AsynchronousServerSocketChannel.open()) {
@@ -151,25 +160,81 @@ class Rfc862Tcp5Server extends Rfc862Tcp {
             // ------------------------------------------------------------------------------ accept
             final var latch = new CountDownLatch(2);
             server.<Void>accept(null, new CompletionHandler<>() {
-                @Override public void completed(final AsynchronousSocketChannel result,
+                @Override public void completed(final AsynchronousSocketChannel client,
                                                 final Void attachment) {
-                    logAccepted(result);
-                    final var buffer = newBuffer();
-                    final var bytes = new LongAdder();
+                    logAccepted(client);
                     final var digest = newDigest();
-                    new Handler(result, buffer, bytes, digest, latch).read();
+                    final var bytes = new LongAdder();
+                    final var buffer = newBuffer();
+                    abstract class Handler implements CompletionHandler<Integer, Handler> {
+                        @Override
+                        public final void failed(final Throwable exc, final Handler attachment) {
+                            log.error("failed to handler in " + getClass(), exc);
+                            latch.countDown();
+                        }
+                    }
+                    class ReadHandler extends Handler {
+                        @Override
+                        public void completed(final Integer r, final Handler writeHandler) {
+                            log.debug("r: {}", r);
+                            if (r == -1) {
+                                assert latch.getCount() == 2L;
+                                latch.countDown(); // 2 -> 1
+                                if (buffer.position() > 0) {
+                                    buffer.flip();
+                                    client.write(buffer, null, writeHandler);
+                                    return;
+                                }
+                                assert latch.getCount() == 1L;
+                                latch.countDown(); // 1 -> 0
+                                closeUnchecked(client);
+                                return;
+                            }
+                            assert r > 0; // why not zero?
+                            bytes.add(r);
+                            assert buffer.position() > 0;
+                            buffer.flip();
+                            assert buffer.hasRemaining();
+                            client.write(buffer, this, writeHandler);
+                        }
+                    }
+                    class WriteHandler extends Handler {
+                        @Override
+                        public void completed(final Integer w, final Handler readHandler) {
+                            assert w > 0; // why?
+                            JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, w);
+                            if (buffer.hasRemaining()) {
+                                client.write(buffer, readHandler, this);
+                                return;
+                            }
+                            if (latch.getCount() == 2L) {
+                                buffer.compact(); // effectively, position -> zero, limit -> capacity
+                                assert buffer.position() == 0; // why?
+                                assert buffer.remaining() == buffer.capacity();
+                                client.read(buffer, this, readHandler);
+                                return;
+                            }
+                            closeUnchecked(client);
+                            assert latch.getCount() == 1L;
+                            latch.countDown(); // 1 -> 0
+                        }
+                    }
+                    // --=--------------------------------------------------------------------- read
+                    client.read(
+                            buffer,             // <dst>
+                            new WriteHandler(), // <attachment>
+                            new ReadHandler()   // <handler>
+                    );
                 }
                 @Override public void failed(final Throwable exc, final Void attachment) {
                     log.error("failed to accept", exc);
                     assert latch.getCount() == 2L;
-                    latch.countDown();
-                    latch.countDown();
+                    latch.countDown(); // 2 -> 1
+                    latch.countDown(); // 1 -> 0
                 }
             });
             latch.await();
-            log.debug("[server] end-of-try");
         }
-        log.debug("[server] end-of-main");
     }
     // @formatter:on
 

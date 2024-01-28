@@ -24,21 +24,18 @@ import com.github.jinahya.hello.util.JavaSecurityMessageDigestUtils;
 import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Supplier;
 
 @Slf4j
 class Rfc862Tcp5Client extends Rfc862Tcp {
 
-    @SuppressWarnings({
-            "java:S3776"
-    })
+    @SuppressWarnings({"java:S3776"})
     // @formatter:off
     public static void main(final String... args) throws Exception {
         try (var client = AsynchronousSocketChannel.open()) {
@@ -55,15 +52,6 @@ class Rfc862Tcp5Client extends Rfc862Tcp {
                     final var digest = newDigest();
                     final var bytes = new AtomicInteger(logClientBytes(newRandomBytes()));
                     final var buffer = newBuffer().limit(0);
-                    final Supplier<ByteBuffer> sanitizer = () -> {
-                        if (!buffer.hasRemaining()) {
-                            ThreadLocalRandom.current().nextBytes(buffer.array());
-                            buffer.clear().limit(Math.min(buffer.capacity(), bytes.get()));
-                            assert buffer.hasRemaining() || bytes.get() == 0;
-                        }
-                        return buffer;
-                    };
-                    // ----------------------------------------------------------------------- write
                     abstract class Handler implements CompletionHandler<Integer, Handler> {
                         @Override
                         public final void failed(final Throwable exc, final Handler attachment) {
@@ -73,50 +61,75 @@ class Rfc862Tcp5Client extends Rfc862Tcp {
                     }
                     class WriteHandler extends Handler {
                         @Override
-                        public void completed(final Integer result, final Handler attachment) {
-                            assert result > 0 || bytes.get() == 0;
-                            JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, result);
-                            if (bytes.addAndGet(-result) == 0) {
+                        public void completed(final Integer w, final Handler readHandler) {
+                            assert w > 0 || bytes.get() == 0;
+                            JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, w);
+                            if (bytes.addAndGet(-w) == 0) {
                                 logDigest(digest);
+                                try {
+                                    client.shutdownOutput();
+                                } catch (final IOException ioe) {
+                                    log.error("failed to shutdown output", ioe);
+                                }
                             }
                             if (buffer.position() > 0) {
                                 buffer.flip();
+                                assert buffer.hasRemaining();
                                 client.read(
-                                        buffer,    // <dst>
-                                        this,      // <attachment>
-                                        attachment // <handler>
+                                        buffer,     // <dst>
+                                        this,       // <attachment>
+                                        readHandler // <handler>
                                 );
                                 return;
                             }
+                            if (bytes.get() == 0) {
+                                latch.countDown();
+                                return;
+                            }
+                            assert buffer.hasRemaining();
                             client.write(
-                                    sanitizer.get(), // <src>
-                                    attachment,      // <attachment>
-                                    this             // <handler>
+                                    buffer,      // <src>
+                                    readHandler, // <attachment>
+                                    this         // <handler>
                             );
                         }
                     }
                     class ReadHandler extends Handler {
                         @Override
-                        public void completed(final Integer result, final Handler attachment) {
-                            assert result > 0;
+                        public void completed(final Integer r, final Handler writeHandler) {
+                            assert r > 0;
                             if (buffer.hasRemaining()) {
-                                client.read(buffer, attachment, this);
+                                client.read(buffer, writeHandler, this);
                                 return;
                             }
+                            buffer.limit(Math.min(
+                                    buffer.capacity() - buffer.position(),
+                                    bytes.get())
+                            );
                             if (bytes.get() > 0) {
+                                if (!buffer.hasRemaining()) {
+                                    ThreadLocalRandom.current().nextBytes(buffer.array());
+                                    buffer.clear().limit(Math.min(buffer.remaining(), bytes.get()));
+                                }
                                 client.write(
-                                        sanitizer.get(), // <src>
-                                        this,            // <attachment>
-                                        attachment       // <handler>
+                                        buffer,      // <src>
+                                        this,        // <attachment>
+                                        writeHandler // <handler>
                                 );
                                 return;
                             }
                             assert bytes.get() == 0; // no need to write, either
-                            latch.countDown();
+                            assert latch.getCount() == 1L;
+                            latch.countDown(); // 1 -> 0
                         }
                     }
+                    // ----------------------------------------------------------------------- write
+                    if (!buffer.hasRemaining()) {
+                        ThreadLocalRandom.current().nextBytes(buffer.array());
+                        buffer.clear().limit(Math.min(buffer.remaining(), bytes.get()));
+                    }
                     client.write(
-                            sanitizer.get(),   // <src>
+                            buffer,            // <src>
                             new ReadHandler(), // <attachment>
                             new WriteHandler() // <handler>
                     );

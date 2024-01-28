@@ -34,10 +34,10 @@ class Rfc862Tcp2Server extends Rfc862Tcp {
 
     public static void main(final String... args) throws Exception {
         try (var server = ServerSocketChannel.open()) {
-            assert server.isBlocking(); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            assert server.isBlocking(); // !!!
             // -------------------------------------------------------------------------------- bind
             logBound(server.bind(ADDR, 1));
-            // -------------------------------------------------------------------- accept/configure
+            // ------------------------------------------------------------------------------ accept
             final SocketChannel client;
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client = server.socket().accept().getChannel();
@@ -45,15 +45,19 @@ class Rfc862Tcp2Server extends Rfc862Tcp {
                 client = server.accept();
             }
             logAccepted(client);
-            assert client.isBlocking(); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            assert client.isBlocking(); // !!!
+            // ----------------------------------------------------------------------------- prepare
+            final var digest = newDigest();
+            var bytes = 0L;
+            final var buffer = newBuffer();
             // -------------------------------------------------------------------------- read/write
             try (client) {
-                // ------------------------------------------------------------------------- prepare
-                final var digest = newDigest();
-                var bytes = 0L;
-                final var buffer = newBuffer();
-                for (int r, w; ; ) {
+                for (int r, w; ; bytes += r) {
                     // ------------------------------------------------------------------------ read
+                    if (!buffer.hasRemaining()) {
+                        buffer.clear();
+                    }
+                    assert buffer.hasRemaining();
                     if (ThreadLocalRandom.current().nextBoolean()) {
                         r = client.socket().getInputStream().read(
                                 buffer.array(),
@@ -64,16 +68,16 @@ class Rfc862Tcp2Server extends Rfc862Tcp {
                             break;
                         }
                         buffer.position(buffer.position() + r);
-                        bytes += r;
                     } else {
                         r = client.read(buffer);
                         if (r == -1) {
                             break;
                         }
-                        bytes += r;
                     }
+                    assert r > 0; // why?
                     // ----------------------------------------------------------------------- write
                     buffer.flip(); // limit -> position, position -> zero
+                    assert buffer.hasRemaining(); // why?
                     if (ThreadLocalRandom.current().nextBoolean()) {
                         client.socket().getOutputStream().write(
                                 buffer.array(),
@@ -81,21 +85,24 @@ class Rfc862Tcp2Server extends Rfc862Tcp {
                                 buffer.remaining()
                         );
                         client.socket().getOutputStream().flush();
-                        if (ThreadLocalRandom.current().nextBoolean()) {
-                            digest.update(buffer.array(), buffer.arrayOffset() + buffer.position(),
-                                          buffer.remaining());
-                            buffer.position(buffer.limit());
-                        } else {
-                            digest.update(buffer);
-                        }
+                        digest.update(
+                                buffer.array(),
+                                buffer.arrayOffset() + buffer.position(),
+                                buffer.remaining()
+                        );
+                        buffer.position(buffer.limit());
                     } else {
                         w = client.write(buffer);
-                        JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, w);
+                        assert w == buffer.position();
+                        assert !buffer.hasRemaining();
+                        buffer.rewind();
+                        digest.update(buffer);
+                        assert !buffer.hasRemaining();
                     }
-                    assert !buffer.hasRemaining(); // why?
+                    assert !buffer.hasRemaining();
                     buffer.compact(); // effectively, position -> zero, limit -> capacity
                     assert buffer.position() == 0; // why?
-                    assert buffer.limit() == buffer.capacity(); // why?
+                    assert buffer.limit() == buffer.capacity();
                 }
                 // ----------------------------------------------------------------------------- log
                 logServerBytes(bytes);

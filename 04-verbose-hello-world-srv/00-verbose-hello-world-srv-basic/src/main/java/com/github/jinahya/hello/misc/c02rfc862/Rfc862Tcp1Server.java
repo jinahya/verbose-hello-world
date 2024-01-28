@@ -20,6 +20,7 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
+import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.ServerSocket;
@@ -37,10 +38,11 @@ class Rfc862Tcp1Server extends Rfc862Tcp {
                 // ------------------------------------------------------------------------- prepare
                 final var digest = newDigest();
                 var bytes = 0L;
+                final var array = newArray();
                 // ---------------------------------------------------------------------- read/write
-                for (final var array = newArray(); ; ) {
+                for (int r; ; ) {
                     // ------------------------------------------------------------------------ read
-                    final int r = client.getInputStream().read(array);
+                    r = client.getInputStream().read(array);
                     if (r == -1) {
                         break;
                     }
@@ -50,17 +52,15 @@ class Rfc862Tcp1Server extends Rfc862Tcp {
                     digest.update(array, 0, r);
                 }
                 // -------------------------------------------------------------------- flush-output
-                log.debug("[server] flushing output...");
                 client.getOutputStream().flush();
                 // ----------------------------------------------------------------------------- log
                 logServerBytes(bytes);
                 logDigest(digest);
-                log.debug("[server] closing client..");
             }
-            log.debug("[server] end-of-try");
         }
     }
 
+    @_ExcludeFromCoverage_PrivateConstructor_Obviously
     private Rfc862Tcp1Server() {
         throw new AssertionError("instantiation is not allowed");
     }

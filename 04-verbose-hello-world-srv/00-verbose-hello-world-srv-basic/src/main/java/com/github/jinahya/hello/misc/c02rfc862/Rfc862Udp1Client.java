@@ -20,13 +20,12 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
-import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
-import com.github.jinahya.hello.util._UdpUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
+import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
@@ -40,30 +39,36 @@ class Rfc862Udp1Client extends Rfc862Udp {
                 client.bind(new InetSocketAddress(HOST, 0));
                 logBound(client);
             }
-            // --------------------------------------------------------------------------- configure
-            client.setSoTimeout((int) _Rfc86_Constants.READ_TIMEOUT_MILLIS);
             // ------------------------------------------------------------------- connect(optional)
-            final var connect = ThreadLocalRandom.current().nextBoolean();
-            if (connect) {
+            if (ThreadLocalRandom.current().nextBoolean()) {
                 client.connect(ADDR);
                 logConnected(client);
             }
             // ----------------------------------------------------------------------------- prepare
+            final var digest = newDigest();
             final var array = new byte[
-//                    ThreadLocalRandom.current().nextInt(client.getSendBufferSize() + 1)
                     ThreadLocalRandom.current().nextInt((client.getSendBufferSize() >> 1) + 1)
                     ];
             ThreadLocalRandom.current().nextBytes(array);
             final var packet = new DatagramPacket(array, array.length, ADDR);
+            assert packet.getData() == array;
+            assert packet.getOffset() == 0;
+            assert packet.getLength() == array.length;
+            if (!client.isConnected()) {
+                packet.setSocketAddress(ADDR);
+            }
             logClientBytes(packet.getLength());
             // -------------------------------------------------------------------------------- send
             client.send(packet);
-//            logDigest(array, 0, packet.getLength());
+            digest.update(packet.getData(), packet.getOffset(), packet.getLength());
             // ----------------------------------------------------------------------------- receive
             client.receive(packet);
-            _UdpUtils.logReceived(packet);
+            assert packet.getLength() == array.length;
+            assert Objects.equals(packet.getSocketAddress(), ADDR);
+            // --------------------------------------------------------------------------------- log
+            logDigest(digest);
             // -------------------------------------------------------------------------- disconnect
-            if (connect) {
+            if (client.isConnected()) {
                 client.disconnect();
             }
         }

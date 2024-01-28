@@ -20,18 +20,17 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
-import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
 import com.github.jinahya.hello.util.JavaSecurityMessageDigestUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
+import java.net.DatagramPacket;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
+import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
 @SuppressWarnings({
@@ -40,84 +39,70 @@ import java.util.concurrent.ThreadLocalRandom;
 @Slf4j
 class Rfc862Udp2Client extends Rfc862Udp {
 
-    public static void main(final String... args)
-            throws IOException {
+    public static void main(final String... args) throws Exception {
         // ------------------------------------------------------------------------------------ open
-        try (var selector = Selector.open();
-             var client = DatagramChannel.open()) {
+        try (var client = DatagramChannel.open()) {
+            assert client.isBlocking(); // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
             // ---------------------------------------------------------------------- bind(optional)
             if (ThreadLocalRandom.current().nextBoolean()) {
                 logBound(client.bind(new InetSocketAddress(HOST, 0)));
             }
             // ------------------------------------------------------------------- connect(optional)
-            final var connect = ThreadLocalRandom.current().nextBoolean();
-            if (connect) {
+            if (ThreadLocalRandom.current().nextBoolean()) {
                 logConnected(client.connect(ADDR));
             }
             // ----------------------------------------------------------------------------- prepare
             final var digest = newDigest();
-            final var buffer = ByteBuffer.allocate(
-                    ThreadLocalRandom.current().nextInt(
-//                            client.getOption(StandardSocketOptions.SO_SNDBUF) + 1
-                            (client.getOption(StandardSocketOptions.SO_SNDBUF) >> 1) + 1
-                    )
-            );
+            final var buffer = ByteBuffer.allocate(ThreadLocalRandom.current().nextInt(
+                    (client.getOption(StandardSocketOptions.SO_SNDBUF) >> 1) + 1
+            ));
             ThreadLocalRandom.current().nextBytes(buffer.array());
             logClientBytes(buffer.remaining());
-            // ------------------------------------------------------------------ configure/register
-            client.configureBlocking(false);
-            final var clientKey = client.register(selector, SelectionKey.OP_WRITE);
-            // ---------------------------------------------------------------------- select-in-loop
-            while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
-                if (selector.select(_Rfc86_Constants.ACCEPT_TIMEOUT_MILLIS) == 0) {
-                    break;
+            // -------------------------------------------------------------------------------- send
+            if (ThreadLocalRandom.current().nextBoolean()) {
+                final var packet = new DatagramPacket(
+                        buffer.array(),                           // <buf>
+                        buffer.arrayOffset() + buffer.position(), // <offset>
+                        buffer.remaining()                        // <length>
+                );
+                if (!client.isConnected()) {
+                    packet.setSocketAddress(ADDR);
                 }
-                for (final var i = selector.selectedKeys().iterator(); i.hasNext(); ) {
-                    final var selectedKey = i.next();
-                    i.remove();
-                    assert selectedKey == clientKey;
-                    // ------------------------------------------------------------------------ send
-                    if (selectedKey.isWritable()) {
-                        final var channel = (DatagramChannel) selectedKey.channel();
-                        final var remaining = buffer.remaining();
-                        assert channel == client;
-                        final int w;
-                        if (channel.isConnected()) {
-                            w = channel.write(buffer);
-                        } else {
-                            w = channel.send(buffer, ADDR);
-                        }
-                        assert w == remaining;
-                        assert !buffer.hasRemaining();
-                        JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, w);
-                        selectedKey.interestOpsAnd(~SelectionKey.OP_WRITE);
-                        selectedKey.interestOpsOr(SelectionKey.OP_READ);
-                    }
-                    // --------------------------------------------------------------------- receive
-                    if (selectedKey.isReadable()) {
-                        final var channel = (DatagramChannel) selectedKey.channel();
-                        assert channel == client;
-                        buffer.clear();
-                        final SocketAddress address;
-                        final int r;
-                        if (channel.isConnected()) {
-                            r = channel.read(buffer);
-                        } else {
-                            address = channel.receive(buffer);
-                            r = buffer.position();
-                        }
-                        if (r == -1 || buffer.hasRemaining()) {
-                            throw new IllegalArgumentException("unexpected eof");
-                        }
-                        logDigest(digest);
-                        selectedKey.interestOpsAnd(~SelectionKey.OP_READ);
-                        selectedKey.cancel();
-                        assert !selectedKey.isValid();
-                    }
+                client.socket().send(packet);
+                buffer.position(buffer.position() + packet.getLength());
+                JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, packet.getLength());
+            } else {
+                if (client.isConnected()) {
+                    final var w = client.write(buffer);
+                    assert w == buffer.position();
+                    assert !buffer.hasRemaining(); // why?
+                    JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, buffer.position());
+                } else {
+                    final var w = client.send(buffer, ADDR);
+                    assert w == buffer.position();
+                    assert !buffer.hasRemaining(); // why?
+                    JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, buffer.position());
                 }
             }
+            // ----------------------------------------------------------------------------- receive
+            buffer.clear(); // position -> zero, limit -> capacity
+            if (ThreadLocalRandom.current().nextBoolean()) {
+                final var packet = new DatagramPacket(
+                        buffer.array(),                           // <buf>
+                        buffer.arrayOffset() + buffer.position(), // <offset>
+                        buffer.remaining()                        // <length>
+                );
+                client.socket().receive(packet);
+                assert packet.getLength() == buffer.remaining();
+                assert Objects.equals(packet.getSocketAddress(), ADDR);
+                buffer.position(buffer.remaining());
+            } else {
+                final var source = client.receive(buffer);
+                assert !buffer.hasRemaining();
+                assert Objects.equals(source, ADDR);
+            }
             // -------------------------------------------------------------------------- disconnect
-            if (connect) {
+            if (client.isConnected()) {
                 client.disconnect();
             }
         }

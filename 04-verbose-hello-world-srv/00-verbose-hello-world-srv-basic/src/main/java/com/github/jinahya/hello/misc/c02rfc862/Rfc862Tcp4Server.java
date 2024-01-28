@@ -32,7 +32,7 @@ class Rfc862Tcp4Server extends Rfc862Tcp {
     public static void main(final String... args) throws Exception {
         try (var server = AsynchronousServerSocketChannel.open()) {
             // -------------------------------------------------------------------------------- bind
-            logBound(server.bind(ADDR));
+            logBound(server.bind(ADDR, 1));
             // ------------------------------------------------------------------------------ accept
             try (var client = logAccepted(server.accept().get())) {
                 // ------------------------------------------------------------------------- prepare
@@ -40,28 +40,31 @@ class Rfc862Tcp4Server extends Rfc862Tcp {
                 var bytes = 0L;
                 final var buffer = newBuffer();
                 // ---------------------------------------------------------------------- read/write
-                while (true) {
+                for (int r, w; ; bytes += r) {
                     // ------------------------------------------------------------------------ read
                     if (!buffer.hasRemaining()) {
                         buffer.clear();
                     }
-                    final int r = client.read(buffer).get();
+                    assert buffer.hasRemaining();
+                    r = client.read(buffer).get();
                     if (r == -1) {
                         break;
                     }
                     assert r > 0; // why?
-                    bytes += r;
                     // ----------------------------------------------------------------------- write
+                    assert buffer.position() > 0;
                     buffer.flip();
-                    final int w = client.write(buffer).get();
+                    assert buffer.hasRemaining(); // why?
+                    w = client.write(buffer).get();
                     assert w > 0; // why?
                     JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, w);
                     buffer.compact();
                 }
                 // ----------------------------------------------------------------- write-remaining
-                for (buffer.flip(); buffer.hasRemaining(); ) {
-                    final int w = client.write(buffer).get();
-                    assert w >= 0; // why?
+                buffer.flip();
+                for (int w; buffer.hasRemaining(); ) {
+                    w = client.write(buffer).get();
+                    assert w > 0; // why?
                     JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, w);
                 }
                 // ----------------------------------------------------------------------------- log

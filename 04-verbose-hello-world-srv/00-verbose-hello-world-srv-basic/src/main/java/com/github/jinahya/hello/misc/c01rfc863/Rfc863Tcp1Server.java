@@ -34,14 +34,15 @@ class Rfc863Tcp1Server extends Rfc863Tcp {
             server.bind(ADDR, 1);
             logBound(server);
             // ------------------------------------------------------------------------------ accept
-            try (var client = server.accept()) {
-                logAccepted(client);
+            try (var client = logAccepted(server.accept())) {
                 // ------------------------------------------------------------------------- prepare
                 final var digest = newDigest();
                 var bytes = 0L;
-                // ---------------------------------------------------------------------------- read
-                for (final var array = newArray(); ; ) {
-                    final var r = client.getInputStream().read(array);
+                final var array = newArray();
+                // --------------------------------------------------------------------------- read/
+                for (int r; ; ) {
+                    // ------------------------------------------------------------------------ read
+                    r = client.getInputStream().read(array);
                     if (r == -1) {
                         break;
                     }

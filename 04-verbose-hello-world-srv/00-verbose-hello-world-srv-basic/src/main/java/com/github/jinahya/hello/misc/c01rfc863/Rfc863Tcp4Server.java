@@ -32,24 +32,24 @@ class Rfc863Tcp4Server extends Rfc863Tcp {
     public static void main(final String... args) throws Exception {
         try (var server = AsynchronousServerSocketChannel.open()) {
             // -------------------------------------------------------------------------------- bind
-            server.bind(ADDR, 1);
-            logBound(server);
+            logBound(server.bind(ADDR, 1));
             // ------------------------------------------------------------------------------ accept
-            try (var client = server.accept().get()) {
-                logAccepted(client);
+            try (var client = logAccepted(server.accept().get())) {
                 // ------------------------------------------------------------------------- prepare
-                var bytes = 0L;
                 final var digest = newDigest();
-                // ---------------------------------------------------------------------------- read
-                for (var buffer = newBuffer(); ; ) {
+                var bytes = 0L;
+                final var buffer = newBuffer();
+                // --------------------------------------------------------------------------- read/
+                for (int r; ; bytes += r) {
+                    // ------------------------------------------------------------------------ read
                     if (!buffer.hasRemaining()) {
                         buffer.clear();
                     }
-                    final var r = client.read(buffer).get();
+                    r = client.read(buffer).get();
                     if (r == -1) {
                         break;
                     }
-                    bytes += r;
+                    assert r > 0; // why?
                     JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, r);
                 }
                 // ----------------------------------------------------------------------------- log

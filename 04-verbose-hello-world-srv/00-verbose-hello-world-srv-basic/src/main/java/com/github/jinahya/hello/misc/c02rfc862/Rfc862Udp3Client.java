@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.misc.c01rfc863;
+package com.github.jinahya.hello.misc.c02rfc862;
 
 /*-
  * #%L
@@ -20,20 +20,27 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
+import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
 import com.github.jinahya.hello.util.JavaSecurityMessageDigestUtils;
 import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.EOFException;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
+import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
+@SuppressWarnings({
+        "java:S2245"
+})
 @Slf4j
-class Rfc863Udp3Client extends Rfc863Udp {
+class Rfc862Udp3Client extends Rfc862Udp {
 
     public static void main(final String... args) throws Exception {
         try (var selector = Selector.open();
@@ -78,6 +85,34 @@ class Rfc863Udp3Client extends Rfc863Udp {
                 assert !buffer.hasRemaining(); // why?
                 JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, buffer.position());
                 selectedKey.interestOpsAnd(~SelectionKey.OP_WRITE);
+                buffer.clear();
+                selectedKey.interestOpsOr(SelectionKey.OP_READ);
+                assert !selectedKey.isReadable();
+            }
+            // ---------------------------------------------------------------------- select/receive
+            {
+                // -------------------------------------------------------------------------- select
+                final int k = selector.select();
+                assert k == 1;
+                // ------------------------------------------------------------------------- process
+                final var selectedKey = selector.selectedKeys().iterator().next();
+                assert selectedKey == clientKey;
+                assert selectedKey.isReadable();
+                final var channel = (DatagramChannel) selectedKey.channel();
+                assert channel == client;
+                // ------------------------------------------------------------------------- receive
+                if (client.isConnected()) {
+                    final int r = channel.read(buffer);
+                    if (r == -1) {
+                        throw new EOFException("unexpected eof");
+                    }
+                    assert r == buffer.position();
+                } else {
+                    final var source = channel.receive(buffer);
+                    assert Objects.equals(source, ADDR);
+                }
+                assert !buffer.hasRemaining();
+                selectedKey.interestOpsAnd(~SelectionKey.OP_READ);
                 // -------------------------------------------------------------------------- cancel
                 selectedKey.cancel();
                 assert !selectedKey.isValid();
@@ -92,7 +127,7 @@ class Rfc863Udp3Client extends Rfc863Udp {
     }
 
     @_ExcludeFromCoverage_PrivateConstructor_Obviously
-    private Rfc863Udp3Client() {
+    private Rfc862Udp3Client() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

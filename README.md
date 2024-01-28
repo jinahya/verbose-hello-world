@@ -104,6 +104,7 @@ See [dockerhub/maven](https://hub.docker.com/_/maven) for available tags.
 * [Multi module POM - creating a site that works](https://stackoverflow.com/q/10848715/330457)
 * [How do SO_REUSEADDR and SO_REUSEPORT differ?](https://stackoverflow.com/q/14388706/330457)
 * [JUL to SLF4J Bridge](https://stackoverflow.com/q/9117030/330457)
+* [What is the minimum number of written bytes of a SocketChannel when its key is writable?](https://stackoverflow.com/q/77895312/330457)
 
 ### [Python 3... documentation](https://docs.python.org/3/)
 

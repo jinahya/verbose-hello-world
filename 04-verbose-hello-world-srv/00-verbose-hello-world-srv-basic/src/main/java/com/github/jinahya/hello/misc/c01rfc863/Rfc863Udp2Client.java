@@ -43,8 +43,7 @@ class Rfc863Udp2Client extends Rfc863Udp {
             }
             // ------------------------------------------------------------------- connect(optional)
             if (ThreadLocalRandom.current().nextBoolean()) {
-                client.connect(ADDR);
-                logConnected(client);
+                logConnected(client.connect(ADDR));
             }
             // ----------------------------------------------------------------------------- prepare
             final var digest = newDigest();
@@ -64,18 +63,19 @@ class Rfc863Udp2Client extends Rfc863Udp {
                     packet.setSocketAddress(ADDR);
                 }
                 client.socket().send(packet);
-                buffer.position(buffer.position() + packet.getLength());
+                buffer.position(packet.getLength());
                 JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, packet.getLength());
             } else {
                 if (client.isConnected()) {
                     final var w = client.write(buffer);
+                    assert w == buffer.position();
                     assert !buffer.hasRemaining(); // why?
-                    JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, w);
+                    JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, buffer.position());
                 } else {
                     final var w = client.send(buffer, ADDR);
-                    assert !buffer.hasRemaining(); // why?
                     assert w == buffer.position();
-                    JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, w);
+                    assert !buffer.hasRemaining(); // why?
+                    JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, buffer.position());
                 }
             }
             // --------------------------------------------------------------------------------- log

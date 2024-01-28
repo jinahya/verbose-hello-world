@@ -36,8 +36,7 @@ class Rfc863Tcp2Server extends Rfc863Tcp {
         try (var server = ServerSocketChannel.open()) {
             assert server.isBlocking(); // !!!
             // -------------------------------------------------------------------------------- bind
-            server.bind(ADDR, 1);
-            logBound(server);
+            logBound(server.bind(ADDR, 1));
             // ------------------------------------------------------------------------------ accept
             final SocketChannel client;
             if (ThreadLocalRandom.current().nextBoolean()) {
@@ -50,13 +49,15 @@ class Rfc863Tcp2Server extends Rfc863Tcp {
             // ----------------------------------------------------------------------------- prepare
             final var digest = newDigest();
             int bytes = 0;
-            // -------------------------------------------------------------------------------- read
+            final var buffer = newBuffer();
+            // ------------------------------------------------------------------------------- read/
             try (client) {
-                final var buffer = newBuffer();
                 for (int r; ; bytes += r) {
+                    // ------------------------------------------------------------------------ read
                     if (!buffer.hasRemaining()) {
                         buffer.clear();
                     }
+                    assert buffer.hasRemaining();
                     if (ThreadLocalRandom.current().nextBoolean()) {
                         r = client.socket().getInputStream().read(
                                 buffer.array(),
@@ -73,6 +74,7 @@ class Rfc863Tcp2Server extends Rfc863Tcp {
                             break;
                         }
                     }
+                    assert r > 0; // why?
                     JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, r);
                 }
             }

@@ -49,6 +49,7 @@ class Rfc862Tcp0Server extends Rfc862Tcp {
                     client.getOutputStream().write(b);
                     digest.update((byte) b);
                 }
+                // -------------------------------------------------------------------- flush-output
                 client.getOutputStream().flush();
                 // ----------------------------------------------------------------------------- log
                 logServerBytes(bytes);

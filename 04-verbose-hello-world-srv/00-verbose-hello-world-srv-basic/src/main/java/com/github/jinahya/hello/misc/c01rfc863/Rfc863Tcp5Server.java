@@ -24,55 +24,60 @@ import com.github.jinahya.hello.util.JavaSecurityMessageDigestUtils;
 import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
-import java.security.MessageDigest;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Slf4j
 class Rfc863Tcp5Server extends Rfc863Tcp {
 
+    private static void closeUnchecked(final Closeable closeable) {
+        try {
+            closeable.close();
+        } catch (final IOException ioe) {
+            log.error("failed to close " + closeable, ioe);
+        }
+    }
+
+    // @formatter:off
     public static void main(final String... args) throws Exception {
         try (var server = AsynchronousServerSocketChannel.open()) {
             // -------------------------------------------------------------------------------- bind
-            server.bind(ADDR, 1);
-            logBound(server);
-            // -------------------------------------------------------------------------------------
-            final var latch = new CountDownLatch(1);
+            logBound(server.bind(ADDR, 1));
             // ------------------------------------------------------------------------------ accept
-            server.<Void>accept(null, new CompletionHandler<>() { // @formatter:off
+            final var latch = new CountDownLatch(1);
+            server.<Void>accept(null, new CompletionHandler<>() {
                 @Override
                 public void completed(final AsynchronousSocketChannel client, final Void a) {
                     logAccepted(client);
+                    final var digest = newDigest();
                     final var bytes = new AtomicLong();
                     final var buffer = newBuffer();
                     // ------------------------------------------------------------------------ read
-                    client.read(buffer, newDigest(), new CompletionHandler<>() {
-                        @Override public void completed(final Integer r, final MessageDigest a) {
-                            if (r == -1) {
+                    client.<Void>read(buffer, null, new CompletionHandler<>() {
+                        @Override
+                        public void completed(final Integer result, final Void attachment) {
+                            if (result == -1) {
                                 logServerBytes(bytes.get());
-                                logDigest(a);
-                                try { client.close(); } catch (final IOException ioe) {
-                                    throw new RuntimeException("failed to close " + client, ioe);
-                                }
+                                logDigest(digest);
+                                closeUnchecked(client);
                                 latch.countDown();
                                 return;
                             }
-                            JavaSecurityMessageDigestUtils.updateDigest(a, buffer, r);
-                            bytes.addAndGet(r);
+                            JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, result);
+                            bytes.addAndGet(result);
                             if (!buffer.hasRemaining()) {
                                 buffer.clear();
                             }
-                            client.read(buffer, a, this);
+                            client.read(buffer, null, this);
                         }
-                        @Override public void failed(final Throwable exc, final MessageDigest a) {
+                        @Override public void failed(final Throwable exc, final Void attachment) {
                             log.error("failed to read", exc);
-                            try { client.close(); } catch (final IOException ioe) {
-                                throw new RuntimeException("failed to close " + client, ioe);
-                            }
+                            closeUnchecked(client);
                             latch.countDown();
                         }
                     });
@@ -80,11 +85,12 @@ class Rfc863Tcp5Server extends Rfc863Tcp {
                 @Override public void failed(final Throwable exc, final Void attachment) {
                     log.error("failed to accept", exc);
                     latch.countDown();
-                } // @formatter:off
+                }
             });
             latch.await();
         }
     }
+    // @formatter:on
 
     @_ExcludeFromCoverage_PrivateConstructor_Obviously
     private Rfc863Tcp5Server() {
