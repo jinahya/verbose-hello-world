@@ -20,22 +20,23 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
-import com.github.jinahya.hello.util.JavaNioByteBufferUtils;
 import com.github.jinahya.hello.util.JavaSecurityMessageDigestUtils;
 import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
-import java.security.MessageDigest;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 @Slf4j
 class Rfc863Tcp5Client extends Rfc863Tcp {
 
+    // @formatter:off
     public static void main(final String... args) throws Exception {
         try (var client = AsynchronousSocketChannel.open()) {
             // ---------------------------------------------------------------------- bind(optional)
@@ -43,32 +44,40 @@ class Rfc863Tcp5Client extends Rfc863Tcp {
                 client.bind(new InetSocketAddress(HOST, 0));
                 logBound(client);
             }
-            final var latch = new CountDownLatch(1);
             // ----------------------------------------------------------------------------- connect
-            client.<Void>connect(ADDR, null, new CompletionHandler<>() { // @formatter:off
+            final var latch = new CountDownLatch(1);
+            client.<Void>connect(ADDR, null, new CompletionHandler<>() {
                 @Override public void completed(final Void result, final Void a) {
                     logConnected(client);
                     // --------------------------------------------------------------------- prepare
                     final var bytes = new AtomicInteger(logClientBytes(newRandomBytes()));
-                    final var buffer = JavaNioByteBufferUtils.randomize(newBuffer());
-                    buffer.limit(Math.min(buffer.limit(), bytes.get()));
+                    final var digest = newDigest();
+                    final var buffer = newBuffer().limit(0);
+                    final Supplier<ByteBuffer> sanitizer = () -> {
+                        if (!buffer.hasRemaining()) {
+                            ThreadLocalRandom.current().nextBytes(buffer.array());
+                            buffer.clear().limit(Math.min(buffer.capacity(), bytes.get()));
+                            assert buffer.hasRemaining() || bytes.get() == 0;
+                        }
+                        return buffer;
+                    };
                     // ----------------------------------------------------------------------- write
-                    client.write(buffer, newDigest(), new CompletionHandler<>() {
-                        @Override public void completed(final Integer w, final MessageDigest a) {
-                            JavaSecurityMessageDigestUtils.updateDigest(a, buffer, w);
+                    client.<Void>write(sanitizer.get(), null, new CompletionHandler<>() {
+                        @Override public void completed(final Integer w, final Void attachment) {
+                            assert w > 0 || bytes.get() == 0; // why?
+                            JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, w);
                             if (bytes.addAndGet(-w) == 0) {
-                                logDigest(a);
+                                logDigest(digest);
                                 latch.countDown();
                                 return;
                             }
-                            if (!buffer.hasRemaining()) {
-                                JavaNioByteBufferUtils.randomize(
-                                        buffer.clear().limit(Math.min(buffer.limit(), bytes.get()))
-                                );
-                            }
-                            client.write(buffer, a, this);
+                            client.write(
+                                    sanitizer.get(), // <src>
+                                    null,            // <attachment>
+                                    this             // <handler>
+                            );
                         }
-                        @Override public void failed(final Throwable exc, final MessageDigest a) {
+                        @Override public void failed(final Throwable exc, final Void attachment) {
                             log.error("failed to write", exc);
                             latch.countDown();
                         }
@@ -77,11 +86,12 @@ class Rfc863Tcp5Client extends Rfc863Tcp {
                 @Override public void failed(final Throwable exc, final Void a) {
                     log.error("failed to connect", exc);
                     latch.countDown();
-                } // @formatter:on
+                }
             });
             latch.await();
         }
     }
+    // @formatter:on
 
     @_ExcludeFromCoverage_PrivateConstructor_Obviously
     private Rfc863Tcp5Client() {

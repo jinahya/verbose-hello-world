@@ -20,6 +20,7 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
+import com.github.jinahya.hello.util.JavaNioByteBufferUtils;
 import com.github.jinahya.hello.util.JavaSecurityMessageDigestUtils;
 import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
@@ -36,23 +37,25 @@ class Rfc863Tcp4Client extends Rfc863Tcp {
         try (var client = AsynchronousSocketChannel.open()) {
             // ---------------------------------------------------------------------- bind(optional)
             if (ThreadLocalRandom.current().nextBoolean()) {
-                client.bind(new InetSocketAddress(HOST, 0));
-                logBound(client);
+                logBound(client.bind(new InetSocketAddress(HOST, 0)));
             }
             // ----------------------------------------------------------------------------- connect
             client.connect(ADDR).get();
             logConnected(client);
             // ----------------------------------------------------------------------------- prepare
             final var digest = newDigest();
-            var bytes = logClientBytes(newRandomBytes());
             final var buffer = newBuffer().limit(0);
+            var bytes = logClientBytes(newRandomBytes());
             // ------------------------------------------------------------------------------- write
             for (int w; bytes > 0; bytes -= w) {
                 if (!buffer.hasRemaining()) {
-                    ThreadLocalRandom.current().nextBytes(buffer.array());
-                    buffer.clear().limit(Math.min(buffer.limit(), bytes));
+                    JavaNioByteBufferUtils.randomize(
+                            buffer.clear().limit(Math.min(buffer.limit(), bytes))
+                    );
                 }
+                assert buffer.hasRemaining();
                 w = client.write(buffer).get();
+                assert w > 0; // why?
                 JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, w);
             }
             // -------------------------------------------------------------------------------------

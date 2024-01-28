@@ -51,20 +51,21 @@ class Rfc862Tcp2Client extends Rfc862Tcp {
                 final var connected = client.connect(ADDR);
                 assert connected || !client.isBlocking();
             }
+            assert client.isConnected();
             logConnected(client);
             // ----------------------------------------------------------------------------- prepare
             final var digest = newDigest();
             final var buffer = newBuffer().limit(0);
             var bytes = logClientBytes(newRandomBytes());
             // ------------------------------------------------------------------------ write / read
-            while (bytes > 0) {
+            for (int w, r; bytes > 0; ) {
                 // --------------------------------------------------------------------------- write
                 if (!buffer.hasRemaining()) {
                     JavaNioByteBufferUtils.randomize(
                             buffer.clear().limit(Math.min(buffer.limit(), bytes))
                     );
-                    assert buffer.hasRemaining();
                 }
+                assert buffer.hasRemaining();
                 if (ThreadLocalRandom.current().nextBoolean()) {
                     client.socket().getOutputStream().write(
                             buffer.array(),
@@ -72,27 +73,22 @@ class Rfc862Tcp2Client extends Rfc862Tcp {
                             buffer.remaining()
                     );
                     client.socket().getOutputStream().flush();
+                    digest.update(buffer.array(), buffer.arrayOffset() + buffer.position(),
+                                  buffer.remaining());
                     bytes -= buffer.remaining();
-                    if (ThreadLocalRandom.current().nextBoolean()) {
-                        digest.update(buffer.array(), buffer.arrayOffset() + buffer.position(),
-                                      buffer.remaining());
-                        buffer.position(buffer.limit());
-                    } else {
-                        digest.update(buffer); // effectively, position -> limit
-                    }
+                    buffer.position(buffer.limit());
                 } else {
-                    final var w = client.write(buffer);
-                    assert !buffer.hasRemaining();
-                    bytes -= w;
+                    w = client.write(buffer);
+                    assert w > 0; // why?
                     JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, w);
+                    bytes -= w;
                 }
                 assert !buffer.hasRemaining(); // why?
                 // ---------------------------------------------------------------------------- read
-                final var limit = buffer.limit();
                 buffer.flip(); // limit -> position, position -> zero
                 assert buffer.hasRemaining();
                 if (ThreadLocalRandom.current().nextBoolean()) {
-                    final var r = client.socket().getInputStream().read(
+                    r = client.socket().getInputStream().read(
                             buffer.array(),
                             buffer.arrayOffset() + buffer.position(),
                             buffer.remaining()
@@ -100,22 +96,34 @@ class Rfc862Tcp2Client extends Rfc862Tcp {
                     if (r == -1) {
                         throw new EOFException("unexpected eof");
                     }
-                    assert r > 0; // why?
-                    buffer.position(buffer.limit());
+                    buffer.position(buffer.position() + r);
                 } else {
-                    final int r = client.read(buffer);
+                    r = client.read(buffer);
                     if (r == -1) {
                         throw new EOFException("unexpected eof");
                     }
-                    assert r > 0; // why?
                 }
-                buffer.position(buffer.limit()).limit(limit);
             }
             // --------------------------------------------------------------------- shutdown-output
             client.shutdownOutput();
             // ---------------------------------------------------------------------- read-remaining
-            while ((client.read(buffer.clear())) != -1) {
-                // empty
+            for (int r; ; ) {
+                buffer.clear();
+                if (ThreadLocalRandom.current().nextBoolean()) {
+                    r = client.socket().getInputStream().read(
+                            buffer.array(),
+                            buffer.arrayOffset() + buffer.position(),
+                            buffer.remaining()
+                    );
+                    if (r == -1) {
+                        break;
+                    }
+                } else {
+                    r = client.read(buffer);
+                    if (r == -1) {
+                        break;
+                    }
+                }
             }
             // --------------------------------------------------------------------------------- log
             logDigest(digest);

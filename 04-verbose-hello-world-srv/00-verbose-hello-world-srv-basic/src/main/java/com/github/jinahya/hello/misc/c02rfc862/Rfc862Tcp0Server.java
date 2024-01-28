@@ -20,14 +20,12 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
+import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.ServerSocket;
 
 @Slf4j
-@SuppressWarnings({
-        "java:S127" // assign loop counter within body
-})
 class Rfc862Tcp0Server extends Rfc862Tcp {
 
     public static void main(final String... args) throws Exception {
@@ -40,30 +38,26 @@ class Rfc862Tcp0Server extends Rfc862Tcp {
                 // ------------------------------------------------------------------------- prepare
                 final var digest = newDigest();
                 var bytes = 0L;
-                // -------------------------------------------------------------------- read / write
-                for (int b; ; ) {
+                // ---------------------------------------------------------------------------- loop
+                for (int b; ; bytes++) {
                     // ------------------------------------------------------------------------ read
                     b = client.getInputStream().read();
                     if (b == -1) {
                         break;
                     }
-                    bytes++;
                     // ----------------------------------------------------------------------- write
                     client.getOutputStream().write(b);
                     digest.update((byte) b);
                 }
-                log.debug("[server] flushing output");
                 client.getOutputStream().flush();
                 // ----------------------------------------------------------------------------- log
                 logServerBytes(bytes);
                 logDigest(digest);
-                log.debug("[server] closing client: " + client);
             }
-            log.debug("[server] end-of-try");
         }
-        log.debug("[server] end-of-main");
     }
 
+    @_ExcludeFromCoverage_PrivateConstructor_Obviously
     private Rfc862Tcp0Server() {
         throw new AssertionError("instantiation is not allowed");
     }

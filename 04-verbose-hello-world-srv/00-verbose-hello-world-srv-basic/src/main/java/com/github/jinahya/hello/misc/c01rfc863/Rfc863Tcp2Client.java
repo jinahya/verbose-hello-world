@@ -20,6 +20,7 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
+import com.github.jinahya.hello.util.JavaNioByteBufferUtils;
 import com.github.jinahya.hello.util.JavaSecurityMessageDigestUtils;
 import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +38,7 @@ class Rfc863Tcp2Client extends Rfc863Tcp {
     public static void main(final String... args) throws Exception {
         try (var client = SocketChannel.open()) {
             assert client.isBlocking(); // !!!
-            // -------------------------------------------------------------------------------- bind
+            // ---------------------------------------------------------------------- bind(optional)
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(HOST, 0));
                 logBound(client);
@@ -45,35 +46,44 @@ class Rfc863Tcp2Client extends Rfc863Tcp {
             // ----------------------------------------------------------------------------- connect
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.socket().connect(ADDR);
-                logConnected(client.socket());
             } else {
                 final var connected = client.connect(ADDR);
                 assert connected || !client.isBlocking();
-                logConnected(client);
             }
+            assert client.isConnected();
+            logConnected(client);
             // ----------------------------------------------------------------------------- prepare
             final var digest = newDigest();
-            var bytes = logClientBytes(newRandomBytes());
-            // ------------------------------------------------------------------------------- write
             final var buffer = newBuffer();
+            var bytes = logClientBytes(newRandomBytes());
+            // -------------------------------------------------------------------------------- loop
             for (int w; bytes > 0; bytes -= w) {
+                // --------------------------------------------------------------------------- write
                 if (!buffer.hasRemaining()) {
-                    ThreadLocalRandom.current().nextBytes(buffer.array());
-                    buffer.clear().limit(Math.min(buffer.limit(), bytes));
+                    JavaNioByteBufferUtils.randomize(
+                            buffer.clear().limit(Math.min(buffer.limit(), bytes))
+                    );
                 }
+                assert buffer.hasRemaining();
                 if (ThreadLocalRandom.current().nextBoolean()) {
                     w = buffer.remaining();
                     client.socket().getOutputStream().write(
                             buffer.array(),
                             buffer.arrayOffset() + buffer.position(),
-                            w
+                            buffer.remaining()
                     );
                     client.socket().getOutputStream().flush();
-                    buffer.position(buffer.position() + w);
+                    digest.update(buffer.array(), buffer.arrayOffset() + buffer.position(),
+                                  buffer.remaining());
+                    bytes -= buffer.remaining();
+                    buffer.position(buffer.limit());
                 } else {
                     w = client.write(buffer);
+                    assert w > 0; // why?
+                    JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, w);
+                    bytes -= w;
                 }
-                JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, w);
+                assert !buffer.hasRemaining(); // why?
             }
             // --------------------------------------------------------------------------------- log
             logDigest(digest);

@@ -32,7 +32,7 @@ class Rfc863Tcp1Client extends Rfc863Tcp {
 
     public static void main(final String... args) throws Exception {
         try (var client = new Socket()) {
-            // -------------------------------------------------------------------------------- bind
+            // ---------------------------------------------------------------------- bind(optional)
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(HOST, 0));
                 logBound(client);
@@ -42,15 +42,18 @@ class Rfc863Tcp1Client extends Rfc863Tcp {
             logConnected(client);
             // ----------------------------------------------------------------------------- prepare
             final var digest = newDigest();
+            final var array = newArray();
             var bytes = logClientBytes(newRandomBytes());
-            // ------------------------------------------------------------------------------- write
-            for (final var array = newArray(); bytes > 0; ) {
+            // -------------------------------------------------------------------------------- loop
+            while (bytes > 0) {
+                // --------------------------------------------------------------------------- write
                 ThreadLocalRandom.current().nextBytes(array);
-                final var length = Math.min(array.length, bytes);
-                client.getOutputStream().write(array, 0, length);
-                bytes -= length;
-                digest.update(array, 0, length);
+                final var l = Math.min(array.length, bytes);
+                client.getOutputStream().write(array, 0, l);
+                digest.update(array, 0, l);
+                bytes -= l;
             }
+            // ------------------------------------------------------------------------------- flush
             client.getOutputStream().flush();
             // --------------------------------------------------------------------------------- log
             logDigest(digest);

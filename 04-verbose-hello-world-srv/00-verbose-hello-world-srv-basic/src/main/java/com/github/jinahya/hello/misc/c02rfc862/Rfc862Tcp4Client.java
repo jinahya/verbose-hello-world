@@ -20,7 +20,6 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
-import com.github.jinahya.hello.util.HelloWorldNetUtils;
 import com.github.jinahya.hello.util.JavaNioByteBufferUtils;
 import com.github.jinahya.hello.util.JavaSecurityMessageDigestUtils;
 import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
@@ -31,7 +30,6 @@ import java.net.InetSocketAddress;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 @Slf4j
 @SuppressWarnings({
@@ -41,7 +39,6 @@ class Rfc862Tcp4Client extends Rfc862Tcp {
 
     public static void main(final String... args) throws Exception {
         try (var client = AsynchronousSocketChannel.open()) {
-            HelloWorldNetUtils.printSocketOptions(AsynchronousSocketChannel.class, client);
             // ---------------------------------------------------------------------- bind(optional)
             if (ThreadLocalRandom.current().nextBoolean()) {
                 logBound(client.bind(new InetSocketAddress(HOST, 0)));
@@ -51,14 +48,10 @@ class Rfc862Tcp4Client extends Rfc862Tcp {
             logConnected(client);
             // ----------------------------------------------------------------------------- prepare
             final var digest = newDigest();
-            final var rdigest = newDigest();
             final var buffer = newBuffer().limit(0);
             var bytes = logClientBytes(newRandomBytes());
-            final var copy = bytes;
-            var received = 0;
             // -------------------------------------------------------------------------- write/read
-//            for (var bytes = logClientBytes(newRandomBytes()); bytes > 0; ) {
-            for (; bytes > 0; ) {
+            for (int w, r; bytes > 0; bytes -= w) {
                 // --------------------------------------------------------------------------- write
                 if (!buffer.hasRemaining()) {
                     JavaNioByteBufferUtils.randomize(
@@ -66,44 +59,21 @@ class Rfc862Tcp4Client extends Rfc862Tcp {
                     );
                 }
                 assert buffer.hasRemaining();
-                final int w = client.write(buffer).get();
-                log.debug("client.w: {}", w);
+                w = client.write(buffer).get();
                 assert w > 0; // why?
                 JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, w);
-                bytes -= w;
                 // ---------------------------------------------------------------------------- read
-                final var limit = buffer.limit();
-                buffer.flip(); // limit -> position, position -> zero
-                final int r = client.read(buffer).get();
-                if (r == -1) {
-                    throw new EOFException("unexpected eof");
+                for (buffer.flip(); buffer.hasRemaining(); ) {
+                    r = client.read(buffer).get();
+                    if (r == -1) {
+                        throw new EOFException("unexpected eof");
+                    }
+                    assert r > 0; // why?
                 }
-                assert r > 0; // why?
-                log.debug("client.r: {}, total: {}", r, (received += r));
-                buffer.position(buffer.limit()).limit(limit);
-                JavaSecurityMessageDigestUtils.updateDigest(rdigest, buffer, r);
+                buffer.limit(Math.min(buffer.capacity(), bytes));
             }
             // --------------------------------------------------------------------- shutdown-output
-            log.debug("[client] shutting down output...");
             client.shutdownOutput();
-            // ---------------------------------------------------------------------- read-remaining
-            log.debug("[client] reading remaining...");
-            try {
-//                for (int r; ;(r = client.read(buffer.clear()).get(10L, TimeUnit.SECONDS)) != -1; ) {
-                for (int r; ; ) {
-                    r = client.read(buffer.clear()).get(10L, TimeUnit.SECONDS);
-                    if (r == -1) {
-                        break;
-                    }
-                    log.debug("[client] remaining client.r: {}, total: {}", r, (received += r));
-                    JavaSecurityMessageDigestUtils.updateDigest(rdigest, buffer, r);
-                }
-            } catch (final TimeoutException te) { // macOS/Monterey
-                log.error("[client] time's up while reading remaining", te);
-            }
-            log.debug("[client] received: {}, copy: {}, {}", received, copy, copy - received);
-            logDigest(rdigest);
-            assert received == copy;
             // --------------------------------------------------------------------------------- log
             logDigest(digest);
         }

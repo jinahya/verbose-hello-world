@@ -40,16 +40,15 @@ class Rfc862Tcp3Client extends Rfc862Tcp {
         try (var selector = Selector.open();
              var client = SocketChannel.open()) {
             // -------------------------------------------------------------- configure-non-blocking
-            client.configureBlocking(false);
+            client.configureBlocking(false); // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
             // ---------------------------------------------------------------------- bind(optional)
             if (ThreadLocalRandom.current().nextBoolean()) {
                 logBound(client.bind(new InetSocketAddress(HOST, 0)));
             }
-            // ------------------------------------------------------------------------ connect(try)
+            // --------------------------------------------------------------- connect(try)/register
             final SelectionKey clientKey;
             if (client.connect(ADDR)) {
-                logConnected(client);
-                clientKey = client.register(
+                clientKey = logConnected(client).register(
                         selector,              // <sel>
                         SelectionKey.OP_WRITE, // <ops>
                         newBuffer().limit(0)   // <att>
@@ -63,69 +62,76 @@ class Rfc862Tcp3Client extends Rfc862Tcp {
             // ----------------------------------------------------------------------------- prepare
             final var digest = newDigest();
             var bytes = logClientBytes(newRandomBytes());
-            // ---------------------------------------------------------------------- select-in-loop
-            while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
+            // ---------------------------------------------------------------------- select/process
+            while (clientKey.isValid()) {
+                // -------------------------------------------------------------------------- select
                 if (selector.select() == 0) {
                     continue;
                 }
-                for (var i = selector.selectedKeys().iterator(); i.hasNext(); ) {
-                    final var key = i.next();
-                    i.remove();
-                    // ------------------------------------------------------------- connect(finish)
-                    if (key.isConnectable()) {
-                        assert key == clientKey;
-                        final var channel = (SocketChannel) key.channel();
-                        assert channel == client;
-                        if (channel.finishConnect()) {
-                            logConnected(channel);
-                            key.interestOpsAnd(~SelectionKey.OP_CONNECT);
-                            key.interestOpsOr(SelectionKey.OP_WRITE);
-                            key.attach(newBuffer().limit(0));
-                        }
+                final var selectedKeys = selector.selectedKeys();
+                final var selectedKey = selectedKeys.iterator().next();
+                assert selectedKey == clientKey;
+                selectedKeys.clear();
+                // ----------------------------------------------------------------- connect(finish)
+                if (selectedKey.isConnectable()) {
+                    final var channel = (SocketChannel) selectedKey.channel();
+                    assert channel == client;
+                    if (channel.finishConnect()) {
+                        logConnected(channel);
+                        selectedKey.interestOpsAnd(~SelectionKey.OP_CONNECT);
+                        selectedKey.attach(newBuffer().limit(0));
+                        selectedKey.interestOpsOr(SelectionKey.OP_WRITE);
+                        assert !selectedKey.isWritable();
                     }
-                    // ----------------------------------------------------------------------- write
-                    if (key.isWritable()) {
-                        final var channel = (SocketChannel) key.channel();
-                        assert channel == client;
-                        final var buffer = (ByteBuffer) key.attachment();
-                        if (!buffer.hasRemaining()) {
-                            JavaNioByteBufferUtils.randomize(
-                                    buffer.clear().limit(Math.min(buffer.limit(), bytes))
-                            );
-                        }
-                        final var w = channel.write(buffer);
-                        assert w >= 0; // why?
-                        JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, w);
-                        bytes -= w;
+                }
+                // --------------------------------------------------------------------------- write
+                if (selectedKey.isWritable()) {
+                    final var channel = (SocketChannel) selectedKey.channel();
+                    assert channel == client;
+                    final var buffer = (ByteBuffer) selectedKey.attachment();
+                    if (!buffer.hasRemaining()) {
+                        JavaNioByteBufferUtils.randomize(
+                                buffer.clear().limit(Math.min(buffer.limit(), bytes))
+                        );
+                    }
+                    assert buffer.hasRemaining() || bytes == 0;
+                    final var w = channel.write(buffer);
+                    assert w >= 0; // why?
+                    JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, w);
+                    bytes -= w;
+                    if (bytes == 0) {
+                        // --------------------------------------------------------- shutdown-output
+                        channel.shutdownOutput();
+                        // --------------------------------------------------------------------- log
+                        logDigest(digest);
+                    }
+                    selectedKey.interestOpsAnd(~SelectionKey.OP_WRITE);
+                    buffer.flip();
+                    assert buffer.hasRemaining(); // why?
+                    selectedKey.interestOpsOr(SelectionKey.OP_READ);
+                    assert !selectedKey.isReadable();
+                }
+                // ---------------------------------------------------------------------------- read
+                if (selectedKey.isReadable()) {
+                    final var channel = (SocketChannel) selectedKey.channel();
+                    assert channel == client;
+                    final var buffer = (ByteBuffer) selectedKey.attachment();
+                    assert buffer.hasRemaining(); // why?
+                    final int r = channel.read(buffer);
+                    if (r == -1) {
+                        throw new EOFException("unexpected eof");
+                    }
+                    assert r >= 0; // why?
+                    if (!buffer.hasRemaining()) {
+                        selectedKey.interestOpsAnd(~SelectionKey.OP_READ);
                         if (bytes == 0) {
-                            key.interestOpsAnd(~SelectionKey.OP_WRITE);
-                            logDigest(digest);
-                            channel.shutdownOutput();
+                            channel.close();
+                            assert !selectedKey.isValid();
+                            return;
                         }
-                        key.interestOpsOr(SelectionKey.OP_READ);
-                        assert !key.isReadable();
-                    }
-                    // ------------------------------------------------------------------------ read
-                    if (key.isReadable()) {
-                        final var channel = (SocketChannel) key.channel();
-                        assert channel == client;
-                        final var buffer = (ByteBuffer) key.attachment();
-                        final var limit = buffer.limit();
-                        buffer.flip();
-                        final int r = channel.read(buffer);
-                        if (r == -1) {
-                            throw new EOFException("unexpected eof");
-                        }
-                        assert r >= 0; // why?
-                        if (!buffer.hasRemaining()) {
-                            key.interestOpsAnd(~SelectionKey.OP_READ);
-                            if ((key.interestOps() & SelectionKey.OP_WRITE) == 0) {
-                                channel.close();
-                                assert !key.isValid();
-                                return;
-                            }
-                        }
-                        buffer.position(buffer.limit()).limit(limit);
+                        buffer.limit(Math.min(buffer.limit(), bytes));
+                        selectedKey.interestOpsOr(SelectionKey.OP_WRITE);
+                        assert !selectedKey.isWritable();
                     }
                 }
             }

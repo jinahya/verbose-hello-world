@@ -190,26 +190,28 @@ abstract class Rfc863Tcp extends Rfc863 {
     }
 
     // -------------------------------------------------------------------------------- logConnected
-    static void logConnected(final Socket socket) {
+    static <T extends Socket> T logConnected(final T socket) {
         if (!Objects.requireNonNull(socket, "socket is null").isConnected()) {
             throw new IllegalArgumentException("not connected: " + socket);
         }
         logConnected(socket.getRemoteSocketAddress());
+        return socket;
     }
 
-    static void logConnected(final SocketChannel channel) {
+    @SuppressWarnings({"unchecked"})
+    static <T extends SocketChannel> T logConnected(final T channel) {
         if (!Objects.requireNonNull(channel, "channel is null").isConnected()) {
             throw new IllegalArgumentException("not connected: " + channel);
         }
         if (ThreadLocalRandom.current().nextBoolean()) {
-            logConnected(channel.socket());
-            return;
+            return (T) logConnected(channel.socket()).getChannel();
         }
         try {
             logConnected(channel.getRemoteAddress());
         } catch (final IOException ioe) {
             throw new RuntimeException("failed to get remoteAddress from " + channel, ioe);
         }
+        return channel;
     }
 
     static void logConnected(final AsynchronousSocketChannel channel) {

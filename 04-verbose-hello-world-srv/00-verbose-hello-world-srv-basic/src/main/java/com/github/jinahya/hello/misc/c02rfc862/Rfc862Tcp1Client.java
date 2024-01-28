@@ -20,7 +20,6 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
-import com.github.jinahya.hello.util.JavaLangArrayUtils;
 import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,7 +29,6 @@ import java.net.Socket;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
-@SuppressWarnings({"java:S127"})
 class Rfc862Tcp1Client extends Rfc862Tcp {
 
     public static void main(final String... args) throws Exception {
@@ -46,11 +44,12 @@ class Rfc862Tcp1Client extends Rfc862Tcp {
             // ----------------------------------------------------------------------------- prepare
             final var digest = newDigest();
             final var array = newArray();
-            // -------------------------------------------------------------------------- write/read
-            for (var bytes = logClientBytes(newRandomBytes()); bytes > 0; ) {
+            var bytes = logClientBytes(newRandomBytes());
+            // -------------------------------------------------------------------------------- loop
+            while (bytes > 0) {
                 // --------------------------------------------------------------------------- write
+                ThreadLocalRandom.current().nextBytes(array);
                 final int l = Math.min(array.length, bytes);
-                JavaLangArrayUtils.randomize(array, 0, l);
                 client.getOutputStream().write(array, 0, l);
                 digest.update(array, 0, l);
                 bytes -= l;
@@ -62,7 +61,7 @@ class Rfc862Tcp1Client extends Rfc862Tcp {
             // --------------------------------------------------------------- flush/shutdown-output
             client.getOutputStream().flush();
             client.shutdownOutput();
-            // ----------------------------------------------------------- read-to-the-end-of-stream
+            // ---------------------------------------------------------------------- read-remaining
             while (client.getInputStream().read(array) != -1) {
                 // empty
             }

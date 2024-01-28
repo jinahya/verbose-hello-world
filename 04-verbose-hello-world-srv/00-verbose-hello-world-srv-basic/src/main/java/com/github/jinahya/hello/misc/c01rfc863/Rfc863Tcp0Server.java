@@ -26,9 +26,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.net.ServerSocket;
 
 @Slf4j
-@SuppressWarnings({
-        "java:S127"
-})
 class Rfc863Tcp0Server extends Rfc863Tcp {
 
     public static void main(final String... args) throws Exception {
@@ -37,13 +34,17 @@ class Rfc863Tcp0Server extends Rfc863Tcp {
             server.bind(ADDR, 1);
             logBound(server);
             // ------------------------------------------------------------------------------ accept
-            try (var client = server.accept()) {
-                logAccepted(client);
+            try (var client = logAccepted(server.accept())) {
                 // ------------------------------------------------------------------------- prepare
                 final var digest = newDigest();
                 var bytes = 0L;
-                // ---------------------------------------------------------------------------- read
-                for (int b; (b = client.getInputStream().read()) != -1; bytes++) {
+                // ---------------------------------------------------------------------------- loop
+                for (int b; ; bytes++) {
+                    // ------------------------------------------------------------------------ read
+                    b = client.getInputStream().read();
+                    if (b == -1) {
+                        break;
+                    }
                     digest.update((byte) b);
                 }
                 // ----------------------------------------------------------------------------- log

@@ -20,145 +20,25 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
-import com.github.jinahya.hello.util.JavaNioByteBufferUtils;
 import com.github.jinahya.hello.util.JavaSecurityMessageDigestUtils;
 import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.EOFException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
-import java.security.MessageDigest;
-import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 @Slf4j
-@SuppressWarnings({
-        "java:S4274" // > Replace this assert with a property check.
-})
 class Rfc862Tcp5Client extends Rfc862Tcp {
 
-    // @formatter:on
-    private record Handler(AsynchronousSocketChannel client, ByteBuffer buffer, AtomicInteger bytes,
-                           MessageDigest digest, CountDownLatch latch)
-            implements CompletionHandler<Integer, Handler.Mode> {
-
-        private enum Mode {
-            READ,
-            WRITE
-        }
-
-        // -----------------------------------------------------------------------------------------
-        private Handler {
-            Objects.requireNonNull(client, "client is null");
-            if (Objects.requireNonNull(buffer, "buffer is null").capacity() == 0) {
-                throw new IllegalArgumentException("buffer.capacity is zero");
-            }
-            if (Objects.requireNonNull(bytes, "bytes is null").get() < 0) {
-                throw new IllegalArgumentException("bytes(" + bytes.get() + ") < 0");
-            }
-            Objects.requireNonNull(digest, "digest is null");
-            if (Objects.requireNonNull(latch, "latch is null").getCount() != 1) {
-                throw new IllegalArgumentException("latch.count != 1");
-            }
-        }
-
-        // ----------------------------------------------------- java.nio.channels.CompletionHandler
-        @Override
-        public void completed(final Integer result, final Mode attachment) {
-            if (attachment == Mode.WRITE) {
-                writeCompleted(result);
-                return;
-            }
-            assert attachment == Mode.READ;
-            readCompleted(result);
-        }
-
-        @Override
-        public void failed(final Throwable exc, final Mode attachment) {
-            log.error("failed to handle; mode: " + attachment, exc);
-            assert latch.getCount() == 1L;
-            latch.countDown();
-        }
-
-        // ----------------------------------------------------------------------------------- write
-        private void write() {
-            if (!buffer.hasRemaining()) {
-                JavaNioByteBufferUtils.randomize(
-                        buffer.clear().limit(Math.min(buffer.remaining(), bytes.get()))
-                );
-            }
-            assert buffer.hasRemaining() || bytes.get() == 0;
-            client.write(
-                    buffer,     // <src>
-                    Mode.WRITE, // <attachment>
-                    this        // <handler>
-            );
-        }
-
-        private void writeCompleted(final int w) {
-            assert w >= 0; // wny?
-            assert w > 0 || bytes.get() == 0;
-            JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, w);
-            if (bytes.addAndGet(-w) == 0) { // no more bytes to write
-                logDigest(digest);
-                if (buffer.position() == 0) { // no more bytes to read, either
-                    assert latch.getCount() == 1L;
-                    latch.countDown();
-                    return;
-                }
-            }
-            assert bytes.get() > 0 || buffer.position() > 0;
-            if (buffer.position() == 0) { // no bytes to read; keep writing
-                write();
-                return;
-            }
-            assert buffer.position() > 0; // read bytes
-            buffer.flip();
-            read();
-        }
-
-        // ------------------------------------------------------------------------------------ read
-        private void read() {
-            assert buffer.hasRemaining();
-            client.read(
-                    buffer,    // <dst>
-                    Mode.READ, // <attachment>
-                    this       // <handler>
-            );
-        }
-
-        private void readCompleted(final int r) {
-            assert r >= -1;
-            if (r == -1) {
-                failed(new EOFException("unexpected eof"), Mode.READ);
-                return;
-            }
-            assert r > 0; // why?
-            if (buffer.hasRemaining()) { // keep reading
-                read();
-                return;
-            }
-            assert buffer.position() == buffer.limit(); // !buffer.hasRemaining()
-            if (bytes.get() > 0) { // has bytes to write
-                buffer.limit(
-                        buffer.position() +
-                        Math.min(buffer.capacity() - buffer.position(), bytes.get())
-                );
-                write();
-                return;
-            }
-            assert bytes.get() == 0; // no bytes to write
-            assert latch.getCount() == 1L;
-            latch.countDown();
-        }
-    }
-
-    // ---------------------------------------------------------------------------------------------
+    @SuppressWarnings({
+            "java:S3776"
+    })
     // @formatter:off
     public static void main(final String... args) throws Exception {
         try (var client = AsynchronousSocketChannel.open()) {
@@ -172,11 +52,74 @@ class Rfc862Tcp5Client extends Rfc862Tcp {
                 @Override public void completed(final Void result, final Void attachment) {
                     logConnected(client);
                     // --------------------------------------------------------------------- prepare
-                    final var buffer = newBuffer().limit(0);
-                    final var bytes = new AtomicInteger(logClientBytes(newRandomBytes()));
                     final var digest = newDigest();
+                    final var bytes = new AtomicInteger(logClientBytes(newRandomBytes()));
+                    final var buffer = newBuffer().limit(0);
+                    final Supplier<ByteBuffer> sanitizer = () -> {
+                        if (!buffer.hasRemaining()) {
+                            ThreadLocalRandom.current().nextBytes(buffer.array());
+                            buffer.clear().limit(Math.min(buffer.capacity(), bytes.get()));
+                            assert buffer.hasRemaining() || bytes.get() == 0;
+                        }
+                        return buffer;
+                    };
                     // ----------------------------------------------------------------------- write
-                    new Handler(client, buffer, bytes, digest, latch).write();
+                    abstract class Handler implements CompletionHandler<Integer, Handler> {
+                        @Override
+                        public final void failed(final Throwable exc, final Handler attachment) {
+                            log.error("failed to handler in " + getClass(), exc);
+                            latch.countDown();
+                        }
+                    }
+                    class WriteHandler extends Handler {
+                        @Override
+                        public void completed(final Integer result, final Handler attachment) {
+                            assert result > 0 || bytes.get() == 0;
+                            JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, result);
+                            if (bytes.addAndGet(-result) == 0) {
+                                logDigest(digest);
+                            }
+                            if (buffer.position() > 0) {
+                                buffer.flip();
+                                client.read(
+                                        buffer,    // <dst>
+                                        this,      // <attachment>
+                                        attachment // <handler>
+                                );
+                                return;
+                            }
+                            client.write(
+                                    sanitizer.get(), // <src>
+                                    attachment,      // <attachment>
+                                    this             // <handler>
+                            );
+                        }
+                    }
+                    class ReadHandler extends Handler {
+                        @Override
+                        public void completed(final Integer result, final Handler attachment) {
+                            assert result > 0;
+                            if (buffer.hasRemaining()) {
+                                client.read(buffer, attachment, this);
+                                return;
+                            }
+                            if (bytes.get() > 0) {
+                                client.write(
+                                        sanitizer.get(), // <src>
+                                        this,            // <attachment>
+                                        attachment       // <handler>
+                                );
+                                return;
+                            }
+                            assert bytes.get() == 0; // no need to write, either
+                            latch.countDown();
+                        }
+                    }
+                    client.write(
+                            sanitizer.get(),   // <src>
+                            new ReadHandler(), // <attachment>
+                            new WriteHandler() // <handler>
+                    );
                 }
                 @Override public void failed(final Throwable exc, final Void attachment) {
                     log.error("failed to connect", exc);

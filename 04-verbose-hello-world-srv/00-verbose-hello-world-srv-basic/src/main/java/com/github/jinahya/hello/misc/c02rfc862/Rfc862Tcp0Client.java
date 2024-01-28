@@ -44,10 +44,11 @@ class Rfc862Tcp0Client extends Rfc862Tcp {
             logConnected(client);
             // ----------------------------------------------------------------------------- prepare
             final var digest = newDigest();
+            var bytes = logClientBytes(newRandomBytes());
             // ------------------------------------------------------------------------ write / read
-            for (var bytes = logClientBytes(newRandomBytes()); bytes > 0; bytes--) {
+            for (int b; bytes > 0; bytes--) {
                 // --------------------------------------------------------------------------- write
-                final int b = ThreadLocalRandom.current().nextInt();
+                b = ThreadLocalRandom.current().nextInt();
                 client.getOutputStream().write(b);
                 client.getOutputStream().flush();
                 digest.update((byte) b);

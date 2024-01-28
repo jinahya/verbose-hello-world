@@ -38,70 +38,75 @@ class Rfc863Tcp3Client extends Rfc863Tcp {
     public static void main(final String... args) throws Exception {
         try (var selector = Selector.open();
              var client = SocketChannel.open()) {
+            // -------------------------------------------------------------- configure-non-blocking
+            client.configureBlocking(false); // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
             // -------------------------------------------------------------------------------- bind
             if (ThreadLocalRandom.current().nextBoolean()) {
-                client.bind(new InetSocketAddress(HOST, 0));
-                logBound(client);
+                logBound(client.bind(new InetSocketAddress(HOST, 0)));
             }
-            // -------------------------------------------------------------- configure-non-blocking
-            client.configureBlocking(false);
-            // ------------------------------------------------------------- connect(try) / register
+            // --------------------------------------------------------------- connect(try)/register
             final SelectionKey clientKey;
             if (client.connect(ADDR)) {
-                logConnected(client);
-                clientKey = client.register(selector, SelectionKey.OP_WRITE);
+                clientKey = logConnected(client).register(
+                        selector,              // <sel>
+                        SelectionKey.OP_WRITE, // <ops>
+                        newBuffer().limit(0)   // <att>
+                );
             } else {
-                clientKey = client.register(selector, SelectionKey.OP_CONNECT);
+                clientKey = client.register(
+                        selector,               // <sel>
+                        SelectionKey.OP_CONNECT // <ops>
+                );
             }
             // ----------------------------------------------------------------------------- prepare
             final var digest = newDigest();
             var bytes = logClientBytes(newRandomBytes());
-            // ------------------------------------------------------------------------------ select
-            while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
+            // ---------------------------------------------------------------------- select/process
+            while (clientKey.isValid()) {
+                // -------------------------------------------------------------------------- select
                 if (selector.select() == 0) {
                     continue;
                 }
-                for (final var i = selector.selectedKeys().iterator(); i.hasNext(); ) {
-                    final var key = i.next();
-                    i.remove();
-                    // ------------------------------------------------------------- connect(finish)
-                    if (key.isConnectable()) {
-                        assert key == clientKey;
-                        final var channel = (SocketChannel) key.channel();
-                        assert channel == client;
-                        if (channel.finishConnect()) {
-                            logConnected(channel);
-                            key.interestOpsAnd(~SelectionKey.OP_CONNECT);
-                            key.interestOpsOr(SelectionKey.OP_WRITE);
-                            assert !key.isWritable();
-                            key.attach(newBuffer().limit(0));
-                        }
+                final var selectedKeys = selector.selectedKeys();
+                final var selectedKey = selectedKeys.iterator().next();
+                assert selectedKey == clientKey;
+                selectedKeys.clear();
+                // ----------------------------------------------------------------- connect(finish)
+                if (selectedKey.isConnectable()) {
+                    final var channel = (SocketChannel) selectedKey.channel();
+                    assert channel == client;
+                    if (channel.finishConnect()) {
+                        logConnected(channel);
+                        selectedKey.interestOpsAnd(~SelectionKey.OP_CONNECT);
+                        selectedKey.attach(newBuffer().limit(0));
+                        selectedKey.interestOpsOr(SelectionKey.OP_WRITE);
+                        assert !selectedKey.isWritable();
                     }
-                    // ----------------------------------------------------------------------- write
-                    if (key.isWritable()) {
-                        assert key == clientKey;
-                        final var channel = (SocketChannel) key.channel();
-                        assert channel == client;
-                        final var buffer = (ByteBuffer) key.attachment();
-                        if (!buffer.hasRemaining()) {
-                            JavaNioByteBufferUtils.randomize(
-                                    buffer.clear().limit(Math.min(buffer.limit(), bytes))
-                            );
-                        }
-                        final var w = client.write(buffer);
-                        assert w >= 0;
-                        JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, w);
-                        bytes -= w;
-                        if (bytes == 0) {
-                            key.interestOpsAnd(~SelectionKey.OP_WRITE); // redundant
-                            key.cancel();
-                            assert !key.isValid();
-                        }
+                }
+                // --------------------------------------------------------------------------- write
+                if (selectedKey.isWritable()) {
+                    final var channel = (SocketChannel) selectedKey.channel();
+                    assert channel == client;
+                    final var buffer = (ByteBuffer) selectedKey.attachment();
+                    if (!buffer.hasRemaining()) {
+                        JavaNioByteBufferUtils.randomize(
+                                buffer.clear().limit(Math.min(buffer.limit(), bytes))
+                        );
+                    }
+                    assert buffer.hasRemaining() || bytes == 0;
+                    final var w = client.write(buffer);
+                    assert w >= 0; // why?
+                    JavaSecurityMessageDigestUtils.updateDigest(digest, buffer, w);
+                    bytes -= w;
+                    if (bytes == 0) {
+                        selectedKey.interestOpsAnd(~SelectionKey.OP_WRITE);
+                        selectedKey.cancel();
+                        assert !selectedKey.isValid();
+                        // -------------------------------------------------------------------- log
+                        logDigest(digest);
                     }
                 }
             }
-            // --------------------------------------------------------------------------------- log
-            logDigest(digest);
         }
     }
 
