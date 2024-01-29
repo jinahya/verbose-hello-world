@@ -45,7 +45,7 @@ class CalcTcp5Server extends CalcTcp {
         }
     }
 
-    // @formatter:off
+    // @formatter:on
     public static void main(final String... args) throws Exception {
         final var group = AsynchronousChannelGroup.withThreadPool(
                 newExecutorForServer("tcp-5-server-")
@@ -70,59 +70,57 @@ class CalcTcp5Server extends CalcTcp {
                 @Override
                 public void completed(final AsynchronousSocketChannel client, final Void a) {
                     final var message = new _Message.OfBuffer().readyToReadFromClient();
-                    final var latch = new CountDownLatch(1);
-                    message.read(client, null, new CompletionHandler<Integer, Void>() {
-                        @Override public void completed(final Integer r, final Void a) {
+                    message.read(client, client, new CompletionHandler<>() {
+                        @Override
+                        public void completed(final Integer r, final AsynchronousSocketChannel c) {
                             if (r == -1) {
                                 log.error("premature eof");
-                                latch.countDown();
+                                closeUnchecked(c);
                                 return;
                             }
                             if (message.hasRemaining()) {
-                                message.read(client, null, this);
+                                message.read(c, c, this);
                                 return;
                             }
                             message.calculateResult().readyToWriteToClient().write(
-                                    client,
-                                    null,
-                                    new CompletionHandler<Integer, Void>() {
+                                    c,
+                                    c,
+                                    new CompletionHandler<>() {
                                         @Override
-                                        public void completed(final Integer w, final Void a) {
+                                        public void completed(final Integer w,
+                                                              final AsynchronousSocketChannel c) {
                                             assert w > 0;
                                             if (message.hasRemaining()) {
-                                                message.write(client, null, this);
+                                                message.write(c, c, this);
                                                 return;
                                             }
-                                            latch.countDown();
+                                            closeUnchecked(c);
                                         }
+
                                         @Override
-                                        public void failed(final Throwable exc, final Void a) {
+                                        public void failed(final Throwable exc,
+                                                           final AsynchronousSocketChannel c) {
                                             log.debug("failed to write", exc);
-                                            latch.countDown();
+                                            closeUnchecked(c);
                                         }
                                     }
                             );
                         }
-                        @Override public void failed(final Throwable exc, final Void a) {
+
+                        @Override
+                        public void failed(final Throwable exc, final AsynchronousSocketChannel c) {
                             log.error("failed to read", exc);
-                            latch.countDown();
+                            closeUnchecked(c);
                         }
                     });
                     // ------------------------------------------------------------- accept-again!!!
                     if (server.isOpen()) {
                         server.accept(null, this);
                     }
-                    // ---------------------------------------------------- await-latch/close-client
-                    try {
-                        latch.await();
-                    } catch (final InterruptedException ie) {
-                        log.error("interrupted while awaiting the latch", ie);
-                        Thread.currentThread().interrupt();
-                    } finally {
-                        closeUnchecked(client);
-                    }
                 }
-                @Override public void failed(final Throwable exc, final Void a) {
+
+                @Override
+                public void failed(final Throwable exc, final Void a) {
                     if (server.isOpen()) {
                         log.error("failed to accept", exc);
                     }

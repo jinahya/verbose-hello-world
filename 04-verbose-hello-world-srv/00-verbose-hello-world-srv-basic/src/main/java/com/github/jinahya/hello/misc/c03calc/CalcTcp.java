@@ -37,7 +37,7 @@ abstract class CalcTcp extends Calc {
     static final int SERVER_BACKLOG = 50;
 
     // -------------------------------------------------------------------------------------- client
-    static final int CLIENT_THREADS = 8;
+    static final int CLIENT_THREADS = 16;
 
     /**
      * Returns a new thread-pool that uses {@value #CLIENT_THREADS} thread(s).

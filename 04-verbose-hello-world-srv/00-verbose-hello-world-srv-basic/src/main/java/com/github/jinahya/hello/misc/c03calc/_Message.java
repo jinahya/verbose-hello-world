@@ -20,6 +20,7 @@ package com.github.jinahya.hello.misc.c03calc;
  * #L%
  */
 
+import com.github.jinahya.hello.util.JavaNioByteBufferUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,11 +29,13 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.Socket;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
-import java.nio.channels.AsynchronousByteChannel;
+import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.ReadableByteChannel;
@@ -40,9 +43,10 @@ import java.nio.channels.WritableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.concurrent.Executor;
-import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 @Slf4j
@@ -165,6 +169,26 @@ abstract sealed class _Message<T extends _Message<T>>
             return this;
         }
 
+        OfArray writeToClient(final OutputStream stream) throws IOException {
+            stream.write(array, 0, array.length);
+            return this;
+        }
+
+        <T extends OutputStream> OfArray writeToClient(final T stream,
+                                                       final Consumer<? super T> consumer)
+                throws IOException {
+            writeToClient(stream);
+            consumer.accept(stream);
+            ;
+            return this;
+        }
+
+        <T extends Socket> OfArray writeToClient(
+                final T socket, final BiConsumer<? super T, ? super OutputStream> consumer)
+                throws IOException {
+            return writeToClient(socket.getOutputStream(), s -> consumer.accept(socket, s));
+        }
+
         OfArray sendToServer(final DatagramSocket socket, final SocketAddress address)
                 throws IOException {
             socket.send(new DatagramPacket(array, 0, INDEX_RESULT, address));
@@ -252,6 +276,11 @@ abstract sealed class _Message<T extends _Message<T>>
         }
 
         // ---------------------------------------------------------------------------------- buffer
+        OfBuffer print(PrintStream printer) {
+            JavaNioByteBufferUtils.print(buffer, printer);
+            return this;
+        }
+
         boolean hasRemaining() {
             return buffer.hasRemaining();
         }
@@ -286,23 +315,27 @@ abstract sealed class _Message<T extends _Message<T>>
             return channel.read(buffer);
         }
 
-        Future<Integer> read(final AsynchronousByteChannel channel) {
-            return channel.read(buffer);
-        }
-
-        Future<Integer> write(final AsynchronousByteChannel channel) {
-            return channel.write(buffer);
-        }
-
-        <A> OfBuffer read(final AsynchronousByteChannel channel, final A attachment,
+        <A> OfBuffer read(final AsynchronousSocketChannel channel, final A attachment,
                           final CompletionHandler<Integer, ? super A> handler) {
-            channel.read(buffer, attachment, handler);
+            channel.read(
+                    buffer,
+                    4L,
+                    TimeUnit.SECONDS,
+                    attachment,
+                    handler
+            );
             return this;
         }
 
-        <A> OfBuffer write(final AsynchronousByteChannel channel, final A attachment,
+        <A> OfBuffer write(final AsynchronousSocketChannel channel, final A attachment,
                            final CompletionHandler<Integer, ? super A> handler) {
-            channel.write(buffer, attachment, handler);
+            channel.write(
+                    buffer,
+                    4L,
+                    TimeUnit.SECONDS,
+                    attachment,
+                    handler
+            );
             return this;
         }
 
@@ -415,14 +448,24 @@ abstract sealed class _Message<T extends _Message<T>>
 
     /**
      * Logs out this message's current status.
+     *
+     * @param index an index to print.
      */
-    final void log() {
-        log.info("{} {} {} {}",
+    final void log(final int index) {
+        log.info("[{}] {} {} {} {}",
+                 String.format("%6d", index),
                  getOperator(),
                  String.format("%+2d", getOperand1()),
                  String.format("%+2d", getOperand2()),
                  String.format("%+3d", getResult())
         );
+    }
+
+    /**
+     * Logs out this message's current status.
+     */
+    final void log() {
+        log(0);
     }
 
     /**

@@ -48,6 +48,7 @@ class CalcTcp3Server extends CalcTcp {
             key.channel().close();
             assert !key.isValid();
         } catch (final IOException ioe) {
+            log.error("failed to close " + key.channel(), ioe);
             key.cancel();
             assert !key.isValid();
         }
@@ -131,6 +132,7 @@ class CalcTcp3Server extends CalcTcp {
                         }
                         assert r > 0;
                         if (!message.hasRemaining()) {
+                            channel.shutdownInput();
                             selectedKey.interestOpsAnd(~SelectionKey.OP_READ);
                             message.calculateResult(executor, m -> {
                                 m.readyToWriteToClient();
@@ -148,6 +150,7 @@ class CalcTcp3Server extends CalcTcp {
                         final var w = message.write(channel);
                         assert w >= 0;
                         if (!message.hasRemaining()) {
+                            channel.shutdownOutput();
                             selectedKey.interestOpsAnd(~SelectionKey.OP_WRITE); // redundant
                             cancel(selectedKey);
                             assert !selectedKey.isValid();

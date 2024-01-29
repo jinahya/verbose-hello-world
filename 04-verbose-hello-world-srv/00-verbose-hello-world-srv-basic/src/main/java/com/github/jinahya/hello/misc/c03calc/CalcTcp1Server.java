@@ -68,9 +68,11 @@ class CalcTcp1Server extends CalcTcp {
                             new _Message.OfArray()
                                     .readFromClient(client.getInputStream())
                                     .calculateResult()
-                                    .writeToClient(client.getOutputStream(), true);
-                        } catch (final Exception e) {
-                            log.error("failed to serve for " + client, e);
+                                    .writeToClient(client.getOutputStream());
+                            client.getOutputStream().flush();
+                            log.debug("flushed/closing...");
+                        } catch (final IOException ioe) {
+                            log.error("failed to serve for " + client, ioe);
                         }
                     });
                 } catch (final RejectedExecutionException ree) {

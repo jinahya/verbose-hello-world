@@ -29,6 +29,7 @@ import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 class CalcTcp5Client extends CalcTcp {
@@ -46,66 +47,66 @@ class CalcTcp5Client extends CalcTcp {
         final var group = AsynchronousChannelGroup.withThreadPool(
                 newExecutorForClient("tcp-5-client-")
         );
-        for (int i = 0; i < REQUEST_COUNT; i++) {
-            // -------------------------------------------------------------------------------- open
-            final var client = AsynchronousSocketChannel.open(group);
-            // ----------------------------------------------------------------------------- connect
-            client.<Void>connect(ADDR, null, new CompletionHandler<>() {
-                @Override public void completed(final Void result, final Void a) {
-                    log.debug("connected");
-                    final var message = new _Message.OfBuffer()
-                            .randomize()
-                            .readyToWriteToServer();
-                    final var latch = new CountDownLatch(1);
-                    message.write(client, null, new CompletionHandler<Integer, Void>() {
-                        @Override public void completed(final Integer w, final Void a) {
-                            log.debug("written: {}", w);
-                            assert w > 0;
-                            if (message.hasRemaining()) {
-                                message.write(client, null, this);
-                                return;
+        final var requests = new AtomicInteger(REQUEST_COUNT);
+        final var index = new AtomicInteger();
+        final var latch = new CountDownLatch(1);
+        // ---------------------------------------------------------------------------- open/connect
+        final var client = AsynchronousSocketChannel.open(group);
+        client.connect(ADDR, client, new CompletionHandler<>() {
+            @Override
+            public void completed(final Void result, AsynchronousSocketChannel c) {
+                final var message = new _Message.OfBuffer().randomize().readyToWriteToServer();
+                message.write(c, c, new CompletionHandler<>() {
+                    @Override
+                    public void completed(final Integer w, final AsynchronousSocketChannel c) {
+                        assert w > 0;
+                        if (message.hasRemaining()) {
+                            message.write(c, c, this);
+                            return;
+                        }
+                        message.readyToReadFromServer().read(c, c, new CompletionHandler<>() {
+                            @Override public void completed(final Integer r,
+                                                            final AsynchronousSocketChannel c) {
+                                assert r > 0;
+                                if (message.hasRemaining()) {
+                                    message.read(c, c, this);
+                                    return;
+                                }
+                                message.log(
+                                        index.getAndIncrement());
+                                closeUnchecked(c);
                             }
-                            log.debug("reading...");
-                            message.readyToReadFromServer().read(
-                                    client, null, new CompletionHandler<Integer, Void>() {
-                                        @Override public void completed(Integer r, Void a) {
-                                            log.debug("read: {}", r);
-                                            assert r > 0;
-                                            if (message.hasRemaining()) {
-                                                message.read(client, null, this);
-                                                return;
-                                            }
-                                            message.log();
-                                            latch.countDown();
-                                        }
-                                        @Override
-                                        public void failed(final Throwable exc, final Void a) {
-                                            log.error("failed to read", exc);
-                                            latch.countDown();
-                                        }
-                                    }
-                            );
-                        }
-                        @Override public void failed(final Throwable exc, final Void a) {
-                            log.error("failed to write", exc);
-                            latch.countDown();
-                        }
-                    });
-                    try {
-                        latch.await();
-                    } catch (final InterruptedException ie) {
-                        log.error("interrupted while awaiting the latch", ie);
-                        Thread.currentThread().interrupt();
-                    } finally {
-                        closeUnchecked(client);
+                            @Override public void failed(final Throwable exc,
+                                                         final AsynchronousSocketChannel d) {
+                                log.error("failed to read", exc);
+                                closeUnchecked(d);
+                            }
+                        });
                     }
+                    @Override
+                    public void failed(final Throwable exc, final AsynchronousSocketChannel c) {
+                        log.error("failed to write", exc);
+                        closeUnchecked(c);
+                    }
+                });
+                if (requests.decrementAndGet() > 0) {
+                    try {
+                        c = AsynchronousSocketChannel.open(group);
+                        c.connect(ADDR, c, this);
+                    } catch (final IOException ioe) {
+                        log.error("failed to open", ioe);
+                    }
+                    return;
                 }
-                @Override public void failed(final Throwable exc, final Void a) {
-                    log.error("failed to connect", exc);
-                    closeUnchecked(client);
-                }
-            });
-        }
+                latch.countDown();
+            }
+            @Override
+            public void failed(final Throwable exc, final AsynchronousSocketChannel client) {
+                log.error("failed to connect", exc);
+                assert !client.isOpen();
+            }
+        });
+        latch.await();
         // -------------------------------------------------------- shutdown-group/await-termination
         group.shutdown();
         if (!group.awaitTermination(1L, TimeUnit.MINUTES)) {

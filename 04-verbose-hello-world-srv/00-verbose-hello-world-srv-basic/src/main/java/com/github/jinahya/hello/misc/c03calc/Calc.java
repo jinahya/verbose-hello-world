@@ -66,10 +66,10 @@ abstract class Calc {
     }
 
     // -------------------------------------------------------------------------------------- client
-    static final int REQUEST_COUNT = 32;
+    static final int REQUEST_COUNT = 8;
 
     // ------------------------------------------------------------------------------------- timeout
-    static final long SO_TIMEOUT = 1L;
+    static final long SO_TIMEOUT = 4L;
 
     static final TimeUnit SO_TIMEOUT_UNIT = TimeUnit.SECONDS;
 
