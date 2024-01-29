@@ -22,7 +22,6 @@ package com.github.jinahya.hello.misc.c04chat;
 
 import com.github.jinahya.hello.util.HelloWorldServerUtils;
 import com.github.jinahya.hello.util.JavaLangUtils;
-import com.github.jinahya.hello.util._TcpUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -131,7 +130,6 @@ class ChatTcp1Client {
         try (var executor = Executors.newFixedThreadPool(2);
              var client = new Socket()) {
             client.connect(new InetSocketAddress(addr, _ChatConstants.PORT));
-            _TcpUtils.logConnected(client);
             executor.submit(new Sender(client));
             executor.submit(new Receiver(client));
             for (executor.shutdown();

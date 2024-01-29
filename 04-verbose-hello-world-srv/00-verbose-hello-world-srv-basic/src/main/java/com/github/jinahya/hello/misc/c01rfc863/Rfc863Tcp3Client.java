@@ -89,9 +89,8 @@ class Rfc863Tcp3Client extends Rfc863Tcp {
                     assert channel == client;
                     final var buffer = (ByteBuffer) selectedKey.attachment();
                     if (!buffer.hasRemaining()) {
-                        JavaNioByteBufferUtils.randomize(
-                                buffer.clear().limit(Math.min(buffer.limit(), bytes))
-                        );
+                        ThreadLocalRandom.current().nextBytes(buffer.array());
+                        buffer.clear().limit(Math.min(buffer.limit(), bytes));
                     }
                     assert buffer.hasRemaining() || bytes == 0;
                     final var w = client.write(buffer);

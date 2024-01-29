@@ -20,7 +20,6 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
-import com.github.jinahya.hello.util.JavaNioByteBufferUtils;
 import com.github.jinahya.hello.util.JavaSecurityMessageDigestUtils;
 import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
@@ -61,9 +60,8 @@ class Rfc862Tcp2Client extends Rfc862Tcp {
             for (int w, r; bytes > 0; ) {
                 // --------------------------------------------------------------------------- write
                 if (!buffer.hasRemaining()) {
-                    JavaNioByteBufferUtils.randomize(
-                            buffer.clear().limit(Math.min(buffer.limit(), bytes))
-                    );
+                    ThreadLocalRandom.current().nextBytes(buffer.array());
+                    buffer.clear().limit(Math.min(buffer.limit(), bytes));
                 }
                 assert buffer.hasRemaining();
                 if (ThreadLocalRandom.current().nextBoolean()) {

@@ -33,14 +33,14 @@ class CalcUdp1Client extends CalcUdp {
 
     public static void main(final String... args) throws IOException {
         try (var client = new DatagramSocket(null)) {
-            // --------------------------------------------------------------------------- configure
-            client.setSoTimeout((int) SO_TIMEOUT_MILLIS);
             // ---------------------------------------------------------------------- bind(optional)
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(HOST, 0));
             }
+            // --------------------------------------------------------------------------- configure
+            client.setSoTimeout((int) SO_TIMEOUT_MILLIS);
             // -------------------------------------------------------------------- send/receive/log
-            for (var i = 0; i < CLIENT_COUNT; i++) {
+            for (var i = 0; i < REQUEST_COUNT; i++) {
                 new _Message.OfArray()
                         .randomize()
                         .sendToServer(client, ADDR)

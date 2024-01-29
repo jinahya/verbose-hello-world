@@ -34,13 +34,9 @@ class CalcTcp3Client extends CalcTcp {
 
     public static void main(final String... args) throws Exception {
         try (var selector = Selector.open()) {
-            for (int i = 0; i < CLIENT_COUNT; i++) {
+            for (int i = 0; i < REQUEST_COUNT; i++) {
                 final var client = SocketChannel.open();
                 try {
-                    // -------------------------------------------------------------- bind(optional)
-                    if (ThreadLocalRandom.current().nextBoolean()) {
-                        client.bind(new InetSocketAddress(HOST, 0));
-                    }
                     // ------------------------------------------------------ configure-non-blocking
                     client.configureBlocking(false);
                     // ---------------------------------------------------------------- connect(try)
@@ -62,65 +58,64 @@ class CalcTcp3Client extends CalcTcp {
             while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
                 // -------------------------------------------------------------------------- select
                 if (selector.select() == 0) {
-                    log.debug("zero selected; continuing..");
                     continue;
                 }
-                // ----------------------------------------------------------- process-selected-keys
+                // ------------------------------------------------------------------------- process
                 for (final var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
-                    final var key = i.next();
+                    final var selectedKey = i.next();
                     // ------------------------------------------------------------- connect(finish)
-                    if (key.isConnectable()) {
-                        final var channel = (SocketChannel) key.channel();
+                    if (selectedKey.isConnectable()) {
+                        final var channel = (SocketChannel) selectedKey.channel();
                         try {
                             if (channel.finishConnect()) {
-                                key.interestOpsAnd(~SelectionKey.OP_CONNECT);
-                                key.attach(
+                                selectedKey.interestOpsAnd(~SelectionKey.OP_CONNECT);
+                                selectedKey.attach(
                                         new _Message.OfBuffer()
                                                 .randomize()
                                                 .readyToWriteToServer()
                                 );
-                                key.interestOpsOr(SelectionKey.OP_WRITE);
-                                assert !key.isWritable();
+                                selectedKey.interestOpsOr(SelectionKey.OP_WRITE);
+                                assert !selectedKey.isWritable();
                             }
                         } catch (final IOException ioe) {
                             log.error("failed to finish connecting", ioe);
                             channel.close();
-                            assert !key.isValid();
+                            assert !selectedKey.isValid();
                             continue;
                         }
                     }
                     // ----------------------------------------------------------------------- write
-                    if (key.isWritable()) {
-                        final var channel = (SocketChannel) key.channel();
-                        final var message = (_Message.OfBuffer) key.attachment();
+                    if (selectedKey.isWritable()) {
+                        final var channel = (SocketChannel) selectedKey.channel();
+                        final var message = (_Message.OfBuffer) selectedKey.attachment();
                         assert message.hasRemaining();
                         final var w = message.write(channel);
                         assert w >= 0;
                         if (!message.hasRemaining()) {
-                            key.interestOpsAnd(~SelectionKey.OP_WRITE);
+                            selectedKey.interestOpsAnd(~SelectionKey.OP_WRITE);
                             message.readyToReadFromServer();
-                            key.interestOpsOr(SelectionKey.OP_READ);
-                            assert !key.isReadable();
+                            selectedKey.interestOpsOr(SelectionKey.OP_READ);
+                            assert !selectedKey.isReadable();
                         }
                     }
                     // ------------------------------------------------------------------------ read
-                    if (key.isReadable()) {
-                        final var channel = (SocketChannel) key.channel();
-                        final var message = (_Message.OfBuffer) key.attachment();
+                    if (selectedKey.isReadable()) {
+                        final var channel = (SocketChannel) selectedKey.channel();
+                        final var message = (_Message.OfBuffer) selectedKey.attachment();
                         assert message.hasRemaining();
                         final var r = message.read(channel);
                         if (r == -1) {
                             log.error("premature eof");
-                            key.interestOpsAnd(~SelectionKey.OP_READ); // redundant
+                            selectedKey.interestOpsAnd(~SelectionKey.OP_READ); // redundant
                             channel.close();
-                            assert !key.isValid();
+                            assert !selectedKey.isValid();
                             continue;
                         }
                         assert r >= 0;
                         if (!message.hasRemaining()) {
-                            key.interestOpsAnd(~SelectionKey.OP_READ); // redundant
+                            selectedKey.interestOpsAnd(~SelectionKey.OP_READ); // redundant
                             channel.close();
-                            assert !key.isValid();
+                            assert !selectedKey.isValid();
                             message.log();
                         }
                     }

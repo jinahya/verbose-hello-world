@@ -37,11 +37,15 @@ class CalcTcp1Server extends CalcTcp {
         try (var executor = newExecutorForServer("tcp1-server-");
              var server = new ServerSocket()) {
             server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
-//            server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
+            try {
+                server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
+            } catch (final IOException ioe) {
+                log.error("failed to set SO_REUSEPORT", ioe);
+            }
             // -------------------------------------------------------------------------------- bind
             server.bind(ADDR, SERVER_BACKLOG);
             logBound(server);
-            // --------------------------------------------------------- read-quit!-and-close-server
+            // ------------------------------------------------------------- read-quit!/close-server
             JavaLangUtils.readLinesAndCloseWhenTests(
                     "quit!"::equalsIgnoreCase,
                     server
@@ -59,17 +63,12 @@ class CalcTcp1Server extends CalcTcp {
                 }
                 try {
                     executor.submit(() -> {
-                        try {
-                            try {
-                                client.setSoTimeout((int) TimeUnit.SECONDS.toMillis(1L));
-                                // -------------------------------------------- read/calculate/write
-                                new _Message.OfArray()
-                                        .readFromClient(client.getInputStream())
-                                        .calculateResult()
-                                        .writeToClient(client.getOutputStream(), true);
-                            } finally {
-                                client.close();
-                            }
+                        try (client) {
+                            // ------------------------------------------------ read/calculate/write
+                            new _Message.OfArray()
+                                    .readFromClient(client.getInputStream())
+                                    .calculateResult()
+                                    .writeToClient(client.getOutputStream(), true);
                         } catch (final Exception e) {
                             log.error("failed to serve for " + client, e);
                         }

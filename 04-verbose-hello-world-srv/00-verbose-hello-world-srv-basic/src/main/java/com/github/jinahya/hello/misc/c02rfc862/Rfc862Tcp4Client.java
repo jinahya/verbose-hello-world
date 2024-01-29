@@ -20,7 +20,6 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
-import com.github.jinahya.hello.util.JavaNioByteBufferUtils;
 import com.github.jinahya.hello.util.JavaSecurityMessageDigestUtils;
 import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +28,6 @@ import java.io.EOFException;
 import java.net.InetSocketAddress;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @SuppressWarnings({
@@ -54,9 +52,8 @@ class Rfc862Tcp4Client extends Rfc862Tcp {
             for (int w, r; bytes > 0; bytes -= w) {
                 // --------------------------------------------------------------------------- write
                 if (!buffer.hasRemaining()) {
-                    JavaNioByteBufferUtils.randomize(
-                            buffer.clear().limit(Math.min(buffer.remaining(), bytes))
-                    );
+                    ThreadLocalRandom.current().nextBytes(buffer.array());
+                    buffer.clear().limit(Math.min(buffer.remaining(), bytes));
                 }
                 assert buffer.hasRemaining();
                 w = client.write(buffer).get();

@@ -20,37 +20,76 @@ package com.github.jinahya.hello.util;
  * #L%
  */
 
+import java.io.PrintStream;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 
 public final class JavaNioByteBufferUtils {
 
     /**
-     * Randomizes specified buffer's content between its {@link ByteBuffer#position() position} and
-     * {@link ByteBuffer#limit() limit} without modifying the {@link ByteBuffer#position() position}
-     * and the {@link ByteBuffer#limit() limit}.
+     * Prints out specified byte buffer's current status.
      *
-     * @param buffer the byte buffer whose content randomized.
-     * @param <T>    buffer type parameter
+     * @param buffer  the byte buffer.
+     * @param printer the print stream to which {@code buffer}'s status is printed.
+     * @param <T>     buffer type parameter
      * @return given {@code buffer}.
      */
-    @SuppressWarnings({"unchecked"})
-    public static <T extends ByteBuffer> T randomize(final T buffer) {
+    @SuppressWarnings({
+            "java:S1192"
+    })
+    public static <T extends ByteBuffer> T print(final T buffer, final PrintStream printer) {
         Objects.requireNonNull(buffer, "buffer is null");
-        if (buffer.remaining() == 0) {
-            return buffer;
-        }
+        var padding = 11;
+        printer.println("------------------------------------------------------------------------");
+        printer.printf(String.format("%%1$%ds: %%2$s%%n", padding), "buffer", buffer);
+        printer.printf(String.format("%%1$%ds: %%2$d%%n", padding), "remaining",
+                       buffer.remaining());
+        printer.printf(String.format("%%1$%ds: %%2$b%%n", padding), "direct", buffer.isDirect());
+        printer.printf(String.format("%%1$%ds: %%2$b%%n", padding), "hasArray", buffer.hasArray());
         if (buffer.hasArray()) {
-            JavaLangArrayUtils.randomize(
-                    buffer.array(),
-                    buffer.arrayOffset() + buffer.position(),
-                    buffer.remaining()
-            );
-            return buffer;
+            printer.printf(String.format("%%1$%ds: %%2$d%%n", padding), "arrayOffset",
+                           buffer.arrayOffset());
         }
-        return (T) buffer.mark()
-                .put(JavaLangArrayUtils.randomize(new byte[buffer.remaining()]))
-                .reset();
+        printer.println("------------------------------------------------------------------------");
+        var arrayOffset = buffer.hasArray() ? buffer.arrayOffset() : 0;
+        var ppadding = padding + arrayOffset + buffer.position() + 3;
+        printer.printf(String.format("%%1$%dc pos(%%2$d)%%n", ppadding), '↓', buffer.position());
+        printer.printf(String.format("%%1$%ds: ", padding), "buffer");
+        for (int i = 0; i < arrayOffset; i++) {
+            printer.print(' ');
+        }
+        for (int i = 0; i < buffer.position(); i++) {
+            printer.print('-');
+        }
+        for (int i = 0; i < buffer.remaining(); i++) {
+            printer.print('*');
+        }
+        for (int i = buffer.position() + buffer.remaining(); i < buffer.capacity(); i++) {
+            printer.print('-');
+        }
+        printer.printf(" %1$c cap(%2$d)%n", '←', buffer.capacity());
+        var lpadding = padding + arrayOffset + buffer.limit() + 3;
+        printer.printf(String.format("%%1$%dc lim(%%2$d)%%n", lpadding), '↑', buffer.limit());
+        if (buffer.hasArray()) {
+            for (int i = 0; i < (padding + buffer.arrayOffset() + 2); i++) {
+                printer.print(' ');
+            }
+            printer.printf("%1$c arrayOffset(%2$d)%n", '↓', buffer.arrayOffset());
+            printer.printf(String.format("%%1$%ds: ", padding), "array");
+            for (int i = 0; i < buffer.arrayOffset(); i++) {
+                printer.print('-');
+            }
+            var array = buffer.array();
+            for (int i = buffer.arrayOffset(); i < buffer.arrayOffset() + buffer.capacity(); i++) {
+                printer.print('+');
+            }
+            for (int i = buffer.arrayOffset() + buffer.capacity(); i < array.length; i++) {
+                printer.print('-');
+            }
+            printer.printf(" %1$c length(%2$d)%n", '←', array.length);
+        }
+        printer.println("------------------------------------------------------------------------");
+        return buffer;
     }
 
     /**
@@ -60,71 +99,11 @@ public final class JavaNioByteBufferUtils {
      * @param <T>    buffer type parameter
      * @return given {@code buffer}.
      */
+    @SuppressWarnings({
+            "java:S106"
+    })
     public static <T extends ByteBuffer> T print(final T buffer) {
-        Objects.requireNonNull(buffer, "buffer is null");
-        var padding = 11;
-        System.out.println(
-                "---------------------------------------------------------------------");
-        System.out.printf("%1$" + padding + "s: %2$s%n", "buffer", buffer);
-        System.out.printf("%1$" + padding + "s: %2$d%n", "remaining",
-                          buffer.remaining());
-        System.out.printf("%1$" + padding + "s: %2$b%n", "direct",
-                          buffer.isDirect());
-        System.out.printf("%1$" + padding + "s: %2$b%n", "hasArray",
-                          buffer.hasArray());
-        if (buffer.hasArray()) {
-            System.out.printf("%1$" + padding + "s: %2$d%n", "arrayOffset",
-                              buffer.arrayOffset());
-        }
-        System.out.println(
-                "---------------------------------------------------------------------");
-        var arrayOffset = buffer.hasArray() ? buffer.arrayOffset() : 0;
-        var ppadding = padding + arrayOffset + buffer.position() + 3;
-        System.out.printf("%1$" + ppadding + "c pos(%2$d)%n", '↓',
-                          buffer.position()); //   ↓ pos(p)
-        System.out.printf("%1$" + padding + "s: ", "buffer");
-        for (int i = 0; i < arrayOffset; i++) {
-            System.out.print(' ');
-        }
-        for (int i = 0; i < buffer.position(); i++) {
-            System.out.print('-');
-        }
-        for (int i = 0; i < buffer.remaining(); i++) {
-            System.out.print('*');
-        }
-        for (int i = buffer.position() + buffer.remaining();
-             i < buffer.capacity(); i++) {
-            System.out.print('-');
-        }
-        System.out.printf(" %1$c cap(%2$d)%n", '←',
-                          buffer.capacity()); //                  ← cap(c)
-        var lpadding = padding + arrayOffset + buffer.limit() + 3;
-        System.out.printf("%1$" + lpadding + "c lim(%2$d)%n", '↑',
-                          buffer.limit()); //      ↑ lim(l)
-        if (buffer.hasArray()) {
-            for (int i = 0; i < (padding + buffer.arrayOffset() + 2); i++) {
-                System.out.print(' ');
-            }
-            System.out.printf("%1$c arrayOffset(%2$d)%n", '↓',
-                              buffer.arrayOffset());
-            System.out.printf("%1$" + padding + "s: ", "array");
-            for (int i = 0; i < buffer.arrayOffset(); i++) {
-                System.out.print('-');
-            }
-            var array = buffer.array();
-            for (int i = buffer.arrayOffset();
-                 i < buffer.arrayOffset() + buffer.capacity(); i++) {
-                System.out.print('+');
-            }
-            for (int i = buffer.arrayOffset() + buffer.capacity();
-                 i < array.length; i++) {
-                System.out.print('-');
-            }
-            System.out.printf(" %1$c length(%2$d)%n", '←', array.length);
-        }
-        System.out.println(
-                "---------------------------------------------------------------------");
-        return buffer;
+        return print(buffer, System.out);
     }
 
     // ---------------------------------------------------------------------------------------------

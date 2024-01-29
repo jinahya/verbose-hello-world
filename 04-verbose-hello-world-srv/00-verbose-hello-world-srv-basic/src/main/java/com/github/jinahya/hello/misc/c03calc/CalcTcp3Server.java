@@ -58,14 +58,19 @@ class CalcTcp3Server extends CalcTcp {
              var server = ServerSocketChannel.open();
              var executor = newExecutorForServer("tcp-3-server-")) {
             server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
-//            server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
+            try {
+                server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
+            } catch (final IOException ioe) {
+                log.error("failed to set SO_REUSEPORT", ioe);
+            }
             // -------------------------------------------------------------------------------- bind
-            logBound(server.bind(ADDR, SERVER_BACKLOG));
+            logBound(server.bind(ADDR));
             // ----------------------------------------------------- configure-non-blocking/register
-            final var serverKey = server
-                    .configureBlocking(false)
-                    .register(selector, SelectionKey.OP_ACCEPT);
-            // ------------------------------------------------------------- read-quit!/close-server
+            final var serverKey = server.configureBlocking(false).register(
+                    selector,              // <sel>
+                    SelectionKey.OP_ACCEPT // <ops>
+            );
+            // --------------------------------------------- read-quit!/close-server/wakeup-selector
             JavaLangUtils.readLinesAndCallWhenTests(
                     "quit!"::equalsIgnoreCase,
                     () -> {
@@ -89,10 +94,10 @@ class CalcTcp3Server extends CalcTcp {
                 }
                 // ------------------------------------------------------------------------- process
                 for (final var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
-                    final var key = i.next();
+                    final var selectedKey = i.next();
                     // ---------------------------------------------------------------------- accept
-                    if (key.isAcceptable()) {
-                        final var channel = (ServerSocketChannel) key.channel();
+                    if (selectedKey.isAcceptable()) {
+                        final var channel = (ServerSocketChannel) selectedKey.channel();
                         assert channel == server;
                         final SocketChannel client;
                         try {
@@ -103,9 +108,9 @@ class CalcTcp3Server extends CalcTcp {
                         }
                         try {
                             final var clientKey = client.configureBlocking(false).register(
-                                    selector,
-                                    SelectionKey.OP_READ,
-                                    new _Message.OfBuffer().readyToReadFromClient()
+                                    selector,                                       // <sel>
+                                    SelectionKey.OP_READ,                           // <ops>
+                                    new _Message.OfBuffer().readyToReadFromClient() // <att>
                             );
                             assert !clientKey.isReadable();
                         } catch (final IOException ioe) {
@@ -114,37 +119,38 @@ class CalcTcp3Server extends CalcTcp {
                         }
                     }
                     // ------------------------------------------------------------------------ read
-                    if (key.isReadable()) {
-                        final var channel = (SocketChannel) key.channel();
-                        final var message = (_Message.OfBuffer) key.attachment();
+                    if (selectedKey.isReadable()) {
+                        final var channel = (SocketChannel) selectedKey.channel();
+                        final var message = (_Message.OfBuffer) selectedKey.attachment();
                         assert message.hasRemaining();
                         final var r = message.read(channel);
                         if (r == -1) {
                             log.error("premature eof");
-                            cancel(key);
+                            cancel(selectedKey);
                             continue;
                         }
-                        assert r >= 0;
+                        assert r > 0;
                         if (!message.hasRemaining()) {
-                            key.interestOpsAnd(~SelectionKey.OP_READ);
+                            selectedKey.interestOpsAnd(~SelectionKey.OP_READ);
                             message.calculateResult(executor, m -> {
                                 m.readyToWriteToClient();
-                                key.interestOpsOr(SelectionKey.OP_WRITE);
-                                assert !key.isWritable();
+                                selectedKey.interestOpsOr(SelectionKey.OP_WRITE);
+                                assert !serverKey.isWritable();
                                 selector.wakeup(); // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
                             });
                         }
                     }
                     // ----------------------------------------------------------------------- write
-                    if (key.isWritable()) {
-                        final var channel = (SocketChannel) key.channel();
-                        final var message = (_Message.OfBuffer) key.attachment();
+                    if (selectedKey.isWritable()) {
+                        final var channel = (SocketChannel) selectedKey.channel();
+                        final var message = (_Message.OfBuffer) selectedKey.attachment();
                         assert message.hasRemaining();
                         final var w = message.write(channel);
                         assert w >= 0;
                         if (!message.hasRemaining()) {
-                            key.interestOpsAnd(~SelectionKey.OP_WRITE); // redundant
-                            cancel(key);
+                            selectedKey.interestOpsAnd(~SelectionKey.OP_WRITE); // redundant
+                            cancel(selectedKey);
+                            assert !selectedKey.isValid();
                         }
                     }
                 }

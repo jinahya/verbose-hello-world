@@ -88,6 +88,7 @@ abstract sealed class _Message<T extends _Message<T>>
 
         @Override
         OfArray setOperator(final _Operator operator) {
+            Objects.requireNonNull(operator, "operator is null");
             System.arraycopy(
                     operator.name().getBytes(StandardCharsets.US_ASCII),
                     0,
@@ -329,7 +330,7 @@ abstract sealed class _Message<T extends _Message<T>>
         OfBuffer sendToClient(final DatagramChannel channel) throws IOException {
             readyToWriteToClient();
             final var w = channel.send(buffer, target);
-            assert w == 1;
+            assert w == buffer.capacity();
             return this;
         }
 
@@ -347,8 +348,20 @@ abstract sealed class _Message<T extends _Message<T>>
     }
 
     // ------------------------------------------------------------------------------------ operator
+
+    /**
+     * Returns current value of {@code operator} property.
+     *
+     * @return current value of {@code operator} property.
+     */
     abstract _Operator getOperator();
 
+    /**
+     * Replaces current value of {@code operator} property with specified value.
+     *
+     * @param operator new value for the {@code operator} property.
+     * @return this message.
+     */
     abstract T setOperator(_Operator operator);
 
     // ------------------------------------------------------------------------------------ operand1
@@ -374,15 +387,13 @@ abstract sealed class _Message<T extends _Message<T>>
         return (T) this;
     }
 
-    @SuppressWarnings({"unchecked"})
     final T calculateResult() {
         final var operator = getOperator();
         final var operand1 = getOperand1();
         final var operand2 = getOperand2();
         log.debug("calculating result...");
         final var result = operator.applyAsInt(operand1, operand2);
-        setResult(result);
-        return (T) this;
+        return setResult(result);
     }
 
     /**
@@ -401,6 +412,10 @@ abstract sealed class _Message<T extends _Message<T>>
     abstract T setResult(int result);
 
     // ----------------------------------------------------------------------------------------- log
+
+    /**
+     * Logs out this message's current status.
+     */
     final void log() {
         log.info("{} {} {} {}",
                  getOperator(),
@@ -410,6 +425,11 @@ abstract sealed class _Message<T extends _Message<T>>
         );
     }
 
+    /**
+     * Randomizes this message's {@code operator}, {@code operand1}, and {@code operand2}.
+     *
+     * @return this message.
+     */
     final T randomize() {
         return setOperator(_Operator.randomValue())
                 .setOperand1(ThreadLocalRandom.current().nextInt())

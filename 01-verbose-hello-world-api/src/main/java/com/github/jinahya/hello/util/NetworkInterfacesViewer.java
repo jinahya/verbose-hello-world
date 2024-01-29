@@ -61,7 +61,8 @@ class NetworkInterfacesViewer extends _AbstractViewer {
 
     private static final String NAME = "Network Interfaces Properties";
 
-    private static class PropertyNode extends DefaultMutableTreeNode
+    private static class PropertyNode
+            extends DefaultMutableTreeNode
             implements JavaBeansUtils.PropertyInfoHolder {
 
         @Serial

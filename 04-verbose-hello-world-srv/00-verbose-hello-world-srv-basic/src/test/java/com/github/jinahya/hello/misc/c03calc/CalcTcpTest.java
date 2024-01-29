@@ -22,7 +22,6 @@ package com.github.jinahya.hello.misc.c03calc;
 
 import com.github.jinahya.hello.HelloWorldServerConstants;
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
-import com.github.jinahya.hello.util.HelloWorldServerUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Assertions;
@@ -116,44 +115,46 @@ class CalcTcpTest {
         log.debug("client: {}", clientClass.getSimpleName());
         serverClass.getClassLoader().setDefaultAssertionStatus(true);
         clientClass.getClassLoader().setDefaultAssertionStatus(true);
-        var executor = Executors.newFixedThreadPool(2);
-        final var systemIn = System.in;
-        final var pos = new PipedOutputStream();
-        final var pis = new PipedInputStream(
-                pos,
-                HelloWorldServerConstants.QUIT_AND_ENTER.length()
-        );
-        try {
-            System.setIn(pis);
-            var server = executor.submit(() -> {
-                try {
-                    serverClass.getMethod("main", String[].class)
-                            .invoke(null, new Object[] {new String[0]});
-                } catch (final Exception e) {
-                    throw new RuntimeException(e);
+        try (var executor = Executors.newFixedThreadPool(2)) {
+            final var systemIn = System.in;
+            final var pos = new PipedOutputStream();
+            final var pis = new PipedInputStream(
+                    pos,
+                    HelloWorldServerConstants.QUIT_AND_ENTER.length()
+            );
+            try {
+                System.setIn(pis);
+                var server = executor.submit(() -> {
+                    try {
+                        serverClass.getMethod("main", String[].class)
+                                .invoke(null, new Object[] {new String[0]});
+                    } catch (final Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+                Awaitility.await().pollDelay(Duration.ofMillis(100L))
+                        .untilAsserted(() -> Assertions.assertTrue(true));
+                var client = executor.submit(() -> {
+                    try {
+                        clientClass.getMethod("main", String[].class)
+                                .invoke(null, new Object[] {new String[0]});
+                    } catch (final Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+                client.get(1L, TimeUnit.MINUTES);
+                pos.write(HelloWorldServerConstants.QUIT_AND_ENTER.getBytes(
+                        StandardCharsets.US_ASCII));
+                pos.flush();
+                server.get(_Rfc86_Constants.SERVER_PROGRAM_TIMEOUT,
+                           _Rfc86_Constants.SERVER_PROGRAM_TIMEOUT_UNIT);
+                executor.shutdown();
+                if (!executor.awaitTermination(8L, TimeUnit.SECONDS)) {
+                    log.error("executor not terminated");
                 }
-            });
-            Awaitility.await().pollDelay(Duration.ofMillis(100L))
-                    .untilAsserted(() -> Assertions.assertTrue(true));
-            var client = executor.submit(() -> {
-                try {
-                    clientClass.getMethod("main", String[].class)
-                            .invoke(null, new Object[] {new String[0]});
-                } catch (final Exception e) {
-                    throw new RuntimeException(e);
-                }
-            });
-            client.get(1L, TimeUnit.MINUTES);
-            pos.write(HelloWorldServerConstants.QUIT_AND_ENTER.getBytes(StandardCharsets.US_ASCII));
-            pos.flush();
-            server.get(_Rfc86_Constants.SERVER_PROGRAM_TIMEOUT,
-                       _Rfc86_Constants.SERVER_PROGRAM_TIMEOUT_UNIT);
-            executor.shutdown();
-            if (!executor.awaitTermination(8L, TimeUnit.SECONDS)) {
-                log.error("executor not terminated");
+            } finally {
+                System.setIn(systemIn);
             }
-        } finally {
-            System.setIn(systemIn);
         }
     }
 
@@ -163,47 +164,49 @@ class CalcTcpTest {
     void __(final Class<?> serverClass) throws Exception {
         log.debug("server: {}", serverClass.getSimpleName());
         serverClass.getClassLoader().setDefaultAssertionStatus(true);
-        final var executor = Executors.newFixedThreadPool(CLIENT_CLASSES.size() + 1);
-        final var systemIn = System.in;
-        final var pos = new PipedOutputStream();
-        final var quitAndEnterBytes = HelloWorldServerUtils.getQuitAndEnterBytes();
-        final var pis = new PipedInputStream(pos, quitAndEnterBytes.length);
-        try {
-            System.setIn(pis);
-            final var server = executor.submit(() -> {
-                try {
-                    serverClass.getMethod("main", String[].class)
-                            .invoke(null, new Object[] {new String[0]});
-                } catch (final Exception e) {
-                    throw new RuntimeException(e);
-                }
-            });
-            Awaitility.await().pollDelay(Duration.ofMillis(100L))
-                    .untilAsserted(() -> Assertions.assertTrue(true));
-            final var futures = new ArrayList<Future<?>>(CLIENT_CLASSES.size());
-            for (final Class<?> clientClass : CLIENT_CLASSES) {
-                log.debug("client: {}", clientClass.getSimpleName());
-                final var future = executor.submit(() -> {
+        try (var executor = Executors.newFixedThreadPool(CLIENT_CLASSES.size() + 1)) {
+            final var systemIn = System.in;
+            final var pos = new PipedOutputStream();
+            final var quitAndEnterBytes = CalcTestConstants.quitPlusEnterBytes;
+            final var pis = new PipedInputStream(pos, quitAndEnterBytes.length);
+            try {
+                System.setIn(pis);
+                final var server = executor.submit(() -> {
                     try {
-                        clientClass.getMethod("main", String[].class)
+                        serverClass.getMethod("main", String[].class)
                                 .invoke(null, new Object[] {new String[0]});
                     } catch (final Exception e) {
                         throw new RuntimeException(e);
                     }
                 });
-                futures.add(future);
+                Awaitility.await().pollDelay(Duration.ofMillis(100L))
+                        .untilAsserted(() -> Assertions.assertTrue(true));
+                final var futures = new ArrayList<Future<?>>(CLIENT_CLASSES.size());
+                for (final Class<?> clientClass : CLIENT_CLASSES) {
+                    log.debug("client: {}", clientClass.getSimpleName());
+                    final var future = executor.submit(() -> {
+                        try {
+                            clientClass.getMethod("main", String[].class)
+                                    .invoke(null, new Object[] {new String[0]});
+                        } catch (final Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+                    futures.add(future);
+                }
+                for (final var future : futures) {
+                    future.get(1L, TimeUnit.MINUTES);
+                }
+                pos.write(quitAndEnterBytes);
+                pos.flush();
+                server.get(1L, TimeUnit.MINUTES);
+                executor.shutdown();
+                if ( executor.awaitTermination(8L, TimeUnit.SECONDS)) {
+                    log.error("executor not terminated");
+                }
+            } finally {
+                System.setIn(systemIn);
             }
-            for (final var future : futures) {
-                future.get(1L, TimeUnit.MINUTES);
-            }
-            pos.write(quitAndEnterBytes);
-            pos.flush();
-            server.get(1L, TimeUnit.MINUTES);
-            executor.shutdown();
-            final var terminated = executor.awaitTermination(8L, TimeUnit.SECONDS);
-            assert terminated : "executor hasn't been terminated";
-        } finally {
-            System.setIn(systemIn);
         }
     }
 }

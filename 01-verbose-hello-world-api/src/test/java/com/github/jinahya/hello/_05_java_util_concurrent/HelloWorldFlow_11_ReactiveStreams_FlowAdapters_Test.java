@@ -112,10 +112,11 @@ class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlo
             final Flow.Publisher<Byte> publisher = Mockito.spy(
                     new HelloWorldFlow.HelloWorldPublisher.OfByte(service, EXECUTOR)
             );
-            // DONE: intercept, publisher.subscribe(subscriber) to wrap the subscriber as a spy
+            // DONE: intercept, publisher.subscribe(subscriber), to wrap the subscriber as a spy
             BDDMockito.willAnswer(i -> {
                 final var subscriber = Mockito.spy(i.getArgument(0, Flow.Subscriber.class));
-                // DONE: intercept, subscriber.onSubscribe(subscription) to wrap the subscription as a spy
+                // DONE: intercept, subscriber.onSubscribe(subscription),
+                //       to wrap the subscription as a spy
                 BDDMockito.willAnswer(j -> {
                     final var subscription = Mockito.spy(j.getArgument(0, Flow.Subscription.class));
                     j.getArguments()[0] = subscription;
@@ -254,6 +255,9 @@ class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlo
         }
 
         @Test
+        @SuppressWarnings({
+                "java:S2699" // TODO: remove when implemented
+        })
         void __string() {
             // TODO: Test!
         }
@@ -389,6 +393,9 @@ class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlo
         }
 
         @Test
+        @SuppressWarnings({
+                "java:S2699" // TODO: remove when implemented
+        })
         void __string() {
             // TODO: Test!
         }

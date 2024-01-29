@@ -22,6 +22,7 @@ package com.github.jinahya.hello.misc.c03calc;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.concurrent.ThreadLocalRandom;
@@ -32,23 +33,19 @@ class CalcTcp1Client extends CalcTcp {
 
     public static void main(final String... args) throws Exception {
         try (var executor = newExecutorForClient("tcp-1-client-")) {
-            for (int i = 0; i < CLIENT_COUNT; i++) {
+            for (int i = 0; i < REQUEST_COUNT; i++) {
                 executor.submit(() -> {
                     try (var client = new Socket()) {
-                        // ---------------------------------------------------------- bind(optional)
-                        if (ThreadLocalRandom.current().nextBoolean()) {
-                            client.bind(new InetSocketAddress(HOST, 0));
-                        }
                         // ----------------------------------------------------------------- connect
-                        client.connect(ADDR, (int) CONNECT_TIMEOUT_MILLIS);
+                        client.connect(ADDR, SERVER_BACKLOG);
                         // ---------------------------------------------------------- write/read/log
                         client.setSoTimeout((int) SO_TIMEOUT_MILLIS);
                         new _Message.OfArray().randomize()
                                 .writeToServer(client.getOutputStream(), true)
                                 .readFromServer(client.getInputStream())
                                 .log();
-                    } catch (final Exception e) {
-                        log.error("failed to request", e);
+                    } catch (final IOException ioe) {
+                        log.error("failed to request", ioe);
                     }
                 });
             }

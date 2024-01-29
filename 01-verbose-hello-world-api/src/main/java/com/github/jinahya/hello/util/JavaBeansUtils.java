@@ -39,9 +39,9 @@ import java.util.stream.Stream;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-public class JavaBeansUtils {
+final class JavaBeansUtils {
 
-    public static class PropertyInfo {
+    static class PropertyInfo {
 
         static PropertyInfo of(final PropertyInfo parent, final PropertyDescriptor descriptor,
                                final Integer index, final Object value) {
@@ -236,7 +236,7 @@ public class JavaBeansUtils {
         acceptEachProperty(parent, clazz, clazz.cast(object), function);
     }
 
-    public static <H extends PropertyInfoHolder> void acceptEachProperty(
+    static <H extends PropertyInfoHolder> void acceptEachProperty(
             final H parent, final Object bean,
             final Function<? super H,
                     ? extends Function<? super PropertyInfo,

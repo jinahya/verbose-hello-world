@@ -28,16 +28,15 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 
 @Slf4j
-class CalcUdp2Client extends CalcUdp {
+class CalcUdp3Client extends CalcUdp {
 
     public static void main(final String... args) throws Exception {
         try (var selector = Selector.open()) {
-            for (var c = 0; c < CLIENT_COUNT; c++) {
+            for (var c = 0; c < REQUEST_COUNT; c++) {
+                @SuppressWarnings({"java:S2095"})
                 var client = DatagramChannel.open(); // not-using-try-with-resources
-                // ---------------------------------------------------------- configure-non-blocking
-                client.configureBlocking(false);
-                // ------------------------------------------------------------------------ register
-                final var clientKey = client.register(
+                // ------------------------------------------------- configure-non-blocking/register
+                final var clientKey = client.configureBlocking(false).register(
                         selector,
                         SelectionKey.OP_WRITE,
                         new _Message.OfBuffer().randomize()
@@ -49,29 +48,29 @@ class CalcUdp2Client extends CalcUdp {
                 if (selector.select() == 0) {
                     continue;
                 }
-                // ----------------------------------------------------------- process-selected-keys
+                // ------------------------------------------------------------------------- process
                 for (final var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
-                    final var key = i.next();
+                    final var selectedKey = i.next();
                     // ------------------------------------------------------------------------ send
-                    if (key.isWritable()) {
-                        final var channel = (DatagramChannel) key.channel();
-                        final var message = (_Message.OfBuffer) key.attachment();
+                    if (selectedKey.isWritable()) {
+                        final var channel = (DatagramChannel) selectedKey.channel();
+                        final var message = (_Message.OfBuffer) selectedKey.attachment();
                         message.sendToServer(channel, ADDR);
                         assert !message.hasRemaining();
-                        key.interestOpsAnd(~SelectionKey.OP_WRITE);
-                        assert key.isWritable(); // why?
-                        key.interestOpsOr(SelectionKey.OP_READ);
-                        assert !key.isReadable(); // why?
+                        selectedKey.interestOpsAnd(~SelectionKey.OP_WRITE);
+                        assert selectedKey.isWritable();
+                        selectedKey.interestOpsOr(SelectionKey.OP_READ);
+                        assert !selectedKey.isReadable();
                     }
-                    // --------------------------------------------------------------------- receive
-                    if (key.isReadable()) {
-                        final var channel = (DatagramChannel) key.channel();
-                        final var message = (_Message.OfBuffer) key.attachment();
+                    // ----------------------------------------------------------------- receive/log
+                    if (selectedKey.isReadable()) {
+                        final var channel = (DatagramChannel) selectedKey.channel();
+                        final var message = (_Message.OfBuffer) selectedKey.attachment();
                         message.receiveFromServer(channel).log();
-                        key.interestOpsAnd(~SelectionKey.OP_READ);
-                        assert key.isReadable(); // why?
+                        selectedKey.interestOpsAnd(~SelectionKey.OP_READ);
+                        assert selectedKey.isReadable();
                         channel.close();
-                        assert !key.isValid();
+                        assert !selectedKey.isValid();
                     }
                 }
             }
@@ -79,7 +78,7 @@ class CalcUdp2Client extends CalcUdp {
     }
 
     @_ExcludeFromCoverage_PrivateConstructor_Obviously
-    private CalcUdp2Client() {
+    private CalcUdp3Client() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

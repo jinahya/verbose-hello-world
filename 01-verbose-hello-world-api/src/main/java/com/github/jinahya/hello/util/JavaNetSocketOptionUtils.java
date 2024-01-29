@@ -45,12 +45,11 @@ import java.util.function.Function;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-public final class HelloWorldNetUtils {
+final class JavaNetSocketOptionUtils {
 
     static final String VALUE_OF_UNSUPPORTED_SOCKET_OPTION = "NOT SUPPORTED";
 
-    public static void acceptEachStandardSocketOption(
-            final Consumer<? super SocketOption<?>> consumer) {
+    static void acceptEachStandardSocketOption(final Consumer<? super SocketOption<?>> consumer) {
         Objects.requireNonNull(consumer, "consumer is null");
         for (final var field : StandardSocketOptions.class.getFields()) {
             final var modifiers = field.getModifiers();
@@ -73,9 +72,11 @@ public final class HelloWorldNetUtils {
         }
     }
 
-    public static <T> void acceptSocketOptions(
+    static <T> void acceptSocketOptions(
             final Class<T> clazz, T object,
-            final Function<? super SocketOption<?>, ? extends Function<? super Class<?>, Consumer<Object>>> function) {
+            final Function<
+                    ? super SocketOption<?>, ? extends Function<
+                    ? super Class<?>, Consumer<Object>>> function) {
         Objects.requireNonNull(clazz, "clazz is null");
         Objects.requireNonNull(object, "object is null");
         Objects.requireNonNull(function, "function is null");
@@ -109,9 +110,11 @@ public final class HelloWorldNetUtils {
         });
     }
 
-    public static <T> void acceptSocketOptionsHelper(
+    static <T> void acceptSocketOptionsHelper(
             final Class<T> clazz, Object object,
-            final Function<? super SocketOption<?>, ? extends Function<? super Class<?>, Consumer<Object>>> function) {
+            final Function<
+                    ? super SocketOption<?>, ? extends Function<
+                    ? super Class<?>, Consumer<Object>>> function) {
         acceptSocketOptions(clazz, clazz.cast(object), function);
     }
 
@@ -130,7 +133,7 @@ public final class HelloWorldNetUtils {
      * @see AsynchronousSocketChannel#getOption(SocketOption)
      * @see AsynchronousServerSocketChannel#getOption(SocketOption)
      */
-    public static <T> void printSocketOptions(final Class<T> clazz, T object) {
+    static <T> void printSocketOptions(final Class<T> clazz, T object) {
         acceptSocketOptions(clazz, object, o -> t -> v -> {
             System.out.printf("%1$-17s\t%2$-17s %3$s%n", o, t.getSimpleName(), v);
         });
@@ -163,7 +166,7 @@ public final class HelloWorldNetUtils {
     }
 
     @_ExcludeFromCoverage_PrivateConstructor_Obviously
-    private HelloWorldNetUtils() {
+    private JavaNetSocketOptionUtils() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

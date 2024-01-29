@@ -92,8 +92,8 @@ public final class JavaLangUtils {
                                                  final Consumer<? super String> consumer) {
         Objects.requireNonNull(predicate, "predicate is null");
         Objects.requireNonNull(callable, "callable is null");
-        var thread = new Thread(() -> {
-            var reader = new BufferedReader(new InputStreamReader(System.in));
+        Thread.ofPlatform().daemon().start(() -> {
+            final var reader = new BufferedReader(new InputStreamReader(System.in));
             try {
                 for (String line; (line = reader.readLine()) != null; ) {
                     if (predicate.test(line.strip())) {
@@ -108,14 +108,12 @@ public final class JavaLangUtils {
             }
             try {
                 callable.call();
-            } catch (InterruptedException ie) {
+            } catch (final InterruptedException ie) {
                 Thread.currentThread().interrupt();
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 log.error("failed to call {}", callable, e);
             }
         });
-        thread.setDaemon(true);
-        thread.start();
     }
 
     public static void readLinesAndCallWhenTests(final Predicate<? super String> predicate,

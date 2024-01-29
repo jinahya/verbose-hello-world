@@ -22,104 +22,95 @@ package com.github.jinahya.hello.misc.c03calc;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.net.InetSocketAddress;
+import java.io.Closeable;
+import java.io.IOException;
 import java.nio.channels.AsynchronousChannelGroup;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
 class CalcTcp5Client extends CalcTcp {
 
-    // @formatter:off
-    private static void read(final AsynchronousSocketChannel client,
-                             final _Message.OfBuffer message, final CountDownLatch latch) {
-        assert message.hasRemaining();
-        message.<Void>write(client, null, new CompletionHandler<>() {
-            @Override public void completed(final Integer result, final Void attachment) {
-                assert result > 0; // why?
-                assert !message.hasRemaining(); // why?
-                message.log();
-                latch.countDown();
-            }
-            @Override public void failed(final Throwable exc, final Void attachment) {
-                log.error("failed to read", exc);
-                latch.countDown();
-            }
-        });
+    private static void closeUnchecked(final Closeable closeable) {
+        try {
+            closeable.close();
+        } catch (final IOException ioe) {
+            log.error("failed to close " + closeable, ioe);
+        }
     }
-    // @formatter:on
-
-    // @formatter:off
-    private static void write(final AsynchronousSocketChannel client,
-                              final _Message.OfBuffer message, final CountDownLatch latch) {
-        assert message.hasRemaining();
-        message.<Void>write(client, null, new CompletionHandler<>() {
-            @Override public void completed(final Integer result, final Void attachment) {
-                assert result > 0; // why?
-                if (!message.hasRemaining()) {
-                    message.readyToReadFromServer();
-                    // ------------------------------------------------------------------------ read
-                    read(client, message, latch);
-                    return;
-                }
-                message.write(client, null, this);
-            }
-            @Override public void failed(final Throwable exc, final Void attachment) {
-                log.error("failed to write", exc);
-                latch.countDown();
-            }
-        });
-    }
-    // @formatter:on
 
     // @formatter:off
     public static void main(final String... args) throws Exception {
-        final var executor = newExecutorForClient("tcp-5-client-");
-        final var group = AsynchronousChannelGroup.withThreadPool(executor);
-        for (int i = 0; i < CLIENT_COUNT; i++) {
+        final var group = AsynchronousChannelGroup.withThreadPool(
+                newExecutorForClient("tcp-5-client-")
+        );
+        for (int i = 0; i < REQUEST_COUNT; i++) {
             // -------------------------------------------------------------------------------- open
-            try (var client = AsynchronousSocketChannel.open(group)) {
-                // ------------------------------------------------------------------ bind(optional)
-                if (ThreadLocalRandom.current().nextBoolean()) {
-                    client.bind(new InetSocketAddress(HOST, 0));
-                }
-                // ------------------------------------------------------------------------- connect
-                final var latch = new CountDownLatch(1);
-                client.connect(
-                        ADDR,
-                        new _Message.OfBuffer().randomize().readyToWriteToServer(),
-                        new CompletionHandler<>() {
-                            @Override
-                            public void completed(final Void result,
-                                                  final _Message.OfBuffer attachment) {
-                                // ----------------------------------------------------------- write
-                                write(client, attachment, latch);
+            final var client = AsynchronousSocketChannel.open(group);
+            // ----------------------------------------------------------------------------- connect
+            client.<Void>connect(ADDR, null, new CompletionHandler<>() {
+                @Override public void completed(final Void result, final Void a) {
+                    log.debug("connected");
+                    final var message = new _Message.OfBuffer()
+                            .randomize()
+                            .readyToWriteToServer();
+                    final var latch = new CountDownLatch(1);
+                    message.write(client, null, new CompletionHandler<Integer, Void>() {
+                        @Override public void completed(final Integer w, final Void a) {
+                            log.debug("written: {}", w);
+                            assert w > 0;
+                            if (message.hasRemaining()) {
+                                message.write(client, null, this);
+                                return;
                             }
-                            @Override public void failed(final Throwable exc,
-                                                         final _Message.OfBuffer attachment) {
-                                log.error("failed to connect", exc);
-                                latch.countDown();
-                            }
+                            log.debug("reading...");
+                            message.readyToReadFromServer().read(
+                                    client, null, new CompletionHandler<Integer, Void>() {
+                                        @Override public void completed(Integer r, Void a) {
+                                            log.debug("read: {}", r);
+                                            assert r > 0;
+                                            if (message.hasRemaining()) {
+                                                message.read(client, null, this);
+                                                return;
+                                            }
+                                            message.log();
+                                            latch.countDown();
+                                        }
+                                        @Override
+                                        public void failed(final Throwable exc, final Void a) {
+                                            log.error("failed to read", exc);
+                                            latch.countDown();
+                                        }
+                                    }
+                            );
                         }
-                );
-                latch.await();
-            } catch (final Exception e) {
-                if (e instanceof InterruptedException ie) {
-                    log.error("interrupted while awaiting the latch", ie);
-                    Thread.currentThread().interrupt();
+                        @Override public void failed(final Throwable exc, final Void a) {
+                            log.error("failed to write", exc);
+                            latch.countDown();
+                        }
+                    });
+                    try {
+                        latch.await();
+                    } catch (final InterruptedException ie) {
+                        log.error("interrupted while awaiting the latch", ie);
+                        Thread.currentThread().interrupt();
+                    } finally {
+                        closeUnchecked(client);
+                    }
                 }
-                log.error("failed to request", e);
-            }
+                @Override public void failed(final Throwable exc, final Void a) {
+                    log.error("failed to connect", exc);
+                    closeUnchecked(client);
+                }
+            });
         }
-        // -------------------------------------------------------------------------- shutdown/await
+        // -------------------------------------------------------- shutdown-group/await-termination
         group.shutdown();
-        if (!group.awaitTermination(1L, TimeUnit.SECONDS)) {
+        if (!group.awaitTermination(1L, TimeUnit.MINUTES)) {
             log.error("group not terminated");
         }
-        assert executor.isShutdown();
     }
     // @formatter:on
 }

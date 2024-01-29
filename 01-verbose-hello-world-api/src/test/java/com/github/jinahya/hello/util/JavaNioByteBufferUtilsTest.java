@@ -21,9 +21,6 @@ package com.github.jinahya.hello.util;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -35,36 +32,29 @@ import java.util.stream.Stream;
 @Slf4j
 class JavaNioByteBufferUtilsTest {
 
+    private static Stream<byte[]> randomByteArrayStream() {
+        return Stream.concat(
+                IntStream.range(0, ThreadLocalRandom.current().nextInt(8) + 1)
+                        .mapToObj(i -> new byte[ThreadLocalRandom.current().nextInt(16) + 1]),
+                Stream.of(new byte[0])
+        );
+    }
+
     static Stream<ByteBuffer> randomByteBufferStream() {
         return Stream.concat(
-                JavaLangArrayUtilsTest.randomByteArrayStream().map(ByteBuffer::wrap),
+                randomByteArrayStream().map(ByteBuffer::wrap),
                 IntStream.rangeClosed(0, ThreadLocalRandom.current().nextInt(8))
                         .mapToObj(i -> ByteBuffer.allocateDirect(
-                                ThreadLocalRandom.current().nextInt(8)))
+                                ThreadLocalRandom.current().nextInt(16)))
         ).peek(b -> {
             b.limit(ThreadLocalRandom.current().nextInt(b.capacity() + 1))
                     .position(ThreadLocalRandom.current().nextInt(b.remaining() + 1));
         });
     }
 
-    @DisplayName("randomize(buffer)")
-    @Nested
-    class RandomizeTest {
-
-        @MethodSource({
-                "com.github.jinahya.hello.util.JavaNioByteBufferUtilsTest#randomByteBufferStream"
-        })
-        @ParameterizedTest
-        void __(final ByteBuffer buffer) {
-            // ------------------------------------------------------------------------------- given
-            final var position = buffer.position();
-            final var limit = buffer.limit();
-            // -------------------------------------------------------------------------------- when
-            final var result = JavaNioByteBufferUtils.randomize(buffer);
-            // -------------------------------------------------------------------------------- then
-            Assertions.assertSame(buffer, result);
-            Assertions.assertEquals(position, result.position());
-            Assertions.assertEquals(limit, result.limit());
-        }
+    @MethodSource({"randomByteBufferStream"})
+    @ParameterizedTest
+    void print__(final ByteBuffer buffer) {
+        JavaNioByteBufferUtils.print(buffer);
     }
 }

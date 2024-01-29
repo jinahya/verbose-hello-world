@@ -124,7 +124,6 @@ class Rfc862Tcp5Server extends Rfc862Tcp {
             assert buffer.position() == 0;
             if (latch.getCount() == 1L) { // reached to an eof; no need to read anymore
                 // ----------------------------------------------------------------------------- log
-                log.debug("[server] closing client...");
                 try {
                     client.close();
                     assert !client.isOpen();
@@ -133,7 +132,6 @@ class Rfc862Tcp5Server extends Rfc862Tcp {
                 }
                 logServerBytes(bytes.longValue());
                 logDigest(digest);
-                log.debug("sent: {}", sent);
                 assert latch.getCount() == 1L;
                 latch.countDown(); // 1 -> 0
                 return;
@@ -176,7 +174,6 @@ class Rfc862Tcp5Server extends Rfc862Tcp {
                     class ReadHandler extends Handler {
                         @Override
                         public void completed(final Integer r, final Handler writeHandler) {
-                            log.debug("r: {}", r);
                             if (r == -1) {
                                 assert latch.getCount() == 2L;
                                 latch.countDown(); // 2 -> 1

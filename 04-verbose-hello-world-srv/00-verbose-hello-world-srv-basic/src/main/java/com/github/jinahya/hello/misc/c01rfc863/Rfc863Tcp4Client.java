@@ -49,9 +49,8 @@ class Rfc863Tcp4Client extends Rfc863Tcp {
             // ------------------------------------------------------------------------------- write
             for (int w; bytes > 0; bytes -= w) {
                 if (!buffer.hasRemaining()) {
-                    JavaNioByteBufferUtils.randomize(
-                            buffer.clear().limit(Math.min(buffer.limit(), bytes))
-                    );
+                    ThreadLocalRandom.current().nextBytes(buffer.array());
+                    buffer.clear().limit(Math.min(buffer.limit(), bytes));
                 }
                 assert buffer.hasRemaining();
                 w = client.write(buffer).get();

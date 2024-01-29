@@ -22,7 +22,6 @@ package com.github.jinahya.hello.misc.c02rfc862;
 
 import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
 import com.github.jinahya.hello.util.JavaSecurityMessageDigestUtils;
-import com.github.jinahya.hello.util._UdpUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.SocketAddress;
@@ -40,8 +39,7 @@ class Rfc862Udp2Server extends Rfc862Udp {
         try (var selector = Selector.open();
              var server = DatagramChannel.open()) {
             // -------------------------------------------------------------------------------- bind
-            server.bind(ADDR);
-            _UdpUtils.logBound(server);
+            logBound(server.bind(ADDR));
             // ------------------------------------------------------------------ configure/register
             server.configureBlocking(false);
             server.register(selector, SelectionKey.OP_READ);

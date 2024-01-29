@@ -67,7 +67,18 @@ enum _Operator implements IntBinaryOperator {
             }
             return left / right;
         }
-    };
+    },
+
+//    MOD() {
+//        @Override
+//        public int applyAsInt(final int left, final int right) {
+//            if (right == 0) {
+//                return 0;
+//            }
+//            return left % right;
+//        }
+//    }
+    ;
 
     // ---------------------------------------------------------------------------------------------
     static final int NAME_BYTES = 3;

@@ -31,7 +31,7 @@ import java.nio.channels.Selector;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-class CalcUdp2Server extends CalcUdp {
+class CalcUdp3Server extends CalcUdp {
 
     public static void main(final String... args) throws Exception {
         try (var selector = Selector.open();
@@ -39,7 +39,7 @@ class CalcUdp2Server extends CalcUdp {
              var executor = newExecutorForServer("udp-2-server-")) {
             server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
             server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
-            // ------------------------------------------------------------- bind/configure/register
+            // ------------------------------------------------ bind/configure-non-blocking/register
             final var serverKey = logBound(server.bind(ADDR))
                     .configureBlocking(false)
                     .register(
@@ -62,33 +62,36 @@ class CalcUdp2Server extends CalcUdp {
                 if (selector.select() == 0) {
                     continue;
                 }
-                // ----------------------------------------------------------- process-selected-keys
+                // ------------------------------------------------------------------------- process
                 for (final var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
-                    final var key = i.next();
-                    // --------------------------------------------------------------------- receive
-                    if (key.isReadable()) {
-                        final var channel = (DatagramChannel) key.channel();
+                    final var selectedKey = i.next();
+                    // ---------------------------------------------------- receive/calculate/wakeup
+                    if (selectedKey.isReadable()) {
+                        final var channel = (DatagramChannel) selectedKey.channel();
                         final var message =
                                 new _Message.OfBuffer().receiveFromClient(channel);
-                        key.interestOpsAnd(~SelectionKey.OP_READ);
+                        selectedKey.interestOpsAnd(~SelectionKey.OP_READ);
+                        assert selectedKey.isReadable();
                         message.calculateResult(executor, m -> {
-                            key.attach(m);
-                            key.interestOpsOr(SelectionKey.OP_WRITE);
+                            selectedKey.attach(m);
+                            selectedKey.interestOpsOr(SelectionKey.OP_WRITE);
                             assert !serverKey.isWritable();
                             selector.wakeup();
                         });
                     }
                     // ------------------------------------------------------------------------ send
-                    if (key.isWritable()) {
-                        final var channel = (DatagramChannel) key.channel();
-                        final var message = (_Message.OfBuffer) key.attachment();
+                    if (selectedKey.isWritable()) {
+                        final var channel = (DatagramChannel) selectedKey.channel();
+                        final var message = (_Message.OfBuffer) selectedKey.attachment();
                         message.sendToClient(channel);
-                        key.interestOpsAnd(~SelectionKey.OP_WRITE);
-                        assert key.isWritable();
+                        selectedKey.interestOpsAnd(~SelectionKey.OP_WRITE);
+                        assert selectedKey.isWritable();
+                        selectedKey.interestOpsOr(SelectionKey.OP_READ);
+                        assert !serverKey.isReadable();
                     }
                 }
             }
-            // ------------------------------------------------------------- shutdown/await-executor
+            // ------------------------------------------------- shutdown-executor/await-termination
             executor.shutdown();
             if (!executor.awaitTermination(1L, TimeUnit.SECONDS)) {
                 log.error("executor not terminated");
@@ -97,7 +100,7 @@ class CalcUdp2Server extends CalcUdp {
     }
 
     @_ExcludeFromCoverage_PrivateConstructor_Obviously
-    private CalcUdp2Server() {
+    private CalcUdp3Server() {
         throw new AssertionError("instantiation is not allowed");
     }
 }
