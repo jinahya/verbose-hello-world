@@ -26,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 class CalcUdp3Client extends CalcUdp {
@@ -43,6 +44,7 @@ class CalcUdp3Client extends CalcUdp {
                 );
             }
             // ----------------------------------------------------------------------- selector-loop
+            final var index = new AtomicInteger();
             while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
                 // -------------------------------------------------------------------------- select
                 if (selector.select() == 0) {
@@ -66,7 +68,7 @@ class CalcUdp3Client extends CalcUdp {
                     if (selectedKey.isReadable()) {
                         final var channel = (DatagramChannel) selectedKey.channel();
                         final var message = (_Message.OfBuffer) selectedKey.attachment();
-                        message.receiveFromServer(channel).log();
+                        message.receiveFromServer(channel).log(index.getAndIncrement());
                         selectedKey.interestOpsAnd(~SelectionKey.OP_READ);
                         assert selectedKey.isReadable();
                         channel.close();

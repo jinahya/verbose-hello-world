@@ -21,6 +21,7 @@ package com.github.jinahya.hello.misc.c03calc;
  */
 
 import com.github.jinahya.hello.util.JavaLangUtils;
+import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -70,7 +71,6 @@ class CalcTcp1Server extends CalcTcp {
                                     .calculateResult()
                                     .writeToClient(client.getOutputStream());
                             client.getOutputStream().flush();
-                            log.debug("flushed/closing...");
                         } catch (final IOException ioe) {
                             log.error("failed to serve for " + client, ioe);
                         }
@@ -89,6 +89,7 @@ class CalcTcp1Server extends CalcTcp {
         }
     }
 
+    @_ExcludeFromCoverage_PrivateConstructor_Obviously
     private CalcTcp1Server() {
         throw new AssertionError("instantiation is not allowed");
     }

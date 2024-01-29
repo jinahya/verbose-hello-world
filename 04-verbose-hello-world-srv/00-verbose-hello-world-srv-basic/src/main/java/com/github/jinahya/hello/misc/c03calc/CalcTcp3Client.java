@@ -20,28 +20,25 @@ package com.github.jinahya.hello.misc.c03calc;
  * #L%
  */
 
+import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 class CalcTcp3Client extends CalcTcp {
 
     private static void connect(final Selector selector) throws IOException {
-//        log.debug("connecting...");
         final var client = SocketChannel.open();
         try {
             // -------------------------------------------------------------- configure-non-blocking
             client.configureBlocking(false);
             // ------------------------------------------------------------------------ connect(try)
             if (client.connect(ADDR)) {
-                log.debug("connected immediately");
                 final var clientKey = client.register(
                         selector,
                         SelectionKey.OP_WRITE,
@@ -56,7 +53,6 @@ class CalcTcp3Client extends CalcTcp {
                 );
                 assert !clientKey.isConnectable();
             }
-            log.debug("waking up...");
             selector.wakeup();
         } catch (final IOException ioe) {
             log.error("failed to configure-non-blocking/connect(try)", ioe);
@@ -65,16 +61,7 @@ class CalcTcp3Client extends CalcTcp {
     }
 
     public static void main(final String... args) throws Exception {
-        try (var selector = Selector.open();
-//             final var executor = newExecutorForClient("tcp-3-client-")
-        ) {
-//            for (int i = 0; i < REQUEST_COUNT; i++) {
-////                final Future<Void> submitter = executor.submit(() -> {
-//                    connect(selector);
-////                    return null;
-////                });
-////            submitter.get();
-//            }
+        try (var selector = Selector.open()) {
             final var index = new AtomicInteger();
             final var requests = new AtomicInteger(REQUEST_COUNT);
             // ------------------------------------------------------------------------ connect(try)
@@ -84,40 +71,28 @@ class CalcTcp3Client extends CalcTcp {
             // ----------------------------------------------------------------------- selector-loop
             while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
                 // -------------------------------------------------------------------------- select
-                log.debug("selecting among {}", selector.keys().size());
                 if (selector.select() == 0) {
-//                if (selector.select(TimeUnit.SECONDS.toMillis(1L)) == 0) {
                     continue;
                 }
-                log.debug("selectedKeys.size: {}", selector.selectedKeys().size());
                 // ------------------------------------------------------------------------- process
                 for (final var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
                     final var selectedKey = i.next();
-                    log.debug("selectedKey: c: {}, w: {}, r: {}", selectedKey.isConnectable(), selectedKey.isWritable(), selectedKey.isReadable());
                     // ------------------------------------------------------------- connect(finish)
                     if (selectedKey.isConnectable()) {
                         final var channel = (SocketChannel) selectedKey.channel();
-                        try {
-                            if (channel.finishConnect()) {
-                                log.debug("connected");
-                                selectedKey.interestOpsAnd(~SelectionKey.OP_CONNECT);
-                                selectedKey.attach(
-                                        new _Message.OfBuffer()
-                                                .randomize()
-                                                .readyToWriteToServer()
-                                );
-                                selectedKey.interestOpsOr(SelectionKey.OP_WRITE);
-                                assert !selectedKey.isWritable();
+                        if (channel.finishConnect()) {
+                            selectedKey.interestOpsAnd(~SelectionKey.OP_CONNECT);
+                            selectedKey.attach(
+                                    new _Message.OfBuffer()
+                                            .randomize()
+                                            .readyToWriteToServer()
+                            );
+                            selectedKey.interestOpsOr(SelectionKey.OP_WRITE);
+                            assert !selectedKey.isWritable();
                             // -------------------------------------------------------- connect(try)
-                                if (requests.getAndDecrement() > 0) {
-                                    connect(selector);
-                                }
+                            if (requests.getAndDecrement() > 0) {
+                                connect(selector);
                             }
-                        } catch (final IOException ioe) {
-                            log.error("failed to finish connecting", ioe);
-                            channel.close();
-                            assert !selectedKey.isValid();
-                            continue;
                         }
                     }
                     // ----------------------------------------------------------------------- write
@@ -126,10 +101,8 @@ class CalcTcp3Client extends CalcTcp {
                         final var message = (_Message.OfBuffer) selectedKey.attachment();
                         assert message.hasRemaining();
                         final var w = message.write(channel);
-                        log.debug("written {}", w);
                         assert w > 0; // why?
                         if (!message.hasRemaining()) {
-                            log.debug("all written");
                             channel.shutdownOutput();
                             selectedKey.interestOpsAnd(~SelectionKey.OP_WRITE);
                             assert selectedKey.isWritable();
@@ -144,7 +117,6 @@ class CalcTcp3Client extends CalcTcp {
                         final var message = (_Message.OfBuffer) selectedKey.attachment();
                         assert message.hasRemaining();
                         final var r = message.read(channel);
-                        log.debug("read: {}", r);
                         if (r == -1) {
                             log.error("premature eof");
                             selectedKey.interestOpsAnd(~SelectionKey.OP_READ);
@@ -155,26 +127,20 @@ class CalcTcp3Client extends CalcTcp {
                         }
                         assert r > 0; // why?
                         if (!message.hasRemaining()) {
-                            log.debug("all read");
                             channel.shutdownInput();
                             selectedKey.interestOpsAnd(~SelectionKey.OP_READ);
                             message.log(index.getAndIncrement());
-                            log.debug("closing...");
                             channel.close();
                             assert !selectedKey.isValid();
                         }
                     }
                 }
             }
-//            // -----------------------------------------------------------------------------------------------------------------
-//            log.debug("shutting down executor...");
-//            executor.shutdown();
-//            if (!executor.awaitTermination(1L, TimeUnit.SECONDS)) {
-//                log.error("executor not terminated");
-//            }
-//            assert executor.isTerminated();
-//            log.debug("executor terminated");
         }
-        log.error("end-of-main");
+    }
+
+    @_ExcludeFromCoverage_PrivateConstructor_Obviously
+    private CalcTcp3Client() {
+        throw new AssertionError("instantiation is not allowed");
     }
 }

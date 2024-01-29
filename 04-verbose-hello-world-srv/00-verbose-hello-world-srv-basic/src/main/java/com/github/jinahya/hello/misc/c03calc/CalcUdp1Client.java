@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 class CalcUdp1Client extends CalcUdp {
@@ -40,12 +41,13 @@ class CalcUdp1Client extends CalcUdp {
             // --------------------------------------------------------------------------- configure
             client.setSoTimeout((int) SO_TIMEOUT_MILLIS);
             // -------------------------------------------------------------------- send/receive/log
+            final var index = new AtomicInteger();
             for (var i = 0; i < REQUEST_COUNT; i++) {
                 new _Message.OfArray()
                         .randomize()
                         .sendToServer(client, ADDR)
                         .receiveFromServer(client)
-                        .log();
+                        .log(index.getAndIncrement());
             }
         }
     }

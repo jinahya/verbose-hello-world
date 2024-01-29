@@ -20,6 +20,7 @@ package com.github.jinahya.hello.misc.c03calc;
  * #L%
  */
 
+import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Closeable;
@@ -114,4 +115,9 @@ class CalcTcp5Client extends CalcTcp {
         }
     }
     // @formatter:on
+
+    @_ExcludeFromCoverage_PrivateConstructor_Obviously
+    private CalcTcp5Client() {
+        throw new AssertionError("instantiation is not allowed");
+    }
 }

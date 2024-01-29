@@ -40,7 +40,7 @@ class CalcUdp3Server extends CalcUdp {
             server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
             server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
             // ------------------------------------------------ bind/configure-non-blocking/register
-            final var serverKey = logBound(server.bind(ADDR))
+            final var serverKey = server.bind(ADDR)
                     .configureBlocking(false)
                     .register(
                             selector,
@@ -75,7 +75,7 @@ class CalcUdp3Server extends CalcUdp {
                         message.calculateResult(executor, m -> {
                             selectedKey.attach(m);
                             selectedKey.interestOpsOr(SelectionKey.OP_WRITE);
-                            assert !serverKey.isWritable();
+                            assert !selectedKey.isWritable();
                             selector.wakeup();
                         });
                     }

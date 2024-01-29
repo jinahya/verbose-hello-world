@@ -66,7 +66,7 @@ abstract class Calc {
     }
 
     // -------------------------------------------------------------------------------------- client
-    static final int REQUEST_COUNT = 8;
+    static final int REQUEST_COUNT = 1024;
 
     // ------------------------------------------------------------------------------------- timeout
     static final long SO_TIMEOUT = 4L;
