@@ -24,6 +24,7 @@ import com.github.jinahya.hello.util.JavaLangUtils;
 import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.net.StandardSocketOptions;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
@@ -39,8 +40,13 @@ class CalcUdp3Server extends CalcUdp {
         try (var selector = Selector.open();
              var server = DatagramChannel.open();
              var executor = newExecutorForServer("udp-2-server-")) {
+            // ----------------------------------------------------------------- SO_REUSE(ADDR|PORT)
             server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
-            server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
+            try {
+                server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
+            } catch (final UnsupportedOperationException uoe) {
+                log.warn("not supported: {}", StandardSocketOptions.SO_REUSEPORT, uoe);
+            }
             // ------------------------------------------------ bind/configure-non-blocking/register
             final var serverKey = server.bind(ADDR)
                     .configureBlocking(false)

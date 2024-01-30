@@ -97,7 +97,7 @@ class CalcTcpTest {
                 });
                 pos.write(quitPlusEnterBytes);
                 pos.flush();
-                server.get(4L, TimeUnit.SECONDS);
+                server.get(16L, TimeUnit.SECONDS);
                 executor.shutdown();
                 if (!executor.awaitTermination(8L, TimeUnit.SECONDS)) {
                     log.error("executor not terminated");

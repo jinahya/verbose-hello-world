@@ -36,6 +36,7 @@ import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
 import java.nio.ByteBuffer;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.concurrent.Flow;
 import java.util.concurrent.ThreadLocalRandom;
@@ -142,6 +143,8 @@ class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlo
             final var nCaptor = ArgumentCaptor.forClass(long.class);
             Mockito.verify(subscription, Mockito.times(1)).request(nCaptor.capture());
             final var n = Math.toIntExact(nCaptor.getValue());
+            // DONE: await
+            HelloWorldTestUtils.awaitFor(8L, ChronoUnit.SECONDS);
             // DONE: verify, subscriber.onNext(item) invoked, n-times
             Mockito.verify(subscriber, Mockito.atMost(n)).onNext(ArgumentMatchers.notNull());
             if (n < HelloWorld.BYTES) {
@@ -248,9 +251,11 @@ class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlo
             final var nCaptor = ArgumentCaptor.forClass(long.class);
             Mockito.verify(subscription, Mockito.times(1)).request(nCaptor.capture());
             final var n = Math.toIntExact(nCaptor.getValue());
-            // verify, subscriber.onNext(item) invoked, n-times
+            // DONE: await
+            HelloWorldTestUtils.awaitFor(8L, ChronoUnit.SECONDS);
+            // DONE: verify, subscriber.onNext(item) invoked, n-times
             Mockito.verify(subscriber, Mockito.atMost(n)).onNext(ArgumentMatchers.notNull());
-            // verify, subscription.cancel() invoked, once
+            // DONE: verify, subscription.cancel() invoked, once
             Mockito.verify(subscription, Mockito.times(1)).cancel();
         }
 

@@ -58,13 +58,14 @@ class CalcTcp5Server extends CalcTcp {
                     "quit!"::equalsIgnoreCase,
                     latch::countDown
             );
-            // ---------------------------------------------------------------------- configure/bind
+            // ----------------------------------------------------------------- SO_REUSE(ADDR|PORT)
             server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
             try {
                 server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
-            } catch (final IOException ioe) {
-                log.error("failed to set SO_REUSEPORT", ioe);
+            } catch (final UnsupportedOperationException uoe) {
+                log.warn("not supported: {}", StandardSocketOptions.SO_REUSEPORT, uoe);
             }
+            // -------------------------------------------------------------------------------- bind
             server.bind(ADDR, SERVER_BACKLOG);
             // ------------------------------------------------------------------------------ accept
             server.<Void>accept(null, new CompletionHandler<>() {

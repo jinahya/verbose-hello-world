@@ -58,12 +58,12 @@ class CalcTcp3Server extends CalcTcp {
         try (var selector = Selector.open();
              var server = ServerSocketChannel.open();
              var executor = newExecutorForServer("tcp-3-server-")) {
-            // --------------------------------------------------------------------------- configure
+            // ----------------------------------------------------------------- SO_REUSE(ADDR|PORT)
             server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
             try {
                 server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
-            } catch (final IOException ioe) {
-                log.error("failed to set SO_REUSEPORT", ioe);
+            } catch (final UnsupportedOperationException uoe) {
+                log.warn("not supported: {}", StandardSocketOptions.SO_REUSEPORT, uoe);
             }
             // -------------------------------------------------------------------------------- bind
             server.bind(ADDR, SERVER_BACKLOG);

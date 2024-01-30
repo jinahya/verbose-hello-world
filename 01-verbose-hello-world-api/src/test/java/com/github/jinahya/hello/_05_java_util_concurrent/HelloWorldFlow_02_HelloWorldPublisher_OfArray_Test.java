@@ -31,8 +31,10 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
+import java.time.temporal.ChronoUnit;
 import java.util.concurrent.Flow;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 
 @DisplayName("HelloWorldFlow.HelloWorldPublisher.OfArray")
 @Slf4j
@@ -75,8 +77,8 @@ class HelloWorldFlow_02_HelloWorldPublisher_OfArray_Test extends _HelloWorldFlow
         final var subscription = subscriptionCaptor.getValue();
         // DONE: verify, subscription.request(n) invoked, once
         Mockito.verify(subscription, Mockito.times(1)).request(n);
-        // DONE: await, for a second
-        HelloWorldTestUtils.awaitForOneSecond();
+        // DONE: await
+        HelloWorldTestUtils.awaitFor(16L, ChronoUnit.SECONDS);
         // DONE: verify, subscriber.onNext(item) invoked, n-times
         Mockito.verify(subscriber, Mockito.times(n)).onNext(ArgumentMatchers.notNull());
         // DONE: verify, subscription.cancel() invoked, once

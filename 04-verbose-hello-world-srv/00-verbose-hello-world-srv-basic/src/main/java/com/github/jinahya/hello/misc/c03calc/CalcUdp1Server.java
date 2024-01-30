@@ -39,9 +39,14 @@ class CalcUdp1Server extends CalcUdp {
                     "quit!"::equalsIgnoreCase,
                     server
             );
-            // ---------------------------------------------------------------------- configure/bind
+            // ---------------------------------------------------------------- SO_REUSE(ADDR|PORT)
             server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
-            server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
+            try {
+                server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
+            } catch (final UnsupportedOperationException uoe) {
+                log.warn("not supported: {}", StandardSocketOptions.SO_REUSEPORT, uoe);
+            }
+            // -------------------------------------------------------------------------------- bind
             server.bind(ADDR);
             // -------------------------------------------------------------- receive/calculate/send
             while (!server.isClosed()) {
