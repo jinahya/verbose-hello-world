@@ -115,3 +115,7 @@ See [dockerhub/maven](https://hub.docker.com/_/maven) for available tags.
 ### [Python 3 Module of the Week](https://pymotw.com/3/)
 
 * [abc — Abstract Base Classes](https://pymotw.com/3/abc/)
+
+### ETC
+
+* [Java: Remainder (modulo) operator with negative numbers](https://programming.guide/java/remainder-modulo-operator-negative-numbers.html)

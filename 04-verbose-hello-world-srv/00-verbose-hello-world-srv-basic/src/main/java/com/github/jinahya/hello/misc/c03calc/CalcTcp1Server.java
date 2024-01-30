@@ -20,7 +20,9 @@ package com.github.jinahya.hello.misc.c03calc;
  * #L%
  */
 
+import com.github.jinahya.hello.util.JavaIoFlushableUtils;
 import com.github.jinahya.hello.util.JavaLangUtils;
+import com.github.jinahya.hello.util.JavaUtilConcurrentCallableUtils;
 import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,8 +30,6 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.StandardSocketOptions;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 class CalcTcp1Server extends CalcTcp {
@@ -45,7 +45,6 @@ class CalcTcp1Server extends CalcTcp {
             }
             // -------------------------------------------------------------------------------- bind
             server.bind(ADDR, SERVER_BACKLOG);
-            logBound(server);
             // ------------------------------------------------------------- read-quit!/close-server
             JavaLangUtils.readLinesAndCloseWhenTests(
                     "quit!"::equalsIgnoreCase,
@@ -62,29 +61,22 @@ class CalcTcp1Server extends CalcTcp {
                     }
                     continue;
                 }
-                try {
-                    executor.submit(() -> {
-                        try (client) {
-                            // ------------------------------------------------ read/calculate/write
-                            new _Message.OfArray()
-                                    .readFromClient(client.getInputStream())
-                                    .calculateResult()
-                                    .writeToClient(client.getOutputStream());
-                            client.getOutputStream().flush();
-                        } catch (final IOException ioe) {
-                            log.error("failed to serve for " + client, ioe);
-                        }
-                    });
-                } catch (final RejectedExecutionException ree) {
-                    if (!executor.isShutdown()) {
-                        log.error("failed to submit task", ree);
+                executor.submit(() -> {
+                    try (client) {
+                        new _Message.OfArray()
+                                .readFromClient(client.getInputStream())
+                                .calculateResult()
+                                .writeToClientAndAccept(client, c -> s -> {
+                                    JavaIoFlushableUtils.flushUnchecked(s);
+                                    JavaUtilConcurrentCallableUtils.callUnchecked(() -> {
+                                        c.setSoTimeout((int) SO_TIMEOUT_MILLIS);
+                                        return null;
+                                    });
+                                });
+                    } catch (final IOException ioe) {
+                        log.error("failed to serve for " + client, ioe);
                     }
-                }
-            }
-            // ---------------------------------------------------------------------- shutdown/await
-            executor.shutdown();
-            if (!executor.awaitTermination(4L, TimeUnit.SECONDS)) {
-                log.error("executor not terminated!");
+                });
             }
         }
     }

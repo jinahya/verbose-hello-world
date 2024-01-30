@@ -24,17 +24,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.ServerSocket;
-import java.nio.channels.AsynchronousServerSocketChannel;
-import java.nio.channels.ServerSocketChannel;
-import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
@@ -66,7 +59,11 @@ abstract class Calc {
     }
 
     // -------------------------------------------------------------------------------------- client
-    static final int REQUEST_COUNT = 1024;
+
+    /**
+     * The number of requests.
+     */
+    static final int REQUEST_COUNT = 64;
 
     // ------------------------------------------------------------------------------------- timeout
     static final long SO_TIMEOUT = 4L;
@@ -74,44 +71,4 @@ abstract class Calc {
     static final TimeUnit SO_TIMEOUT_UNIT = TimeUnit.SECONDS;
 
     static final long SO_TIMEOUT_MILLIS = SO_TIMEOUT_UNIT.toMillis(SO_TIMEOUT);
-
-    // ----------------------------------------------------------------------------------------- log
-
-    private static final String LOG_FORMAT_BOUND = "bound to {}";
-
-    static <T extends ServerSocket> T logBound(final T server) {
-        Objects.requireNonNull(server, "server is null");
-        log.info(LOG_FORMAT_BOUND, server.getLocalSocketAddress());
-        return server;
-    }
-
-    @SuppressWarnings({"unchecked"})
-    static <T extends ServerSocketChannel> T logBound(final T server) {
-        Objects.requireNonNull(server, "server is null");
-        if (ThreadLocalRandom.current().nextBoolean()) {
-            return (T) logBound(server.socket()).getChannel();
-        }
-        try {
-            log.info(LOG_FORMAT_BOUND, server.getLocalAddress());
-        } catch (final IOException ioe) {
-            throw new RuntimeException(ioe);
-        }
-        return server;
-    }
-
-    static <T extends AsynchronousServerSocketChannel> T logBound(final T server) {
-        Objects.requireNonNull(server, "server is null");
-        try {
-            log.info(LOG_FORMAT_BOUND, server.getLocalAddress());
-        } catch (final IOException ioe) {
-            throw new RuntimeException(ioe);
-        }
-        return server;
-    }
-
-    public static <T extends DatagramSocket> T logBound(final T socket) {
-        Objects.requireNonNull(socket, "socket is null");
-        log.info(LOG_FORMAT_BOUND, socket.getLocalSocketAddress());
-        return socket;
-    }
 }

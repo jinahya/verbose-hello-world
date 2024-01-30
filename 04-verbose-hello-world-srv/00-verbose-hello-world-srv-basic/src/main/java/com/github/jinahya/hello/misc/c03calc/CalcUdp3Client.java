@@ -32,19 +32,18 @@ import java.util.concurrent.atomic.AtomicInteger;
 class CalcUdp3Client extends CalcUdp {
 
     public static void main(final String... args) throws Exception {
-        try (var selector = Selector.open()) {
-            for (var c = 0; c < REQUEST_COUNT; c++) {
-                @SuppressWarnings({"java:S2095"})
-                var client = DatagramChannel.open(); // not-using-try-with-resources
-                // ------------------------------------------------- configure-non-blocking/register
-                final var clientKey = client.configureBlocking(false).register(
-                        selector,
-                        SelectionKey.OP_WRITE,
-                        new _Message.OfBuffer().randomize()
-                );
-            }
+        try (var selector = Selector.open();
+             var client = DatagramChannel.open()) {
+            // ----------------------------------------------------- configure-non-blocking/register
+            final var clientKey = client.configureBlocking(false).register(
+                    selector,                                    // <sel>
+                    SelectionKey.OP_WRITE | SelectionKey.OP_READ // <ops>
+            );
+            // ----------------------------------------------------------------------------- prepare
+            final var requestsToSend = new AtomicInteger(REQUEST_COUNT);
+            final var requestsToReceive = new AtomicInteger(requestsToSend.get());
+            final var logIndex = new AtomicInteger();
             // ----------------------------------------------------------------------- selector-loop
-            final var index = new AtomicInteger();
             while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
                 // -------------------------------------------------------------------------- select
                 if (selector.select() == 0) {
@@ -56,23 +55,26 @@ class CalcUdp3Client extends CalcUdp {
                     // ------------------------------------------------------------------------ send
                     if (selectedKey.isWritable()) {
                         final var channel = (DatagramChannel) selectedKey.channel();
-                        final var message = (_Message.OfBuffer) selectedKey.attachment();
-                        message.sendToServer(channel, ADDR);
-                        assert !message.hasRemaining();
-                        selectedKey.interestOpsAnd(~SelectionKey.OP_WRITE);
-                        assert selectedKey.isWritable();
-                        selectedKey.interestOpsOr(SelectionKey.OP_READ);
-                        assert !selectedKey.isReadable();
+                        new _Message.OfBuffer()
+                                .randomize()
+                                .sendToServer(channel, ADDR);
+                        if (requestsToSend.decrementAndGet() == 0) {
+                            selectedKey.interestOpsAnd(~SelectionKey.OP_WRITE);
+                            assert selectedKey.isWritable();
+                        }
                     }
                     // ----------------------------------------------------------------- receive/log
                     if (selectedKey.isReadable()) {
                         final var channel = (DatagramChannel) selectedKey.channel();
-                        final var message = (_Message.OfBuffer) selectedKey.attachment();
-                        message.receiveFromServer(channel).log(index.getAndIncrement());
-                        selectedKey.interestOpsAnd(~SelectionKey.OP_READ);
-                        assert selectedKey.isReadable();
+                        new _Message.OfBuffer()
+                                .receiveFromServer(channel)
+                                .log(logIndex.getAndIncrement());
+                        if (requestsToReceive.decrementAndGet() == 0) {
+                            selectedKey.interestOpsAnd(~SelectionKey.OP_READ);
+                            assert selectedKey.isReadable();
                         channel.close();
                         assert !selectedKey.isValid();
+                        }
                     }
                 }
             }

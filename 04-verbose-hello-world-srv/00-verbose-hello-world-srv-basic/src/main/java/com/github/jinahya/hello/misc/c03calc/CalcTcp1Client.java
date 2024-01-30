@@ -20,12 +20,13 @@ package com.github.jinahya.hello.misc.c03calc;
  * #L%
  */
 
+import com.github.jinahya.hello.util.JavaIoFlushableUtils;
+import com.github.jinahya.hello.util.JavaUtilConcurrentCallableUtils;
 import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
@@ -33,27 +34,29 @@ class CalcTcp1Client extends CalcTcp {
 
     public static void main(final String... args) throws Exception {
         try (var executor = newExecutorForClient("tcp-1-client-")) {
-            final var index = new AtomicInteger();
+            // --------------------------------------------------------------------- submit-requests
+            final var logIndex = new AtomicInteger();
             for (int i = 0; i < REQUEST_COUNT; i++) {
                 executor.submit(() -> {
                     try (var client = new Socket()) {
                         // ----------------------------------------------------------------- connect
                         client.connect(ADDR, (int) CONNECT_TIMEOUT_MILLIS);
                         // ---------------------------------------------------------- write/read/log
-                        client.setSoTimeout((int) SO_TIMEOUT_MILLIS);
-                        new _Message.OfArray().randomize()
-                                .writeToServer(client.getOutputStream(), true)
+                        new _Message.OfArray()
+                                .randomize()
+                                .writeToServerAndAccept(client, c -> s -> {
+                                    JavaIoFlushableUtils.flushUnchecked(s);
+                                    JavaUtilConcurrentCallableUtils.callUnchecked(() -> {
+                                        c.setSoTimeout((int) SO_TIMEOUT_MILLIS);
+                                        return null;
+                                    });
+                                })
                                 .readFromServer(client.getInputStream())
-                                .log(index.getAndIncrement());
+                                .log(logIndex.getAndIncrement());
                     } catch (final IOException ioe) {
                         log.error("failed to request", ioe);
                     }
                 });
-            }
-            // ---------------------------------------------------------------------- shutdown/await
-            executor.shutdown();
-            if (!executor.awaitTermination(1L, TimeUnit.MINUTES)) {
-                log.error("executor not terminated");
             }
         }
     }

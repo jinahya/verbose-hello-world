@@ -59,6 +59,7 @@ class CalcTcp3Server extends CalcTcp {
         try (var selector = Selector.open();
              var server = ServerSocketChannel.open();
              var executor = newExecutorForServer("tcp-3-server-")) {
+            // --------------------------------------------------------------------------- configure
             server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
             try {
                 server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
@@ -66,7 +67,7 @@ class CalcTcp3Server extends CalcTcp {
                 log.error("failed to set SO_REUSEPORT", ioe);
             }
             // -------------------------------------------------------------------------------- bind
-            logBound(server.bind(ADDR));
+            server.bind(ADDR, SERVER_BACKLOG);
             // ----------------------------------------------------- configure-non-blocking/register
             final var serverKey = server.configureBlocking(false).register(
                     selector,              // <sel>
@@ -78,7 +79,6 @@ class CalcTcp3Server extends CalcTcp {
                     () -> {
                         server.close();
                         assert !serverKey.isValid();
-                        selector.keys().forEach(SelectionKey::cancel);
                         selector.wakeup(); // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
                         return null;
                     }
@@ -86,12 +86,7 @@ class CalcTcp3Server extends CalcTcp {
             // ---------------------------------------------------------------------- selection-loop
             while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
                 // -------------------------------------------------------------------------- select
-                try {
-                    if (selector.select() == 0) {
-                        continue;
-                    }
-                } catch (final IOException ioe) {
-                    log.error("failed to select", ioe);
+                if (selector.select() == 0) {
                     continue;
                 }
                 // ------------------------------------------------------------------------- process
@@ -105,20 +100,17 @@ class CalcTcp3Server extends CalcTcp {
                         try {
                             client = channel.accept();
                         } catch (final IOException ioe) {
-                            log.debug("failed to accept", ioe);
+                            if (channel.isOpen()) {
+                                log.debug("failed to accept", ioe);
+                            }
                             continue;
                         }
-                        try {
-                            final var clientKey = client.configureBlocking(false).register(
-                                    selector,                                       // <sel>
-                                    SelectionKey.OP_READ,                           // <ops>
-                                    new _Message.OfBuffer().readyToReadFromClient() // <att>
-                            );
-                            assert !clientKey.isReadable();
-                        } catch (final IOException ioe) {
-                            log.error("failed to configure/register " + client, ioe);
-                            closeUnchecked(client);
-                        }
+                        final var clientKey = client.configureBlocking(false).register(
+                                selector,                                       // <sel>
+                                SelectionKey.OP_READ,                           // <ops>
+                                new _Message.OfBuffer().readyToReadFromClient() // <att>
+                        );
+                        assert !clientKey.isReadable();
                     }
                     // ------------------------------------------------------------------------ read
                     if (selectedKey.isReadable()) {
@@ -135,10 +127,11 @@ class CalcTcp3Server extends CalcTcp {
                         if (!message.hasRemaining()) {
                             channel.shutdownInput();
                             selectedKey.interestOpsAnd(~SelectionKey.OP_READ);
+                            assert selectedKey.isReadable();
                             message.calculateResult(executor, m -> {
                                 m.readyToWriteToClient();
                                 selectedKey.interestOpsOr(SelectionKey.OP_WRITE);
-                                assert !serverKey.isWritable();
+                                assert !selectedKey.isWritable();
                                 selector.wakeup(); // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
                             });
                         }
@@ -151,8 +144,8 @@ class CalcTcp3Server extends CalcTcp {
                         final var w = message.write(channel);
                         assert w >= 0;
                         if (!message.hasRemaining()) {
-                            channel.shutdownOutput();
-                            selectedKey.interestOpsAnd(~SelectionKey.OP_WRITE); // redundant
+                            selectedKey.interestOpsAnd(~SelectionKey.OP_WRITE);
+                            assert selectedKey.isWritable();
                             cancel(selectedKey);
                             assert !selectedKey.isValid();
                         }
@@ -161,7 +154,7 @@ class CalcTcp3Server extends CalcTcp {
             }
             // ------------------------------------------------- shutdown-executor/await-termination
             executor.shutdown();
-            if (!executor.awaitTermination(10L, TimeUnit.SECONDS)) {
+            if (!executor.awaitTermination(1L, TimeUnit.SECONDS)) {
                 log.error("executor not terminated");
             }
         }

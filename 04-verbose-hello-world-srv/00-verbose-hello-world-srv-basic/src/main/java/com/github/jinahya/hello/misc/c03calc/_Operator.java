@@ -22,13 +22,18 @@ package com.github.jinahya.hello.misc.c03calc;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Function;
 import java.util.function.IntBinaryOperator;
+import java.util.stream.Collectors;
 
 /**
  * Operators applied with two operands.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ * @see Math#floorDiv(int, int)
+ * @see Math#floorMod(int, int)
  * @see <a href="https://ko.wikipedia.org/wiki/%EC%82%AC%EC%B9%99%EC%97%B0%EC%82%B0">사칙연산</a>
  * (Wikipedia)
  * @see <a href="https://en.wikipedia.org/wiki/Arithmetic">Arithmetic</a> (Wikipedia)
@@ -68,6 +73,15 @@ enum _Operator implements IntBinaryOperator {
             return left / right;
         }
     },
+    FIV() {
+        @Override
+        public int applyAsInt(final int left, final int right) {
+            if (right == 0) {
+                return 0;
+            }
+            return Math.floorDiv(left, right);
+        }
+    },
 
 //    MOD() {
 //        @Override
@@ -77,15 +91,62 @@ enum _Operator implements IntBinaryOperator {
 //            }
 //            return left % right;
 //        }
+//    },
+//
+//    FOD() {
+//        @Override
+//        public int applyAsInt(final int left, final int right) {
+//            if (right == 0) {
+//                return 0;
+//            }
+//            return Math.floorMod(left, right);
+//        }
 //    }
     ;
 
     // ---------------------------------------------------------------------------------------------
-    static final int NAME_BYTES = 3;
 
-    private static final List<_Operator> valueList = Arrays.asList(values());
+    /**
+     * A cached result of {@link #values()}.
+     */
+    static final List<_Operator> VALUES = Arrays.asList(values());
 
+    /**
+     * Returns a random value.
+     *
+     * @return a random value.
+     */
     static _Operator randomValue() {
-        return valueList.get(ThreadLocalRandom.current().nextInt(valueList.size()));
+        return VALUES.get(ThreadLocalRandom.current().nextInt(VALUES.size()));
     }
+
+    private static final Map<String, _Operator> VALUES_BY_NAMES = VALUES.stream().collect(
+            Collectors.toUnmodifiableMap(Enum::name, Function.identity())
+    );
+
+    /**
+     * Returns a value whose {@link #name()} is equal to specified value.
+     *
+     * @param name the value of {@link #name()} to match.
+     * @return the value whose {@link #name()} is equal to specified value; {@code null} if none
+     * matched.
+     */
+    static _Operator cachedValueOf(final String name) {
+        return VALUES_BY_NAMES.get(name);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    static final int NAME_LENGTH = 3;
+
+    // ---------------------------------------------------------------------------------------------
+
+    static final int SIZE_OPERAND = Byte.SIZE >> 1;
+
+    static final int MIN_OPERAND = Integer.MIN_VALUE >> (Integer.SIZE - SIZE_OPERAND);
+
+    static final int MAX_OPERAND = Integer.MAX_VALUE >> (Integer.SIZE - SIZE_OPERAND);
+
+    static final int MIN_RESULT = MIN_OPERAND * MAX_OPERAND;
+
+    static final int MAX_RESULT = MIN_OPERAND * MIN_OPERAND;
 }

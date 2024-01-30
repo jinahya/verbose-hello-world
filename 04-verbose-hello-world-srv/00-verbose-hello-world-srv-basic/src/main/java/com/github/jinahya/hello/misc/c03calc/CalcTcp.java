@@ -58,4 +58,16 @@ abstract class CalcTcp extends Calc {
     static final TimeUnit CONNECT_TIMEOUT_UNIT = TimeUnit.SECONDS;
 
     static final long CONNECT_TIMEOUT_MILLIS = CONNECT_TIMEOUT_UNIT.toMillis(CONNECT_TIMEOUT);
+
+    static final long WRITE_TIMEOUT = 1L;
+
+    static final TimeUnit WRITE_TIMEOUT_UNIT = TimeUnit.SECONDS;
+
+    static final long WRITE_TIMEOUT_MILLIS = WRITE_TIMEOUT_UNIT.toMillis(WRITE_TIMEOUT);
+
+    static final long READ_TIMEOUT = 1L;
+
+    static final TimeUnit READ_TIMEOUT_UNIT = TimeUnit.SECONDS;
+
+    static final long READ_TIMEOUT_MILLIS = READ_TIMEOUT_UNIT.toMillis(READ_TIMEOUT);
 }

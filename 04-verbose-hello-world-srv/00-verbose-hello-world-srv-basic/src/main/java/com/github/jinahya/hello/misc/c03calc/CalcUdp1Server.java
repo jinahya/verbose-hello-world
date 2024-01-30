@@ -38,7 +38,6 @@ class CalcUdp1Server extends CalcUdp {
             server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
             // -------------------------------------------------------------------------------- bind
             server.bind(ADDR);
-            logBound(server);
             // ------------------------------------------------------------- read-quit!/close-server
             JavaLangUtils.readLinesAndCloseWhenTests(
                     "quit!"::equalsIgnoreCase,

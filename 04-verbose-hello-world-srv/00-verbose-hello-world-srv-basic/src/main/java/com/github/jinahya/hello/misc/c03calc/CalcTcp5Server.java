@@ -46,88 +46,80 @@ class CalcTcp5Server extends CalcTcp {
         }
     }
 
-    // @formatter:on
+    // @formatter:off
     public static void main(final String... args) throws Exception {
         final var group = AsynchronousChannelGroup.withThreadPool(
                 newExecutorForServer("tcp-5-server-")
         );
         try (var server = AsynchronousServerSocketChannel.open(group)) {
+            final var latch = new CountDownLatch(1);
+            // --------------------------------------------------------- read-quit!/count-down-latch
+            JavaLangUtils.readLinesAndCloseWhenTests(
+                    "quit!"::equalsIgnoreCase,
+                    latch::countDown
+            );
+            // ---------------------------------------------------------------------- configure/bind
             server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
             try {
                 server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
             } catch (final IOException ioe) {
                 log.error("failed to set SO_REUSEPORT", ioe);
             }
-            // -------------------------------------------------------------------------------- bind
-            logBound(server.bind(ADDR, SERVER_BACKLOG));
-            // -------------------------------------------------- read-quit!/count-down-server-latch
-            final var serverLatch = new CountDownLatch(1);
-            JavaLangUtils.readLinesAndRunWhenTests(
-                    "quit!"::equalsIgnoreCase,
-                    serverLatch::countDown
-            );
+            server.bind(ADDR, SERVER_BACKLOG);
             // ------------------------------------------------------------------------------ accept
             server.<Void>accept(null, new CompletionHandler<>() {
                 @Override
                 public void completed(final AsynchronousSocketChannel client, final Void a) {
                     final var message = new _Message.OfBuffer().readyToReadFromClient();
-                    message.read(client, client, new CompletionHandler<>() {
+                    message.<Void>read(client, null, new CompletionHandler<>() {
                         @Override
-                        public void completed(final Integer r, final AsynchronousSocketChannel c) {
+                        public void completed(final Integer r, final Void a) {
                             if (r == -1) {
                                 log.error("premature eof");
-                                closeUnchecked(c);
+                                closeUnchecked(client);
                                 return;
                             }
                             if (message.hasRemaining()) {
-                                message.read(c, c, this);
+                                message.read(client, null, this);
                                 return;
                             }
-                            message.calculateResult().readyToWriteToClient().write(
-                                    c,
-                                    c,
-                                    new CompletionHandler<>() {
+                            message.calculateResult()
+                                    .readyToWriteToClient()
+                                    .<Void>write(client, null, new CompletionHandler<>() {
                                         @Override
-                                        public void completed(final Integer w,
-                                                              final AsynchronousSocketChannel c) {
+                                        public void completed(final Integer w, final Void a) {
                                             assert w > 0;
                                             if (message.hasRemaining()) {
-                                                message.write(c, c, this);
+                                                message.write(client, null, this);
                                                 return;
                                             }
-                                            closeUnchecked(c);
+                                            closeUnchecked(client);
                                         }
-
                                         @Override
-                                        public void failed(final Throwable exc,
-                                                           final AsynchronousSocketChannel c) {
+                                        public void failed(final Throwable exc, final Void a) {
                                             log.debug("failed to write", exc);
-                                            closeUnchecked(c);
+                                            closeUnchecked(client);
                                         }
-                                    }
-                            );
+                                    });
                         }
-
                         @Override
-                        public void failed(final Throwable exc, final AsynchronousSocketChannel c) {
+                        public void failed(final Throwable exc, final Void a) {
                             log.error("failed to read", exc);
-                            closeUnchecked(c);
+                            closeUnchecked(client);
                         }
                     });
                     // ------------------------------------------------------------- accept-again!!!
-                    if (server.isOpen()) {
-                        server.accept(null, this);
-                    }
+                    server.accept(null, this);
                 }
-
                 @Override
-                public void failed(final Throwable exc, final Void a) {
+                public void failed(final Throwable exc, final Void attachment) {
                     if (server.isOpen()) {
                         log.error("failed to accept", exc);
                     }
                 }
             });
-            serverLatch.await();
+            // ------------------------------------------------------------------------- await-latch
+            latch.await();
         }
         // -------------------------------------------------------- shutdown-group/await-termination
         group.shutdown();

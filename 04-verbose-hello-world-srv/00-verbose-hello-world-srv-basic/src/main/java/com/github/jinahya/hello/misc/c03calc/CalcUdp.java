@@ -31,5 +31,4 @@ import lombok.extern.slf4j.Slf4j;
 })
 abstract class CalcUdp extends Calc {
 
-    private static final String LOG_FORMAT_BOUND = "bound to {}";
 }

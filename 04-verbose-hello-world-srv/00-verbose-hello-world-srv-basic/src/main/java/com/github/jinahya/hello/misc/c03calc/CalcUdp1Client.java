@@ -38,11 +38,23 @@ class CalcUdp1Client extends CalcUdp {
             if (ThreadLocalRandom.current().nextBoolean()) {
                 client.bind(new InetSocketAddress(HOST, 0));
             }
+            // -------------------------------------------------------------------------------------
+            if (ThreadLocalRandom.current().nextBoolean()) {
+                client.connect(ADDR);
+            }
             // --------------------------------------------------------------------------- configure
             client.setSoTimeout((int) SO_TIMEOUT_MILLIS);
             // -------------------------------------------------------------------- send/receive/log
             final var index = new AtomicInteger();
             for (var i = 0; i < REQUEST_COUNT; i++) {
+                if (client.isConnected()) {
+                    new _Message.OfArray()
+                            .randomize()
+                            .sendToServer(client)
+                            .receiveFromServer(client)
+                            .log(index.getAndIncrement());
+                    continue;
+                }
                 new _Message.OfArray()
                         .randomize()
                         .sendToServer(client, ADDR)

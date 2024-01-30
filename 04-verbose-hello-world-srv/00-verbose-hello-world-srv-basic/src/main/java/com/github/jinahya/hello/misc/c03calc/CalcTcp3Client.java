@@ -53,7 +53,6 @@ class CalcTcp3Client extends CalcTcp {
                 );
                 assert !clientKey.isConnectable();
             }
-            selector.wakeup();
         } catch (final IOException ioe) {
             log.error("failed to configure-non-blocking/connect(try)", ioe);
             client.close();
@@ -62,8 +61,8 @@ class CalcTcp3Client extends CalcTcp {
 
     public static void main(final String... args) throws Exception {
         try (var selector = Selector.open()) {
-            final var index = new AtomicInteger();
             final var requests = new AtomicInteger(REQUEST_COUNT);
+            final var index = new AtomicInteger();
             // ------------------------------------------------------------------------ connect(try)
             if (requests.getAndDecrement() > 0) {
                 connect(selector);
@@ -103,7 +102,6 @@ class CalcTcp3Client extends CalcTcp {
                         final var w = message.write(channel);
                         assert w > 0; // why?
                         if (!message.hasRemaining()) {
-                            channel.shutdownOutput();
                             selectedKey.interestOpsAnd(~SelectionKey.OP_WRITE);
                             assert selectedKey.isWritable();
                             message.readyToReadFromServer();
@@ -119,15 +117,12 @@ class CalcTcp3Client extends CalcTcp {
                         final var r = message.read(channel);
                         if (r == -1) {
                             log.error("premature eof");
-                            selectedKey.interestOpsAnd(~SelectionKey.OP_READ);
-                            assert selectedKey.isReadable();
                             channel.close();
                             assert !selectedKey.isValid();
                             continue;
                         }
                         assert r > 0; // why?
                         if (!message.hasRemaining()) {
-                            channel.shutdownInput();
                             selectedKey.interestOpsAnd(~SelectionKey.OP_READ);
                             message.log(index.getAndIncrement());
                             channel.close();

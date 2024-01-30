@@ -46,9 +46,10 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 @SuppressWarnings({
         "java:S101",  // class _Message
@@ -62,9 +63,9 @@ abstract sealed class _Message<T extends _Message<T>>
     /**
      * The number of bytes enough to hold a message.
      */
-    static final int BYTES = 5;
+    private static final int BYTES = 5;
 
-    private static final int INDEX_OPERAND = _Operator.NAME_BYTES;
+    private static final int INDEX_OPERAND = _Operator.NAME_LENGTH;
 
     private static final int LENGTH_RESULT = 1;
 
@@ -85,9 +86,11 @@ abstract sealed class _Message<T extends _Message<T>>
         // -------------------------------------------------------------------------------- operator
         @Override
         _Operator getOperator() {
-            return _Operator.valueOf(
-                    new String(array, 0, INDEX_OPERAND, StandardCharsets.US_ASCII)
-            );
+            final var name = new String(array, 0, INDEX_OPERAND, StandardCharsets.US_ASCII);
+            if (ThreadLocalRandom.current().nextBoolean()) {
+                return _Operator.cachedValueOf(name);
+            }
+            return _Operator.valueOf(name);
         }
 
         @Override
@@ -139,12 +142,30 @@ abstract sealed class _Message<T extends _Message<T>>
         }
 
         // ----------------------------------------------------------------------------------- array
-        OfArray writeToServer(final OutputStream stream, final boolean flush) throws IOException {
+        OfArray writeToServer(final OutputStream stream) throws IOException {
             stream.write(array, 0, INDEX_RESULT);
-            if (flush) {
-                stream.flush();
-            }
             return this;
+        }
+
+        <T extends OutputStream> OfArray writeToServerAndAccept(
+                final T stream, final Consumer<? super T> consumer)
+                throws IOException {
+            Objects.requireNonNull(stream, "stream is null");
+            Objects.requireNonNull(consumer, "consumer is null");
+            final var result = writeToServer(stream);
+            consumer.accept(stream);
+            return result;
+        }
+
+        <T extends Socket> OfArray writeToServerAndAccept(
+                final T socket,
+                final Function<? super Socket, ? extends Consumer<? super OutputStream>> function)
+                throws IOException {
+            Objects.requireNonNull(socket, "socket is null");
+            Objects.requireNonNull(function, "function is null");
+            return writeToServerAndAccept(socket.getOutputStream(), s -> {
+                function.apply(socket).accept(s);
+            });
         }
 
         OfArray readFromServer(final InputStream stream) throws IOException {
@@ -161,55 +182,95 @@ abstract sealed class _Message<T extends _Message<T>>
             return this;
         }
 
-        OfArray writeToClient(final OutputStream stream, final boolean flush) throws IOException {
-            stream.write(array, 0, array.length);
-            if (flush) {
-                stream.flush();
-            }
-            return this;
-        }
-
         OfArray writeToClient(final OutputStream stream) throws IOException {
+            Objects.requireNonNull(stream, "stream is null");
             stream.write(array, 0, array.length);
             return this;
         }
 
-        <T extends OutputStream> OfArray writeToClient(final T stream,
-                                                       final Consumer<? super T> consumer)
+        <T extends OutputStream> OfArray writeToClientAndAccept(final T stream,
+                                                                final Consumer<? super T> consumer)
                 throws IOException {
+            Objects.requireNonNull(consumer, "consumer is null");
             writeToClient(stream);
             consumer.accept(stream);
-            ;
             return this;
         }
 
-        <T extends Socket> OfArray writeToClient(
-                final T socket, final BiConsumer<? super T, ? super OutputStream> consumer)
+        <T extends Socket> OfArray writeToClientAndAccept(
+                final T socket, final Consumer<? super OutputStream> consumer)
                 throws IOException {
-            return writeToClient(socket.getOutputStream(), s -> consumer.accept(socket, s));
+            Objects.requireNonNull(socket, "socket is null");
+            Objects.requireNonNull(consumer, "consumer is null");
+            return writeToClientAndAccept(socket.getOutputStream(), consumer);
+        }
+
+        <T extends Socket> OfArray writeToClientAndAccept(
+                final T socket,
+                final Function<? super T, ? extends Consumer<? super OutputStream>> function)
+                throws IOException {
+            Objects.requireNonNull(socket, "socket is null");
+            Objects.requireNonNull(function, "function is null");
+            return writeToClientAndAccept(socket, s -> {
+                function.apply(socket).accept(s);
+            });
         }
 
         OfArray sendToServer(final DatagramSocket socket, final SocketAddress address)
                 throws IOException {
-            socket.send(new DatagramPacket(array, 0, INDEX_RESULT, address));
+            Objects.requireNonNull(socket, "socket is null");
+            Objects.requireNonNull(address, "address is null");
+            socket.send(new DatagramPacket(
+                    array,        // <buf>
+                    0,            // <offset>
+                    INDEX_RESULT, // <length>
+                    address       // <address>
+            ));
             return this;
         }
 
+        OfArray sendToServer(final DatagramSocket socket) throws IOException {
+            if (!Objects.requireNonNull(socket, "socket is null").isConnected()) {
+                throw new IllegalArgumentException("socket is not connected: " + socket);
+            }
+            return sendToServer(
+                    socket,
+                    socket.getRemoteSocketAddress()
+            );
+        }
+
         OfArray receiveFromServer(final DatagramSocket socket) throws IOException {
-            final var packet = new DatagramPacket(array, 0, array.length);
+            final var packet = new DatagramPacket(
+                    array,       // <buf>
+                    0,           // <offset>
+                    array.length // <offset>
+            );
             socket.receive(packet);
             return this;
         }
 
         OfArray receiveFromClient(final DatagramSocket socket) throws IOException {
-            final var packet = new DatagramPacket(array, 0, INDEX_RESULT);
+            final var packet = new DatagramPacket(
+                    array,       // <buf>
+                    0,           // <offset>
+                    INDEX_RESULT // <length>
+            );
             socket.receive(packet);
             address = packet.getSocketAddress();
             return this;
         }
 
         OfArray sendToClient(final DatagramSocket socket) throws IOException {
-            final var packet = new DatagramPacket(array, 0, array.length, address);
+            Objects.requireNonNull(socket, "socket is null");
+            if (address == null) {
+                throw new IllegalStateException("address is null");
+            }
+            final var packet = new DatagramPacket(
+                    array,
+                    0,
+                    array.length,
+                    address
+            );
             socket.send(packet);
             return this;
         }
@@ -318,11 +379,11 @@ abstract sealed class _Message<T extends _Message<T>>
         <A> OfBuffer read(final AsynchronousSocketChannel channel, final A attachment,
                           final CompletionHandler<Integer, ? super A> handler) {
             channel.read(
-                    buffer,
-                    4L,
-                    TimeUnit.SECONDS,
-                    attachment,
-                    handler
+                    buffer,           // <dst>
+                    1L,               // <timeout>
+                    TimeUnit.SECONDS, // <unit>
+                    attachment,       // <attachment>
+                    handler           // <handler>
             );
             return this;
         }
@@ -330,40 +391,83 @@ abstract sealed class _Message<T extends _Message<T>>
         <A> OfBuffer write(final AsynchronousSocketChannel channel, final A attachment,
                            final CompletionHandler<Integer, ? super A> handler) {
             channel.write(
-                    buffer,
-                    4L,
-                    TimeUnit.SECONDS,
-                    attachment,
-                    handler
+                    buffer,           // <src>
+                    1L,               // <timeout>
+                    TimeUnit.SECONDS, // <unit>
+                    attachment,       // <attachment>
+                    handler           // <handler>
             );
             return this;
         }
 
+        /**
+         * Sends this message, through specified channel, to specified target.
+         *
+         * @param channel the channel through which this message is sent.
+         * @param target  the target address to which this message is sent.
+         * @return this message.
+         * @throws IOException if an I/O error occurs.
+         */
         OfBuffer sendToServer(final DatagramChannel channel, final SocketAddress target)
                 throws IOException {
+            Objects.requireNonNull(channel, "channel is null");
+            Objects.requireNonNull(target, "target is null");
             readyToWriteToServer();
-            final int w = channel.send(buffer, target);
+            final int w = channel.send(
+                    buffer, // <src>
+                    target  // <target>
+            );
             assert w == INDEX_RESULT;
+            return this;
+        }
+
+        /**
+         * Sends this message through specified {@link DatagramChannel#isConnected() connected}
+         * channel.
+         *
+         * @param channel the {@link DatagramChannel#isConnected() connected} channel through which
+         *                this message is sent.
+         * @return this message.
+         * @throws IOException if an I/O error occurs.
+         */
+        OfBuffer sendToServer(final DatagramChannel channel) throws IOException {
+            if (!Objects.requireNonNull(channel, "channel is null").isConnected()) {
+                throw new IllegalArgumentException("channel is not connected");
+            }
+            readyToWriteToServer();
+            final var w = channel.write(
+                    buffer // <src>
+            );
+            assert w == INDEX_RESULT;
+            assert !buffer.hasRemaining();
             return this;
         }
 
         OfBuffer receiveFromServer(final DatagramChannel channel) throws IOException {
             readyToReadFromServer();
-            target = channel.receive(buffer);
+            source = channel.receive(
+                    buffer // <dst>
+            );
             return this;
         }
 
         OfBuffer receiveFromClient(final DatagramChannel channel) throws IOException {
             readyToReadFromClient();
-            target = channel.receive(buffer);
-            assert target != null;
+            source = channel.receive(
+                    buffer // <dst>
+            );
+            assert source != null;
             return this;
         }
 
         OfBuffer sendToClient(final DatagramChannel channel) throws IOException {
             readyToWriteToClient();
-            final var w = channel.send(buffer, target);
-            assert w == buffer.capacity();
+            final var w = channel.send(
+                    buffer, // <src>
+                    source  // <target>
+            );
+            assert w == buffer.position();
+            assert !buffer.hasRemaining();
             return this;
         }
 
@@ -372,12 +476,7 @@ abstract sealed class _Message<T extends _Message<T>>
 
         private final ByteBuffer buffer = ByteBuffer.wrap(ofArray.array);
 
-        private transient SocketAddress target;
-    }
-
-    // ---------------------------------------------------------------------------------------------
-    private _Message() {
-        super();
+        private transient SocketAddress source;
     }
 
     // ------------------------------------------------------------------------------------ operator
@@ -451,7 +550,8 @@ abstract sealed class _Message<T extends _Message<T>>
      *
      * @param index an index to print.
      */
-    final void log(final int index) {
+    @SuppressWarnings({"unchecked"})
+    final T log(final int index) {
         log.info("[{}] {} {} {} {}",
                  String.format("%6d", index),
                  getOperator(),
@@ -459,17 +559,18 @@ abstract sealed class _Message<T extends _Message<T>>
                  String.format("%+2d", getOperand2()),
                  String.format("%+3d", getResult())
         );
+        return (T) this;
     }
 
     /**
      * Logs out this message's current status.
      */
-    final void log() {
-        log(0);
+    final T log() {
+        return log(0);
     }
 
     /**
-     * Randomizes this message's {@code operator}, {@code operand1}, and {@code operand2}.
+     * Randomizes this message.
      *
      * @return this message.
      */
@@ -477,6 +578,7 @@ abstract sealed class _Message<T extends _Message<T>>
         return setOperator(_Operator.randomValue())
                 .setOperand1(ThreadLocalRandom.current().nextInt())
                 .setOperand2(ThreadLocalRandom.current().nextInt())
+                .setResult(0)
                 ;
     }
 }

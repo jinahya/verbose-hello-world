@@ -21,12 +21,14 @@ package com.github.jinahya.hello.misc.c03calc;
  */
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class Calc_Static_Test {
 
+    @DisplayName("REQUEST_COUNT")
     @Test
-    void _ShouldBePositive_CIENT_COUNT() {
+    void _ShouldBePositive_RQUEST_COUNT() {
         Assertions.assertTrue(Calc.REQUEST_COUNT > 0);
     }
 }
