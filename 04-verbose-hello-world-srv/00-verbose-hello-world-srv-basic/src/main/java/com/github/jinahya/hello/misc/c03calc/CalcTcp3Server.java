@@ -31,7 +31,6 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 class CalcTcp3Server extends CalcTcp {
@@ -125,13 +124,11 @@ class CalcTcp3Server extends CalcTcp {
                         }
                         assert r > 0;
                         if (!message.hasRemaining()) {
-                            channel.shutdownInput();
                             selectedKey.interestOpsAnd(~SelectionKey.OP_READ);
                             assert selectedKey.isReadable();
                             message.calculateResult(executor, m -> {
                                 m.readyToWriteToClient();
                                 selectedKey.interestOpsOr(SelectionKey.OP_WRITE);
-                                assert !selectedKey.isWritable();
                                 selector.wakeup(); // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
                             });
                         }
@@ -151,11 +148,6 @@ class CalcTcp3Server extends CalcTcp {
                         }
                     }
                 }
-            }
-            // ------------------------------------------------- shutdown-executor/await-termination
-            executor.shutdown();
-            if (!executor.awaitTermination(1L, TimeUnit.SECONDS)) {
-                log.error("executor not terminated");
             }
         }
     }

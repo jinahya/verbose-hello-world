@@ -34,16 +34,16 @@ class CalcUdp1Server extends CalcUdp {
     public static void main(final String... args) throws IOException {
         try (var server = new DatagramSocket(null);
              var executor = newExecutorForServer("udp-1-server-")) {
-            server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
-            server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
-            // -------------------------------------------------------------------------------- bind
-            server.bind(ADDR);
             // ------------------------------------------------------------- read-quit!/close-server
             JavaLangUtils.readLinesAndCloseWhenTests(
                     "quit!"::equalsIgnoreCase,
                     server
             );
-            // ----------------------------------------------------------------- read/calculate/send
+            // ---------------------------------------------------------------------- configure/bind
+            server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
+            server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
+            server.bind(ADDR);
+            // -------------------------------------------------------------- receive/calculate/send
             while (!server.isClosed()) {
                 try {
                     new _Message.OfArray()

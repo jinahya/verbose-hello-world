@@ -40,9 +40,6 @@ import java.util.stream.Stream;
 @Slf4j
 class _OperatorTest {
 
-    private static final int MASK_OPERAND =
-            Integer.MIN_VALUE >>> (Integer.SIZE - _Operator.SIZE_OPERAND);
-
     @DisplayName("NAME_BYTES")
     @Nested
     class NAME_BYTES_Test {

@@ -26,9 +26,6 @@ import lombok.extern.slf4j.Slf4j;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-@SuppressWarnings({
-        "java:S101" // class _Calc...
-})
 abstract class CalcUdp extends Calc {
 
 }

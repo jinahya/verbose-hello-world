@@ -46,6 +46,7 @@ class CalcTcp5Client extends CalcTcp {
                 @Override
                 public void completed(final Void result, final Void attachment) {
                     final var message = new _Message.OfBuffer().randomize().readyToWriteToServer();
+                    // ----------------------------------------------------------------------- write
                     message.<Void>write(client, null, new CompletionHandler<>() {
                         @Override public void completed(final Integer w, final Void a) {
                             assert w > 0; // why?
@@ -53,6 +54,7 @@ class CalcTcp5Client extends CalcTcp {
                                 message.write(client, null, this);
                                 return;
                             }
+                            // ---------------------------------------------------------------- read
                             message.readyToReadFromServer()
                                     .<Void>read(client, null, new CompletionHandler<>() {
                                         @Override

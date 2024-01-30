@@ -61,13 +61,29 @@ class CalcTcp3Client extends CalcTcp {
 
     public static void main(final String... args) throws Exception {
         try (var selector = Selector.open()) {
-            final var requests = new AtomicInteger(REQUEST_COUNT);
-            final var index = new AtomicInteger();
-            // ------------------------------------------------------------------------ connect(try)
-            if (requests.getAndDecrement() > 0) {
-                connect(selector);
+            for (int i = 0; i < REQUEST_COUNT; i++) {
+                final var client = SocketChannel.open();
+                // ---------------------------------------------------------- configure-non-blocking
+                client.configureBlocking(false);
+                // -------------------------------------------------------------------- connect(try)
+                if (client.connect(ADDR)) {
+                    final var clientKey = client.register(
+                            selector,
+                            SelectionKey.OP_WRITE,
+                            new _Message.OfBuffer().randomize().readyToWriteToServer()
+                    );
+                    assert !clientKey.isWritable();
+                    connect(selector);
+                } else {
+                    final var clientKey = client.register(
+                            selector,
+                            SelectionKey.OP_CONNECT
+                    );
+                    assert !clientKey.isConnectable();
+                }
             }
             // ----------------------------------------------------------------------- selector-loop
+            final var index = new AtomicInteger();
             while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
                 // -------------------------------------------------------------------------- select
                 if (selector.select() == 0) {
@@ -79,19 +95,22 @@ class CalcTcp3Client extends CalcTcp {
                     // ------------------------------------------------------------- connect(finish)
                     if (selectedKey.isConnectable()) {
                         final var channel = (SocketChannel) selectedKey.channel();
-                        if (channel.finishConnect()) {
-                            selectedKey.interestOpsAnd(~SelectionKey.OP_CONNECT);
-                            selectedKey.attach(
-                                    new _Message.OfBuffer()
-                                            .randomize()
-                                            .readyToWriteToServer()
-                            );
-                            selectedKey.interestOpsOr(SelectionKey.OP_WRITE);
-                            assert !selectedKey.isWritable();
-                            // -------------------------------------------------------- connect(try)
-                            if (requests.getAndDecrement() > 0) {
-                                connect(selector);
+                        try {
+                            if (channel.finishConnect()) {
+                                selectedKey.interestOpsAnd(~SelectionKey.OP_CONNECT);
+                                selectedKey.attach(
+                                        new _Message.OfBuffer()
+                                                .randomize()
+                                                .readyToWriteToServer()
+                                );
+                                selectedKey.interestOpsOr(SelectionKey.OP_WRITE);
+                                assert !selectedKey.isWritable();
                             }
+                        } catch (final IOException ioe) {
+                            log.error("failed to finish connecting", ioe);
+                            channel.close();
+                            assert !selectedKey.isValid();
+                            continue;
                         }
                     }
                     // ----------------------------------------------------------------------- write
@@ -124,7 +143,7 @@ class CalcTcp3Client extends CalcTcp {
                         assert r > 0; // why?
                         if (!message.hasRemaining()) {
                             selectedKey.interestOpsAnd(~SelectionKey.OP_READ);
-                            message.log(index.getAndIncrement());
+                            message.log(index);
                             channel.close();
                             assert !selectedKey.isValid();
                         }

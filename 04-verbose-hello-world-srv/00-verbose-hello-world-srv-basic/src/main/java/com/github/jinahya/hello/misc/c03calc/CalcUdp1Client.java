@@ -33,33 +33,45 @@ import java.util.concurrent.atomic.AtomicInteger;
 class CalcUdp1Client extends CalcUdp {
 
     public static void main(final String... args) throws IOException {
-        try (var client = new DatagramSocket(null)) {
-            // ---------------------------------------------------------------------- bind(optional)
-            if (ThreadLocalRandom.current().nextBoolean()) {
-                client.bind(new InetSocketAddress(HOST, 0));
-            }
-            // -------------------------------------------------------------------------------------
-            if (ThreadLocalRandom.current().nextBoolean()) {
-                client.connect(ADDR);
-            }
-            // --------------------------------------------------------------------------- configure
-            client.setSoTimeout((int) SO_TIMEOUT_MILLIS);
-            // -------------------------------------------------------------------- send/receive/log
+        try (var executor = newExecutorForClient("udp-1-client-")) {
             final var index = new AtomicInteger();
-            for (var i = 0; i < REQUEST_COUNT; i++) {
-                if (client.isConnected()) {
-                    new _Message.OfArray()
-                            .randomize()
-                            .sendToServer(client)
-                            .receiveFromServer(client)
-                            .log(index.getAndIncrement());
-                    continue;
-                }
-                new _Message.OfArray()
-                        .randomize()
-                        .sendToServer(client, ADDR)
-                        .receiveFromServer(client)
-                        .log(index.getAndIncrement());
+            for (int i = 0; i < REQUEST_COUNT; i++) {
+                executor.submit(() -> {
+                    try (var client = new DatagramSocket(null)) {
+                        // ---------------------------------------------------------- bind(optional)
+                        if (ThreadLocalRandom.current().nextBoolean()) {
+                            try {
+                                client.bind(new InetSocketAddress(HOST, 0));
+                            } catch (final IOException ioe) {
+                                log.error("failed to bind", ioe);
+                            }
+                        }
+                        // ------------------------------------------------------- connect(optional)
+                        if (ThreadLocalRandom.current().nextBoolean()) {
+                            try {
+                                client.connect(ADDR);
+                            } catch (final IOException ioe) {
+                                log.error("failed to connect", ioe);
+                            }
+                        }
+                        // -------------------------------------------------------------------- send
+                        final var message = new _Message.OfArray().randomize();
+                        if (client.isConnected()) {
+                            message.sendToServer(client);
+                        } else {
+                            message.sendToServer(client, ADDR);
+                        }
+                        // ------------------------------------------------------------- receive/log
+                        client.setSoTimeout((int) SO_TIMEOUT_MILLIS);
+                        message.receiveFromServer(client).log(index);
+                        // ------------------------------------------------- disconnect-if-connected
+                        if (client.isConnected()) {
+                            client.disconnect();
+                        }
+                    } catch (final Exception e) {
+                        log.error("failed to request", e);
+                    }
+                });
             }
         }
     }

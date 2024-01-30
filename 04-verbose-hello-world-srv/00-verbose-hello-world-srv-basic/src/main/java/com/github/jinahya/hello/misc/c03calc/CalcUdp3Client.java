@@ -23,58 +23,84 @@ package com.github.jinahya.hello.misc.c03calc;
 import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 class CalcUdp3Client extends CalcUdp {
 
     public static void main(final String... args) throws Exception {
-        try (var selector = Selector.open();
-             var client = DatagramChannel.open()) {
-            // ----------------------------------------------------- configure-non-blocking/register
-            final var clientKey = client.configureBlocking(false).register(
-                    selector,                                    // <sel>
-                    SelectionKey.OP_WRITE | SelectionKey.OP_READ // <ops>
-            );
+        try (var selector = Selector.open()) {
+            for (int i = 0; i < REQUEST_COUNT; i++) {
+                // ---------------------------------------------------------------------------- open
+                @SuppressWarnings({"java:S2095"})
+                final var client = DatagramChannel.open();
+                // ------------------------------------------------------------------ bind(optional)
+                if (ThreadLocalRandom.current().nextBoolean()) {
+                    try {
+                        client.bind(new InetSocketAddress(HOST, 0));
+                    } catch (final IOException ioe) {
+                        log.error("failed to bind", ioe);
+                    }
+                }
+                // --------------------------------------------------------------- connect(optional)
+                if (ThreadLocalRandom.current().nextBoolean()) {
+                    try {
+                        client.connect(ADDR);
+                    } catch (final IOException ioe) {
+                        log.error("failed to connect", ioe);
+                    }
+                }
+                // ------------------------------------------------- configure-non-blocking/register
+                final var clientKey = client.configureBlocking(false).register(
+                        selector,             // <sel>
+                        SelectionKey.OP_WRITE // <ops>
+                );
+                assert !clientKey.isWritable();
+            }
             // ----------------------------------------------------------------------------- prepare
-            final var requestsToSend = new AtomicInteger(REQUEST_COUNT);
-            final var requestsToReceive = new AtomicInteger(requestsToSend.get());
-            final var logIndex = new AtomicInteger();
+            final var index = new AtomicInteger();
             // ----------------------------------------------------------------------- selector-loop
             while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
                 // -------------------------------------------------------------------------- select
-                if (selector.select() == 0) {
-                    continue;
+                if (selector.select(TimeUnit.SECONDS.toMillis(1L)) == 0) {
+                    log.error("failed to select in a while");
+                    break;
                 }
                 // ------------------------------------------------------------------------- process
                 for (final var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
-                    final var selectedKey = i.next();
+                    final var key = i.next();
                     // ------------------------------------------------------------------------ send
-                    if (selectedKey.isWritable()) {
-                        final var channel = (DatagramChannel) selectedKey.channel();
-                        new _Message.OfBuffer()
-                                .randomize()
-                                .sendToServer(channel, ADDR);
-                        if (requestsToSend.decrementAndGet() == 0) {
-                            selectedKey.interestOpsAnd(~SelectionKey.OP_WRITE);
-                            assert selectedKey.isWritable();
+                    if (key.isWritable()) {
+                        final var channel = (DatagramChannel) key.channel();
+                        final var message = new _Message.OfBuffer().randomize();
+                        if (channel.isConnected()) {
+                            message.sendToServer(channel);
+                        } else {
+                            message.sendToServer(channel, ADDR);
                         }
+                        key.interestOpsAnd(~SelectionKey.OP_WRITE);
+                        assert key.isWritable();
+                        key.attach(message);
+                        key.interestOpsOr(SelectionKey.OP_READ);
+                        assert !key.isReadable();
                     }
                     // ----------------------------------------------------------------- receive/log
-                    if (selectedKey.isReadable()) {
-                        final var channel = (DatagramChannel) selectedKey.channel();
-                        new _Message.OfBuffer()
-                                .receiveFromServer(channel)
-                                .log(logIndex.getAndIncrement());
-                        if (requestsToReceive.decrementAndGet() == 0) {
-                            selectedKey.interestOpsAnd(~SelectionKey.OP_READ);
-                            assert selectedKey.isReadable();
-                        channel.close();
-                        assert !selectedKey.isValid();
+                    if (key.isReadable()) {
+                        final var channel = (DatagramChannel) key.channel();
+                        final var message = (_Message.OfBuffer) key.attachment();
+                        message.receiveFromServer(channel).log(index);
+                        if (channel.isConnected()) {
+                            channel.disconnect();
                         }
+                        channel.close();
+                        assert !key.isValid();
                     }
                 }
             }

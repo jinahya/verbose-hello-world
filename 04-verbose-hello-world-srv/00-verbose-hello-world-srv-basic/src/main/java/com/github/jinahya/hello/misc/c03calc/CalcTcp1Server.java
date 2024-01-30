@@ -37,7 +37,13 @@ class CalcTcp1Server extends CalcTcp {
     public static void main(final String... args) throws IOException, InterruptedException {
         try (var executor = newExecutorForServer("tcp1-server-");
              var server = new ServerSocket()) {
-            server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
+            // -------------------------------------------------------------------------- REUSE_ADDR
+            try {
+                server.setOption(StandardSocketOptions.SO_REUSEADDR, Boolean.TRUE);
+            } catch (final IOException ioe) {
+                log.error("failed to set SO_REUSEADDR", ioe);
+            }
+            // -------------------------------------------------------------------------- REUSE_PORT
             try {
                 server.setOption(StandardSocketOptions.SO_REUSEPORT, Boolean.TRUE);
             } catch (final IOException ioe) {

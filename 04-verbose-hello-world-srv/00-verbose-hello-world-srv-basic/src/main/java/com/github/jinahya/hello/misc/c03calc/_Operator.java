@@ -20,6 +20,8 @@ package com.github.jinahya.hello.misc.c03calc;
  * #L%
  */
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +43,7 @@ import java.util.stream.Collectors;
  * 나누기</a> (Wikipedia)
  * @see <a href="https://en.wikipedia.org/wiki/Division_by_zero">Division by zero</a> (Wikipedia)
  */
+@Slf4j
 enum _Operator implements IntBinaryOperator {
 
     ADD() {
@@ -73,15 +76,16 @@ enum _Operator implements IntBinaryOperator {
             return left / right;
         }
     },
-    FIV() {
-        @Override
-        public int applyAsInt(final int left, final int right) {
-            if (right == 0) {
-                return 0;
-            }
-            return Math.floorDiv(left, right);
-        }
-    },
+
+//    FIV() {
+//        @Override
+//        public int applyAsInt(final int left, final int right) {
+//            if (right == 0) {
+//                return 0;
+//            }
+//            return Math.floorDiv(left, right);
+//        }
+//    },
 
 //    MOD() {
 //        @Override
@@ -92,7 +96,7 @@ enum _Operator implements IntBinaryOperator {
 //            return left % right;
 //        }
 //    },
-//
+
 //    FOD() {
 //        @Override
 //        public int applyAsInt(final int left, final int right) {

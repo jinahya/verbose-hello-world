@@ -34,14 +34,14 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 abstract class Calc {
 
-    // ------------------------------------------------------------------------------ host/port/addr
+    // ------------------------------------------------------------------------------ HOST/PORT/ADDR
     static final InetAddress HOST = InetAddress.getLoopbackAddress();
 
     private static final int PORT = 30007;
 
     static final InetSocketAddress ADDR = new InetSocketAddress(HOST, PORT);
 
-    // -------------------------------------------------------------------------------------- server
+    // -------------------------------------------------------------------------------------- SERVER
 
     static final int SERVER_THREADS = 128;
 
@@ -58,15 +58,29 @@ abstract class Calc {
         );
     }
 
-    // -------------------------------------------------------------------------------------- client
+    // -------------------------------------------------------------------------------------- CLIENT
+    static final int CLIENT_THREADS = 32;
+
+    /**
+     * Returns a new thread-pool that uses {@value #CLIENT_THREADS} thread(s).
+     *
+     * @param namePrefix a thread name prefix.
+     * @return a new thread-pool that uses {@value #CLIENT_THREADS} thread(s).
+     */
+    static ExecutorService newExecutorForClient(final String namePrefix) {
+        return Executors.newFixedThreadPool(
+                CLIENT_THREADS,
+                Thread.ofVirtual().name(namePrefix, 0L).factory()
+        );
+    }
 
     /**
      * The number of requests.
      */
-    static final int REQUEST_COUNT = 64;
+    static final int REQUEST_COUNT = 16;
 
-    // ------------------------------------------------------------------------------------- timeout
-    static final long SO_TIMEOUT = 4L;
+    // ---------------------------------------------------------------------------------- SO_TIMEOUT
+    static final long SO_TIMEOUT = 1L;
 
     static final TimeUnit SO_TIMEOUT_UNIT = TimeUnit.SECONDS;
 

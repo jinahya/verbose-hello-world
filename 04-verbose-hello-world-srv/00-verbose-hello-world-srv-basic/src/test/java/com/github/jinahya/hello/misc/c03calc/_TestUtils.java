@@ -25,13 +25,17 @@ import lombok.extern.slf4j.Slf4j;
 import java.nio.charset.StandardCharsets;
 
 @Slf4j
-final class CalcTestConstants {
+final class _TestUtils {
 
     static final String QUIT_PLUS_ENTER = "quit!" + System.lineSeparator();
 
-    static final byte[] quitPlusEnterBytes = QUIT_PLUS_ENTER.getBytes(StandardCharsets.US_ASCII);
+    static byte[] quitPlusEnterBytes() {
+        return QUIT_PLUS_ENTER.getBytes(StandardCharsets.US_ASCII);
+    }
 
-    private CalcTestConstants() {
+    static final int QUIT_PLUS_ENTER_LENGTH = quitPlusEnterBytes().length;
+
+    private _TestUtils() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

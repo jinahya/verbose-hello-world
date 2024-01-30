@@ -30,33 +30,29 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 @Slf4j
-class CalcTcpTest {
+class CalcUdpTest {
 
     private static final List<Class<?>> SERVER_CLASSES = List.of(
-            CalcTcp1Server.class,
-            CalcTcp3Server.class,
-            CalcTcp5Server.class
+            CalcUdp1Server.class,
+            CalcUdp3Server.class
+    );
+
+    private static final List<Class<?>> CLIENT_CLASSES = List.of(
+            CalcUdp1Client.class,
+            CalcUdp3Client.class
     );
 
     private static List<Class<?>> serverClasses() {
         return SERVER_CLASSES;
     }
-
-    private static final List<Class<?>> CLIENT_CLASSES = List.of(
-            CalcTcp1Client.class,
-            CalcTcp3Client.class,
-            CalcTcp5Client.class
-    );
 
     private static List<Class<?>> clientClasses() {
         return CLIENT_CLASSES;
@@ -69,56 +65,15 @@ class CalcTcpTest {
                                                 Named.of(cc.getSimpleName(), cc))));
     }
 
-    private static final String QUIT_PLUS_ENTER = "quit!" + System.lineSeparator();
-
-    private static final int QUIT_PLUS_ENTER_LENGTH =
-            QUIT_PLUS_ENTER.getBytes(StandardCharsets.US_ASCII).length;
-
-    @DisplayName("quit!")
-    @MethodSource({"serverClasses"})
-    @ParameterizedTest
-    void __quit(final Class<?> serverClass) throws Exception {
-        log.debug("server: {}", serverClass.getSimpleName());
-        serverClass.getClassLoader().setDefaultAssertionStatus(true);
-        final var quitPlusEnterBytes = QUIT_PLUS_ENTER.getBytes(StandardCharsets.US_ASCII);
-        try (var executor = Executors.newFixedThreadPool(1)) {
-            final var pos = new PipedOutputStream();
-            final var pis = new PipedInputStream(pos, quitPlusEnterBytes.length);
-            final var systemIn = System.in;
-            try {
-                System.setIn(pis);
-                var server = executor.submit(() -> {
-                    try {
-                        serverClass.getMethod("main", String[].class)
-                                .invoke(null, new Object[] {new String[0]});
-                    } catch (final Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-                pos.write(quitPlusEnterBytes);
-                pos.flush();
-                server.get(4L, TimeUnit.SECONDS);
-                executor.shutdown();
-                if (!executor.awaitTermination(8L, TimeUnit.SECONDS)) {
-                    log.error("executor not terminated");
-                }
-            } finally {
-                System.setIn(systemIn);
-            }
-        }
-    }
-
     @DisplayName("one2one")
     @MethodSource({"getClassesArgumentsList"})
     @ParameterizedTest
     void __(final Class<?> serverClass, final Class<?> clientClass) throws Exception {
         log.debug("server: {}", serverClass.getSimpleName());
         log.debug("client: {}", clientClass.getSimpleName());
-        serverClass.getClassLoader().setDefaultAssertionStatus(true);
-        clientClass.getClassLoader().setDefaultAssertionStatus(true);
         try (var executor = Executors.newFixedThreadPool(2)) {
             final var pos = new PipedOutputStream();
-            final var pis = new PipedInputStream(pos, QUIT_PLUS_ENTER_LENGTH);
+            final var pis = new PipedInputStream(pos, _TestUtils.QUIT_PLUS_ENTER_LENGTH);
             final var systemIn = System.in;
             try {
                 System.setIn(pis);
@@ -131,7 +86,7 @@ class CalcTcpTest {
                         throw new RuntimeException(e);
                     }
                 });
-                // --------------------------------------------------------------------------- await
+                // ------------------------------------------------------- await(for-server-binding)
                 final var duration = Duration.ofMillis(100L);
                 Awaitility.await()
                         .timeout(duration.plusMillis(1L))
@@ -147,7 +102,6 @@ class CalcTcpTest {
                         throw new RuntimeException(e);
                     }
                 });
-                // -------------------------------------------------- await-until-client-future-done
                 Awaitility.await()
                         .timeout(Duration.ofSeconds(8L))
                         .pollDelay(Duration.ofMillis(100L))
@@ -168,10 +122,10 @@ class CalcTcpTest {
     void __(final Class<?> serverClass) throws Exception {
         log.debug("server: {}", serverClass.getSimpleName());
         serverClass.getClassLoader().setDefaultAssertionStatus(true);
-        try (var executor = Executors.newFixedThreadPool(CLIENT_CLASSES.size() + 1)) {
-            final var pos = new PipedOutputStream();
-            final var pis = new PipedInputStream(pos, QUIT_PLUS_ENTER_LENGTH);
+        try (var executor = Executors.newFixedThreadPool(1 + CLIENT_CLASSES.size())) {
             final var systemIn = System.in;
+            final var pos = new PipedOutputStream();
+            final var pis = new PipedInputStream(pos, _TestUtils.QUIT_PLUS_ENTER_LENGTH);
             try {
                 System.setIn(pis);
                 // -------------------------------------------------------------------------- server

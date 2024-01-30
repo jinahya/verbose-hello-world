@@ -20,7 +20,6 @@ package com.github.jinahya.hello.misc.c03calc;
  * #L%
  */
 
-import com.github.jinahya.hello.util.JavaNioByteBufferUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +28,6 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.Socket;
@@ -42,10 +40,11 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.Executor;
-import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -80,7 +79,7 @@ abstract sealed class _Message<T extends _Message<T>>
     static final class OfArray extends _Message<OfArray> {
 
         private static byte operand(final int operand1, final int operand2) {
-            return (byte) ((((operand1) << 4) | (operand2 & 0xF)) & 0xFF);
+            return (byte) (((operand1 & 0xF) << 4) | (operand2 & 0xF));
         }
 
         // -------------------------------------------------------------------------------- operator
@@ -90,14 +89,20 @@ abstract sealed class _Message<T extends _Message<T>>
             if (ThreadLocalRandom.current().nextBoolean()) {
                 return _Operator.cachedValueOf(name);
             }
-            return _Operator.valueOf(name);
+            try {
+                return _Operator.valueOf(name);
+            } catch (final IllegalArgumentException iae) {
+                return null;
+            }
         }
 
         @Override
         OfArray setOperator(final _Operator operator) {
-            Objects.requireNonNull(operator, "operator is null");
+            final var src = Optional.ofNullable(operator)
+                    .map(v -> v.name().getBytes(StandardCharsets.US_ASCII))
+                    .orElseGet(() -> new byte[INDEX_OPERAND]);
             System.arraycopy(
-                    operator.name().getBytes(StandardCharsets.US_ASCII),
+                    src,
                     0,
                     array,
                     0,
@@ -216,27 +221,33 @@ abstract sealed class _Message<T extends _Message<T>>
             });
         }
 
-        OfArray sendToServer(final DatagramSocket socket, final SocketAddress address)
+        private OfArray sendToServer_(final DatagramSocket socket, final SocketAddress address)
                 throws IOException {
-            Objects.requireNonNull(socket, "socket is null");
-            Objects.requireNonNull(address, "address is null");
-            socket.send(new DatagramPacket(
+            final var packet = new DatagramPacket(
                     array,        // <buf>
                     0,            // <offset>
                     INDEX_RESULT, // <length>
                     address       // <address>
-            ));
+            );
+            socket.send(packet);
+            assert packet.getLength() == INDEX_RESULT;
             return this;
         }
 
         OfArray sendToServer(final DatagramSocket socket) throws IOException {
             if (!Objects.requireNonNull(socket, "socket is null").isConnected()) {
-                throw new IllegalArgumentException("socket is not connected: " + socket);
+                throw new IllegalArgumentException("socket is not connected");
             }
-            return sendToServer(
-                    socket,
-                    socket.getRemoteSocketAddress()
-            );
+            return sendToServer_(socket, socket.getRemoteSocketAddress());
+        }
+
+        OfArray sendToServer(final DatagramSocket socket, final SocketAddress address)
+                throws IOException {
+            if (Objects.requireNonNull(socket, "socket is null").isConnected()) {
+                throw new IllegalArgumentException("socket is connected");
+            }
+            Objects.requireNonNull(address, "address is null");
+            return sendToServer_(socket, address);
         }
 
         OfArray receiveFromServer(final DatagramSocket socket) throws IOException {
@@ -246,6 +257,7 @@ abstract sealed class _Message<T extends _Message<T>>
                     array.length // <offset>
             );
             socket.receive(packet);
+            assert packet.getLength() == array.length;
             return this;
         }
 
@@ -256,6 +268,7 @@ abstract sealed class _Message<T extends _Message<T>>
                     INDEX_RESULT // <length>
             );
             socket.receive(packet);
+            assert packet.getLength() == INDEX_RESULT;
             address = packet.getSocketAddress();
             return this;
         }
@@ -272,6 +285,7 @@ abstract sealed class _Message<T extends _Message<T>>
                     address
             );
             socket.send(packet);
+            assert packet.getLength() == array.length;
             return this;
         }
 
@@ -337,17 +351,8 @@ abstract sealed class _Message<T extends _Message<T>>
         }
 
         // ---------------------------------------------------------------------------------- buffer
-        OfBuffer print(PrintStream printer) {
-            JavaNioByteBufferUtils.print(buffer, printer);
-            return this;
-        }
-
         boolean hasRemaining() {
             return buffer.hasRemaining();
-        }
-
-        int remaining() {
-            return buffer.remaining();
         }
 
         OfBuffer readyToWriteToServer() {
@@ -410,7 +415,9 @@ abstract sealed class _Message<T extends _Message<T>>
          */
         OfBuffer sendToServer(final DatagramChannel channel, final SocketAddress target)
                 throws IOException {
-            Objects.requireNonNull(channel, "channel is null");
+            if (Objects.requireNonNull(channel, "channel is null").isConnected()) {
+                throw new IllegalArgumentException("channel is connected");
+            }
             Objects.requireNonNull(target, "target is null");
             readyToWriteToServer();
             final int w = channel.send(
@@ -462,7 +469,7 @@ abstract sealed class _Message<T extends _Message<T>>
 
         OfBuffer sendToClient(final DatagramChannel channel) throws IOException {
             readyToWriteToClient();
-            final var w = channel.send(
+            final int w = channel.send(
                     buffer, // <src>
                     source  // <target>
             );
@@ -507,18 +514,6 @@ abstract sealed class _Message<T extends _Message<T>>
     abstract T setOperand2(int operand);
 
     // -------------------------------------------------------------------------------------- result
-    @SuppressWarnings({"unchecked"})
-    final T calculateResult(final Executor executor, final Consumer<? super T> consumer) {
-        Objects.requireNonNull(executor, "executor is null");
-        Objects.requireNonNull(consumer, "consumer is null");
-        try {
-            executor.execute(() -> consumer.accept(calculateResult()));
-        } catch (final RejectedExecutionException ree) {
-            log.error("failed to submit task", ree);
-        }
-        return (T) this;
-    }
-
     final T calculateResult() {
         final var operator = getOperator();
         final var operand1 = getOperand1();
@@ -526,6 +521,14 @@ abstract sealed class _Message<T extends _Message<T>>
         log.debug("calculating result...");
         final var result = operator.applyAsInt(operand1, operand2);
         return setResult(result);
+    }
+
+    @SuppressWarnings({"unchecked"})
+    final T calculateResult(final Executor executor, final Consumer<? super T> consumer) {
+        Objects.requireNonNull(executor, "executor is null");
+        Objects.requireNonNull(consumer, "consumer is null");
+        executor.execute(() -> consumer.accept(calculateResult()));
+        return (T) this;
     }
 
     /**
@@ -563,10 +566,13 @@ abstract sealed class _Message<T extends _Message<T>>
     }
 
     /**
-     * Logs out this message's current status.
+     * Logs out this message's current status with specified atomic integer's current value, and
+     * increments the atomic integer.
+     *
+     * @param index the atomic integer whose current value is used, and is incremented.
      */
-    final T log() {
-        return log(0);
+    final T log(final AtomicInteger index) {
+        return log(index.getAndIncrement());
     }
 
     /**

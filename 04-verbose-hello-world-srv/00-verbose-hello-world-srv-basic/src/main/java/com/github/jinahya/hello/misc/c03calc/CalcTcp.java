@@ -23,8 +23,6 @@ package com.github.jinahya.hello.misc.c03calc;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
@@ -33,38 +31,24 @@ import java.util.concurrent.TimeUnit;
 })
 abstract class CalcTcp extends Calc {
 
-    // -------------------------------------------------------------------------------------- server
+    // -------------------------------------------------------------------------------------- SERVER
     static final int SERVER_BACKLOG = 50;
 
-    // -------------------------------------------------------------------------------------- client
-    static final int CLIENT_THREADS = 16;
-
-    /**
-     * Returns a new thread-pool that uses {@value #CLIENT_THREADS} thread(s).
-     *
-     * @param namePrefix a thread name prefix.
-     * @return a new thread-pool that uses {@value #CLIENT_THREADS} thread(s).
-     */
-    static ExecutorService newExecutorForClient(final String namePrefix) {
-        return Executors.newFixedThreadPool(
-                CLIENT_THREADS,
-                Thread.ofVirtual().name(namePrefix, 0L).factory()
-        );
-    }
-
-    // ------------------------------------------------------------------------------------- timeout
+    // ----------------------------------------------------------------------------- CONNECT_TIMEOUT
     static final long CONNECT_TIMEOUT = 1L;
 
     static final TimeUnit CONNECT_TIMEOUT_UNIT = TimeUnit.SECONDS;
 
     static final long CONNECT_TIMEOUT_MILLIS = CONNECT_TIMEOUT_UNIT.toMillis(CONNECT_TIMEOUT);
 
+    // ------------------------------------------------------------------------------- WRITE_TIMEOUT
     static final long WRITE_TIMEOUT = 1L;
 
     static final TimeUnit WRITE_TIMEOUT_UNIT = TimeUnit.SECONDS;
 
     static final long WRITE_TIMEOUT_MILLIS = WRITE_TIMEOUT_UNIT.toMillis(WRITE_TIMEOUT);
 
+    // ----------------------------------------------------------------------------- CONNECT_TIMEOUT
     static final long READ_TIMEOUT = 1L;
 
     static final TimeUnit READ_TIMEOUT_UNIT = TimeUnit.SECONDS;

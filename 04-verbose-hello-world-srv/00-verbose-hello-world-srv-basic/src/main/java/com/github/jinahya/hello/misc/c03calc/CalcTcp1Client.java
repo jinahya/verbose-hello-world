@@ -25,17 +25,16 @@ import com.github.jinahya.hello.util.JavaUtilConcurrentCallableUtils;
 import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.net.Socket;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 class CalcTcp1Client extends CalcTcp {
 
-    public static void main(final String... args) throws Exception {
+    public static void main(final String... args) {
         try (var executor = newExecutorForClient("tcp-1-client-")) {
             // --------------------------------------------------------------------- submit-requests
-            final var logIndex = new AtomicInteger();
+            final var index = new AtomicInteger();
             for (int i = 0; i < REQUEST_COUNT; i++) {
                 executor.submit(() -> {
                     try (var client = new Socket()) {
@@ -52,9 +51,9 @@ class CalcTcp1Client extends CalcTcp {
                                     });
                                 })
                                 .readFromServer(client.getInputStream())
-                                .log(logIndex.getAndIncrement());
-                    } catch (final IOException ioe) {
-                        log.error("failed to request", ioe);
+                                .log(index.getAndIncrement());
+                    } catch (final Exception e) {
+                        log.error("failed to request", e);
                     }
                 });
             }

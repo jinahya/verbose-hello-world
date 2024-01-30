@@ -71,6 +71,7 @@ class CalcTcp5Server extends CalcTcp {
                 @Override
                 public void completed(final AsynchronousSocketChannel client, final Void a) {
                     final var message = new _Message.OfBuffer().readyToReadFromClient();
+                    // ------------------------------------------------------------------------ read
                     message.<Void>read(client, null, new CompletionHandler<>() {
                         @Override
                         public void completed(final Integer r, final Void a) {
@@ -83,6 +84,7 @@ class CalcTcp5Server extends CalcTcp {
                                 message.read(client, null, this);
                                 return;
                             }
+                            // --------------------------------------------------------------- write
                             message.calculateResult()
                                     .readyToWriteToClient()
                                     .<Void>write(client, null, new CompletionHandler<>() {
@@ -108,8 +110,8 @@ class CalcTcp5Server extends CalcTcp {
                             closeUnchecked(client);
                         }
                     });
-                    // ------------------------------------------------------------- accept-again!!!
-                    server.accept(null, this);
+                    // ---------------------------------------------------------------- accept-again
+                    server.accept(null, this); // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
                 }
                 @Override
                 public void failed(final Throwable exc, final Void attachment) {

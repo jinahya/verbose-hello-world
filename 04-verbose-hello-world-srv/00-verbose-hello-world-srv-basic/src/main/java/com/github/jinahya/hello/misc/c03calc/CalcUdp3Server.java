@@ -28,7 +28,9 @@ import java.net.StandardSocketOptions;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
-import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Slf4j
 class CalcUdp3Server extends CalcUdp {
@@ -56,6 +58,9 @@ class CalcUdp3Server extends CalcUdp {
                         return null;
                     }
             );
+            // ----------------------------------------------------------------------------- prepare
+            final var messages = new ArrayList<_Message.OfBuffer>();
+            final var lock = new ReentrantLock();
             // ----------------------------------------------------------------------- selector-loop
             while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
                 // -------------------------------------------------------------------------- select
@@ -64,37 +69,39 @@ class CalcUdp3Server extends CalcUdp {
                 }
                 // ------------------------------------------------------------------------- process
                 for (final var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
-                    final var selectedKey = i.next();
+                    final var key = i.next();
                     // ---------------------------------------------------- receive/calculate/wakeup
-                    if (selectedKey.isReadable()) {
-                        final var channel = (DatagramChannel) selectedKey.channel();
-                        final var message =
-                                new _Message.OfBuffer().receiveFromClient(channel);
-                        selectedKey.interestOpsAnd(~SelectionKey.OP_READ);
-                        assert selectedKey.isReadable();
+                    if (key.isReadable()) {
+                        final var channel = (DatagramChannel) key.channel();
+                        final var message = new _Message.OfBuffer().receiveFromClient(channel);
+                        assert !message.hasRemaining();
                         message.calculateResult(executor, m -> {
-                            selectedKey.attach(m);
-                            selectedKey.interestOpsOr(SelectionKey.OP_WRITE);
-                            assert !selectedKey.isWritable();
-                            selector.wakeup();
+                            m.readyToWriteToClient();
+                            lock.lock();
+                            try {
+                                messages.add(m);
+                                key.interestOpsOr(SelectionKey.OP_WRITE);
+                            } finally {
+                                lock.unlock();
+                            }
+                            selector.wakeup(); // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
                         });
                     }
                     // ------------------------------------------------------------------------ send
-                    if (selectedKey.isWritable()) {
-                        final var channel = (DatagramChannel) selectedKey.channel();
-                        final var message = (_Message.OfBuffer) selectedKey.attachment();
-                        message.sendToClient(channel);
-                        selectedKey.interestOpsAnd(~SelectionKey.OP_WRITE);
-                        assert selectedKey.isWritable();
-                        selectedKey.interestOpsOr(SelectionKey.OP_READ);
-                        assert !serverKey.isReadable();
+                    if (key.isWritable()) {
+                        final var channel = (DatagramChannel) key.channel();
+                        lock.lock();
+                        try {
+                            assert !messages.isEmpty();
+                            messages.removeFirst().sendToClient(channel);
+                            if (messages.isEmpty()) {
+                                key.interestOpsAnd(~SelectionKey.OP_WRITE);
+                            }
+                        } finally {
+                            lock.unlock();
+                        }
                     }
                 }
-            }
-            // ------------------------------------------------- shutdown-executor/await-termination
-            executor.shutdown();
-            if (!executor.awaitTermination(1L, TimeUnit.SECONDS)) {
-                log.error("executor not terminated");
             }
         }
     }
