@@ -35,17 +35,17 @@ import java.time.temporal.TemporalUnit;
 })
 public final class HelloWorldTestUtils {
 
-    // ----------------------------------------------------------------------------------- Awaitility
-    public static void await(final Duration duration) {
+    // ---------------------------------------------------------------------------------- Awaitility
+    public static void awaitFor(final Duration duration) {
         log.debug("awaiting for {}...", duration);
         Awaitility.await()
-                .timeout(duration.plusMillis(1L))
+                .timeout(duration.plusSeconds(1L))
                 .pollDelay(duration)
                 .untilAsserted(() -> Assertions.assertTrue(true));
     }
 
     public static void awaitFor(final long amount, final TemporalUnit unit) {
-        await(Duration.of(amount, unit));
+        awaitFor(Duration.of(amount, unit));
     }
 
     public static void awaitForOneSecond() {

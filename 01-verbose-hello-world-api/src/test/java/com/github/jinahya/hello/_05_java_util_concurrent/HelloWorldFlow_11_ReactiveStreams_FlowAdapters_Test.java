@@ -24,6 +24,7 @@ import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello.HelloWorldFlow;
 import com.github.jinahya.hello.HelloWorldTestUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -129,7 +130,6 @@ class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlo
             // -------------------------------------------------------------------------------- when
             new AlienService() {
             }.doSome(FlowAdapters.toPublisher(publisher));
-            HelloWorldTestUtils.awaitForOneSecond();
             // -------------------------------------------------------------------------------- then
             // DONE: verify, publisher.subscribe(subscriber) invoked, once
             final var subscriberCaptor = ArgumentCaptor.forClass(Flow.Subscriber.class);
@@ -143,16 +143,20 @@ class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlo
             final var nCaptor = ArgumentCaptor.forClass(long.class);
             Mockito.verify(subscription, Mockito.times(1)).request(nCaptor.capture());
             final var n = Math.toIntExact(nCaptor.getValue());
-            // DONE: await
-            HelloWorldTestUtils.awaitFor(8L, ChronoUnit.SECONDS);
             // DONE: verify, subscriber.onNext(item) invoked, n-times
-            Mockito.verify(subscriber, Mockito.atMost(n)).onNext(ArgumentMatchers.notNull());
+            Awaitility.await().untilAsserted(() -> {
+                Mockito.verify(subscriber, Mockito.atMost(n)).onNext(ArgumentMatchers.notNull());
+            });
             if (n < HelloWorld.BYTES) {
                 // DONE: verify, subscription.cancel() invoked, once
-                Mockito.verify(subscription, Mockito.times(1)).cancel();
+                Awaitility.await().untilAsserted(() -> {
+                    Mockito.verify(subscription, Mockito.times(1)).cancel();
+                });
             } else {
                 // DONE: verify, subscriber.onComplete() invoked, once
-                Mockito.verify(subscriber, Mockito.times(1)).onComplete();
+                Awaitility.await().untilAsserted(() -> {
+                    Mockito.verify(subscriber, Mockito.times(1)).onComplete();
+                });
             }
         }
 
@@ -187,24 +191,27 @@ class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlo
             // -------------------------------------------------------------------------------- when
             new AlienService() {
             }.doSome(FlowAdapters.toPublisher(publisher));
-            HelloWorldTestUtils.awaitForOneSecond();
             // -------------------------------------------------------------------------------- then
-            // verify, publisher.subscribe(subscriber) invoked, once
+            // DONE: verify, publisher.subscribe(subscriber) invoked, once
             final var subscriberCaptor = ArgumentCaptor.forClass(Flow.Subscriber.class);
             Mockito.verify(publisher, Mockito.times(1)).subscribe(subscriberCaptor.capture());
             final var subscriber = subscriberCaptor.getValue();
-            // verify, subscriber.onSubscribe(subscription) invoked, once
+            // DONE: verify, subscriber.onSubscribe(subscription) invoked, once
             final var subscriptionCaptor = ArgumentCaptor.forClass(Flow.Subscription.class);
             Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(subscriptionCaptor.capture());
             final var subscription = subscriptionCaptor.getValue();
-            // verify, subscription.request(n) invoked, once
+            // DONE: verify, subscription.request(n) invoked, once
             final var nCaptor = ArgumentCaptor.forClass(long.class);
             Mockito.verify(subscription, Mockito.times(1)).request(nCaptor.capture());
             final var n = Math.toIntExact(nCaptor.getValue());
-            // verify, subscriber.onNext(item) invoked, n-times
-            Mockito.verify(subscriber, Mockito.atMost(n)).onNext(ArgumentMatchers.notNull());
+            // DONE: verify, subscriber.onNext(item) invoked, n-times
+            Awaitility.await().untilAsserted(() -> {
+                Mockito.verify(subscriber, Mockito.atMost(n)).onNext(ArgumentMatchers.notNull());
+            });
             // verify, subscription.cancel() invoked, once
-            Mockito.verify(subscription, Mockito.times(1)).cancel();
+            Awaitility.await().untilAsserted(() -> {
+                Mockito.verify(subscription, Mockito.times(1)).cancel();
+            });
         }
 
         @Test
@@ -237,26 +244,27 @@ class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlo
             // -------------------------------------------------------------------------------- when
             new AlienService() {
             }.doSome(FlowAdapters.toPublisher(publisher));
-            HelloWorldTestUtils.awaitForOneSecond();
             // -------------------------------------------------------------------------------- then
-            // verify, publisher.subscribe(subscriber) invoked, once
+            // DONE: verify, publisher.subscribe(subscriber) invoked, once
             final var subscriberCaptor = ArgumentCaptor.forClass(Flow.Subscriber.class);
             Mockito.verify(publisher, Mockito.times(1)).subscribe(subscriberCaptor.capture());
             final var subscriber = subscriberCaptor.getValue();
-            // verify, subscriber.onSubscribe(subscription) invoked, once
+            // DONE: verify, subscriber.onSubscribe(subscription) invoked, once
             final var subscriptionCaptor = ArgumentCaptor.forClass(Flow.Subscription.class);
             Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(subscriptionCaptor.capture());
             final var subscription = subscriptionCaptor.getValue();
-            // verify, subscription.request(n) invoked, once
+            // DONE: verify, subscription.request(n) invoked, once
             final var nCaptor = ArgumentCaptor.forClass(long.class);
             Mockito.verify(subscription, Mockito.times(1)).request(nCaptor.capture());
             final var n = Math.toIntExact(nCaptor.getValue());
-            // DONE: await
-            HelloWorldTestUtils.awaitFor(8L, ChronoUnit.SECONDS);
             // DONE: verify, subscriber.onNext(item) invoked, n-times
-            Mockito.verify(subscriber, Mockito.atMost(n)).onNext(ArgumentMatchers.notNull());
+            Awaitility.await().untilAsserted(() -> {
+                Mockito.verify(subscriber, Mockito.atMost(n)).onNext(ArgumentMatchers.notNull());
+            });
             // DONE: verify, subscription.cancel() invoked, once
-            Mockito.verify(subscription, Mockito.times(1)).cancel();
+            Awaitility.await().untilAsserted(() -> {
+                Mockito.verify(subscription, Mockito.times(1)).cancel();
+            });
         }
 
         @Test
@@ -296,7 +304,6 @@ class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlo
             }).given(subscriber).onSubscribe(ArgumentMatchers.notNull());
             // -------------------------------------------------------------------------------- when
             publisher.subscribe(FlowAdapters.toFlowSubscriber(subscriber));
-            HelloWorldTestUtils.awaitForOneSecond();
             // -------------------------------------------------------------------------------- then
             // verify, subscriber.onSubscribe(subscription) invoked, once
             final var subscriptionCaptor = ArgumentCaptor.forClass(Subscription.class);
@@ -307,13 +314,19 @@ class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlo
             Mockito.verify(subscription, Mockito.times(1)).request(nCaptor.capture());
             final var n = Math.toIntExact(nCaptor.getValue());
             // verify, subscriber.onNext(item) invoked, n-times
-            Mockito.verify(subscriber, Mockito.atMost(n)).onNext(ArgumentMatchers.notNull());
+            Awaitility.await().untilAsserted(() -> {
+                Mockito.verify(subscriber, Mockito.atMost(n)).onNext(ArgumentMatchers.notNull());
+            });
             if (n < HelloWorld.BYTES) {
                 // verify, subscription.cancel() invoked, once
-                Mockito.verify(subscription, Mockito.times(1)).cancel();
+                Awaitility.await().untilAsserted(() -> {
+                    Mockito.verify(subscription, Mockito.times(1)).cancel();
+                });
             } else {
                 // verify, subscriber.onComplete() invoked, once
-                Mockito.verify(subscriber, Mockito.times(1)).onComplete();
+                Awaitility.await().untilAsserted(() -> {
+                    Mockito.verify(subscriber, Mockito.times(1)).onComplete();
+                });
             }
         }
 
@@ -341,7 +354,6 @@ class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlo
             }).given(subscriber).onSubscribe(ArgumentMatchers.notNull());
             // -------------------------------------------------------------------------------- when
             publisher.subscribe(FlowAdapters.toFlowSubscriber(subscriber));
-            HelloWorldTestUtils.awaitForOneSecond();
             // -------------------------------------------------------------------------------- then
             // verify, subscriber.onSubscribe(subscription) invoked, once
             final var subscriptionCaptor = ArgumentCaptor.forClass(Subscription.class);
@@ -351,10 +363,14 @@ class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlo
             final var nCaptor = ArgumentCaptor.forClass(long.class);
             Mockito.verify(subscription, Mockito.times(1)).request(nCaptor.capture());
             final var n = Math.toIntExact(nCaptor.getValue());
-            // verify, subscriber.onNext(item) invoked, n-times
-            Mockito.verify(subscriber, Mockito.times(n)).onNext(ArgumentMatchers.notNull());
+            // DONE, verify, subscriber.onNext(item) invoked, n-times
+            Awaitility.await().untilAsserted(() -> {
+                Mockito.verify(subscriber, Mockito.times(n)).onNext(ArgumentMatchers.notNull());
+            });
             // verify, subscription.cancel() invoked, once
-            Mockito.verify(subscription, Mockito.times(1)).cancel();
+            Awaitility.await().untilAsserted(() -> {
+                Mockito.verify(subscription, Mockito.times(1)).cancel();
+            });
         }
 
         @Test
@@ -381,7 +397,6 @@ class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlo
             }).given(subscriber).onSubscribe(ArgumentMatchers.notNull());
             // -------------------------------------------------------------------------------- when
             publisher.subscribe(FlowAdapters.toFlowSubscriber(subscriber));
-            HelloWorldTestUtils.awaitForOneSecond();
             // -------------------------------------------------------------------------------- then
             // verify, subscriber.onSubscribe(subscription) invoked, once
             final var subscriptionCaptor = ArgumentCaptor.forClass(Subscription.class);
@@ -392,9 +407,13 @@ class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlo
             Mockito.verify(subscription, Mockito.times(1)).request(nCaptor.capture());
             final var n = Math.toIntExact(nCaptor.getValue());
             // verify, subscriber.onNext(item) invoked, n-times
-            Mockito.verify(subscriber, Mockito.times(n)).onNext(ArgumentMatchers.notNull());
+            Awaitility.await().untilAsserted(() -> {
+                Mockito.verify(subscriber, Mockito.times(n)).onNext(ArgumentMatchers.notNull());
+            });
             // verify, subscription.cancel() invoked, once
-            Mockito.verify(subscription, Mockito.times(1)).cancel();
+            Awaitility.await().untilAsserted(() -> {
+                Mockito.verify(subscription, Mockito.times(1)).cancel();
+            });
         }
 
         @Test

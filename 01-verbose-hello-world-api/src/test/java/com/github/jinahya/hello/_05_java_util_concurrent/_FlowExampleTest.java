@@ -144,7 +144,7 @@ class _FlowExampleTest {
                 this.subscription = subscription;
                 this.subscription.request(1L);
                 Thread.ofPlatform().start(() -> {
-                    HelloWorldTestUtils.awaitFor(100L, ChronoUnit.MILLIS);
+                    HelloWorldTestUtils.awaitFor(1L, ChronoUnit.SECONDS);
                     this.subscription.cancel();
                 });
             }

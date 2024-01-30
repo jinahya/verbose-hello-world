@@ -24,6 +24,7 @@ import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello.HelloWorldFlow;
 import com.github.jinahya.hello.HelloWorldTestUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -83,7 +84,6 @@ class HelloWorldFlow_13_Reactor_JdkFlowAdapter_Test extends _HelloWorldFlowTest 
             // -------------------------------------------------------------------------------- when
             new AlienService() {
             }.doSome(JdkFlowAdapter.flowPublisherToFlux(publisher));
-            HelloWorldTestUtils.awaitForOneSecond();
             // -------------------------------------------------------------------------------- then
             final var subscriberCaptor = ArgumentCaptor.forClass(Flow.Subscriber.class);
             // verify, publisher.subscribe(subscriber) invoked, once
@@ -96,12 +96,18 @@ class HelloWorldFlow_13_Reactor_JdkFlowAdapter_Test extends _HelloWorldFlowTest 
             // verify, subscription.request(Long.MAX_VALUE) invoked, once
             Mockito.verify(subscription, Mockito.times(1)).request(Long.MAX_VALUE);
             // verify, subscriber.onNext(nonnull) invoked, HelloWorld.BYTES-times
-            Mockito.verify(subscriber, Mockito.times(HelloWorld.BYTES))
-                    .onNext(ArgumentMatchers.notNull());
+            Awaitility.await().untilAsserted(() -> {
+                Mockito.verify(subscriber, Mockito.times(HelloWorld.BYTES))
+                        .onNext(ArgumentMatchers.notNull());
+            });
             // verify, subscriber.onComplete() invoked, once
-            Mockito.verify(subscriber, Mockito.times(1)).onComplete();
+            Awaitility.await().untilAsserted(() -> {
+                Mockito.verify(subscriber, Mockito.times(1)).onComplete();
+            });
             // verify, subscription.cancel() invoked, once
-            Mockito.verify(subscription, Mockito.never()).cancel(); // do we have log for this?
+            Awaitility.await().untilAsserted(() -> {
+                Mockito.verify(subscription, Mockito.never()).cancel(); // do we have log for this?
+            });
         }
 
         @Test
@@ -139,7 +145,6 @@ class HelloWorldFlow_13_Reactor_JdkFlowAdapter_Test extends _HelloWorldFlowTest 
             // -------------------------------------------------------------------------------- when
             new AlienService() {
             }.doSome(JdkFlowAdapter.flowPublisherToFlux(publisher));
-            HelloWorldTestUtils.awaitForOneSecond();
             // -------------------------------------------------------------------------------- then
             // DONE: verify, publisher.subscribe(subscriber) invoked, once
             final var subscriberCaptor = ArgumentCaptor.forClass(Flow.Subscriber.class);
@@ -154,9 +159,13 @@ class HelloWorldFlow_13_Reactor_JdkFlowAdapter_Test extends _HelloWorldFlowTest 
             Mockito.verify(subscription, Mockito.times(1)).request(nCaptor.capture());
             final var n = Math.toIntExact(nCaptor.getValue());
             // DONE: verify, subscriber.onNext(item) invoked, n-times
-            Mockito.verify(subscriber, Mockito.times(n)).onNext(ArgumentMatchers.notNull());
+            Awaitility.await().untilAsserted(() -> {
+                Mockito.verify(subscriber, Mockito.times(n)).onNext(ArgumentMatchers.notNull());
+            });
             // DONE: verify, subscription.cancel() invoked, once
-            Mockito.verify(subscription, Mockito.times(1)).cancel();
+            Awaitility.await().untilAsserted(() -> {
+                Mockito.verify(subscription, Mockito.times(1)).cancel();
+            });
         }
 
         @Test
@@ -195,7 +204,6 @@ class HelloWorldFlow_13_Reactor_JdkFlowAdapter_Test extends _HelloWorldFlowTest 
             // -------------------------------------------------------------------------------- when
             new AlienService() {
             }.doSome(JdkFlowAdapter.flowPublisherToFlux(publisher));
-            HelloWorldTestUtils.awaitForOneSecond();
             // -------------------------------------------------------------------------------- then
             // DONE: verify, publisher.subscribe(subscriber) invoked, once
             final var subscriberCaptor = ArgumentCaptor.forClass(Flow.Subscriber.class);
@@ -210,9 +218,13 @@ class HelloWorldFlow_13_Reactor_JdkFlowAdapter_Test extends _HelloWorldFlowTest 
             Mockito.verify(subscription, Mockito.times(1)).request(nCaptor.capture());
             final var n = Math.toIntExact(nCaptor.getValue());
             // DONE: verify, subscriber.onNext(item) invoked, n-times
-            Mockito.verify(subscriber, Mockito.times(n)).onNext(ArgumentMatchers.notNull());
+            Awaitility.await().untilAsserted(() -> {
+                Mockito.verify(subscriber, Mockito.times(n)).onNext(ArgumentMatchers.notNull());
+            });
             // DONE: verify, subscription.cancel() invoked, once
-            Mockito.verify(subscription, Mockito.times(1)).cancel();
+            Awaitility.await().untilAsserted(() -> {
+                Mockito.verify(subscription, Mockito.times(1)).cancel();
+            });
         }
 
         @Test

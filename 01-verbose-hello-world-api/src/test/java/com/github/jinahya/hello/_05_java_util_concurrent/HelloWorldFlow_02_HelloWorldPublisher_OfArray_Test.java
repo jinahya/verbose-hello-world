@@ -24,6 +24,7 @@ import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello.HelloWorldFlow;
 import com.github.jinahya.hello.HelloWorldTestUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -77,11 +78,13 @@ class HelloWorldFlow_02_HelloWorldPublisher_OfArray_Test extends _HelloWorldFlow
         final var subscription = subscriptionCaptor.getValue();
         // DONE: verify, subscription.request(n) invoked, once
         Mockito.verify(subscription, Mockito.times(1)).request(n);
-        // DONE: await
-        HelloWorldTestUtils.awaitFor(16L, ChronoUnit.SECONDS);
         // DONE: verify, subscriber.onNext(item) invoked, n-times
-        Mockito.verify(subscriber, Mockito.times(n)).onNext(ArgumentMatchers.notNull());
+        Awaitility.await().untilAsserted(() -> {
+            Mockito.verify(subscriber, Mockito.times(n)).onNext(ArgumentMatchers.notNull());
+        });
         // DONE: verify, subscription.cancel() invoked, once
-        Mockito.verify(subscription, Mockito.times(1)).cancel();
+        Awaitility.await().untilAsserted(() -> {
+            Mockito.verify(subscription, Mockito.times(1)).cancel();
+        });
     }
 }
