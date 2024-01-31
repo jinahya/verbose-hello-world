@@ -22,7 +22,6 @@ package com.github.jinahya.hello._05_java_util_concurrent;
 
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello.HelloWorldFlow;
-import com.github.jinahya.hello.HelloWorldTestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.DisplayName;
@@ -79,11 +78,11 @@ class HelloWorldFlow_03_HelloWorldPublisher_OfBuffer_Test extends _HelloWorldFlo
         // DONE: verify, subscription.request(n) invoked, once
         Mockito.verify(subscription, Mockito.times(1)).request(n);
         // DONE: verify, subscriber.onNext(item) invoked, n-times
-        Awaitility.await().untilAsserted(() -> {
+        Awaitility.await().atMost(Duration.ofSeconds(8L)).untilAsserted(() -> {
             Mockito.verify(subscriber, Mockito.times(n)).onNext(ArgumentMatchers.notNull());
         });
         // DONE: verify, subscription.cancel() invoked, once
-        Awaitility.await().untilAsserted(() -> {
+        Awaitility.await().atMost(Duration.ofSeconds(4L)).untilAsserted(() -> {
             Mockito.verify(subscription, Mockito.times(1)).cancel();
         });
     }

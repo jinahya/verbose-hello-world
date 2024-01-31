@@ -22,7 +22,6 @@ package com.github.jinahya.hello._05_java_util_concurrent;
 
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello.HelloWorldFlow;
-import com.github.jinahya.hello.HelloWorldTestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.DisplayName;
@@ -32,6 +31,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
+import java.time.Duration;
 import java.util.concurrent.Flow;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -70,17 +70,17 @@ class HelloWorldFlow_01_HelloWorldPublisher_OfByte_Test extends _HelloWorldFlowT
         Mockito.verify(subscription, Mockito.times(1)).request(n);
         if (n < HelloWorld.BYTES) {
             // DONE: verify, subscriber.onNext(item) invoked, n-times
-            Awaitility.await().untilAsserted(() -> {
+            Awaitility.await().atMost(Duration.ofSeconds(8L)).untilAsserted(() -> {
                 Mockito.verify(subscriber, Mockito.times(n)).onNext(ArgumentMatchers.notNull());
             });
         } else {
-            Awaitility.await().untilAsserted(() -> {
+            Awaitility.await().atMost(Duration.ofSeconds(8L)).untilAsserted(() -> {
                 // DONE: verify, subscriber.onNext(item) invoked, at most HelloWorld.BYTES times
                 Mockito.verify(subscriber, Mockito.atMost(HelloWorld.BYTES))
                         .onNext(ArgumentMatchers.notNull());
             });
             // DONE: verify, subscriber.onComplete() invoked, once
-            Awaitility.await().untilAsserted(() -> {
+            Awaitility.await().atMost(Duration.ofSeconds(4L)).untilAsserted(() -> {
                 Mockito.verify(subscriber, Mockito.times(1)).onComplete();
             });
         }

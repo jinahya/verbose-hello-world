@@ -78,11 +78,11 @@ class HelloWorldFlow_04_HelloWorldPublisher_OfString_Test extends _HelloWorldFlo
         // DONE: verify, subscription.request(n) invoked, once
         Mockito.verify(subscription, Mockito.times(1)).request(n);
         // DONE: verify, subscriber.onNext(item) invoked, n-times
-        Awaitility.await().timeout(Duration.ofSeconds(8L)).untilAsserted(()-> {
+        Awaitility.await().atMost(Duration.ofSeconds(8L)).untilAsserted(()-> {
             Mockito.verify(subscriber, Mockito.times(n)).onNext(ArgumentMatchers.notNull());
         });
         // DONE: verify, subscription.cancel() invoked, once
-        Awaitility.await().timeout(Duration.ofSeconds(4L)).untilAsserted(()-> {
+        Awaitility.await().atMost(Duration.ofSeconds(4L)).untilAsserted(()-> {
             Mockito.verify(subscription, Mockito.times(1)).cancel();
         });
     }

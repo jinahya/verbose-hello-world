@@ -32,6 +32,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
+import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.Flow;
 import java.util.concurrent.ThreadLocalRandom;
@@ -79,11 +80,11 @@ class HelloWorldFlow_02_HelloWorldPublisher_OfArray_Test extends _HelloWorldFlow
         // DONE: verify, subscription.request(n) invoked, once
         Mockito.verify(subscription, Mockito.times(1)).request(n);
         // DONE: verify, subscriber.onNext(item) invoked, n-times
-        Awaitility.await().untilAsserted(() -> {
+        Awaitility.await().atMost(Duration.ofSeconds(8L)).untilAsserted(() -> {
             Mockito.verify(subscriber, Mockito.times(n)).onNext(ArgumentMatchers.notNull());
         });
         // DONE: verify, subscription.cancel() invoked, once
-        Awaitility.await().untilAsserted(() -> {
+        Awaitility.await().atMost(Duration.ofSeconds(4L)).untilAsserted(() -> {
             Mockito.verify(subscription, Mockito.times(1)).cancel();
         });
     }
