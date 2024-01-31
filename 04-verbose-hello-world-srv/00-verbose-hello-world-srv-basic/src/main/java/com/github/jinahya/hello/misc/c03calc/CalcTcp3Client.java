@@ -32,35 +32,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Slf4j
 class CalcTcp3Client extends CalcTcp {
 
-    private static void connect(final Selector selector) throws IOException {
-        final var client = SocketChannel.open();
-        try {
-            // -------------------------------------------------------------- configure-non-blocking
-            client.configureBlocking(false);
-            // ------------------------------------------------------------------------ connect(try)
-            if (client.connect(ADDR)) {
-                final var clientKey = client.register(
-                        selector,
-                        SelectionKey.OP_WRITE,
-                        new _Message.OfBuffer().randomize().readyToWriteToServer()
-                );
-                assert !clientKey.isWritable();
-                connect(selector);
-            } else {
-                final var clientKey = client.register(
-                        selector,
-                        SelectionKey.OP_CONNECT
-                );
-                assert !clientKey.isConnectable();
-            }
-        } catch (final IOException ioe) {
-            log.error("failed to configure-non-blocking/connect(try)", ioe);
-            client.close();
-        }
-    }
-
     public static void main(final String... args) throws Exception {
         try (var selector = Selector.open()) {
+            final var sequence = new AtomicInteger();
             for (int i = 0; i < REQUEST_COUNT; i++) {
                 final var client = SocketChannel.open();
                 // ---------------------------------------------------------- configure-non-blocking
@@ -70,10 +44,12 @@ class CalcTcp3Client extends CalcTcp {
                     final var clientKey = client.register(
                             selector,
                             SelectionKey.OP_WRITE,
-                            new _Message.OfBuffer().randomize().readyToWriteToServer()
+                            new _Message.OfBuffer()
+                                    .randomize()
+                                    .sequence(sequence)
+                                    .readyToWriteToServer()
                     );
                     assert !clientKey.isWritable();
-                    connect(selector);
                 } else {
                     final var clientKey = client.register(
                             selector,
@@ -83,7 +59,6 @@ class CalcTcp3Client extends CalcTcp {
                 }
             }
             // ----------------------------------------------------------------------- selector-loop
-            final var index = new AtomicInteger();
             while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
                 // -------------------------------------------------------------------------- select
                 if (selector.select() == 0) {
@@ -101,6 +76,7 @@ class CalcTcp3Client extends CalcTcp {
                                 selectedKey.attach(
                                         new _Message.OfBuffer()
                                                 .randomize()
+                                                .sequence(sequence)
                                                 .readyToWriteToServer()
                                 );
                                 selectedKey.interestOpsOr(SelectionKey.OP_WRITE);
@@ -110,7 +86,7 @@ class CalcTcp3Client extends CalcTcp {
                             log.error("failed to finish connecting", ioe);
                             channel.close();
                             assert !selectedKey.isValid();
-                            continue;
+                            continue; // why?
                         }
                     }
                     // ----------------------------------------------------------------------- write
@@ -142,8 +118,8 @@ class CalcTcp3Client extends CalcTcp {
                         }
                         assert r > 0; // why?
                         if (!message.hasRemaining()) {
+                            message.log();
                             selectedKey.interestOpsAnd(~SelectionKey.OP_READ);
-                            message.log(index);
                             channel.close();
                             assert !selectedKey.isValid();
                         }

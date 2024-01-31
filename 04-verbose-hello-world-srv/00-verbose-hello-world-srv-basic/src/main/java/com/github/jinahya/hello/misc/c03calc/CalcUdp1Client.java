@@ -34,7 +34,7 @@ class CalcUdp1Client extends CalcUdp {
 
     public static void main(final String... args) throws IOException {
         try (var executor = newExecutorForClient("udp-1-client-")) {
-            final var index = new AtomicInteger();
+            final var sequence = new AtomicInteger();
             for (int i = 0; i < REQUEST_COUNT; i++) {
                 executor.submit(() -> {
                     try (var client = new DatagramSocket(null)) {
@@ -55,7 +55,9 @@ class CalcUdp1Client extends CalcUdp {
                             }
                         }
                         // -------------------------------------------------------------------- send
-                        final var message = new _Message.OfArray().randomize();
+                        final var message = new _Message.OfArray()
+                                .randomize()
+                                .sequence(sequence);
                         if (client.isConnected()) {
                             message.sendToServer(client);
                         } else {
@@ -63,7 +65,7 @@ class CalcUdp1Client extends CalcUdp {
                         }
                         // ------------------------------------------------------------- receive/log
                         client.setSoTimeout((int) SO_TIMEOUT_MILLIS);
-                        message.receiveFromServer(client).log(index);
+                        message.receiveFromServer(client).log();
                         // ------------------------------------------------- disconnect-if-connected
                         if (client.isConnected()) {
                             client.disconnect();

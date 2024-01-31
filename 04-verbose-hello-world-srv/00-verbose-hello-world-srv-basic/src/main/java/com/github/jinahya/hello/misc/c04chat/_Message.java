@@ -41,7 +41,7 @@ import java.util.function.ToLongFunction;
 @SuppressWarnings({
         "java:S101"
 })
-class _ChatMessage {
+class _Message {
 
     private static final int TIMESTAMP_OFFSET = 0;
 
@@ -398,7 +398,7 @@ class _ChatMessage {
         }
     }
 
-    private _ChatMessage() {
+    private _Message() {
         throw new IllegalArgumentException("");
     }
 }

@@ -24,13 +24,11 @@ import com.github.jinahya.hello.util.JavaLangUtils;
 import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.net.StandardSocketOptions;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
 @Slf4j
@@ -81,7 +79,7 @@ class CalcUdp3Server extends CalcUdp {
                         final var channel = (DatagramChannel) key.channel();
                         final var message = new _Message.OfBuffer().receiveFromClient(channel);
                         assert !message.hasRemaining();
-                        message.calculateResult(executor, m -> {
+                        message.calculate(executor, m -> {
                             m.readyToWriteToClient();
                             lock.lock();
                             try {

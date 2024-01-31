@@ -13,6 +13,45 @@ import java.util.concurrent.ThreadLocalRandom;
 @Slf4j
 abstract class _MessageTest<T extends _Message<T>> {
 
+    // ------------------------------------------------------------------------------------ sequence
+    @DisplayName("sequence")
+    @Nested
+    class SequenceTest {
+
+        @DisplayName("getSequence()I")
+        @Nested
+        class GetSequenceTest {
+
+            @Test
+            void _Zero_New() {
+                // ------------------------------------------------------------------------------- given
+                final var instance = newInstance();
+                // -------------------------------------------------------------------------------- when
+                final var result = instance.sequence();
+                // -------------------------------------------------------------------------------- then
+                Assertions.assertEquals(0, result);
+            }
+        }
+
+        @DisplayName("setSequence(I)T")
+        @Nested
+        class SetSequenceTest {
+
+            @DisplayName("setSequence(random)T")
+            @Test
+            void _DoesNotThrow_Random() {
+                // --------------------------------------------------------------------------- given
+                final var instance = newInstance();
+                final var value = ThreadLocalRandom.current().nextInt();
+                // ---------------------------------------------------------------------------- when
+                final var result = Assertions.assertDoesNotThrow(() -> instance.sequence(value));
+                // ---------------------------------------------------------------------------- then
+                Assertions.assertEquals(instance, result);
+                Assertions.assertEquals(value & 0xFF, instance.sequence());
+            }
+        }
+    }
+
     // ------------------------------------------------------------------------------------ operator
     @Nested
     class OperatorTest {
@@ -26,7 +65,7 @@ abstract class _MessageTest<T extends _Message<T>> {
                 // --------------------------------------------------------------------------- given
                 final var instance = newInstance();
                 // ---------------------------------------------------------------------------- when
-                final var result = instance.getOperator();
+                final var result = instance.operator();
                 // ---------------------------------------------------------------------------- then
                 Assertions.assertNull(result);
             }
@@ -43,11 +82,11 @@ abstract class _MessageTest<T extends _Message<T>> {
                 final var instance = newInstance();
                 // ---------------------------------------------------------------------------- when
                 final var result = Assertions.assertDoesNotThrow(
-                        () -> instance.setOperator(null)
+                        () -> instance.operator(null)
                 );
                 // ---------------------------------------------------------------------------- then
                 Assertions.assertSame(instance, result);
-                Assertions.assertNull(instance.getOperator());
+                Assertions.assertNull(instance.operator());
             }
 
             @DisplayName("setOperator(!null)")
@@ -58,11 +97,11 @@ abstract class _MessageTest<T extends _Message<T>> {
                 final var instance = newInstance();
                 // ---------------------------------------------------------------------------- when
                 final var result = Assertions.assertDoesNotThrow(
-                        () -> instance.setOperator(operator)
+                        () -> instance.operator(operator)
                 );
                 // ---------------------------------------------------------------------------- then
                 Assertions.assertSame(instance, result);
-                Assertions.assertSame(operator, instance.getOperator());
+                Assertions.assertSame(operator, instance.operator());
             }
         }
     }
@@ -77,7 +116,7 @@ abstract class _MessageTest<T extends _Message<T>> {
             // ------------------------------------------------------------------------------- given
             final var instance = newInstance();
             // -------------------------------------------------------------------------------- when
-            final var result = instance.getOperand1();
+            final var result = instance.operand1();
             // -------------------------------------------------------------------------------- then
             Assertions.assertEquals(0, result);
         }
@@ -88,10 +127,10 @@ abstract class _MessageTest<T extends _Message<T>> {
             final var instance = newInstance();
             final var operand1 = ThreadLocalRandom.current().nextInt();
             // -------------------------------------------------------------------------------- when
-            final var result = instance.setOperand1(operand1);
+            final var result = instance.operand1(operand1);
             // -------------------------------------------------------------------------------- then
             Assertions.assertEquals(instance, result);
-            Assertions.assertEquals((operand1 << 28) >> 28, instance.getOperand1());
+            Assertions.assertEquals((operand1 << 28) >> 28, instance.operand1());
         }
     }
 
@@ -105,7 +144,7 @@ abstract class _MessageTest<T extends _Message<T>> {
             // ------------------------------------------------------------------------------- given
             final var instance = newInstance();
             // -------------------------------------------------------------------------------- when
-            final var result = instance.getOperand2();
+            final var result = instance.operand2();
             // -------------------------------------------------------------------------------- then
             Assertions.assertEquals(0, result);
         }
@@ -116,10 +155,10 @@ abstract class _MessageTest<T extends _Message<T>> {
             final var instance = newInstance();
             final var operand2 = ThreadLocalRandom.current().nextInt();
             // -------------------------------------------------------------------------------- when
-            final var result = instance.setOperand2(operand2);
+            final var result = instance.operand2(operand2);
             // -------------------------------------------------------------------------------- then
             Assertions.assertEquals(instance, result);
-            Assertions.assertEquals((operand2 << 28) >> 28, instance.getOperand2());
+            Assertions.assertEquals((operand2 << 28) >> 28, instance.operand2());
         }
     }
 
@@ -133,7 +172,7 @@ abstract class _MessageTest<T extends _Message<T>> {
             // ------------------------------------------------------------------------------- given
             final var instance = newInstance();
             // -------------------------------------------------------------------------------- when
-            final var result = instance.getResult();
+            final var result = instance.result();
             // -------------------------------------------------------------------------------- then
             Assertions.assertEquals(0, result);
         }
@@ -144,10 +183,10 @@ abstract class _MessageTest<T extends _Message<T>> {
             final var instance = newInstance();
             final var value = ThreadLocalRandom.current().nextInt();
             // -------------------------------------------------------------------------------- when
-            final var result = instance.setResult(value);
+            final var result = instance.result(value);
             // -------------------------------------------------------------------------------- then
             Assertions.assertEquals(instance, result);
-            Assertions.assertEquals((value << 24) >> 24, instance.getResult());
+            Assertions.assertEquals((value << 24) >> 24, instance.result());
         }
     }
 

@@ -53,7 +53,7 @@ class CalcUdp1Server extends CalcUdp {
                 try {
                     new _Message.OfArray()
                             .receiveFromClient(server)
-                            .calculateResult(executor, m -> {
+                            .calculate(executor, m -> {
                                 try {
                                     m.sendToClient(server);
                                 } catch (final IOException ioe) {

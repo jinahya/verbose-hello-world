@@ -34,7 +34,7 @@ class CalcTcp1Client extends CalcTcp {
     public static void main(final String... args) {
         try (var executor = newExecutorForClient("tcp-1-client-")) {
             // --------------------------------------------------------------------- submit-requests
-            final var index = new AtomicInteger();
+            final var sequence = new AtomicInteger();
             for (int i = 0; i < REQUEST_COUNT; i++) {
                 executor.submit(() -> {
                     try (var client = new Socket()) {
@@ -43,6 +43,7 @@ class CalcTcp1Client extends CalcTcp {
                         // ---------------------------------------------------------- write/read/log
                         new _Message.OfArray()
                                 .randomize()
+                                .sequence(sequence.getAndIncrement())
                                 .writeToServerAndAccept(client, c -> s -> {
                                     JavaIoFlushableUtils.flushUnchecked(s);
                                     JavaUtilConcurrentCallableUtils.callUnchecked(() -> {
@@ -51,7 +52,7 @@ class CalcTcp1Client extends CalcTcp {
                                     });
                                 })
                                 .readFromServer(client.getInputStream())
-                                .log(index.getAndIncrement());
+                                .log();
                     } catch (final Exception e) {
                         log.error("failed to request", e);
                     }

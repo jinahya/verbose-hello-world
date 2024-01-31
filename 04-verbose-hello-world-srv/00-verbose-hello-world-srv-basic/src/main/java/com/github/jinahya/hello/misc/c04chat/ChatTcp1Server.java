@@ -20,27 +20,22 @@ package com.github.jinahya.hello.misc.c04chat;
  * #L%
  */
 
-import com.github.jinahya.hello.util.HelloWorldServerUtils;
 import com.github.jinahya.hello.util.JavaLangUtils;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.EOFException;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-class ChatTcp1Server {
+class ChatTcp1Server extends _ChatTcp {
 
     private record Receiver(Socket client, Queue<? super byte[]> queue) implements Runnable {
 
@@ -55,7 +50,7 @@ class ChatTcp1Server {
                 byte[] array;
                 try {
                     array = client.getInputStream()
-                            .readNBytes(_ChatMessage.BYTES);
+                            .readNBytes(_Message.BYTES);
                 } catch (IOException ioe) {
                     if (!client.isClosed()) {
                         log.error("failed to read", ioe);
@@ -120,50 +115,82 @@ class ChatTcp1Server {
         }
     }
 
-    public static void main(String... args) throws Exception {
-        var executor = Executors.newCachedThreadPool();
-        var futures = new ArrayList<Future<?>>();
-        var clients = Collections.synchronizedList(new ArrayList<Socket>());
-        var queue = new ArrayBlockingQueue<byte[]>(1024);
-        futures.add(executor.submit(new Sender(queue, clients)));
-        try (var server = new ServerSocket() /* IOException */) {
-            server.bind(new InetSocketAddress(InetAddress.getByName("::"),
-                                              _ChatConstants.PORT));
-            JavaLangUtils.readLinesAndCallWhenTests(
-                    HelloWorldServerUtils::isQuit, // <predicate>
-                    () -> {                        // <callable>
-                        server.close();
-                        return null;
-                    },
-                    l -> {                        // <consumer>
-                        // does nothing
-                    }
+    public static void main(final String... args) throws Exception {
+        try (var executor = newExecutorForServer("tcp-1-server-");
+             var server = new ServerSocket()) {
+            // -------------------------------------------------------------------------------- bind
+            server.bind(ADDR, SERVER_BACKLOG);
+            // ------------------------------------------------------------- read-quit!/close-server
+            JavaLangUtils.readLinesAndCloseWhenTests(
+                    "quit!"::equalsIgnoreCase,
+                    server
             );
+            // ----------------------------------------------------------------------------- prepare
+            final var clients = new CopyOnWriteArrayList<Socket>();
+            final var messages = new ArrayBlockingQueue<___Message2>(1024);
+            // -------------------------------------------------------------------------- take/write
+            final var writer = executor.submit(() -> {
+                for (___Message2 message; !Thread.currentThread().isInterrupted(); ) {
+                    try {
+                        message = messages.take();
+                    } catch (final InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        continue;
+                    }
+                    for (var i = clients.iterator(); i.hasNext(); ) {
+                        final var client = i.next();
+                        try {
+                            message.write(client.getOutputStream()).flush();
+                        } catch (final IOException ioe) {
+                            i.remove();
+                            if (!client.isConnected()) {
+                                continue;
+                            }
+                            log.error("failed to write to " + client, ioe);
+                            try {
+                                client.close();
+                            } catch (final IOException ioe2) {
+                                log.error("failed to close " + client, ioe2);
+                            }
+                        }
+                    }
+                }
+            });
             while (!server.isClosed()) {
+                // -------------------------------------------------------------------------- accept
+                final Socket client;
                 try {
-                    var client = server.accept(); // IOException
-//                    logAccepted(client);
-                    clients.add(client);
-                    futures.add(executor.submit(new Receiver(client, queue)));
-                } catch (IOException ioe) {
+                    client = server.accept();
+                } catch (final IOException ioe) {
                     if (!server.isClosed()) {
                         log.error("failed to accept", ioe);
                     }
-                    break;
+                    continue;
                 }
+                // ---------------------------------------------------------------------- read/offer
+                executor.submit(() -> {
+                    clients.add(client);
+                    try (client) {
+                        while (!Thread.currentThread().isInterrupted()) {
+                            try {
+                                final var message = ___Message2.read(client.getInputStream());
+                                if (!messages.offer(message)) {
+                                    log.error("failed to offer message: " + message);
+                                }
+                            } catch (final IOException ioe) {
+                                if (ioe instanceof EOFException) {
+                                    Thread.currentThread().interrupt();
+                                    continue;
+                                }
+                                log.error("failed to read", ioe);
+                            }
+                        }
+                    }
+                    return null;
+                });
             }
-        }
-        futures.forEach(f -> f.cancel(true));
-        for (var client : clients) {
-            try {
-                client.close(); // IOException
-            } catch (IOException ioe) {
-                log.error("failed to close " + client, ioe);
-            }
-        }
-        executor.shutdown();
-        if (!executor.awaitTermination(8L, TimeUnit.SECONDS)) {
-            log.error("executor has not been terminated");
+            // --------------------------------------------------------------- shutdown-executor-now
+            executor.shutdownNow();
         }
     }
 }

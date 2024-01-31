@@ -86,7 +86,7 @@ class CalcTcp5Server extends CalcTcp {
                                 return;
                             }
                             // --------------------------------------------------------------- write
-                            message.calculateResult()
+                            message.calculate()
                                     .readyToWriteToClient()
                                     .<Void>write(client, null, new CompletionHandler<>() {
                                         @Override

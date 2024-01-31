@@ -65,7 +65,7 @@ class CalcUdp3Client extends CalcUdp {
                 assert !clientKey.isWritable();
             }
             // ----------------------------------------------------------------------------- prepare
-            final var index = new AtomicInteger();
+            final var sequence = new AtomicInteger();
             // ----------------------------------------------------------------------- selector-loop
             while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
                 // -------------------------------------------------------------------------- select
@@ -79,7 +79,9 @@ class CalcUdp3Client extends CalcUdp {
                     // ------------------------------------------------------------------------ send
                     if (key.isWritable()) {
                         final var channel = (DatagramChannel) key.channel();
-                        final var message = new _Message.OfBuffer().randomize();
+                        final var message = new _Message.OfBuffer()
+                                .randomize()
+                                .sequence(sequence);
                         if (channel.isConnected()) {
                             message.sendToServer(channel);
                         } else {
@@ -95,7 +97,7 @@ class CalcUdp3Client extends CalcUdp {
                     if (key.isReadable()) {
                         final var channel = (DatagramChannel) key.channel();
                         final var message = (_Message.OfBuffer) key.attachment();
-                        message.receiveFromServer(channel).log(index);
+                        message.receiveFromServer(channel).log();
                         if (channel.isConnected()) {
                             channel.disconnect();
                         }

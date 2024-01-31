@@ -41,12 +41,12 @@ class ChatTcp2Server {
 
     // @formatter:off
     static class ChatTcp2ServerAttachment {
-        final ByteBuffer buffer = _ChatMessage.OfBuffer.empty();
+        final ByteBuffer buffer = _Message.OfBuffer.empty();
         final List<ByteBuffer> buffers = new LinkedList<>();
     }
     // @formatter:on
 
-    public static void main(String... args) throws Exception {
+    public static void main(final String... args) throws Exception {
         try (var selector = Selector.open();
              var server = ServerSocketChannel.open()) {
             server.bind(new InetSocketAddress(InetAddress.getByName("::"),
