@@ -32,9 +32,9 @@ import java.util.function.Supplier;
 
 public final class HelloWorldUtils {
 
-    public static <T> Future<T> executeAsync(final Supplier<? extends HelloWorld> supplier,
-                                             final Function<? super HelloWorld, ? extends T> function,
-                                             final Executor executor) {
+    public static <T> Future<T> executeAsync(
+            final Supplier<? extends HelloWorld> supplier,
+            final Function<? super HelloWorld, ? extends T> function, final Executor executor) {
         Objects.requireNonNull(supplier, "supplier is null");
         Objects.requireNonNull(function, "function is null");
         Objects.requireNonNull(executor, "executor is null");

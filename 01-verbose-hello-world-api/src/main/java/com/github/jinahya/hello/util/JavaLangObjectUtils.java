@@ -20,8 +20,11 @@ package com.github.jinahya.hello.util;
  * #L%
  */
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.Objects;
 
+@Slf4j
 public final class JavaLangObjectUtils {
 
     public static String toSimpleString(final Object obj) {
@@ -29,6 +32,7 @@ public final class JavaLangObjectUtils {
         return String.format("%1$s@%2$08x", obj.getClass().getSimpleName(), obj.hashCode());
     }
 
+    @_ExcludeFromCoverage_PrivateConstructor_Obviously
     private JavaLangObjectUtils() {
         throw new AssertionError("instantiation is not allowed");
     }

@@ -55,12 +55,12 @@ public final class JavaLangUtils {
             void.class, Void.class
     );
 
-    public static boolean isPrimitive(final Class<?> clazz) {
+    static boolean isPrimitive(final Class<?> clazz) {
         Objects.requireNonNull(clazz, "clazz is null");
         return WRAPPER_CLASSES.containsKey(clazz);
     }
 
-    public static Class<?> getWrapperType(final Class<?> clazz) {
+    static Class<?> getWrapperType(final Class<?> clazz) {
         Objects.requireNonNull(clazz, "clazz is null");
         if (!isPrimitive(clazz)) {
             throw new IllegalArgumentException("not a primitive type: " + clazz);
@@ -73,7 +73,7 @@ public final class JavaLangUtils {
                     .stream()
                     .collect(Collectors.toUnmodifiableMap(Map.Entry::getValue, Map.Entry::getKey));
 
-    public static boolean isWrapper(final Class<?> clazz) {
+    static boolean isWrapper(final Class<?> clazz) {
         Objects.requireNonNull(clazz, "clazz is null");
         return PRIMITIVE_CLASSES.containsKey(clazz);
     }
@@ -81,11 +81,11 @@ public final class JavaLangUtils {
     /**
      * Starts a new {@link Thread#isDaemon() daemon} thread which continuously reads lines from
      * {@link System#in}, calls specified callable when a line tests with specified predicate,
-     * otherwise, accepts each line to specified consumer.
+     * otherwise accepts each line to, if a non-null specified,  specified consumer.
      *
      * @param predicate the predicate to test.
      * @param callable  the callable to be called when a line passes {@code predicate}.
-     * @param consumer  the consumer be accepted with lines not pass.
+     * @param consumer  the consumer be accepted with lines not pass; may be {@code null}.
      */
     public static void readLinesAndCallWhenTests(final Predicate<? super String> predicate,
                                                  final Callable<Void> callable,
@@ -116,11 +116,28 @@ public final class JavaLangUtils {
         });
     }
 
+    /**
+     * Starts a new {@link Thread#isDaemon() daemon} thread which continuously reads lines from
+     * {@link System#in}, calls specified callable when a line tests with specified predicate.
+     *
+     * @param predicate the predicate to test.
+     * @param callable  the callable to be called when a line passes the {@code predicate}.
+     */
     public static void readLinesAndCallWhenTests(final Predicate<? super String> predicate,
                                                  final Callable<Void> callable) {
         readLinesAndCallWhenTests(predicate, callable, null);
     }
 
+    /**
+     * Starts a new {@link Thread#isDaemon() daemon} thread which continuously reads lines from
+     * {@link System#in}, {@link Closeable#close() closes} specified closeable when a line tests
+     * with specified predicate, otherwise accepts each line to, if a non-null specified,  specified
+     * consumer.
+     *
+     * @param predicate the predicate to test.
+     * @param closeable the closeable to be closed when a line passes {@code predicate}.
+     * @param consumer  the consumer be accepted with lines not pass; may be {@code null}.
+     */
     public static void readLinesAndCloseWhenTests(final Predicate<? super String> predicate,
                                                   final Closeable closeable,
                                                   final Consumer<? super String> consumer) {
@@ -136,11 +153,12 @@ public final class JavaLangUtils {
     }
 
     /**
-     * Reads lines from {@link System#in}, and closes specified closeable when a line tests with
-     * specified predicate.
+     * Starts a new {@link Thread#isDaemon() daemon} thread which continuously reads lines from
+     * {@link System#in}, {@link Closeable#close() closes} specified closeable when a line tests
+     * with specified predicate.
      *
-     * @param predicate the predicate tests each line.
-     * @param closeable the closeable to close.
+     * @param predicate the predicate to test.
+     * @param closeable the closeable to be closed when a line passes {@code predicate}.
      */
     public static void readLinesAndCloseWhenTests(final Predicate<? super String> predicate,
                                                   final Closeable closeable) {
@@ -153,6 +171,16 @@ public final class JavaLangUtils {
         );
     }
 
+    /**
+     * Starts a new {@link Thread#isDaemon() daemon} thread which continuously reads lines from
+     * {@link System#in}, {@link Runnable#run() runs} specified runnable when a line tests with
+     * specified predicate, otherwise accepts each line to, if a non-null specified,  specified
+     * consumer.
+     *
+     * @param predicate the predicate to test.
+     * @param runnable  the runnable to run when a line passes {@code predicate}.
+     * @param consumer  the consumer be accepted with lines not pass; may be {@code null}.
+     */
     public static void readLinesAndRunWhenTests(final Predicate<? super String> predicate,
                                                 final Runnable runnable,
                                                 final Consumer<? super String> consumer) {
@@ -167,6 +195,14 @@ public final class JavaLangUtils {
         );
     }
 
+    /**
+     * Starts a new {@link Thread#isDaemon() daemon} thread which continuously reads lines from
+     * {@link System#in}, {@link Runnable#run() runs} specified runnable when a line tests with
+     * specified predicate.
+     *
+     * @param predicate the predicate to test.
+     * @param runnable  the runnable to run when a line passes {@code predicate}.
+     */
     public static void readLinesAndRunWhenTests(final Predicate<? super String> predicate,
                                                 final Runnable runnable) {
         readLinesAndRunWhenTests(
@@ -199,6 +235,14 @@ public final class JavaLangUtils {
         return trimByCodepoints(codePoints, from, to, charset, bytes);
     }
 
+    /**
+     * Trims specified string that its number of bytes is not greater than specified number.
+     *
+     * @param string  the string to trim.
+     * @param charset the charset to encode {@code string}.
+     * @param bytes   the number of maximum bytes.
+     * @return a trimmed string whose number of bytes is not greater than {@code bytes}.
+     */
     public static String trimByCodepoints(final String string, final Charset charset,
                                           final int bytes) {
         Objects.requireNonNull(string, "string is null");
@@ -212,6 +256,7 @@ public final class JavaLangUtils {
     }
 
     // ---------------------------------------------------------------------------------------------
+    @_ExcludeFromCoverage_PrivateConstructor_Obviously
     private JavaLangUtils() {
         throw new AssertionError("instantiation is not allowed");
     }

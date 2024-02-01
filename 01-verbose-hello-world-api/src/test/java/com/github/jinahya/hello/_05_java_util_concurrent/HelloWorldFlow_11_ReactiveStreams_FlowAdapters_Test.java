@@ -22,7 +22,6 @@ package com.github.jinahya.hello._05_java_util_concurrent;
 
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello.HelloWorldFlow;
-import com.github.jinahya.hello.HelloWorldTestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.DisplayName;
@@ -38,7 +37,6 @@ import org.reactivestreams.Subscription;
 
 import java.nio.ByteBuffer;
 import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.concurrent.Flow;
 import java.util.concurrent.ThreadLocalRandom;
@@ -206,11 +204,11 @@ class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlo
             Mockito.verify(subscription, Mockito.times(1)).request(nCaptor.capture());
             final var n = Math.toIntExact(nCaptor.getValue());
             // DONE: verify, subscriber.onNext(item) invoked, n-times
-            Awaitility.await().untilAsserted(() -> {
+            Awaitility.await().atMost(Duration.ofSeconds(8L)).untilAsserted(() -> {
                 Mockito.verify(subscriber, Mockito.atMost(n)).onNext(ArgumentMatchers.notNull());
             });
             // verify, subscription.cancel() invoked, once
-            Awaitility.await().untilAsserted(() -> {
+            Awaitility.await().atMost(Duration.ofSeconds(4L)).untilAsserted(() -> {
                 Mockito.verify(subscription, Mockito.times(1)).cancel();
             });
         }

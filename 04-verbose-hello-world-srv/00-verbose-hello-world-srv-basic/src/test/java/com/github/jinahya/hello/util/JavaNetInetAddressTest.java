@@ -30,36 +30,35 @@ class JavaNetInetAddressTest {
             }
         }
 
-        @DisplayName("getByName(empty)")
+        @DisplayName("getByName(blank)")
         @ValueSource(strings = {
                 "",
                 " "
         })
-        @ParameterizedTest
-        void __Empty(final String name) {
+        @ParameterizedTest(name = "[{index}] hostName: \"{0}\"")
+        void __Blank(final String hostName) {
             try {
-                final var host = InetAddress.getByName(name);
+                final var host = InetAddress.getByName(hostName);
                 log.debug("getByName(null): {}", host);
             } catch (final UnknownHostException uhe) {
-                log.error("failed to get InetAddress for '{}'}", name, uhe);
+                log.error("failed to get InetAddress for '{}'", hostName, uhe);
             }
         }
 
-        @DisplayName("getByName(non-null)")
+        @DisplayName("getByName(!blank)")
         @ValueSource(strings = {
-                "",
                 "sun.com",
                 "java.sun.com",
                 "microsoft.com",
                 "www.microsoft.com"
         })
-        @ParameterizedTest
-        void __(final String name) {
+        @ParameterizedTest(name = "[{index}] hostName: \"{0}\"")
+        void __(final String hostName) {
             try {
-                final var host = InetAddress.getByName(name);
-                log.debug("getByName(\"{}\"): {}", name, host);
+                final var host = InetAddress.getByName(hostName);
+                log.debug("host {}", host);
             } catch (final UnknownHostException uhe) {
-                log.error("failed to get InetAddress for `{}'", name, uhe);
+                log.error("failed to get InetAddress for '{}'", hostName, uhe);
             }
         }
     }
@@ -73,21 +72,25 @@ class JavaNetInetAddressTest {
         void __() {
             final var loopbackAddress = InetAddress.getLoopbackAddress();
             log.debug("loopbackAddress: {}", loopbackAddress);
+            Assertions.assertTrue(loopbackAddress.isLoopbackAddress());
         }
 
         @DisplayName("127.0.0.1/0:0:0:0:0:0:0:1/::1")
         @ValueSource(strings = {
+                "localhost",
                 "127.0.0.1",
                 "0:0:0:0:0:0:0:1",
                 "::1"
         })
-        @ParameterizedTest
+        @ParameterizedTest(name = "[{index}] hostName: \"{0}\"")
         void __NotNull(final String hostName) {
             try {
                 final var host = InetAddress.getByName(hostName);
+                log.debug("host: {}", host);
+                log.debug("hostName: {}", host.getHostName());
                 Assertions.assertTrue(host.isLoopbackAddress());
             } catch (final UnknownHostException uhe) {
-                log.error("failed to get InetAddress for '{}'", hostName, uhe);
+                log.error("failed to get InetAddress by name: '{}'", hostName, uhe);
             }
         }
     }

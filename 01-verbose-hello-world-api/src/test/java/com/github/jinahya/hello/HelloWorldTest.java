@@ -32,8 +32,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import java.util.concurrent.ThreadLocalRandom;
-
 /**
  * An abstract class for testing methods defined in {@link HelloWorld} interface.
  *
@@ -45,10 +43,6 @@ import java.util.concurrent.ThreadLocalRandom;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Slf4j
 public abstract class HelloWorldTest {
-
-    protected ThreadLocalRandom threadLocalRandom() {
-        return ThreadLocalRandom.current();
-    }
 
     // ---------------------------------------------------------------------------------------------
     @Spy

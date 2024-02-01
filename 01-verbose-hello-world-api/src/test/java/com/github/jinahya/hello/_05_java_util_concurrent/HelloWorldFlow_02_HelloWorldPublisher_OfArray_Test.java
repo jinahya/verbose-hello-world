@@ -22,7 +22,6 @@ package com.github.jinahya.hello._05_java_util_concurrent;
 
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello.HelloWorldFlow;
-import com.github.jinahya.hello.HelloWorldTestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.DisplayName;
@@ -33,10 +32,8 @@ import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
 import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.concurrent.Flow;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 
 @DisplayName("HelloWorldFlow.HelloWorldPublisher.OfArray")
 @Slf4j
