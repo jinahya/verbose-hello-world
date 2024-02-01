@@ -42,7 +42,7 @@ import java.util.concurrent.SubmissionPublisher;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-class ChatTcp3Server extends _ChatTcp {
+class ChatTcp3Server extends ChatTcp {
 
     // @formatter:off
     static class ChatTcp3ServerAttachment extends ChatTcp2Server.ChatTcp2ServerAttachment

@@ -115,10 +115,10 @@ final class ___Message2 {
             throws IOException {
         var value = 0L;
         for (int r; bytes > 0; bytes--) {
-            value <<= Byte.SIZE;
             if ((r = stream.read()) == -1) {
                 throw new EOFException("premature eof");
             }
+            value <<= Byte.SIZE;
             value |= r;
         }
         return value;
