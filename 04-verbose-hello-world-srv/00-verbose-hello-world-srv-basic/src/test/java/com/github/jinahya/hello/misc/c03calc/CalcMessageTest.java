@@ -11,7 +11,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
-abstract class _MessageTest<T extends _Message<T>> {
+abstract class CalcMessageTest<T extends CalcMessage<T>> {
 
     // ------------------------------------------------------------------------------------ sequence
     @DisplayName("sequence")
@@ -90,9 +90,9 @@ abstract class _MessageTest<T extends _Message<T>> {
             }
 
             @DisplayName("setOperator(!null)")
-            @EnumSource(_Operator.class)
+            @EnumSource(CalcOperator.class)
             @ParameterizedTest
-            void _DoesNotThrow_NotNull(final _Operator operator) {
+            void _DoesNotThrow_NotNull(final CalcOperator operator) {
                 // --------------------------------------------------------------------------- given
                 final var instance = newInstance();
                 // ---------------------------------------------------------------------------- when
@@ -191,7 +191,7 @@ abstract class _MessageTest<T extends _Message<T>> {
     }
 
     // ---------------------------------------------------------------------------------------------
-    _MessageTest(final Class<T> messageClass) {
+    CalcMessageTest(final Class<T> messageClass) {
         super();
         this.messageClass = messageClass;
     }

@@ -55,7 +55,7 @@ class CalcUdp1Client extends CalcUdp {
                             }
                         }
                         // -------------------------------------------------------------------- send
-                        final var message = new _Message.OfArray()
+                        final var message = new CalcMessage.OfArray()
                                 .randomize()
                                 .sequence(sequence);
                         if (client.isConnected()) {

@@ -44,7 +44,7 @@ class CalcTcp3Client extends CalcTcp {
                     final var clientKey = client.register(
                             selector,
                             SelectionKey.OP_WRITE,
-                            new _Message.OfBuffer()
+                            new CalcMessage.OfBuffer()
                                     .randomize()
                                     .sequence(sequence)
                                     .readyToWriteToServer()
@@ -74,7 +74,7 @@ class CalcTcp3Client extends CalcTcp {
                             if (channel.finishConnect()) {
                                 selectedKey.interestOpsAnd(~SelectionKey.OP_CONNECT);
                                 selectedKey.attach(
-                                        new _Message.OfBuffer()
+                                        new CalcMessage.OfBuffer()
                                                 .randomize()
                                                 .sequence(sequence)
                                                 .readyToWriteToServer()
@@ -92,7 +92,7 @@ class CalcTcp3Client extends CalcTcp {
                     // ----------------------------------------------------------------------- write
                     if (selectedKey.isWritable()) {
                         final var channel = (SocketChannel) selectedKey.channel();
-                        final var message = (_Message.OfBuffer) selectedKey.attachment();
+                        final var message = (CalcMessage.OfBuffer) selectedKey.attachment();
                         assert message.hasRemaining();
                         final var w = message.write(channel);
                         assert w > 0; // why?
@@ -107,7 +107,7 @@ class CalcTcp3Client extends CalcTcp {
                     // ------------------------------------------------------------------------ read
                     if (selectedKey.isReadable()) {
                         final var channel = (SocketChannel) selectedKey.channel();
-                        final var message = (_Message.OfBuffer) selectedKey.attachment();
+                        final var message = (CalcMessage.OfBuffer) selectedKey.attachment();
                         assert message.hasRemaining();
                         final var r = message.read(channel);
                         if (r == -1) {

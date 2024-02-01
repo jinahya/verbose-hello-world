@@ -41,7 +41,7 @@ class CalcTcp1Client extends CalcTcp {
                         // ----------------------------------------------------------------- connect
                         client.connect(ADDR, (int) CONNECT_TIMEOUT_MILLIS);
                         // ---------------------------------------------------------- write/read/log
-                        new _Message.OfArray()
+                        new CalcMessage.OfArray()
                                 .randomize()
                                 .sequence(sequence.getAndIncrement())
                                 .writeToServerAndAccept(client, c -> s -> {

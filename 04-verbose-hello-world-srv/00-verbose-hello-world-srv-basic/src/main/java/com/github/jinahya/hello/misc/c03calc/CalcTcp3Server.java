@@ -107,14 +107,14 @@ class CalcTcp3Server extends CalcTcp {
                         final var clientKey = client.configureBlocking(false).register(
                                 selector,                                       // <sel>
                                 SelectionKey.OP_READ,                           // <ops>
-                                new _Message.OfBuffer().readyToReadFromClient() // <att>
+                                new CalcMessage.OfBuffer().readyToReadFromClient() // <att>
                         );
                         assert !clientKey.isReadable();
                     }
                     // ------------------------------------------------------------------------ read
                     if (selectedKey.isReadable()) {
                         final var channel = (SocketChannel) selectedKey.channel();
-                        final var message = (_Message.OfBuffer) selectedKey.attachment();
+                        final var message = (CalcMessage.OfBuffer) selectedKey.attachment();
                         assert message.hasRemaining();
                         final var r = message.read(channel);
                         if (r == -1) {
@@ -136,7 +136,7 @@ class CalcTcp3Server extends CalcTcp {
                     // ----------------------------------------------------------------------- write
                     if (selectedKey.isWritable()) {
                         final var channel = (SocketChannel) selectedKey.channel();
-                        final var message = (_Message.OfBuffer) selectedKey.attachment();
+                        final var message = (CalcMessage.OfBuffer) selectedKey.attachment();
                         assert message.hasRemaining();
                         final var w = message.write(channel);
                         assert w >= 0;
