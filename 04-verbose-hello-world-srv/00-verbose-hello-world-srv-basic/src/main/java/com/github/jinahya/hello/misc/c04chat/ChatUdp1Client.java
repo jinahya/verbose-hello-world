@@ -21,7 +21,7 @@ package com.github.jinahya.hello.misc.c04chat;
  */
 
 import com.github.jinahya.hello.HelloWorldServerConstants;
-import com.github.jinahya.hello.misc.c04chat._ChatMessage.OfArray;
+import com.github.jinahya.hello.misc.c04chat._Message.OfArray;
 import com.github.jinahya.hello.util.HelloWorldServerUtils;
 import com.github.jinahya.hello.util.JavaLangUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -67,7 +67,7 @@ class ChatUdp1Client {
 
         @Override
         public void run() {
-            var array = _ChatMessage.OfArray.empty();
+            var array = _Message.OfArray.empty();
             var packet = new DatagramPacket(array, array.length);
             while (!Thread.currentThread().isInterrupted()) {
                 try {

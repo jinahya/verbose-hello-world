@@ -126,7 +126,7 @@ class CalcTcp3Server extends CalcTcp {
                         if (!message.hasRemaining()) {
                             selectedKey.interestOpsAnd(~SelectionKey.OP_READ);
                             assert selectedKey.isReadable();
-                            message.calculateResult(executor, m -> {
+                            message.calculate(executor, m -> {
                                 m.readyToWriteToClient();
                                 selectedKey.interestOpsOr(SelectionKey.OP_WRITE);
                                 selector.wakeup(); // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

@@ -21,7 +21,7 @@ package com.github.jinahya.hello.misc.c04chat;
  */
 
 import com.github.jinahya.hello.HelloWorldServerConstants;
-import com.github.jinahya.hello.misc.c04chat._ChatMessage.OfBuffer;
+import com.github.jinahya.hello.misc.c04chat._Message.OfBuffer;
 import com.github.jinahya.hello.util.HelloWorldServerUtils;
 import com.github.jinahya.hello.util.JavaLangUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -105,7 +105,7 @@ class ChatUdp2Client {
                     var selectedKey = i.next();
                     if (selectedKey.isReadable()) {
                         var channel = (DatagramChannel) selectedKey.channel();
-                        var buffer = _ChatMessage.OfBuffer.empty();
+                        var buffer = _Message.OfBuffer.empty();
                         channel.receive(buffer); // IOException
                         assert !buffer.hasRemaining() : "not all bytes received";
                         OfBuffer.printToSystemOut(buffer);

@@ -95,7 +95,7 @@ class ChatTcp3Client {
                 return;
             }
             if (!attachment.buffer.hasRemaining()) {
-                _ChatMessage.OfBuffer.printToSystemOut(attachment.buffer);
+                _Message.OfBuffer.printToSystemOut(attachment.buffer);
                 attachment.buffer.clear();
             }
             attachment.client.read(attachment.buffer, attachment, this);
@@ -142,7 +142,7 @@ class ChatTcp3Client {
                                     },
                                     l -> {                         // <consumer>
                                         final var message = _ChatUtils.prependUsername(l);
-                                        final var buffer = _ChatMessage.OfBuffer.of(message);
+                                        final var buffer = _Message.OfBuffer.of(message);
                                         attachment.publisher.submit(buffer);
                                     }
                             );

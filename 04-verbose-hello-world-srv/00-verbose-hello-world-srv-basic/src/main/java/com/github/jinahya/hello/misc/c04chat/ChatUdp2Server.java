@@ -77,13 +77,13 @@ class ChatUdp2Server {
                     var selectedKey = i.next();
                     if (selectedKey.isReadable()) {
                         var channel = (DatagramChannel) selectedKey.channel();
-                        var buffer = _ChatMessage.OfBuffer.empty();
+                        var buffer = _Message.OfBuffer.empty();
                         var address = channel.receive(
                                 buffer.clear()); // IOException
                         assert !buffer.hasRemaining() : "not all bytes received";
                         addresses.put(address, Instant.now());
                         if (!HelloWorldServerUtils.isKeep(
-                                _ChatMessage.OfBuffer.getMessage(buffer))) {
+                                _Message.OfBuffer.getMessage(buffer))) {
                             var offered = buffers.offer(buffer.clear());
                             assert offered : "failed to offer";
                             selectedKey.interestOpsOr(SelectionKey.OP_WRITE);

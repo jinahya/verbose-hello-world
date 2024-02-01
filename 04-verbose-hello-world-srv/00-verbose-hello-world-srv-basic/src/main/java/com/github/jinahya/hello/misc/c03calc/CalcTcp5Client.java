@@ -38,14 +38,16 @@ class CalcTcp5Client extends CalcTcp {
         final var group = AsynchronousChannelGroup.withThreadPool(
                 newExecutorForClient("tcp-5-client-")
         );
-        final var index = new AtomicInteger();
+        final var sequence = new AtomicInteger();
         for (int i = 0; i < REQUEST_COUNT; i++) {
             // ------------------------------------------------------------------------ open/connect
             final var client = AsynchronousSocketChannel.open(group);
             client.<Void>connect(ADDR, null, new CompletionHandler<>() {
-                @Override
-                public void completed(final Void result, final Void attachment) {
-                    final var message = new _Message.OfBuffer().randomize().readyToWriteToServer();
+                @Override public void completed(final Void result, final Void a) {
+                    final var message = new _Message.OfBuffer()
+                            .randomize()
+                            .sequence(sequence)
+                            .readyToWriteToServer();
                     // ----------------------------------------------------------------------- write
                     message.<Void>write(client, null, new CompletionHandler<>() {
                         @Override public void completed(final Integer w, final Void a) {
@@ -64,7 +66,7 @@ class CalcTcp5Client extends CalcTcp {
                                                 message.read(client, null, this);
                                                 return;
                                             }
-                                            message.log(index.getAndIncrement());
+                                            message.log();
                                             JavaIoCloseableUtils.closeUnchecked(client);
                                         }
                                         @Override

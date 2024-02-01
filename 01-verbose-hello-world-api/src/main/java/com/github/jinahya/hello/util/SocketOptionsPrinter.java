@@ -55,9 +55,9 @@ class SocketOptionsPrinter {
         m.put(SocketChannel.class, SocketChannel::open);
         m.put(ServerSocketChannel.class, ServerSocketChannel::open);
         m.put(AsynchronousSocketChannel.class, AsynchronousSocketChannel::open);
+        m.put(AsynchronousServerSocketChannel.class, AsynchronousServerSocketChannel::open);
         m.put(DatagramSocket.class, DatagramSocket::new);
         m.put(DatagramChannel.class, DatagramChannel::open);
-        m.put(AsynchronousServerSocketChannel.class, AsynchronousServerSocketChannel::open);
         CLASSES_AND_INITIALIZERS = Collections.unmodifiableMap(m);
     }
 

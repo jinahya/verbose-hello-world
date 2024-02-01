@@ -73,7 +73,7 @@ class ChatTcp2Client {
                         if (attachment == null) { // not connected yet.
                             return;
                         }
-                        var buffer = _ChatMessage.OfBuffer.of(
+                        var buffer = _Message.OfBuffer.of(
                                 _ChatUtils.prependUsername(l));
                         attachment.buffers.add(buffer);
                         clientKey.interestOpsOr(SelectionKey.OP_WRITE);
@@ -110,7 +110,7 @@ class ChatTcp2Client {
                             continue;
                         }
                         if (!attachment.buffer.hasRemaining()) {
-                            _ChatMessage.OfBuffer.printToSystemOut(
+                            _Message.OfBuffer.printToSystemOut(
                                     attachment.buffer);
                             attachment.buffer.clear();
                         }

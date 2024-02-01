@@ -42,7 +42,7 @@ import java.util.concurrent.SubmissionPublisher;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-class ChatTcp3Server {
+class ChatTcp3Server extends _ChatTcp {
 
     // @formatter:off
     static class ChatTcp3ServerAttachment extends ChatTcp2Server.ChatTcp2ServerAttachment
@@ -139,7 +139,7 @@ class ChatTcp3Server {
                 return;
             }
             if (!attachment.buffer.hasRemaining()) {
-                attachment.publisher.submit(_ChatMessage.OfBuffer.copyOf(attachment.buffer));
+                attachment.publisher.submit(_Message.OfBuffer.copyOf(attachment.buffer));
                 attachment.buffer.clear();
             }
             attachment.client.read(attachment.buffer, attachment, this);

@@ -111,7 +111,7 @@ class ChatUdp1Server {
 
         @Override
         public void run() {
-            var array = _ChatMessage.OfArray.empty();
+            var array = _Message.OfArray.empty();
             var packet = new DatagramPacket(array, array.length);
             while (!Thread.currentThread().isInterrupted()) {
                 try {
@@ -126,10 +126,10 @@ class ChatUdp1Server {
                 var address = packet.getSocketAddress();
                 addresses.put(address, Instant.now());
                 if (HelloWorldServerUtils.isKeep(
-                        _ChatMessage.OfArray.getMessage(array))) {
+                        _Message.OfArray.getMessage(array))) {
                     continue;
                 }
-                if (!messages.offer(_ChatMessage.OfArray.copyOf(array))) {
+                if (!messages.offer(_Message.OfArray.copyOf(array))) {
                     log.error("failed to offer");
                 }
             }

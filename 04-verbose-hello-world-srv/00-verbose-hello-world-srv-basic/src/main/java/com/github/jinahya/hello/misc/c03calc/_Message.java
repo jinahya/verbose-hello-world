@@ -57,18 +57,34 @@ import java.util.function.Function;
 abstract sealed class _Message<T extends _Message<T>>
         permits _Message.OfArray, _Message.OfBuffer {
 
-    // ---------------------------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------------ SEQUENCE
+    private static final int INDEX_SEQUENCE = 0;
+
+    private static final int LENGTH_SEQUENCE = Byte.BYTES;
+
+    // ------------------------------------------------------------------------------------ OPERATOR
+    private static final int INDEX_OPERATOR = INDEX_SEQUENCE + LENGTH_SEQUENCE;
+
+    private static final int LENGTH_OPERATOR = _Operator.NAME_LENGTH;
+
+    // ------------------------------------------------------------------------------------- OPERAND
+    private static final int INDEX_OPERAND = INDEX_OPERATOR + LENGTH_OPERATOR;
+
+    private static final int LENGTH_OPERAND = Byte.BYTES;
+
+    // -------------------------------------------------------------------------------------- RESULT
+    private static final int INDEX_RESULT = INDEX_OPERAND + LENGTH_OPERAND;
+
+    private static final int LENGTH_RESULT = 1;
+
+    // --------------------------------------------------------------------------------------- BYTES
 
     /**
      * The number of bytes enough to hold a message.
      */
-    private static final int BYTES = 5;
+    private static final int BYTES = INDEX_RESULT + LENGTH_RESULT;
 
-    private static final int INDEX_OPERAND = _Operator.NAME_LENGTH;
-
-    private static final int LENGTH_RESULT = 1;
-
-    private static final int INDEX_RESULT = INDEX_OPERAND + LENGTH_RESULT;
+    // ---------------------------------------------------------------------------------------------
 
     /**
      * A message class internally uses an array of {@value #BYTES} bytes.
@@ -82,10 +98,23 @@ abstract sealed class _Message<T extends _Message<T>>
             return (byte) (((operand1 & 0xF) << 4) | (operand2 & 0xF));
         }
 
+        // -------------------------------------------------------------------------------- sequence
+        @Override
+        int sequence() {
+            return array[INDEX_SEQUENCE] & 0xFF;
+        }
+
+        @Override
+        OfArray sequence(final int sequence) {
+            array[INDEX_SEQUENCE] = (byte) sequence;
+            return this;
+        }
+
         // -------------------------------------------------------------------------------- operator
         @Override
-        _Operator getOperator() {
-            final var name = new String(array, 0, INDEX_OPERAND, StandardCharsets.US_ASCII);
+        _Operator operator() {
+            final var name = new String(array, INDEX_OPERATOR, LENGTH_OPERATOR,
+                                        StandardCharsets.US_ASCII);
             if (ThreadLocalRandom.current().nextBoolean()) {
                 return _Operator.cachedValueOf(name);
             }
@@ -97,51 +126,52 @@ abstract sealed class _Message<T extends _Message<T>>
         }
 
         @Override
-        OfArray setOperator(final _Operator operator) {
+        OfArray operator(final _Operator operator) {
             final var src = Optional.ofNullable(operator)
                     .map(v -> v.name().getBytes(StandardCharsets.US_ASCII))
-                    .orElseGet(() -> new byte[INDEX_OPERAND]);
+                    .orElseGet(() -> new byte[LENGTH_OPERATOR]);
+            assert src.length == _Operator.NAME_LENGTH;
             System.arraycopy(
                     src,
                     0,
                     array,
-                    0,
-                    INDEX_OPERAND
+                    INDEX_OPERATOR,
+                    LENGTH_OPERATOR
             );
             return this;
         }
 
         // -------------------------------------------------------------------------------- operand1
         @Override
-        int getOperand1() {
+        int operand1() {
             return (array[INDEX_OPERAND] << 24) >> 28;
         }
 
         @Override
-        OfArray setOperand1(final int operand1) {
-            array[INDEX_OPERAND] = operand(operand1, getOperand2());
+        OfArray operand1(final int operand1) {
+            array[INDEX_OPERAND] = operand(operand1, operand2());
             return this;
         }
 
         // -------------------------------------------------------------------------------- operand2
         @Override
-        int getOperand2() {
+        int operand2() {
             return (array[INDEX_OPERAND] << 28) >> 28;
         }
 
         @Override
-        OfArray setOperand2(final int operand2) {
-            array[INDEX_OPERAND] = operand(getOperand1(), operand2);
+        OfArray operand2(final int operand2) {
+            array[INDEX_OPERAND] = operand(operand1(), operand2);
             return this;
         }
 
         // ---------------------------------------------------------------------------------- result
         @Override
-        int getResult() {
+        int result() {
             return array[INDEX_RESULT];
         }
 
-        OfArray setResult(final int result) {
+        OfArray result(final int result) {
             array[INDEX_RESULT] = (byte) result;
             return this;
         }
@@ -303,50 +333,62 @@ abstract sealed class _Message<T extends _Message<T>>
     @NoArgsConstructor(access = AccessLevel.PACKAGE)
     static final class OfBuffer extends _Message<OfBuffer> {
 
-        // -------------------------------------------------------------------------------- operator
+        // -------------------------------------------------------------------------------- sequence
         @Override
-        _Operator getOperator() {
-            return ofArray.getOperator();
+        int sequence() {
+            return ofArray.sequence();
         }
 
-        OfBuffer setOperator(final _Operator operator) {
-            ofArray.setOperator(operator);
+        @Override
+        OfBuffer sequence(final int sequence) {
+            ofArray.sequence(sequence);
+            return this;
+        }
+
+        // -------------------------------------------------------------------------------- operator
+        @Override
+        _Operator operator() {
+            return ofArray.operator();
+        }
+
+        OfBuffer operator(final _Operator operator) {
+            ofArray.operator(operator);
             return this;
         }
 
         // -------------------------------------------------------------------------------- operand1
         @Override
-        int getOperand1() {
-            return ofArray.getOperand1();
+        int operand1() {
+            return ofArray.operand1();
         }
 
         @Override
-        OfBuffer setOperand1(final int operand1) {
-            ofArray.setOperand1(operand1);
+        OfBuffer operand1(final int operand1) {
+            ofArray.operand1(operand1);
             return this;
         }
 
         // -------------------------------------------------------------------------------- operand2
         @Override
-        int getOperand2() {
-            return ofArray.getOperand2();
+        int operand2() {
+            return ofArray.operand2();
         }
 
         @Override
-        OfBuffer setOperand2(final int operand2) {
-            ofArray.setOperand2(operand2);
+        OfBuffer operand2(final int operand2) {
+            ofArray.operand2(operand2);
             return this;
         }
 
         // ---------------------------------------------------------------------------------- result
         @Override
-        int getResult() {
-            return ofArray.getResult();
+        int result() {
+            return ofArray.result();
         }
 
         @Override
-        OfBuffer setResult(final int result) {
-            ofArray.setResult(result);
+        OfBuffer result(final int result) {
+            ofArray.result(result);
             return this;
         }
 
@@ -486,6 +528,15 @@ abstract sealed class _Message<T extends _Message<T>>
         private transient SocketAddress source;
     }
 
+    // ------------------------------------------------------------------------------------ sequence
+    abstract int sequence();
+
+    abstract T sequence(final int sequence);
+
+    final T sequence(final AtomicInteger sequence) {
+        return sequence(sequence.getAndIncrement());
+    }
+
     // ------------------------------------------------------------------------------------ operator
 
     /**
@@ -493,7 +544,7 @@ abstract sealed class _Message<T extends _Message<T>>
      *
      * @return current value of {@code operator} property.
      */
-    abstract _Operator getOperator();
+    abstract _Operator operator();
 
     /**
      * Replaces current value of {@code operator} property with specified value.
@@ -501,33 +552,80 @@ abstract sealed class _Message<T extends _Message<T>>
      * @param operator new value for the {@code operator} property.
      * @return this message.
      */
-    abstract T setOperator(_Operator operator);
+    abstract T operator(_Operator operator);
 
     // ------------------------------------------------------------------------------------ operand1
-    abstract int getOperand1();
 
-    abstract T setOperand1(int operand);
+    /**
+     * Returns current value of {@code operand1} property.
+     *
+     * @return current value of the {@code operand1} property.
+     */
+    abstract int operand1();
+
+    /**
+     * Replaces current value of {@code operand1} property with the lower {@code 4} bits of
+     * specified value.
+     *
+     * @param operand1 new value for the {@code operand1} property.
+     * @return this message.
+     */
+    abstract T operand1(int operand1);
 
     // ------------------------------------------------------------------------------------ operand2
-    abstract int getOperand2();
 
-    abstract T setOperand2(int operand);
+    /**
+     * Returns current value of {@code operand2} property.
+     *
+     * @return current value of the {@code operand2} property.
+     */
+    abstract int operand2();
+
+    /**
+     * Replaces current value of {@code operand2} property with the lower {@code 4} bits of
+     * specified value.
+     *
+     * @param operand2 new value for the {@code operand2} property.
+     * @return this message.
+     */
+    abstract T operand2(int operand2);
 
     // -------------------------------------------------------------------------------------- result
-    final T calculateResult() {
-        final var operator = getOperator();
-        final var operand1 = getOperand1();
-        final var operand2 = getOperand2();
+
+    /**
+     * Calculates and sets the {@code result} with current value of {@code operator},
+     * {@code operand1}, and {@code operand2}.
+     *
+     * @return this message.
+     * @see #calculate(Executor, Consumer)
+     */
+    final T calculate() {
+        final var operator = operator();
+        if (operator == null) {
+            throw new IllegalStateException("no operator set");
+        }
+        final var operand1 = operand1();
+        final var operand2 = operand2();
         log.debug("calculating result...");
         final var result = operator.applyAsInt(operand1, operand2);
-        return setResult(result);
+        return result(result);
     }
 
+    /**
+     * Submits a command which {@link #calculate() calculates} the {@code result} with current value
+     * of {@code operator}, {@code operand1}, and {@code operand2}, to specified executor, and
+     * accepts this message to specified consumer.
+     *
+     * @param executor the executor to which a command is summited.
+     * @param consumer the consumer to be accepted with this message.
+     * @return this message.
+     * @see #calculate()
+     */
     @SuppressWarnings({"unchecked"})
-    final T calculateResult(final Executor executor, final Consumer<? super T> consumer) {
+    final T calculate(final Executor executor, final Consumer<? super T> consumer) {
         Objects.requireNonNull(executor, "executor is null");
         Objects.requireNonNull(consumer, "consumer is null");
-        executor.execute(() -> consumer.accept(calculateResult()));
+        executor.execute(() -> consumer.accept(calculate()));
         return (T) this;
     }
 
@@ -536,7 +634,7 @@ abstract sealed class _Message<T extends _Message<T>>
      *
      * @return current value of the {@code result} property.
      */
-    abstract int getResult();
+    abstract int result();
 
     /**
      * Replaces current value of {@code result} property with specified value.
@@ -544,47 +642,34 @@ abstract sealed class _Message<T extends _Message<T>>
      * @param result new value for the {@code result} property.
      * @return this instance.
      */
-    abstract T setResult(int result);
+    abstract T result(int result);
 
     // ----------------------------------------------------------------------------------------- log
 
     /**
      * Logs out this message's current status.
-     *
-     * @param index an index to print.
      */
     @SuppressWarnings({"unchecked"})
-    final T log(final int index) {
+    final T log() {
         log.info("[{}] {} {} {} {}",
-                 String.format("%6d", index),
-                 getOperator(),
-                 String.format("%+2d", getOperand1()),
-                 String.format("%+2d", getOperand2()),
-                 String.format("%+3d", getResult())
+                 String.format("%3d", sequence()),
+                 operator(),
+                 String.format("%+2d", operand1()),
+                 String.format("%+2d", operand2()),
+                 String.format("%+3d", result())
         );
         return (T) this;
     }
 
     /**
-     * Logs out this message's current status with specified atomic integer's current value, and
-     * increments the atomic integer.
-     *
-     * @param index the atomic integer whose current value is used, and is incremented.
-     */
-    final T log(final AtomicInteger index) {
-        return log(index.getAndIncrement());
-    }
-
-    /**
-     * Randomizes this message.
+     * Randomizes this message's {@code operator}, {@code operand1}, and {@code operand2}.
      *
      * @return this message.
      */
     final T randomize() {
-        return setOperator(_Operator.randomValue())
-                .setOperand1(ThreadLocalRandom.current().nextInt())
-                .setOperand2(ThreadLocalRandom.current().nextInt())
-                .setResult(0)
+        return operator(_Operator.randomValue())
+                .operand1(ThreadLocalRandom.current().nextInt())
+                .operand2(ThreadLocalRandom.current().nextInt())
                 ;
     }
 }

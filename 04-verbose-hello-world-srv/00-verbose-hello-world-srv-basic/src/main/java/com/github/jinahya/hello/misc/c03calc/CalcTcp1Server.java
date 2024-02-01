@@ -66,7 +66,7 @@ class CalcTcp1Server extends CalcTcp {
                     try (client) {
                         new _Message.OfArray()
                                 .readFromClient(client.getInputStream())
-                                .calculateResult()
+                                .calculate()
                                 .writeToClientAndAccept(client, c -> s -> {
                                     JavaIoFlushableUtils.flushUnchecked(s);
                                     JavaUtilConcurrentCallableUtils.callUnchecked(() -> {
@@ -74,8 +74,8 @@ class CalcTcp1Server extends CalcTcp {
                                         return null;
                                     });
                                 });
-                    } catch (final IOException ioe) {
-                        log.error("failed to serve for " + client, ioe);
+                    } catch (final Exception e) {
+                        log.error("failed to serve for " + client, e);
                     }
                 });
             }
