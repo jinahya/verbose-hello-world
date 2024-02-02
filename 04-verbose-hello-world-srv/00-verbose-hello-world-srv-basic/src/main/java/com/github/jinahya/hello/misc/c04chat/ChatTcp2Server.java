@@ -20,13 +20,10 @@ package com.github.jinahya.hello.misc.c04chat;
  * #L%
  */
 
-import com.github.jinahya.hello.util.HelloWorldServerUtils;
 import com.github.jinahya.hello.util.JavaLangUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -37,7 +34,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-class ChatTcp2Server {
+class ChatTcp2Server extends ChatTcp {
 
     // @formatter:off
     static class ChatTcp2ServerAttachment {
@@ -49,41 +46,39 @@ class ChatTcp2Server {
     public static void main(final String... args) throws Exception {
         try (var selector = Selector.open();
              var server = ServerSocketChannel.open()) {
-            server.bind(new InetSocketAddress(InetAddress.getByName("::"),
-                                              _ChatConstants.PORT));
-            log.debug("bound to {}", server.getLocalAddress());
-            server.configureBlocking(false);
-            var serverKey = server.register(selector, SelectionKey.OP_ACCEPT);
-            JavaLangUtils.readLinesAndCallWhenTests(
-                    HelloWorldServerUtils::isQuit, // <predicate>
-                    () -> {                        // <callable>
+            // -------------------------------------------------------------------------------- bind
+            server.bind(ADDR);
+            // ----------------------------------------------------- configure-non-blocking/register
+            final var serverKey = server.configureBlocking(false).register(
+                    selector,
+                    SelectionKey.OP_ACCEPT
+            );
+            // -------------------------------------------------------- read-quit!/cancel-server-key
+            JavaLangUtils.readLinesAndRunWhenTests(
+                    "quit!"::equalsIgnoreCase,
+                    () -> {
                         serverKey.cancel();
                         assert !serverKey.isValid();
                         selector.wakeup();
-                        return null;
-                    },
-                    l -> {                         // <consumer>
-                        // does nothing
                     }
             );
-            while (serverKey.isValid()) {
-                if (selector.select(TimeUnit.SECONDS.toMillis(8L)) == 0) {
+            // ----------------------------------------------------------------------- selector-loop
+            while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
+                // -------------------------------------------------------------------------- select
+                if (selector.select() == 0) {
                     continue;
                 }
-                for (var i = selector.selectedKeys().iterator(); i.hasNext();
-                     i.remove()) {
+                // ------------------------------------------------------------------------- process
+                for (var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
                     var key = i.next();
+                    // ---------------------------------------------------------------------- accept
                     if (key.isAcceptable()) {
-                        var channel = (ServerSocketChannel) key.channel();
+                        final var channel = (ServerSocketChannel) key.channel();
                         assert channel == server;
-                        var client = channel.accept(); // IOException
-                        log.debug("accepted from {} through {}",
-                                  client.getRemoteAddress(),
-                                  client.getLocalAddress());
+                        final var client = channel.accept();
                         var attachment = new ChatTcp2ServerAttachment();
                         client.configureBlocking(false);
-                        client.register(selector, SelectionKey.OP_READ,
-                                        attachment);
+                        client.register(selector, SelectionKey.OP_READ, attachment);
                         continue;
                     }
                     if (key.isReadable()) {

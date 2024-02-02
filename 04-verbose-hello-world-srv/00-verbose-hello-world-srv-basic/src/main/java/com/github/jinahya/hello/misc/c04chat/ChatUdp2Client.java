@@ -90,8 +90,7 @@ class ChatUdp2Client {
                         return null;
                     },
                     l -> {                         // <consumer>
-                        queue.addLast(
-                                OfBuffer.of(_ChatUtils.prependUsername(l)));
+                        queue.addLast(OfBuffer.of(ChatMessage.prependUserName(l)));
                         clientKey.interestOpsOr(SelectionKey.OP_WRITE);
                         selector.wakeup();
                     }

@@ -20,7 +20,6 @@ package com.github.jinahya.hello.misc.c04chat;
  * #L%
  */
 
-import com.github.jinahya.hello.util.JavaLangArrayUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,7 +47,8 @@ import java.util.Optional;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
-abstract class ChatMessage<T extends ChatMessage<T>> {
+abstract sealed class ChatMessage<T extends ChatMessage<T>>
+        permits ChatMessage.OfArray, ChatMessage.OfBuffer {
 
     // ----------------------------------------------------------------------------------- TIMESTAMP
     static final int INDEX_TIMESTAMP = 0;
@@ -123,7 +123,6 @@ abstract class ChatMessage<T extends ChatMessage<T>> {
 
         private static void integralRange(final byte[] array, int upper, final int lower,
                                           long value) {
-            JavaLangArrayUtils.requireValidRange2(array, lower, upper);
             while (upper >= lower) {
                 array[upper--] = (byte) (value & 0xFF);
                 value >>= Byte.SIZE;
@@ -132,7 +131,6 @@ abstract class ChatMessage<T extends ChatMessage<T>> {
 
         private static void integral(final byte[] array, final int index, final int length,
                                      final long value) {
-            JavaLangArrayUtils.requireValidRange1(array, index, length);
             integralRange(array, index + length - 1, index, value);
         }
 

@@ -165,7 +165,7 @@ class ChatUdp1Client {
                     },
                     l -> {                         // <consumer>
                         if (!queue.offer(
-                                OfArray.of(_ChatUtils.prependUsername(l)))) {
+                                OfArray.of(ChatMessage.prependUserName(l)))) {
                             log.error("failed to offer message");
                         }
                     }

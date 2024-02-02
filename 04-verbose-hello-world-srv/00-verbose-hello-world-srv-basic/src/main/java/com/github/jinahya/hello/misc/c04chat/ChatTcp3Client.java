@@ -141,7 +141,7 @@ class ChatTcp3Client {
                                         return null;
                                     },
                                     l -> {                         // <consumer>
-                                        final var message = _ChatUtils.prependUsername(l);
+                                        final var message = ChatMessage.prependUserName(l);
                                         final var buffer = _Message.OfBuffer.of(message);
                                         attachment.publisher.submit(buffer);
                                     }
