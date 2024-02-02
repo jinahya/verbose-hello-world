@@ -53,7 +53,7 @@ abstract class ChatMessageTest<T extends ChatMessage<T>> {
             @Test
             void __() {
                 // --------------------------------------------------------------------------- given
-                final var instance = newMessageSpy();
+                final var instance = Mockito.spy(newMessageInstance());
                 // ---------------------------------------------------------------------------- when
                 final var result = instance.timestamp();
                 // ---------------------------------------------------------------------------- then
@@ -69,14 +69,13 @@ abstract class ChatMessageTest<T extends ChatMessage<T>> {
             @Test
             void __() {
                 // --------------------------------------------------------------------------- given
-                final var instance = newMessageInstance();
-                final var spy = Mockito.spy(instance);
+                final var instance = Mockito.spy(newMessageInstance());
                 final var timestamp = Instant.now().getEpochSecond();
                 // ---------------------------------------------------------------------------- when
-                final T result = spy.timestamp(timestamp);
+                final T result = instance.timestamp(timestamp);
                 // ---------------------------------------------------------------------------- then
-                Mockito.verify(spy, Mockito.only()).timestamp(timestamp);
-                Assertions.assertSame(spy, result);
+                Mockito.verify(instance, Mockito.only()).timestamp(timestamp);
+                Assertions.assertSame(instance, result);
                 Assertions.assertEquals(timestamp, instance.timestamp());
             }
         }
@@ -117,7 +116,7 @@ abstract class ChatMessageTest<T extends ChatMessage<T>> {
                 assert message != null;
                 assert !message.isBlank();
                 // --------------------------------------------------------------------------- given
-                final var instance = newMessageSpy();
+                final var instance = Mockito.spy(newMessageInstance());
                 // ---------------------------------------------------------------------------- when
                 final var result = instance.message(message);
                 // ---------------------------------------------------------------------------- then
@@ -139,10 +138,6 @@ abstract class ChatMessageTest<T extends ChatMessage<T>> {
         } catch (final ReflectiveOperationException roe) {
             throw new RuntimeException("failed to instantiate " + messageClass, roe);
         }
-    }
-
-    private T newMessageSpy() {
-        return Mockito.spy(newMessageInstance());
     }
 
     // ---------------------------------------------------------------------------------------------

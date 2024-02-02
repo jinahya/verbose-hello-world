@@ -130,7 +130,7 @@ abstract class ChatMessage<T extends ChatMessage<T>> {
 
         private static long integral(final byte[] array, final int index, final int length) {
             long value = 0L;
-            for (int i = index + length - 1; i >= index; i--) {
+            for (int i = index; i < (index + length); i++) {
                 value <<= Byte.SIZE;
                 value |= array[i] & 0xFF;
             }
@@ -176,7 +176,8 @@ abstract class ChatMessage<T extends ChatMessage<T>> {
         // ------------------------------------------------------------------------------- timestamp
         @Override
         long timestamp() {
-            return integral(array, INDEX_TIMESTAMP, LENGTH_TIMESTAMP);
+            final var value = integral(array, INDEX_TIMESTAMP, LENGTH_TIMESTAMP);
+            return value;
         }
 
         @Override
