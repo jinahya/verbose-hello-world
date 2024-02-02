@@ -63,7 +63,7 @@ class CalcUdp3Server extends CalcUdp {
                     }
             );
             // ----------------------------------------------------------------------------- prepare
-            final var messages = new ArrayList<_Message.OfBuffer>();
+            final var messages = new ArrayList<CalcMessage.OfBuffer>();
             final var lock = new ReentrantLock();
             // ----------------------------------------------------------------------- selector-loop
             while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
@@ -77,7 +77,7 @@ class CalcUdp3Server extends CalcUdp {
                     // ---------------------------------------------------- receive/calculate/wakeup
                     if (key.isReadable()) {
                         final var channel = (DatagramChannel) key.channel();
-                        final var message = new _Message.OfBuffer().receiveFromClient(channel);
+                        final var message = new CalcMessage.OfBuffer().receiveFromClient(channel);
                         assert !message.hasRemaining();
                         message.calculate(executor, m -> {
                             m.readyToWriteToClient();

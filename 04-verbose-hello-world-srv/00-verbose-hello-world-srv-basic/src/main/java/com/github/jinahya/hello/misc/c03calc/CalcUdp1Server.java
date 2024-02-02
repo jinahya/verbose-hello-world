@@ -51,7 +51,7 @@ class CalcUdp1Server extends CalcUdp {
             // -------------------------------------------------------------- receive/calculate/send
             while (!server.isClosed()) {
                 try {
-                    new _Message.OfArray()
+                    new CalcMessage.OfArray()
                             .receiveFromClient(server)
                             .calculate(executor, m -> {
                                 try {

@@ -44,7 +44,7 @@ class CalcTcp5Client extends CalcTcp {
             final var client = AsynchronousSocketChannel.open(group);
             client.<Void>connect(ADDR, null, new CompletionHandler<>() {
                 @Override public void completed(final Void result, final Void a) {
-                    final var message = new _Message.OfBuffer()
+                    final var message = new CalcMessage.OfBuffer()
                             .randomize()
                             .sequence(sequence)
                             .readyToWriteToServer();

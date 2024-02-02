@@ -54,8 +54,8 @@ import java.util.function.Function;
         "java:S101",  // class _Message
         "java:S6217"  // remove permits list; all permitted classes are in the same file
 })
-abstract sealed class _Message<T extends _Message<T>>
-        permits _Message.OfArray, _Message.OfBuffer {
+abstract sealed class CalcMessage<T extends CalcMessage<T>>
+        permits CalcMessage.OfArray, CalcMessage.OfBuffer {
 
     // ------------------------------------------------------------------------------------ SEQUENCE
     private static final int INDEX_SEQUENCE = 0;
@@ -65,7 +65,7 @@ abstract sealed class _Message<T extends _Message<T>>
     // ------------------------------------------------------------------------------------ OPERATOR
     private static final int INDEX_OPERATOR = INDEX_SEQUENCE + LENGTH_SEQUENCE;
 
-    private static final int LENGTH_OPERATOR = _Operator.NAME_LENGTH;
+    private static final int LENGTH_OPERATOR = CalcOperator.NAME_LENGTH;
 
     // ------------------------------------------------------------------------------------- OPERAND
     private static final int INDEX_OPERAND = INDEX_OPERATOR + LENGTH_OPERATOR;
@@ -92,7 +92,7 @@ abstract sealed class _Message<T extends _Message<T>>
      * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
      */
     @NoArgsConstructor(access = AccessLevel.PACKAGE)
-    static final class OfArray extends _Message<OfArray> {
+    static final class OfArray extends CalcMessage<OfArray> {
 
         private static byte operand(final int operand1, final int operand2) {
             return (byte) (((operand1 & 0xF) << 4) | (operand2 & 0xF));
@@ -112,25 +112,25 @@ abstract sealed class _Message<T extends _Message<T>>
 
         // -------------------------------------------------------------------------------- operator
         @Override
-        _Operator operator() {
+        CalcOperator operator() {
             final var name = new String(array, INDEX_OPERATOR, LENGTH_OPERATOR,
                                         StandardCharsets.US_ASCII);
             if (ThreadLocalRandom.current().nextBoolean()) {
-                return _Operator.cachedValueOf(name);
+                return CalcOperator.cachedValueOf(name);
             }
             try {
-                return _Operator.valueOf(name);
+                return CalcOperator.valueOf(name);
             } catch (final IllegalArgumentException iae) {
                 return null;
             }
         }
 
         @Override
-        OfArray operator(final _Operator operator) {
+        OfArray operator(final CalcOperator operator) {
             final var src = Optional.ofNullable(operator)
                     .map(v -> v.name().getBytes(StandardCharsets.US_ASCII))
                     .orElseGet(() -> new byte[LENGTH_OPERATOR]);
-            assert src.length == _Operator.NAME_LENGTH;
+            assert src.length == CalcOperator.NAME_LENGTH;
             System.arraycopy(
                     src,
                     0,
@@ -331,7 +331,7 @@ abstract sealed class _Message<T extends _Message<T>>
      * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
      */
     @NoArgsConstructor(access = AccessLevel.PACKAGE)
-    static final class OfBuffer extends _Message<OfBuffer> {
+    static final class OfBuffer extends CalcMessage<OfBuffer> {
 
         // -------------------------------------------------------------------------------- sequence
         @Override
@@ -347,11 +347,11 @@ abstract sealed class _Message<T extends _Message<T>>
 
         // -------------------------------------------------------------------------------- operator
         @Override
-        _Operator operator() {
+        CalcOperator operator() {
             return ofArray.operator();
         }
 
-        OfBuffer operator(final _Operator operator) {
+        OfBuffer operator(final CalcOperator operator) {
             ofArray.operator(operator);
             return this;
         }
@@ -544,7 +544,7 @@ abstract sealed class _Message<T extends _Message<T>>
      *
      * @return current value of {@code operator} property.
      */
-    abstract _Operator operator();
+    abstract CalcOperator operator();
 
     /**
      * Replaces current value of {@code operator} property with specified value.
@@ -552,7 +552,7 @@ abstract sealed class _Message<T extends _Message<T>>
      * @param operator new value for the {@code operator} property.
      * @return this message.
      */
-    abstract T operator(_Operator operator);
+    abstract T operator(CalcOperator operator);
 
     // ------------------------------------------------------------------------------------ operand1
 
@@ -667,7 +667,7 @@ abstract sealed class _Message<T extends _Message<T>>
      * @return this message.
      */
     final T randomize() {
-        return operator(_Operator.randomValue())
+        return operator(CalcOperator.randomValue())
                 .operand1(ThreadLocalRandom.current().nextInt())
                 .operand2(ThreadLocalRandom.current().nextInt())
                 ;

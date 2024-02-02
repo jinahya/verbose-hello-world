@@ -64,7 +64,7 @@ class CalcTcp1Server extends CalcTcp {
                 }
                 executor.submit(() -> {
                     try (client) {
-                        new _Message.OfArray()
+                        new CalcMessage.OfArray()
                                 .readFromClient(client.getInputStream())
                                 .calculate()
                                 .writeToClientAndAccept(client, c -> s -> {

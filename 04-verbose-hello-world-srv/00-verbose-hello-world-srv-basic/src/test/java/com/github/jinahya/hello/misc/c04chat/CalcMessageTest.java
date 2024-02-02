@@ -36,7 +36,7 @@ import java.time.Instant;
 import java.util.stream.Stream;
 
 @Slf4j
-class _MessageTest {
+class CalcMessageTest {
 
     // https://tatoeba.org/ko/
     private static Stream<String> getMessageStream() {

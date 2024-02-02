@@ -38,18 +38,18 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 @Slf4j
-class _OperatorTest {
+class CalcOperatorTest {
 
     @DisplayName("NAME_BYTES")
     @Nested
     class NAME_BYTES_Test {
 
         @DisplayName("value.name().bytes(\"US_ASCII\").length == NAME_BYTES")
-        @EnumSource(_Operator.class)
+        @EnumSource(CalcOperator.class)
         @ParameterizedTest
-        void _IsEqualToBytes_NameBytesLength(final _Operator value) {
+        void _IsEqualToBytes_NameBytesLength(final CalcOperator value) {
             Assertions.assertEquals(
-                    _Operator.NAME_LENGTH,
+                    CalcOperator.NAME_LENGTH,
                     value.name().getBytes(StandardCharsets.US_ASCII).length
             );
         }
@@ -61,7 +61,7 @@ class _OperatorTest {
 
         @Test
         void __() {
-            final var randomValue = _Operator.randomValue();
+            final var randomValue = CalcOperator.randomValue();
             Assertions.assertNotNull(randomValue, "randomValue() should return non-null");
         }
     }
@@ -70,10 +70,10 @@ class _OperatorTest {
     @Nested
     class CachedValueOfTest {
 
-        @EnumSource(_Operator.class)
+        @EnumSource(CalcOperator.class)
         @ParameterizedTest
-        void __(final _Operator value) {
-            final var result = _Operator.cachedValueOf(value.name());
+        void __(final CalcOperator value) {
+            final var result = CalcOperator.cachedValueOf(value.name());
             Assertions.assertSame(value, result);
         }
     }
@@ -84,8 +84,8 @@ class _OperatorTest {
 
         private static int randomOperands() {
             return ThreadLocalRandom.current().nextInt(
-                    _Operator.MIN_OPERAND,
-                    _Operator.MAX_OPERAND + 1
+                    CalcOperator.MIN_OPERAND,
+                    CalcOperator.MAX_OPERAND + 1
             );
         }
 
@@ -108,7 +108,7 @@ class _OperatorTest {
         }
 
         private static Stream<Arguments> operatorAndOperandsArgumentsStream() {
-            return Arrays.stream(_Operator.values()).flatMap(v -> {
+            return Arrays.stream(CalcOperator.values()).flatMap(v -> {
                 return operandsArgumentsStream().map(a -> {
                     return Arguments.of(
                             v,
@@ -121,16 +121,16 @@ class _OperatorTest {
 
         @MethodSource({"operatorAndOperandsArgumentsStream"})
         @ParameterizedTest
-        void __(final _Operator operator, final int left, final int right) {
+        void __(final CalcOperator operator, final int left, final int right) {
             final var result = operator.applyAsInt(left, right);
             Assertions.assertTrue(
-                    result >= _Operator.MIN_RESULT,
+                    result >= CalcOperator.MIN_RESULT,
                     String.format("%s %d %d %d should GE %d", operator.name(), left, right, result,
-                                  _Operator.MIN_RESULT));
+                                  CalcOperator.MIN_RESULT));
             Assertions.assertTrue(
-                    result <= _Operator.MAX_RESULT,
+                    result <= CalcOperator.MAX_RESULT,
                     String.format("%s %d %d %d should LE %d", operator.name(), left, right, result,
-                                  _Operator.MAX_OPERAND));
+                                  CalcOperator.MAX_OPERAND));
         }
     }
 }

@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
  * @see <a href="https://en.wikipedia.org/wiki/Division_by_zero">Division by zero</a> (Wikipedia)
  */
 @Slf4j
-enum _Operator implements IntBinaryOperator {
+enum CalcOperator implements IntBinaryOperator {
 
     ADD() {
         @Override
@@ -113,18 +113,18 @@ enum _Operator implements IntBinaryOperator {
     /**
      * A cached result of {@link #values()}.
      */
-    static final List<_Operator> VALUES = Arrays.asList(values());
+    static final List<CalcOperator> VALUES = Arrays.asList(values());
 
     /**
      * Returns a random value.
      *
      * @return a random value.
      */
-    static _Operator randomValue() {
+    static CalcOperator randomValue() {
         return VALUES.get(ThreadLocalRandom.current().nextInt(VALUES.size()));
     }
 
-    private static final Map<String, _Operator> VALUES_BY_NAMES = VALUES.stream().collect(
+    private static final Map<String, CalcOperator> VALUES_BY_NAMES = VALUES.stream().collect(
             Collectors.toUnmodifiableMap(Enum::name, Function.identity())
     );
 
@@ -135,7 +135,7 @@ enum _Operator implements IntBinaryOperator {
      * @return the value whose {@link #name()} is equal to specified value; {@code null} if none
      * matched.
      */
-    static _Operator cachedValueOf(final String name) {
+    static CalcOperator cachedValueOf(final String name) {
         return VALUES_BY_NAMES.get(name);
     }
 

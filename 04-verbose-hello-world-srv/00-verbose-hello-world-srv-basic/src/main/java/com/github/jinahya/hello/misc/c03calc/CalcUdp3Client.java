@@ -79,7 +79,7 @@ class CalcUdp3Client extends CalcUdp {
                     // ------------------------------------------------------------------------ send
                     if (key.isWritable()) {
                         final var channel = (DatagramChannel) key.channel();
-                        final var message = new _Message.OfBuffer()
+                        final var message = new CalcMessage.OfBuffer()
                                 .randomize()
                                 .sequence(sequence);
                         if (channel.isConnected()) {
@@ -96,7 +96,7 @@ class CalcUdp3Client extends CalcUdp {
                     // ----------------------------------------------------------------- receive/log
                     if (key.isReadable()) {
                         final var channel = (DatagramChannel) key.channel();
-                        final var message = (_Message.OfBuffer) key.attachment();
+                        final var message = (CalcMessage.OfBuffer) key.attachment();
                         message.receiveFromServer(channel).log();
                         if (channel.isConnected()) {
                             channel.disconnect();

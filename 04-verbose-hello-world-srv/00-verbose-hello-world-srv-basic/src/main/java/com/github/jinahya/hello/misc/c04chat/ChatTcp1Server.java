@@ -23,19 +23,18 @@ package com.github.jinahya.hello.misc.c04chat;
 import com.github.jinahya.hello.util.JavaLangUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.EOFException;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Objects;
 import java.util.Queue;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-class ChatTcp1Server extends _ChatTcp {
+class ChatTcp1Server extends ChatTcp {
 
     private record Receiver(Socket client, Queue<? super byte[]> queue) implements Runnable {
 
@@ -127,31 +126,31 @@ class ChatTcp1Server extends _ChatTcp {
             );
             // ----------------------------------------------------------------------------- prepare
             final var clients = new CopyOnWriteArrayList<Socket>();
-            final var messages = new ArrayBlockingQueue<___Message2>(1024);
+            final var messages = new LinkedBlockingQueue<ChatMessage.OfArray>();
             // -------------------------------------------------------------------------- take/write
-            final var writer = executor.submit(() -> {
-                for (___Message2 message; !Thread.currentThread().isInterrupted(); ) {
+            executor.submit(() -> {
+                for (ChatMessage.OfArray message; !Thread.currentThread().isInterrupted(); ) {
                     try {
                         message = messages.take();
                     } catch (final InterruptedException ie) {
                         Thread.currentThread().interrupt();
                         continue;
                     }
-                    for (var i = clients.iterator(); i.hasNext(); ) {
-                        final var client = i.next();
+                    log.debug("clients.size: {}", clients.size());
+                    for (final var client : clients) {
                         try {
                             message.write(client.getOutputStream()).flush();
-                        } catch (final IOException ioe) {
-                            i.remove();
-                            if (!client.isConnected()) {
-                                continue;
+                        } catch (final Exception e) {
+                            if (!client.isClosed()) {
+                                log.error("failed to write", e);
                             }
-                            log.error("failed to write to " + client, ioe);
                             try {
                                 client.close();
-                            } catch (final IOException ioe2) {
-                                log.error("failed to close " + client, ioe2);
+                            } catch (final IOException ioe) {
+                                log.error("failed to close " + client, ioe);
                             }
+                            final var removed = clients.remove(client);
+                            assert removed;
                         }
                     }
                 }
@@ -171,18 +170,19 @@ class ChatTcp1Server extends _ChatTcp {
                 executor.submit(() -> {
                     clients.add(client);
                     try (client) {
-                        while (!Thread.currentThread().isInterrupted()) {
+                        while (!client.isClosed() && !Thread.currentThread().isInterrupted()) {
                             try {
-                                final var message = ___Message2.read(client.getInputStream());
+                                final var message = new ChatMessage.OfArray()
+                                        .read(client.getInputStream());
                                 if (!messages.offer(message)) {
                                     log.error("failed to offer message: " + message);
                                 }
                             } catch (final IOException ioe) {
-                                if (ioe instanceof EOFException) {
-                                    Thread.currentThread().interrupt();
-                                    continue;
+                                try {
+                                    client.close();
+                                } catch (final IOException ioe2) {
+                                    log.error("failed to close " + client, ioe);
                                 }
-                                log.error("failed to read", ioe);
                             }
                         }
                     }

@@ -71,7 +71,7 @@ class CalcTcp5Server extends CalcTcp {
             server.<Void>accept(null, new CompletionHandler<>() {
                 @Override
                 public void completed(final AsynchronousSocketChannel client, final Void a) {
-                    final var message = new _Message.OfBuffer().readyToReadFromClient();
+                    final var message = new CalcMessage.OfBuffer().readyToReadFromClient();
                     // ------------------------------------------------------------------------ read
                     message.<Void>read(client, null, new CompletionHandler<>() {
                         @Override
