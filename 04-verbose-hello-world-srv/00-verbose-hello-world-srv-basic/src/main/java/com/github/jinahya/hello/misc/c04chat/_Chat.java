@@ -58,7 +58,7 @@ abstract class _Chat {
 
     // -------------------------------------------------------------------------------------- SERVER
 
-    static final int SERVER_THREADS = 128;
+    static final int SERVER_THREADS = 1048576;
 
     /**
      * Returns a new thread-pool that uses {@value #SERVER_THREADS} thread(s).

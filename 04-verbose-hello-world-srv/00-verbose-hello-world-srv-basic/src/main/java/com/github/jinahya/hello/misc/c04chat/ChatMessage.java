@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.channels.ReadableByteChannel;
@@ -53,65 +54,81 @@ abstract class ChatMessage<T extends ChatMessage<T>> {
 
     static final int LENGTH_TIMESTAMP = Integer.BYTES;
 
-    // ------------------------------------------------------------------------------------- MESSAGE
+    // ------------------------------------------------------------------------------ MESSAGE_LENGTH
     static final int INDEX_MESSAGE_LENGTH = INDEX_TIMESTAMP + LENGTH_TIMESTAMP;
 
     static final int LENGTH_MESSAGE_LENGTH = Byte.BYTES;
 
+    // ----------------------------------------------------------------------------- MESSAGE_CONTENT
     static final int INDEX_MESSAGE_CONTENT = INDEX_MESSAGE_LENGTH + LENGTH_MESSAGE_LENGTH;
 
-    static final int LENGTH_MESSAGE_CONTENT =
+    static final int LENGTH_MESSAGE_CONTENT_MIN = 1;
+
+    static final int LENGTH_MESSAGE_CONTENT_MAX =
             (int) Math.pow(2, (double) LENGTH_MESSAGE_LENGTH * Byte.SIZE);
 
     static final Charset CHARSET_MESSAGE_CONTENT = StandardCharsets.UTF_8;
 
     // --------------------------------------------------------------------------------------- BYTES
-    static final int BYTES = INDEX_MESSAGE_CONTENT + LENGTH_MESSAGE_CONTENT;
+    static final int BYTES = INDEX_MESSAGE_CONTENT + LENGTH_MESSAGE_CONTENT_MAX;
 
     // ---------------------------------------------------------------------------------------------
+    static final String PROPERTY_NAME_USER_NAME = "user.name";
+
+    static final String PROPERTY_VALUE_USER_NAME_UNKNOWN = "unknown";
+
     static String prependUserName(final String message) {
         if (Objects.requireNonNull(message, "message is null").isBlank()) {
             return message;
         }
         return '['
-               + Optional.ofNullable(System.getProperty("user.name"))
+               + Optional.ofNullable(System.getProperty(PROPERTY_NAME_USER_NAME))
                        .map(String::trim)
                        .filter(n -> !n.isBlank())
-                       .orElse("unknown")
+                       .orElse(PROPERTY_VALUE_USER_NAME_UNKNOWN)
                + "] "
                + message;
     }
 
-    static byte[] trim(final String message) {
+    private static CharBuffer trimToBuffer(final String message) {
         if (Objects.requireNonNull(message, "message is null").isBlank()) {
             throw new IllegalArgumentException("message is blank");
         }
-        final var buffer = ByteBuffer.wrap(message.getBytes(CHARSET_MESSAGE_CONTENT));
+        final var bytes = message.getBytes(CHARSET_MESSAGE_CONTENT);
+        final var buffer = ByteBuffer.wrap(
+                bytes, 0, Math.min(LENGTH_MESSAGE_CONTENT_MAX, bytes.length)
+        );
         try {
             return CHARSET_MESSAGE_CONTENT
                     .newDecoder()
                     .onMalformedInput(CodingErrorAction.IGNORE)
-                    .decode(buffer)
-                    .toString()
-                    .getBytes(CHARSET_MESSAGE_CONTENT);
+                    .decode(buffer);
         } catch (final CharacterCodingException cce) {
-            throw new RuntimeException(cce);
+            throw new RuntimeException("failed to decode", cce);
         }
+    }
+
+    private static String trimToString(final String message) {
+        return trimToBuffer(message).toString();
+    }
+
+    static byte[] trimToBytes(final String message) {
+        return trimToString(message).getBytes(CHARSET_MESSAGE_CONTENT);
     }
 
     @NoArgsConstructor(access = AccessLevel.PACKAGE)
     @Slf4j
     static final class OfArray extends ChatMessage<OfArray> {
 
-        // ---------------------------------------------------------------------------------------------
-        static void integral(final byte[] array, final int index, final int length,
-                             final long value) {
+        private static void integral(final byte[] array, final int index, final int length,
+                                     long value) {
             for (int i = index + length - 1; i >= index; i--) {
                 array[i] = (byte) (value & 0xFF);
+                value >>= Byte.SIZE;
             }
         }
 
-        static long integral(final byte[] array, final int index, final int length) {
+        private static long integral(final byte[] array, final int index, final int length) {
             long value = 0L;
             for (int i = index + length - 1; i >= index; i--) {
                 value <<= Byte.SIZE;
@@ -120,7 +137,7 @@ abstract class ChatMessage<T extends ChatMessage<T>> {
             return value;
         }
 
-        static long integral(final byte[] array) {
+        private static long integral(final byte[] array) {
             return integral(array, 0, array.length);
         }
 
@@ -147,7 +164,7 @@ abstract class ChatMessage<T extends ChatMessage<T>> {
 
         <T extends OutputStream> T write(final T stream) throws IOException {
             Objects.requireNonNull(stream, "stream is null");
-            timestampAsInstant(Instant.now());
+            timestamp(Instant.now().getEpochSecond());
             stream.write(
                     array,
                     0,
@@ -195,7 +212,7 @@ abstract class ChatMessage<T extends ChatMessage<T>> {
             if (Objects.requireNonNull(message, "message is null").isBlank()) {
                 throw new IllegalArgumentException("message is blank");
             }
-            final var bytes = trim(message);
+            final var bytes = trimToBytes(message);
             messageLength(bytes.length);
             System.arraycopy(
                     bytes,
@@ -214,15 +231,25 @@ abstract class ChatMessage<T extends ChatMessage<T>> {
     // -------------------------------------------------------------------------------------- buffer
     static final class OfBuffer extends ChatMessage<OfBuffer> {
 
-        OfBuffer readyToWrite() {
-            timestampAsInstant(Instant.now());
-            buffer.limit(INDEX_MESSAGE_CONTENT + ofArray.messageLength()).position(0);
+        // ----------------------------------------------------------------------------- client-side
+        OfBuffer readyToWriteToServer() {
+            return readyToWriteToClient()
+                    .timestamp(Instant.now().getEpochSecond());
+        }
+
+        OfBuffer readyToReadFromServer() {
+            Arrays.fill(buffer.array(), (byte) 0);
+            buffer.clear().limit(INDEX_MESSAGE_CONTENT);
             return this;
         }
 
-        OfBuffer readyToRead() {
-            Arrays.fill(buffer.array(), (byte) 0);
-            buffer.clear().limit(INDEX_MESSAGE_CONTENT);
+        // ----------------------------------------------------------------------------- server-side
+        OfBuffer readyToReadFromClient() {
+            return readyToReadFromServer();
+        }
+
+        OfBuffer readyToWriteToClient() {
+            buffer.limit(INDEX_MESSAGE_CONTENT + ofArray.messageLength()).position(0);
             return this;
         }
 
@@ -308,12 +335,8 @@ abstract class ChatMessage<T extends ChatMessage<T>> {
 
     abstract T timestamp(long timestamp);
 
-    final Instant timestampAsInstant() {
-        return Instant.ofEpochSecond(timestamp());
-    }
-
-    final T timestampAsInstant(final Instant instant) {
-        return timestamp(instant.getEpochSecond());
+    private String timestampString() {
+        return DateTimeFormatter.ISO_INSTANT.format(Instant.ofEpochSecond(timestamp()));
     }
 
     // ------------------------------------------------------------------------------------- message
@@ -322,9 +345,6 @@ abstract class ChatMessage<T extends ChatMessage<T>> {
     abstract T message(String message);
 
     // --------------------------------------------------------------------------------------- print
-    final String timestampString() {
-        return DateTimeFormatter.ISO_INSTANT.format(timestampAsInstant());
-    }
 
     @SuppressWarnings({"unchecked"})
     final T print(final PrintStream printer) {

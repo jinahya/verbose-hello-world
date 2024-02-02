@@ -26,93 +26,11 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Objects;
-import java.util.Queue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 class ChatTcp1Server extends ChatTcp {
-
-    private record Receiver(Socket client, Queue<? super byte[]> queue) implements Runnable {
-
-        private Receiver {
-            Objects.requireNonNull(client, "client is null");
-            Objects.requireNonNull(queue, "queue is null");
-        }
-
-        @Override
-        public void run() {
-            while (!Thread.currentThread().isInterrupted()) {
-                byte[] array;
-                try {
-                    array = client.getInputStream()
-                            .readNBytes(_Message.BYTES);
-                } catch (IOException ioe) {
-                    if (!client.isClosed()) {
-                        log.error("failed to read", ioe);
-                    }
-                    break;
-                }
-                if (array.length == 0) {
-                    break;
-                }
-                if (!queue.offer(array)) {
-                    log.error("failed to offer");
-                }
-            }
-            try {
-                client.close();
-            } catch (IOException ioe) {
-                log.error("failed to close {}", client, ioe);
-            }
-        }
-    }
-
-    private record Sender(BlockingQueue<? extends byte[]> queue,
-                          Iterable<? extends Socket> clients)
-            implements Runnable {
-
-        private Sender {
-            Objects.requireNonNull(queue, "queue is null");
-            Objects.requireNonNull(clients, "clients is null");
-        }
-
-        @Override
-        public void run() {
-            while (!Thread.currentThread().isInterrupted()) {
-                byte[] array;
-                try {
-                    if ((array = queue.poll(8L, TimeUnit.SECONDS)) == null) {
-                        continue;
-                    }
-                } catch (InterruptedException ie) {
-                    break;
-                }
-                synchronized (clients) {
-                    for (var i = clients.iterator(); i.hasNext(); ) {
-                        var client = i.next();
-                        try {
-                            client.getOutputStream().write(array);
-                            client.getOutputStream().flush();
-                        } catch (IOException ioe) {
-                            if (!client.isClosed()) {
-                                log.error("failed to send to {}", client, ioe);
-                            }
-                            try {
-                                client.close();
-                            } catch (IOException ioe2) {
-                                log.error("failed to close {}", client, ioe2);
-                            }
-                            i.remove();
-                        }
-                    }
-                }
-            }
-        }
-    }
 
     public static void main(final String... args) throws Exception {
         try (var executor = newExecutorForServer("tcp-1-server-");
@@ -129,9 +47,10 @@ class ChatTcp1Server extends ChatTcp {
             final var messages = new LinkedBlockingQueue<ChatMessage.OfArray>();
             // -------------------------------------------------------------------------- take/write
             executor.submit(() -> {
-                for (ChatMessage.OfArray message; !Thread.currentThread().isInterrupted(); ) {
+                for (ChatMessage.OfArray m; !Thread.currentThread().isInterrupted(); ) {
                     try {
-                        message = messages.take();
+                        m = messages.take();
+                        m.print();
                     } catch (final InterruptedException ie) {
                         Thread.currentThread().interrupt();
                         continue;
@@ -139,24 +58,19 @@ class ChatTcp1Server extends ChatTcp {
                     log.debug("clients.size: {}", clients.size());
                     for (final var client : clients) {
                         try {
-                            message.write(client.getOutputStream()).flush();
-                        } catch (final Exception e) {
+                            m.write(client.getOutputStream()).flush();
+                        } catch (final IOException e) {
                             if (!client.isClosed()) {
                                 log.error("failed to write", e);
                             }
-                            try {
-                                client.close();
-                            } catch (final IOException ioe) {
-                                log.error("failed to close " + client, ioe);
-                            }
-                            final var removed = clients.remove(client);
-                            assert removed;
+                            clients.remove(client);
                         }
                     }
                 }
             });
+            // ------------------------------------------------------------------------- server-loop
             while (!server.isClosed()) {
-                // -------------------------------------------------------------------------- accept
+                // --------------------------------------------------- accept-client/add-to-the-list
                 final Socket client;
                 try {
                     client = server.accept();
@@ -166,24 +80,20 @@ class ChatTcp1Server extends ChatTcp {
                     }
                     continue;
                 }
-                // ---------------------------------------------------------------------- read/offer
+                clients.add(client);
+                // ------------------------------------------------- read-message/offer-to-the-queue
                 executor.submit(() -> {
-                    clients.add(client);
                     try (client) {
                         while (!client.isClosed() && !Thread.currentThread().isInterrupted()) {
-                            try {
-                                final var message = new ChatMessage.OfArray()
-                                        .read(client.getInputStream());
-                                if (!messages.offer(message)) {
-                                    log.error("failed to offer message: " + message);
-                                }
-                            } catch (final IOException ioe) {
-                                try {
-                                    client.close();
-                                } catch (final IOException ioe2) {
-                                    log.error("failed to close " + client, ioe);
-                                }
+                            final var message = new ChatMessage.OfArray()
+                                    .read(client.getInputStream());
+                            if (!messages.offer(message)) {
+                                log.error("failed to offer message: " + message);
                             }
+                        }
+                    } catch (final IOException ioe) {
+                        if (!client.isClosed()) {
+                            log.error("failed to read", ioe);
                         }
                     }
                     return null;

@@ -31,7 +31,7 @@ import java.net.InetSocketAddress;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 @Slf4j
 class ChatTcp2Client extends ChatTcp {
@@ -40,7 +40,8 @@ class ChatTcp2Client extends ChatTcp {
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class Attachment {
         private final ChatMessage.OfBuffer  writing = new ChatMessage.OfBuffer();
-        private final ChatMessage.OfBuffer reading = new ChatMessage.OfBuffer();
+        private final ChatMessage.OfBuffer reading =
+                new ChatMessage.OfBuffer().readyToReadFromServer();
     }
     // @formatter:on
 
@@ -69,8 +70,9 @@ class ChatTcp2Client extends ChatTcp {
                         SelectionKey.OP_CONNECT
                 );
             }
+            // ----------------------------------------------------------------------------- prepare
+            final var lines = new LinkedBlockingQueue<String>();
             // -------------------------------------- read-quit!/count-down-latch|offer-to-the-queue
-            final var lines = new ArrayBlockingQueue<String>(8);
             JavaLangUtils.readLinesAndRunWhenTests(
                     "quit!"::equalsIgnoreCase,
                     () -> {
@@ -96,68 +98,68 @@ class ChatTcp2Client extends ChatTcp {
                 if (selector.select() == 0) {
                     continue;
                 }
-                final var selectedKeys = selector.selectedKeys();
-                assert selectedKeys.size() == 1;
-                final var key = selectedKeys.iterator().next();
-                assert key == clientKey;
-                selectedKeys.clear();
+                selector.selectedKeys().clear();
                 // ----------------------------------------------------------------- connect(finish)
-                if (key.isConnectable()) {
-                    final var channel = (SocketChannel) key.channel();
+                if (clientKey.isConnectable()) {
+                    final var channel = (SocketChannel) clientKey.channel();
                     try {
                         if (channel.finishConnect()) {
-                            key.interestOpsAnd(~SelectionKey.OP_CONNECT);
-                            assert key.isConnectable();
-                            key.attach(new Attachment());
-                            key.interestOpsOr(SelectionKey.OP_READ);
-                            assert !key.isReadable();
+                            clientKey.interestOpsAnd(~SelectionKey.OP_CONNECT);
+                            assert clientKey.isConnectable();
+                            clientKey.attach(new Attachment());
+                            clientKey.interestOpsOr(SelectionKey.OP_READ);
                         }
                     } catch (final IOException ioe) {
+                        log.error("failed to connect", ioe);
                         channel.close();
-                        assert !key.isValid();
+                        assert !clientKey.isValid();
                         continue; // why?
                     }
                 }
                 // ---------------------------------------------------------------------------- read
-                if (key.isReadable()) {
-                    final var channel = (SocketChannel) key.channel();
+                if (clientKey.isReadable()) {
+                    final var channel = (SocketChannel) clientKey.channel();
                     assert channel == client;
-                    final var attachment = (Attachment) key.attachment();
+                    final var attachment = (Attachment) clientKey.attachment();
                     try {
                         if (attachment.reading.read(channel) == -1) {
                             log.error("premature eof");
-                            channel.close();
-                            assert !key.isValid();
+                            clientKey.interestOpsAnd(~SelectionKey.OP_READ);
+                            assert clientKey.isReadable();
                             continue;
                         }
                         if (!attachment.reading.hasRemaining() &&
                             attachment.reading.limit() > ChatMessage.INDEX_MESSAGE_CONTENT) {
-                            attachment.reading.print().readyToRead();
+                            attachment.reading.print().readyToReadFromClient();
                         }
                     } catch (final IOException ioe) {
-                        if (key.isValid()) {
+                        if (clientKey.isValid()) {
                             log.error("failed to read", ioe);
                         }
                     }
                 }
                 // --------------------------------------------------------------------------- write
-                if (key.isWritable()) {
-                    final var channel = (SocketChannel) key.channel();
+                if (clientKey.isWritable()) {
+                    final var channel = (SocketChannel) clientKey.channel();
                     assert channel == client;
-                    final var attachment = (Attachment) key.attachment();
+                    final var attachment = (Attachment) clientKey.attachment();
                     if (!attachment.writing.hasRemaining()) {
                         assert !lines.isEmpty();
                         attachment.writing
                                 .message(ChatMessage.prependUserName(lines.take()))
-                                .readyToWrite();
+                                .readyToWriteToServer();
                     }
                     assert attachment.writing.hasRemaining();
-                    final var w = attachment.writing.write(channel);
-                    assert w >= 0;
-                    if (!attachment.writing.hasRemaining()) {
-                        if (lines.isEmpty()) {
-                            key.interestOpsAnd(~SelectionKey.OP_WRITE);
+                    try {
+                        final var w = attachment.writing.write(channel);
+                        assert w >= 0;
+                        if (!attachment.writing.hasRemaining() && (lines.isEmpty())) {
+                            clientKey.interestOpsAnd(~SelectionKey.OP_WRITE);
                         }
+                    } catch (final IOException ioe) {
+                        log.error("failed to write", ioe);
+                        clientKey.interestOpsAnd(~SelectionKey.OP_WRITE);
+                        assert clientKey.isWritable();
                     }
                 }
             }

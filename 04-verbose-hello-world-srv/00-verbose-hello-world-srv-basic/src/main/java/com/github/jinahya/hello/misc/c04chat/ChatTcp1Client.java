@@ -23,6 +23,7 @@ package com.github.jinahya.hello.misc.c04chat;
 import com.github.jinahya.hello.util.JavaLangUtils;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -45,16 +46,13 @@ class ChatTcp1Client extends ChatTcp {
                     new InetSocketAddress(addr, PORT),
                     (int) CONNECT_TIMEOUT_MILLIS
             );
-            // ----------------------------------------------------------------------------- prepare
-            final var latch = new CountDownLatch(1);
             // -------------------------------------------------------------- read-from-server/print
             Thread.ofPlatform().daemon().start(() -> {
-                final var message = new ChatMessage.OfArray();
-                while (!client.isClosed()) {
+                for (final var m = new ChatMessage.OfArray(); !client.isClosed(); ) {
                     try {
-                        message.read(client.getInputStream()).print();
+                        m.read(client.getInputStream()).print();
                     } catch (final IOException ioe) {
-                        if (!client.isClosed()) {
+                        if (!(ioe instanceof EOFException)) {
                             log.error("failed to read", ioe);
                         }
                         break;
@@ -62,6 +60,7 @@ class ChatTcp1Client extends ChatTcp {
                 }
             });
             // ----------------------------------------- read-quit!/count-down-latch|write-to-server
+            final var latch = new CountDownLatch(1);
             final var message = new ChatMessage.OfArray();
             JavaLangUtils.readLinesAndRunWhenTests(
                     "quit!"::equalsIgnoreCase,
@@ -76,7 +75,7 @@ class ChatTcp1Client extends ChatTcp {
                                     .flush();
                         } catch (final IOException ioe) {
                             if (!client.isClosed()) {
-                                log.error("failed to write", ioe);
+                                log.error("failed to warite", ioe);
                             }
                         }
                     }
