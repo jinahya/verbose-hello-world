@@ -20,6 +20,7 @@ package com.github.jinahya.hello.misc.c04chat;
  * #L%
  */
 
+import com.github.jinahya.hello.util.JavaLangArrayUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -120,21 +121,32 @@ abstract class ChatMessage<T extends ChatMessage<T>> {
     @Slf4j
     static final class OfArray extends ChatMessage<OfArray> {
 
-        private static void integral(final byte[] array, final int index, final int length,
-                                     long value) {
-            for (int i = index + length - 1; i >= index; i--) {
-                array[i] = (byte) (value & 0xFF);
+        private static void integralRange(final byte[] array, int upper, final int lower,
+                                          long value) {
+            JavaLangArrayUtils.requireValidRange2(array, lower, upper);
+            while (upper >= lower) {
+                array[upper--] = (byte) (value & 0xFF);
                 value >>= Byte.SIZE;
             }
         }
 
-        private static long integral(final byte[] array, final int index, final int length) {
+        private static void integral(final byte[] array, final int index, final int length,
+                                     final long value) {
+            JavaLangArrayUtils.requireValidRange1(array, index, length);
+            integralRange(array, index + length - 1, index, value);
+        }
+
+        private static long integralRange(final byte[] array, int from, final int to) {
             long value = 0L;
-            for (int i = index; i < (index + length); i++) {
+            while (from < to) {
                 value <<= Byte.SIZE;
-                value |= array[i] & 0xFF;
+                value |= array[from++] & 0xFF;
             }
             return value;
+        }
+
+        private static long integral(final byte[] array, final int index, final int length) {
+            return integralRange(array, index, index + length);
         }
 
         private static long integral(final byte[] array) {
@@ -176,8 +188,7 @@ abstract class ChatMessage<T extends ChatMessage<T>> {
         // ------------------------------------------------------------------------------- timestamp
         @Override
         long timestamp() {
-            final var value = integral(array, INDEX_TIMESTAMP, LENGTH_TIMESTAMP);
-            return value;
+            return integral(array, INDEX_TIMESTAMP, LENGTH_TIMESTAMP);
         }
 
         @Override
