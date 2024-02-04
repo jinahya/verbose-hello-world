@@ -20,23 +20,26 @@ package com.github.jinahya.hello.misc.c04chat;
  * #L%
  */
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({
         "java:S101"
 })
-final class _ChatConstants {
+abstract class ChatUdp extends _Chat {
 
-    static final int PORT = 7 + 40000;
+    // -------------------------------------------------------------------------------------- SERVER
+    static final int SERVER_BACKLOG = 50;
 
-    static final String USER_NAME =
-            Optional.ofNullable(System.getProperty("user.name"))
-                    .orElse("unknown");
+    // -------------------------------------------------------------------------------------- CLIENT
+    static final long CONNECT_TIMEOUT = 1L;
 
-    private _ChatConstants() {
-        throw new AssertionError("instantiation is not allowed");
-    }
+    static final TimeUnit CONNECT_TIMEOUT_UNIT = TimeUnit.SECONDS;
+
+    static final long CONNECT_TIMEOUT_MILLIS = CONNECT_TIMEOUT_UNIT.toMillis(CONNECT_TIMEOUT);
 }

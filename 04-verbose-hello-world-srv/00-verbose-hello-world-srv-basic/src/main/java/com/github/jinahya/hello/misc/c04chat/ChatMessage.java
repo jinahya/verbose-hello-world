@@ -22,6 +22,7 @@ package com.github.jinahya.hello.misc.c04chat;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.EOFException;
@@ -128,7 +129,7 @@ abstract sealed class ChatMessage<T extends ChatMessage<T>>
 
     // ---------------------------------------------------------------------------------------------
     @NoArgsConstructor(access = AccessLevel.PACKAGE)
-    @Slf4j
+    @ToString(callSuper = true)
     static final class OfArray extends ChatMessage<OfArray> {
 
         static OfArray copyOf(final OfArray original) {
@@ -266,6 +267,7 @@ abstract sealed class ChatMessage<T extends ChatMessage<T>>
     }
 
     // -------------------------------------------------------------------------------------- buffer
+    @ToString(callSuper = true)
     static final class OfBuffer extends ChatMessage<OfBuffer> {
 
         static OfBuffer copyOf(final OfBuffer original) {
@@ -276,7 +278,7 @@ abstract sealed class ChatMessage<T extends ChatMessage<T>>
         private OfBuffer(final OfArray ofArray) {
             super();
             this.ofArray = Objects.requireNonNull(ofArray, "ofArray is null");
-            buffer = ByteBuffer.wrap(this.ofArray.array);
+            buffer = ByteBuffer.wrap(this.ofArray.array).limit(0);
         }
 
         OfBuffer() {

@@ -25,7 +25,6 @@ import com.github.jinahya.hello.util.JavaLangUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
@@ -38,8 +37,6 @@ class ChatTcp2Server extends ChatTcp {
 
     // @formatter:off
     static class Attachment {
-        final ByteBuffer buffer = _Message.OfBuffer.empty();
-        final List<ByteBuffer> buffers = new LinkedList<>();
         private ChatMessage.OfBuffer reading;
         final List<ChatMessage.OfBuffer> writings = new LinkedList<>();
          ChatMessage.OfBuffer writing;

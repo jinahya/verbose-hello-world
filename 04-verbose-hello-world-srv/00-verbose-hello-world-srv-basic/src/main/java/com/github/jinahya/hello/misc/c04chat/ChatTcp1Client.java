@@ -53,12 +53,9 @@ class ChatTcp1Client extends ChatTcp {
                     try {
                         reading.read(client.getInputStream()).print();
                     } catch (final IOException ioe) {
-                        if (ioe instanceof EOFException) {
-                            log.error("premature eof");
-                            return;
-                        }
                         if (!client.isClosed()) {
                             log.error("failed to read", ioe);
+                            return;
                         }
                     } catch (final Exception e) {
                         log.error("unexpected error", e);

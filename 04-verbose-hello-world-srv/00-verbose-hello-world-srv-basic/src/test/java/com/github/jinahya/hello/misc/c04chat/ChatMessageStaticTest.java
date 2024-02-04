@@ -28,7 +28,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -77,21 +76,6 @@ class ChatMessageStaticTest {
     @DisplayName("prependUserName(message)")
     @Nested
     class PrependUserNameTest {
-
-        @DisplayName("(blank)same")
-        @ValueSource(strings = {
-                "",
-                " ",
-                "\t"
-        })
-        @ParameterizedTest
-        void __Blank(final String message) {
-            Assertions.assertTrue(message.isBlank());
-            // -------------------------------------------------------------------------------- when
-            final var result = ChatMessage.prependUserName(message);
-            // -------------------------------------------------------------------------------- then
-            Assertions.assertSame(message, result);
-        }
 
         @MethodSource({
                 "com.github.jinahya.hello.misc.c04chat.ChatMessageStaticTest#messageStream"

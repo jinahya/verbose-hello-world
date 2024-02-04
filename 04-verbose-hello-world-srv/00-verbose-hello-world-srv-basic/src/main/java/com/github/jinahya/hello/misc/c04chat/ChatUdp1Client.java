@@ -44,7 +44,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-class ChatUdp1Client {
+class ChatUdp1Client extends ChatUdp {
 
     private static final Duration PERIOD_TO_SEND_KEEP =
             ChatUdp1Server.DURATION_TO_KEEP_ADDRESSES.dividedBy(2L);
@@ -132,7 +132,7 @@ class ChatUdp1Client {
         } catch (ArrayIndexOutOfBoundsException aioobe) {
             addr = InetAddress.getLoopbackAddress();
         }
-        var address = new InetSocketAddress(addr, _ChatConstants.PORT);
+        var address = new InetSocketAddress(addr, PORT);
         log.debug("address: {}", address);
         var queue = new LinkedBlockingQueue<byte[]>();
         var executor = Executors.newScheduledThreadPool(

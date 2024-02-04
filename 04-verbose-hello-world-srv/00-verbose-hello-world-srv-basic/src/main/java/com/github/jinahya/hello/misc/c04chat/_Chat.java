@@ -56,6 +56,9 @@ abstract class _Chat {
 
     static final InetSocketAddress ADDR = new InetSocketAddress(HOST, PORT);
 
+    // --------------------------------------------------------------------------------------- QUIT!
+    static final String QUIT = "quit!";
+
     // -------------------------------------------------------------------------------------- SERVER
 
     static final int SERVER_THREADS = 1048576;

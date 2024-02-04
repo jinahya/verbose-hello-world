@@ -41,7 +41,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-class ChatUdp2Client {
+class ChatUdp2Client extends ChatUdp {
 
     private static final Duration PERIOD_TO_SEND_KEEP =
             ChatUdp1Server.DURATION_TO_KEEP_ADDRESSES.dividedBy(2L);
@@ -57,7 +57,7 @@ class ChatUdp2Client {
         } catch (ArrayIndexOutOfBoundsException aioobe) {
             addr = InetAddress.getLoopbackAddress();
         }
-        var address = new InetSocketAddress(addr, _ChatConstants.PORT);
+        var address = new InetSocketAddress(addr, PORT);
         log.debug("address: {}", address);
         var executor = Executors.newScheduledThreadPool(3);
         var futures = new ArrayList<Future<?>>();

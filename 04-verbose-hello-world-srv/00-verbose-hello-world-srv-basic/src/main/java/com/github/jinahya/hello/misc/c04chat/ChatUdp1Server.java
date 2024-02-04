@@ -46,7 +46,7 @@ import java.util.concurrent.TimeUnit;
 
 // https://www.rfc-editor.org/rfc/rfc862
 @Slf4j
-class ChatUdp1Server {
+class ChatUdp1Server extends ChatUdp {
 
     static final Duration DURATION_TO_KEEP_ADDRESSES = Duration.ofSeconds(8L);
 
@@ -145,7 +145,7 @@ class ChatUdp1Server {
             log.debug("[S]: SO_SNFBUD: {}",
                       server.getOption(StandardSocketOptions.SO_SNDBUF));
             server.bind(new InetSocketAddress(
-                    InetAddress.getByName("0.0.0.0"), _ChatConstants.PORT
+                    InetAddress.getByName("0.0.0.0"), PORT
             ));
             log.debug("bound to {}", server.getLocalSocketAddress());
             var messages = new ArrayBlockingQueue<byte[]>(1024);

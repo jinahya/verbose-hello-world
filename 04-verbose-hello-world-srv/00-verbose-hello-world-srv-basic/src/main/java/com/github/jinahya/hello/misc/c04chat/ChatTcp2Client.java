@@ -61,7 +61,7 @@ class ChatTcp2Client extends ChatTcp {
             // ----------------------------------------------------------------------------- prepare
             final ChatMessage.OfBuffer reading = new ChatMessage.OfBuffer().readyToReadFromServer();
             final ChatMessage.OfBuffer writing = new ChatMessage.OfBuffer();
-            final var lines = new LinkedBlockingQueue<String>();
+            final var lines = new LinkedBlockingQueue<String>(8);
             // ----------------------------------- read-quit!/count-down-latch-or-offer-to-the-queue
             JavaLangUtils.readLinesAndRunWhenTests(
                     "quit!"::equalsIgnoreCase,
@@ -107,7 +107,7 @@ class ChatTcp2Client extends ChatTcp {
                 }
                 // --------------------------------------------------------------------------- write
                 if (clientKey.isWritable()) {
-                    if (!writing.hasRemaining()) {
+                                        if (!writing.hasRemaining()) {
                         assert !lines.isEmpty(); // why?
                         writing.timestamp(Instant.now())
                                 .message(ChatMessage.prependUserName(lines.take()))

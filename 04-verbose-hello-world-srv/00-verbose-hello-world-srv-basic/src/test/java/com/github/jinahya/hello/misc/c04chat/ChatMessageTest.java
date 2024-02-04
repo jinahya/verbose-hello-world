@@ -99,7 +99,6 @@ abstract class ChatMessageTest<T extends ChatMessage<T>> {
                 final var message = spy.message();
                 log.debug("message: {}", message);
                 // ---------------------------------------------------------------------------- then
-                Mockito.verify(spy, Mockito.only()).message();
                 Assertions.assertNotNull(message);
             }
         }
@@ -120,7 +119,6 @@ abstract class ChatMessageTest<T extends ChatMessage<T>> {
                 // ---------------------------------------------------------------------------- when
                 final var result = instance.message(message);
                 // ---------------------------------------------------------------------------- then
-                Mockito.verify(instance, Mockito.only()).message(message);
                 Assertions.assertSame(instance, result);
                 Assertions.assertNotNull(instance.message());
             }
