@@ -32,6 +32,7 @@ import java.io.PrintStream;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.channels.AsynchronousByteChannel;
+import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
@@ -41,12 +42,19 @@ import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
+@SuppressWarnings({
+        "java:S6217" // all permitted classes are in the same file
+})
 abstract sealed class ChatMessage<T extends ChatMessage<T>>
         permits ChatMessage.OfArray, ChatMessage.OfBuffer {
 
@@ -80,7 +88,7 @@ abstract sealed class ChatMessage<T extends ChatMessage<T>>
 
     static String prependUserName(final String message) {
         if (Objects.requireNonNull(message, "message is null").isBlank()) {
-            return message;
+            throw new IllegalArgumentException("message is blank");
         }
         return '['
                + Optional.ofNullable(System.getProperty(PROPERTY_NAME_USER_NAME))
@@ -91,6 +99,7 @@ abstract sealed class ChatMessage<T extends ChatMessage<T>>
                + message;
     }
 
+    // ---------------------------------------------------------------------------------------------
     private static CharBuffer trimToBuffer(final String message) {
         if (Objects.requireNonNull(message, "message is null").isBlank()) {
             throw new IllegalArgumentException("message is blank");
@@ -117,14 +126,14 @@ abstract sealed class ChatMessage<T extends ChatMessage<T>>
         return trimToString(message).getBytes(CHARSET_MESSAGE_CONTENT);
     }
 
+    // ---------------------------------------------------------------------------------------------
     @NoArgsConstructor(access = AccessLevel.PACKAGE)
     @Slf4j
     static final class OfArray extends ChatMessage<OfArray> {
 
-        private static void integralRange(final byte[] array, int upper, final int lower,
-                                          long value) {
-            while (upper >= lower) {
-                array[upper--] = (byte) (value & 0xFF);
+        private static void integralRange(final byte[] array, int to, final int from, long value) {
+            while (to >= from) {
+                array[to--] = (byte) (value & 0xFF);
                 value >>= Byte.SIZE;
             }
         }
@@ -161,17 +170,29 @@ abstract sealed class ChatMessage<T extends ChatMessage<T>>
         }
 
         // -----------------------------------------------------------------------------------------
+
+        /**
+         * Reads this message from specified stream.
+         *
+         * @param stream the stream from which this message is read.
+         * @return this message.
+         * @throws IOException if an I/O error occurs.
+         */
         OfArray read(final InputStream stream) throws IOException {
             Objects.requireNonNull(stream, "stream is null");
             timestamp(integral(readNBytes(stream, LENGTH_TIMESTAMP)));
-            final var messageLength = (int) integral(readNBytes(stream, LENGTH_MESSAGE_LENGTH)) + 1;
-            final var message = new String(
-                    readNBytes(stream, messageLength),
-                    CHARSET_MESSAGE_CONTENT
-            );
-            return message(message);
+            messageLength((int) integral(readNBytes(stream, LENGTH_MESSAGE_LENGTH)) + 1);
+            return messageContent(readNBytes(stream, messageLength()));
         }
 
+        /**
+         * Writes this message to specified stream.
+         *
+         * @param stream the stream to which this message is written.
+         * @param <T>    stream type parameter
+         * @return given {@code stream}.
+         * @throws IOException if an I/O error occurs.
+         */
         <T extends OutputStream> T write(final T stream) throws IOException {
             Objects.requireNonNull(stream, "stream is null");
             timestamp(Instant.now().getEpochSecond());
@@ -195,41 +216,35 @@ abstract sealed class ChatMessage<T extends ChatMessage<T>>
             return this;
         }
 
-        // --------------------------------------------------------------------------------- message
-        private int messageLength() {
+        // --------------------------------------------------------------------------- messageLength
+        @Override
+        int messageLength() {
             return (int) integral(array, INDEX_MESSAGE_LENGTH, LENGTH_MESSAGE_LENGTH) + 1;
         }
 
-        private OfArray messageLength(final int messageLength) {
+        OfArray messageLength(final int messageLength) {
             integral(array, INDEX_MESSAGE_LENGTH, LENGTH_MESSAGE_LENGTH, messageLength - 1L);
             return this;
         }
 
+        // -------------------------------------------------------------------------- messageContent
         @Override
-        String message() {
-            return new String(
-                    Arrays.copyOfRange(
-                            array,
-                            INDEX_MESSAGE_CONTENT,
-                            INDEX_MESSAGE_CONTENT + messageLength()
-                    ),
-                    CHARSET_MESSAGE_CONTENT
+        byte[] messageContent() {
+            return Arrays.copyOfRange(
+                    array,                 // <original>
+                    INDEX_MESSAGE_CONTENT, // <from>
+                    array.length           // <to>
             );
         }
 
         @Override
-        OfArray message(final String message) {
-            if (Objects.requireNonNull(message, "message is null").isBlank()) {
-                throw new IllegalArgumentException("message is blank");
-            }
-            final var bytes = trimToBytes(message);
-            messageLength(bytes.length);
+        OfArray messageContent(final byte[] messageContent) {
             System.arraycopy(
-                    bytes,
-                    0,
-                    array,
-                    INDEX_MESSAGE_CONTENT,
-                    bytes.length
+                    messageContent,        // <src>
+                    0,                     // <srcPos>
+                    array,                 // <dest>
+                    INDEX_MESSAGE_CONTENT, // <destPos>
+                    messageContent.length  // <length>
             );
             return this;
         }
@@ -243,13 +258,12 @@ abstract sealed class ChatMessage<T extends ChatMessage<T>>
 
         // ----------------------------------------------------------------------------- client-side
         OfBuffer readyToWriteToServer() {
-            return readyToWriteToClient()
-                    .timestamp(Instant.now().getEpochSecond());
+            buffer.limit(INDEX_MESSAGE_CONTENT + messageLength()).position(0);
+            return this;
         }
 
         OfBuffer readyToReadFromServer() {
-            Arrays.fill(buffer.array(), (byte) 0);
-            buffer.clear().limit(INDEX_MESSAGE_CONTENT);
+            buffer.limit(INDEX_MESSAGE_CONTENT).position(0);
             return this;
         }
 
@@ -259,40 +273,89 @@ abstract sealed class ChatMessage<T extends ChatMessage<T>>
         }
 
         OfBuffer readyToWriteToClient() {
-            buffer.limit(INDEX_MESSAGE_CONTENT + ofArray.messageLength()).position(0);
-            return this;
+            return readyToWriteToServer();
         }
 
         // -----------------------------------------------------------------------------------------
+
+        /**
+         * Writes this message's content to specified channel.
+         *
+         * @param channel the channel to which this message's content is written.
+         * @return the number of bytes written.
+         * @throws IOException if an I/O error occurs.
+         */
         int write(final WritableByteChannel channel) throws IOException {
             Objects.requireNonNull(channel, "channel is null");
             return channel.write(buffer);
         }
 
         int read(final ReadableByteChannel channel) throws IOException {
-            if (!hasRemaining() && limit() == INDEX_MESSAGE_CONTENT) {
-                buffer.limit(INDEX_MESSAGE_CONTENT + ofArray.messageLength());
-            }
+            Objects.requireNonNull(channel, "channel is null");
             final int r = channel.read(buffer);
-            if (r != -1) {
-                final var messageLength = ofArray.messageLength();
-                if (messageLength > 0) {
-                    buffer.limit(INDEX_MESSAGE_CONTENT + messageLength);
-                }
+            if (!buffer.hasRemaining() && buffer.limit() == INDEX_MESSAGE_CONTENT) {
+                buffer.limit(buffer.limit() + messageLength());
             }
             return r;
         }
 
-        <A> void write(final AsynchronousByteChannel channel, final A attachment,
-                       final CompletionHandler<Integer, ? super A> handler) {
+        void write(final AsynchronousByteChannel channel,
+                   final CompletionHandler<Integer, ? super OfBuffer> handler) {
             Objects.requireNonNull(channel, "channel is null");
-            channel.write(buffer, attachment, handler);
+            Objects.requireNonNull(handler, "handler is null");
+            assert buffer.hasRemaining();
+            channel.write(buffer, this, handler);
         }
 
-        <A> void read(final AsynchronousByteChannel channel, final A attachment,
-                      final CompletionHandler<Integer, ? super A> handler) {
-            channel.read(buffer, attachment, handler);
+        // @formatter:off
+        void read(final AsynchronousByteChannel channel,
+                  final CompletionHandler<Integer, ? super OfBuffer> handler) {
+            Objects.requireNonNull(channel, "channel is null");
+            Objects.requireNonNull(handler, "handler is null");
+            channel.read(buffer, this, new CompletionHandler<>() {
+                @Override
+                public void completed(final Integer result, final OfBuffer attachment) {
+                    if (!buffer.hasRemaining() && buffer.limit() == INDEX_MESSAGE_CONTENT) {
+                        buffer.limit(buffer.limit() + messageLength());
+                    }
+                    handler.completed(result, attachment);
+                }
+                @Override
+                public void failed(final Throwable exc, final OfBuffer attachment) {
+                    handler.failed(exc, attachment);
+                }
+            });
         }
+        // @formatter:on
+
+        void write(final AsynchronousSocketChannel channel, final long timeout, final TimeUnit unit,
+                   final CompletionHandler<Integer, ? super OfBuffer> handler) {
+            Objects.requireNonNull(channel, "channel is null");
+            Objects.requireNonNull(handler, "handler is null");
+            channel.write(buffer, timeout, unit, this, handler);
+        }
+
+        // @formatter:off
+        void read(final AsynchronousSocketChannel channel, final long timeout, final TimeUnit unit,
+                  final CompletionHandler<Integer, ? super OfBuffer> handler) {
+            if (!buffer.hasRemaining() && buffer.limit() == INDEX_MESSAGE_CONTENT) {
+                buffer.limit(buffer.limit() + messageLength());
+            }
+            channel.read(buffer, timeout, unit, this, new CompletionHandler<>() {
+                @Override
+                public void completed(final Integer result, final OfBuffer attachment) {
+                    if (!buffer.hasRemaining() && buffer.limit() == INDEX_MESSAGE_CONTENT) {
+                        buffer.limit(buffer.limit() + messageLength());
+                    }
+                    handler.completed(result, attachment);
+                }
+                @Override
+                public void failed(final Throwable exc, final OfBuffer attachment) {
+                    handler.failed(exc, attachment);
+                }
+            });
+        }
+        // @formatter:on
 
         // ------------------------------------------------------------------------------- timestamp
         @Override
@@ -306,27 +369,58 @@ abstract sealed class ChatMessage<T extends ChatMessage<T>>
             return this;
         }
 
-        // --------------------------------------------------------------------------------- message
+        // --------------------------------------------------------------------------- messageLength
         @Override
-        String message() {
-            return ofArray.message();
+        int messageLength() {
+            return ofArray.messageLength();
         }
 
         @Override
-        OfBuffer message(final String message) {
-            ofArray.message(message);
+        OfBuffer messageLength(final int messageLength) {
+            ofArray.messageLength(messageLength);
+            buffer.limit(INDEX_MESSAGE_CONTENT + messageLength());
+            return this;
+        }
+
+        // -------------------------------------------------------------------------- messageContent
+        @Override
+        byte[] messageContent() {
+            return ofArray.messageContent();
+        }
+
+        @Override
+        OfBuffer messageContent(final byte[] messageContent) {
+            ofArray.messageContent(messageContent);
             return this;
         }
 
         // --------------------------------------------------------------------------------- ofArray
 
         // ---------------------------------------------------------------------------------- buffer
+        <R> R applyBuffer(final Function<? super ByteBuffer, ? extends R> function) {
+            Objects.requireNonNull(function, "function is null");
+            return function.apply(buffer);
+        }
+
+        OfBuffer acceptBuffer(final Consumer<? super ByteBuffer> consumer) {
+            Objects.requireNonNull(consumer, "consumer is null");
+            return applyBuffer(b -> {
+                consumer.accept(b);
+                return this;
+            });
+        }
+
         boolean hasRemaining() {
             return buffer.hasRemaining();
         }
 
         int limit() {
             return buffer.limit();
+        }
+
+        OfBuffer limit(int limit) {
+            buffer.limit(limit);
+            return this;
         }
 
         OfBuffer clear() {
@@ -341,18 +435,58 @@ abstract sealed class ChatMessage<T extends ChatMessage<T>>
     }
 
     // ----------------------------------------------------------------------------------- timestamp
+
+    /**
+     * Returns current value of {@code timestamp} property of this message.
+     *
+     * @return current value of the {@code timestamp} property of this message.
+     */
     abstract long timestamp();
 
+    /**
+     * Replaces current value of {@code timestamp} property with specified value.
+     *
+     * @param timestamp current value of the {@code timestamp} property.
+     * @return this instance.
+     */
     abstract T timestamp(long timestamp);
+
+    final T timestamp(final Instant instant) {
+        return timestamp(Objects.requireNonNull(instant, "instant is null").getEpochSecond());
+    }
+
+    final T timestamp(final TemporalAccessor temporal) {
+        Objects.requireNonNull(temporal, "temporal is null");
+        if (temporal instanceof Instant instant) {
+            return timestamp(instant);
+        }
+        return timestamp(Instant.from(temporal));
+    }
 
     private String timestampString() {
         return DateTimeFormatter.ISO_INSTANT.format(Instant.ofEpochSecond(timestamp()));
     }
 
-    // ------------------------------------------------------------------------------------- message
-    abstract String message();
+    // ------------------------------------------------------------------------------------- messageLength
+    abstract int messageLength();
 
-    abstract T message(String message);
+    abstract T messageLength(int messageLength);
+
+    // ------------------------------------------------------------------------------------- messageContent
+    abstract byte[] messageContent();
+
+    abstract T messageContent(byte[] messageContent);
+
+    // ------------------------------------------------------------------------------------- message
+    final String message() {
+        return new String(messageContent(), 0, messageLength(), CHARSET_MESSAGE_CONTENT);
+    }
+
+    final T message(final String message) {
+        final var messageContent = trimToBytes(message);
+        return messageLength(messageContent.length)
+                .messageContent(messageContent);
+    }
 
     // --------------------------------------------------------------------------------------- print
 

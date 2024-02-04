@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -59,6 +60,18 @@ class ChatMessageStaticTest {
                         息をし続ける限り、私たちは希望をもち続けるのだと。
                         そして疑り深く悲観し否定する声に対しては、そんなことできないという人たちに対しては、ひとつ国民の魂を端的に象徴するあの不朽の信条でもって、必ずやこう答えましょう。"""
         );
+    }
+
+    @DisplayName("LENGTH_MSSAGE_LENGTH")
+    @Nested
+    class LENGTH_MESSAGE_LENGTH_Test {
+
+        @DisplayName("should be between 8 and 16")
+        @Test
+        void __() {
+            Assertions.assertTrue(ChatMessage.LENGTH_MESSAGE_LENGTH >= Byte.BYTES);
+            Assertions.assertTrue(ChatMessage.LENGTH_MESSAGE_LENGTH <= Short.BYTES);
+        }
     }
 
     @DisplayName("prependUserName(message)")

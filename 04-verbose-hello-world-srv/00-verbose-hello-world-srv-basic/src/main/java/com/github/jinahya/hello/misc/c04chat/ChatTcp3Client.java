@@ -20,92 +20,85 @@ package com.github.jinahya.hello.misc.c04chat;
  * #L%
  */
 
-import com.github.jinahya.hello.util.HelloWorldServerUtils;
 import com.github.jinahya.hello.util.JavaLangUtils;
+import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
-import java.nio.channels.AsynchronousChannelGroup;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
-import java.nio.channels.WritePendingException;
-import java.util.Objects;
-import java.util.concurrent.Executors;
-import java.util.concurrent.SubmissionPublisher;
-import java.util.concurrent.TimeUnit;
+import java.time.Instant;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.LinkedBlockingQueue;
 
 @Slf4j
-class ChatTcp3Client {
+class ChatTcp3Client extends ChatTcp {
 
     // @formatter:off
-    private static class ChatTcp3ClientAttachment extends ChatTcp3Server.ChatTcp3ServerAttachment {
-        public ChatTcp3ClientAttachment(final AsynchronousSocketChannel client,
-                                        final SubmissionPublisher<ByteBuffer> publisher) {
-            super(client, publisher);
-        }
-        @Override public void onNext(final ByteBuffer item) {
-            Objects.requireNonNull(item, "item is null");
-            Objects.requireNonNull(item, "item is null");
-            buffers.add(item);
+    private static void startWriting(final AsynchronousSocketChannel client,
+                                     final BlockingQueue<String> lines) {
+        Thread.ofPlatform().daemon().start(() -> {
             try {
-                client.write(buffers.get(0), this, W_HANDLER);
-            } catch (WritePendingException wpe) {
-                // empty
+                new ChatMessage.OfBuffer()
+                        .message(lines.take())
+                        .timestamp(Instant.now())
+                        .readyToWriteToServer()
+                        .write(client, new CompletionHandler<>() {
+                            @Override
+                            public void completed(final Integer w, final ChatMessage.OfBuffer a) {
+                                if (!a.hasRemaining()) {
+                                    try {
+                                        a.message(lines.take())
+                                                .timestamp(Instant.now())
+                                                .readyToWriteToServer();
+                                    } catch (final InterruptedException ie) {
+                                        log.error("interrupted while taking a line", ie);
+                                        Thread.currentThread().interrupt();
+                                        return;
+                                    }
+                                }
+                                a.write(client, this);
+                            }
+                            @Override
+                            public void failed(final Throwable exc, final ChatMessage.OfBuffer a) {
+                                log.error("failed to write", exc);
+                            }
+                        });
+            } catch (final InterruptedException ie) {
+                log.error("interrupted while taking a line", ie);
+                Thread.currentThread().interrupt();
             }
-        }
+        });
     }
     // @formatter:on
 
-    // @formatter:off
-    private static final
-    CompletionHandler<Integer, ChatTcp3ClientAttachment> W_HANDLER = new CompletionHandler<>() {
-        @Override
-        public void completed(final Integer result, final ChatTcp3ClientAttachment attachment) {
-            assert !attachment.buffers.isEmpty();
-            var buffer = attachment.buffers.get(0);
-            if (!buffer.hasRemaining()) {
-                attachment.buffers.remove(0);
-            }
-            if (!attachment.buffers.isEmpty()) {
-                attachment.client.write(
-                        attachment.buffers.get(0), // <src>
-                        attachment,                // <attachment>
-                        this                       // <handler>
-                );
-            }
-        }
-        @Override
-        public void failed(final Throwable exc, final ChatTcp3ClientAttachment attachment) {
-            log.error("failed to write", exc);
-            attachment.closeUnchecked();
-        }
-    };
     // @formatter:on
+    private static void startReading(final AsynchronousSocketChannel client) {
+        Thread.ofPlatform().daemon().start(() -> {
+            new ChatMessage.OfBuffer()
+                    .readyToReadFromServer()
+                    .read(client, new CompletionHandler<>() {
+                        @Override
+                        public void completed(final Integer r, final ChatMessage.OfBuffer a) {
+                            if (r == -1) {
+                                log.error("premature eof");
+                                return;
+                            }
+                            if (!a.hasRemaining()) {
+                                a.print().readyToReadFromServer();
+                            }
+                            a.read(client, this);
+                        }
 
-    // @formatter:off
-    private static final
-    CompletionHandler<Integer, ChatTcp3ClientAttachment> R_HANDLER = new CompletionHandler<>() {
-        @Override public void completed(final Integer result,
-                                        final ChatTcp3ClientAttachment attachment) {
-            if (result == -1) {
-                attachment.closeUnchecked();
-                return;
-            }
-            if (!attachment.buffer.hasRemaining()) {
-                _Message.OfBuffer.printToSystemOut(attachment.buffer);
-                attachment.buffer.clear();
-            }
-            attachment.client.read(attachment.buffer, attachment, this);
-        }
-        @Override public void failed(final Throwable exc,
-                                     final ChatTcp3ClientAttachment attachment) {
-            log.error("failed to read", exc);
-            attachment.closeUnchecked();
-        }
-    };
+                        @Override
+                        public void failed(final Throwable exc, final ChatMessage.OfBuffer a) {
+                            log.error("failed to read", exc);
+                        }
+                    });
+        });
+    }
     // @formatter:on
 
     // @formatter:off
@@ -116,57 +109,44 @@ class ChatTcp3Client {
         } catch (ArrayIndexOutOfBoundsException aioobe) {
             addr = InetAddress.getLoopbackAddress();
         }
-        final var group = AsynchronousChannelGroup.withThreadPool(Executors.newCachedThreadPool());
-        try (var client = AsynchronousSocketChannel.open();
-             final var publisher = new SubmissionPublisher<ByteBuffer>()) {
-            client.connect(
-                    new InetSocketAddress(addr, _ChatConstants.PORT),
-                    new ChatTcp3ClientAttachment(client, publisher),
+        try (var client = AsynchronousSocketChannel.open()) {
+            // ----------------------------------------------------------------------------- prepare
+            final var latch = new CountDownLatch(1);
+            final var lines = new LinkedBlockingQueue<String>(8);
+            // -------------------------------- read-quit!/count-down-latch-or-else-offer-to-<lines>
+            JavaLangUtils.readLinesAndRunWhenTests(
+                    "quit!"::equalsIgnoreCase,
+                    latch::countDown,
+                    l -> {
+                        if (l.isBlank()) {
+                            return;
+                        }
+                        if (!lines.offer(l)) {
+                            log.error("failed to offer");
+                        }
+                    }
+            );
+            // ----------------------------------------------------------------------------- connect
+            client.<Void>connect(
+                    new InetSocketAddress(addr, PORT),
+                    null,
                     new CompletionHandler<>() {
-                        @Override
-                        public void completed(final Void result,
-                                              final ChatTcp3ClientAttachment attachment) {
-                            try {
-                                log.debug("connected to {}, through {}",
-                                          attachment.client.getRemoteAddress(),
-                                          attachment.client.getLocalAddress());
-                            } catch (IOException ioe) {
-                                log.error("failed to get addresses from {}", attachment.client,
-                                          ioe);
-                            }
-                            JavaLangUtils.readLinesAndCallWhenTests(
-                                    HelloWorldServerUtils::isQuit, // <predicate>
-                                    () -> {                        // <callable>
-                                        group.shutdownNow();
-                                        return null;
-                                    },
-                                    l -> {                         // <consumer>
-                                        final var message = ChatMessage.prependUserName(l);
-                                        final var buffer = _Message.OfBuffer.of(message);
-                                        attachment.publisher.submit(buffer);
-                                    }
-                            );
-                            attachment.publisher.subscribe(attachment);
-                            attachment.client.read(attachment.buffer, attachment, R_HANDLER);
+                        @Override public void completed(final Void result, final Void attachment) {
+                            startWriting(client, lines);
+                            startReading(client);
                         }
-                        @Override
-                        public void failed(final Throwable exc,
-                                           final ChatTcp3ClientAttachment attachment) {
-                            log.error("failed to accept", exc);
-                            try {
-                                group.shutdownNow();
-                            } catch (IOException ioe) {
-                                log.error("failed shutdown " + group, ioe);
-                            }
+                        @Override public void failed(final Throwable exc, final Void attachment) {
+                            log.error("failed to connect", exc);
                         }
-                    });
-            while (!group.awaitTermination(8L, TimeUnit.SECONDS)) {
-                // does nothing but just waiting...
-            }
+                    }
+            );
+            // ------------------------------------------------------------------------- await-latch
+            latch.await();
         }
     }
     // @formatter:off
 
+    @_ExcludeFromCoverage_PrivateConstructor_Obviously
     private ChatTcp3Client() {
         throw new AssertionError("instantiation is not allowed");
     }

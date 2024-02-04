@@ -21,35 +21,24 @@ package com.github.jinahya.hello.misc.c04chat;
  */
 
 import com.github.jinahya.hello.util.JavaLangUtils;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
+import java.time.Instant;
 import java.util.concurrent.LinkedBlockingQueue;
 
 @Slf4j
 class ChatTcp2Client extends ChatTcp {
 
-    // @formatter:off
-    @NoArgsConstructor(access = AccessLevel.PRIVATE)
-    private static final class Attachment {
-        private final ChatMessage.OfBuffer  writing = new ChatMessage.OfBuffer();
-        private final ChatMessage.OfBuffer reading =
-                new ChatMessage.OfBuffer().readyToReadFromServer();
-    }
-    // @formatter:on
-
     public static void main(final String... args) throws Exception {
         InetAddress addr;
         try {
             addr = InetAddress.getByName(args[0]);
-        } catch (ArrayIndexOutOfBoundsException aioobe) {
+        } catch (final ArrayIndexOutOfBoundsException aioobe) {
             addr = InetAddress.getLoopbackAddress();
         }
         try (var selector = Selector.open();
@@ -61,8 +50,7 @@ class ChatTcp2Client extends ChatTcp {
             if (client.connect(new InetSocketAddress(addr, PORT))) {
                 clientKey = client.register(
                         selector,
-                        SelectionKey.OP_READ,
-                        new Attachment()
+                        SelectionKey.OP_READ
                 );
             } else {
                 clientKey = client.register(
@@ -71,8 +59,10 @@ class ChatTcp2Client extends ChatTcp {
                 );
             }
             // ----------------------------------------------------------------------------- prepare
+            final ChatMessage.OfBuffer reading = new ChatMessage.OfBuffer().readyToReadFromServer();
+            final ChatMessage.OfBuffer writing = new ChatMessage.OfBuffer();
             final var lines = new LinkedBlockingQueue<String>();
-            // -------------------------------------- read-quit!/count-down-latch|offer-to-the-queue
+            // ----------------------------------- read-quit!/count-down-latch-or-offer-to-the-queue
             JavaLangUtils.readLinesAndRunWhenTests(
                     "quit!"::equalsIgnoreCase,
                     () -> {
@@ -84,12 +74,10 @@ class ChatTcp2Client extends ChatTcp {
                         if (l.isBlank()) {
                             return;
                         }
-                        final var offered = lines.offer(l);
-                        if (!offered) {
-                            log.error("failed to offer!");
+                        if (lines.offer(l)) {
+                            clientKey.interestOpsOr(SelectionKey.OP_WRITE);
+                            selector.wakeup();
                         }
-                        clientKey.interestOpsOr(SelectionKey.OP_WRITE);
-                        selector.wakeup();
                     }
             );
             // ----------------------------------------------------------------------- selector-loop
@@ -98,68 +86,40 @@ class ChatTcp2Client extends ChatTcp {
                 if (selector.select() == 0) {
                     continue;
                 }
+                assert selector.selectedKeys().size() == 1;
+                assert selector.selectedKeys().contains(clientKey);
                 selector.selectedKeys().clear();
                 // ----------------------------------------------------------------- connect(finish)
-                if (clientKey.isConnectable()) {
-                    final var channel = (SocketChannel) clientKey.channel();
-                    try {
-                        if (channel.finishConnect()) {
-                            clientKey.interestOpsAnd(~SelectionKey.OP_CONNECT);
-                            assert clientKey.isConnectable();
-                            clientKey.attach(new Attachment());
-                            clientKey.interestOpsOr(SelectionKey.OP_READ);
-                        }
-                    } catch (final IOException ioe) {
-                        log.error("failed to connect", ioe);
-                        channel.close();
-                        assert !clientKey.isValid();
-                        continue; // why?
-                    }
+                if (clientKey.isConnectable() && (client.finishConnect())) {
+                    clientKey.interestOpsAnd(~SelectionKey.OP_CONNECT);
+                    clientKey.interestOpsOr(SelectionKey.OP_READ);
                 }
                 // ---------------------------------------------------------------------------- read
                 if (clientKey.isReadable()) {
-                    final var channel = (SocketChannel) clientKey.channel();
-                    assert channel == client;
-                    final var attachment = (Attachment) clientKey.attachment();
-                    try {
-                        if (attachment.reading.read(channel) == -1) {
-                            log.error("premature eof");
-                            clientKey.interestOpsAnd(~SelectionKey.OP_READ);
-                            assert clientKey.isReadable();
-                            continue;
-                        }
-                        if (!attachment.reading.hasRemaining() &&
-                            attachment.reading.limit() > ChatMessage.INDEX_MESSAGE_CONTENT) {
-                            attachment.reading.print().readyToReadFromClient();
-                        }
-                    } catch (final IOException ioe) {
-                        if (clientKey.isValid()) {
-                            log.error("failed to read", ioe);
-                        }
+                    if ((reading.read(client)) == -1) {
+                        log.error("premature eof");
+                        clientKey.interestOpsAnd(~SelectionKey.OP_READ);
+                        continue;
+                    }
+                    if (!reading.hasRemaining()) {
+                        reading.print().readyToReadFromServer();
                     }
                 }
                 // --------------------------------------------------------------------------- write
                 if (clientKey.isWritable()) {
-                    final var channel = (SocketChannel) clientKey.channel();
-                    assert channel == client;
-                    final var attachment = (Attachment) clientKey.attachment();
-                    if (!attachment.writing.hasRemaining()) {
-                        assert !lines.isEmpty();
-                        attachment.writing
+                    if (!writing.hasRemaining()) {
+                        assert !lines.isEmpty(); // why?
+                        writing.timestamp(Instant.now())
                                 .message(ChatMessage.prependUserName(lines.take()))
                                 .readyToWriteToServer();
                     }
-                    assert attachment.writing.hasRemaining();
-                    try {
-                        final var w = attachment.writing.write(channel);
-                        assert w >= 0;
-                        if (!attachment.writing.hasRemaining() && (lines.isEmpty())) {
-                            clientKey.interestOpsAnd(~SelectionKey.OP_WRITE);
-                        }
-                    } catch (final IOException ioe) {
-                        log.error("failed to write", ioe);
+                    assert writing.hasRemaining();
+                    writing.write(client);
+                    if (!writing.hasRemaining()) {
                         clientKey.interestOpsAnd(~SelectionKey.OP_WRITE);
-                        assert clientKey.isWritable();
+                    }
+                    if (!lines.isEmpty()) {
+                        clientKey.interestOpsOr(SelectionKey.OP_WRITE);
                     }
                 }
             }

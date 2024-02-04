@@ -151,15 +151,12 @@ class ChatTcp3Server extends ChatTcp {
     };
     // @formatter:on
 
-    public static void main(String... args)
-            throws Exception {
+    public static void main(final String... args) throws Exception {
         var group = AsynchronousChannelGroup.withThreadPool(
                 Executors.newCachedThreadPool());
         try (var server = AsynchronousServerSocketChannel.open();
              var publisher = new SubmissionPublisher<ByteBuffer>()) {
-            server.bind(new InetSocketAddress(InetAddress.getByName("::"),
-                                              _ChatConstants.PORT));
-            log.debug("server bound to {}", server.getLocalAddress());
+            server.bind(ADDR);
             JavaLangUtils.readLinesAndCallWhenTests(
                     HelloWorldServerUtils::isQuit, // <predicate>
                     () -> {                        // <callable>
