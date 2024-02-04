@@ -121,6 +121,7 @@ abstract class ChatMessageTest<T extends ChatMessage<T>> {
                 // ---------------------------------------------------------------------------- then
                 Assertions.assertSame(instance, result);
                 Assertions.assertNotNull(instance.message());
+                Assertions.assertTrue(message.startsWith(instance.message()));
             }
         }
     }

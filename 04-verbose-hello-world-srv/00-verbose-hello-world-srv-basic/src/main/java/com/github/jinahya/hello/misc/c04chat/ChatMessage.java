@@ -63,6 +63,7 @@ abstract sealed class ChatMessage<T extends ChatMessage<T>>
     static final int INDEX_TIMESTAMP = 0;
 
     static final int LENGTH_TIMESTAMP = Integer.BYTES;
+//    static final int LENGTH_TIMESTAMP = Long.BYTES;
 
     // ------------------------------------------------------------------------------ MESSAGE_LENGTH
     static final int INDEX_MESSAGE_LENGTH = INDEX_TIMESTAMP + LENGTH_TIMESTAMP;
@@ -490,15 +491,19 @@ abstract sealed class ChatMessage<T extends ChatMessage<T>>
     }
 
     private String timestampString() {
-        return DateTimeFormatter.ISO_INSTANT.format(Instant.ofEpochSecond(timestamp()));
+        final var instant = Instant.ofEpochSecond(timestamp());
+        return DateTimeFormatter.ISO_INSTANT.format(instant);
+//        return DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(
+//                java.time.LocalDateTime.ofInstant(instant, java.time.ZoneId.systemDefault())
+//        );
     }
 
-    // ------------------------------------------------------------------------------------- messageLength
+    // ------------------------------------------------------------------------------- messageLength
     abstract int messageLength();
 
     abstract T messageLength(int messageLength);
 
-    // ------------------------------------------------------------------------------------- messageContent
+    // ------------------------------------------------------------------------------ messageContent
     abstract byte[] messageContent();
 
     abstract T messageContent(byte[] messageContent);
