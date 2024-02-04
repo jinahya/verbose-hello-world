@@ -338,9 +338,6 @@ abstract sealed class ChatMessage<T extends ChatMessage<T>>
         // @formatter:off
         void read(final AsynchronousSocketChannel channel, final long timeout, final TimeUnit unit,
                   final CompletionHandler<Integer, ? super OfBuffer> handler) {
-            if (!buffer.hasRemaining() && buffer.limit() == INDEX_MESSAGE_CONTENT) {
-                buffer.limit(buffer.limit() + messageLength());
-            }
             channel.read(buffer, timeout, unit, this, new CompletionHandler<>() {
                 @Override
                 public void completed(final Integer result, final OfBuffer attachment) {
