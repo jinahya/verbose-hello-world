@@ -35,7 +35,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
-class ChatTcp3Server extends ChatTcp {
+class ChatTcp5Server extends ChatTcp {
 
     public static void main(final String... args) throws Exception {
         final var group = AsynchronousChannelGroup.withThreadPool(
@@ -43,7 +43,7 @@ class ChatTcp3Server extends ChatTcp {
         );
         // ----------------------------------------------------------- read-quit!/shutdown-group-now
         JavaLangUtils.readLinesAndCallWhenTests(
-                "quit!"::equalsIgnoreCase,
+                QUIT::equalsIgnoreCase,
                 () -> {
                     group.shutdownNow();
                     return null;
@@ -51,7 +51,7 @@ class ChatTcp3Server extends ChatTcp {
         );
         // ------------------------------------------------------------------------------------ open
         try (var server = AsynchronousServerSocketChannel.open(group);
-             var publisher = new SubmissionPublisher<ChatMessage.OfBuffer>()) {
+             var publisher = new SubmissionPublisher<_ChatMessage.OfBuffer>()) {
             // -------------------------------------------------------------------------------- bind
             server.bind(ADDR, SERVER_BACKLOG);
             log.debug("bound");
@@ -60,14 +60,14 @@ class ChatTcp3Server extends ChatTcp {
                 @Override
                 public void completed(final AsynchronousSocketChannel client,
                                       final Void attachment) {
-                    new ChatMessage.OfBuffer().readyToReadFromClient().read(
+                    new _ChatMessage.OfBuffer().readyToReadFromClient().read(
                             client,
                             new CompletionHandler<>() {
                                 @Override
                                 public void completed(final Integer w,
-                                                      final ChatMessage.OfBuffer message) {
+                                                      final _ChatMessage.OfBuffer message) {
                                     if (!message.hasRemaining()) {
-                                        publisher.submit(ChatMessage.OfBuffer.copyOf(message));
+                                        publisher.submit(_ChatMessage.OfBuffer.copyOf(message));
                                         message.print().readyToReadFromClient();
                                     }
                                     message.read(client, this);
@@ -75,12 +75,12 @@ class ChatTcp3Server extends ChatTcp {
 
                                 @Override
                                 public void failed(final Throwable exc,
-                                                   final ChatMessage.OfBuffer message) {
+                                                   final _ChatMessage.OfBuffer message) {
                                     JavaIoCloseableUtils.closeSilently(client);
                                 }
                             }
                     );
-                    final var messages = new LinkedBlockingQueue<ChatMessage.OfBuffer>(8);
+                    final var messages = new LinkedBlockingQueue<_ChatMessage.OfBuffer>(8);
                     final var subscriptionRef = new AtomicReference<Flow.Subscription>();
                     publisher.subscribe(new Flow.Subscriber<>() {
                         @Override
@@ -90,8 +90,8 @@ class ChatTcp3Server extends ChatTcp {
                         }
 
                         @Override
-                        public void onNext(final ChatMessage.OfBuffer item) {
-                            if (!messages.offer(ChatMessage.OfBuffer.copyOf(item))) {
+                        public void onNext(final _ChatMessage.OfBuffer item) {
+                            if (!messages.offer(_ChatMessage.OfBuffer.copyOf(item))) {
                                 log.error("failed to offer");
                             }
                         }
@@ -121,7 +121,7 @@ class ChatTcp3Server extends ChatTcp {
         }
     }
 
-    private ChatTcp3Server() {
+    private ChatTcp5Server() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

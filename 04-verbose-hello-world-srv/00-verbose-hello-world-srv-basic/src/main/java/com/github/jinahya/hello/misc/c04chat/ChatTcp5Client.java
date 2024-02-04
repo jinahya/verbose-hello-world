@@ -34,20 +34,20 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 
 @Slf4j
-class ChatTcp3Client extends ChatTcp {
+class ChatTcp5Client extends ChatTcp {
 
     // @formatter:off
     private static void startWriting(final AsynchronousSocketChannel client,
                                      final BlockingQueue<String> lines) {
         Thread.ofPlatform().daemon().start(() -> {
             try {
-                new ChatMessage.OfBuffer()
+                new _ChatMessage.OfBuffer()
                         .message(lines.take())
                         .timestamp(Instant.now())
                         .readyToWriteToServer()
                         .write(client, new CompletionHandler<>() {
                             @Override
-                            public void completed(final Integer w, final ChatMessage.OfBuffer a) {
+                            public void completed(final Integer w, final _ChatMessage.OfBuffer a) {
                                 if (!a.hasRemaining()) {
                                     try {
                                         a.message(lines.take())
@@ -62,7 +62,7 @@ class ChatTcp3Client extends ChatTcp {
                                 a.write(client, this);
                             }
                             @Override
-                            public void failed(final Throwable exc, final ChatMessage.OfBuffer a) {
+                            public void failed(final Throwable exc, final _ChatMessage.OfBuffer a) {
                                 log.error("failed to write", exc);
                             }
                         });
@@ -77,11 +77,11 @@ class ChatTcp3Client extends ChatTcp {
     // @formatter:on
     private static void startReading(final AsynchronousSocketChannel client) {
         Thread.ofPlatform().daemon().start(() -> {
-            new ChatMessage.OfBuffer()
+            new _ChatMessage.OfBuffer()
                     .readyToReadFromServer()
                     .read(client, new CompletionHandler<>() {
                         @Override
-                        public void completed(final Integer r, final ChatMessage.OfBuffer a) {
+                        public void completed(final Integer r, final _ChatMessage.OfBuffer a) {
                             if (r == -1) {
                                 log.error("premature eof");
                                 return;
@@ -93,7 +93,7 @@ class ChatTcp3Client extends ChatTcp {
                         }
 
                         @Override
-                        public void failed(final Throwable exc, final ChatMessage.OfBuffer a) {
+                        public void failed(final Throwable exc, final _ChatMessage.OfBuffer a) {
                             log.error("failed to read", exc);
                         }
                     });
@@ -115,7 +115,7 @@ class ChatTcp3Client extends ChatTcp {
             final var lines = new LinkedBlockingQueue<String>(8);
             // -------------------------------- read-quit!/count-down-latch-or-else-offer-to-<lines>
             JavaLangUtils.readLinesAndRunWhenTests(
-                    "quit!"::equalsIgnoreCase,
+                    QUIT::equalsIgnoreCase,
                     latch::countDown,
                     l -> {
                         if (l.isBlank()) {
@@ -147,7 +147,7 @@ class ChatTcp3Client extends ChatTcp {
     // @formatter:off
 
     @_ExcludeFromCoverage_PrivateConstructor_Obviously
-    private ChatTcp3Client() {
+    private ChatTcp5Client() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

@@ -37,9 +37,9 @@ class ChatTcp2Server extends ChatTcp {
 
     // @formatter:off
     static class Attachment {
-        private ChatMessage.OfBuffer reading;
-        final List<ChatMessage.OfBuffer> writings = new LinkedList<>();
-         ChatMessage.OfBuffer writing;
+        private _ChatMessage.OfBuffer reading;
+        final List<_ChatMessage.OfBuffer> writings = new LinkedList<>();
+         _ChatMessage.OfBuffer writing;
     }
     // @formatter:on
 
@@ -55,7 +55,7 @@ class ChatTcp2Server extends ChatTcp {
             );
             // -------------------------------------------------------- read-quit!/cancel-server-key
             JavaLangUtils.readLinesAndRunWhenTests(
-                    "quit!"::equalsIgnoreCase,
+                    QUIT::equalsIgnoreCase,
                     () -> {
                         serverKey.cancel();
                         assert !serverKey.isValid();
@@ -83,7 +83,7 @@ class ChatTcp2Server extends ChatTcp {
                         final var channel = (SocketChannel) key.channel();
                         final var attachment = (Attachment) key.attachment();
                         if (attachment.reading == null) {
-                            attachment.reading = new ChatMessage.OfBuffer().readyToReadFromClient();
+                            attachment.reading = new _ChatMessage.OfBuffer().readyToReadFromClient();
                         }
                         try {
                             if (attachment.reading.read(channel) == -1) {
@@ -99,7 +99,7 @@ class ChatTcp2Server extends ChatTcp {
                                     .filter(SelectionKey::isValid)
                                     .forEach(k -> {
                                         ((Attachment) k.attachment()).writings.add(
-                                                ChatMessage.OfBuffer
+                                                _ChatMessage.OfBuffer
                                                         .copyOf(attachment.reading)
                                                         .readyToWriteToClient()
                                         );

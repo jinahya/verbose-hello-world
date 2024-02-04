@@ -20,6 +20,7 @@ package com.github.jinahya.hello.misc.c04chat;
  * #L%
  */
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -56,8 +57,8 @@ import java.util.function.Function;
 @SuppressWarnings({
         "java:S6217" // all permitted classes are in the same file
 })
-abstract sealed class ChatMessage<T extends ChatMessage<T>>
-        permits ChatMessage.OfArray, ChatMessage.OfBuffer {
+abstract sealed class _ChatMessage<T extends _ChatMessage<T>>
+        permits _ChatMessage.OfArray, _ChatMessage.OfBuffer {
 
     // ----------------------------------------------------------------------------------- TIMESTAMP
     static final int INDEX_TIMESTAMP = 0;
@@ -129,9 +130,8 @@ abstract sealed class ChatMessage<T extends ChatMessage<T>>
     }
 
     // ---------------------------------------------------------------------------------------------
-    @NoArgsConstructor(access = AccessLevel.PACKAGE)
     @ToString(callSuper = true)
-    static final class OfArray extends ChatMessage<OfArray> {
+    static final class OfArray extends _ChatMessage<OfArray> {
 
         static OfArray copyOf(final OfArray original) {
             final var instance = new OfArray();
@@ -181,6 +181,13 @@ abstract sealed class ChatMessage<T extends ChatMessage<T>>
                 throw new EOFException("premature eof");
             }
             return bytes;
+        }
+
+        // -----------------------------------------------------------------------------------------
+        OfArray() {
+            super();
+            array = new byte[BYTES];
+            array[INDEX_MESSAGE_CONTENT] = 0x21;
         }
 
         // -----------------------------------------------------------------------------------------
@@ -264,12 +271,12 @@ abstract sealed class ChatMessage<T extends ChatMessage<T>>
         }
 
         // ---------------------------------------------------------------------------------------------
-        private final byte[] array = new byte[BYTES];
+        private final byte[] array;
     }
 
     // -------------------------------------------------------------------------------------- buffer
     @ToString(callSuper = true)
-    static final class OfBuffer extends ChatMessage<OfBuffer> {
+    static final class OfBuffer extends _ChatMessage<OfBuffer> {
 
         static OfBuffer copyOf(final OfBuffer original) {
             return new OfBuffer(OfArray.copyOf(original.ofArray));
@@ -509,11 +516,17 @@ abstract sealed class ChatMessage<T extends ChatMessage<T>>
     abstract T messageContent(byte[] messageContent);
 
     // ------------------------------------------------------------------------------------- message
+    @NotBlank
     final String message() {
-        return new String(messageContent(), 0, messageLength(), CHARSET_MESSAGE_CONTENT);
+        return new String(
+                messageContent(),
+                0,
+                messageLength(),
+                CHARSET_MESSAGE_CONTENT
+        );
     }
 
-    final T message(final String message) {
+    final T message(@NotBlank final String message) {
         final var messageContent = trimToBytes(message);
         return messageLength(messageContent.length)
                 .messageContent(messageContent);

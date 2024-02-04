@@ -23,7 +23,6 @@ package com.github.jinahya.hello.misc.c04chat;
 import com.github.jinahya.hello.util.JavaLangUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.EOFException;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -49,7 +48,7 @@ class ChatTcp1Client extends ChatTcp {
             );
             // -------------------------------------------------------------- read-from-server/print
             Thread.ofPlatform().daemon().start(() -> {
-                for (final var reading = new ChatMessage.OfArray(); !client.isClosed(); ) {
+                for (final var reading = new _ChatMessage.OfArray(); !client.isClosed(); ) {
                     try {
                         reading.read(client.getInputStream()).print();
                     } catch (final IOException ioe) {
@@ -66,9 +65,9 @@ class ChatTcp1Client extends ChatTcp {
             // ----------------------------------------------------------------------------- prepare
             final var latch = new CountDownLatch(1);
             // --------------------------------- read-quit!/count-down-latch-or-else-write-to-server
-            final var writing = new ChatMessage.OfArray();
+            final var writing = new _ChatMessage.OfArray();
             JavaLangUtils.readLinesAndRunWhenTests(
-                    "quit!"::equalsIgnoreCase,
+                    QUIT::equalsIgnoreCase,
                     latch::countDown,
                     l -> {
                         if (l.isBlank()) {
@@ -76,7 +75,7 @@ class ChatTcp1Client extends ChatTcp {
                         }
                         try {
                             writing.timestamp(Instant.now())
-                                    .message(ChatMessage.prependUserName(l))
+                                    .message(_ChatMessage.prependUserName(l))
                                     .write(client.getOutputStream())
                                     .flush();
                         } catch (final IOException ioe) {

@@ -68,8 +68,8 @@ class ChatMessageStaticTest {
         @DisplayName("should be between 8 and 16")
         @Test
         void __() {
-            Assertions.assertTrue(ChatMessage.LENGTH_MESSAGE_LENGTH >= Byte.BYTES);
-            Assertions.assertTrue(ChatMessage.LENGTH_MESSAGE_LENGTH <= Short.BYTES);
+            Assertions.assertTrue(_ChatMessage.LENGTH_MESSAGE_LENGTH >= Byte.BYTES);
+            Assertions.assertTrue(_ChatMessage.LENGTH_MESSAGE_LENGTH <= Short.BYTES);
         }
     }
 
@@ -83,11 +83,11 @@ class ChatMessageStaticTest {
         @ParameterizedTest
         void __NotBlank(final String message) {
             // -------------------------------------------------------------------------------- when
-            final var result = ChatMessage.prependUserName(message);
+            final var result = _ChatMessage.prependUserName(message);
             // -------------------------------------------------------------------------------- then
             Assertions.assertTrue(result.contains(
-                    Optional.ofNullable(System.getProperty(ChatMessage.PROPERTY_NAME_USER_NAME))
-                            .orElse(ChatMessage.PROPERTY_VALUE_USER_NAME_UNKNOWN))
+                    Optional.ofNullable(System.getProperty(_ChatMessage.PROPERTY_NAME_USER_NAME))
+                            .orElse(_ChatMessage.PROPERTY_VALUE_USER_NAME_UNKNOWN))
             );
         }
     }
@@ -103,11 +103,11 @@ class ChatMessageStaticTest {
         void _Trimmed_NotBlank(final String message) {
             assert !message.isBlank();
             // -------------------------------------------------------------------------------- when
-            final var result = ChatMessage.trimToBytes(message);
+            final var result = _ChatMessage.trimToBytes(message);
             // -------------------------------------------------------------------------------- then
-            log.debug("result: {}", new String(result, ChatMessage.CHARSET_MESSAGE_CONTENT));
+            log.debug("result: {}", new String(result, _ChatMessage.CHARSET_MESSAGE_CONTENT));
             Assertions.assertNotNull(result);
-            Assertions.assertTrue(result.length <= ChatMessage.LENGTH_MESSAGE_CONTENT_MAX);
+            Assertions.assertTrue(result.length <= _ChatMessage.LENGTH_MESSAGE_CONTENT_MAX);
         }
     }
 }

@@ -3,9 +3,9 @@ package com.github.jinahya.hello.misc.c04chat;
 import org.junit.jupiter.api.Nested;
 
 @Nested
-class ChatMessageOfBufferTest extends ChatMessageTest<ChatMessage.OfBuffer> {
+class ChatMessageOfBufferTest extends ChatMessageTest<_ChatMessage.OfBuffer> {
 
     ChatMessageOfBufferTest() {
-        super(ChatMessage.OfBuffer.class);
+        super(_ChatMessage.OfBuffer.class);
     }
 }

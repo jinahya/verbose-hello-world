@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
 @SuppressWarnings({
         "java:S101"
 })
-abstract class ChatUdp extends _Chat {
+abstract class ChatUdp extends Chat {
 
     // -------------------------------------------------------------------------------------- SERVER
     static final int SERVER_BACKLOG = 50;

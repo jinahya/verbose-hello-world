@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
 @SuppressWarnings({
         "java:S101"
 })
-abstract class _Chat {
+abstract class Chat {
 
     // ------------------------------------------------------------------------------ HOST/PORT/ADDR
     private static final String HOST_NAME = "::";

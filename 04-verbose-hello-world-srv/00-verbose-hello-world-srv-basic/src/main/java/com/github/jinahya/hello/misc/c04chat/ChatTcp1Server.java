@@ -39,15 +39,15 @@ class ChatTcp1Server extends ChatTcp {
             server.bind(ADDR, SERVER_BACKLOG);
             // ------------------------------------------------------------- read-quit!/close-server
             JavaLangUtils.readLinesAndCloseWhenTests(
-                    "quit!"::equalsIgnoreCase,
+                    QUIT::equalsIgnoreCase,
                     server
             );
             // ----------------------------------------------------------------------------- prepare
             final var clients = new CopyOnWriteArrayList<Socket>();
-            final var messages = new LinkedBlockingQueue<ChatMessage.OfArray>();
+            final var messages = new LinkedBlockingQueue<_ChatMessage.OfArray>();
             // -------------------------------------------------------------------------- take/write
             executor.submit(() -> {
-                for (ChatMessage.OfArray m; !Thread.currentThread().isInterrupted(); ) {
+                for (_ChatMessage.OfArray m; !Thread.currentThread().isInterrupted(); ) {
                     try {
                         m = messages.take();
                         m.print();
@@ -85,7 +85,7 @@ class ChatTcp1Server extends ChatTcp {
                 executor.submit(() -> {
                     try (client) {
                         while (!client.isClosed() && !Thread.currentThread().isInterrupted()) {
-                            final var message = new ChatMessage.OfArray()
+                            final var message = new _ChatMessage.OfArray()
                                     .read(client.getInputStream());
                             if (!messages.offer(message)) {
                                 log.error("failed to offer message: " + message);

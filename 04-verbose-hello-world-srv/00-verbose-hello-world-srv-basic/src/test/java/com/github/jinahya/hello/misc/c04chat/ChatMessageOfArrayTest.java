@@ -3,9 +3,9 @@ package com.github.jinahya.hello.misc.c04chat;
 import org.junit.jupiter.api.Nested;
 
 @Nested
-class ChatMessageOfArrayTest extends ChatMessageTest<ChatMessage.OfArray> {
+class ChatMessageOfArrayTest extends ChatMessageTest<_ChatMessage.OfArray> {
 
     ChatMessageOfArrayTest() {
-        super(ChatMessage.OfArray.class);
+        super(_ChatMessage.OfArray.class);
     }
 }

@@ -33,7 +33,7 @@ import java.time.Instant;
 import java.util.Objects;
 
 @Slf4j
-abstract class ChatMessageTest<T extends ChatMessage<T>> {
+abstract class ChatMessageTest<T extends _ChatMessage<T>> {
 
     // ---------------------------------------------------------------------------------------------
     ChatMessageTest(final Class<T> messageClass) {
