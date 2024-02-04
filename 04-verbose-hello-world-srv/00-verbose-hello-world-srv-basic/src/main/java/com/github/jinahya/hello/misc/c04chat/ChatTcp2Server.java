@@ -20,6 +20,7 @@ package com.github.jinahya.hello.misc.c04chat;
  * #L%
  */
 
+import com.github.jinahya.hello.util.JavaIoCloseableUtils;
 import com.github.jinahya.hello.util.JavaLangUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,15 +32,17 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 class ChatTcp2Server extends ChatTcp {
 
     // @formatter:off
-    static class ChatTcp2ServerAttachment {
+    static class Attachment {
         final ByteBuffer buffer = _Message.OfBuffer.empty();
         final List<ByteBuffer> buffers = new LinkedList<>();
+        private ChatMessage.OfBuffer reading;
+        final List<ChatMessage.OfBuffer> writings = new LinkedList<>();
+         ChatMessage.OfBuffer writing;
     }
     // @formatter:on
 
@@ -63,77 +66,79 @@ class ChatTcp2Server extends ChatTcp {
                     }
             );
             // ----------------------------------------------------------------------- selector-loop
-            while (selector.keys().stream().anyMatch(SelectionKey::isValid)) {
+            while (serverKey.isValid()) {
                 // -------------------------------------------------------------------------- select
                 if (selector.select() == 0) {
                     continue;
                 }
                 // ------------------------------------------------------------------------- process
                 for (var i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
-                    var key = i.next();
+                    final var key = i.next();
                     // ---------------------------------------------------------------------- accept
                     if (key.isAcceptable()) {
-                        final var channel = (ServerSocketChannel) key.channel();
-                        assert channel == server;
-                        final var client = channel.accept();
-                        var attachment = new ChatTcp2ServerAttachment();
-                        client.configureBlocking(false);
-                        client.register(selector, SelectionKey.OP_READ, attachment);
-                        continue;
+                        ((ServerSocketChannel) key.channel())
+                                .accept()
+                                .configureBlocking(false)
+                                .register(selector, SelectionKey.OP_READ, new Attachment());
                     }
+                    // ---------------------------------------------------------------------- reader
                     if (key.isReadable()) {
-                        var channel = (SocketChannel) key.channel();
-                        var attachment = (ChatTcp2ServerAttachment) key.attachment();
-                        var r = channel.read(attachment.buffer);
-                        if (r == -1) {
-                            channel.close();
-                            assert !key.isValid();
-                            continue;
+                        final var channel = (SocketChannel) key.channel();
+                        final var attachment = (Attachment) key.attachment();
+                        if (attachment.reading == null) {
+                            attachment.reading = new ChatMessage.OfBuffer().readyToReadFromClient();
                         }
-                        assert r > 0;
-                        if (!attachment.buffer.hasRemaining()) {
+                        try {
+                            if (attachment.reading.read(channel) == -1) {
+                                JavaIoCloseableUtils.closeSilently(channel);
+                                continue;
+                            }
+                        } catch (final IOException ioe) {
+                            log.error("failed to read from {}", channel, ioe);
+                        }
+                        if (!attachment.reading.hasRemaining()) {
                             selector.keys().stream()
                                     .filter(k -> k.channel() instanceof SocketChannel)
                                     .filter(SelectionKey::isValid)
                                     .forEach(k -> {
-                                        ((ChatTcp2ServerAttachment) k.attachment()).buffers.add(
-                                                ByteBuffer.wrap(
-                                                        attachment.buffer.array())
+                                        ((Attachment) k.attachment()).writings.add(
+                                                ChatMessage.OfBuffer
+                                                        .copyOf(attachment.reading)
+                                                        .readyToWriteToClient()
                                         );
                                         k.interestOpsOr(SelectionKey.OP_WRITE);
                                     });
-                            attachment.buffer.clear();
+                            attachment.reading.readyToReadFromClient();
                         }
                     }
+                    // ----------------------------------------------------------------------- write
                     if (key.isWritable()) {
-                        var channel = (SocketChannel) key.channel();
-                        var attachment = (ChatTcp2ServerAttachment) key.attachment();
-                        assert !attachment.buffers.isEmpty();
-                        var buffer = attachment.buffers.get(0);
-                        assert buffer.hasRemaining();
-                        var w = channel.write(buffer);
-                        assert w > 0;
-                        if (!buffer.hasRemaining()) {
-                            attachment.buffers.remove(buffer);
-                            if (attachment.buffers.isEmpty()) {
-                                key.interestOpsAnd(~SelectionKey.OP_WRITE);
+                        final var channel = (SocketChannel) key.channel();
+                        final var attachment = (Attachment) key.attachment();
+                        assert !attachment.writings.isEmpty();
+                        if (attachment.writing == null) {
+                            attachment.writing = attachment.writings.removeFirst();
+                        }
+                        try {
+                            attachment.writing.write(channel);
+                            if (!attachment.writing.hasRemaining()) {
+                                attachment.writing = null;
+                                if (attachment.writings.isEmpty()) {
+                                    key.interestOpsAnd(~SelectionKey.OP_WRITE);
+                                }
                             }
+                        } catch (final IOException ioe) {
+                            log.error("failed to write to {}", channel, ioe);
+                            JavaIoCloseableUtils.closeSilently(channel);
+                            key.cancel();
                         }
                     }
                 }
             }
+            // ------------------------------------------------------------------- close-all-clients
             selector.keys().stream()
-                    .filter(k -> k.channel() instanceof SocketChannel)
-                    .filter(SelectionKey::isValid)
-                    .forEach(k -> {
-                        var channel = k.channel();
-                        try {
-                            channel.close();
-                            assert !k.isValid();
-                        } catch (IOException ioe) {
-                            log.error("failed to close {}", channel, ioe);
-                        }
-                    });
+                    .map(SelectionKey::channel)
+                    .forEach(JavaIoCloseableUtils::closeSilently);
         }
     }
 }

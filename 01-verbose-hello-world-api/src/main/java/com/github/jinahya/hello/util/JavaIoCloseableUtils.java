@@ -1,5 +1,7 @@
 package com.github.jinahya.hello.util;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Objects;
@@ -10,6 +12,7 @@ import java.util.function.Consumer;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@Slf4j
 public final class JavaIoCloseableUtils {
 
     public static void closeUnchecked(final Closeable closeable,
@@ -37,6 +40,15 @@ public final class JavaIoCloseableUtils {
             closeable.close();
             return closeable;
         });
+    }
+
+    public static void closeSilently(final Closeable closeable) {
+        Objects.requireNonNull(closeable, "closeable is null");
+        try {
+            closeable.close();
+        } catch (final IOException ioe) {
+            log.error("failed to close {}", closeable, ioe);
+        }
     }
 
     @_ExcludeFromCoverage_PrivateConstructor_Obviously

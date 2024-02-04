@@ -131,6 +131,18 @@ abstract sealed class ChatMessage<T extends ChatMessage<T>>
     @Slf4j
     static final class OfArray extends ChatMessage<OfArray> {
 
+        static OfArray copyOf(final OfArray original) {
+            final var instance = new OfArray();
+            System.arraycopy(
+                    original.array,
+                    0,
+                    instance.array,
+                    0,
+                    original.array.length
+            );
+            return instance;
+        }
+
         private static void integralRange(final byte[] array, int to, final int from, long value) {
             while (to >= from) {
                 array[to--] = (byte) (value & 0xFF);
@@ -255,6 +267,21 @@ abstract sealed class ChatMessage<T extends ChatMessage<T>>
 
     // -------------------------------------------------------------------------------------- buffer
     static final class OfBuffer extends ChatMessage<OfBuffer> {
+
+        static OfBuffer copyOf(final OfBuffer original) {
+            return new OfBuffer(OfArray.copyOf(original.ofArray));
+        }
+
+        // -----------------------------------------------------------------------------------------
+        private OfBuffer(final OfArray ofArray) {
+            super();
+            this.ofArray = Objects.requireNonNull(ofArray, "ofArray is null");
+            buffer = ByteBuffer.wrap(this.ofArray.array);
+        }
+
+        OfBuffer() {
+            this(new OfArray());
+        }
 
         // ----------------------------------------------------------------------------- client-side
         OfBuffer readyToWriteToServer() {
@@ -426,9 +453,9 @@ abstract sealed class ChatMessage<T extends ChatMessage<T>>
         }
 
         // -----------------------------------------------------------------------------------------
-        private final OfArray ofArray = new OfArray();
+        private final OfArray ofArray;
 
-        private final ByteBuffer buffer = ByteBuffer.wrap(ofArray.array).limit(0);
+        private final ByteBuffer buffer;
     }
 
     // ----------------------------------------------------------------------------------- timestamp

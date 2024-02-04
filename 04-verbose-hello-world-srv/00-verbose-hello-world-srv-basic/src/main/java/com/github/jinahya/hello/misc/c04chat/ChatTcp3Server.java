@@ -27,8 +27,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousChannelGroup;
 import java.nio.channels.AsynchronousServerSocketChannel;
@@ -45,7 +43,7 @@ import java.util.concurrent.TimeUnit;
 class ChatTcp3Server extends ChatTcp {
 
     // @formatter:off
-    static class ChatTcp3ServerAttachment extends ChatTcp2Server.ChatTcp2ServerAttachment
+    static class ChatTcp3ServerAttachment extends ChatTcp2Server.Attachment
             implements Flow.Subscriber<ByteBuffer>, Closeable {
         ChatTcp3ServerAttachment(AsynchronousSocketChannel client,
                                  SubmissionPublisher<ByteBuffer> publisher) {
@@ -62,9 +60,9 @@ class ChatTcp3Server extends ChatTcp {
         @Override
         public void onNext(ByteBuffer item) {
             Objects.requireNonNull(item, "item is null");
-            buffers.add(item);
+            writings.add(item);
             try {
-                client.write(buffers.get(0), this, W_HANDLER);
+                client.write(writings.get(0), this, W_HANDLER);
             } catch (WritePendingException wpe) {
                 // empty
             }
@@ -110,14 +108,14 @@ class ChatTcp3Server extends ChatTcp {
     private static final
     CompletionHandler<Integer, ChatTcp3ServerAttachment> W_HANDLER = new CompletionHandler<>() {
         @Override public void completed(Integer result, ChatTcp3ServerAttachment attachment) {
-            assert !attachment.buffers.isEmpty();
-            var buffer = attachment.buffers.get(0);
+            assert !attachment.writings.isEmpty();
+            var buffer = attachment.writings.get(0);
             if (!buffer.hasRemaining()) {
-                attachment.buffers.remove(0);
+                attachment.writings.remove(0);
             }
-            if (!attachment.buffers.isEmpty()) {
+            if (!attachment.writings.isEmpty()) {
                 attachment.client.write(
-                        attachment.buffers.get(0), // <src>
+                        attachment.writings.get(0), // <src>
                         attachment,                // <attachment>
                         this                       // <handler>
                 );
