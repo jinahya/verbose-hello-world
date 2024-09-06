@@ -449,7 +449,6 @@ public final class HelloWorldFlow {
     } // @formatter:on
 
     // ---------------------------------------------------------------------------------------------
-
     @_ExcludeFromCoverage_PrivateConstructor_Obviously
     private HelloWorldFlow() {
         throw new AssertionError("instantiation is not allowed");
