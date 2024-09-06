@@ -20,6 +20,8 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import com.github.jinahya.hello.util.JavaLangObjectUtils;
+
 import java.util.Objects;
 
 /**
@@ -27,21 +29,37 @@ import java.util.Objects;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-public class HelloWorldImpl
-        implements HelloWorld {
+public class HelloWorldImpl implements HelloWorld {
 
     @Override
-    public byte[] set(final byte[] array, final int index) {
+    public String toString() {
+        return JavaLangObjectUtils.toSimpleString(this);
+    }
+
+    @Override
+    public byte[] set(final byte[] array, int index) {
         Objects.requireNonNull(array, "array is null");
         if (index < 0) {
-            throw new ArrayIndexOutOfBoundsException("index(" + index + ") < 0");
+            throw new ArrayIndexOutOfBoundsException("index(" + index + ") is negative");
         }
-        if (index + BYTES > array.length) {
+        if (array.length < index + BYTES) {
             throw new ArrayIndexOutOfBoundsException(
-                    "index(" + index + ") + " + BYTES + " > array.length("
-                    + array.length + ")");
+                    "array.length(" + array.length + ") " +
+                    "is less than (index(" + index + ") + BYTES(" + BYTES + "))"
+            );
         }
-        // TODO: Set 'hello, world' on array starting at index
+        array[index++] = 'h';
+        array[index++] = 'e';
+        array[index++] = 'l';
+        array[index++] = 'l';
+        array[index++] = 'o';
+        array[index++] = ',';
+        array[index++] = ' ';
+        array[index++] = 'w';
+        array[index++] = 'o';
+        array[index++] = 'r';
+        array[index++] = 'l';
+        array[index++] = 'd';
         return array;
     }
 }

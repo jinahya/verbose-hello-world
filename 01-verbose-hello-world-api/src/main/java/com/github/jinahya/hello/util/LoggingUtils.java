@@ -29,7 +29,7 @@ import java.util.Objects;
 
 @Slf4j
 // https://gist.github.com/nkcoder/cd74919fd80594c56e09b448a2d1ba31
-public final class LoggingUtils {
+final class LoggingUtils {
 
     private static final Class<?> CLASS_LOGGER_CONTEXT;
 
@@ -44,7 +44,7 @@ public final class LoggingUtils {
         }
     }
 
-    public static void setLevel(final String loggerName, final Level level) {
+    static void setLevel(final String loggerName, final Level level) {
         Objects.requireNonNull(loggerName, "loggerName is null");
         try {
             LogbackUtils.setLevel(LoggerFactory.getLogger(loggerName), level);
@@ -53,12 +53,12 @@ public final class LoggingUtils {
         }
     }
 
-    public static void setLevel(final String loggerName, final String levelName) {
+    static void setLevel(final String loggerName, final String levelName) {
         Objects.requireNonNull(loggerName, "loggerName is null");
         setLevel(loggerName, Level.valueOf(levelName));
     }
 
-    public static void setLevelForAllLoggers(final Level level) {
+    static void setLevelForAllLoggers(final Level level) {
         Objects.requireNonNull(level, "level is null");
         try {
             LogbackUtils.setLevel(LoggerFactory.getILoggerFactory(), level);
@@ -67,7 +67,7 @@ public final class LoggingUtils {
         }
     }
 
-    public static void setLevelForAllLoggers(final String levelName) {
+    static void setLevelForAllLoggers(final String levelName) {
         setLevelForAllLoggers(Level.valueOf(levelName));
     }
 

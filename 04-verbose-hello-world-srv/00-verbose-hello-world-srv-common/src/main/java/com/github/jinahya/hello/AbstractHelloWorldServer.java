@@ -81,8 +81,7 @@ abstract class AbstractHelloWorldServer
      *
      * @throws IOException if an I/O error occurs.
      */
-    protected abstract void closeInternal()
-            throws IOException;
+    protected abstract void closeInternal() throws IOException;
 
     /**
      * {@inheritDoc}
@@ -91,8 +90,7 @@ abstract class AbstractHelloWorldServer
      * @implSpec Invokes {@link #closeInternal()} method.
      */
     @Override
-    public void close()
-            throws IOException {
+    public void close() throws IOException {
         try {
             lock.lock();
             closeInternal();

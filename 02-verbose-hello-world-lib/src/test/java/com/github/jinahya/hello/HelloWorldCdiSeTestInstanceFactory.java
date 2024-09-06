@@ -33,8 +33,7 @@ import org.junit.jupiter.api.extension.TestInstantiationException;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorldCdiSeTestInstanceFactory
-        implements TestInstanceFactory {
+class HelloWorldCdiSeTestInstanceFactory implements TestInstanceFactory {
 
     @Override
     public Object createTestInstance(final TestInstanceFactoryContext factoryContext,

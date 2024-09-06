@@ -37,8 +37,7 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 @ExtendWith({HelloWorldCdiSeTestInstanceFactory.class})
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorldCdiSeOpenWebBeansTest
-        extends HelloWorldCdiSeTest {
+class HelloWorldCdiSeOpenWebBeansTest extends HelloWorldCdiSeTest {
 
     /**
      * Removes handlers from the root logger and installs SLF4J bridge handler.

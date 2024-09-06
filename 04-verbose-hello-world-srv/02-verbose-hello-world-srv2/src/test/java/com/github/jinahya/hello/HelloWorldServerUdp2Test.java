@@ -20,49 +20,11 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import com.github.jinahya.hello.util.HelloWorldServerUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
-
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 @Disabled
 @Slf4j
 class HelloWorldServerUdp2Test {
 
-    @Test
-    void test(@TempDir Path tempDir)
-            throws IOException, InterruptedException {
-        var host = InetAddress.getLoopbackAddress();
-        var dir = Files.createTempDirectory(tempDir, null);
-        var thread = HelloWorldServerUtils.startReadingPortNumber(dir, p -> {
-            var endpoint = new InetSocketAddress(host, p);
-            try {
-                HelloWorldClientUdp2.runClients(4, endpoint, s -> {
-                    log.debug("[C] received: {}", s);
-                    Assertions.assertNotNull(s);
-                });
-            } catch (InterruptedException ie) {
-                log.error("interrupted while running clients", ie);
-                Thread.currentThread().interrupt();
-            }
-        });
-        try (var server = new HelloWorldServerUdp2()) {
-            try {
-                server.open(new InetSocketAddress(host, 0), dir);
-            } catch (IOException ioe) {
-                log.error("failed to open the server", ioe);
-                thread.interrupt();
-                throw ioe;
-            }
-            thread.join();
-        }
-    }
 }

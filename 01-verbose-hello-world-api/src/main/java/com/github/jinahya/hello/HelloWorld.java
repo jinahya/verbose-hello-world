@@ -28,7 +28,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
-import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.net.Socket;
 import java.nio.BufferOverflowException;
@@ -42,12 +41,9 @@ import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.atomic.LongAccumulator;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * An interface for generating <a href="#hello-world-bytes">hello-world-bytes</a> to various
@@ -65,7 +61,12 @@ import java.util.concurrent.atomic.LongAccumulator;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @FunctionalInterface
+@SuppressWarnings({
+        "java:S4274" // assert ...
+})
 public interface HelloWorld {
+
+    // ---------------------------------------------------------------------------------- log/logger
 
     /**
      * Returns a logger for this interface.
@@ -73,7 +74,7 @@ public interface HelloWorld {
      * @return a logger for this interface.
      */
     private Logger log() {
-        return HelloWorldLoggers.log(getClass());
+        return HelloWorldLoggers.log();
     }
 
     /**
@@ -82,35 +83,40 @@ public interface HelloWorld {
      * @return a logger for this interface.
      */
     private System.Logger logger() {
-        return HelloWorldLoggers.logger(getClass());
+        return HelloWorldLoggers.logger();
     }
+
+    // ----------------------------------------------------------------------------------- constants
 
     /**
      * The length of the <a href="#hello-world-bytes">hello-world-bytes</a> which is {@value}.
      */
-    public static final // redundant
+    public static final // redundant // TODO: remove!
             int BYTES = 12;
+
+    // ----------------------------------------------------------------------------------- java.lang
 
     /**
      * Sets the <a href="#hello-world-bytes">hello-world-bytes</a> on specified array starting at
-     * specified position.
+     * specified index.
      * <p>
      * The elements in the array, on successful return, will be set as follows.
      * <pre>
-     *  0   &lt;= index            index+12     &lt;= array.length
-     *  ↓      ↓                       ↓        ↓
-     * | |....|h|e|l|l|o|,| |w|o|r|l|d| |....| |
+     *  0  &lt;= index            index+12    &lt;= array.length
+     *  ↓     ↓                       ↓       ↓
+     * | |...|h|e|l|l|o|,| |w|o|r|l|d| |...| |
      * </pre>
      *
      * @param array the array on which bytes are set.
-     * @param index the starting index of the {@code array}.
+     * @param index the starting index of the {@code array} to which bytes are set.
      * @return given {@code array}.
      * @throws NullPointerException      if {@code array} is {@code null}.
-     * @throws IndexOutOfBoundsException if {@code index} is negative or {@code array.length} is
-     *                                   less than or equal to ({@code index} + {@value #BYTES}).
+     * @throws IndexOutOfBoundsException if {@code index} is negative, or {@code array.length} is
+     *                                   less than ({@code index} +
+     *                                   {@link #BYTES}({@value #BYTES})).
      */
-    public   // redundant
-    abstract // discouraged
+    public   // redundant // TODO: remove!
+    abstract // discouraged // TODO: remove!
     byte[] set(byte[] array, int index);
 
     /**
@@ -123,24 +129,87 @@ public interface HelloWorld {
      *  ↓                       ↓        ↓
      * |h|e|l|l|o|,| |w|o|r|l|d| |....| |
      * </pre>
+     * <p>
+     * Default implementation would look like,
+     * {@snippet :
+     * if (array == null) {
+     *     throw new NullPointerException("array is null");
+     * }
+     * if (array.length < BYTES) {
+     *     throw new IndexOutOfBoundsException("array.length(" + array.length +") < " + BYTES);
+     * }
+     * set(array, 0); // @highlight
+     * return array;
+     *}
      *
      * @param array the array on which bytes are set.
      * @return given {@code array}.
-     * @throws NullPointerException           if {@code array} is {@code null}.
-     * @throws ArrayIndexOutOfBoundsException if {@code array.length} is less than {@link #BYTES}.
+     * @throws NullPointerException      if {@code array} is {@code null}.
+     * @throws IndexOutOfBoundsException if {@code array.length} is less than
+     *                                   {@link #BYTES}({@value #BYTES}).
      * @implSpec The default implementation invokes {@link #set(byte[], int) set(array, index)}
-     * method with {@code array} and {@code 0}, and returns the result.
+     * method with {@code array} and {@code 0}, and returns the {@code array}.
      * @see #set(byte[], int)
      */
     default byte[] set(final byte[] array) {
-        // TODO: Throw a NullPointerException when array is null
-        // TODO: Throw a ArrayIndexOutOfBoundsException when array.length is less than BYTES
-        // TODO: Invoke set(array, 0);
+        // TODO: throw a NullPointerException when array is null
+        // TODO: throw an IndexOutOfBoundsException when array.length is less than BYTES
+        // TODO: invoke set(array, 0);
+        // TODO: return array
         return null;
     }
 
     /**
+     * Appends the <a href="#hello-world-bytes">hello-world-bytes</a> to specified appendable.
+     * <p>
+     * Default implementation would look like,
+     * {@snippet :
+     * if (appendable == null) {
+     *     throw new NullPointerException("appendable is null");
+     * }
+     * final var array = new byte[BYTES];
+     * set(array);
+     * for (final var b : array) { // @highlight region
+     *     appendable.append((char) b);
+     * } // @end
+     * return appendable;
+     *}
+     *
+     * @param <T>        appendable type parameter
+     * @param appendable the appendable to which bytes are appended.
+     * @return given {@code appendable}.
+     * @throws NullPointerException if {@code appendable} is {@code null}.
+     * @throws IOException          if an I/O error occurs.
+     * @implSpec The default implementation invokes {@link #set(byte[]) set(array)} method with an
+     * array of {@value #BYTES} bytes, and {@link Appendable#append(char) appends} each byte in the
+     * array, as a {@code char}, to {@code appendable}.
+     * @see #set(byte[])
+     * @see Appendable#append(char)
+     */
+    default <T extends Appendable> T append(final T appendable) throws IOException {
+        if (appendable == null) {
+            throw new NullPointerException("appendable is null");
+        }
+        final var array = new byte[BYTES];
+        set(array);
+        // TODO: append each byte in array to appendable
+        return appendable;
+    }
+
+    // ------------------------------------------------------------------------------------- java.io
+
+    /**
      * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified output stream.
+     * <p>
+     * Default implementation would look like,
+     * {@snippet :
+     * if (stream == null) {
+     *     throw new NullPointerException("stream is null");
+     * }
+     * final var array = set(new byte[BYTES]);
+     * stream.write(array); // @highlight
+     * return stream;
+     *}
      *
      * @param <T>    stream type parameter
      * @param stream the output stream to which bytes are written.
@@ -155,17 +224,29 @@ public interface HelloWorld {
      * @see #set(byte[])
      * @see OutputStream#write(byte[])
      */
-    default <T extends OutputStream> T write(T stream) throws IOException {
+    default <T extends OutputStream> T write(final T stream) throws IOException {
         if (stream == null) {
             throw new NullPointerException("stream is null");
         }
-        // TODO: invoke set(array[12])
-        // TODO: Write the array to the stream
+        final var array = set(new byte[BYTES]);
+        // TODO: write the array to the stream
         return stream;
     }
 
     /**
      * Appends the <a href="#hello-world-bytes">hello-world-bytes</a> to the end of specified file.
+     * <p>
+     * Default implementation would look like,
+     * {@snippet :
+     * if (file == null) {
+     *     throw new NullPointerException("file is null");
+     * }
+     * try (var stream = new FileOutputStream(file, true)) { // @highlight region
+     *     write(stream);
+     *     stream.flush();
+     * } // @end
+     * return file;
+     *}
      *
      * @param <T>  file type parameter
      * @param file the file to which bytes are appended.
@@ -184,41 +265,61 @@ public interface HelloWorld {
         if (file == null) {
             throw new NullPointerException("file is null");
         }
-        // TODO: Create a new FileOutputStream with file, in appending mode.
-        // TODO: Invoke write(stream) method with it.
-        // TODO: Flush the stream.
-        // TODO: Close the stream.
+        // TODO: create a new FileOutputStream with file and true
+        // TODO: invoke write(stream) method with it
+        // TODO: flush (and close) the stream
         return file;
     }
 
     /**
      * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified data output.
+     * <p>
+     * Default implementation would look like,
+     * {@snippet lang = "java":
+     * if (output == null) {
+     *     throw new NullPointerException("output is null");
+     * }
+     * final var array = new byte[BYTES];
+     * set(array);
+     * output.write(array); // @highlight
+     * return data;
+     *}
      *
-     * @param <T>  data output type parameter
-     * @param data the data output to which bytes are written.
-     * @return given {@code data}.
-     * @throws NullPointerException if {@code data} is {@code null}.
+     * @param <T>    data output type parameter
+     * @param output the data output to which bytes are written.
+     * @return given {@code output}.
+     * @throws NullPointerException if {@code output} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @implSpec The default implementation invokes {@link #set(byte[])} method with an array of
-     * {@value #BYTES} bytes, writes the array to {@code data} by invoking
-     * {@link DataOutput#write(byte[])} method on {@code data} with the array, and returns
-     * {@code data}.
+     * {@value #BYTES} bytes, writes the array to {@code output} by invoking
+     * {@link DataOutput#write(byte[])} method on {@code output} with the array, and returns
+     * {@code output}.
      * @see #set(byte[])
      * @see DataOutput#write(byte[])
      */
-    default <T extends DataOutput> T write(final T data) throws IOException {
-        if (data == null) {
-            throw new NullPointerException("data is null");
+    default <T extends DataOutput> T write(final T output) throws IOException {
+        if (output == null) {
+            throw new NullPointerException("output is null");
         }
-        final var array = new byte[BYTES];
-        set(array);
-        // TODO: Write array to data!
-        return data;
+        final var array = set(new byte[BYTES]);
+        // TODO: write array to data
+        return output;
     }
 
     /**
      * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified random access file
      * starting at its current file pointer.
+     * <p>
+     * Default implementation would look like,
+     * {@snippet :
+     * if (file == null) {
+     *     throw new NullPointerException("file is null");
+     * }
+     * final var array = new byte[BYTES];
+     * set(array);
+     * file.write(array); // @highlight
+     * return file;
+     *}
      *
      * @param <T>  random access file type parameter
      * @param file the random access file to which bytes are written.
@@ -236,14 +337,53 @@ public interface HelloWorld {
         if (file == null) {
             throw new NullPointerException("file is null");
         }
-        final var array = new byte[BYTES];
-        set(array);
-        // TODO: Write array to file!
+        final var array = set(new byte[BYTES]);
+        // TODO: write array to file
         return file;
     }
 
     /**
+     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified writer.
+     * <p>
+     * Default implementation would look like,
+     * {@snippet :
+     * if (writer == null) {
+     *     throw new NullPointerException("writer is null");
+     * }
+     * append(writer); // @highlight
+     * return writer;
+     *}
+     *
+     * @param <T>    writer type parameter
+     * @param writer the writer to which bytes are appended.
+     * @return given {@code writer}.
+     * @throws NullPointerException if {@code writer} is {@code null}.
+     * @throws IOException          if an I/O error occurs.
+     * @implSpec The default implementation invokes {@link #append(Appendable) append(appendable)}
+     * method with {@code writer}, and returns the writer.
+     * @see #append(Appendable)
+     */
+    default <T extends Writer> T write(final T writer) throws IOException {
+        if (writer == null) {
+            throw new NullPointerException("writer is null");
+        }
+        // TODO: invoke append(writer)
+        return writer;
+    }
+
+    // ------------------------------------------------------------------------------------ java.net
+
+    /**
      * Sends the <a href="#hello-world-bytes">hello-world-bytes</a> through specified socket.
+     * <p>
+     * Default implementation would look like,
+     * {@snippet :
+     * if (socket == null) {
+     *     throw new NullPointerException("socket is null");
+     * }
+     * write(socket.getOutputStream()); // @highlight
+     * return socket;
+     *}
      *
      * @param <T>    socket type parameter
      * @param socket the socket through which bytes are sent.
@@ -259,53 +399,12 @@ public interface HelloWorld {
         if (socket == null) {
             throw new NullPointerException("socket is null");
         }
-        // TODO: Invoke write(socket.getOutputStream())
+        final var stream = socket.getOutputStream();
+        // TODO: invoke write(stream)
         return socket;
     }
 
-    /**
-     * Appends the <a href="#hello-world-bytes">hello-world-bytes</a> to specified appendable.
-     *
-     * @param <T>        appendable type parameter
-     * @param appendable the appendable to which bytes are appended.
-     * @return given {@code appendable}.
-     * @throws NullPointerException if {@code appendable} is {@code null}.
-     * @throws IOException          if an I/O error occurs.
-     * @implSpec The default implementation invokes {@link #set(byte[]) set(array)} method with an
-     * array of {@value #BYTES} bytes, and appends each byte (as a {@code char}) in the array to
-     * {@code appendable}.
-     * @see #set(byte[])
-     * @see Appendable#append(char)
-     */
-    default <T extends Appendable> T append(final T appendable) throws IOException {
-        if (appendable == null) {
-            throw new NullPointerException("appendable is null");
-        }
-        final var array = new byte[BYTES];
-        set(array);
-        // TODO: append each byte (as char) in array to appendable
-        return appendable;
-    }
-
-    /**
-     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified writer.
-     *
-     * @param <T>    writer type parameter
-     * @param writer the writer to which bytes are appended.
-     * @return given {@code writer}.
-     * @throws NullPointerException if {@code writer} is {@code null}.
-     * @throws IOException          if an I/O error occurs.
-     * @implSpec The default implementation invokes {@link #append(Appendable) append(appendable)}
-     * method with {@code writer}, and returns the writer.
-     * @see #append(Appendable)
-     */
-    default <T extends Writer> T write(final T writer) throws IOException {
-        if (writer == null) {
-            throw new NullPointerException("writer is null");
-        }
-        // TODO: invoke #append(appendable) method with <writer>
-        return writer;
-    }
+    // ------------------------------------------------------------------------------------ java.nio
 
     /**
      * Puts the <a href="#hello-world-bytes">hello-world-bytes</a> on specified byte buffer.
@@ -314,22 +413,39 @@ public interface HelloWorld {
      * <pre>
      * Given,
      *
-     *          4                                        25          31
-     *  0    &lt;= position                           &lt;= limit &lt;= capacity
-     *  ↓       ↓                                         ↓           ↓
-     * | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |
+     *          4                                        25            31
+     *  0    &lt;= position                           &lt;= limit   &lt;= capacity
+     *  ↓       ↓                                         ↓             ↓
+     * | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |
      *         |--------------- remaining ---------------|
      *                                 21
      *
      * Then, on successful return,
      *
-     *                                 16                25          31
-     *  0                     &lt;= position          &lt;= limit &lt;= capacity
-     *  ↓                               ↓                 ↓           ↓
-     * | | | | |h|e|l|l|o|,| |w|o|r|l|d| | | | | | | | | | | | | | | |
+     *                                 16                25            31
+     *  0                     &lt;= position          &lt;= limit   &lt;= capacity
+     *  ↓                               ↓                 ↓             ↓
+     * | | | | |h|e|l|l|o|,| |w|o|r|l|d| | | | | | | | | | | | | | | | |
      *                                 |--- remaining ---|
      *                                              9
      * </pre>
+     * <p>
+     * Default implementation would look like,
+     * {@snippet lang = "java":
+     * Objects.requireNonNull(buffer, "buffer is null");
+     * if (buffer.remaining() < BYTES) {
+     *     throw new BufferOverflowException();
+     * }
+     * if (buffer.hasArray()) {
+     *     set(buffer.array(), buffer.arrayOffset() + buffer.position()); // @highlight region
+     *     buffer.position(buffer.position() + BYTES);                    // @end
+     * } else {
+     *     final var array = new byte[BYTES];
+     *     set(array);
+     *     buffer.put(array); // @highlight
+     * }
+     * return buffer;
+     *}
      *
      * @param <T>    buffer type parameter
      * @param buffer the byte buffer on which bytes are put.
@@ -341,10 +457,11 @@ public interface HelloWorld {
      * @implSpec The default implementation, if {@code buffer}
      * {@link ByteBuffer#hasArray() has a backing-array}, invokes
      * {@link #set(byte[], int) #set(array, index)} method with the buffer's
-     * {@link ByteBuffer#array() backing-array} and ({@code buffer.arrayOffset} +
-     * {@code buffer.position}), and then manually increments the buffer"s position by
-     * {@value #BYTES}. Otherwise, this method invokes {@link #set(byte[]) #set(array)} method with
-     * an array of {@value #BYTES} bytes, and puts the array on the buffer by invoking
+     * {@link ByteBuffer#array() backing-array} and
+     * ({@link ByteBuffer#arrayOffset() buffer.arrayOffset} +
+     * {@link ByteBuffer#position() buffer.position}), and then manually increments the buffer"s
+     * position by {@value #BYTES}. Otherwise, this method invokes {@link #set(byte[]) #set(array)}
+     * method with an array of {@value #BYTES} bytes, and puts the array on the buffer by invoking
      * {@link ByteBuffer#put(byte[])} method on {@code buffer} with the array.
      * @see ByteBuffer#hasArray()
      * @see ByteBuffer#array()
@@ -360,19 +477,30 @@ public interface HelloWorld {
             throw new BufferOverflowException();
         }
         if (buffer.hasArray()) {
-            // TODO: Invoke set(buffer.array(), (buffer.arrayOffset() + buffer.position())
-            // TODO: Increment buffer.position by 12
+            // TODO: invoke set(buffer.array(), (buffer.arrayOffset() + buffer.position())
+            // TODO: increment buffer.position by BYTES
         } else {
-            final var array = new byte[BYTES];
-            set(array);
-            // TODO: Invoke set(array[12])
-            // TODO: Put the array to the buffer
+            final var array = set(new byte[BYTES]);
+            // TODO: put <array> to the <buffer>
         }
         return buffer;
     }
 
     /**
      * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified channel.
+     * <p>
+     * Default implementation would look like,
+     * {@snippet lang = "java":
+     * Objects.requireNonNull(channel, "channel is null");
+     * final var buffer = ByteBuffer.allocate(BYTES);
+     * put(buffer);
+     * buffer.flip();
+     * while (buffer.hasRemaining()) { // @highlight region
+     *     final var written = channel.write(buffer);
+     *     assert written >= 0; // why?
+     * } // @end
+     * return channel;
+     *}
      *
      * @param <T>     channel type parameter
      * @param channel the channel to which bytes are written.
@@ -381,7 +509,7 @@ public interface HelloWorld {
      * @throws IOException          if an I/O error occurs.
      * @implSpec The default implementation invokes {@link #put(ByteBuffer)} method with a buffer of
      * {@value #BYTES} bytes, {@link ByteBuffer#flip() flips} it, writes the buffer to
-     * {@code channel} by continuously invoking
+     * {@code channel}, by continuously invoking
      * {@link WritableByteChannel#write(ByteBuffer) channel.write(buffer)} while the buffer has
      * remaining, and returns the {@code channel}.
      * @see #put(ByteBuffer)
@@ -394,13 +522,25 @@ public interface HelloWorld {
         final var buffer = ByteBuffer.allocate(BYTES);
         put(buffer);
         buffer.flip();
-        // TODO: Invoke channel.write(buffer), continuously, while buffer.hasRemaining()
+        // TODO: invoke channel.write(buffer) while buffer.hasRemaining()
         return channel;
     }
 
     /**
      * Appends the <a href="#hello-world-bytes">hello-world-bytes</a> to the end of specified path
-     * to a file. The length of the file, on successful return, is increased by {@value #BYTES}.
+     * to a file. The {@link java.nio.file.Files#size(Path) size} of the {@code path}, on successful
+     * return, is increased by {@value #BYTES}.
+     * <p>
+     * Default implementation would look like,
+     * {@snippet lang = "java":
+     * Objects.requireNonNull(path, "path is null");
+     * try (var channel = FileChannel.open(path, StandardOpenOption.CREATE, // @highlight region
+     *                                     StandardOpenOption.WRITE, StandardOpenOption.APPEND)) {
+     *     write(channel);
+     *     channel.force(true);
+     * } // @end
+     * return path;
+     *}
      *
      * @param <T>  path type parameter
      * @param path the path a file to which bytes are appended.
@@ -408,29 +548,44 @@ public interface HelloWorld {
      * @throws NullPointerException if {@code path} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @implSpec The default implementation opens a {@link FileChannel} from {@code path} with
-     * {@link StandardOpenOption#CREATE}, {@link StandardOpenOption#WRITE}, and
-     * {@link StandardOpenOption#APPEND}, invokes {@link #write(WritableByteChannel) write(channel)}
-     * method with it,
-     * {@link FileChannel#force(boolean) forces}/{@link WritableByteChannel#close() closes} the
-     * channel, and returns the {@code path}.
+     * {@link StandardOpenOption#CREATE CREATE}, {@link StandardOpenOption#WRITE WRITE}, and
+     * {@link StandardOpenOption#APPEND APPEND}, invokes
+     * {@link #write(WritableByteChannel) write(channel)} method with it,
+     * {@link FileChannel#force(boolean) forces channel including metadata},
+     * {@link WritableByteChannel#close() closes} the channel, and returns the {@code path}.
      * @see FileChannel#open(Path, OpenOption...)
      * @see StandardOpenOption#CREATE
      * @see StandardOpenOption#WRITE
      * @see StandardOpenOption#APPEND
      * @see #write(WritableByteChannel)
      * @see FileChannel#force(boolean)
+     * @see <a
+     * href="https://docs.oracle.com/javase/specs/jls/se21/html/jls-14.html#jls-14.20.3">14.20.3.
+     * try-with-resources</a> (The Java® Language Specification /  Java SE 21 Edition)
      */
     default <T extends Path> T append(final T path) throws IOException {
         Objects.requireNonNull(path, "path is null");
-        // TODO: Open a file channel from the path as an appending mode.
-        // TODO: Invoke write(channel) method with it.
-        // TODO: Force the channel with true.
-        // TODO: Close the channel.
+        // TODO: open a file channel with path, StandardOpenOption.WRITE,
+        //       StandardOpenOption.CREATE, and StandardOpenOption.APPEND
+        //       ; use the try-with-resources statement
+        // TODO: invoke write(channel) method with it
+        // TODO: force changes to both the file's content and metadata
         return path;
     }
 
     /**
      * Writes the <a href="hello-world-bytes">hello-world-bytes</a> to specified channel.
+     * <p>
+     * Default implementation would look like,
+     * {@snippet lang = "java":
+     * Objects.requireNonNull(channel, "channel is null");
+     * final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
+     * while (buffer.hasRemaining()) { // @highlight region
+     *     final var written = channel.write(buffer).get();
+     *     assert written > 0; // why?
+     * } // @end
+     * return channel;
+     *}
      *
      * @param <T>     channel type parameter
      * @param channel the channel to which bytes are written.
@@ -438,10 +593,11 @@ public interface HelloWorld {
      * @throws InterruptedException if interrupted while executing.
      * @throws ExecutionException   if failed to execute.
      * @implSpec The default implementation invokes {@link #put(ByteBuffer) put(buffer)} method with
-     * a byte buffer of {@value #BYTES} bytes, flips it, and writes the buffer to the
-     * {@code channel} by, while the {@code buffer} {@link ByteBuffer#hasRemaining() has remaining},
-     * continuously invoking {@link AsynchronousByteChannel#write(ByteBuffer)} method with the
-     * {@code buffer}.
+     * a byte buffer of {@value #BYTES} bytes, {@link ByteBuffer#flip() flips} it, and writes the
+     * buffer to the {@code channel} by, while the {@code buffer}
+     * {@link ByteBuffer#hasRemaining() has remaining}, continuously invoking and
+     * {@link Future#get() getting the result} of {@link AsynchronousByteChannel#write(ByteBuffer)}
+     * method on {@code channel} with the {@code buffer}.
      * @see #put(ByteBuffer)
      * @see AsynchronousByteChannel#write(ByteBuffer)
      */
@@ -454,41 +610,55 @@ public interface HelloWorld {
     }
 
     /**
-     * Writes, asynchronously, the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>
-     * to specified channel, and notifies a completion (or a failure) to specified handler with
-     * specified channel and specified attachment.
+     * Writes, <em>asynchronously</em>, the <a
+     * href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to specified channel, and
+     * notifies a completion (or a failure) to specified handler with specified attachment.
+     * <p>
+     * Default implementation would look like,
+     * {@snippet lang = "java":
+     * Objects.requireNonNull(channel, "channel is null");
+     * Objects.requireNonNull(handler, "handler is null");
+     * final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
+     * channel.write( // @highlight region
+     *         buffer,                                    // <src>
+     *         null,                                      // <attachment>
+     *         new CompletionHandler<Integer, Object>() { // <handler>
+     *                 @Override
+     *                 public void completed(final AsynchronousSocketChannel client,
+     *                                       final Object a) {
+     *                     if (!buffer.hasRemaining()) {
+     *                         handler.completed(channel, attachment);
+     *                         return;
+     *                     }
+     *                     channel.write(
+     *                             buffer, // <src>
+     *                             a,      // <attachment>
+     *                             this    // <handler>
+     *                     );
+     *                 }
+     *                 @Override
+     *                 public void failed(final Throwable exc, final Object a) {
+     *                     handler.failed(exc, attachment);
+     *                 }
+     *         }
+     * ); // @end
+     *}
      *
-     * @param <C>        channel type parameter
+     * @param <T>        channel type parameter
      * @param channel    the channel to which bytes are written.
-     * @param handler    the completion handler.
      * @param attachment the attachment for the {@code handler}; may be {@code null}.
+     * @param handler    the completion handler.
      * @see AsynchronousByteChannel#write(ByteBuffer, Object, CompletionHandler)
      */
-    default <C extends AsynchronousByteChannel, A> void writeAsync(
-            final C channel, final CompletionHandler<? super C, ? super A> handler,
-            final A attachment) {
+    default <T extends AsynchronousByteChannel, A> void write(
+            final T channel, final A attachment,
+            final CompletionHandler<? super T, ? super A> handler) {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(handler, "handler is null");
         final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
         // TODO: keep invoking channel.write(buffer, attachment, a-handler)
-        // TODO: while buffer has remaining
+        //       while buffer has remaining
         // TODO: and, eventually, invoke handler.complete(channel, attachment)
-    }
-
-    /**
-     * Returns a completable future of specified channel which writes the <a
-     * href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to the channel.
-     *
-     * @param <T>     channel type parameter
-     * @param channel the channel to which bytes are written.
-     * @return a completable future of {@code channel}.
-     */
-    default <T extends AsynchronousByteChannel>
-    CompletableFuture<T> writeCompletable(final T channel) {
-        Objects.requireNonNull(channel, "channel is null");
-        final var future = new CompletableFuture<T>();
-        // TODO: Invoke, writeAsync(channel, a-handler, null)
-        return future;
     }
 
     /**
@@ -507,11 +677,11 @@ public interface HelloWorld {
      *
      * Then, in an intermediate state, possibly,
      *
-     *                        p(n)
+     *                        p(3)
      *                        ↓
      * &lt;buffer&gt;:       |h|e|l|l|o|,| |w|o|r|l|d|
      *
-     *                       &lt;position&gt; + n
+     *                       &lt;position&gt; + 3
      *                        ↓
      * &lt;channel&gt;: ...| |h|e|l| | | | | | | | | | |...
      *
@@ -552,6 +722,7 @@ public interface HelloWorld {
         while (buffer.hasRemaining()) {
             final var future = channel.write(buffer, position);
             final var written = future.get();
+            assert written > 0; // why?
             position += written;
         }
         return channel;
@@ -559,158 +730,53 @@ public interface HelloWorld {
 
     /**
      * Writes, asynchronously, the <a href="hello-world-bytes">hello-world-bytes</a> to specified
-     * file channel, starting at given file position.
-     *
-     * @param <T>      channel type parameter
-     * @param channel  the file channel to which bytes are written.
-     * @param position the file position at which the transfer is to begin; must be non-negative.
-     * @param executor an executor.
-     * @return a future of {@code channel}.
-     * @implSpec The default implementation returns a future of {@code channel} which invokes
-     * {@link #write(AsynchronousFileChannel, long) write(channel, position)} method with
-     * {@code channel}, and {@code position}.
-     * @see #write(AsynchronousFileChannel, long)
-     */
-    default <T extends AsynchronousFileChannel>
-    Future<T> writeAsync(final T channel, final long position, final Executor executor) {
-        Objects.requireNonNull(channel, "channel is null");
-        if (position < 0L) {
-            throw new IllegalArgumentException("position(" + position + ") is negative");
-        }
-        Objects.requireNonNull(executor, "executor is null");
-        final var command = new FutureTask<T>(() -> write(channel, position));
-        executor.execute(command); // Runnable  <- RunnableFuture<V> <- FutureTask<V>
-        return command;            // Future<V> <- RunnableFuture<V> <- FutureTask<V>
-    }
-
-    /**
-     * Writes, asynchronously, the <a href="hello-world-bytes">hello-world-bytes</a> to specified
      * channel, starting at specified position, and notifies a completion (or a failure) to
      * specified handler.
      *
-     * @param <C>        channel type parameter
+     * @param <T>        channel type parameter
      * @param <A>        attachment type parameter
      * @param channel    the file channel to which bytes are written.
      * @param position   the file position at which the transfer is to begin; must be non-negative.
+     * @param attachment an attachment for the {@code handler}; may be {@code null}.
      * @param handler    the handler.
-     * @param attachment an attachment; may be {@code null}.
-     * @throws NullPointerException  either {@code channel} or {@code handler} is {@code null}.
+     * @throws NullPointerException  if either {@code channel} or {@code handler} is {@code null}.
      * @throws IllegalStateException if {@code position} is negative.
      * @see AsynchronousFileChannel#write(ByteBuffer, long, Object, CompletionHandler)
      */
-    @SuppressWarnings({
-            "java:S117" // attachment_
-    })
-    default <C extends AsynchronousFileChannel, A> void writeAsync(
-            final C channel, final long position,
-            final CompletionHandler<? super C, ? super A> handler, final A attachment) {
+    // @formatter:off
+    default <T extends AsynchronousFileChannel, A> void write(
+            final T channel, final long position, final A attachment,
+            final CompletionHandler<? super T, ? super A> handler) {
         Objects.requireNonNull(channel, "channel is null");
         if (position < 0L) {
             throw new IllegalArgumentException("position(" + position + ") is negative");
         }
         Objects.requireNonNull(handler, "handler is null");
-        final var buffer = ByteBuffer.allocate(BYTES);
-        put(buffer);
-        buffer.flip();
+        final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
+        final var cursor = new AtomicLong(position);
         channel.write(
-                buffer,                                   // <src>
-                position,                                 // <position>
-                new LongAccumulator(Long::sum, position), // <attachment> <1>
-                new CompletionHandler<>() {               // <handler>
-                    @Override // @formatter:off
-                    public void completed(final Integer result, final LongAccumulator accumulator) {
+                buffer,                     // <src>
+                position,                   // <position>
+                attachment,                 // <attachment>
+                new CompletionHandler<>() { // <handler>
+                    @Override public void completed(final Integer result, final A attachment) {
+                        assert result > 0; // why?
                         if (!buffer.hasRemaining()) {
                             handler.completed(channel, attachment);
                             return;
                         }
-                        accumulator.accumulate(result);
                         channel.write(
-                                buffer,            // <src>
-                                accumulator.get(), // <position>          <3>
-                                accumulator,       // <attachment>        <4>
-                                this               // <handler>
+                                buffer,                   // <src>
+                                cursor.addAndGet(result), // <position>
+                                attachment,               // <attachment>
+                                this                      // <handler>
                         );
                     }
-                    @Override
-                    public void failed(final Throwable exc, final LongAccumulator accumulator) {
+                    @Override public void failed(final Throwable exc, final A attachment) {
                         handler.failed(exc, attachment);
-                    } // @formatter:on
+                    }
                 }
         );
     }
-
-    /**
-     * Returns a completable future of specified channel which writes the <a
-     * href="#hello-world-bytes">hello-world-bytes</a> to the channel starting at specified
-     * position.
-     *
-     * @param channel  the channel to which bytes are written.
-     * @param position the starting position to which the bytes are transferred; must be
-     *                 non-negative.
-     * @param <C>      channel type parameter
-     * @return a completable future of {@code channel}.
-     * @throws NullPointerException     when {@code channel} is {@code null}.
-     * @throws IllegalArgumentException when {@code position} is negative.
-     */
-    default <C extends AsynchronousFileChannel>
-    CompletableFuture<C> writeCompletable(final C channel, final long position) {
-        Objects.requireNonNull(channel, "channel is null");
-        if (position < 0L) {
-            throw new IllegalArgumentException("position(" + position + ") is negative");
-        }
-        final var future = new CompletableFuture<C>();
-        final var handler = new CompletionHandler<C, Object>() {
-            @Override // @formatter:off
-            public void completed(final C result, final Object attachment) {
-                future.complete(result);
-            }
-            @Override
-            public void failed(final Throwable exc, final Object attachment) {
-                future.completeExceptionally(exc);
-            } // @formatter:on
-        };
-        writeAsync(
-                channel,  // <channel>
-                position, // <position>
-                handler,  // <handler>
-                null      // <attachment>
-        );
-        return future;
-    }
-
-    /**
-     * Returns a completable future of specified path which writes the <a
-     * href="#hello-world-bytes">hello-world-bytes</a> to the end of specified path.
-     *
-     * @param path the path to the file to which bytes are appended.
-     * @param <P>  path type parameter
-     * @return a completable future of {@code path}.
-     * @throws NullPointerException when {@code path} is {@code null}.
-     */
-    @SuppressWarnings({
-            "java:S2095" // no try-with-resources
-    })
-    default <P extends Path> CompletableFuture<P> appendCompletable(final P path)
-            throws IOException {
-        Objects.requireNonNull(path, "path is null");
-        final var channel = AsynchronousFileChannel.open(
-                path,
-                StandardOpenOption.CREATE,
-                StandardOpenOption.WRITE
-        );
-        return writeCompletable(channel, channel.size())
-                .whenComplete((r, e) -> {
-                    assert r == null || r == channel;
-                    try {
-                        channel.force(true);
-                        channel.close();
-                    } catch (final IOException ioe) {
-                        throw new UncheckedIOException("unable to force/close " + channel, ioe);
-                    }
-                })
-                .thenApply(c -> {
-                    assert !c.isOpen();
-                    return path;
-                });
-    }
+    // @formatter:off
 }

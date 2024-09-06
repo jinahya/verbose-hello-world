@@ -28,18 +28,14 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorldDiSpringTest
-        extends HelloWorldDiTest {
+class HelloWorldDiSpringTest extends HelloWorldDiTest {
 
     @BeforeEach
-    private void autowireBean() {
+    void autowireBean() {
         final var applicationContext = new AnnotationConfigApplicationContext(
                 HelloWorldDiSpringConfiguration.class
         );
-        log.debug("applicationContext: {}", applicationContext);
         final var beanFactory = applicationContext.getAutowireCapableBeanFactory();
-        log.debug("beanFactory: {}", beanFactory);
         beanFactory.autowireBean(this);
-        log.debug("autowired: {}", this);
     }
 }

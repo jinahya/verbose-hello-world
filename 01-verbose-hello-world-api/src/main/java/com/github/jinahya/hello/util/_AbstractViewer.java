@@ -32,7 +32,7 @@ import java.util.Objects;
  * A class renders socket options of all kinds of sockets.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorldNetUtils#printSocketOptions(Class, Object)
+ * @see JavaNetSocketOptionUtils#printSocketOptions(Class, Object)
  */
 @Slf4j
 abstract class _AbstractViewer {
@@ -49,8 +49,7 @@ abstract class _AbstractViewer {
         System.setProperty("apple.laf.useScreenMenuBar", "true");
     }
 
-    static boolean init(final String[] args, final Class<?> alternative)
-            throws Exception {
+    static boolean init(final String[] args, final Class<?> alternative) throws Exception {
         if (GraphicsEnvironment.isHeadless()) {
             if (alternative != null) {
                 alternative.getMethod("main", String[].class).invoke(null, (Object) args);

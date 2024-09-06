@@ -24,11 +24,6 @@ import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obv
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Objects;
-import java.util.WeakHashMap;
-
 /**
  * A helper class for managing loggers.
  *
@@ -36,38 +31,34 @@ import java.util.WeakHashMap;
  */
 final class HelloWorldLoggers {
 
-    /**
-     * A map of classes and {@link Logger}s.
-     */
-    private static final Map<Class<?>, Logger> LOGS = Collections.synchronizedMap(
-            new WeakHashMap<>());
+    private static Logger log;
 
     /**
-     * Returns a logger for specified class.
+     * Returns a logger for {@link HelloWorld} interface.
      *
-     * @param clazz the class.
-     * @return a logger.
+     * @return a logger for {@link HelloWorld} interface.
      */
-    static Logger log(final Class<?> clazz) {
-        Objects.requireNonNull(clazz, "clazz is null");
-        return LOGS.computeIfAbsent(clazz, LoggerFactory::getLogger);
+    static Logger log() {
+        var result = log;
+        if (result == null) {
+            result = log = LoggerFactory.getLogger(HelloWorld.class);
+        }
+        return result;
     }
 
-    /**
-     * A map of classes and {@link System.Logger}s.
-     */
-    private static final Map<Class<?>, System.Logger> LOGGERS
-            = Collections.synchronizedMap(new WeakHashMap<>());
+    private static System.Logger logger;
 
     /**
-     * Returns a logger for specified class.
+     * Returns a logger for {@link HelloWorld} interface.
      *
-     * @param clazz the class.
-     * @return a logger.
+     * @return a logger for {@link HelloWorld} interface.
      */
-    static System.Logger logger(final Class<?> clazz) {
-        Objects.requireNonNull(clazz, "clazz is null");
-        return LOGGERS.computeIfAbsent(clazz, k -> System.getLogger(k.getName()));
+    static System.Logger logger() {
+        var result = logger;
+        if (result == null) {
+            result = logger = System.getLogger(HelloWorld.class.getName());
+        }
+        return result;
     }
 
     @_ExcludeFromCoverage_PrivateConstructor_Obviously

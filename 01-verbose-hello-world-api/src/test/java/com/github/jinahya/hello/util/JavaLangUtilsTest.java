@@ -32,22 +32,20 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
-
-import static com.github.jinahya.hello.util.JavaLangUtils.PRIMITIVE_CLASSES;
-import static com.github.jinahya.hello.util.JavaLangUtils.WRAPPER_CLASSES;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 class JavaLangUtilsTest {
 
     @Test
     void __() {
-        assertEquals(Primitives.allPrimitiveTypes(), WRAPPER_CLASSES.keySet());
-        assertEquals(Primitives.allWrapperTypes(), PRIMITIVE_CLASSES.keySet());
+        Assertions.assertEquals(
+                Primitives.allPrimitiveTypes(),
+                JavaLangUtils.WRAPPER_CLASSES.keySet()
+        );
+        Assertions.assertEquals(
+                Primitives.allWrapperTypes(),
+                JavaLangUtils.PRIMITIVE_CLASSES.keySet()
+        );
     }
 
     @Nested
@@ -60,7 +58,7 @@ class JavaLangUtilsTest {
         @MethodSource({"getPrimitiveClasses"})
         @ParameterizedTest
         void __(final Class<?> clazz) {
-            assertTrue(JavaLangUtils.isPrimitive(clazz));
+            Assertions.assertTrue(JavaLangUtils.isPrimitive(clazz));
         }
     }
 
@@ -74,89 +72,7 @@ class JavaLangUtilsTest {
         @MethodSource({"getWrapperClasses"})
         @ParameterizedTest
         void __(final Class<?> clazz) {
-            assertTrue(JavaLangUtils.isWrapper(clazz));
-        }
-    }
-
-    @DisplayName("Ints")
-    @Nested
-    class IntsTest {
-
-        @DisplayName("requireGreaterThanOrEqualTo")
-        @Nested
-        class RequireGreaterThanOrEqualToTest {
-
-            @DisplayName("(value, value)")
-            @Test
-            void _GreaterThanOrEqualTo_Self() {
-                final var value = ThreadLocalRandom.current().nextInt();
-                final var against = value;
-                assertDoesNotThrow(
-                        () -> JavaLangUtils.Ints.requireGreaterThanOrEqualTo(value, against)
-                );
-            }
-
-            @DisplayName("(value, value - 1)")
-            @Test
-            void _GreaterThanOrEqualToMinusOne_() {
-                final var value = ThreadLocalRandom.current().nextInt() >> 1;
-                assert value != Integer.MIN_VALUE;
-                final var against = value - 1;
-                assertDoesNotThrow(
-                        () -> JavaLangUtils.Ints.requireGreaterThanOrEqualTo(value, against)
-                );
-            }
-
-            @DisplayName("(value, value - 1)IllegalArgumentException")
-            @Test
-            void _NotGreaterThanOrEqualToPlusOne_() {
-                final var value = ThreadLocalRandom.current().nextInt() << 1;
-                assert value != Integer.MAX_VALUE;
-                final var against = value + 1;
-                Assertions.assertThrows(
-                        IllegalArgumentException.class,
-                        () -> JavaLangUtils.Ints.requireGreaterThanOrEqualTo(value, against)
-                );
-            }
-        }
-
-        @DisplayName("requireGreaterThan")
-        @Nested
-        class RequireGreaterThanTest {
-
-            @DisplayName("(value, value)")
-            @Test
-            void _NotGreaterThan_Self() {
-                final var value = ThreadLocalRandom.current().nextInt();
-                final var against = value;
-                assertThrows(
-                        IllegalArgumentException.class,
-                        () -> JavaLangUtils.Ints.requireGreaterThan(value, against)
-                );
-            }
-
-            @DisplayName("(value, value - 1)")
-            @Test
-            void _GreaterThanMinusOne_() {
-                final var value = ThreadLocalRandom.current().nextInt() >> 1;
-                assert value != Integer.MIN_VALUE;
-                final var against = value - 1;
-                assertDoesNotThrow(
-                        () -> JavaLangUtils.Ints.requireGreaterThan(value, against)
-                );
-            }
-
-            @DisplayName("(value, value + 1)IllegalArgumentException")
-            @Test
-            void _NotGreaterThanPlusOne_() {
-                final var value = ThreadLocalRandom.current().nextInt() << 1;
-                assert value != Integer.MAX_VALUE;
-                final var against = value + 1;
-                assertThrows(
-                        IllegalArgumentException.class,
-                        () -> JavaLangUtils.Ints.requireGreaterThan(value, against)
-                );
-            }
+            Assertions.assertTrue(JavaLangUtils.isWrapper(clazz));
         }
     }
 
@@ -187,8 +103,8 @@ class JavaLangUtilsTest {
                 var trimmed = JavaLangUtils.trimByCodepoints(string,
                                                              charset,
                                                              bytes);
-                assertTrue(trimmed.getBytes(charset).length <= bytes);
-                assertTrue(previous.startsWith(trimmed));
+                Assertions.assertTrue(trimmed.getBytes(charset).length <= bytes);
+                Assertions.assertTrue(previous.startsWith(trimmed));
                 previous = trimmed;
             }
         }

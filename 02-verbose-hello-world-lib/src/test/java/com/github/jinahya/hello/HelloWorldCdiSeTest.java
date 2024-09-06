@@ -24,7 +24,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-abstract class HelloWorldCdiSeTest
-        extends HelloWorldDiTest {
+abstract class HelloWorldCdiSeTest extends HelloWorldDiTest {
 
 }

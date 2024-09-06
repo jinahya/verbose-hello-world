@@ -41,7 +41,7 @@ import java.util.concurrent.Callable;
  * A class prints socket options of all kinds of sockets.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorldNetUtils#printSocketOptions(Class, Object)
+ * @see JavaNetSocketOptionUtils#printSocketOptions(Class, Object)
  */
 @Slf4j
 class SocketOptionsPrinter {
@@ -52,12 +52,12 @@ class SocketOptionsPrinter {
         final var m = new LinkedHashMap<Class<?>, Callable<?>>();
         m.put(Socket.class, Socket::new);
         m.put(ServerSocket.class, ServerSocket::new);
-        m.put(DatagramSocket.class, DatagramSocket::new);
         m.put(SocketChannel.class, SocketChannel::open);
         m.put(ServerSocketChannel.class, ServerSocketChannel::open);
-        m.put(DatagramChannel.class, DatagramChannel::open);
         m.put(AsynchronousSocketChannel.class, AsynchronousSocketChannel::open);
         m.put(AsynchronousServerSocketChannel.class, AsynchronousServerSocketChannel::open);
+        m.put(DatagramSocket.class, DatagramSocket::new);
+        m.put(DatagramChannel.class, DatagramChannel::open);
         CLASSES_AND_INITIALIZERS = Collections.unmodifiableMap(m);
     }
 
@@ -69,7 +69,7 @@ class SocketOptionsPrinter {
         System.out.printf("%n%1$s%n", clazz.getName());
         System.out.println("---------------------------------------------------------------------");
         try (T object = Objects.requireNonNull(initializer.call(), "null called")) {
-            HelloWorldNetUtils.printSocketOptions(clazz, object);
+            JavaNetSocketOptionUtils.printSocketOptions(clazz, object);
         }
     }
 
@@ -79,8 +79,7 @@ class SocketOptionsPrinter {
         print(clazz, () -> clazz.cast(initializer.call()));
     }
 
-    public static void main(String... args)
-            throws Exception {
+    public static void main(final String... args) throws Exception {
         for (final Map.Entry<Class<?>, Callable<?>> pair : CLASSES_AND_INITIALIZERS.entrySet()) {
             printHelper(pair.getKey().asSubclass(Closeable.class), pair.getValue());
         }

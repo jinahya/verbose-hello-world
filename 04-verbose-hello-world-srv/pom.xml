@@ -15,16 +15,12 @@
   <description>Verbose Hello World Server</description>
 
   <modules>
+    <module>00-verbose-hello-world-srv-basic</module>
     <module>00-verbose-hello-world-srv-common</module>
     <module>01-verbose-hello-world-srv1</module>
     <module>02-verbose-hello-world-srv2</module>
     <module>03-verbose-hello-world-srv3</module>
     <module>04-verbose-hello-world-srv4</module>
-    <!--    <module>verbose-hello-world-srv3</module>-->
-    <!--    <module>verbose-hello-world-srv4</module>-->
-    <!--    <module>verbose-hello-world-srv5</module>-->
-    <!--    <module>verbose-hello-world-srv6</module>-->
-    <!--    <module>verbose-hello-world-srv7</module>-->
   </modules>
 
   <properties>
@@ -32,35 +28,18 @@
     <mainClass>com.github.jinahya.hello.HelloWorldMain</mainClass>
   </properties>
 
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>com.github.jinahya</groupId>
-        <artifactId>verbose-hello-world-api</artifactId>
-        <version>${project.parent.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.github.jinahya</groupId>
-        <artifactId>verbose-hello-world-lib</artifactId>
-        <version>${project.parent.version}</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
   <dependencies>
-    <!--    <dependency>-->
-    <!--      <groupId>ch.qos.logback</groupId>-->
-    <!--      <artifactId>logback-classic</artifactId>-->
-    <!--      <scope>runtime</scope>-->
-    <!--    </dependency>-->
     <dependency>
-      <groupId>org.projectlombok</groupId>
-      <artifactId>lombok</artifactId>
-      <scope>provided</scope>
+      <groupId>com.github.jinahya</groupId>
+      <artifactId>verbose-hello-world-api</artifactId>
+      <version>${project.parent.version}</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <scope>compile</scope>
+      <groupId>com.github.jinahya</groupId>
+      <artifactId>verbose-hello-world-lib</artifactId>
+      <version>${project.parent.version}</version>
+      <scope>runtime</scope>
     </dependency>
   </dependencies>
 

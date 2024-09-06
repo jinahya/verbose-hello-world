@@ -28,7 +28,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith({HelloWorldCdiSeTestInstanceFactory.class})
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorldCdiSeWeldTest
-        extends HelloWorldCdiSeTest {
+class HelloWorldCdiSeWeldTest extends HelloWorldCdiSeTest {
 
 }

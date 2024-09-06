@@ -41,57 +41,81 @@ See [dockerhub/maven](https://hub.docker.com/_/maven) for available tags.
 
 ## Links
 
-### Java
-
-#### bugs.openjdk.org
+### [JDK Bug System](https://bugs.openjdk.org)
 
 * [(aio) AsynchronousCloseException not notified to completion handler when channel group shutdown](https://bugs.openjdk.org/browse/JDK-7056546)
 
-#### doc.oracle.com
+### [Help Center](https://docs.oracle.com) (docs.oracle.com)
 
 * [Networking IPv6 User Guide](https://docs.oracle.com/javase/8/docs/technotes/guides/net/ipv6_guide/)
 * [Java Cryptography Architecture / Standard Algorithm Name Documentation for JDK 8](https://docs.oracle.com/javase/8/docs/technotes/guides/security/StandardNames.html) (javase/8)
 * [Java Security Standard Algorithm Names](https://docs.oracle.com/en/java/javase/11/docs/specs/security/standard-names.html) (javase/11)
 * [Java Security Standard Algorithm Names](https://docs.oracle.com/en/java/javase/17/docs/specs/security/standard-names.html) (javase/17)
+* [Java Security Standard Algorithm Names](https://docs.oracle.com/en/java/javase/21/docs/specs/security/standard-names.html) (javase/21)
 
-#### geeksforgeeks.org
+### [DZone](https://dzone.com)
+
+* [7 Popular Unit Test Naming Conventions](https://dzone.com/articles/7-popular-unit-test-naming)
+
+### [GeeksforGeeks](https://geeksforgeeks.org)
 
 * [Difference Between SO_REUSEADDR and SO_REUSEPORT](https://www.geeksforgeeks.org/difference-between-so_reuseaddr-and-so_reuseport/)
 
-#### github.com/assertj
+### [AssertJ](https://github.com/assertj/assertj) (GitHub)
 
-* [Add AbstractStringAssert#extracting(Charset)](https://github.com/assertj/assertj/issues/3229) (assertj/assertj)
+* [Add bytes()/bytes(Charset)/bytes(String) navigation methods to AbstractStringAssert #3229
+  ](https://github.com/assertj/assertj/issues/3229) (assertj/assertj)
 
-#### github.com/junit-team
+### [Dagger](https://github.com/google/dagger) (GitHub)
 
-* [TestInstanceFactory on enclosing class is not called for @Nested test class](https://github.com/junit-team/junit5/issues/1567) (junit-team/junit5)
+* [jakarta.inject support #2058](https://github.com/google/dagger/issues/2058) (assertj/assertj)
 
-#### github.com/weld
+### [JUnit](https://github.com/junit-team) (GitHub)
+
+#### [JUnit 5](https://github.com/junit-team/junit5)
+
+*
+* [TestInstanceFactory on enclosing class is not called for @Nested test class #1567](https://github.com/junit-team/junit5/issues/1567)
+
+### [ReactiveX](https://github.com/ReactiveX) (GitHub)
+
+#### [RxJava: Reactive Extensions for the JVM](https://github.com/ReactiveX/RxJava) (GitHub)
+
+* [Reactive Streams](https://github.com/ReactiveX/RxJava/wiki/Reactive-Streams)
+
+#### [RxJava Reactive Streams](https://github.com/ReactiveX/RxJavaReactiveStreams)
+
+### [Weld](https://github.com/weld)
+
+#### [Weld Testing Extensions](https://github.com/weld/weld-testing) (GitHub)
 
 * [Weld JUnit 5 (Jupiter) Extensions](https://github.com/weld/weld-testing/blob/master/junit5/README.md#weldjunit5autoextension)
 
-#### ibm.com
+### [IBM Documentation](https://www.ibm.com/docs/en)
 
 * [Example: Accepting connections from both IPv6 and IPv4 clients](https://www.ibm.com/docs/en/i/7.1?topic=sscaaiic-example-accepting-connections-from-both-ipv6-ipv4-clients)
 
-#### openwebbeans.apache.org
+### [Apache OpenWebBeans](https://openwebbeans.apache.org/)
 
 * [OpenWebBeans JUnit 5](https://openwebbeans.apache.org/openwebbeans-junit5.html)
 
-#### stackoverflow.com
+### [stackoverflow](https://stackoverflow.com/)
 
 * [Multi module POM - creating a site that works](https://stackoverflow.com/q/10848715/330457)
 * [How do SO_REUSEADDR and SO_REUSEPORT differ?](https://stackoverflow.com/q/14388706/330457)
 * [JUL to SLF4J Bridge](https://stackoverflow.com/q/9117030/330457)
+* [What is the minimum number of written bytes of a SocketChannel when its key is writable?](https://stackoverflow.com/q/77895312/330457)
 
-### Python
-
-#### docs.python.org
+### [Python 3... documentation](https://docs.python.org/3/)
 
 * [`base64` — Base16, Base32, Base64, Base85 Data Encodings](https://docs.python.org/3/library/base64.html)
 
 * [`hashlib` — Secure hashes and message digests](https://docs.python.org/3/library/hashlib.html)
 
-#### pymotw.com
+### [Python 3 Module of the Week](https://pymotw.com/3/)
 
 * [abc — Abstract Base Classes](https://pymotw.com/3/abc/)
+
+### ETC
+
+* [Java: Remainder (modulo) operator with negative numbers](https://programming.guide/java/remainder-modulo-operator-negative-numbers.html)
