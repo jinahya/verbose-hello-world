@@ -25,7 +25,7 @@ A fairly verbose modules just for generating`hello, world`.
 
 ## Miscellaneous
 
-### Building with different JDKs using Dockert
+### Building with different JDKs using Docker
 
 ```shell script
 $ sh ./docker.maven.sh <tag> <phase1> <phase2> ...

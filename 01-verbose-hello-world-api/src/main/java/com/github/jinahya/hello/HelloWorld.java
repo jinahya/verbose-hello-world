@@ -91,7 +91,7 @@ public interface HelloWorld {
     /**
      * The length of the <a href="#hello-world-bytes">hello-world-bytes</a> which is {@value}.
      */
-    public static final // redundant // TODO: remove!
+    public static final /* redundant */ // TODO: remove!
             int BYTES = 12;
 
     // ----------------------------------------------------------------------------------- java.lang
