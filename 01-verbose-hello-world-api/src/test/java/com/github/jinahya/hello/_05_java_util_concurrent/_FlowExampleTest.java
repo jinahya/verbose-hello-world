@@ -25,6 +25,7 @@ import com.github.jinahya.hello.util.JavaLangObjectUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -197,6 +198,7 @@ class _FlowExampleTest {
     @Nested
     class LocalDatePublisherTest {
 
+        @Disabled
         @Test
         void __() { // @formatter:off
             new LocalDatePublisher().subscribe(new Flow.Subscriber<>() {

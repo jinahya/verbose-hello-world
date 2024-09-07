@@ -85,7 +85,7 @@ public abstract class AbstractHelloWorldServer implements HelloWorldServer {
     /**
      * {@inheritDoc}
      *
-     * @throws IOException {@inheritDoc}
+     * @throws IOException if an I/O error occurs.
      * @implSpec Invokes {@link #closeInternal()} method.
      */
     @Override
