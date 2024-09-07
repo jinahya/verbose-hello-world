@@ -62,7 +62,11 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 @FunctionalInterface
 @SuppressWarnings({
-        "java:S4274" // assert ...
+        "java:S1168", // Empty arrays and collections should be returned instead of null
+        "java:S1481", // Unused local variables should be removed
+        "java:S1854", // Unused assignments should be removed
+        "java:S1865", // useless assignments
+        "java:S4274"  // assert ...
 })
 public interface HelloWorld {
 
@@ -91,7 +95,7 @@ public interface HelloWorld {
     /**
      * The length of the <a href="#hello-world-bytes">hello-world-bytes</a> which is {@value}.
      */
-    public static final /* redundant */ // TODO: remove!
+    public static final // redundant
             int BYTES = 12;
 
     // ----------------------------------------------------------------------------------- java.lang
@@ -115,8 +119,8 @@ public interface HelloWorld {
      *                                   less than ({@code index} +
      *                                   {@link #BYTES}({@value #BYTES})).
      */
-    public   // redundant // TODO: remove!
-    abstract // discouraged // TODO: remove!
+    public   // redundant
+    abstract // discouraged
     byte[] set(byte[] array, int index);
 
     /**
@@ -152,10 +156,6 @@ public interface HelloWorld {
      * @see #set(byte[], int)
      */
     default byte[] set(final byte[] array) {
-        // TODO: throw a NullPointerException when array is null
-        // TODO: throw an IndexOutOfBoundsException when array.length is less than BYTES
-        // TODO: invoke set(array, 0);
-        // TODO: return array
         return null;
     }
 
@@ -192,7 +192,7 @@ public interface HelloWorld {
         }
         final var array = new byte[BYTES];
         set(array);
-        // TODO: append each byte in array to appendable
+        // append each byte in array to appendable
         return appendable;
     }
 
@@ -202,7 +202,7 @@ public interface HelloWorld {
      * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified output stream.
      * <p>
      * Default implementation would look like,
-     * {@snippet lang:"java" :
+     * {@snippet lang = "java":
      * if (stream == null) {
      *     throw new NullPointerException("stream is null");
      * }
@@ -229,7 +229,7 @@ public interface HelloWorld {
             throw new NullPointerException("stream is null");
         }
         final var array = set(new byte[BYTES]);
-        // TODO: write the array to the stream
+        // write the array to the stream
         return stream;
     }
 
@@ -265,9 +265,9 @@ public interface HelloWorld {
         if (file == null) {
             throw new NullPointerException("file is null");
         }
-        // TODO: create a new FileOutputStream with file and true
-        // TODO: invoke write(stream) method with it
-        // TODO: flush (and close) the stream
+        // create a new FileOutputStream with file and true
+        // invoke write(stream) method with it
+        // flush (and close) the stream
         return file;
     }
 
@@ -302,7 +302,7 @@ public interface HelloWorld {
             throw new NullPointerException("output is null");
         }
         final var array = set(new byte[BYTES]);
-        // TODO: write array to data
+        // write array to data
         return output;
     }
 
@@ -338,7 +338,7 @@ public interface HelloWorld {
             throw new NullPointerException("file is null");
         }
         final var array = set(new byte[BYTES]);
-        // TODO: write array to file
+        // write array to file
         return file;
     }
 
@@ -367,7 +367,7 @@ public interface HelloWorld {
         if (writer == null) {
             throw new NullPointerException("writer is null");
         }
-        // TODO: invoke append(writer)
+        // invoke append(writer)
         return writer;
     }
 
@@ -400,7 +400,7 @@ public interface HelloWorld {
             throw new NullPointerException("socket is null");
         }
         final var stream = socket.getOutputStream();
-        // TODO: invoke write(stream)
+        // invoke write(stream)
         return socket;
     }
 
@@ -477,11 +477,11 @@ public interface HelloWorld {
             throw new BufferOverflowException();
         }
         if (buffer.hasArray()) {
-            // TODO: invoke set(buffer.array(), (buffer.arrayOffset() + buffer.position())
-            // TODO: increment buffer.position by BYTES
+            // invoke set(buffer.array(), (buffer.arrayOffset() + buffer.position())
+            // increment buffer.position by BYTES
         } else {
             final var array = set(new byte[BYTES]);
-            // TODO: put <array> to the <buffer>
+            // put <array> to the <buffer>
         }
         return buffer;
     }
@@ -522,7 +522,7 @@ public interface HelloWorld {
         final var buffer = ByteBuffer.allocate(BYTES);
         put(buffer);
         buffer.flip();
-        // TODO: invoke channel.write(buffer) while buffer.hasRemaining()
+        // invoke channel.write(buffer) while buffer.hasRemaining()
         return channel;
     }
 
@@ -565,11 +565,11 @@ public interface HelloWorld {
      */
     default <T extends Path> T append(final T path) throws IOException {
         Objects.requireNonNull(path, "path is null");
-        // TODO: open a file channel with path, StandardOpenOption.WRITE,
-        //       StandardOpenOption.CREATE, and StandardOpenOption.APPEND
-        //       ; use the try-with-resources statement
-        // TODO: invoke write(channel) method with it
-        // TODO: force changes to both the file's content and metadata
+        // open a file channel with path, StandardOpenOption.WRITE, StandardOpenOption.CREATE,
+        //   and StandardOpenOption.APPEND
+        //   use the try-with-resources statement
+        // invoke write(channel) method with it
+        // force changes to both the file's content and metadata
         return path;
     }
 
@@ -605,7 +605,7 @@ public interface HelloWorld {
             throws InterruptedException, ExecutionException {
         Objects.requireNonNull(channel, "channel is null");
         final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
-        // TODO: write buffer to channel while buffer has remaining
+        // write buffer to channel while buffer has remaining
         return channel;
     }
 
@@ -656,9 +656,9 @@ public interface HelloWorld {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(handler, "handler is null");
         final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
-        // TODO: keep invoking channel.write(buffer, attachment, a-handler)
-        //       while buffer has remaining
-        // TODO: and, eventually, invoke handler.complete(channel, attachment)
+        // keep invoking channel.write(buffer, attachment, a-handler)
+        //   while buffer has remaining
+        // and, eventually, invoke handler.complete(channel, attachment)
     }
 
     /**

@@ -147,7 +147,7 @@ class HelloWorld_10_Write_AsynchronousFileChannelWithHandler_Test extends HelloW
     void __() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // DONE: service.put(buffer) will increase the buffer's position by HelloWorld.BYTES
+        // service.put(buffer) will increase the buffer's position by HelloWorld.BYTES
         BDDMockito.willAnswer(i -> {
                     final var buffer = i.getArgument(0, ByteBuffer.class);
                     buffer.position(buffer.position() + HelloWorld.BYTES);
@@ -157,7 +157,7 @@ class HelloWorld_10_Write_AsynchronousFileChannelWithHandler_Test extends HelloW
                 .put(ArgumentMatchers.argThat(b -> b != null && b.remaining() >= HelloWorld.BYTES));
         final var writtenSoFar = new LongAdder();
         final var channel = Mockito.mock(AsynchronousFileChannel.class);
-        // DONE: channel.write(src, position, attachment, handler) will invoke handler.completed
+        // channel.write(src, position, attachment, handler) will invoke handler.completed
         BDDMockito.willAnswer(i -> {
             final var src = i.getArgument(0, ByteBuffer.class);
             final var position = i.getArgument(1, Long.class);
@@ -180,16 +180,16 @@ class HelloWorld_10_Write_AsynchronousFileChannelWithHandler_Test extends HelloW
         // ------------------------------------------------------------------------------------ when
         service.write(channel, position, attachment, handler);
         // ------------------------------------------------------------------------------------ then
-        // DONE: verify, put(buffer[12]) invoked
+        // verify, put(buffer[12]) invoked
         final var bufferCaptor = ArgumentCaptor.forClass(ByteBuffer.class);
         Mockito.verify(service, Mockito.times(1)).put(bufferCaptor.capture());
         final var buffer = bufferCaptor.getValue();
         Assertions.assertNotNull(buffer);
         Assertions.assertEquals(HelloWorld.BYTES, buffer.capacity());
-        // DONE: await, handler to be completed(channel, attachment)
+        // await, handler to be completed(channel, attachment)
         Mockito.verify(handler, Mockito.timeout(TimeUnit.SECONDS.toMillis(8L)).times(1))
                 .completed(channel, attachment);
-        // DONE: assert, writtenSoFar.intValue() equals to HelloWorld.BYTES
+        // assert, writtenSoFar.intValue() equals to HelloWorld.BYTES
         Assertions.assertEquals(HelloWorld.BYTES, writtenSoFar.intValue());
     }
 

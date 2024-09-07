@@ -61,7 +61,7 @@ class HelloWorld_01_Send_Socket_Test extends HelloWorldTest {
         final var service = service();
         final Socket socket = null;
         // ------------------------------------------------------------------------------- when/then
-        // DONE: assert, service.send(socket) throws a NullPointerException
+        // assert, service.send(socket) throws a NullPointerException
         Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.send(socket)
@@ -80,7 +80,7 @@ class HelloWorld_01_Send_Socket_Test extends HelloWorldTest {
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // DONE: service.write(stream) will return the stream
+        // service.write(stream) will return the stream
         BDDMockito.willAnswer(i -> i.getArgument(0, OutputStream.class))
                 .given(service)
                 .write(ArgumentMatchers.any(OutputStream.class));
@@ -90,10 +90,10 @@ class HelloWorld_01_Send_Socket_Test extends HelloWorldTest {
         // ------------------------------------------------------------------------------------ when
         final var result = service.send(socket);
         // ------------------------------------------------------------------------------------ then
-        // // DONE: verify, socket.getOutputStream() invoked, once
+        // // verify, socket.getOutputStream() invoked, once
         Mockito.verify(socket, Mockito.times(1)).getOutputStream();
         // TODO: verify, service.write(stream) invoked, once
-        // DONE: assert, result is same as socket
+        // assert, result is same as socket
         Assertions.assertSame(socket, result);
     }
 }

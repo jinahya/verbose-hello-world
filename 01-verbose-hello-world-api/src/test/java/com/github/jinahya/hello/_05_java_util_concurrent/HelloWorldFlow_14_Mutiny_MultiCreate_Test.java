@@ -71,10 +71,10 @@ class HelloWorldFlow_14_Mutiny_MultiCreate_Test extends _HelloWorldFlowTest {
             final var publisher = Mockito.spy(
                     new HelloWorldFlow.HelloWorldPublisher.OfByte(service, EXECUTOR)
             );
-            // DONE: intercept, publisher.subscribe(subscriber) to wrap the subscriber as a spy
+            // intercept, publisher.subscribe(subscriber) to wrap the subscriber as a spy
             BDDMockito.willAnswer(i -> {
                 final var subscriber = Mockito.spy(i.getArgument(0, Flow.Subscriber.class));
-                // DONE: intercept, subscriber.onSubscribe(subscription)
+                // intercept, subscriber.onSubscribe(subscription)
                 //                  to wrap the subscription as a spy
                 BDDMockito.willAnswer(j -> {
                     final var subscription = Mockito.spy(j.getArgument(0, Flow.Subscription.class));
@@ -90,21 +90,21 @@ class HelloWorldFlow_14_Mutiny_MultiCreate_Test extends _HelloWorldFlowTest {
             HelloWorldTestUtils.awaitForOneSecond();
             // -------------------------------------------------------------------------------- then
             final var subscriberCaptor = ArgumentCaptor.forClass(Flow.Subscriber.class);
-            // DONE: verify, publisher.subscribe(subscriber) invoked, once
+            // verify, publisher.subscribe(subscriber) invoked, once
             Mockito.verify(publisher, Mockito.times(1)).subscribe(subscriberCaptor.capture());
             final var subscriber = subscriberCaptor.getValue();
             final var subscriptionCaptor = ArgumentCaptor.forClass(Flow.Subscription.class);
-            // DONE: verify, subscriber.onSubscribe(subscription) invoked, once
+            // verify, subscriber.onSubscribe(subscription) invoked, once
             Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(subscriptionCaptor.capture());
             final var subscription = subscriptionCaptor.getValue();
-//            // DONE: verify, subscription.request(Long.MAX_VALUE) invoked, once
+//            // verify, subscription.request(Long.MAX_VALUE) invoked, once
 //            Mockito.verify(subscription, Mockito.times(1)).request(Long.MAX_VALUE);
-            // DONE: verify, subscriber.onNext(nonnull) invoked, HelloWorld.BYTES-times
+            // verify, subscriber.onNext(nonnull) invoked, HelloWorld.BYTES-times
             Mockito.verify(subscriber, Mockito.times(HelloWorld.BYTES))
                     .onNext(ArgumentMatchers.notNull());
-            // DONE: verify, subscriber.onComplete() invoked, once
+            // verify, subscriber.onComplete() invoked, once
             Mockito.verify(subscriber, Mockito.times(1)).onComplete();
-            // DONE: verify, subscription.cancel() invoked, once
+            // verify, subscription.cancel() invoked, once
             Mockito.verify(subscription, Mockito.never()).cancel(); // do we have log for this?
         }
 
@@ -127,7 +127,7 @@ class HelloWorldFlow_14_Mutiny_MultiCreate_Test extends _HelloWorldFlowTest {
             final var publisher = Mockito.spy(
                     new HelloWorldFlow.HelloWorldPublisher.OfArray(service, EXECUTOR)
             );
-            // DONE: publisher.subscribe(subscription) will wrap the subscription as a spy
+            // publisher.subscribe(subscription) will wrap the subscription as a spy
             BDDMockito.willAnswer(i -> {
                 final var subscriber = Mockito.spy(i.getArgument(0, Flow.Subscriber.class));
                 BDDMockito.willAnswer(j -> {
@@ -144,16 +144,16 @@ class HelloWorldFlow_14_Mutiny_MultiCreate_Test extends _HelloWorldFlowTest {
             }.doSome(multi);
             // -------------------------------------------------------------------------------- then
             final var subscriberCaptor = ArgumentCaptor.forClass(Flow.Subscriber.class);
-            // DONE: verify, publisher.subscribe(subscriber) invoked, once
+            // verify, publisher.subscribe(subscriber) invoked, once
             Mockito.verify(publisher, Mockito.times(1)).subscribe(subscriberCaptor.capture());
             final var subscriber = subscriberCaptor.getValue();
             final var subscriptionCaptor = ArgumentCaptor.forClass(Flow.Subscription.class);
-            // DONE: verify, subscriber.onSubscribe(subscription) invoked, once
+            // verify, subscriber.onSubscribe(subscription) invoked, once
             Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(subscriptionCaptor.capture());
             final var subscription = subscriptionCaptor.getValue();
-//            // DONE: verify, subscription.request(Long.MAX_VALUE) invoked, once
+//            // verify, subscription.request(Long.MAX_VALUE) invoked, once
 //            Mockito.verify(subscription, Mockito.times(1)).request(Long.MAX_VALUE);
-//            // DONE: verify, subscription.cancel() invoked, once
+//            // verify, subscription.cancel() invoked, once
 //            Mockito.verify(subscription, Mockito.times(1)).cancel(); // why?
         }
 
@@ -180,7 +180,7 @@ class HelloWorldFlow_14_Mutiny_MultiCreate_Test extends _HelloWorldFlowTest {
             final var publisher = Mockito.spy(
                     new HelloWorldFlow.HelloWorldPublisher.OfBuffer(service, EXECUTOR)
             );
-            // DONE: publisher.subscribe(subscriber) will wrap the subscriber as a spy
+            // publisher.subscribe(subscriber) will wrap the subscriber as a spy
             BDDMockito.willAnswer(i -> {
                 final var subscriber = Mockito.spy(i.getArgument(0, Flow.Subscriber.class));
                 BDDMockito.willAnswer(j -> {
@@ -197,16 +197,16 @@ class HelloWorldFlow_14_Mutiny_MultiCreate_Test extends _HelloWorldFlowTest {
             }.doSome(multi);
             // -------------------------------------------------------------------------------- then
             final var subscriberCaptor = ArgumentCaptor.forClass(Flow.Subscriber.class);
-            // DONE: verify, publisher.subscribe(subscriber) invoked, once
+            // verify, publisher.subscribe(subscriber) invoked, once
             Mockito.verify(publisher, Mockito.times(1)).subscribe(subscriberCaptor.capture());
             final var subscriber = subscriberCaptor.getValue();
             final var subscriptionCaptor = ArgumentCaptor.forClass(Flow.Subscription.class);
-            // DONE: verify, subscriber.onSubscribe(subscription) invoked, once
+            // verify, subscriber.onSubscribe(subscription) invoked, once
             Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(subscriptionCaptor.capture());
             final var subscription = subscriptionCaptor.getValue();
-//            // DONE: verify, subscription.request(Long.MAX_VALUE) invoked, once
+//            // verify, subscription.request(Long.MAX_VALUE) invoked, once
 //            Mockito.verify(subscription, Mockito.times(1)).request(Long.MAX_VALUE);
-//            // DONE: verify, subscription.cancel() invoked, once
+//            // verify, subscription.cancel() invoked, once
 //            Mockito.verify(subscription, Mockito.times(1)).cancel(); // why?
         }
 

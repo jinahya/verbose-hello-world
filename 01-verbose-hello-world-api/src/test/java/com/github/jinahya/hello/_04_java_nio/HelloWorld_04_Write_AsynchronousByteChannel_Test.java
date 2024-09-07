@@ -76,7 +76,7 @@ class HelloWorld_04_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
         final var service = service();
         final var channel = (AsynchronousByteChannel) null;
         // ------------------------------------------------------------------------------- when/then
-        // DONE: service.write(channel) will throw a NullPointerException
+        // service.write(channel) will throw a NullPointerException
         Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.write(channel)
@@ -99,7 +99,7 @@ class HelloWorld_04_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
     void __() throws InterruptedException, ExecutionException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // DONE: service.put(buffer) will increase buffer's position by HelloWorld.BYTES
+        // service.put(buffer) will increase buffer's position by HelloWorld.BYTES
         BDDMockito.willAnswer(i -> {
                     final var buffer = i.getArgument(0, ByteBuffer.class);
                     buffer.position(buffer.position() + HelloWorld.BYTES);
@@ -109,10 +109,10 @@ class HelloWorld_04_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
                 .put(ArgumentMatchers.argThat(b -> b != null && b.remaining() >= HelloWorld.BYTES));
         final var writtenSoFar = new LongAdder();
         final var channel = Mockito.mock(AsynchronousByteChannel.class);
-        // DONE: channel.write(buffer) will return a future drains the buffer
+        // channel.write(buffer) will return a future drains the buffer
         final var futureReference = new AtomicReference<Future<Integer>>();
         BDDMockito.willAnswer(w -> {
-            // DONE: preceding future's get() should be invoked
+            // preceding future's get() should be invoked
             final var previousFuture = futureReference.get();
             if (previousFuture != null) {
                 Mockito.verify(previousFuture, Mockito.times(1)).get();
@@ -120,7 +120,7 @@ class HelloWorld_04_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
             final var src = w.getArgument(0, ByteBuffer.class);
             @SuppressWarnings({"unchecked"})
             final var future = (Future<Integer>) Mockito.mock(Future.class);
-            // DONE: future.get() will increase buffer's position by a random value
+            // future.get() will increase buffer's position by a random value
             BDDMockito.willAnswer(g -> {
                 final var result = ThreadLocalRandom.current().nextInt(src.remaining()) + 1;
                 src.position(src.position() + result);
@@ -133,7 +133,7 @@ class HelloWorld_04_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(channel);
         // ------------------------------------------------------------------------------------ then
-        // DONE: service.put(buffer[12]) invoked, once
+        // service.put(buffer[12]) invoked, once
         final var bufferCaptor = ArgumentCaptor.forClass(ByteBuffer.class);
         Mockito.verify(service, Mockito.times(1)).put(bufferCaptor.capture());
         final var buffer = bufferCaptor.getValue();
@@ -141,7 +141,7 @@ class HelloWorld_04_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
         Assertions.assertEquals(HelloWorld.BYTES, buffer.capacity());
         // TODO: verify, channel.write(buffer) invoked, at least once
         // TODO: assert, total number of bytes written is equal to HelloWorld.BYTES
-        // DONE: assert, result is same as channel
+        // assert, result is same as channel
         Assertions.assertSame(channel, result);
     }
 
@@ -152,7 +152,7 @@ class HelloWorld_04_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
     void __AsynchronousSocketChannel() throws Exception {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // DONE: start a new thread which
+        // start a new thread which
         //           binds to a random port
         //           accepts a client,
         //           and reads 12 bytes
@@ -178,7 +178,7 @@ class HelloWorld_04_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
             }
         });
         // ------------------------------------------------------------------------------------ when
-        // DONE: connect to the server,
+        // connect to the server,
         //       and send 12 bytes to the server
         Thread.currentThread().setName("client");
         try (var client = AsynchronousSocketChannel.open()) {
