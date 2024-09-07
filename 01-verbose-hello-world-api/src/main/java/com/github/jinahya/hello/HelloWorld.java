@@ -49,7 +49,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * An interface for generating <a href="#hello-world-bytes">hello-world-bytes</a> to various
  * targets.
  * <p>
- * All methods defined in this interface are thead-safe.
+ * All methods defined in this interface are thread-safe.
  *
  * <h2 id="hello-world-bytes">hello-world-bytes</h2>
  * A sequence of {@value #BYTES} bytes, representing the "{@code hello, world}" string encoded in

@@ -1,4 +1,4 @@
-package com.github.jinahya.hello;
+package com.github.jinahya.hello.srv1;
 
 /*-
  * #%L
@@ -26,29 +26,33 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 
 /**
- * A class whose {@link #main(String[])} method serves {@code hello, world} to clients.
+ * A class whose {@link #main(String[])} method accepts socket connections and sends
+ * {@code hello, world} to clients.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorldMainUdp1 {
+class HelloWorldMainTcp1 {
 
     /**
-     * The main method of this program which serves {@code hello, world} to clients.
+     * The main method of this program which accepts socket connections and sends
+     * {@code hello, world} bytes to clients.
      *
      * @param args an array of command line arguments.
      * @throws IOException if an I/O error occurs.
      */
-    public static void main(String... args)
-            throws IOException {
+    public static void main(String... args) throws IOException {
         var endpoint = HelloWorldServerUtils.parseAddr(args);
-        try (var server = new HelloWorldServerUdp1()) {
+        try (var server = new HelloWorldServerTcp1()) {
             server.open(endpoint, null);
             HelloWorldServerUtils.readQuitFromStandardInput();
         }
     }
 
-    private HelloWorldMainUdp1() {
+    /**
+     * Creates a new instance.
+     */
+    private HelloWorldMainTcp1() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

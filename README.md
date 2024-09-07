@@ -17,7 +17,7 @@ A fairly verbose modules just for generating`hello, world`.
 | `\- 03-verbose-hello-world-app3`       | DI                                    |
 | `\- 04-verbose-hello-world-app4`       | CDI                                   |
 | `04-verbose-hello-world-srv`           |                                       |
-| `\- 00-verbose-hello-world-srv-common` |                                       |
+| `\- 00-verbose-hello-world-srv-common` | Common classes for src*               |
 | `\- 01-verbose-hello-world-srv1`       |                                       |
 | `\- 02-verbose-hello-world-srv2`       |                                       |
 | `\- 03-verbose-hello-world-srv3`       |                                       |

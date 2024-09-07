@@ -1,8 +1,8 @@
-package com.github.jinahya.hello;
+package com.github.jinahya.hello.srv2;
 
 /*-
  * #%L
- * verbose-hello-world-04-srv1
+ * verbose-hello-world-04-srv2
  * %%
  * Copyright (C) 2018 - 2021 Jinahya, Inc.
  * %%
@@ -20,24 +20,11 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import com.github.jinahya.hello.util.HelloWorldServerUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Disabled;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.util.concurrent.ExecutionException;
-
+@Disabled
 @Slf4j
-class HelloWorldMainTcp1Test {
+class HelloWorldServerUdp2Test {
 
-    @Test
-    void main__()
-            throws IOException, InterruptedException, ExecutionException {
-        HelloWorldServerUtils.submitAndWriteQuit(() -> {
-            var host = InetAddress.getLoopbackAddress();
-            HelloWorldMainTcp1.main("0", host.getHostAddress());
-            return null;
-        });
-    }
 }

@@ -1,4 +1,4 @@
-package com.github.jinahya.hello;
+package com.github.jinahya.hello.srv1;
 
 /*-
  * #%L
@@ -20,13 +20,14 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import com.github.jinahya.hello.HelloWorld;
+import com.github.jinahya.hello.HelloWorldServer;
 import com.github.jinahya.hello.util.HelloWorldServerUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
+import java.net.ServerSocket;
 import java.net.SocketAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -38,72 +39,60 @@ import java.util.Objects;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorldServerUdp1
-        implements HelloWorldServer {
+class HelloWorldServerTcp1 implements HelloWorldServer {
 
     @Override
-    public synchronized void open(SocketAddress endpoint, Path dir)
-            throws IOException {
+    public synchronized void open(SocketAddress endpoint, Path dir) throws IOException {
         Objects.requireNonNull(endpoint, "endpoint is null");
         if (dir != null && !Files.isDirectory(dir)) {
             throw new IllegalArgumentException("not a directory: " + dir);
         }
         close();
-        socket = new DatagramSocket(null);
+        server = new ServerSocket();
         if (endpoint instanceof InetSocketAddress
             && ((InetSocketAddress) endpoint).getPort() > 0) {
-            socket.setReuseAddress(true);
+            server.setReuseAddress(true);
         }
         try {
-            socket.bind(endpoint);
+            server.bind(endpoint);
         } catch (IOException ioe) {
             log.error("failed to bind to {}", endpoint, ioe);
             throw ioe;
         }
-        log.info("[S] bound to {}", socket.getLocalSocketAddress());
+        log.info("[S] bound to {}", server.getLocalSocketAddress());
         if (dir != null) {
-            HelloWorldServerUtils.writePortNumber(dir, socket.getLocalPort());
+            var port = server.getLocalPort();
+            HelloWorldServerUtils.writePortNumber(dir, port);
         }
         var thread = new Thread(() -> {
-            while (!Thread.currentThread().isInterrupted()) {
-                var received = new DatagramPacket(new byte[1], 1);
-                try {
-                    socket.receive(received);
+            while (true) {
+                try (var client = server.accept()) {
+                    var address = client.getRemoteSocketAddress();
+                    log.debug("[S] connected from {}", address);
+                    var array = new byte[HelloWorld.BYTES];
+                    service().set(array);
+                    client.getOutputStream().write(array);
+                    client.getOutputStream().flush();
+                    log.debug("[S] written to {}", address);
                 } catch (IOException ioe) {
-                    if (socket.isClosed()) {
+                    if (server.isClosed()) {
                         break;
                     }
-                    log.error("failed to receive", ioe);
-                    continue;
+                    log.error("failed to serve", ioe);
                 }
-                var address = received.getSocketAddress();
-                log.debug("[S] received from {}", address);
-                var array = new byte[HelloWorld.BYTES];
-                service().set(array);
-                var sending = new DatagramPacket(array, array.length, address);
-                try {
-                    socket.send(sending);
-                    log.debug("[S] sent to {}", address);
-                } catch (IOException ioe) {
-                    if (socket.isClosed()) {
-                        break;
-                    }
-                    log.error("failed to send to {}", address, ioe);
-                }
-            } // end-of-while
+            }
         });
         thread.start();
         log.debug("[S] server thread started");
     }
 
     @Override
-    public synchronized void close()
-            throws IOException {
-        if (socket != null && !socket.isClosed()) {
-            socket.close();
+    public synchronized void close() throws IOException {
+        if (server != null && !server.isClosed()) {
+            server.close();
             log.debug("[S] server closed");
         }
     }
 
-    private DatagramSocket socket;
+    private ServerSocket server;
 }

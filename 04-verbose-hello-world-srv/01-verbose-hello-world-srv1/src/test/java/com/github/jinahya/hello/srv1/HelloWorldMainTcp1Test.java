@@ -1,4 +1,4 @@
-package com.github.jinahya.hello;
+package com.github.jinahya.hello.srv1;
 
 /*-
  * #%L
@@ -29,14 +29,14 @@ import java.net.InetAddress;
 import java.util.concurrent.ExecutionException;
 
 @Slf4j
-class HelloWorldMainUdp1Test {
+class HelloWorldMainTcp1Test {
 
     @Test
     void main__()
             throws IOException, InterruptedException, ExecutionException {
         HelloWorldServerUtils.submitAndWriteQuit(() -> {
             var host = InetAddress.getLoopbackAddress();
-            HelloWorldMainUdp1.main("0", host.getHostAddress());
+            HelloWorldMainTcp1.main("0", host.getHostAddress());
             return null;
         });
     }

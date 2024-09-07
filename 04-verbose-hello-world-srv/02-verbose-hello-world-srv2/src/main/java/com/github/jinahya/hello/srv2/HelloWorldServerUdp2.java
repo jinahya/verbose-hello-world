@@ -1,4 +1,4 @@
-package com.github.jinahya.hello;
+package com.github.jinahya.hello.srv2;
 
 /*-
  * #%L
@@ -20,12 +20,15 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import com.github.jinahya.hello.AbstractHelloWorldServer;
+import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello.util.HelloWorldServerUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
-import java.net.ServerSocket;
 import java.net.SocketAddress;
 import java.nio.file.Path;
 import java.util.concurrent.Executors;
@@ -36,65 +39,69 @@ import java.util.concurrent.Executors;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorldServerTcp2
+class HelloWorldServerUdp2
         extends AbstractHelloWorldServer {
 
     @Override
     protected void openInternal(SocketAddress endpoint, Path dir)
             throws IOException {
-        server = new ServerSocket();
+        socket = new DatagramSocket(null);
         if (endpoint instanceof InetSocketAddress
             && ((InetSocketAddress) endpoint).getPort() > 0) {
-            server.setReuseAddress(true);
+            socket.setReuseAddress(true);
         }
         try {
-            server.bind(endpoint);
+            socket.bind(endpoint);
+            log.info("[S] server bound to {}", socket.getLocalSocketAddress());
         } catch (IOException ioe) {
-            log.error("failed to bind to {}", endpoint);
+            log.error("failed to bind to {}", endpoint, ioe);
             throw ioe;
         }
-        log.info("[S] server bound to {}", server.getLocalSocketAddress());
         if (dir != null) {
-            HelloWorldServerUtils.writePortNumber(dir, server.getLocalPort());
+            HelloWorldServerUtils.writePortNumber(dir, socket.getLocalPort());
         }
-        var thread = new Thread(() -> {
+        new Thread(() -> {
             var executor = Executors.newCachedThreadPool();
             while (!Thread.currentThread().isInterrupted()) {
+                var received = new DatagramPacket(new byte[1], 1);
                 try {
-                    var client = server.accept();
+                    socket.receive(received);
                     var future = executor.submit(() -> {
-                        try (client) {
-                            var address = client.getRemoteSocketAddress();
-                            log.debug("[S] connected from {}", address);
-                            var array = new byte[HelloWorld.BYTES];
-                            service().set(array);
-                            client.getOutputStream().write(array);
-                            client.getOutputStream().flush();
-                            log.debug("[S] written to {}", address);
+                        var address = received.getSocketAddress();
+                        log.debug("[S] received from {}", address);
+                        var array = new byte[HelloWorld.BYTES];
+                        service().set(array);
+                        var sending = new DatagramPacket(array, array.length,
+                                                         address);
+                        try {
+                            socket.send(sending);
+                            log.debug("[S] sent to {}", address);
+                        } catch (IOException ioe) {
+                            if (!socket.isClosed()) {
+                                log.error("failed to send", ioe);
+                            }
                         }
-                        return null;
                     });
                 } catch (IOException ioe) {
-                    if (server.isClosed()) {
+                    if (socket.isClosed()) {
                         break;
                     }
-                    log.error("failed to accept", ioe);
+                    log.error("failed to receive", ioe);
                 }
             } // end-of-while
             HelloWorldServerUtils.shutdownAndAwaitTermination(executor);
-        });
-        thread.start();
+        }).start();
         log.debug("[S] server thread started");
     }
 
     @Override
     protected void closeInternal()
             throws IOException {
-        if (server != null && !server.isClosed()) {
-            server.close();
-            log.debug("[S] server closed");
+        if (socket != null && !socket.isClosed()) {
+            socket.close();
+            log.debug("server closed");
         }
     }
 
-    private ServerSocket server;
+    private DatagramSocket socket;
 }
