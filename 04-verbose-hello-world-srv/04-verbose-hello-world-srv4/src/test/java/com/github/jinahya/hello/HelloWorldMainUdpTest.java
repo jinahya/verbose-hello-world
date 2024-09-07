@@ -34,8 +34,7 @@ class HelloWorldMainUdpTest {
 
     @Disabled
     @Test
-    void main__()
-            throws IOException, InterruptedException, ExecutionException {
+    void main__() throws IOException, InterruptedException, ExecutionException {
         HelloWorldServerUtils.submitAndWriteQuit(() -> {
             InetAddress host = InetAddress.getLocalHost();
             HelloWorldMainUdp.main("0", host.getHostAddress());

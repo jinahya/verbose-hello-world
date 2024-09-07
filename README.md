@@ -1,6 +1,6 @@
 # verbose-hello-world
 
-[![Java CI with Maven](https://github.com/jinahya/verbose-hello-world/actions/workflows/maven.yml/badge.svg?branch=develop)](https://github.com/jinahya/verbose-hello-world/actions/workflows/maven.yml)
+[![Java CI with Maven](https://github.com/jinahya/verbose-hello-world/actions/workflows/maven.yml/badge.svg)](https://github.com/jinahya/verbose-hello-world/actions/workflows/maven.yml)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=jinahya_verbose-hello-world&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=jinahya_verbose-hello-world)
 
 A fairly verbose modules just for generating`hello, world`.
@@ -13,31 +13,15 @@ A fairly verbose modules just for generating`hello, world`.
 | `02-verbose-hello-world-lib`           | Implements the `HelloWorld` interface |
 | `03-verbose-hello-world-app`           |                                       |
 | `\- 01-verbose-hello-world-app1`       | Uses the `HelloWorldImpl`             |
-| `\- 02-verbose-hello-world-app2`       | SPI                                   |
-| `\- 03-verbose-hello-world-app3`       | DI                                    |
-| `\- 04-verbose-hello-world-app4`       | CDI                                   |
-| `04-verbose-hello-world-srv`           |                                       |
-| `\- 00-verbose-hello-world-srv-common` | Common classes for src*               |
+| `\- 02-verbose-hello-world-app2`       | Service Provider Interface            |
+| `\- 03-verbose-hello-world-app3`       | Dependency Injection                  |
+| `\- 04-verbose-hello-world-app4`       | Contexts and Dependency Injection     |
+| `04-verbose-hello-world-srv`           | Serves `hello, world` to clients      |
+| `\- 00-verbose-hello-world-srv-common` | Common classes for `srv*`             |
 | `\- 01-verbose-hello-world-srv1`       |                                       |
 | `\- 02-verbose-hello-world-srv2`       |                                       |
 | `\- 03-verbose-hello-world-srv3`       |                                       |
 | `\- 04-verbose-hello-world-srv4`       |                                       |
-
-## Miscellaneous
-
-### Building with different JDKs using Docker
-
-```shell script
-$ sh ./docker.maven.sh <tag> <phase1> <phase2> ...
-```
-
-e.g.
-
-```shell script
-$ sh ./docker.maven.sh 3-jdk-11-openj9 clean install
-```
-
-See [dockerhub/maven](https://hub.docker.com/_/maven) for available tags.
 
 ## Links
 

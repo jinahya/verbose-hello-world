@@ -41,8 +41,7 @@ import java.util.Set;
 @Slf4j
 class HelloWorldServerUdp extends AbstractHelloWorldServer {
 
-    private void handle(Set<SelectionKey> keys)
-            throws IOException {
+    private void handle(Set<SelectionKey> keys) throws IOException {
         for (var key : keys) {
             var channel = (DatagramChannel) key.channel();
             if (key.isReadable()) {
@@ -86,8 +85,7 @@ class HelloWorldServerUdp extends AbstractHelloWorldServer {
         }
         log.info("server bound to {}", server.getLocalAddress());
         if (dir != null) {
-            HelloWorldServerUtils.writePortNumber(dir, server.socket()
-                    .getLocalPort());
+            HelloWorldServerUtils.writePortNumber(dir, server.socket().getLocalPort());
         }
         thread = new Thread(() -> {
             try (var selector = Selector.open()) {
@@ -111,8 +109,7 @@ class HelloWorldServerUdp extends AbstractHelloWorldServer {
     }
 
     @Override
-    protected void closeInternal()
-            throws IOException {
+    protected void closeInternal() throws IOException {
         if (thread == null || !thread.isAlive()) {
             return;
         }
