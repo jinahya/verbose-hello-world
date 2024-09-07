@@ -1,4 +1,4 @@
-package com.github.jinahya.hello;
+package com.github.jinahya.hello.srv2;
 
 /*-
  * #%L
@@ -20,6 +20,8 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import com.github.jinahya.hello.AbstractHelloWorldServer;
+import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello.util.HelloWorldServerUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,12 +38,10 @@ import java.util.concurrent.Executors;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorldServerTcp2
-        extends AbstractHelloWorldServer {
+class HelloWorldServerTcp2 extends AbstractHelloWorldServer {
 
     @Override
-    protected void openInternal(SocketAddress endpoint, Path dir)
-            throws IOException {
+    protected void openInternal(SocketAddress endpoint, Path dir) throws IOException {
         server = new ServerSocket();
         if (endpoint instanceof InetSocketAddress
             && ((InetSocketAddress) endpoint).getPort() > 0) {

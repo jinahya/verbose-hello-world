@@ -1,4 +1,4 @@
-package com.github.jinahya.hello;
+package com.github.jinahya.hello.srv2;
 
 /*-
  * #%L
@@ -20,11 +20,23 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import com.github.jinahya.hello.util.HelloWorldServerUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
-@Disabled
+import java.io.IOException;
+import java.net.InetAddress;
+import java.util.concurrent.ExecutionException;
+
 @Slf4j
-class HelloWorldServerUdp2Test {
+class HelloWorldMainUdp2Test {
 
+    @Test
+    void main__() throws IOException, InterruptedException, ExecutionException {
+        HelloWorldServerUtils.submitAndWriteQuit(() -> {
+            var host = InetAddress.getLoopbackAddress();
+            HelloWorldMainUdp2.main("0", host.getHostAddress());
+            return null;
+        });
+    }
 }

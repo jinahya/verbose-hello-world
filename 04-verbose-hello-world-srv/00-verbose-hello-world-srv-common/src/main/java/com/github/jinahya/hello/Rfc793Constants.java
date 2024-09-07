@@ -26,14 +26,25 @@ import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obv
  * .
  *
  * @see <a href="https://www.rfc-editor.org/rfc/rfc793">RFC 793: TRANSMISSION
- * CONTROL PROTOCOL</a>
+ * CONTROL PROTOCOL</a> (Obsoleted by <a href="https://www.rfc-editor.org/rfc/rfc9293">RFC 9293 Transmission Control
+ * Protocol (TCP)</a>
  * @see <a href="https://www.rfc-editor.org/rfc/rfc9293">RFC 9293: Transmission
  * Control Protocol (TCP)</a>
+ * @see <a href="https://www.rfc-editor.org/rfc/rfc9293#name-header-format">3.1 Header Format</a>
  */
 public final class Rfc793Constants {
 
-    public static final int HEADER_SOURCE_PORT_BYTES = Short.BYTES;
+    // -----------------------------------------------------------------------------------------------------------------
+    public static final int HEADER_SOURCE_PORT_SIZE = Short.SIZE;
 
+    /**
+     * The number of bytes for the {@code Source Port}. The value is {@value}.
+     *
+     * @see <a href="https://www.rfc-editor.org/rfc/rfc9293#name-header-format">3.1 Header Format</a>
+     */
+    public static final int HEADER_SOURCE_PORT_BYTES = HEADER_SOURCE_PORT_SIZE >> 3;
+
+    // -----------------------------------------------------------------------------------------------------------------
     public static final int HEADER_DESTINATION_PORT_BYTES = Short.BYTES;
 
     public static final int HEADER_SEQUENCE_NUMBER_PORT_BYTES = Integer.BYTES;

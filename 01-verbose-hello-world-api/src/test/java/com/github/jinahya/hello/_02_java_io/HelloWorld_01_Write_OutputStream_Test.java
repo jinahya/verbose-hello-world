@@ -101,7 +101,7 @@ class HelloWorld_01_Write_OutputStream_Test extends HelloWorldTest {
         final var array = arrayCaptor.getValue();                             // <3>
         Assertions.assertNotNull(array);                                      // <4>
         Assertions.assertEquals(HelloWorld.BYTES, array.length);              // <5>
-        // TODO: verify, stream.write(array) invoked, once
+        // verify, stream.write(array) invoked, once
         // verify, service.write(stream) returns the stream
         Assertions.assertSame(stream, result);
     }

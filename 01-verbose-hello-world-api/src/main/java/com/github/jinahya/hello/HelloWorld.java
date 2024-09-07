@@ -49,7 +49,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * An interface for generating <a href="#hello-world-bytes">hello-world-bytes</a> to various
  * targets.
  * <p>
- * All methods defined in this interface are thead-safe.
+ * All methods defined in this interface are thread-safe.
  *
  * <h2 id="hello-world-bytes">hello-world-bytes</h2>
  * A sequence of {@value #BYTES} bytes, representing the "{@code hello, world}" string encoded in
@@ -91,7 +91,7 @@ public interface HelloWorld {
     /**
      * The length of the <a href="#hello-world-bytes">hello-world-bytes</a> which is {@value}.
      */
-    public static final // redundant // TODO: remove!
+    public static final /* redundant */ // TODO: remove!
             int BYTES = 12;
 
     // ----------------------------------------------------------------------------------- java.lang
@@ -202,7 +202,7 @@ public interface HelloWorld {
      * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified output stream.
      * <p>
      * Default implementation would look like,
-     * {@snippet :
+     * {@snippet lang:"java" :
      * if (stream == null) {
      *     throw new NullPointerException("stream is null");
      * }
