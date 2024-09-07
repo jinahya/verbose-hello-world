@@ -39,12 +39,10 @@ import java.util.concurrent.Executors;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorldServerUdp2
-        extends AbstractHelloWorldServer {
+class HelloWorldServerUdp2 extends AbstractHelloWorldServer {
 
     @Override
-    protected void openInternal(SocketAddress endpoint, Path dir)
-            throws IOException {
+    protected void openInternal(SocketAddress endpoint, Path dir) throws IOException {
         socket = new DatagramSocket(null);
         if (endpoint instanceof InetSocketAddress
             && ((InetSocketAddress) endpoint).getPort() > 0) {
@@ -95,8 +93,7 @@ class HelloWorldServerUdp2
     }
 
     @Override
-    protected void closeInternal()
-            throws IOException {
+    protected void closeInternal() throws IOException {
         if (socket != null && !socket.isClosed()) {
             socket.close();
             log.debug("server closed");

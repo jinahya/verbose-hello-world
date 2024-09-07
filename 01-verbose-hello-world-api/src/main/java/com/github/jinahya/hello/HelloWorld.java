@@ -202,7 +202,7 @@ public interface HelloWorld {
      * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified output stream.
      * <p>
      * Default implementation would look like,
-     * {@snippet :
+     * {@snippet lang:"java" :
      * if (stream == null) {
      *     throw new NullPointerException("stream is null");
      * }
