@@ -656,8 +656,7 @@ public interface HelloWorld {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(handler, "handler is null");
         final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
-        // keep invoking channel.write(buffer, attachment, a-handler)
-        //   while buffer has remaining
+        // keep invoking channel.write(buffer, attachment, a-handler), while buffer has remaining
         // and, eventually, invoke handler.complete(channel, attachment)
     }
 
