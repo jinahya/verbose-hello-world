@@ -57,8 +57,7 @@ class HelloWorldServerTcp extends AbstractHelloWorldServer {
      * @param selector a selector.
      * @throws IOException if an I/O error occurs.
      */
-    private void handle(Set<SelectionKey> keys, Selector selector)
-            throws IOException {
+    private void handle(Set<SelectionKey> keys, Selector selector) throws IOException {
         Objects.requireNonNull(keys, "keys is null");
         if (keys.isEmpty()) {
             throw new IllegalArgumentException("empty keys");
@@ -86,8 +85,7 @@ class HelloWorldServerTcp extends AbstractHelloWorldServer {
     }
 
     @Override
-    protected void openInternal(SocketAddress endpoint, Path dir)
-            throws IOException {
+    protected void openInternal(SocketAddress endpoint, Path dir) throws IOException {
         var server = ServerSocketChannel.open();
         if (endpoint instanceof InetSocketAddress
             && ((InetSocketAddress) endpoint).getPort() > 0) {

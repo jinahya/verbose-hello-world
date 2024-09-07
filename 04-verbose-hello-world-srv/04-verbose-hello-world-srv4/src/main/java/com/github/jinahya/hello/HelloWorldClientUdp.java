@@ -38,10 +38,8 @@ import java.util.function.Consumer;
 @Slf4j
 public class HelloWorldClientUdp {
 
-    private static void handle(Set<SelectionKey> keys,
-                               SocketAddress endpoint,
-                               Consumer<? super String> consumer,
-                               CountDownLatch latch)
+    private static void handle(Set<SelectionKey> keys, SocketAddress endpoint,
+                               Consumer<? super String> consumer, CountDownLatch latch)
             throws IOException {
         for (var key : keys) {
             var channel = (DatagramChannel) key.channel();
@@ -61,8 +59,7 @@ public class HelloWorldClientUdp {
         keys.clear();
     }
 
-    static void runClients(int count, SocketAddress endpoint,
-                           Consumer<? super String> consumer)
+    static void runClients(int count, SocketAddress endpoint, Consumer<? super String> consumer)
             throws IOException {
         if (count <= 0) {
             throw new IllegalArgumentException(
