@@ -117,10 +117,10 @@ public interface HelloWorld {
      * @param array the array on which bytes are set.
      * @param index the starting index of the {@code array} to which bytes are set.
      * @return given {@code array}.
-     * @throws NullPointerException      if {@code array} is {@code null}.
-     * @throws IndexOutOfBoundsException if {@code index} is negative, or {@code array.length} is
-     *                                   less than ({@code index} +
-     *                                   {@link #BYTES}({@value #BYTES})).
+     * @throws NullPointerException           if {@code array} is {@code null}.
+     * @throws ArrayIndexOutOfBoundsException if {@code index} is negative, or {@code array.length}
+     *                                        is less than ({@code index} +
+     *                                        {@link #BYTES}({@value #BYTES})).
      * @see <a href="https://docs.oracle.com/javase/specs/jls/se21/html/jls-9.html#jls-9.4">9.4.
      * Method Declarations </a> (The Java® Language Specification / Java SE 21 Edition)
      */
@@ -153,9 +153,9 @@ public interface HelloWorld {
      *
      * @param array the array on which bytes are set.
      * @return given {@code array}.
-     * @throws NullPointerException      if {@code array} is {@code null}.
-     * @throws IndexOutOfBoundsException if {@code array.length} is less than
-     *                                   {@link #BYTES}({@value #BYTES}).
+     * @throws NullPointerException           if {@code array} is {@code null}.
+     * @throws ArrayIndexOutOfBoundsException if {@code array.length} is less than
+     *                                        {@link #BYTES}({@value #BYTES}).
      * @implSpec The default implementation invokes {@link #set(byte[], int) set(array, index)}
      * method with {@code array} and {@code 0}, and returns the {@code array}.
      * @see #set(byte[], int)
