@@ -7,21 +7,21 @@ A fairly verbose modules just for generating`hello, world`.
 
 ## Modules
 
-| module                                 | description                           |
-|----------------------------------------|---------------------------------------|
-| `01-verbose-hello-world-api`           | Defines the `HelloWorld` interface    |
-| `02-verbose-hello-world-lib`           | Implements the `HelloWorld` interface |
-| `03-verbose-hello-world-app`           |                                       |
-| `\- 01-verbose-hello-world-app1`       | Uses the `HelloWorldImpl`             |
-| `\- 02-verbose-hello-world-app2`       | Service Provider Interface            |
-| `\- 03-verbose-hello-world-app3`       | Dependency Injection                  |
-| `\- 04-verbose-hello-world-app4`       | Contexts and Dependency Injection     |
-| `04-verbose-hello-world-srv`           | Serves `hello, world` to clients      |
-| `\- 00-verbose-hello-world-srv-common` | Common classes for `srv*`             |
-| `\- 01-verbose-hello-world-srv1`       |                                       |
-| `\- 02-verbose-hello-world-srv2`       |                                       |
-| `\- 03-verbose-hello-world-srv3`       |                                       |
-| `\- 04-verbose-hello-world-srv4`       |                                       |
+| module                                 | description                             |
+|----------------------------------------|-----------------------------------------|
+| `01-verbose-hello-world-api`           | Defines the `HelloWorld` interface      |
+| `02-verbose-hello-world-lib`           | Implements the `HelloWorld` interface   |
+| `03-verbose-hello-world-app`           | Prints `hello, world`                   |
+| `\- 01-verbose-hello-world-app1`       | Uses the `HelloWorldImpl`               |
+| `\- 02-verbose-hello-world-app2`       | &nbsp;&nbsp;-&nbsp;Service Provider Interface |
+| `\- 03-verbose-hello-world-app3`       | &nbsp;&nbsp;-&nbsp;Dependency Injection                    |
+| `\- 04-verbose-hello-world-app4`       | &nbsp;&nbsp;-&nbsp;Contexts and Dependency Injection       |
+| `04-verbose-hello-world-srv`           | Serves `hello, world` to clients        |
+| `\- 00-verbose-hello-world-srv-common` | &nbsp;&nbsp;-&nbsp;Common classes for `srv*`               |
+| `\- 01-verbose-hello-world-srv1`       |                                         |
+| `\- 02-verbose-hello-world-srv2`       |                                         |
+| `\- 03-verbose-hello-world-srv3`       |                                         |
+| `\- 04-verbose-hello-world-srv4`       |                                         |
 
 ## Links
 
