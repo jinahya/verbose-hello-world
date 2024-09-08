@@ -58,7 +58,6 @@ A fairly verbose modules just for generating`hello, world`.
 
 #### [JUnit 5](https://github.com/junit-team/junit5)
 
-*
 * [TestInstanceFactory on enclosing class is not called for @Nested test class #1567](https://github.com/junit-team/junit5/issues/1567)
 
 ### [ReactiveX](https://github.com/ReactiveX) (GitHub)
