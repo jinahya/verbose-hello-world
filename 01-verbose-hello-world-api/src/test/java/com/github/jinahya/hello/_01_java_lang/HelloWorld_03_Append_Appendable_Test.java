@@ -43,7 +43,6 @@ import java.io.IOException;
 @DisplayName("append(appendable) arguments")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-@SuppressWarnings({"java:S101"})
 class HelloWorld_03_Append_Appendable_Test extends HelloWorldTest {
 
     /**
@@ -79,7 +78,7 @@ class HelloWorld_03_Append_Appendable_Test extends HelloWorldTest {
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // DONE: service.set(array) will return given <array>
+        // service.set(array) will return given <array>
         BDDMockito.willAnswer(i -> {
             final var array = i.getArgument(0, byte[].class);
             if (array != null) {
@@ -93,14 +92,14 @@ class HelloWorld_03_Append_Appendable_Test extends HelloWorldTest {
         // ------------------------------------------------------------------------------------ when
         final var result = service.append(appendable);
         // ------------------------------------------------------------------------------------ then
-        // DONE: verify, service.set(array[12]) invoked, once
+        // verify, service.set(array[12]) invoked, once
         final var arrayCaptor = ArgumentCaptor.forClass(byte[].class);
         Mockito.verify(service, Mockito.times(1)).set(arrayCaptor.capture());
         final var array = arrayCaptor.getValue();
         Assertions.assertNotNull(array);
         Assertions.assertEquals(HelloWorld.BYTES, array.length);
-        // TODO: verify, each byte in <array> has been appended to <appendable>
-        // DONE: verify, service.append(appendable) returns given <appendable>
+        // verify, each byte in <array> has been appended to <appendable>
+        // verify, service.append(appendable) returns given <appendable>
         Assertions.assertSame(appendable, result);
     }
 }

@@ -38,7 +38,9 @@ import java.util.concurrent.ThreadLocalRandom;
 @DisplayName("set(array)")
 @Slf4j
 @SuppressWarnings({
-        "java:S101"
+        "java:S1481", // unused (yet) local variables
+        "java:S1854", // useless (yet) assignments
+        "java:S2699"  // no assertions (yet)
 })
 class HelloWorld_02_Set_Array_Test extends HelloWorldTest {
 
@@ -56,7 +58,7 @@ class HelloWorld_02_Set_Array_Test extends HelloWorldTest {
         final var service = service();
         final var array = (byte[]) null;
         // ------------------------------------------------------------------------------- when/then
-        // TODO: verify, service.set(array) throws a NullPointerException.
+        // verify, service.set(array) throws a NullPointerException.
     }
 
     /**
@@ -74,7 +76,7 @@ class HelloWorld_02_Set_Array_Test extends HelloWorldTest {
         final var service = service();
         final var array = new byte[ThreadLocalRandom.current().nextInt(HelloWorld.BYTES)];
         // ------------------------------------------------------------------------------- when/then
-        // TODO: verify, service.set(array) throws an ArrayIndexOutOfBoundsException.
+        // verify, service.set(array) throws an ArrayIndexOutOfBoundsException.
     }
 
     /**
@@ -90,7 +92,7 @@ class HelloWorld_02_Set_Array_Test extends HelloWorldTest {
     void __() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // DONE: service.set(array, index) will just return the <array>
+        // service.set(array, index) will just return the <array>
         BDDMockito.willAnswer(i -> i.getArgument(0))
                 .given(service)
                 .set(ArgumentMatchers.any(), ArgumentMatchers.anyInt());
@@ -98,7 +100,7 @@ class HelloWorld_02_Set_Array_Test extends HelloWorldTest {
         // ------------------------------------------------------------------------------------ when
         final var result = service.set(array);
         // ------------------------------------------------------------------------------------ then
-        // TODO: verify, service.set(array, 0) invoked, once
-        // TODO: verify, result is same as array
+        // verify, service.set(array, 0) invoked, once
+        // verify, result is same as array
     }
 }

@@ -158,7 +158,7 @@ abstract class _HelloWorldTest {
                         // -------------------------------------------------------------------- when
                         final var result = s.set(array, index);
                         // -------------------------------------------------------------------- then
-                        // DONE: assert, 'hello, world' set on array starting at index
+                        // assert, 'hello, world' set on array starting at index
                         final var buffer = ByteBuffer.wrap(array, index, HelloWorld.BYTES);
                         Assertions.assertEquals('h', buffer.get());
                         Assertions.assertEquals('e', buffer.get());
@@ -172,7 +172,7 @@ abstract class _HelloWorldTest {
                         Assertions.assertEquals('r', buffer.get());
                         Assertions.assertEquals('l', buffer.get());
                         Assertions.assertEquals('d', buffer.get());
-                        // DONE: assert, result is same as array
+                        // assert, result is same as array
                         Assertions.assertSame(array, result);
                     }
             );

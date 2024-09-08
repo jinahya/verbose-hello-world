@@ -28,7 +28,9 @@ import java.util.Objects;
 public final class JavaLangObjectUtils {
 
     public static String toSimpleString(final Object obj) {
-        Objects.requireNonNull(obj, "obj is null");
+        if (obj == null) {
+            return Objects.toString(obj);
+        }
         return String.format("%1$s@%2$08x", obj.getClass().getSimpleName(), obj.hashCode());
     }
 

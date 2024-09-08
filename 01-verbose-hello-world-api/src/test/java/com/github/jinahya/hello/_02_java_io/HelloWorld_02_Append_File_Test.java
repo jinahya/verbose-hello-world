@@ -68,7 +68,7 @@ class HelloWorld_02_Append_File_Test extends HelloWorldTest {
         final var service = service();
         final var file = (File) null;
         // ------------------------------------------------------------------------------- when/then
-        // DONE: service.append(file) will throw a NullPointerException
+        // service.append(file) will throw a NullPointerException
         Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.append(file)
@@ -92,7 +92,7 @@ class HelloWorld_02_Append_File_Test extends HelloWorldTest {
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // DONE: service.write(stream) will return the stream
+        // service.write(stream) will return the stream
         BDDMockito.willAnswer(i -> i.getArgument(0, OutputStream.class))
                 .given(service)
                 .write(ArgumentMatchers.any(OutputStream.class));

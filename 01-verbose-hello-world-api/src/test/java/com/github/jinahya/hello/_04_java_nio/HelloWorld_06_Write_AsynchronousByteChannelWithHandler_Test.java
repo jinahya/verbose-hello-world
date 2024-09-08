@@ -191,7 +191,7 @@ class HelloWorld_06_Write_AsynchronousByteChannelWithHandler_Test extends HelloW
     void __AsynchronousSocketChannel() throws Exception {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // DONE: start a server thread which
+        // start a server thread which
         //           binds on a random port,
         //           accepts a client,
         //           and reads 12 bytes
@@ -235,7 +235,7 @@ class HelloWorld_06_Write_AsynchronousByteChannelWithHandler_Test extends HelloW
             }
         });
         // ------------------------------------------------------------------------------------ when
-        // DONE: connect to the server
+        // connect to the server
         //       send 12 bytes to the server
         Thread.currentThread().setName("client");
         try (var client = AsynchronousSocketChannel.open()) {

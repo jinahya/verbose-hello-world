@@ -156,21 +156,21 @@ public final class HelloWorldFlow {
                 final var condition = lock.newCondition();
                 final var latch = new CountDownLatch(1);
                 final var future = executor.submit(() -> {
-                    // DONE: await for the latch
+                    // await for the latch
                     //       which will be broken at the end of subscriber.onSubscribe(subscription)
                     try {
                         latch.await();
                     } catch (final InterruptedException ie) {
                         Thread.currentThread().interrupt();
                     }
-                    // DONE: prepare a single-threaded-executor for the byte-publisher
+                    // prepare a single-threaded-executor for the byte-publisher
                     final var executorForByte = Executors.newSingleThreadExecutor(
                             Thread.ofVirtual().name("byte-publisher-", 0L).factory()
                     );
                     while (!Thread.currentThread().isInterrupted()) {
                         lock.lock();
                         try {
-                            // DONE: await condition while accumulated is still zero
+                            // await condition while accumulated is still zero
                             while (accumulated.get() == 0) {
                                 try {
                                     condition.await();
@@ -179,12 +179,12 @@ public final class HelloWorldFlow {
                                     return;
                                 }
                             }
-                            // DONE: decrease the accumulated
+                            // decrease the accumulated
                             accumulated.decrementAndGet();
                         } finally {
                             lock.unlock();
                         }
-                        // DONE: subscribe to a byte-publisher
+                        // subscribe to a byte-publisher
                         new OfByte(service, executorForByte).subscribe(
                                 new HelloWorldSubscriber.OfByte() {
                                     @Override

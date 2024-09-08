@@ -116,7 +116,7 @@ class HelloWorld_08_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
     void _PutBufferWriteBufferToChannel_() throws InterruptedException, ExecutionException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // DONE: service.put(buffer) will increase the buffer's position by 12
+        // service.put(buffer) will increase the buffer's position by 12
         BDDMockito.willAnswer(i -> {
                     final var buffer = i.getArgument(0, ByteBuffer.class);
                     buffer.position(buffer.position() + HelloWorld.BYTES);
@@ -126,7 +126,7 @@ class HelloWorld_08_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
                 .put(ArgumentMatchers.argThat(b -> b != null && b.remaining() >= HelloWorld.BYTES));
         final var writtenSoFar = new LongAdder();
         final var channel = Mockito.mock(AsynchronousFileChannel.class);
-        // DONE: channel.write(src, position) will return a future
+        // channel.write(src, position) will return a future
         final var previousFutureRef = new AtomicReference<Future<?>>();
         BDDMockito.willAnswer(w -> { // invocation of channel.write
             final var previousFuture = previousFutureRef.get();
@@ -134,7 +134,7 @@ class HelloWorld_08_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
                 Mockito.verify(previousFuture, Mockito.times(1)).get();
             }
             final var future = Mockito.mock(Future.class);
-            // DONE: future.get() will increase src's position by a random value
+            // future.get() will increase src's position by a random value
             BDDMockito.willAnswer(g -> {
                 final var src = w.getArgument(0, ByteBuffer.class);
                 final var position = w.getArgument(1, Long.class);
@@ -153,13 +153,13 @@ class HelloWorld_08_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(channel, position);
         // ------------------------------------------------------------------------------------ then
-        // DONE: verify, service.put(buffer[12]) invoked, once
+        // verify, service.put(buffer[12]) invoked, once
         final var bufferCaptor = ArgumentCaptor.forClass(ByteBuffer.class);
         Mockito.verify(service, Mockito.times(1)).put(bufferCaptor.capture());
         final var buffer = bufferCaptor.getValue();
         Assertions.assertNotNull(buffer);
         Assertions.assertEquals(HelloWorld.BYTES, buffer.capacity());
-        // DONE: verify, channel.write(buffer, position) invoked, at least once
+        // verify, channel.write(buffer, position) invoked, at least once
         final var positionCaptor = ArgumentCaptor.forClass(long.class);
         Mockito.verify(channel, Mockito.atLeastOnce())
                 .write(ArgumentMatchers.same(buffer), positionCaptor.capture());   // <1>
@@ -171,9 +171,9 @@ class HelloWorld_08_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
         });
         Assertions.assertTrue(lastPosition.isPresent());                           // <5>
         Assertions.assertTrue(lastPosition.get() < (position + HelloWorld.BYTES)); // <6>
-        // DONE: assert, 12 bytes written
+        // assert, 12 bytes written
         Assertions.assertEquals(HelloWorld.BYTES, writtenSoFar.intValue());
-        // DONE: assert, result is same as chanel
+        // assert, result is same as chanel
         Assertions.assertSame(channel, result);
     }
 
@@ -190,7 +190,7 @@ class HelloWorld_08_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
             service.write(channel, position).force(false);
         }
         // ------------------------------------------------------------------------------------ then
-        // DONE: assert, 12 bytes written starting at <position>
+        // assert, 12 bytes written starting at <position>
         Assertions.assertEquals(
                 position + HelloWorld.BYTES,
                 Files.size(path)

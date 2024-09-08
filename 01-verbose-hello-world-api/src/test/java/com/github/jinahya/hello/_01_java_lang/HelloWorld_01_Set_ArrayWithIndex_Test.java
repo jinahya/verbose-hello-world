@@ -36,10 +36,9 @@ import org.junit.jupiter.api.DisplayName;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({
-        "java:S101",
-        "java:S2187"
+        "java:S2187" // empty
 })
 class HelloWorld_01_Set_ArrayWithIndex_Test extends HelloWorldTest {
 
-    // DONE: empty; we're not going to implement the method in this module.
+    // empty; we're not going to implement the method in this module.
 }

@@ -54,7 +54,7 @@ class HelloWorldFlow_01_HelloWorldPublisher_OfByte_Test extends _HelloWorldFlowT
                 subscription.request(n);
             }
         });
-        // DONE: intercept subscriber.onSubscribe(subscription) and wrap the subscription as a spy
+        // intercept subscriber.onSubscribe(subscription) and wrap the subscription as a spy
         BDDMockito.willAnswer(i -> {
             i.getRawArguments()[0] = Mockito.spy(i.getArgument(0, Flow.Subscription.class));
             return i.callRealMethod();
@@ -62,24 +62,24 @@ class HelloWorldFlow_01_HelloWorldPublisher_OfByte_Test extends _HelloWorldFlowT
         // ------------------------------------------------------------------------------------ when
         publisher.subscribe(subscriber);
         // ------------------------------------------------------------------------------------ then
-        // DONE: verify, subscriber.onSubscribe(subscription) invoked, once
+        // verify, subscriber.onSubscribe(subscription) invoked, once
         final var subscriptionCaptor = ArgumentCaptor.forClass(Flow.Subscription.class);
         Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(subscriptionCaptor.capture());
         final var subscription = subscriptionCaptor.getValue();
-        // DONE: verify, subscription.request(n) invoked, once
+        // verify, subscription.request(n) invoked, once
         Mockito.verify(subscription, Mockito.times(1)).request(n);
         if (n < HelloWorld.BYTES) {
-            // DONE: verify, subscriber.onNext(item) invoked, n-times
+            // verify, subscriber.onNext(item) invoked, n-times
             Awaitility.await().atMost(Duration.ofSeconds(8L)).untilAsserted(() -> {
                 Mockito.verify(subscriber, Mockito.times(n)).onNext(ArgumentMatchers.notNull());
             });
         } else {
             Awaitility.await().atMost(Duration.ofSeconds(8L)).untilAsserted(() -> {
-                // DONE: verify, subscriber.onNext(item) invoked, at most HelloWorld.BYTES times
+                // verify, subscriber.onNext(item) invoked, at most HelloWorld.BYTES times
                 Mockito.verify(subscriber, Mockito.atMost(HelloWorld.BYTES))
                         .onNext(ArgumentMatchers.notNull());
             });
-            // DONE: verify, subscriber.onComplete() invoked, once
+            // verify, subscriber.onComplete() invoked, once
             Awaitility.await().atMost(Duration.ofSeconds(4L)).untilAsserted(() -> {
                 Mockito.verify(subscriber, Mockito.times(1)).onComplete();
             });

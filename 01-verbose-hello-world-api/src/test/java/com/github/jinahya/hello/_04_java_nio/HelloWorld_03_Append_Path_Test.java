@@ -67,7 +67,7 @@ class HelloWorld_03_Append_Path_Test extends HelloWorldTest {
         final var service = service();
         final var path = (Path) null;
         // ------------------------------------------------------------------------------- when/then
-        // DONE: assert, service.append(path) throws a NullPointerException
+        // assert, service.append(path) throws a NullPointerException
         Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.append(path)
@@ -79,14 +79,14 @@ class HelloWorld_03_Append_Path_Test extends HelloWorldTest {
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // DONE: service.write(channel) will return the channel
+        // service.write(channel) will return the channel
         BDDMockito.willAnswer(i -> i.getArgument(0, WritableByteChannel.class))
                 .given(service)
                 .write(ArgumentMatchers.any(WritableByteChannel.class));
         final var path = Mockito.mock(Path.class);
         final var channel = Mockito.mock(FileChannel.class);
         try (var mockStatic = Mockito.mockStatic(FileChannel.class)) {
-            // DONE: FileChannel.open(path, arguments) will return the channel
+            // FileChannel.open(path, arguments) will return the channel
             mockStatic.when(() -> FileChannel.open(ArgumentMatchers.same(path),
                                                    ArgumentMatchers.any(OpenOption[].class)))
                     .thenReturn(channel);
@@ -99,7 +99,7 @@ class HelloWorld_03_Append_Path_Test extends HelloWorldTest {
             // TODO: verify, write(channel) invoked, once.
             // TODO: verify, channel.force(true) invoked, once.
             // TODO: verify, channel.close() invoked, once.
-            // DONE: assert, result is same as path
+            // assert, result is same as path
             Assertions.assertSame(path, result);
         }
     }

@@ -59,7 +59,7 @@ public class HelloWorldImpl implements HelloWorld {
         array[index++] = 'o';
         array[index++] = 'r';
         array[index++] = 'l';
-        array[index++] = 'd';
+        array[index++] = 'd'; // NOSONAR
         return array;
     }
 }

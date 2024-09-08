@@ -98,7 +98,7 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
         final var service = service();
         final var buffer = (ByteBuffer) null;
         // ------------------------------------------------------------------------------- when/then
-        // DONE: assert, service.put(buffer) throws a NullPointerException
+        // assert, service.put(buffer) throws a NullPointerException
         Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.put(buffer)
@@ -126,7 +126,7 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
         ).map(b -> DynamicTest.dynamicTest(
                 "should throw a BufferOverflowException for " + b,
                 () -> {
-                    // DONE: assert, service,put(b) throws a BufferOverflowException
+                    // assert, service,put(b) throws a BufferOverflowException
                     Assertions.assertThrows(
                             BufferOverflowException.class,
                             () -> service.put(b)
@@ -169,7 +169,7 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
         // ------------------------------------------------------------------------------------ then
         // TODO: verify, set(buffer.array(), buffer.arrayOffset() + position) invoked, once
         // TODO: assert, buffer's position increased by HelloWorld.BYTES
-        // DONE: assert, result is same as buffer
+        // assert, result is same as buffer
         Assertions.assertSame(buffer, result);
     }
 
@@ -187,7 +187,7 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
     void __BufferDoesNotHaveBackingArray() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // DONE: service.set(array) will return given array
+        // service.set(array) will return given array
         BDDMockito.willAnswer(i -> i.getArgument(0))
                 .given(service)
                 .set(ArgumentMatchers.any());
@@ -200,14 +200,14 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
         // ------------------------------------------------------------------------------------ when
         final var result = service.put(buffer);
         // ------------------------------------------------------------------------------------ then
-        // DONE: verify, service.set(array[12]) invoked, once
+        // verify, service.set(array[12]) invoked, once
         final var arrayCaptor = ArgumentCaptor.forClass(byte[].class);
         Mockito.verify(service, Mockito.times(1)).set(arrayCaptor.capture());
         final var array = arrayCaptor.getValue();
         Assertions.assertNotNull(array);
         Assertions.assertEquals(HelloWorld.BYTES, array.length);
         // TODO: verify, buffer.put(array) invoked, once
-        // DONE: assert, result is same as buffer
+        // assert, result is same as buffer
         Assertions.assertSame(buffer, result);
     }
 }

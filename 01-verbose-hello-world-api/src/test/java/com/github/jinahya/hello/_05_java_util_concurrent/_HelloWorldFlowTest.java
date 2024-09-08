@@ -53,7 +53,7 @@ abstract class _HelloWorldFlowTest extends HelloWorldTest {
 
     @BeforeEach
     void _PutHelloWorldBytesToTheBuffer_putBuffer() {
-        // DONE: service.put(buffer) will put 'hello, world' to the buffer
+        // service.put(buffer) will put 'hello, world' to the buffer
         BDDMockito.willAnswer(i -> {
                     final var buffer = i.getArgument(0, ByteBuffer.class);
                     buffer.put("hello, world".getBytes(StandardCharsets.US_ASCII));
