@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 
+import java.awt.event.HierarchyListener;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -75,6 +76,7 @@ class HelloWorld_02_Set_Array_Test extends HelloWorldTest {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var array = new byte[ThreadLocalRandom.current().nextInt(HelloWorld.BYTES)];
+        assert array.length < HelloWorld.BYTES;
         // ------------------------------------------------------------------------------- when/then
         // verify, service.set(array) throws an ArrayIndexOutOfBoundsException.
     }
