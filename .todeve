@@ -1,6 +1,6 @@
 #!/bin/sh
 git add .
-git commit -m wip
+git commit --allow-empty -m wip
 git switch develop
 git merge --squash sketch
 git commit -m 'Squash sketch'
