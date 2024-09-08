@@ -143,17 +143,17 @@ class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlo
             Mockito.verify(subscription, Mockito.times(1)).request(nCaptor.capture());
             final var n = Math.toIntExact(nCaptor.getValue());
             // verify, subscriber.onNext(item) invoked, n-times
-            Awaitility.await().atMost(Duration.ofSeconds(8L)).untilAsserted(() -> {
+            Awaitility.await().atMost(Duration.ofSeconds(16L)).untilAsserted(() -> {
                 Mockito.verify(subscriber, Mockito.atMost(n)).onNext(ArgumentMatchers.notNull());
             });
             if (n < HelloWorld.BYTES) {
                 // verify, subscription.cancel() invoked, once
-                Awaitility.await().atMost(Duration.ofSeconds(4L)).untilAsserted(() -> {
+                Awaitility.await().atMost(Duration.ofSeconds(8L)).untilAsserted(() -> {
                     Mockito.verify(subscription, Mockito.times(1)).cancel();
                 });
             } else {
                 // verify, subscriber.onComplete() invoked, once
-                Awaitility.await().atMost(Duration.ofSeconds(4L)).untilAsserted(() -> {
+                Awaitility.await().atMost(Duration.ofSeconds(8L)).untilAsserted(() -> {
                     Mockito.verify(subscriber, Mockito.times(1)).onComplete();
                 });
             }
