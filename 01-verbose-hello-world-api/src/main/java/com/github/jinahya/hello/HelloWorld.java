@@ -94,6 +94,9 @@ public interface HelloWorld {
 
     /**
      * The length of the <a href="#hello-world-bytes">hello-world-bytes</a> which is {@value}.
+     *
+     * @see <a href="https://docs.oracle.com/javase/specs/jls/se21/html/jls-9.html#jls-9.3">9.3.
+     * Field (Constant) Declarations</a> (The Java® Language Specification / Java SE 21 Edition)
      */
     public static final // redundant
             int BYTES = 12;
@@ -118,6 +121,8 @@ public interface HelloWorld {
      * @throws IndexOutOfBoundsException if {@code index} is negative, or {@code array.length} is
      *                                   less than ({@code index} +
      *                                   {@link #BYTES}({@value #BYTES})).
+     * @see <a href="https://docs.oracle.com/javase/specs/jls/se21/html/jls-9.html#jls-9.4">9.4.
+     * Method Declarations </a> (The Java® Language Specification / Java SE 21 Edition)
      */
     public   // redundant
     abstract // discouraged
