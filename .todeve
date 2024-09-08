@@ -2,7 +2,7 @@
 git add .
 git commit --allow-empty -m wip
 git switch develop
-git merge --squash sketch
+git merge -Xtheirs --squash sketch
 git commit -m 'Squash sketch'
 git push
 git switch -
