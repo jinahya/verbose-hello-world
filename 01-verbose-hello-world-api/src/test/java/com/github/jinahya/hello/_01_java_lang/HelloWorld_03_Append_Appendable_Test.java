@@ -79,15 +79,9 @@ class HelloWorld_03_Append_Appendable_Test extends HelloWorldTest {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // service.set(array) will return given <array>
-        BDDMockito.willAnswer(i -> {
-            final var array = i.getArgument(0, byte[].class);
-            if (array != null) {
-                for (int j = 0; j < HelloWorld.BYTES; j++) {
-                    array[j] = (byte) j;
-                }
-            }
-            return array;
-        }).given(service).set(ArgumentMatchers.any());
+        BDDMockito.willAnswer(i -> i.getArgument(0, byte[].class))
+                .given(service)
+                .set(ArgumentMatchers.any());
         final var appendable = Mockito.mock(Appendable.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.append(appendable);
