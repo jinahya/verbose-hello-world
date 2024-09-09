@@ -79,7 +79,7 @@ class HelloWorld_03_Append_Appendable_Test extends HelloWorldTest {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // service.set(array) will return given <array>
-        BDDMockito.willAnswer(i -> i.getArgument(0, byte[].class))
+        BDDMockito.willAnswer(i -> i.getArgument(0))
                 .given(service)
                 .set(ArgumentMatchers.any());
         final var appendable = Mockito.mock(Appendable.class);
