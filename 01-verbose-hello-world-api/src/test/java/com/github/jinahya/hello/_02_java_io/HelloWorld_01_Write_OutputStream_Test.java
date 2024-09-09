@@ -84,15 +84,10 @@ class HelloWorld_01_Write_OutputStream_Test extends HelloWorldTest {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // service.set(array) will return the array
-        BDDMockito.willAnswer(i -> i.getArgument(0, byte[].class))
+        BDDMockito.willAnswer(i -> i.getArgument(0))
                 .given(service)
                 .set(ArgumentMatchers.any());
         final var stream = Mockito.mock(OutputStream.class);
-        if (false) { // redundant!
-            BDDMockito.willDoNothing()
-                    .given(stream)
-                    .write(ArgumentMatchers.any());
-        }
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(stream);
         // ------------------------------------------------------------------------------------ then
