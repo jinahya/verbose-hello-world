@@ -316,7 +316,7 @@ public interface HelloWorld {
      * starting at its current file pointer.
      * <p>
      * Default implementation would look like,
-     * {@snippet :
+     * {@snippet lang = "java":
      * if (file == null) {
      *     throw new NullPointerException("file is null");
      * }
