@@ -3,7 +3,9 @@
 [![Java CI with Maven](https://github.com/jinahya/verbose-hello-world/actions/workflows/maven.yml/badge.svg)](https://github.com/jinahya/verbose-hello-world/actions/workflows/maven.yml)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=jinahya_verbose-hello-world&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=jinahya_verbose-hello-world)
 
-A fairly verbose modules just for generating`hello, world`.
+A fairly verbose `hello, world` project.
+
+Too verbose?, See [succinct-hello-world](https://github.com/jinahya/succinct-hello-world).
 
 ## Modules
 
