@@ -91,12 +91,14 @@ class HelloWorld_01_Write_OutputStream_Test extends HelloWorldTest {
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(stream);
         // ------------------------------------------------------------------------------------ then
+        // verify, set(byte[12]) invoked, once
         final var arrayCaptor = ArgumentCaptor.forClass(byte[].class);        // <1>
         Mockito.verify(service, Mockito.times(1)).set(arrayCaptor.capture()); // <2>
         final var array = arrayCaptor.getValue();                             // <3>
         Assertions.assertNotNull(array);                                      // <4>
         Assertions.assertEquals(HelloWorld.BYTES, array.length);              // <5>
         // verify, stream.write(array) invoked, once
+
         // verify, service.write(stream) returns the stream
         Assertions.assertSame(stream, result);
     }
