@@ -233,8 +233,11 @@ public interface HelloWorld {
         if (stream == null) {
             throw new NullPointerException("stream is null");
         }
+        // get the hello, world bytes
         final var array = set(new byte[BYTES]);
-        // write the array to the stream
+        // write the array to the <stream>
+
+        // return the stream
         return stream;
     }
 
@@ -242,7 +245,7 @@ public interface HelloWorld {
      * Appends the <a href="#hello-world-bytes">hello-world-bytes</a> to the end of specified file.
      * <p>
      * Default implementation would look like,
-     * {@snippet :
+     * {@snippet lang = "java":
      * if (file == null) {
      *     throw new NullPointerException("file is null");
      * }
@@ -259,7 +262,7 @@ public interface HelloWorld {
      * @throws NullPointerException if {@code file} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @implSpec The default implementation creates a new {@link FileOutputStream} with
-     * {@code file}, as an {@link FileOutputStream#FileOutputStream(File, boolean) appending mode},
+     * {@code file}, in {@link FileOutputStream#FileOutputStream(File, boolean) appending mode},
      * invokes the {@link #write(OutputStream) write(stream)} method with it,
      * {@link OutputStream#flush() flushes} and {@link OutputStream#close() closes} the stream, and
      * returns {@code file}.
@@ -270,9 +273,9 @@ public interface HelloWorld {
         if (file == null) {
             throw new NullPointerException("file is null");
         }
-        // create a new FileOutputStream with file and true
-        // invoke write(stream) method with it
-        // flush (and close) the stream
+        // create a new <FileOutputStream> with <file> and <true>
+        // invoke <write(stream)> method with it
+        // <flush> (and <close>) the stream
         return file;
     }
 
@@ -306,8 +309,11 @@ public interface HelloWorld {
         if (output == null) {
             throw new NullPointerException("output is null");
         }
+        // get the hello, world bytes
         final var array = set(new byte[BYTES]);
-        // write array to data
+        // write <array> to <output>
+
+        // return the <output>
         return output;
     }
 
@@ -316,7 +322,7 @@ public interface HelloWorld {
      * starting at its current file pointer.
      * <p>
      * Default implementation would look like,
-     * {@snippet :
+     * {@snippet lang = "java":
      * if (file == null) {
      *     throw new NullPointerException("file is null");
      * }
@@ -342,8 +348,11 @@ public interface HelloWorld {
         if (file == null) {
             throw new NullPointerException("file is null");
         }
+        // get the hello, world bytes
         final var array = set(new byte[BYTES]);
-        // write array to file
+        // write array to <file>
+
+        // return the <file>
         return file;
     }
 
@@ -351,7 +360,7 @@ public interface HelloWorld {
      * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified writer.
      * <p>
      * Default implementation would look like,
-     * {@snippet :
+     * {@snippet lang = "java":
      * if (writer == null) {
      *     throw new NullPointerException("writer is null");
      * }
@@ -372,7 +381,9 @@ public interface HelloWorld {
         if (writer == null) {
             throw new NullPointerException("writer is null");
         }
-        // invoke append(writer)
+        // invoke <append(writer)> with <writer>
+
+        // return the <writer>
         return writer;
     }
 
@@ -382,7 +393,7 @@ public interface HelloWorld {
      * Sends the <a href="#hello-world-bytes">hello-world-bytes</a> through specified socket.
      * <p>
      * Default implementation would look like,
-     * {@snippet :
+     * {@snippet lang = "java":
      * if (socket == null) {
      *     throw new NullPointerException("socket is null");
      * }
@@ -405,7 +416,9 @@ public interface HelloWorld {
             throw new NullPointerException("socket is null");
         }
         final var stream = socket.getOutputStream();
-        // invoke write(stream)
+        // invoke <write(stream)> with <stream>
+
+        // return the <socket>
         return socket;
     }
 
@@ -482,11 +495,15 @@ public interface HelloWorld {
             throw new BufferOverflowException();
         }
         if (buffer.hasArray()) {
-            // invoke set(buffer.array(), (buffer.arrayOffset() + buffer.position())
-            // increment buffer.position by BYTES
+            // invoke <set(buffer.array(), (buffer.arrayOffset() + buffer.position())>
+
+            // increment <buffer.position> by <BYTES>
+
         } else {
+            // get the hello, world bytes
             final var array = set(new byte[BYTES]);
             // put <array> to the <buffer>
+
         }
         return buffer;
     }
@@ -524,10 +541,13 @@ public interface HelloWorld {
      */
     default <T extends WritableByteChannel> T write(final T channel) throws IOException {
         Objects.requireNonNull(channel, "channel is null");
+        // get the hello, world bytes
         final var buffer = ByteBuffer.allocate(BYTES);
         put(buffer);
         buffer.flip();
-        // invoke channel.write(buffer) while buffer.hasRemaining()
+        // invoke <channel.write(buffer)> while <buffer.hasRemaining()>
+
+        // return the <channel>
         return channel;
     }
 
@@ -573,7 +593,7 @@ public interface HelloWorld {
         // open a file channel with path, StandardOpenOption.WRITE, StandardOpenOption.CREATE,
         //   and StandardOpenOption.APPEND
         //   use the try-with-resources statement
-        // invoke write(channel) method with it
+        // invoke <write(channel)> method with it
         // force changes to both the file's content and metadata
         return path;
     }
@@ -609,15 +629,18 @@ public interface HelloWorld {
     default <T extends AsynchronousByteChannel> T write(final T channel)
             throws InterruptedException, ExecutionException {
         Objects.requireNonNull(channel, "channel is null");
+        // get the hello, world bytes
         final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
         // write buffer to channel while buffer has remaining
+
+        // return the <channel>
         return channel;
     }
 
     /**
-     * Writes, <em>asynchronously</em>, the <a
-     * href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to specified channel, and
-     * notifies a completion (or a failure) to specified handler with specified attachment.
+     * Writes, asynchronously, the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>
+     * to specified channel, and notifies a completion (or a failure) to specified handler with
+     * specified attachment.
      * <p>
      * Default implementation would look like,
      * {@snippet lang = "java":
@@ -660,9 +683,11 @@ public interface HelloWorld {
             final CompletionHandler<? super T, ? super A> handler) {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(handler, "handler is null");
+        // get the hello, world bytes
         final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
         // keep invoking channel.write(buffer, attachment, a-handler), while buffer has remaining
         // and, eventually, invoke handler.complete(channel, attachment)
+
     }
 
     /**
@@ -722,6 +747,7 @@ public interface HelloWorld {
         if (position < 0L) {
             throw new IllegalArgumentException("position(" + position + ") is negative");
         }
+        // get the hello, world bytes
         final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
         while (buffer.hasRemaining()) {
             final var future = channel.write(buffer, position);

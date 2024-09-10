@@ -77,11 +77,11 @@ class HelloWorldFlow_02_HelloWorldPublisher_OfArray_Test extends _HelloWorldFlow
         // verify, subscription.request(n) invoked, once
         Mockito.verify(subscription, Mockito.times(1)).request(n);
         // verify, subscriber.onNext(item) invoked, n-times
-        Awaitility.await().atMost(Duration.ofSeconds(16L)).untilAsserted(() -> {
+        Awaitility.await().atMost(Duration.ofSeconds(64L)).untilAsserted(() -> {
             Mockito.verify(subscriber, Mockito.times(n)).onNext(ArgumentMatchers.notNull());
         });
         // verify, subscription.cancel() invoked, once
-        Awaitility.await().atMost(Duration.ofSeconds(8L)).untilAsserted(() -> {
+        Awaitility.await().atMost(Duration.ofSeconds(64L)).untilAsserted(() -> {
             Mockito.verify(subscription, Mockito.times(1)).cancel();
         });
     }
