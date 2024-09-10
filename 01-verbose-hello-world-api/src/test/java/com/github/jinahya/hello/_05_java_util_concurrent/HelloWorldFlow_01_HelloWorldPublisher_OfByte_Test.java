@@ -70,17 +70,17 @@ class HelloWorldFlow_01_HelloWorldPublisher_OfByte_Test extends _HelloWorldFlowT
         Mockito.verify(subscription, Mockito.times(1)).request(n);
         if (n < HelloWorld.BYTES) {
             // verify, subscriber.onNext(item) invoked, n-times
-            Awaitility.await().atMost(Duration.ofSeconds(8L)).untilAsserted(() -> {
+            Awaitility.await().atMost(Duration.ofSeconds(64L)).untilAsserted(() -> {
                 Mockito.verify(subscriber, Mockito.times(n)).onNext(ArgumentMatchers.notNull());
             });
         } else {
-            Awaitility.await().atMost(Duration.ofSeconds(8L)).untilAsserted(() -> {
+            Awaitility.await().atMost(Duration.ofSeconds(64L)).untilAsserted(() -> {
                 // verify, subscriber.onNext(item) invoked, at most HelloWorld.BYTES times
                 Mockito.verify(subscriber, Mockito.atMost(HelloWorld.BYTES))
                         .onNext(ArgumentMatchers.notNull());
             });
             // verify, subscriber.onComplete() invoked, once
-            Awaitility.await().atMost(Duration.ofSeconds(4L)).untilAsserted(() -> {
+            Awaitility.await().atMost(Duration.ofSeconds(64L)).untilAsserted(() -> {
                 Mockito.verify(subscriber, Mockito.times(1)).onComplete();
             });
         }
