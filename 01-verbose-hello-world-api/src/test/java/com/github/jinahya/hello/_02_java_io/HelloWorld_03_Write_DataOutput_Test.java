@@ -79,19 +79,23 @@ class HelloWorld_03_Write_DataOutput_Test extends HelloWorldTest {
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        BDDMockito.willAnswer(i -> i.getArgument(0, byte[].class))
+        // stub service.set(array) to return the array.
+        BDDMockito.willAnswer(i -> i.getArgument(0))
                 .given(service)
                 .set(ArgumentMatchers.any());
-        final var data = Mockito.mock(DataOutput.class);
+        final var output = Mockito.mock(DataOutput.class);
         // ------------------------------------------------------------------------------------ when
-        final var result = service.write(data);
+        final var result = service.write(output);
         // ------------------------------------------------------------------------------------ then
+        // verify, set(byte[12]) invoked, once
         final var arrayCaptor = ArgumentCaptor.forClass(byte[].class);
         Mockito.verify(service, Mockito.times(1)).set(arrayCaptor.capture());
         final var array = arrayCaptor.getValue();
         Assertions.assertNotNull(array);
         Assertions.assertEquals(HelloWorld.BYTES, array.length);
-        // TODO: verify, data.write(array) invoked, once
-        Assertions.assertSame(data, result);
+        // verify, output.write(array) invoked, once
+
+        // verify <result> is same as <data>
+        Assertions.assertSame(output, result);
     }
 }
