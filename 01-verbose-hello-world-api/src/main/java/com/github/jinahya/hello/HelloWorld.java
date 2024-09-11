@@ -290,7 +290,7 @@ public interface HelloWorld {
      * final var array = new byte[BYTES];
      * set(array);
      * output.write(array); // @highlight
-     * return data;
+     * return output;
      *}
      *
      * @param <T>    data output type parameter
@@ -311,7 +311,7 @@ public interface HelloWorld {
         }
         // get the hello, world bytes
         final var array = set(new byte[BYTES]);
-        // write <array> to <output>
+        // invoke <output.write(array)>
 
         // return the <output>
         return output;
