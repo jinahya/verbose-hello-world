@@ -66,6 +66,9 @@ class HelloWorld_11_Append_File_Using_Writer_Test extends HelloWorldTest {
                     .generate(HelloWorld.BYTES).toCharArray();
             assert cbuf.length == HelloWorld.BYTES;
             log.debug("cbuf: {}", String.valueOf(cbuf));
+            for (final var c : cbuf) {
+                log.debug("c: {}", String.format("%1$04x", (int) c));
+            }
         }
         // stub service.set(DataOutput) will write 12 empty bytes.
         BDDMockito.willAnswer(i -> {
