@@ -39,7 +39,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.concurrent.ThreadLocalRandom;
 
-@DisplayName("write(writer)")
+/**
+ * Tests appending the {@code hello, world} to an instance of {@link File} using
+ * {@link HelloWorld#write(DataOutput)} method.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
+@DisplayName("appends using DataOutput")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
@@ -68,7 +74,7 @@ class HelloWorld_11_Append_File_Using_DataOutput_Test extends HelloWorldTest {
         }
         final var length = file.length();
         // ------------------------------------------------------------------------------------ when
-        try (var output = new DataOutputStream(new FileOutputStream(file))) {
+        try (var output = new DataOutputStream(new FileOutputStream(file, true))) { // appending!
             service.write((DataOutput) output);
             output.flush();
         }

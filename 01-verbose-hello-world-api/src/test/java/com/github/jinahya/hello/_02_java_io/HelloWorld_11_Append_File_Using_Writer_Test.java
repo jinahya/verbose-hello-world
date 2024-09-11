@@ -25,6 +25,8 @@ import com.github.jinahya.hello.HelloWorldTest;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.text.RandomStringGenerator;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -39,7 +41,13 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ThreadLocalRandom;
 
-@DisplayName("write(writer)")
+/**
+ * Tests appending the {@code hello, world} to an instance of {@link File} using
+ * {@link HelloWorld#write(Writer)} method.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
+@DisplayName("append using Writer")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
@@ -49,10 +57,20 @@ class HelloWorld_11_Append_File_Using_Writer_Test extends HelloWorldTest {
     void _appendToFileUsingDataOutput_(@TempDir final File tempDir) throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
+        // prepare cbuf
+        final char[] cbuf;
+        {
+            cbuf = new RandomStringGenerator.Builder()
+                    .withinRange(0, 65535)
+                    .get()
+                    .generate(HelloWorld.BYTES).toCharArray();
+            assert cbuf.length == HelloWorld.BYTES;
+            log.debug("cbuf: {}", String.valueOf(cbuf));
+        }
         // stub service.set(DataOutput) will write 12 empty bytes.
         BDDMockito.willAnswer(i -> {
                     final var writer = i.getArgument(0, Writer.class);
-                    writer.write(new char[HelloWorld.BYTES]);
+                    writer.write(cbuf);
                     return writer;
                 })
                 .given(service)
@@ -63,13 +81,17 @@ class HelloWorld_11_Append_File_Using_Writer_Test extends HelloWorldTest {
         if (ThreadLocalRandom.current().nextBoolean()) {
             try (var stream = new FileOutputStream(file)) {
                 stream.write(new byte[ThreadLocalRandom.current().nextInt(128)]);
+                stream.flush();
             }
         }
-        // ------------------------------------------------------------------------------- when/then
-        try (var writer = new OutputStreamWriter(new FileOutputStream(file),
-                                                 StandardCharsets.US_ASCII)) {
+        final var length = file.length();
+        // ------------------------------------------------------------------------------------ when
+        try (var writer = new OutputStreamWriter(new FileOutputStream(file, true), // appending!
+                                                 StandardCharsets.US_ASCII)) {     // US_ASCII!
             service.write(writer);
             writer.flush();
         }
+        // ------------------------------------------------------------------------------------ then
+        Assertions.assertEquals(length + HelloWorld.BYTES, file.length());
     }
 }
