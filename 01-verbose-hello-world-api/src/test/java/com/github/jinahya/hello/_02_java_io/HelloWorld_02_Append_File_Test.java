@@ -102,10 +102,15 @@ class HelloWorld_02_Append_File_Test extends HelloWorldTest {
             // -------------------------------------------------------------------------------- when
             final var result = service.append(file);
             // ---------------------------------------------------------------------------------then
-            // TODO: assert, FileOutputStream(file, true)<stream> invoked, once
-            // TODO: verify, service.write(<stream>) invoked, once
-            // TODO: verify, <stream>.flush() invoked, once
-            // TODO: verify, <stream>.close() invoked, once
+            // assert, FileOutputStream(file, true)<stream> invoked, once
+
+            // verify, service.write(<stream>) invoked, once
+
+            // verify, <stream>.flush() invoked, once
+
+            // verify, <stream>.close() invoked, once
+
+            // assert, <result> is same as <file>
             Assertions.assertSame(file, result);
         }
     }
