@@ -47,7 +47,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 @DisplayName("write(channel, position)")
 @Slf4j
-class HelloWorld_21_Append_Path_Using_AsynchronousFileChannelAndPosition_Test
+class HelloWorld_21_Append_Path_Using_AsynchronousFileChannelWithPosition_Test
         extends HelloWorldTest {
 
     @Test
