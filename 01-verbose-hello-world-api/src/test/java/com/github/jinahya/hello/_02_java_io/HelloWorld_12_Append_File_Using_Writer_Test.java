@@ -51,7 +51,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_11_Append_File_Using_Writer_Test extends HelloWorldTest {
+class HelloWorld_12_Append_File_Using_Writer_Test extends HelloWorldTest {
 
     @Test
     void _appendToFileUsingDataOutput_(@TempDir final File tempDir) throws IOException {

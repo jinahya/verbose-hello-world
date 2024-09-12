@@ -500,11 +500,12 @@ public interface HelloWorld {
             // increment <buffer.position> by <BYTES>
 
         } else {
-            // get the hello, world bytes
+            // get the hello-world-bytes
             final var array = set(new byte[BYTES]);
-            // put <array> to the <buffer>
+            // invoke <buffer.put(array)>
 
         }
+        // return given <buffer>
         return buffer;
     }
 
@@ -541,13 +542,13 @@ public interface HelloWorld {
      */
     default <T extends WritableByteChannel> T write(final T channel) throws IOException {
         Objects.requireNonNull(channel, "channel is null");
-        // get the hello, world bytes
+        // get the hello-world-bytes
         final var buffer = ByteBuffer.allocate(BYTES);
         put(buffer);
         buffer.flip();
         // invoke <channel.write(buffer)> while <buffer.hasRemaining()>
 
-        // return the <channel>
+        // return given <channel>
         return channel;
     }
 
