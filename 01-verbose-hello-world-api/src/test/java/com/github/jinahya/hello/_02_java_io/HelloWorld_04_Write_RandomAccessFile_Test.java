@@ -44,7 +44,9 @@ import java.io.RandomAccessFile;
 @DisplayName("write(file)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-@SuppressWarnings({"java:S101"})
+@SuppressWarnings({
+        "java:S101"
+})
 class HelloWorld_04_Write_RandomAccessFile_Test extends HelloWorldTest {
 
     /**
@@ -62,6 +64,7 @@ class HelloWorld_04_Write_RandomAccessFile_Test extends HelloWorldTest {
         final var service = service();
         final var file = (RandomAccessFile) null;
         // ------------------------------------------------------------------------------- when/then
+        // assert, <service.write(file)> throws NullPointerException
         Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.write(file)
@@ -81,19 +84,23 @@ class HelloWorld_04_Write_RandomAccessFile_Test extends HelloWorldTest {
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        BDDMockito.willAnswer(i -> i.getArgument(0, byte[].class))
+        // stub, <service.set(array)> returns the <array>
+        BDDMockito.willAnswer(i -> i.getArgument(0))
                 .given(service)
                 .set(ArgumentMatchers.any());
         final var file = Mockito.mock(RandomAccessFile.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(file);
         // ------------------------------------------------------------------------------------ then
+        // verify, <service.set(byte[12])> invoked, once
         final var arrayCaptor = ArgumentCaptor.forClass(byte[].class);
         Mockito.verify(service, Mockito.times(1)).set(arrayCaptor.capture());
         final var array = arrayCaptor.getValue();
         Assertions.assertNotNull(array);
         Assertions.assertEquals(HelloWorld.BYTES, array.length);
-        // TODO: verify file.write(array) invoked, once and only
-        Assertions.assertSame(result, file);
+        // verify, <file.write(array)> invoked, once and only
+
+        // assert, <result> is same as <file>
+        Assertions.assertSame(file, result);
     }
 }

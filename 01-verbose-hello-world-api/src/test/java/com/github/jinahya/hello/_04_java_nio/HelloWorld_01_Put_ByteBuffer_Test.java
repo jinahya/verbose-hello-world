@@ -56,31 +56,30 @@ import java.util.stream.Stream;
 @SuppressWarnings({"java:S101"})
 class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
 
-    private static <R> R adjust(
-            final ByteBuffer buffer,
-            final Function<
-                    ? super ByteBuffer, ? extends IntFunction<
-                    ? extends IntFunction<? extends R>>> function) {
+    private static <R> R adjust(final ByteBuffer buffer,
+                                final Function<
+                                        ? super ByteBuffer, ? extends IntFunction<
+                                        ? extends IntFunction<? extends R>>> function) {
         if (Objects.requireNonNull(buffer, "buffer is null").remaining() < HelloWorld.BYTES) {
             throw new IllegalArgumentException(
                     "buffer.remaining(" + buffer.remaining() + ") < " + HelloWorld.BYTES
             );
         }
         Objects.requireNonNull(function, "function is null");
-        final var p = ThreadLocalRandom.current().nextInt(
+        final var forwardPosition = ThreadLocalRandom.current().nextInt(
                 buffer.remaining() - HelloWorld.BYTES + 1
         );
-        final var l = ThreadLocalRandom.current().nextInt(
-                buffer.remaining() - HelloWorld.BYTES - p + 1
+        final var backwardLimit = ThreadLocalRandom.current().nextInt(
+                buffer.remaining() - HelloWorld.BYTES - forwardPosition + 1
         );
-        assert buffer.limit() - l - p >= HelloWorld.BYTES;
-        return function.apply(buffer).apply(p).apply(l);
+        assert (buffer.limit() - backwardLimit - forwardPosition) >= HelloWorld.BYTES;
+        return function.apply(buffer).apply(forwardPosition).apply(backwardLimit);
     }
 
     private static ByteBuffer adjust(final ByteBuffer buffer) {
         return adjust(
                 buffer,
-                b -> p -> l -> b.position(b.position() + p).limit(b.limit() - l)
+                b -> fp -> bl -> b.position(b.position() + fp).limit(b.limit() - bl)
         );
     }
 
@@ -98,7 +97,7 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
         final var service = service();
         final var buffer = (ByteBuffer) null;
         // ------------------------------------------------------------------------------- when/then
-        // assert, service.put(buffer) throws a NullPointerException
+        // assert, <service.put(buffer)> throws a NullPointerException
         Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.put(buffer)
@@ -126,7 +125,7 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
         ).map(b -> DynamicTest.dynamicTest(
                 "should throw a BufferOverflowException for " + b,
                 () -> {
-                    // assert, service,put(b) throws a BufferOverflowException
+                    // assert, service.put(b) throws a BufferOverflowException
                     Assertions.assertThrows(
                             BufferOverflowException.class,
                             () -> service.put(b)
@@ -167,9 +166,11 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
         // ------------------------------------------------------------------------------------ when
         final var result = service.put(buffer);
         // ------------------------------------------------------------------------------------ then
-        // TODO: verify, set(buffer.array(), buffer.arrayOffset() + position) invoked, once
-        // TODO: assert, buffer's position increased by HelloWorld.BYTES
-        // assert, result is same as buffer
+        // verify, <service.set(buffer.array(), buffer.arrayOffset() + position)> invoked, once
+
+        // assert, <buffer>'s <position> increased by <HelloWorld.BYTES>
+
+        // assert, <result> is same as <buffer>
         Assertions.assertSame(buffer, result);
     }
 

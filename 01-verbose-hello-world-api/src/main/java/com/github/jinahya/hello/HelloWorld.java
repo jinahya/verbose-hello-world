@@ -309,7 +309,7 @@ public interface HelloWorld {
         if (output == null) {
             throw new NullPointerException("output is null");
         }
-        // get the hello, world bytes
+        // get the hello-world-bytes
         final var array = set(new byte[BYTES]);
         // invoke <output.write(array)>
 
@@ -348,9 +348,9 @@ public interface HelloWorld {
         if (file == null) {
             throw new NullPointerException("file is null");
         }
-        // get the hello, world bytes
+        // get the hello-world-bytes
         final var array = set(new byte[BYTES]);
-        // write array to <file>
+        // invoke <file.write(array)>
 
         // return the <file>
         return file;
@@ -381,7 +381,7 @@ public interface HelloWorld {
         if (writer == null) {
             throw new NullPointerException("writer is null");
         }
-        // invoke <append(writer)> with <writer>
+        // invoke <append(writer)>
 
         // return the <writer>
         return writer;
@@ -416,7 +416,7 @@ public interface HelloWorld {
             throw new NullPointerException("socket is null");
         }
         final var stream = socket.getOutputStream();
-        // invoke <write(stream)> with <stream>
+        // invoke <write(stream)>
 
         // return the <socket>
         return socket;
@@ -500,11 +500,12 @@ public interface HelloWorld {
             // increment <buffer.position> by <BYTES>
 
         } else {
-            // get the hello, world bytes
+            // get the hello-world-bytes
             final var array = set(new byte[BYTES]);
-            // put <array> to the <buffer>
+            // invoke <buffer.put(array)>
 
         }
+        // return given <buffer>
         return buffer;
     }
 
@@ -541,13 +542,13 @@ public interface HelloWorld {
      */
     default <T extends WritableByteChannel> T write(final T channel) throws IOException {
         Objects.requireNonNull(channel, "channel is null");
-        // get the hello, world bytes
+        // get the hello-world-bytes
         final var buffer = ByteBuffer.allocate(BYTES);
         put(buffer);
         buffer.flip();
         // invoke <channel.write(buffer)> while <buffer.hasRemaining()>
 
-        // return the <channel>
+        // return given <channel>
         return channel;
     }
 
