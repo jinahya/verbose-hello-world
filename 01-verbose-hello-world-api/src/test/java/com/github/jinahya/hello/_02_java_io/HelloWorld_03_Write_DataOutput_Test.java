@@ -59,27 +59,27 @@ class HelloWorld_03_Write_DataOutput_Test extends HelloWorldTest {
     void _ThrowNullPointerException_DataIsNull() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        final var data = (DataOutput) null;
+        final var output = (DataOutput) null;
         // ------------------------------------------------------------------------------- when/then
         Assertions.assertThrows(
                 NullPointerException.class,
-                () -> service.write(data)
+                () -> service.write(output)
         );
     }
 
     /**
-     * Asserts {@link HelloWorld#write(DataOutput) write(data)} method invokes
+     * Asserts {@link HelloWorld#write(DataOutput) write(output)} method invokes
      * {@link HelloWorld#set(byte[]) set(array)} method with an array of {@value HelloWorld#BYTES}
-     * bytes, writes the array to specified data output, and returns the {@code data}.
+     * bytes, writes the array to specified data output, and returns the {@code output}.
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("-> set(array[12]) -> data.write(array)")
+    @DisplayName("-> set(array[12]) -> output.write(array)")
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // stub, service.set(array) to return the array.
+        // stub, <service.set(array)> to return the <array>.
         BDDMockito.willAnswer(i -> i.getArgument(0))
                 .given(service)
                 .set(ArgumentMatchers.any());
@@ -87,15 +87,15 @@ class HelloWorld_03_Write_DataOutput_Test extends HelloWorldTest {
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(output);
         // ------------------------------------------------------------------------------------ then
-        // verify, set(byte[12]) invoked, once
+        // verify, <set(byte[12])> invoked, once
         final var arrayCaptor = ArgumentCaptor.forClass(byte[].class);
         Mockito.verify(service, Mockito.times(1)).set(arrayCaptor.capture());
         final var array = arrayCaptor.getValue();
         Assertions.assertNotNull(array);
         Assertions.assertEquals(HelloWorld.BYTES, array.length);
-        // verify, output.write(array) invoked, once
+        // verify, <output.write(array)> invoked, once
 
-        // verify <result> is same as <data>
+        // verify <result> is same as <output>
         Assertions.assertSame(output, result);
     }
 }
