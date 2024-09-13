@@ -64,7 +64,7 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends HelloWorldTest {
         final var service = service();
         final var channel = (WritableByteChannel) null;
         // ------------------------------------------------------------------------------- when/then
-        // assert, service.write(channel) throws a NullPointerException
+        // assert, <service.write(channel)> throws a NullPointerException
         Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.write(channel)
@@ -86,7 +86,7 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends HelloWorldTest {
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // service.put(buffer) will increase the buffer's position by 12
+        // stub, <service.put(buffer)> will increase the <buffer>'s <position> by <12>
         BDDMockito.willAnswer(i -> {
                     final var buffer = i.getArgument(0, ByteBuffer.class);
                     buffer.position(buffer.position() + HelloWorld.BYTES);
@@ -96,7 +96,7 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends HelloWorldTest {
                 .put(ArgumentMatchers.argThat(b -> b != null && b.remaining() >= HelloWorld.BYTES));
         final var writtenSoFar = new LongAdder();
         final var channel = Mockito.mock(WritableByteChannel.class);
-        // channel.write(buffer) will increase the buffer's position by a random value
+        // stub, <channel.write(buffer)> will increase the <buffer>'s <position> by a random value
         BDDMockito.willAnswer(i -> {
             final var src = i.getArgument(0, ByteBuffer.class);
             final var written = ThreadLocalRandom.current().nextInt(src.remaining()) + 1;
@@ -107,16 +107,19 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends HelloWorldTest {
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(channel);
         // ------------------------------------------------------------------------------------ then
-        // verify, put(buffer[12]) invoked, once
+        // verify, <put(buffer[12])> invoked, once
         final var bufferCaptor = ArgumentCaptor.forClass(ByteBuffer.class);    // <1>
         Mockito.verify(service, Mockito.times(1)).put(bufferCaptor.capture()); // <2>
         final var buffer = bufferCaptor.getValue();                            // <3>
         Assertions.assertNotNull(buffer);                                      // <4>
         Assertions.assertEquals(HelloWorld.BYTES, buffer.capacity());          // <5>
-        // TODO: verify, channel.write(buffer) invoked, at least once
-        // TODO: assert, buffer has no remaining
-        // TODO: assert, writtenSoFar.intValue() is equal to HelloWorld.BYTES
-        // assert, result is same as channel
+        // verify, channel.write(buffer) invoked, at least once
+
+        // assert, <buffer> has no <remaining>
+
+        // assert, <writtenSoFar.intValue()> is equal to <HelloWorld.BYTES>
+
+        // assert, <result> is same as <channel>
         Assertions.assertSame(channel, result);
     }
 }

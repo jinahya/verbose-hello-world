@@ -79,7 +79,7 @@ class HelloWorld_03_Write_DataOutput_Test extends HelloWorldTest {
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // stub service.set(array) to return the array.
+        // stub, service.set(array) to return the array.
         BDDMockito.willAnswer(i -> i.getArgument(0))
                 .given(service)
                 .set(ArgumentMatchers.any());

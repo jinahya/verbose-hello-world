@@ -25,7 +25,6 @@ import com.github.jinahya.hello.HelloWorldTest;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.text.RandomStringGenerator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,11 +33,9 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.RandomAccessFile;
 import java.io.Writer;
-import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -51,50 +48,30 @@ import java.util.concurrent.ThreadLocalRandom;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_12_Append_File_Using_Writer_Test extends HelloWorldTest {
+class HelloWorld_12_Append_File_Using_RandomAccessFile_Test extends HelloWorldTest {
 
     @Test
     void _appendToFileUsingDataOutput_(@TempDir final File tempDir) throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // prepare cbuf
-        final char[] cbuf;
-        {
-            cbuf = new RandomStringGenerator.Builder()
-                    .withinRange(0, 65535)
-                    .get()
-                    .generate(HelloWorld.BYTES).toCharArray();
-            assert cbuf.length == HelloWorld.BYTES;
-            log.debug("cbuf: {}", String.valueOf(cbuf));
-            for (final var c : cbuf) {
-                log.debug("c: {}", String.format("%1$04x", (int) c));
-            }
-        }
-        // stub service.set(DataOutput) will write 12 empty bytes.
+        // stub, service.write(RandomAccessFile) will write 12 empty bytes.
         BDDMockito.willAnswer(i -> {
-                    final var writer = i.getArgument(0, Writer.class);
-                    writer.write(cbuf);
-                    return writer;
+                    final var file = i.getArgument(0, RandomAccessFile.class);
+                    file.write(new byte[HelloWorld.BYTES]);
+                    return file;
                 })
                 .given(service)
-                .write(ArgumentMatchers.<Writer>any());
+                .write(ArgumentMatchers.<RandomAccessFile>notNull());
         // create a temp file
-        final File file = File.createTempFile("tmp", "tmp", tempDir);
-        // write some dummy bytes
-        if (ThreadLocalRandom.current().nextBoolean()) {
-            try (var stream = new FileOutputStream(file)) {
-                stream.write(new byte[ThreadLocalRandom.current().nextInt(128)]);
-                stream.flush();
-            }
-        }
-        final var length = file.length();
+        final File f = File.createTempFile("tmp", "tmp", tempDir);
+        final var pos = ThreadLocalRandom.current().nextLong(128L);
         // ------------------------------------------------------------------------------------ when
-        try (var writer = new OutputStreamWriter(new FileOutputStream(file, true), // appending!
-                                                 StandardCharsets.US_ASCII)) {     // US_ASCII!
-            service.write(writer);
-            writer.flush();
+        try (var file = new RandomAccessFile(f, "rw")) {
+            file.seek(pos);
+            service.write(file);
+            file.getFD().sync();
         }
         // ------------------------------------------------------------------------------------ then
-        Assertions.assertEquals(length + HelloWorld.BYTES, file.length());
+        Assertions.assertEquals(pos + HelloWorld.BYTES, f.length());
     }
 }
