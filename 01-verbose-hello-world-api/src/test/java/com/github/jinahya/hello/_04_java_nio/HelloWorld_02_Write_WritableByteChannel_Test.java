@@ -113,7 +113,7 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends HelloWorldTest {
         final var buffer = bufferCaptor.getValue();                            // <3>
         Assertions.assertNotNull(buffer);                                      // <4>
         Assertions.assertEquals(HelloWorld.BYTES, buffer.capacity());          // <5>
-        // verify, channel.write(buffer) invoked, at least once
+        // verify, <channel.write(buffer)> invoked, at least once
 
         // assert, <buffer> has no <remaining>
 

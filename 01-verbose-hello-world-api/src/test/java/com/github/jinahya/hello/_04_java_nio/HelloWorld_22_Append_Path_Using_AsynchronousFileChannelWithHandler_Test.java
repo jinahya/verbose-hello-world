@@ -39,7 +39,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.LongAccumulator;
 
 /**
  * A class for testing
@@ -57,71 +57,77 @@ class HelloWorld_22_Append_Path_Using_AsynchronousFileChannelWithHandler_Test
     void __(@TempDir final Path tempDir) throws Exception {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // service.put(buffer) will increase the buffer's position by HelloWorld.BYTES
+        // stub, <service.write(channel, position, attachment, handler)>
+        //         will write 12 bytes to the <channel>
+        //         and will invoke <handler.completed(channel, attachment)>
         BDDMockito.willAnswer(i -> {
                     final var channel = i.getArgument(0, AsynchronousFileChannel.class);
-                    final var position = new AtomicLong(i.getArgument(1, Long.class));
+                    final var position = i.getArgument(1, Long.class);
                     final var attachment = i.getArgument(2);
                     @SuppressWarnings({"unchecked"})
                     final var handler = (CompletionHandler<AsynchronousFileChannel, Object>)
                             i.getArgument(3, CompletionHandler.class);
                     final var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
-                    channel.write(
-                            buffer,
-                            position.get(),
-                            attachment,
-                            new CompletionHandler<>() {
+                    final var accumulator = new LongAccumulator(Long::sum, position);
+                    channel.write( // @formatter:off
+                            buffer,                     // <src>
+                            accumulator.get(),          // <position>
+                            attachment,                 // <attachment>
+                            new CompletionHandler<>() { // <handler>
                                 @Override
-                                public void completed(Integer result, Object a) {
-                                    position.addAndGet(result);
+                                public void completed(final Integer r, final Object a) {
+                                    accumulator.accumulate(r);
                                     if (buffer.hasRemaining()) {
-                                        channel.write(buffer, position.get(), attachment, this);
+                                        channel.write(
+                                                buffer,            // <src>
+                                                accumulator.get(), // <position>
+                                                a,                 // <attachment>
+                                                this               // <handler>
+                                        );
                                         return;
                                     }
-                                    handler.completed(channel, attachment);
+                                    assert accumulator.get() == position + HelloWorld.BYTES;
+                                    handler.completed(channel, a);
                                 }
-
                                 @Override
-                                public void failed(Throwable exc, Object a) {
-                                    handler.failed(exc, a);
+                                public void failed(final Throwable t, final Object a) {
+                                    handler.failed(t, a);
                                 }
                             }
-                    );
+                    ); // @formatter:on
                     return channel;
                 })
                 .given(service)
-                .write(ArgumentMatchers.notNull(),
-                       ArgumentMatchers.longThat(v -> v >= 0L),
-                       ArgumentMatchers.any(),
-                       ArgumentMatchers.notNull()
+                .write(ArgumentMatchers.notNull(),              // <channel>
+                       ArgumentMatchers.longThat(v -> v >= 0L), // <position>
+                       ArgumentMatchers.any(),                  // <attachment>
+                       ArgumentMatchers.notNull()               // <handler>
                 );
         final var position = ThreadLocalRandom.current().nextLong(1024L);
-        final var attachment = new CountDownLatch(1);
+        final var latch = new CountDownLatch(1);
         final var handler = new CompletionHandler<AsynchronousFileChannel, CountDownLatch>() {
-            @Override
-            public void completed(AsynchronousFileChannel result, CountDownLatch a) {
-                try {
-                    result.force(true);
-                    result.close();
-                } catch (final IOException ioe) {
-                    log.error("failed to handle completion", ioe);
-                }
+            @Override public void completed(final AsynchronousFileChannel r, // @formatter:off
+                                            final CountDownLatch a) {
                 a.countDown();
             }
-
-            @Override
-            public void failed(Throwable exc, CountDownLatch a) {
-                log.error("failed to write", exc);
+            @Override public void failed(final Throwable t, final CountDownLatch a) {
+                log.error("failed to write", t);
                 a.countDown();
             }
-        };
-        var path = Files.createTempFile(tempDir, null, null);
+        }; // @formatter:on
+        final var path = Files.createTempFile(tempDir, null, null);
         // ------------------------------------------------------------------------------------ when
-        var channel = AsynchronousFileChannel.open(path, StandardOpenOption.WRITE);
-        service.write(channel, position, attachment, handler);
-        attachment.await();
+        final var channel = AsynchronousFileChannel.open(path, StandardOpenOption.WRITE);
+        service.write(channel, position, latch, handler);
+        try {
+            latch.await();
+        } catch (final InterruptedException ie) {
+            channel.force(true);
+            channel.close();
+            throw ie;
+        }
         // ------------------------------------------------------------------------------------ then
-        // assert, path's size increased by 12, after the <position>
+        // assert, <path>'s <size> increased by <12>, after the <position>
         Assertions.assertEquals(
                 position + HelloWorld.BYTES,
                 Files.size(path)

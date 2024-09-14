@@ -66,7 +66,7 @@ class HelloWorld_12_Append_File_Using_RandomAccessFile_Test extends HelloWorldTe
         final File f = File.createTempFile("tmp", "tmp", tempDir);
         final var pos = ThreadLocalRandom.current().nextLong(128L);
         // ------------------------------------------------------------------------------------ when
-        try (var file = new RandomAccessFile(f, "rw")) {
+        try (var file = new RandomAccessFile(f, "rw")) { // check, rws, rwd
             file.seek(pos);
             service.write(file);
             file.getFD().sync();

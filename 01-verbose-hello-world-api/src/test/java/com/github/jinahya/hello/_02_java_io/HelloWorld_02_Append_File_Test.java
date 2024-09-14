@@ -41,7 +41,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.LinkedHashMap;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * A class for testing {@link HelloWorld#append(File) append(file)} method.
@@ -115,22 +114,34 @@ class HelloWorld_02_Append_File_Test extends HelloWorldTest {
         }
     }
 
-    @Disabled("not implemented yet")
-    @DisplayName("file's length should be increased by HelloWorld.BYTES")
     @畵蛇添足
+    @DisplayName("file's length should be increased by HelloWorld.BYTES")
     @Test
-    void _12BytesAppended_(@TempDir final File tempDir) throws IOException {
+    void _添足_畵蛇(@TempDir File tempDir) throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        final var file = File.createTempFile("tmp", "tmp", tempDir);
-        try (var stream = new FileOutputStream(file)) {
-            stream.write(new byte[ThreadLocalRandom.current().nextInt(8)]);
-            stream.flush();
-        }
-        // ------------------------------------------------------------------------------- when/then
+        // stub, <service.append(file)> will append 12 bytes
+        BDDMockito.willAnswer(i -> {
+                    var file = i.getArgument(0, File.class);
+                    try (var stream = new FileOutputStream(file, true)) {
+                        stream.write(new byte[HelloWorld.BYTES]);
+                        stream.flush();
+                    }
+                    return file;
+                })
+                .given(service())
+                .append(ArgumentMatchers.any(File.class));
+        var file = File.createTempFile("tmp", null, tempDir);
+        var length = file.length();
+        // ------------------------------------------------------------------------------------ when
+        final var result = service.append(file);
+        // ------------------------------------------------------------------------------------ then
+        // assert, <file>'s <length> increased by <12>
         Assertions.assertEquals(
-                file.length() + HelloWorld.BYTES, // <expected>
-                service.append(file).length()     // <actual>
+                length + HelloWorld.BYTES,
+                file.length()
         );
+        // assert, <result> is same as <file>
+        Assertions.assertSame(file, result);
     }
 }
