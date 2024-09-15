@@ -339,7 +339,7 @@ public interface HelloWorld {
      * @throws IOException          if an I/O error occurs.
      * @implSpec The default implementation invokes {@link #set(byte[])} method with an array of
      * {@value #BYTES} bytes, writes the array to specified random access file by invoking
-     * {@link DataOutput#write(byte[])} method on {@code file} with the array, and returns the
+     * {@link RandomAccessFile#write(byte[])} method on {@code file} with the array, and returns the
      * {@code file}.
      * @see #set(byte[])
      * @see RandomAccessFile#write(byte[])
