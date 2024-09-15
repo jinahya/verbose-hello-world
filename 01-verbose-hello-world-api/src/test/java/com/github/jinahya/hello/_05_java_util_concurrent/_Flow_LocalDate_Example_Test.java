@@ -26,13 +26,9 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.time.DayOfWeek;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.time.LocalDate;
 import java.util.Objects;
 import java.util.concurrent.Flow;
 import java.util.concurrent.ThreadLocalRandom;
@@ -45,21 +41,20 @@ import java.util.concurrent.atomic.AtomicReference;
 @SuppressWarnings({
         "java:S3577" // class _Flow...
 })
-class _Flow_DayOfWeek_Example_Test {
+class _Flow_LocalDate_Example_Test {
 
-    private static class DayOfWeekSubscription implements Flow.Subscription {
+    private static class LocalDateSubscription implements Flow.Subscription {
 
         /**
          * Creates a new instance for specified subscriber.
          *
          * @param subscriber the subscriber.
          */
-        DayOfWeekSubscription(final Flow.Subscriber<? super DayOfWeek> subscriber) {
+        LocalDateSubscription(final Flow.Subscriber<? super LocalDate> subscriber) {
             super();
             this.subscriber = Objects.requireNonNull(subscriber, "subscriber is null");
-            accumulated = new AtomicLong();
+            this.accumulated = new AtomicLong();
             Thread.startVirtualThread(() -> {
-                final List<DayOfWeek> items = new LinkedList<>(Arrays.asList(DayOfWeek.values()));
                 while (!cancelled) {
                     while (!cancelled && accumulated.get() == 0L) {
                         synchronized (accumulated) {
@@ -73,16 +68,13 @@ class _Flow_DayOfWeek_Example_Test {
                     if (cancelled) {
                         continue;
                     }
-                    while (!cancelled && accumulated.getAndDecrement() > 0 && !items.isEmpty()) {
-                        final var item = items.removeFirst();
-                        subscriber.onNext(item);
-                    }
-                    if (cancelled) {
-                        continue;
-                    }
-                    if (items.isEmpty()) {
-                        cancelled = true;
-                        subscriber.onComplete();
+                    while (!cancelled && accumulated.getAndDecrement() > 0) {
+                        if (date == null) {
+                            date = LocalDate.now();
+                        } else {
+                            date = date.plusDays(1L);
+                        }
+                        subscriber.onNext(date);
                     }
                 }
             });
@@ -122,29 +114,32 @@ class _Flow_DayOfWeek_Example_Test {
             }
         }
 
-        private final Flow.Subscriber<? super DayOfWeek> subscriber;
+        private final Flow.Subscriber<? super LocalDate> subscriber;
 
         private final AtomicLong accumulated;
 
         private volatile boolean cancelled;
+
+        private volatile LocalDate date;
     }
 
-    private static class DayOfWeekPublisher implements Flow.Publisher<DayOfWeek> {
+    private static class LocalDatePublisher implements Flow.Publisher<LocalDate> {
 
         private static class InstanceHolder {
 
-            private static final DayOfWeekPublisher INSTANCE = new DayOfWeekPublisher();
+            private static final _Flow_LocalDate_Example_Test.LocalDatePublisher INSTANCE
+                    = new _Flow_LocalDate_Example_Test.LocalDatePublisher();
 
             private InstanceHolder() {
                 throw new AssertionError("instantiation is not allowed");
             }
         }
 
-        static DayOfWeekPublisher getInstance() {
+        static LocalDatePublisher getInstance() {
             return InstanceHolder.INSTANCE;
         }
 
-        private DayOfWeekPublisher() {
+        private LocalDatePublisher() {
             super();
         }
 
@@ -154,17 +149,17 @@ class _Flow_DayOfWeek_Example_Test {
         }
 
         @Override
-        public void subscribe(final Flow.Subscriber<? super DayOfWeek> subscriber) {
+        public void subscribe(final Flow.Subscriber<? super LocalDate> subscriber) {
             log.debug("{}.subscribe({})", this, subscriber);
             Objects.requireNonNull(subscriber, "subscriber is null");
-            final var subscription = new DayOfWeekSubscription(subscriber);
+            final var subscription = new LocalDateSubscription(subscriber);
             subscriber.onSubscribe(subscription);
         }
     }
 
-    private static class DayOfWeekSubscriber implements Flow.Subscriber<DayOfWeek> {
+    private static class LocalDateSubscriber implements Flow.Subscriber<LocalDate> {
 
-        private DayOfWeekSubscriber(final AtomicReference<Flow.Subscription> reference) {
+        private LocalDateSubscriber(final AtomicReference<Flow.Subscription> reference) {
             super();
             this.reference = Objects.requireNonNull(reference, "reference is null");
         }
@@ -181,7 +176,7 @@ class _Flow_DayOfWeek_Example_Test {
         }
 
         @Override
-        public void onNext(final DayOfWeek item) {
+        public void onNext(final LocalDate item) {
             log.debug("onNext({})", item);
         }
 
@@ -202,22 +197,22 @@ class _Flow_DayOfWeek_Example_Test {
     @Test
     void __() {
         final var reference = new AtomicReference<Flow.Subscription>();
-        final var subscriber = new DayOfWeekSubscriber(reference) { // @formatter:off
+        final var subscriber = new LocalDateSubscriber(reference) { // @formatter:off
             @Override public void onSubscribe(final Flow.Subscription subscription) {
                 super.onSubscribe(subscription);
                 if (ThreadLocalRandom.current().nextBoolean()) {
                     reference.get().request(1L);
                 }
             }
-            @Override public void onNext(final DayOfWeek item) {
+            @Override public void onNext(final LocalDate item) {
                 super.onNext(item);
                 if (ThreadLocalRandom.current().nextBoolean()) {
                     reference.get().request(1L);
                 }
             } // @formatter:on
         };
-        DayOfWeekPublisher.getInstance().subscribe(subscriber);
-        reference.get().request(ThreadLocalRandom.current().nextLong(1, 8));
+        LocalDatePublisher.getInstance().subscribe(subscriber);
+        reference.get().request(ThreadLocalRandom.current().nextLong(1, 16));
         Awaitility.await()
                 .timeout(2L, TimeUnit.SECONDS)
                 .pollDelay(1L, TimeUnit.SECONDS)
