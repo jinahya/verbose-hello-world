@@ -83,6 +83,8 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
         );
     }
 
+    // ---------------------------------------------------------------------------------------------
+
     /**
      * Verifies that the {@link HelloWorld#put(ByteBuffer) put(buffer)} method throws a
      * {@link NullPointerException} when the {@code buffer} argument is {@code null}.
@@ -201,14 +203,15 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
         // ------------------------------------------------------------------------------------ when
         final var result = service.put(buffer);
         // ------------------------------------------------------------------------------------ then
-        // verify, service.set(array[12]) invoked, once
+        // verify, <service.set(byte[12])> invoked, once
         final var arrayCaptor = ArgumentCaptor.forClass(byte[].class);
         Mockito.verify(service, Mockito.times(1)).set(arrayCaptor.capture());
         final var array = arrayCaptor.getValue();
         Assertions.assertNotNull(array);
         Assertions.assertEquals(HelloWorld.BYTES, array.length);
-        // TODO: verify, buffer.put(array) invoked, once
-        // assert, result is same as buffer
+        // verify, <buffer.put(array)> invoked, once
+
+        // assert, <result> is same as <buffer>
         Assertions.assertSame(buffer, result);
     }
 }
