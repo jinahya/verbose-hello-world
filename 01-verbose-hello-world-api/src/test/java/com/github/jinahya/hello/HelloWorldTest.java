@@ -25,12 +25,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+
+import java.nio.ByteBuffer;
 
 /**
  * An abstract class for testing methods defined in {@link HelloWorld} interface.
@@ -43,6 +48,38 @@ import org.mockito.quality.Strictness;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Slf4j
 public abstract class HelloWorldTest {
+
+    // ------------------------------------------------------------------------------------- service
+
+    /**
+     * Verifies that {@link HelloWorld#set(byte[]) set(array)} method invoked on the
+     * {@link #service() service} instance with an array of {@value HelloWorld#BYTES} bytes.
+     *
+     * @return the {@code array} argument captured.
+     */
+    protected byte[] verify_set_array12_invoked_once() {
+        final var captor = ArgumentCaptor.forClass(byte[].class);
+        Mockito.verify(service, Mockito.times(1)).set(captor.capture());
+        final var array = captor.getValue();
+        Assertions.assertNotNull(array);
+        Assertions.assertEquals(HelloWorld.BYTES, array.length);
+        return array;
+    }
+
+    /**
+     * Verifies that {@link HelloWorld#put(ByteBuffer) put(buffer)} method invoked on the
+     * {@link #service() service} instance with a byte buffer of {@value HelloWorld#BYTES} bytes.
+     *
+     * @return the {@code buffer} argument captured.
+     */
+    protected ByteBuffer verify_put_buffer12_invoked_once() {
+        final var captor = ArgumentCaptor.forClass(ByteBuffer.class);
+        Mockito.verify(service, Mockito.times(1)).put(captor.capture());
+        final var buffer = captor.getValue();
+        Assertions.assertNotNull(buffer);
+        Assertions.assertEquals(HelloWorld.BYTES, buffer.capacity());
+        return buffer;
+    }
 
     // ---------------------------------------------------------------------------------------------
     @Spy

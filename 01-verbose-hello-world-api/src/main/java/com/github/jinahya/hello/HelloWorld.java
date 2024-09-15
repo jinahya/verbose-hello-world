@@ -43,7 +43,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.LongAccumulator;
 
 /**
  * An interface for generating <a href="#hello-world-bytes">hello-world-bytes</a> to various
@@ -630,9 +630,9 @@ public interface HelloWorld {
     default <T extends AsynchronousByteChannel> T write(final T channel)
             throws InterruptedException, ExecutionException {
         Objects.requireNonNull(channel, "channel is null");
-        // get the hello, world bytes
+        // get the hello-world-bytes
         final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
-        // write buffer to channel while buffer has remaining
+        // write <buffer> to <channel> while <buffer> has <remaining>
 
         // return the <channel>
         return channel;
@@ -653,8 +653,7 @@ public interface HelloWorld {
      *         null,                                      // <attachment>
      *         new CompletionHandler<Integer, Object>() { // <handler>
      *                 @Override
-     *                 public void completed(final AsynchronousSocketChannel client,
-     *                                       final Object a) {
+     *                 public void completed(final Integer result, final Object a) {
      *                     if (!buffer.hasRemaining()) {
      *                         handler.completed(channel, attachment);
      *                         return;
@@ -748,7 +747,7 @@ public interface HelloWorld {
         if (position < 0L) {
             throw new IllegalArgumentException("position(" + position + ") is negative");
         }
-        // get the hello, world bytes
+        // get the hello-world-bytes
         final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
         while (buffer.hasRemaining()) {
             final var future = channel.write(buffer, position);
@@ -761,8 +760,8 @@ public interface HelloWorld {
 
     /**
      * Writes, asynchronously, the <a href="hello-world-bytes">hello-world-bytes</a> to specified
-     * channel, starting at specified position, and notifies a completion (or a failure) to
-     * specified handler.
+     * channel, starting at specified position, and notifies a completion (or a failure) to the
+     * handler.
      *
      * @param <T>        channel type parameter
      * @param <A>        attachment type parameter
@@ -784,27 +783,29 @@ public interface HelloWorld {
         }
         Objects.requireNonNull(handler, "handler is null");
         final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
-        final var cursor = new AtomicLong(position);
+        final var accumulator = new LongAccumulator(Long::sum, position);
         channel.write(
                 buffer,                     // <src>
-                position,                   // <position>
+                accumulator.get(),          // <position>
                 attachment,                 // <attachment>
                 new CompletionHandler<>() { // <handler>
-                    @Override public void completed(final Integer result, final A attachment) {
-                        assert result > 0; // why?
+                    @Override public void completed(final Integer r, final A a) {
+                        log().debug("written: {}", r);
+                        assert r > 0; // why?
+                        accumulator.accumulate(r);
                         if (!buffer.hasRemaining()) {
-                            handler.completed(channel, attachment);
+                            handler.completed(channel, a);
                             return;
                         }
                         channel.write(
-                                buffer,                   // <src>
-                                cursor.addAndGet(result), // <position>
-                                attachment,               // <attachment>
-                                this                      // <handler>
+                                buffer,            // <src>
+                                accumulator.get(), // <position>
+                                a,                 // <attachment>
+                                this               // <handler>
                         );
                     }
-                    @Override public void failed(final Throwable exc, final A attachment) {
-                        handler.failed(exc, attachment);
+                    @Override public void failed(final Throwable t, final A a) {
+                        handler.failed(t, a);
                     }
                 }
         );
