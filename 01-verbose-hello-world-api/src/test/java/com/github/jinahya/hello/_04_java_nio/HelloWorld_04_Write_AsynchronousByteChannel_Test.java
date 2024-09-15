@@ -73,10 +73,10 @@ class HelloWorld_04_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
         // ----------------------------------------------------------------------------------- given
-        final var service = service();
-        final var channel = (AsynchronousByteChannel) null;
+        var service = service();
+        var channel = (AsynchronousByteChannel) null;
         // ------------------------------------------------------------------------------- when/then
-        // service.write(channel) will throw a NullPointerException
+        // assert, <service.write(channel)> will throw a NullPointerException
         Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.write(channel)
@@ -98,10 +98,10 @@ class HelloWorld_04_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
     @Test
     void __() throws InterruptedException, ExecutionException {
         // ----------------------------------------------------------------------------------- given
-        final var service = service();
-        // service.put(buffer) will increase buffer's position by HelloWorld.BYTES
+        var service = service();
+        // stub, <service.put(buffer)> will increase <buffer>'s <position> by <HelloWorld.BYTES>
         BDDMockito.willAnswer(i -> {
-                    final var buffer = i.getArgument(0, ByteBuffer.class);
+                    var buffer = i.getArgument(0, ByteBuffer.class);
                     buffer.position(buffer.position() + HelloWorld.BYTES);
                     return buffer;
                 })
@@ -109,7 +109,7 @@ class HelloWorld_04_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
                 .put(ArgumentMatchers.argThat(b -> b != null && b.remaining() >= HelloWorld.BYTES));
         final var writtenSoFar = new LongAdder();
         final var channel = Mockito.mock(AsynchronousByteChannel.class);
-        // channel.write(buffer) will return a future drains the buffer
+        // stub, <channel.write(buffer)> will return a <future> drains the <buffer>
         final var futureReference = new AtomicReference<Future<Integer>>();
         BDDMockito.willAnswer(w -> {
             // preceding future's get() should be invoked
@@ -120,7 +120,7 @@ class HelloWorld_04_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
             final var src = w.getArgument(0, ByteBuffer.class);
             @SuppressWarnings({"unchecked"})
             final var future = (Future<Integer>) Mockito.mock(Future.class);
-            // future.get() will increase buffer's position by a random value
+            // stub, <future.get()> will increase <buffer>'s <position> by a random value
             BDDMockito.willAnswer(g -> {
                 final var result = ThreadLocalRandom.current().nextInt(src.remaining()) + 1;
                 src.position(src.position() + result);
@@ -133,15 +133,19 @@ class HelloWorld_04_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(channel);
         // ------------------------------------------------------------------------------------ then
-        // service.put(buffer[12]) invoked, once
+        // verify, <service.put(buffer[12])> invoked, once
         final var bufferCaptor = ArgumentCaptor.forClass(ByteBuffer.class);
         Mockito.verify(service, Mockito.times(1)).put(bufferCaptor.capture());
         final var buffer = bufferCaptor.getValue();
         Assertions.assertNotNull(buffer);
         Assertions.assertEquals(HelloWorld.BYTES, buffer.capacity());
-        // TODO: verify, channel.write(buffer) invoked, at least once
-        // TODO: assert, total number of bytes written is equal to HelloWorld.BYTES
-        // assert, result is same as channel
+        // verify, <channel.write(buffer)> invoked, at least once
+
+        // assert, <buffer> has no <remaining>
+
+        // assert, total number of bytes written is equal to <HelloWorld.BYTES>
+
+        // assert, <result> is same as <channel>
         Assertions.assertSame(channel, result);
     }
 
@@ -149,7 +153,7 @@ class HelloWorld_04_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
     @DisplayName("AsynchronousSocketChannel implements AsynchronousByteChannel")
     @畵蛇添足
     @Test
-    void __AsynchronousSocketChannel() throws Exception {
+    void _添足_畵蛇() throws Exception {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // start a new thread which

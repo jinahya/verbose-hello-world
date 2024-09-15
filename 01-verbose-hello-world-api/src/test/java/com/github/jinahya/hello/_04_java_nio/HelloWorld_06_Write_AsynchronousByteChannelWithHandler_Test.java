@@ -35,6 +35,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -52,11 +53,11 @@ import java.util.concurrent.atomic.LongAdder;
 /**
  * A class for testing
  * {@link HelloWorld#write(AsynchronousByteChannel, Object, CompletionHandler) write(channel,
- * handler, attachment)} method.
+ * attachment, handler)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("write(channel, handler, attachment)")
+@DisplayName("write(channel, attachment, handler)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({
@@ -67,7 +68,7 @@ class HelloWorld_06_Write_AsynchronousByteChannelWithHandler_Test extends HelloW
     /**
      * Verifies that the
      * {@link HelloWorld#write(AsynchronousByteChannel, Object, CompletionHandler) write(channel,
-     * handler, attachment)} method throws a {@link NullPointerException} when the {@code channel}
+     * attachment, handler)} method throws a {@link NullPointerException} when the {@code channel}
      * argument is {@code null}.
      */
     @DisplayName("""
@@ -92,7 +93,7 @@ class HelloWorld_06_Write_AsynchronousByteChannelWithHandler_Test extends HelloW
     /**
      * Verifies that the
      * {@link HelloWorld#write(AsynchronousByteChannel, Object, CompletionHandler) write(channel,
-     * handler, attachment)} method throws a {@link NullPointerException} when the {@code handler}
+     * attachment, handler)} method throws a {@link NullPointerException} when the {@code handler}
      * argument is {@code null}.
      */
     @DisplayName("""
@@ -116,12 +117,12 @@ class HelloWorld_06_Write_AsynchronousByteChannelWithHandler_Test extends HelloW
     /**
      * Verifies that the
      * {@link HelloWorld#write(AsynchronousByteChannel, Object, CompletionHandler) write(channel,
-     * handler, attachment)} method invokes {@link HelloWorld#put(ByteBuffer) put(buffer)} method
+     * attachment, handler)} method invokes {@link HelloWorld#put(ByteBuffer) put(buffer)} method
      * with a byte buffer of {@value HelloWorld#BYTES} bytes, continuously invokes
      * {@link AsynchronousByteChannel#write(ByteBuffer, Object, CompletionHandler)
-     * channel.write(buffer, attachment, a-handler)}, and eventually invokes
-     * {@link CompletionHandler#completed(Object, Object) handler.completed(Object, Object)
-     * handler.completed(channel, attachment)}.
+     * channel.write(buffer, attachment, a-handler)} method while the {@code buffer} has remaining,
+     * and eventually invokes
+     * {@link CompletionHandler#completed(Object, Object) handler.completed(channel, attachment)}.
      */
     @DisplayName("""
             should invoke put(buffer[12])
@@ -132,6 +133,7 @@ class HelloWorld_06_Write_AsynchronousByteChannelWithHandler_Test extends HelloW
     void __() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
+        // stub, <service.put(buffer)> will increase <buffer>'s <position> by <12>
         BDDMockito.willAnswer(i -> {
                     final var buffer = i.getArgument(0, ByteBuffer.class);
                     buffer.position(buffer.position() + HelloWorld.BYTES);
@@ -141,23 +143,23 @@ class HelloWorld_06_Write_AsynchronousByteChannelWithHandler_Test extends HelloW
                 .put(ArgumentMatchers.argThat(b -> b != null && b.remaining() >= HelloWorld.BYTES));
         final var writtenSoFar = new LongAdder();
         final var channel = Mockito.mock(AsynchronousByteChannel.class);
-        // channel.write(src, attachment, handler) will drain the src
-        final var threadRef = new AtomicReference<Thread>();
+        // stub, <channel.write(src, attachment, handler)> will drain the <src>
+        final var reference = new AtomicReference<Thread>();
         BDDMockito.willAnswer(i -> {
             final var src = i.getArgument(0, ByteBuffer.class);
             final var attachment = i.getArgument(1);
             final var handler = i.getArgument(2, CompletionHandler.class);
             Thread.ofVirtual().start(() -> {
-                final var previous = threadRef.get();
+                final var previous = reference.get();
                 if (previous != null) {
                     try {
                         previous.join();
                     } catch (final InterruptedException ie) {
                         Thread.currentThread().interrupt();
-                        throw new RuntimeException(ie);
+                        throw new RuntimeException("interrupted while joining previous thread", ie);
                     }
                 }
-                threadRef.set(Thread.currentThread());
+                reference.set(Thread.currentThread());
                 final var result = ThreadLocalRandom.current().nextInt(src.remaining()) + 1;
                 src.position(src.position() + result);
                 handler.completed(result, attachment);
@@ -174,58 +176,90 @@ class HelloWorld_06_Write_AsynchronousByteChannelWithHandler_Test extends HelloW
         // ------------------------------------------------------------------------------------ when
         service.write(channel, attachment, handler);
         // ------------------------------------------------------------------------------------ then
+        // verify, <service.put(buffer[12])> invoked, once
         final var bufferCaptor = ArgumentCaptor.forClass(ByteBuffer.class);
         Mockito.verify(service, Mockito.times(1)).put(bufferCaptor.capture());
         final var buffer = bufferCaptor.getValue();
         Assertions.assertNotNull(buffer);
         Assertions.assertEquals(HelloWorld.BYTES, buffer.capacity());
-        // TODO: verify, handler.completed(channel, attachment) invoked, once, within some time.
-        // TODO: verify, channel.write(buffer, attachment, a-handler) invoked, at least once.
-        // TODO: assert, writtenSoFar.intValue() is equal to BYTES
-        // TODO: assert, buffer ha no remaining
+        // verify, <handler.completed(channel, attachment)> invoked, once, within some time.
+
+        // verify, <channel.write(buffer, attachment, a-handler)> invoked, at least once.
+
+        // assert, <writtenSoFar.intValue()> is equal to HelloWorld.BYTES>
+
+        // assert, <buffer> ha no <remaining>
     }
 
-    @Disabled("not implemented yet")
     @畵蛇添足
     @Test
-    void __AsynchronousSocketChannel() throws Exception {
+    void _添足_畵蛇() throws Exception {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
+        // stub, <service.write(channel, attachment, handler)> will write 12 bytes
+        BDDMockito.willAnswer(i -> {
+            final var channel = i.getArgument(0, AsynchronousByteChannel.class);
+            final var attachment = i.getArgument(1);
+            @SuppressWarnings({"unchecked"})
+            final var handler = (CompletionHandler<AsynchronousByteChannel, Object>)
+                    i.getArgument(2, CompletionHandler.class);
+            final var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
+            channel.write(buffer, null, new CompletionHandler<>() { // @formatter:off
+                @Override public void completed(final Integer result, final Object a) {
+                    if (buffer.hasRemaining()) {
+                        channel.write(buffer, null, this);
+                        return;
+                    }
+                    handler.completed(channel, attachment);
+                }
+                @Override public void failed(final Throwable exc, final Object a) {
+                    log.error("failed to write", exc);
+                    handler.failed(exc, attachment);
+                }
+            }); // @formatter:on
+            return null;
+        }).given(service).write(
+                ArgumentMatchers.notNull(), // <channel>
+                ArgumentMatchers.any(),     // <attachment>
+                ArgumentMatchers.notNull()  // <handler>
+        );
         // start a server thread which
-        //           binds on a random port,
-        //           accepts a client,
-        //           and reads 12 bytes
+        //         binds on a random port,
+        //         accepts a client,
+        //         and reads 12 bytes
         final var addr = InetAddress.getLoopbackAddress();
         final var port = new ArrayBlockingQueue<Integer>(1);
         Thread.ofPlatform().name("server").start(() -> {
             try (var server = AsynchronousServerSocketChannel.open()) {
                 server.bind(new InetSocketAddress(addr, 0), 1);
-                final var localAddress = server.getLocalAddress();
-                log.debug("listening on {}", localAddress);
-                port.put(((InetSocketAddress) localAddress).getPort());
+                final var address = server.getLocalAddress();
+                log.debug("listening on {}", address);
+                port.put(((InetSocketAddress) address).getPort());
                 final var latch = new CountDownLatch(1);
                 server.accept(null, new CompletionHandler<>() { // @formatter:off
-                    @Override public void completed(final AsynchronousSocketChannel client,
-                                                    final Object attachment) {
+                    @Override public void completed(final AsynchronousSocketChannel c,
+                                                    final Object a) {
+                        try {
+                            log.debug("accepted from {}", c.getRemoteAddress());
+                        } catch (final IOException ioe) {
+                            throw new RuntimeException(ioe);
+                        }
                         final var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
-                        client.read(buffer, null, new CompletionHandler<>() {
-                            @Override public void completed(final Integer written,
-                                                            final Object attachment) {
+                        c.read(buffer, null, new CompletionHandler<>() {
+                            @Override public void completed(final Integer r, final Object a) {
                                 if (!buffer.hasRemaining()) {
-                                    log.debug("read");
                                     latch.countDown();
                                     return;
                                 }
-                                client.write(buffer, null, this);
+                                c.write(buffer, null, this);
                             }
-                            @Override public void failed(final Throwable exc,
-                                                         final Object attachment) {
-                                log.error("failed to read", exc);
+                            @Override public void failed(final Throwable t, final Object a) {
+                                log.error("failed to read", t);
                                 latch.countDown();
                             }});
                     }
-                    @Override public void failed(final Throwable exc, final Object attachment) {
-                        log.error("failed to accept", exc);
+                    @Override public void failed(final Throwable t, final Object a) {
+                        log.error("failed to accept", t);
                         latch.countDown();
                     } // @formatter:on
                 });
@@ -236,29 +270,33 @@ class HelloWorld_06_Write_AsynchronousByteChannelWithHandler_Test extends HelloW
         });
         // ------------------------------------------------------------------------------------ when
         // connect to the server
-        //       send 12 bytes to the server
+        //         send 12 bytes to the server
         Thread.currentThread().setName("client");
         try (var client = AsynchronousSocketChannel.open()) {
             final var remote = new InetSocketAddress(addr, port.take());
             log.debug("connecting to {}", remote);
             final var latch = new CountDownLatch(1);
             client.connect(remote, null, new CompletionHandler<>() { // @formatter:off
-                @Override public void completed(final Void result, final Object attachment) {
-                    log.debug("connected");
-                    log.debug("writing...");
+                @Override public void completed(final Void r, final Object a) {
+                    try {
+                        log.debug("connected to {}", client.getRemoteAddress());
+                    } catch (final IOException e) {
+                        throw new RuntimeException(e);
+                    }
                     service.write(client, null, new CompletionHandler<>() {
-                        @Override public void completed(final AsynchronousSocketChannel result,
-                                                        final Object attachment) {
-                            log.debug("written");
+                        @Override public void completed(final AsynchronousSocketChannel c,
+                                                        final Object a) {
                             latch.countDown();
                         }
-                        @Override public void failed(final Throwable exc, final Object attachment) {
-                            throw new RuntimeException("failed to write", exc);
+                        @Override public void failed(final Throwable t, final Object a) {
+                            log.error("failed to write", t);
+                            latch.countDown();
                         }
                     });
                 }
-                @Override public void failed(final Throwable exc, final Object attachment) {
-                    throw new RuntimeException("failed to connect", exc);
+                @Override public void failed(final Throwable t, final Object a) {
+                    log.error("failed to connect", t);
+                    latch.countDown();
                 } // @formatter:on
             });
             final var broken = latch.await(1L, TimeUnit.SECONDS);

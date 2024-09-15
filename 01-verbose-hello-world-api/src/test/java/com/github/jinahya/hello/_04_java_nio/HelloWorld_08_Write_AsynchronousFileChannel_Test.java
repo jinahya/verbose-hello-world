@@ -180,7 +180,7 @@ class HelloWorld_08_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
     @Disabled("not implemented yet")
     @畵蛇添足
     @Test
-    void __(@TempDir final Path tempDir) throws Exception {
+    void _添足_畵蛇(@TempDir final Path tempDir) throws Exception {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var path = Files.createTempFile(tempDir, null, null);
