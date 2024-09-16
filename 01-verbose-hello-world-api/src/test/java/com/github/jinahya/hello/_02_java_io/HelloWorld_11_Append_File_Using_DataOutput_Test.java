@@ -52,7 +52,7 @@ import java.util.concurrent.ThreadLocalRandom;
 class HelloWorld_11_Append_File_Using_DataOutput_Test extends HelloWorldTest {
 
     @Test
-    void _appendToFileUsingDataOutput_(@TempDir final File tempDir) throws IOException {
+    void _appendToFileUsingDataOutput_(@TempDir final File dir) throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // stub service.set(DataOutput) will write 12 empty bytes.
@@ -64,7 +64,7 @@ class HelloWorld_11_Append_File_Using_DataOutput_Test extends HelloWorldTest {
                 .given(service)
                 .write(ArgumentMatchers.<DataOutput>any());
         // create a temp file
-        final File file = File.createTempFile("tmp", "tmp", tempDir);
+        final File file = File.createTempFile("tmp", null, dir);
         // write some dummy bytes
         if (ThreadLocalRandom.current().nextBoolean()) {
             try (var stream = new FileOutputStream(file)) {

@@ -28,12 +28,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
+import org.mockito.AdditionalMatchers;
 import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
 import java.io.IOException;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 import java.util.concurrent.ThreadLocalRandom;
@@ -108,11 +109,7 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends HelloWorldTest {
         final var result = service.write(channel);
         // ------------------------------------------------------------------------------------ then
         // verify, <put(buffer[12])> invoked, once
-        final var bufferCaptor = ArgumentCaptor.forClass(ByteBuffer.class);    // <1>
-        Mockito.verify(service, Mockito.times(1)).put(bufferCaptor.capture()); // <2>
-        final var buffer = bufferCaptor.getValue();                            // <3>
-        Assertions.assertNotNull(buffer);                                      // <4>
-        Assertions.assertEquals(HelloWorld.BYTES, buffer.capacity());          // <5>
+        final var buffer = verify_put_buffer12_invoked_once();
         // verify, <channel.write(buffer)> invoked, at least once
 
         // assert, <buffer> has no <remaining>

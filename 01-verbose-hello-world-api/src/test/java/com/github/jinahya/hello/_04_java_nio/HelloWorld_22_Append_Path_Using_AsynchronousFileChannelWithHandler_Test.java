@@ -30,7 +30,6 @@ import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.CompletionHandler;
@@ -54,7 +53,7 @@ class HelloWorld_22_Append_Path_Using_AsynchronousFileChannelWithHandler_Test
         extends HelloWorldTest {
 
     @Test
-    void __(@TempDir final Path tempDir) throws Exception {
+    void __(@TempDir final Path dir) throws Exception {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // stub, <service.write(channel, position, attachment, handler)>
@@ -115,7 +114,7 @@ class HelloWorld_22_Append_Path_Using_AsynchronousFileChannelWithHandler_Test
                 a.countDown();
             }
         }; // @formatter:on
-        final var path = Files.createTempFile(tempDir, null, null);
+        final var path = Files.createTempFile(dir, null, null);
         // ------------------------------------------------------------------------------------ when
         final var channel = AsynchronousFileChannel.open(path, StandardOpenOption.WRITE);
         service.write(channel, position, latch, handler);

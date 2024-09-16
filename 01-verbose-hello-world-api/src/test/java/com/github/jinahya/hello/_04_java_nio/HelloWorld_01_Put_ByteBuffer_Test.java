@@ -190,7 +190,7 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
     void __BufferDoesNotHaveBackingArray() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // service.set(array) will return given array
+        // stub, service.set(array) will return given array
         BDDMockito.willAnswer(i -> i.getArgument(0))
                 .given(service)
                 .set(ArgumentMatchers.any());

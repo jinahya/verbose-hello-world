@@ -27,7 +27,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -117,7 +116,7 @@ class HelloWorld_02_Append_File_Test extends HelloWorldTest {
     @畵蛇添足
     @DisplayName("file's length should be increased by HelloWorld.BYTES")
     @Test
-    void _添足_畵蛇(@TempDir File tempDir) throws IOException {
+    void _添足_畵蛇(@TempDir File dir) throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // stub, <service.append(file)> will append 12 bytes
@@ -131,7 +130,7 @@ class HelloWorld_02_Append_File_Test extends HelloWorldTest {
                 })
                 .given(service())
                 .append(ArgumentMatchers.any(File.class));
-        var file = File.createTempFile("tmp", null, tempDir);
+        var file = File.createTempFile("tmp", null, dir);
         var length = file.length();
         // ------------------------------------------------------------------------------------ when
         final var result = service.append(file);

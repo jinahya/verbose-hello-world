@@ -54,7 +54,7 @@ import java.util.concurrent.ThreadLocalRandom;
 class HelloWorld_13_Append_File_Using_Writer_Test extends HelloWorldTest {
 
     @Test
-    void _appendToFileUsingDataOutput_(@TempDir final File tempDir) throws IOException {
+    void _appendToFileUsingDataOutput_(@TempDir final File dir) throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // prepare cbuf
@@ -79,7 +79,7 @@ class HelloWorld_13_Append_File_Using_Writer_Test extends HelloWorldTest {
                 .given(service)
                 .write(ArgumentMatchers.<Writer>any());
         // create a temp file
-        final File file = File.createTempFile("tmp", "tmp", tempDir);
+        final File file = File.createTempFile("tmp", "tmp", dir);
         // write some dummy bytes
         if (ThreadLocalRandom.current().nextBoolean()) {
             try (var stream = new FileOutputStream(file)) {

@@ -51,7 +51,7 @@ import java.util.concurrent.ThreadLocalRandom;
 class HelloWorld_12_Append_File_Using_RandomAccessFile_Test extends HelloWorldTest {
 
     @Test
-    void _appendToFileUsingDataOutput_(@TempDir final File tempDir) throws IOException {
+    void _appendToFileUsingDataOutput_(@TempDir final File dir) throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // stub, service.write(RandomAccessFile) will write 12 empty bytes.
@@ -63,7 +63,7 @@ class HelloWorld_12_Append_File_Using_RandomAccessFile_Test extends HelloWorldTe
                 .given(service)
                 .write(ArgumentMatchers.<RandomAccessFile>notNull());
         // create a temp file
-        final File f = File.createTempFile("tmp", "tmp", tempDir);
+        final File f = File.createTempFile("tmp", "tmp", dir);
         final var pos = ThreadLocalRandom.current().nextLong(128L);
         // ------------------------------------------------------------------------------------ when
         try (var file = new RandomAccessFile(f, "rw")) { // check, rws, rwd
