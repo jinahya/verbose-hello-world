@@ -32,46 +32,49 @@ import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 
+import java.io.DataOutput;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.io.Writer;
 import java.util.concurrent.ThreadLocalRandom;
 
-/**
- * Tests appending the {@code hello, world} to an instance of {@link File} using
- * {@link HelloWorld#write(Writer)} method.
- *
- * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- */
-@DisplayName("append using Writer")
+@DisplayName("appends using DataOutput")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_12_Append_File_Using_RandomAccessFile_Test extends HelloWorldTest {
+class HelloWorld_21_Append_File_Using_DataOutput_Test extends HelloWorldTest {
 
     @Test
-    void _appendToFileUsingDataOutput_(@TempDir final File dir) throws IOException {
+    void __(@TempDir final File dir) throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // stub, service.write(RandomAccessFile) will write 12 empty bytes.
+        // stub, <service.set(DataOutput)> will write <12> empty bytes.
         BDDMockito.willAnswer(i -> {
-                    final var file = i.getArgument(0, RandomAccessFile.class);
-                    file.write(new byte[HelloWorld.BYTES]);
-                    return file;
+                    final var output = i.getArgument(0, DataOutput.class);
+                    output.write(new byte[HelloWorld.BYTES]);
+                    return output;
                 })
                 .given(service)
-                .write(ArgumentMatchers.<RandomAccessFile>notNull());
-        // create a temp file
-        final File f = File.createTempFile("tmp", "tmp", dir);
-        final var pos = ThreadLocalRandom.current().nextLong(128L);
+                .write(ArgumentMatchers.<DataOutput>notNull());
+        // create a temp file, and write some dummy bytes
+        final File file = File.createTempFile("tmp", null, dir);
+        try (var stream = new FileOutputStream(file)) {
+            stream.write(new byte[ThreadLocalRandom.current().nextInt(128)]);
+            stream.flush();
+        }
+        final var length = file.length();
         // ------------------------------------------------------------------------------------ when
-        try (var file = new RandomAccessFile(f, "rw")) { // check, rws, rwd
-            file.seek(pos);
-            service.write(file);
-            file.getFD().sync();
+        try (var output = new DataOutputStream(new FileOutputStream(file, true))) { // appending!
+            final var result = service.write((DataOutput) output);
+            assert result == output;
+            output.flush();
         }
         // ------------------------------------------------------------------------------------ then
-        Assertions.assertEquals(pos + HelloWorld.BYTES, f.length());
+        // assert, <file.length> increased by <12>
+        Assertions.assertEquals(
+                length + HelloWorld.BYTES,
+                file.length()
+        );
     }
 }

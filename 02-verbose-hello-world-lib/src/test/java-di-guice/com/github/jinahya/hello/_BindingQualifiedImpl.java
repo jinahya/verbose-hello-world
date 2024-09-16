@@ -33,7 +33,7 @@ import java.lang.annotation.Target;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @BindingAnnotation
-@_QualifiedDemo
+@__QualifiedDemo
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE,
          ElementType.ANNOTATION_TYPE})

@@ -20,6 +20,7 @@ package com.github.jinahya.hello._05_java_util_concurrent;
  * #L%
  */
 
+import com.github.jinahya.hello.AwaitilityTestUtils;
 import com.github.jinahya.hello.util.JavaLangObjectUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -100,7 +101,6 @@ class _Flow_DayOfWeek_Example_Test {
                 subscriber.onError(new IllegalArgumentException("n(" + n + ") is negative"));
             }
             if (cancelled) {
-                log.debug("cancelled. returns...");
                 return;
             }
             accumulated.addAndGet(n);
@@ -175,23 +175,23 @@ class _Flow_DayOfWeek_Example_Test {
 
         @Override
         public void onSubscribe(final Flow.Subscription subscription) {
-            log.debug("onSubscribe({}", subscription);
+            log.debug("{}.onSubscribe({}", this, subscription);
             reference.set(subscription);
         }
 
         @Override
         public void onNext(final DayOfWeek item) {
-            log.debug("onNext({})", item);
+            log.debug("{}.onNext({})", this,item);
         }
 
         @Override
         public void onError(final Throwable throwable) {
-            log.debug("onError({})", throwable, throwable);
+            log.debug("{}.onError({})", this, throwable, throwable);
         }
 
         @Override
         public void onComplete() {
-            log.debug("onComplete()");
+            log.debug("{}.onComplete()", this);
         }
 
         private final AtomicReference<Flow.Subscription> reference;
@@ -202,6 +202,9 @@ class _Flow_DayOfWeek_Example_Test {
     void __() {
         final var reference = new AtomicReference<Flow.Subscription>();
         final var subscriber = new DayOfWeekSubscriber(reference) { // @formatter:off
+            @Override public String toString() {
+                return DayOfWeekSubscriber.class.getSimpleName() + '@' + super.toString();
+            }
             @Override public void onSubscribe(final Flow.Subscription subscription) {
                 super.onSubscribe(subscription);
                 if (ThreadLocalRandom.current().nextBoolean()) {
@@ -215,12 +218,15 @@ class _Flow_DayOfWeek_Example_Test {
                 }
             } // @formatter:on
         };
+        // subscribe
         DayOfWeekPublisher.getInstance().subscribe(subscriber);
+        // request a random number of items
         reference.get().request(ThreadLocalRandom.current().nextLong(1, 8));
-        Awaitility.await()
-                .timeout(2L, TimeUnit.SECONDS)
-                .pollDelay(1L, TimeUnit.SECONDS)
-                .untilAsserted(() -> Assertions.assertTrue(true));
+        // await, for 1 sec
+        AwaitilityTestUtils.awaitForOneSecond();
+        // cancel the subscription
         reference.get().cancel();
+        // request some after the cancellation
+        reference.get().request(1L);
     }
 }

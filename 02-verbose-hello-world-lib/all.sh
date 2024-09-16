@@ -1,4 +1,4 @@
-#!/bin/zsh
+# #!/bin/zsh
 declare -A profilesAndTests=(
   ["cdi-se-openwebbeans"]="HelloWorldCdiSeOpenWebBeansTest"
   ["cdi-se-openwebbeans-junit5"]="HelloWorldCdiSeOpenWebBeansJunit5Test"

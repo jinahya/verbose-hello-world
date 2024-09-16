@@ -32,10 +32,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
-import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
-import org.mockito.Mockito;
 
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
@@ -56,10 +54,13 @@ import java.util.stream.Stream;
 @SuppressWarnings({"java:S101"})
 class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
 
-    private static <R> R adjust(final ByteBuffer buffer,
-                                final Function<
-                                        ? super ByteBuffer, ? extends IntFunction<
-                                        ? extends IntFunction<? extends R>>> function) {
+    private static <R> R adjust(
+            final ByteBuffer buffer,
+            final Function<
+                    ? super ByteBuffer,
+                    ? extends IntFunction<
+                            ? extends IntFunction<
+                                    ? extends R>>> function) {
         if (Objects.requireNonNull(buffer, "buffer is null").remaining() < HelloWorld.BYTES) {
             throw new IllegalArgumentException(
                     "buffer.remaining(" + buffer.remaining() + ") < " + HelloWorld.BYTES
@@ -171,6 +172,7 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
         // verify, <service.set(buffer.array(), buffer.arrayOffset() + position)> invoked, once
 
         // assert, <buffer>'s <position> increased by <HelloWorld.BYTES>
+        JavaNioByteBufferUtils.print(buffer);
 
         // assert, <result> is same as <buffer>
         Assertions.assertSame(buffer, result);
@@ -190,25 +192,21 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
     void __BufferDoesNotHaveBackingArray() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // stub, service.set(array) will return given array
-        BDDMockito.willAnswer(i -> i.getArgument(0))
-                .given(service)
-                .set(ArgumentMatchers.any());
+        // stub, <service.set(array)> will return given <array>
+        stub_set_array_will_return_the_array();
+        // create a direct buffer
         final ByteBuffer buffer = adjust(ByteBuffer.allocateDirect(HelloWorld.BYTES << 1));
         JavaNioByteBufferUtils.print(buffer);
+        // assume the buffer does not have a backing array
         Assumptions.assumeFalse(
                 buffer.hasArray(),
-                "failed to assume that a direct buffer does not has a backing array"
+                "failed to assume that a direct buffer does not have a backing array"
         );
         // ------------------------------------------------------------------------------------ when
         final var result = service.put(buffer);
         // ------------------------------------------------------------------------------------ then
         // verify, <service.set(byte[12])> invoked, once
-        final var arrayCaptor = ArgumentCaptor.forClass(byte[].class);
-        Mockito.verify(service, Mockito.times(1)).set(arrayCaptor.capture());
-        final var array = arrayCaptor.getValue();
-        Assertions.assertNotNull(array);
-        Assertions.assertEquals(HelloWorld.BYTES, array.length);
+        final var array = verify_set_array12_invoked_once();
         // verify, <buffer.put(array)> invoked, once
 
         // assert, <result> is same as <buffer>

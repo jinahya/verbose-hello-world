@@ -41,23 +41,17 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ThreadLocalRandom;
 
-/**
- * Tests appending the {@code hello, world} to an instance of {@link File} using
- * {@link HelloWorld#write(Writer)} method.
- *
- * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- */
 @DisplayName("append using Writer")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_13_Append_File_Using_Writer_Test extends HelloWorldTest {
+class HelloWorld_23_Append_File_Using_Writer_Test extends HelloWorldTest {
 
     @Test
     void _appendToFileUsingDataOutput_(@TempDir final File dir) throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // prepare cbuf
+        // prepare <cbuf>
         final char[] cbuf;
         {
             cbuf = new RandomStringGenerator.Builder()
@@ -70,7 +64,7 @@ class HelloWorld_13_Append_File_Using_Writer_Test extends HelloWorldTest {
                 log.debug("c: {}", String.format("%1$04x", (int) c));
             }
         }
-        // stub service.set(DataOutput) will write 12 empty bytes.
+        // stub, <service.set(Writer)> will write <12> empty bytes.
         BDDMockito.willAnswer(i -> {
                     final var writer = i.getArgument(0, Writer.class);
                     writer.write(cbuf);
@@ -79,7 +73,7 @@ class HelloWorld_13_Append_File_Using_Writer_Test extends HelloWorldTest {
                 .given(service)
                 .write(ArgumentMatchers.<Writer>any());
         // create a temp file
-        final File file = File.createTempFile("tmp", "tmp", dir);
+        final File file = File.createTempFile("tmp", null, dir);
         // write some dummy bytes
         if (ThreadLocalRandom.current().nextBoolean()) {
             try (var stream = new FileOutputStream(file)) {
@@ -91,10 +85,15 @@ class HelloWorld_13_Append_File_Using_Writer_Test extends HelloWorldTest {
         // ------------------------------------------------------------------------------------ when
         try (var writer = new OutputStreamWriter(new FileOutputStream(file, true), // appending!
                                                  StandardCharsets.US_ASCII)) {     // US_ASCII!
-            service.write(writer);
+            final var result = service.write(writer);
+            assert result == writer;
             writer.flush();
         }
         // ------------------------------------------------------------------------------------ then
-        Assertions.assertEquals(length + HelloWorld.BYTES, file.length());
+        // assert, <file.length> increased by <12>
+        Assertions.assertEquals(
+                length + HelloWorld.BYTES,
+                file.length()
+        );
     }
 }

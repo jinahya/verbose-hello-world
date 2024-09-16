@@ -35,20 +35,19 @@ import java.io.Serial;
  */
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorldDiHk2Binder
-        extends AbstractBinder {
+class HelloWorldDiHk2Binder extends AbstractBinder {
 
     private static class _QualifiedDemo_
-            extends AnnotationLiteral<_QualifiedDemo>
-            implements _QualifiedDemo {
+            extends AnnotationLiteral<__QualifiedDemo>
+            implements __QualifiedDemo {
 
         @Serial
         private static final long serialVersionUID = 8947668889394516822L;
     }
 
     private static class _QualifiedImpl_
-            extends AnnotationLiteral<_QualifiedImpl>
-            implements _QualifiedImpl {
+            extends AnnotationLiteral<__QualifiedImpl>
+            implements __QualifiedImpl {
 
         @Serial
         private static final long serialVersionUID = 9084623087464727990L;

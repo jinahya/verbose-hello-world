@@ -20,6 +20,7 @@ package com.github.jinahya.hello._05_java_util_concurrent;
  * #L%
  */
 
+import com.github.jinahya.hello.AwaitilityTestUtils;
 import com.github.jinahya.hello.util.JavaLangObjectUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -55,6 +56,7 @@ class _Flow_LocalDate_Example_Test {
             this.subscriber = Objects.requireNonNull(subscriber, "subscriber is null");
             this.accumulated = new AtomicLong();
             Thread.startVirtualThread(() -> {
+                LocalDate date = null;
                 while (!cancelled) {
                     while (!cancelled && accumulated.get() == 0L) {
                         synchronized (accumulated) {
@@ -119,8 +121,6 @@ class _Flow_LocalDate_Example_Test {
         private final AtomicLong accumulated;
 
         private volatile boolean cancelled;
-
-        private volatile LocalDate date;
     }
 
     private static class LocalDatePublisher implements Flow.Publisher<LocalDate> {
@@ -211,12 +211,15 @@ class _Flow_LocalDate_Example_Test {
                 }
             } // @formatter:on
         };
+        // subscribe
         LocalDatePublisher.getInstance().subscribe(subscriber);
+        // request a random number of items
         reference.get().request(ThreadLocalRandom.current().nextLong(1, 16));
-        Awaitility.await()
-                .timeout(2L, TimeUnit.SECONDS)
-                .pollDelay(1L, TimeUnit.SECONDS)
-                .untilAsserted(() -> Assertions.assertTrue(true));
+        // await, for 1 sec
+        AwaitilityTestUtils.awaitForOneSecond();
+        // cancel the subscription
         reference.get().cancel();
+        // request some after the cancellation
+        reference.get().request(1L);
     }
 }

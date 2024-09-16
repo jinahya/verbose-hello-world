@@ -88,21 +88,13 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends HelloWorldTest {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // stub, <service.put(buffer)> will increase the <buffer>'s <position> by <12>
-        BDDMockito.willAnswer(i -> {
-                    final var buffer = i.getArgument(0, ByteBuffer.class);
-                    buffer.position(buffer.position() + HelloWorld.BYTES);
-                    return buffer;
-                })
-                .given(service)
-                .put(ArgumentMatchers.argThat(b -> b != null && b.remaining() >= HelloWorld.BYTES));
-        final var writtenSoFar = new LongAdder();
-        final var channel = Mockito.mock(WritableByteChannel.class);
+        stub_put_buffer_will_increase_buffer_position_by_12();
         // stub, <channel.write(buffer)> will increase the <buffer>'s <position> by a random value
+        final var channel = Mockito.mock(WritableByteChannel.class);
         BDDMockito.willAnswer(i -> {
             final var src = i.getArgument(0, ByteBuffer.class);
             final var written = ThreadLocalRandom.current().nextInt(src.remaining()) + 1;
             src.position(src.position() + written);
-            writtenSoFar.add(written);
             return written;
         }).given(channel).write(ArgumentMatchers.argThat(b -> b != null && b.hasRemaining()));
         // ------------------------------------------------------------------------------------ when
@@ -113,8 +105,6 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends HelloWorldTest {
         // verify, <channel.write(buffer)> invoked, at least once
 
         // assert, <buffer> has no <remaining>
-
-        // assert, <writtenSoFar.intValue()> is equal to <HelloWorld.BYTES>
 
         // assert, <result> is same as <channel>
         Assertions.assertSame(channel, result);
