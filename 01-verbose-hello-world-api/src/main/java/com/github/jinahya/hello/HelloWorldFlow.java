@@ -54,8 +54,7 @@ public final class HelloWorldFlow {
      * @param <T> item type parameter.
      * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
      */
-    public abstract static class HelloWorldPublisher<T> // @formatter:off
-            implements Flow.Publisher<T> {
+    public abstract static class HelloWorldPublisher<T> implements Flow.Publisher<T> { // @formatter:off
         /**
          * A publisher publishes <em>hello-world-bytes</em>.
          * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
