@@ -35,26 +35,19 @@ import org.mockito.BDDMockito;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.io.Writer;
 import java.util.concurrent.ThreadLocalRandom;
 
-/**
- * Tests appending the {@code hello, world} to an instance of {@link File} using
- * {@link HelloWorld#write(Writer)} method.
- *
- * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- */
-@DisplayName("append using Writer")
+@DisplayName("append using RandomAccessFile")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_12_Append_File_Using_RandomAccessFile_Test extends HelloWorldTest {
+class HelloWorld_22_Append_File_Using_RandomAccessFile_Test extends HelloWorldTest {
 
     @Test
-    void _appendToFileUsingDataOutput_(@TempDir final File tempDir) throws IOException {
+    void __(@TempDir final File tempDir) throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // stub, service.write(RandomAccessFile) will write 12 empty bytes.
+        // stub, <service.write(RandomAccessFile)> will write <12> empty bytes.
         BDDMockito.willAnswer(i -> {
                     final var file = i.getArgument(0, RandomAccessFile.class);
                     file.write(new byte[HelloWorld.BYTES]);
@@ -64,14 +57,19 @@ class HelloWorld_12_Append_File_Using_RandomAccessFile_Test extends HelloWorldTe
                 .write(ArgumentMatchers.<RandomAccessFile>notNull());
         // create a temp file
         final File f = File.createTempFile("tmp", "tmp", tempDir);
+        assert f.length() == 0L;
         final var pos = ThreadLocalRandom.current().nextLong(128L);
         // ------------------------------------------------------------------------------------ when
         try (var file = new RandomAccessFile(f, "rw")) { // check, rws, rwd
             file.seek(pos);
-            service.write(file);
+            final var result = service.write(file);
+            assert result == file;
             file.getFD().sync();
         }
         // ------------------------------------------------------------------------------------ then
-        Assertions.assertEquals(pos + HelloWorld.BYTES, f.length());
+        Assertions.assertEquals(
+                pos + HelloWorld.BYTES,
+                f.length()
+        );
     }
 }

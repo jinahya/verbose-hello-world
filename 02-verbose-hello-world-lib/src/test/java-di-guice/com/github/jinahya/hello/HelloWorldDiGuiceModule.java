@@ -46,10 +46,10 @@ class HelloWorldDiGuiceModule extends AbstractModule {
                 .to(HelloWorldImpl.class);
         // -----------------------------------------------------------------------------------------
         bind((HelloWorld.class))
-                .annotatedWith(_QualifiedDemo.class)
+                .annotatedWith(__QualifiedDemo.class)
                 .to(HelloWorldDemo.class);
         bind((HelloWorld.class))
-                .annotatedWith(_QualifiedImpl.class)
+                .annotatedWith(__QualifiedImpl.class)
                 .to(HelloWorldImpl.class);
         // -----------------------------------------------------------------------------------------
         bind((HelloWorld.class))

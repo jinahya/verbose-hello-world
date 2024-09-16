@@ -81,7 +81,7 @@ class HelloWorld_03_Append_Path_Test extends HelloWorldTest {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // stub, <service.write(channel)> will return the <channel>
-        BDDMockito.willAnswer(i -> i.getArgument(0, WritableByteChannel.class))
+        BDDMockito.willAnswer(i -> i.getArgument(0))
                 .given(service)
                 .write(ArgumentMatchers.any(WritableByteChannel.class));
         final var path = Mockito.mock(Path.class);
@@ -95,6 +95,7 @@ class HelloWorld_03_Append_Path_Test extends HelloWorldTest {
             final var result = service.append(path);
             // -------------------------------------------------------------------------------- then
             // verify, <new FileChannel.open(path, <options>)> invoked, once
+
             // verify, <options> contains <StandardOpenOption.WRITE>, <StandardOpenOption.CREATE>,
             //         <StandardOpenOption.APPEND)>, and no others
 
@@ -121,8 +122,9 @@ class HelloWorld_03_Append_Path_Test extends HelloWorldTest {
                     try (var channel = FileChannel.open(path, StandardOpenOption.APPEND)) {
                         for (var b = ByteBuffer.allocate(HelloWorld.BYTES); b.hasRemaining(); ) {
                             final var w = channel.write(b);
-                            assert w >= 0;
+                            assert w >= 0; // why?
                         }
+                        channel.force(true);
                     }
                     return path;
                 })

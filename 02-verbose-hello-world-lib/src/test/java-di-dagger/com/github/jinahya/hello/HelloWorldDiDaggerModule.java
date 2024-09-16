@@ -44,13 +44,13 @@ class HelloWorldDiDaggerModule {
         return new HelloWorldImpl();
     }
 
-    @_QualifiedDemo
+    @__QualifiedDemo
     @Provides
     static HelloWorld provideQualifiedDemo() {
         return new HelloWorldDemo();
     }
 
-    @_QualifiedImpl
+    @__QualifiedImpl
     @Provides
     static HelloWorld provideQualifiedImpl() {
         return new HelloWorldImpl();

@@ -58,7 +58,8 @@ abstract class _HelloWorldFlowTest extends HelloWorldTest {
                     final var buffer = i.getArgument(0, ByteBuffer.class);
                     buffer.put("hello, world".getBytes(StandardCharsets.US_ASCII));
                     return buffer;
-                }).given(service())
+                })
+                .given(service())
                 .put(ArgumentMatchers.argThat(b -> b != null && b.remaining() >= HelloWorld.BYTES));
     }
 }
