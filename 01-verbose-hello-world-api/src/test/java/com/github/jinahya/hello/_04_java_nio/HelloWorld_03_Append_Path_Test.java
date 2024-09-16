@@ -81,9 +81,9 @@ class HelloWorld_03_Append_Path_Test extends HelloWorldTest {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // stub, <service.write(channel)> will return the <channel>
-        BDDMockito.willAnswer(i -> i.getArgument(0, WritableByteChannel.class))
+        BDDMockito.willAnswer(i -> i.getArgument(0))
                 .given(service)
-                .write(ArgumentMatchers.any(WritableByteChannel.class));
+                .write(ArgumentMatchers.<WritableByteChannel>any());
         final var path = Mockito.mock(Path.class);
         final var channel = Mockito.mock(FileChannel.class);
         try (var mockStatic = Mockito.mockStatic(FileChannel.class)) {
@@ -95,6 +95,7 @@ class HelloWorld_03_Append_Path_Test extends HelloWorldTest {
             final var result = service.append(path);
             // -------------------------------------------------------------------------------- then
             // verify, <new FileChannel.open(path, <options>)> invoked, once
+
             // verify, <options> contains <StandardOpenOption.WRITE>, <StandardOpenOption.CREATE>,
             //         <StandardOpenOption.APPEND)>, and no others
 
@@ -112,7 +113,7 @@ class HelloWorld_03_Append_Path_Test extends HelloWorldTest {
     @畵蛇添足("testing with a real path doesn't add any value")
     @DisplayName("path's size should be increased by HelloWorld.BYTES")
     @Test
-    void _添足_畵蛇(@TempDir final Path tempDir) throws Exception {
+    void _添足_畵蛇(@TempDir final Path dir) throws Exception {
         // ----------------------------------------------------------------------------------- given
         var service = service();
         // stub, <service.append(Path)> will append 12 bytes
@@ -121,14 +122,15 @@ class HelloWorld_03_Append_Path_Test extends HelloWorldTest {
                     try (var channel = FileChannel.open(path, StandardOpenOption.APPEND)) {
                         for (var b = ByteBuffer.allocate(HelloWorld.BYTES); b.hasRemaining(); ) {
                             final var w = channel.write(b);
-                            assert w >= 0;
+                            assert w >= 0; // why?
                         }
+                        channel.force(true);
                     }
                     return path;
                 })
                 .given(service)
                 .append(ArgumentMatchers.any(Path.class));
-        var path = Files.createTempFile(tempDir, null, null);
+        var path = Files.createTempFile(dir, null, null);
         var size = Files.size(path);
         // ------------------------------------------------------------------------------------ when
         var result = service.append(path);

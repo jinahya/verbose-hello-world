@@ -61,7 +61,7 @@ class HelloWorld_01_Send_Socket_Test extends HelloWorldTest {
         final var service = service();
         final Socket socket = null;
         // ------------------------------------------------------------------------------- when/then
-        // assert, service.send((Socket) null)) throws a NullPointerException
+        // assert, <service.send(socket)> throws a NullPointerException
         Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.send(socket)
@@ -75,13 +75,13 @@ class HelloWorld_01_Send_Socket_Test extends HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("should invoke write(socket.getOutputStream())")
+    @DisplayName("should invoke write(socket.outputStream)")
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // stub, service.write(stream) will return the stream
-        BDDMockito.willAnswer(i -> i.getArgument(0, OutputStream.class))
+        // stub, <service.write(stream)> will return the <stream>
+        BDDMockito.willAnswer(i -> i.getArgument(0))
                 .given(service)
                 .write(ArgumentMatchers.any(OutputStream.class));
         final var socket = Mockito.mock(Socket.class);                 // <1>
@@ -94,7 +94,9 @@ class HelloWorld_01_Send_Socket_Test extends HelloWorldTest {
         Mockito.verify(socket, Mockito.times(1)).getOutputStream();
         // verify, <service.write(stream)> invoked, once
 
-        // verify, no more interaction with the <stream>
+        // verify, no more interactions with the <stream>
+
+        // verify, no more interactions with the <socket>
 
         // assert, <result> is same as <socket>
         Assertions.assertSame(socket, result);

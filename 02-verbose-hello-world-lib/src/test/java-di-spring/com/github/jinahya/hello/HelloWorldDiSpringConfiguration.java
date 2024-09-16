@@ -49,13 +49,13 @@ class HelloWorldDiSpringConfiguration {
         return new HelloWorldImpl();
     }
 
-    @_QualifiedDemo
+    @__QualifiedDemo
     @Bean
     HelloWorld qualifiedDemo() {
         return new HelloWorldDemo();
     }
 
-    @_QualifiedImpl
+    @__QualifiedImpl
     @Bean
     HelloWorld qualifiedImpl() {
         return new HelloWorldImpl();

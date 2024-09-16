@@ -25,7 +25,6 @@ import com.github.jinahya.hello.HelloWorldTest;
 import com.github.jinahya.hello.畵蛇添足;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -224,7 +223,7 @@ class HelloWorld_10_Write_AsynchronousFileChannelWithHandler_Test extends HelloW
 
     @畵蛇添足
     @Test
-    void _添足_畵蛇(@TempDir final Path tempDir) throws Exception { // @formatter:off
+    void _添足_畵蛇(@TempDir final Path dir) throws Exception { // @formatter:off
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // stub, <service.write(channel, position, attachment, handler)>
@@ -264,7 +263,7 @@ class HelloWorld_10_Write_AsynchronousFileChannelWithHandler_Test extends HelloW
                 ArgumentMatchers.<Void>any(),
                 ArgumentMatchers.notNull()
         );
-        final var path = Files.createTempFile(tempDir, null, null);
+        final var path = Files.createTempFile(dir, null, null);
         final var position = ThreadLocalRandom.current().nextLong(128L);
         // ------------------------------------------------------------------------------------ when
         try (var channel = AsynchronousFileChannel.open(path, StandardOpenOption.WRITE)) {

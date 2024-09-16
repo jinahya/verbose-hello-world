@@ -54,6 +54,11 @@
       </properties>
       <dependencies>
         <dependency>
+          <groupId>jakarta.interceptor</groupId>
+          <artifactId>jakarta.interceptor-api</artifactId>
+          <scope>provided</scope>
+        </dependency>
+        <dependency>
           <groupId>org.apache.openwebbeans</groupId>
           <artifactId>openwebbeans-junit5</artifactId>
           <scope>test</scope>
@@ -110,6 +115,11 @@
         <test>HelloWorldCdiSeOpenWebBeansJunit5Test</test>
       </properties>
       <dependencies>
+        <dependency>
+          <groupId>jakarta.interceptor</groupId>
+          <artifactId>jakarta.interceptor-api</artifactId>
+          <scope>provided</scope>
+        </dependency>
         <dependency>
           <groupId>org.apache.openwebbeans</groupId>
           <artifactId>openwebbeans-junit5</artifactId>

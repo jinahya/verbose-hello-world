@@ -78,17 +78,17 @@ class HelloWorld_05_Write_Writer_Test extends HelloWorldTest {
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // stub, service.append(appendable) will return given appendable
+        // stub, <service.append(appendable)> will return given <appendable>
         BDDMockito.willAnswer(i -> i.getArgument(0))
-                .given(service())
+                .given(service)
                 .append(ArgumentMatchers.any(Appendable.class));
         final var writer = Mockito.mock(Writer.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(writer);
         // ------------------------------------------------------------------------------------ then
-        // verify, service.append(writer) invoked, once
+        // verify, <service.append(writer)> invoked, once
 
-        // assert, result is same as writer
+        // assert, <result> is same as <writer>
         Assertions.assertSame(writer, result);
     }
 }
