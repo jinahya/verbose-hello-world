@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
@@ -87,7 +88,7 @@ class HelloWorld_03_Append_Path_Test extends HelloWorldTest {
         final var path = Mockito.mock(Path.class);
         final var channel = Mockito.mock(FileChannel.class);
         try (var mockStatic = Mockito.mockStatic(FileChannel.class)) {
-            // FileChannel.open(path, arguments) will return the channel
+            // stub, FileChannel.open(path, arguments) will return the channel
             mockStatic.when(() -> FileChannel.open(ArgumentMatchers.same(path),
                                                    ArgumentMatchers.any(OpenOption[].class)))
                     .thenReturn(channel);
@@ -95,6 +96,7 @@ class HelloWorld_03_Append_Path_Test extends HelloWorldTest {
             final var result = service.append(path);
             // -------------------------------------------------------------------------------- then
             // verify, <new FileChannel.open(path, <options>)> invoked, once
+            final var captor = ArgumentCaptor.forClass(OpenOption[].class);
 
             // verify, <options> contains <StandardOpenOption.WRITE>, <StandardOpenOption.CREATE>,
             //         <StandardOpenOption.APPEND)>, and no others
@@ -118,9 +120,10 @@ class HelloWorld_03_Append_Path_Test extends HelloWorldTest {
         var service = service();
         // stub, <service.append(Path)> will append 12 bytes
         BDDMockito.willAnswer(i -> {
-                    var path = i.getArgument(0, Path.class);
+                    final var path = i.getArgument(0, Path.class);
                     try (var channel = FileChannel.open(path, StandardOpenOption.APPEND)) {
-                        for (var b = ByteBuffer.allocate(HelloWorld.BYTES); b.hasRemaining(); ) {
+                        for (final var b = ByteBuffer.allocate(HelloWorld.BYTES);
+                             b.hasRemaining(); ) {
                             final var w = channel.write(b);
                             assert w >= 0; // why?
                         }
@@ -133,7 +136,7 @@ class HelloWorld_03_Append_Path_Test extends HelloWorldTest {
         var path = Files.createTempFile(dir, null, null);
         var size = Files.size(path);
         // ------------------------------------------------------------------------------------ when
-        var result = service.append(path);
+        final var result = service.append(path);
         // ------------------------------------------------------------------------------------ then
         // assert, <path>'s <size> has been increased by <12>
         Assertions.assertEquals(

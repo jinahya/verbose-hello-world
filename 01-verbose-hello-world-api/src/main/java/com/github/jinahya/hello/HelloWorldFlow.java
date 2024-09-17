@@ -20,6 +20,7 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import com.github.jinahya.hello.util.JavaNioByteBufferUtils;
 import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -54,25 +55,33 @@ public final class HelloWorldFlow {
      * @param <T> item type parameter.
      * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
      */
-    public abstract static class HelloWorldPublisher<T> implements Flow.Publisher<T> { // @formatter:off
+    public abstract static class HelloWorldPublisher<T> implements Flow.Publisher<T> {
+
         /**
-         * A publisher publishes <em>hello-world-bytes</em>.
+         * A publisher publishes each byte of <em>hello-world-bytes</em>.
+         *
          * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
-         * */
+         */
         public static class OfByte extends HelloWorldPublisher<Byte> {
+
             /**
              * Creates a new instance.
+             *
              * @param service  a service for the <em>hello-world-bytes</em>.
              * @param executor an executor service for publishing items asynchronously.
              */
             public OfByte(final HelloWorld service, final ExecutorService executor) {
                 super(service, executor);
             }
-            @Override public String toString() {
+
+            @Override
+            public String toString() {
                 return String.format("[byte-publisher@%1$08x]", hashCode());
             }
-            @Override public void subscribe(final Flow.Subscriber<? super Byte> subscriber) {
-                log.debug("{}.subscribe({})", this, subscriber);
+
+            @Override
+            public void subscribe(final Flow.Subscriber<? super Byte> subscriber) {
+                log.debug("{}.subscribe({})", this, subscriber); // NOSONAR
                 Objects.requireNonNull(subscriber, "subscriber is null");
                 final var buffer = service.put(ByteBuffer.allocate(HelloWorld.BYTES)).limit(0);
                 final var latch = new CountDownLatch(1);
@@ -91,20 +100,32 @@ public final class HelloWorldFlow {
                                     Thread.currentThread().interrupt();
                                 }
                             }
-                            subscriber.onNext(buffer.get());
+                            while (buffer.hasRemaining()) {
+                                JavaNioByteBufferUtils.print(buffer);
+                                subscriber.onNext(buffer.get());
+                            }
+                            JavaNioByteBufferUtils.print(buffer);
                             if (buffer.position() == buffer.capacity()) {
                                 subscriber.onComplete();
                                 Thread.currentThread().interrupt();
                             }
                         }
                     }
+                    log.debug("out of while loop");
                 });
                 subscriber.onSubscribe(new Flow.Subscription() {
-                    @Override public String toString() {
+                    @Override
+                    public String toString() {
                         return String.format("[subscription-for-%1$s]", subscriber);
                     }
-                    @Override public void request(final long n) {
-                        log.debug("{}.request({})", this, n);
+
+                    private void cancelInternal() {
+                        future.cancel(true);
+                    }
+
+                    @Override
+                    public void request(final long n) {
+                        log.debug("{}.request({})", this, n); // NOSONAR
                         if (n <= 0L) {
                             cancelInternal();
                             subscriber.onError(new IllegalArgumentException("n(" + n + ") <= 0L"));
@@ -121,34 +142,41 @@ public final class HelloWorldFlow {
                             buffer.notifyAll();
                         }
                     }
-                    private void cancelInternal() {
-                        future.cancel(true);
-                    }
-                    @Override public void cancel() {
-                        log.debug("{}.cancel()", this);
+
+                    @Override
+                    public void cancel() {
+                        log.debug("{}.cancel()", this); // NOSONAR
                         cancelInternal();
                     }
                 });
                 latch.countDown();
             }
         }
+
         /**
          * A publisher publishes arrays of the <em>hello-world-bytes</em>.
+         *
          * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
          */
         public static class OfArray extends HelloWorldPublisher<byte[]> {
+
             /**
              * Creates a new instance with specified service and executor.
-             * @param service the service for the <em>hello-world-bytes</em>.
+             *
+             * @param service  the service for the <em>hello-world-bytes</em>.
              * @param executor the executor for publishing items asynchronously.
              */
             public OfArray(final HelloWorld service, final ExecutorService executor) {
                 super(service, executor);
             }
-            @Override public String toString() {
+
+            @Override
+            public String toString() {
                 return String.format("[array-publisher@%1$08x]", hashCode());
             }
-            @Override public void subscribe(final Flow.Subscriber<? super byte[]> subscriber) {
+
+            @Override
+            public void subscribe(final Flow.Subscriber<? super byte[]> subscriber) {
                 Objects.requireNonNull(subscriber, "subscriber is null");
                 final var accumulated = new AtomicLong();
                 final var lock = new ReentrantLock();
@@ -191,31 +219,42 @@ public final class HelloWorldFlow {
                                         super.onSubscribe(subscription);
                                         subscription.request(array.length);
                                     }
-                                    @Override public void onNext(final Byte item) {
+
+                                    @Override
+                                    public void onNext(final Byte item) {
                                         super.onNext(item);
                                         array[index++] = item;
                                     }
-                                    @Override public void onError(final Throwable throwable) {
+
+                                    @Override
+                                    public void onError(final Throwable throwable) {
                                         super.onError(throwable);
                                         Thread.currentThread().interrupt();
                                         subscriber.onError(throwable);
                                     }
-                                    @Override public void onComplete() {
+
+                                    @Override
+                                    public void onComplete() {
                                         super.onComplete();
                                         assert index == array.length;
                                         subscriber.onNext(array);
                                     }
+
                                     private final byte[] array = new byte[HelloWorld.BYTES];
+
                                     private int index = 0;
                                 }
                         );
                     }
                 });
                 subscriber.onSubscribe(new Flow.Subscription() {
-                    @Override public String toString() {
+                    @Override
+                    public String toString() {
                         return String.format("[subscription-for-%s]", subscriber);
                     }
-                    @Override public void request(final long n) {
+
+                    @Override
+                    public void request(final long n) {
                         log.debug("{}.request({})", this, n);
                         if (n <= 0L) {
                             cancelInternal();
@@ -234,10 +273,13 @@ public final class HelloWorldFlow {
                             lock.unlock();
                         }
                     }
+
                     private void cancelInternal() {
                         future.cancel(true);
                     }
-                    @Override public void cancel() {
+
+                    @Override
+                    public void cancel() {
                         log.debug("{}.cancel()", this);
                         cancelInternal();
                     }
@@ -245,139 +287,194 @@ public final class HelloWorldFlow {
                 latch.countDown();
             }
         }
+
         /**
          * A publisher publishes byte buffers of the <em>hello-world-bytes</em>.
+         *
          * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
          */
         public static class OfBuffer extends HelloWorldPublisher<ByteBuffer> {
+
             /**
              * Creates a new instance with specified service and executor.
-             * @param service the service for the <em>hello-world-bytes</em>.
+             *
+             * @param service  the service for the <em>hello-world-bytes</em>.
              * @param executor the executor for publishing items asynchronously.
              */
             public OfBuffer(final HelloWorld service, final ExecutorService executor) {
                 super(service, executor);
             }
-            @Override public String toString() {
+
+            @Override
+            public String toString() {
                 return String.format("[buffer-publisher@%1$08x]", hashCode());
             }
-            @Override public void subscribe(final Flow.Subscriber<? super ByteBuffer> subscriber) {
+
+            @Override
+            public void subscribe(final Flow.Subscriber<? super ByteBuffer> subscriber) {
                 super.subscribe(subscriber);
                 final var processor = new Flow.Processor<byte[], ByteBuffer>() {
-                    @Override public String toString() {
+                    @Override
+                    public String toString() {
                         return String.format("[array-to-buffer-processor@%08x]", hashCode());
                     }
+
                     @Override
                     public void subscribe(final Flow.Subscriber<? super ByteBuffer> subscriber) {
                         log.debug("{}.subscribe({})", this, subscriber);
                         subscriber.onSubscribe(new Flow.Subscription() {
-                            @Override public String toString() {
-                                return String.format("[subscription-for-%1$s@%2$08x]", subscriber, hashCode());
+                            @Override
+                            public String toString() {
+                                return String.format("[subscription-for-%1$s@%2$08x]", subscriber,
+                                                     hashCode());
                             }
-                            @Override public void request(final long n) {
+
+                            @Override
+                            public void request(final long n) {
                                 log.debug("{}.request({})", this, n);
                                 subscription.request(n);
                             }
-                            @Override public void cancel() {
+
+                            @Override
+                            public void cancel() {
                                 log.debug("{}.cancel()", this);
                                 subscription.cancel();
                             }
                         });
                     }
-                    @Override public void onSubscribe(final Flow.Subscription subscription) {
+
+                    @Override
+                    public void onSubscribe(final Flow.Subscription subscription) {
                         log.debug("{}.onSubscribe({})", this, subscription);
                         this.subscription = subscription;
                     }
-                    @Override public void onNext(final byte[] item) {
+
+                    @Override
+                    public void onNext(final byte[] item) {
                         log.debug("{}.onNext({})", this, item);
                         subscriber.onNext(ByteBuffer.wrap(item));
                     }
-                    @Override public void onError(final Throwable throwable) {
+
+                    @Override
+                    public void onError(final Throwable throwable) {
                         log.error("{}.onError({})", this, throwable, throwable);
                         subscriber.onError(throwable);
                     }
-                    @Override public void onComplete() {
+
+                    @Override
+                    public void onComplete() {
                         log.debug("{}.onComplete()", this);
                         subscriber.onComplete();
                     }
+
                     private Flow.Subscription subscription;
                 };
                 new OfArray(service, executor).subscribe(processor);
                 processor.subscribe(subscriber);
             }
         }
+
         /**
          * A publisher publishes byte buffers of the <em>hello-world-bytes</em>.
+         *
          * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
          */
         public static class OfString extends HelloWorldPublisher<String> {
+
             /**
              * Creates a new instance with specified service and executor.
-             * @param service the service for the <em>hello-world-bytes</em>.
+             *
+             * @param service  the service for the <em>hello-world-bytes</em>.
              * @param executor the executor for publishing items asynchronously.
              */
             public OfString(final HelloWorld service, final ExecutorService executor) {
                 super(service, executor);
             }
-            @Override public String toString() {
+
+            @Override
+            public String toString() {
                 return String.format("[string-publisher@%1$08x]", hashCode());
             }
-            @Override public void subscribe(final Flow.Subscriber<? super String> subscriber) {
+
+            @Override
+            public void subscribe(final Flow.Subscriber<? super String> subscriber) {
                 super.subscribe(subscriber);
                 final var processor = new Flow.Processor<ByteBuffer, String>() {
-                    @Override public String toString() {
+                    @Override
+                    public String toString() {
                         return String.format("[buffer-to-string-processor@%08x]", hashCode());
                     }
+
                     @Override
                     public void subscribe(final Flow.Subscriber<? super String> subscriber) {
                         log.debug("{}.subscribe({})", this, subscriber);
                         subscriber.onSubscribe(new Flow.Subscription() {
-                            @Override public String toString() {
-                                return String.format("[subscription-for-%1$s@%2$08x]", subscriber, hashCode());
+                            @Override
+                            public String toString() {
+                                return String.format("[subscription-for-%1$s@%2$08x]", subscriber,
+                                                     hashCode());
                             }
-                            @Override public void request(final long n) {
+
+                            @Override
+                            public void request(final long n) {
                                 log.debug("{}.request({})", this, n);
                                 subscription.request(n);
                             }
-                            @Override public void cancel() {
+
+                            @Override
+                            public void cancel() {
                                 log.debug("{}.cancel()", this);
                                 subscription.cancel();
                             }
                         });
                     }
-                    @Override public void onSubscribe(final Flow.Subscription subscription) {
+
+                    @Override
+                    public void onSubscribe(final Flow.Subscription subscription) {
                         log.debug("{}.onSubscribe({})", this, subscription);
                         this.subscription = subscription;
                     }
-                    @Override public void onNext(final ByteBuffer item) {
+
+                    @Override
+                    public void onNext(final ByteBuffer item) {
                         log.debug("{}.onNext({})", this, item);
                         subscriber.onNext(StandardCharsets.US_ASCII.decode(item).toString());
                     }
-                    @Override public void onError(final Throwable throwable) {
+
+                    @Override
+                    public void onError(final Throwable throwable) {
                         log.error("{}.onError({})", this, throwable, throwable);
                         subscriber.onError(throwable);
                     }
-                    @Override public void onComplete() {
+
+                    @Override
+                    public void onComplete() {
                         log.debug("{}.onComplete()", this);
                         subscriber.onComplete();
                     }
+
                     private Flow.Subscription subscription;
                 };
                 new OfBuffer(service, executor).subscribe(processor);
                 processor.subscribe(subscriber);
             }
         }
+
         private HelloWorldPublisher(final HelloWorld service, final ExecutorService executor) {
             super();
             this.service = Objects.requireNonNull(service, "service is null");
             this.executor = Objects.requireNonNull(executor, "executor is null");
         }
-        @Override public void subscribe(final Flow.Subscriber<? super T> subscriber) {
+
+        @Override
+        public void subscribe(final Flow.Subscriber<? super T> subscriber) {
             log.debug("{}.subscribe({})", this, subscriber);
         }
+
         final HelloWorld service;
+
         final ExecutorService executor;
-    } // @formatter:on
+    }
 
     /**
      * An abstract class for subscribing to {@link HelloWorldPublisher}.
@@ -385,67 +482,115 @@ public final class HelloWorldFlow {
      * @param <T> item type parameter.
      */
     @Slf4j
-    public abstract static class HelloWorldSubscriber<T> // @formatter:off
-            implements Flow.Subscriber<T> {
-        /** A subscriber for {@link HelloWorldPublisher.OfByte}. */
+    public abstract static class HelloWorldSubscriber<T> implements Flow.Subscriber<T> {
+
+        /**
+         * A subscriber for {@link HelloWorldPublisher.OfByte}.
+         */
         public static class OfByte extends HelloWorldSubscriber<Byte> {
-            /** Creates a new instance. */
+
+            /**
+             * Creates a new instance.
+             */
             public OfByte() {
                 super(i -> String.format("0x%1$02x('%2$c')", i, (char) i.byteValue()));
             }
-            @Override public String toString() {
+
+            @Override
+            public String toString() {
                 return String.format("[byte-subscriber@%1$08x]", hashCode());
             }
         }
-        /** A subscriber for {@link HelloWorldPublisher.OfArray}. */
+
+        /**
+         * A subscriber for {@link HelloWorldPublisher.OfArray}.
+         */
         public static class OfArray extends HelloWorldSubscriber<byte[]> {
-            /** Creates a new instance. */
-            public OfArray() { super(Arrays::toString); }
-            @Override public String toString() {
+
+            /**
+             * Creates a new instance.
+             */
+            public OfArray() {
+                super(Arrays::toString);
+            }
+
+            @Override
+            public String toString() {
                 return String.format("[array-subscriber@%1$08x]", hashCode());
             }
         }
-        /** A subscriber for {@link HelloWorldPublisher.OfBuffer}. */
+
+        /**
+         * A subscriber for {@link HelloWorldPublisher.OfBuffer}.
+         */
         public static class OfBuffer extends HelloWorldSubscriber<ByteBuffer> {
-            /** Creates a new instance. */
-            public OfBuffer() { super(Objects::toString); }
-            @Override public String toString() {
+
+            /**
+             * Creates a new instance.
+             */
+            public OfBuffer() {
+                super(Objects::toString);
+            }
+
+            @Override
+            public String toString() {
                 return String.format("[buffer-subscriber@%1$08x]", hashCode());
             }
         }
-        /** A subscriber for {@link HelloWorldPublisher.OfString}. */
+
+        /**
+         * A subscriber for {@link HelloWorldPublisher.OfString}.
+         */
         public static class OfString extends HelloWorldSubscriber<String> {
-            /** Creates a new instance. */
-            public OfString() { super(Function.identity()); }
-            @Override public String toString() {
+
+            /**
+             * Creates a new instance.
+             */
+            public OfString() {
+                super(Function.identity());
+            }
+
+            @Override
+            public String toString() {
                 return String.format("[string-subscriber@%1$08x]", hashCode());
             }
         }
+
         private HelloWorldSubscriber(final Function<? super T, String> formatter) {
             super();
             this.formatter = Optional.ofNullable(formatter).orElseGet(() -> Objects::toString);
         }
-        @Override public void onSubscribe(final Flow.Subscription subscription) {
+
+        @Override
+        public void onSubscribe(final Flow.Subscription subscription) {
             log.debug("{}.onSubscribe({})", this, subscription);
             if (this.subscription != null) {
                 this.subscription.cancel();
             }
             this.subscription = subscription;
         }
-        @Override public void onNext(final T item) {
+
+        @Override
+        public void onNext(final T item) {
             log.debug("{}.onNext({})", this, formatter.apply(item));
         }
-        @Override public void onError(final Throwable throwable) {
+
+        @Override
+        public void onError(final Throwable throwable) {
             log.error("{}.onError({})", this, throwable, throwable);
         }
-        @Override public void onComplete() {
+
+        @Override
+        public void onComplete() {
             log.debug("{}.onComplete()", this);
         }
+
         private final Function<? super T, String> formatter;
+
         @Accessors(fluent = true)
         @Getter(AccessLevel.PROTECTED)
         private Flow.Subscription subscription;
-    } // @formatter:on
+    }
 
     // ---------------------------------------------------------------------------------------------
     @_ExcludeFromCoverage_PrivateConstructor_Obviously

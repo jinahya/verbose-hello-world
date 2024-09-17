@@ -71,7 +71,7 @@ class HelloWorldFlow_14_Mutiny_MultiCreate_Test extends _HelloWorldFlowTest {
             final var publisher = Mockito.spy(
                     new HelloWorldFlow.HelloWorldPublisher.OfByte(service, EXECUTOR)
             );
-            // intercept, publisher.subscribe(subscriber) to wrap the subscriber as a spy
+            // intercept, <publisher.subscribe(subscriber)> to wrap the <subscriber> as a spy
             BDDMockito.willAnswer(i -> {
                 final var subscriber = Mockito.spy(i.getArgument(0, Flow.Subscriber.class));
                 // intercept, subscriber.onSubscribe(subscription)
@@ -89,10 +89,10 @@ class HelloWorldFlow_14_Mutiny_MultiCreate_Test extends _HelloWorldFlowTest {
             }.doSome(Multi.createFrom().publisher(publisher));
             HelloWorldTestUtils.awaitForOneSecond();
             // -------------------------------------------------------------------------------- then
-            final var subscriberCaptor = ArgumentCaptor.forClass(Flow.Subscriber.class);
-            // verify, publisher.subscribe(subscriber) invoked, once
-            Mockito.verify(publisher, Mockito.times(1)).subscribe(subscriberCaptor.capture());
-            final var subscriber = subscriberCaptor.getValue();
+            final var captor = ArgumentCaptor.forClass(Flow.Subscriber.class);
+            // verify, <publisher.subscribe(subscriber)> invoked, once
+            Mockito.verify(publisher, Mockito.times(1)).subscribe(captor.capture());
+            final var subscriber = captor.getValue();
             final var subscriptionCaptor = ArgumentCaptor.forClass(Flow.Subscription.class);
             // verify, subscriber.onSubscribe(subscription) invoked, once
             Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(subscriptionCaptor.capture());

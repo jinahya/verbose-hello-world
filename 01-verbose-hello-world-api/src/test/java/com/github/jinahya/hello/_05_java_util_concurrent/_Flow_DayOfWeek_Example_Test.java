@@ -43,7 +43,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({
-        "java:S3577" // class _Flow...
+        "java:S3577" // Test classes should comply with a naming convention
 })
 class _Flow_DayOfWeek_Example_Test {
 
@@ -58,10 +58,10 @@ class _Flow_DayOfWeek_Example_Test {
             super();
             this.subscriber = Objects.requireNonNull(subscriber, "subscriber is null");
             accumulated = new AtomicLong();
-            Thread.startVirtualThread(() -> {
-                final List<DayOfWeek> items = new LinkedList<>(Arrays.asList(DayOfWeek.values()));
-                while (!cancelled) {
-                    while (!cancelled && accumulated.get() == 0L) {
+            Thread.ofPlatform().start(() -> {
+                final var items = new LinkedList<>(Arrays.asList(DayOfWeek.values()));
+                while (!Thread.currentThread().isInterrupted()) {
+                    while (accumulated.get() == 0L) {
                         synchronized (accumulated) {
                             try {
                                 accumulated.wait();
@@ -70,21 +70,24 @@ class _Flow_DayOfWeek_Example_Test {
                             }
                         }
                     }
-                    if (cancelled) {
-                        continue;
-                    }
                     while (!cancelled && accumulated.getAndDecrement() > 0 && !items.isEmpty()) {
                         final var item = items.removeFirst();
                         subscriber.onNext(item);
                     }
                     if (cancelled) {
+                        log.debug("cancelled; interrupting self...");
+                        Thread.currentThread().interrupt();
                         continue;
                     }
                     if (items.isEmpty()) {
-                        cancelled = true;
+                        log.debug("no more items left; calling subscriber.onComplete()...");
                         subscriber.onComplete();
+                        log.debug("interrupting self...");
+                        Thread.currentThread().interrupt();
+                        continue; // unnecessary
                     }
                 }
+                log.debug("out of while loop");
             });
         }
 

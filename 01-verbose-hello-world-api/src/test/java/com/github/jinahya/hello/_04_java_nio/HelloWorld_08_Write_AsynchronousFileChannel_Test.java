@@ -190,7 +190,7 @@ class HelloWorld_08_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
             service.write(channel, position).force(false);
         }
         // ------------------------------------------------------------------------------------ then
-        // assert, 12 bytes written starting at <position>
+        // assert, <12> bytes written starting at <position>
         Assertions.assertEquals(
                 position + HelloWorld.BYTES,
                 Files.size(path)

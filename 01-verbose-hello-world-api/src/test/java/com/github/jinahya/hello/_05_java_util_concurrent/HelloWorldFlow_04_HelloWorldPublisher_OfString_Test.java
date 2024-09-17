@@ -62,7 +62,7 @@ class HelloWorldFlow_04_HelloWorldPublisher_OfString_Test extends _HelloWorldFlo
                     private int i = 0;
                 } // @formatter:on
         );
-        // intercept, subscriber.onSubscribe(subscription), to wrap the subscription as a spy
+        // intercept, <subscriber.onSubscribe(subscription)>, to wrap the <subscription> as a spy
         BDDMockito.willAnswer(i -> {
             i.getRawArguments()[0] = Mockito.spy(i.getArgument(0, Flow.Subscription.class));
             return i.callRealMethod();
@@ -70,17 +70,17 @@ class HelloWorldFlow_04_HelloWorldPublisher_OfString_Test extends _HelloWorldFlo
         // ------------------------------------------------------------------------------------ when
         publisher.subscribe(subscriber);
         // ------------------------------------------------------------------------------------ then
-        // verify, subscriber.onSubscribe(subscription) invoked, once
-        final var subscriptionCaptor = ArgumentCaptor.forClass(Flow.Subscription.class);
-        Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(subscriptionCaptor.capture());
-        final var subscription = subscriptionCaptor.getValue();
-        // verify, subscription.request(n) invoked, once
+        // verify, <subscriber.onSubscribe(subscription)> invoked, once
+        final var captor = ArgumentCaptor.forClass(Flow.Subscription.class);
+        Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(captor.capture());
+        final var subscription = captor.getValue();
+        // verify, <subscription.request(n)> invoked, once
         Mockito.verify(subscription, Mockito.times(1)).request(n);
-        // verify, subscriber.onNext(item) invoked, n-times
+        // verify, <subscriber.onNext(item)> invoked, n-times
         Awaitility.await().atMost(Duration.ofSeconds(64L)).untilAsserted(() -> {
             Mockito.verify(subscriber, Mockito.times(n)).onNext(ArgumentMatchers.notNull());
         });
-        // verify, subscription.cancel() invoked, once
+        // verify, <subscription.cancel()> invoked, once
         Awaitility.await().atMost(Duration.ofSeconds(64L)).untilAsserted(() -> {
             Mockito.verify(subscription, Mockito.times(1)).cancel();
         });

@@ -40,7 +40,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({
-        "java:S3577" // class _Flow...
+        "java:S3577" // Test classes should comply with a naming convention
 })
 class _Flow_LocalDate_Example_Test {
 
@@ -55,10 +55,10 @@ class _Flow_LocalDate_Example_Test {
             super();
             this.subscriber = Objects.requireNonNull(subscriber, "subscriber is null");
             this.accumulated = new AtomicLong();
-            Thread.startVirtualThread(() -> {
+            Thread.ofPlatform().start(() -> {
                 LocalDate date = null;
-                while (!cancelled) {
-                    while (!cancelled && accumulated.get() == 0L) {
+                while (!Thread.currentThread().isInterrupted()) {
+                    while (accumulated.get() == 0L) {
                         synchronized (accumulated) {
                             try {
                                 accumulated.wait();
@@ -67,18 +67,21 @@ class _Flow_LocalDate_Example_Test {
                             }
                         }
                     }
-                    if (cancelled) {
-                        continue;
-                    }
                     while (!cancelled && accumulated.getAndDecrement() > 0) {
                         if (date == null) {
                             date = LocalDate.now();
                         } else {
-                            date = date.plusDays(1L);
+                            date = date.plusDays(1L); // will it ever grow?
                         }
                         subscriber.onNext(date);
                     }
+                    if (cancelled) {
+                        log.debug("cancelled; interrupting self...");
+                        Thread.currentThread().interrupt();
+                        continue; // unnecessary
+                    }
                 }
+                log.debug("out of while loop");
             });
         }
 

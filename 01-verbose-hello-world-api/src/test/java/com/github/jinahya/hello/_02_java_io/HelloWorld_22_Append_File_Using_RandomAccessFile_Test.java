@@ -56,7 +56,7 @@ class HelloWorld_22_Append_File_Using_RandomAccessFile_Test extends HelloWorldTe
                 .given(service)
                 .write(ArgumentMatchers.<RandomAccessFile>notNull());
         // create a temp file
-        final File f = File.createTempFile("tmp", "tmp", dir);
+        final File f = File.createTempFile("tmp", null, dir);
         assert f.length() == 0L;
         final var pos = ThreadLocalRandom.current().nextLong(128L);
         // ------------------------------------------------------------------------------------ when

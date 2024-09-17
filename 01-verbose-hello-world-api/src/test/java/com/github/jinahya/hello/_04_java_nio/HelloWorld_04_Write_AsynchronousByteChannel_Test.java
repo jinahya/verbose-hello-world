@@ -73,8 +73,8 @@ class HelloWorld_04_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
         // ----------------------------------------------------------------------------------- given
-        var service = service();
-        var channel = (AsynchronousByteChannel) null;
+        final var service = service();
+        final var channel = (AsynchronousByteChannel) null;
         // ------------------------------------------------------------------------------- when/then
         // assert, <service.write(channel)> will throw a NullPointerException
         Assertions.assertThrows(
@@ -98,7 +98,7 @@ class HelloWorld_04_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
     @Test
     void __() throws InterruptedException, ExecutionException {
         // ----------------------------------------------------------------------------------- given
-        var service = service();
+        final var service = service();
         // stub, <service.put(buffer)> will increase <buffer>'s <position> by <HelloWorld.BYTES>
         BDDMockito.willAnswer(i -> {
                     var buffer = i.getArgument(0, ByteBuffer.class);
