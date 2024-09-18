@@ -101,11 +101,8 @@ public final class HelloWorldFlow {
                                 }
                             }
                             while (buffer.hasRemaining()) {
-                                JavaNioByteBufferUtils.print(buffer);
                                 subscriber.onNext(buffer.get());
-                                JavaNioByteBufferUtils.print(buffer);
                             }
-                            JavaNioByteBufferUtils.print(buffer);
                             if (buffer.position() == buffer.capacity()) {
                                 subscriber.onComplete();
                                 Thread.currentThread().interrupt();
