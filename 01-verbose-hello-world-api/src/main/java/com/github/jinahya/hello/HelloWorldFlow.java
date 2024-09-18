@@ -103,6 +103,7 @@ public final class HelloWorldFlow {
                             while (buffer.hasRemaining()) {
                                 JavaNioByteBufferUtils.print(buffer);
                                 subscriber.onNext(buffer.get());
+                                JavaNioByteBufferUtils.print(buffer);
                             }
                             JavaNioByteBufferUtils.print(buffer);
                             if (buffer.position() == buffer.capacity()) {
@@ -113,18 +114,14 @@ public final class HelloWorldFlow {
                     }
                     log.debug("out of while loop");
                 });
-                subscriber.onSubscribe(new Flow.Subscription() {
-                    @Override
-                    public String toString() {
+                subscriber.onSubscribe(new Flow.Subscription() { // @formatter:off
+                    @Override public String toString() {
                         return String.format("[subscription-for-%1$s]", subscriber);
                     }
-
                     private void cancelInternal() {
                         future.cancel(true);
                     }
-
-                    @Override
-                    public void request(final long n) {
+                    @Override public void request(final long n) {
                         log.debug("{}.request({})", this, n); // NOSONAR
                         if (n <= 0L) {
                             cancelInternal();
@@ -142,12 +139,10 @@ public final class HelloWorldFlow {
                             buffer.notifyAll();
                         }
                     }
-
-                    @Override
-                    public void cancel() {
+                    @Override public void cancel() {
                         log.debug("{}.cancel()", this); // NOSONAR
                         cancelInternal();
-                    }
+                    } // @formatter:on
                 });
                 latch.countDown();
             }
@@ -212,49 +207,38 @@ public final class HelloWorldFlow {
                             lock.unlock();
                         }
                         // subscribe to a byte-publisher
-                        new OfByte(service, executorForByte).subscribe(
+                        new OfByte(service, executorForByte).subscribe( // @formatter:off
                                 new HelloWorldSubscriber.OfByte() {
                                     @Override
                                     public void onSubscribe(final Flow.Subscription subscription) {
                                         super.onSubscribe(subscription);
                                         subscription.request(array.length);
                                     }
-
-                                    @Override
-                                    public void onNext(final Byte item) {
+                                    @Override public void onNext(final Byte item) {
                                         super.onNext(item);
                                         array[index++] = item;
                                     }
-
-                                    @Override
-                                    public void onError(final Throwable throwable) {
+                                    @Override public void onError(final Throwable throwable) {
                                         super.onError(throwable);
                                         Thread.currentThread().interrupt();
                                         subscriber.onError(throwable);
                                     }
-
-                                    @Override
-                                    public void onComplete() {
+                                    @Override public void onComplete() {
                                         super.onComplete();
                                         assert index == array.length;
                                         subscriber.onNext(array);
                                     }
-
                                     private final byte[] array = new byte[HelloWorld.BYTES];
-
                                     private int index = 0;
-                                }
+                                } // @formatter:on
                         );
                     }
                 });
-                subscriber.onSubscribe(new Flow.Subscription() {
-                    @Override
-                    public String toString() {
-                        return String.format("[subscription-for-%s]", subscriber);
+                subscriber.onSubscribe(new Flow.Subscription() { // @formatter:off
+                    @Override public String toString() {
+                        return String.format("[subscription-for-%1$s]", subscriber);
                     }
-
-                    @Override
-                    public void request(final long n) {
+                    @Override public void request(final long n) {
                         log.debug("{}.request({})", this, n);
                         if (n <= 0L) {
                             cancelInternal();
@@ -273,16 +257,11 @@ public final class HelloWorldFlow {
                             lock.unlock();
                         }
                     }
-
-                    private void cancelInternal() {
-                        future.cancel(true);
-                    }
-
-                    @Override
-                    public void cancel() {
+                    private void cancelInternal() { future.cancel(true); }
+                    @Override public void cancel() {
                         log.debug("{}.cancel()", this);
                         cancelInternal();
-                    }
+                    } // @formatter:on
                 });
                 latch.countDown();
             }

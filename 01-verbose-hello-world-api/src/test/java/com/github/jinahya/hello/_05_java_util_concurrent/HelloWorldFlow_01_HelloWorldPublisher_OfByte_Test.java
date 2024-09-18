@@ -62,7 +62,8 @@ class HelloWorldFlow_01_HelloWorldPublisher_OfByte_Test extends _HelloWorldFlowT
         });
         // intercept, <subscriber.onSubscribe(subscription)> and wrap the <subscription> as a spy
         BDDMockito.willAnswer(i -> {
-            i.getRawArguments()[0] = Mockito.spy(i.getArgument(0, Flow.Subscription.class));
+            final var subscription = i.getArgument(0);
+            i.getRawArguments()[0] = Mockito.spy(subscription);
             return i.callRealMethod();
         }).given(subscriber).onSubscribe(ArgumentMatchers.notNull());
         // ------------------------------------------------------------------------------------ when

@@ -25,7 +25,6 @@ import com.github.jinahya.hello.HelloWorldFlow;
 import com.github.jinahya.hello.HelloWorldTestUtils;
 import io.smallrye.mutiny.Multi;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -38,7 +37,6 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Flow;
 
-@Disabled("failing with github aciton")
 @DisplayName("MultiCreate")
 @Slf4j
 class HelloWorldFlow_14_Mutiny_MultiCreate_Test extends _HelloWorldFlowTest {

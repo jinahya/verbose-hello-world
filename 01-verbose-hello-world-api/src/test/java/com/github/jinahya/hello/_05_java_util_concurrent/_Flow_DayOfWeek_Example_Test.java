@@ -25,18 +25,15 @@ import com.github.jinahya.hello.util.JavaLangObjectUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.awaitility.Awaitility;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.time.DayOfWeek;
 import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.Flow;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -49,19 +46,14 @@ class _Flow_DayOfWeek_Example_Test {
 
     private static class DayOfWeekSubscription implements Flow.Subscription {
 
-        /**
-         * Creates a new instance for specified subscriber.
-         *
-         * @param subscriber the subscriber.
-         */
-        DayOfWeekSubscription(final Flow.Subscriber<? super DayOfWeek> subscriber) {
+        private DayOfWeekSubscription(final Flow.Subscriber<? super DayOfWeek> subscriber) {
             super();
             this.subscriber = Objects.requireNonNull(subscriber, "subscriber is null");
             accumulated = new AtomicLong();
             Thread.ofPlatform().start(() -> {
                 final var items = new LinkedList<>(Arrays.asList(DayOfWeek.values()));
                 while (!Thread.currentThread().isInterrupted()) {
-                    while (accumulated.get() == 0L) {
+                    while (accumulated.get() == 0L) { // mind the spurious wakeup
                         synchronized (accumulated) {
                             try {
                                 accumulated.wait();
@@ -108,7 +100,7 @@ class _Flow_DayOfWeek_Example_Test {
             }
             accumulated.addAndGet(n);
             synchronized (accumulated) {
-                accumulated.notifyAll();
+                accumulated.notify();
             }
         }
 
@@ -120,7 +112,7 @@ class _Flow_DayOfWeek_Example_Test {
             }
             cancelled = true;
             synchronized (accumulated) {
-                accumulated.notifyAll();
+                accumulated.notify();
             }
         }
 
@@ -179,12 +171,13 @@ class _Flow_DayOfWeek_Example_Test {
         @Override
         public void onSubscribe(final Flow.Subscription subscription) {
             log.debug("{}.onSubscribe({}", this, subscription);
-            reference.set(subscription);
+            Optional.ofNullable(reference.getAndSet(subscription))
+                    .ifPresent(Flow.Subscription::cancel);
         }
 
         @Override
         public void onNext(final DayOfWeek item) {
-            log.debug("{}.onNext({})", this,item);
+            log.debug("{}.onNext({})", this, item);
         }
 
         @Override
@@ -223,8 +216,10 @@ class _Flow_DayOfWeek_Example_Test {
         };
         // subscribe
         DayOfWeekPublisher.getInstance().subscribe(subscriber);
+        final var subscription = reference.get();
+        assert subscription != null;
         // request a random number of items
-        reference.get().request(ThreadLocalRandom.current().nextLong(1, 8));
+        subscription.request(ThreadLocalRandom.current().nextLong(1, 8));
         // await, for 1 sec
         AwaitilityTestUtils.awaitForOneSecond();
         // cancel the subscription
