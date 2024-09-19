@@ -20,7 +20,6 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import com.github.jinahya.hello.util.JavaNioByteBufferUtils;
 import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.AccessLevel;
 import lombok.Getter;

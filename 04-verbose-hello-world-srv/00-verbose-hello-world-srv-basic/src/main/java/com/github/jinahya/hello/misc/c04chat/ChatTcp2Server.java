@@ -83,7 +83,8 @@ class ChatTcp2Server extends ChatTcp {
                         final var channel = (SocketChannel) key.channel();
                         final var attachment = (Attachment) key.attachment();
                         if (attachment.reading == null) {
-                            attachment.reading = new _ChatMessage.OfBuffer().readyToReadFromClient();
+                            attachment.reading
+                                    = new _ChatMessage.OfBuffer().readyToReadFromClient();
                         }
                         try {
                             if (attachment.reading.read(channel) == -1) {

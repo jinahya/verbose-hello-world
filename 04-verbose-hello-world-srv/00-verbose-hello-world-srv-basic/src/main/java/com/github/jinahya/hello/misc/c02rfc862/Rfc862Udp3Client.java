@@ -20,14 +20,12 @@ package com.github.jinahya.hello.misc.c02rfc862;
  * #L%
  */
 
-import com.github.jinahya.hello.misc.c00rfc86_._Rfc86_Constants;
 import com.github.jinahya.hello.util.JavaSecurityMessageDigestUtils;
 import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.EOFException;
 import java.net.InetSocketAddress;
-import java.net.SocketAddress;
 import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
