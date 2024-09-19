@@ -42,7 +42,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 @DisplayName("HelloWorldFlow.HelloWorldPublisher.OfByte")
 @Slf4j
-class HelloWorldFlow_01_HelloWorldPublisher_OfByte_Test extends _HelloWorldFlowTest {
+class HelloWorldFlow_01_OfByte_Test extends _HelloWorldFlowTest {
 
     @Test
     void __() {
@@ -51,23 +51,22 @@ class HelloWorldFlow_01_HelloWorldPublisher_OfByte_Test extends _HelloWorldFlowT
         final var publisher = Mockito.spy(
                 new HelloWorldFlow.HelloWorldPublisher.OfByte(service, EXECUTOR)
         );
-        final var subscriber = Mockito.spy(new HelloWorldFlow.HelloWorldSubscriber.OfByte() {
-            @Override
-            public void onSubscribe(final Flow.Subscription subscription) {
-                super.onSubscribe(subscription);
-                if (ThreadLocalRandom.current().nextBoolean()) {
-                    subscription().request(1L);
-                }
-            }
-
-            @Override
-            public void onNext(final Byte item) {
-                super.onNext(item);
-                if (ThreadLocalRandom.current().nextBoolean()) {
-                    subscription().request(1L);
-                }
-            }
-        });
+        final var subscriber = Mockito.spy(
+                new HelloWorldFlow.HelloWorldSubscriber.OfByte() { // @formatter:off
+                    @Override public void onSubscribe(final Flow.Subscription subscription) {
+                        super.onSubscribe(subscription);
+                        if (ThreadLocalRandom.current().nextBoolean()) {
+                            subscription().request(1L);
+                        }
+                    }
+                    @Override public void onNext(final Byte item) {
+                        super.onNext(item);
+                        if (ThreadLocalRandom.current().nextBoolean()) {
+                            subscription().request(1L);
+                        }
+                    }
+                } // @formatter:on
+        );
         // intercept, <subscriber.onSubscribe(subscription)> and wrap the <subscription> as a spy
         BDDMockito.willAnswer(i -> {
             final var subscription = i.getArgument(0);
@@ -86,9 +85,7 @@ class HelloWorldFlow_01_HelloWorldPublisher_OfByte_Test extends _HelloWorldFlowT
         }
         // request some
         subscription.request(ThreadLocalRandom.current().nextLong(8L) + 1L);
-        // verify, <subscription.request(positive)> invoked, at least once
-        Mockito.verify(subscription, Mockito.atLeastOnce())
-                .request(ArgumentMatchers.longThat(n -> n > 0L));
+        AwaitilityTestUtils.awaitForOneSecond();
         // cancel
         subscription.cancel();
         // request some, after the cancellation
@@ -111,8 +108,14 @@ class HelloWorldFlow_01_HelloWorldPublisher_OfByte_Test extends _HelloWorldFlowT
             Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(captor.capture());
             subscription = captor.getValue();
         }
-        subscription.request(HelloWorld.BYTES);
+        subscription.request(
+                ThreadLocalRandom.current().nextInt(HelloWorld.BYTES, HelloWorld.BYTES << 1)
+        );
+        // await, for a sec
         AwaitilityTestUtils.awaitForOneSecond();
+        // verify, <subscriber.onNext(...)> invoked, at most 12 times
+        Mockito.verify(subscriber, Mockito.atMost(HelloWorld.BYTES))
+                .onNext(ArgumentMatchers.notNull());
         // cancel
         subscription.cancel();
     }
