@@ -71,9 +71,12 @@ class HelloWorldFlow_02_HelloWorldPublisher_OfArray_Test extends _HelloWorldFlow
         publisher.subscribe(subscriber);
         // ------------------------------------------------------------------------------------ then
         // verify, <subscriber.onSubscribe(subscription)> invoked, once
-        final var subscriptionCaptor = ArgumentCaptor.forClass(Flow.Subscription.class);
-        Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(subscriptionCaptor.capture());
-        final var subscription = subscriptionCaptor.getValue();
+        final Flow.Subscription subscription;
+        {
+            final var captor = ArgumentCaptor.forClass(Flow.Subscription.class);
+            Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(captor.capture());
+            subscription = captor.getValue();
+        }
         // verify, <subscription.request(n)> invoked, once
         Mockito.verify(subscription, Mockito.times(1)).request(n);
         // verify, <subscriber.onNext(item)> invoked, n-times

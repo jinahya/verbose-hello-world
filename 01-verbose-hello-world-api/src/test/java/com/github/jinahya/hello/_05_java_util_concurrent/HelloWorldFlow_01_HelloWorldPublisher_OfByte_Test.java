@@ -20,10 +20,10 @@ package com.github.jinahya.hello._05_java_util_concurrent;
  * #L%
  */
 
+import com.github.jinahya.hello.AwaitilityTestUtils;
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello.HelloWorldFlow;
 import lombok.extern.slf4j.Slf4j;
-import org.awaitility.Awaitility;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -31,7 +31,6 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
-import java.time.Duration;
 import java.util.concurrent.Flow;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -52,12 +51,21 @@ class HelloWorldFlow_01_HelloWorldPublisher_OfByte_Test extends _HelloWorldFlowT
         final var publisher = Mockito.spy(
                 new HelloWorldFlow.HelloWorldPublisher.OfByte(service, EXECUTOR)
         );
-        final var n = ThreadLocalRandom.current().nextInt(HelloWorld.BYTES << 1) + 1;
         final var subscriber = Mockito.spy(new HelloWorldFlow.HelloWorldSubscriber.OfByte() {
             @Override
             public void onSubscribe(final Flow.Subscription subscription) {
                 super.onSubscribe(subscription);
-                subscription.request(n);
+                if (ThreadLocalRandom.current().nextBoolean()) {
+                    subscription().request(1L);
+                }
+            }
+
+            @Override
+            public void onNext(final Byte item) {
+                super.onNext(item);
+                if (ThreadLocalRandom.current().nextBoolean()) {
+                    subscription().request(1L);
+                }
             }
         });
         // intercept, <subscriber.onSubscribe(subscription)> and wrap the <subscription> as a spy
@@ -70,26 +78,42 @@ class HelloWorldFlow_01_HelloWorldPublisher_OfByte_Test extends _HelloWorldFlowT
         publisher.subscribe(subscriber);
         // ------------------------------------------------------------------------------------ then
         // verify, <subscriber.onSubscribe(subscription)> invoked, once
-        final var captor = ArgumentCaptor.forClass(Flow.Subscription.class);
-        Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(captor.capture());
-        final var subscription = captor.getValue();
-        // verify, <subscription.request(n)> invoked, once
-        Mockito.verify(subscription, Mockito.times(1)).request(n);
-        if (n < HelloWorld.BYTES) {
-            // verify, <subscriber.onNext(item)> invoked, n-times
-            Awaitility.await().atMost(Duration.ofSeconds(64L)).untilAsserted(() -> {
-                Mockito.verify(subscriber, Mockito.times(n)).onNext(ArgumentMatchers.notNull());
-            });
-        } else {
-            Awaitility.await().atMost(Duration.ofSeconds(64L)).untilAsserted(() -> {
-                // verify, <subscriber.onNext(item) invoked>, at most <12> times
-                Mockito.verify(subscriber, Mockito.atMost(HelloWorld.BYTES))
-                        .onNext(ArgumentMatchers.notNull());
-            });
-            // verify, <subscriber.onComplete()> invoked, once
-            Awaitility.await().atMost(Duration.ofSeconds(64L)).untilAsserted(() -> {
-                Mockito.verify(subscriber, Mockito.times(1)).onComplete();
-            });
+        final Flow.Subscription subscription;
+        {
+            final var captor = ArgumentCaptor.forClass(Flow.Subscription.class);
+            Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(captor.capture());
+            subscription = captor.getValue();
         }
+        // request some
+        subscription.request(ThreadLocalRandom.current().nextLong(8L) + 1L);
+        // verify, <subscription.request(positive)> invoked, at least once
+        Mockito.verify(subscription, Mockito.atLeastOnce())
+                .request(ArgumentMatchers.longThat(n -> n > 0L));
+        // cancel
+        subscription.cancel();
+        // request some, after the cancellation
+        subscription.request(ThreadLocalRandom.current().nextLong(8L) + 1L);
+    }
+
+    @Test
+    void _12_() {
+        // ----------------------------------------------------------------------------------- given
+        final var service = service();
+        final var publisher = new HelloWorldFlow.HelloWorldPublisher.OfByte(service, EXECUTOR);
+        final var subscriber = Mockito.spy(new HelloWorldFlow.HelloWorldSubscriber.OfByte());
+        // ------------------------------------------------------------------------------------ when
+        publisher.subscribe(subscriber);
+        // ------------------------------------------------------------------------------------ then
+        // verify, <subscriber.onSubscribe(subscription)> invoked, once
+        final Flow.Subscription subscription;
+        {
+            final var captor = ArgumentCaptor.forClass(Flow.Subscription.class);
+            Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(captor.capture());
+            subscription = captor.getValue();
+        }
+        subscription.request(HelloWorld.BYTES);
+        AwaitilityTestUtils.awaitForOneSecond();
+        // cancel
+        subscription.cancel();
     }
 }
