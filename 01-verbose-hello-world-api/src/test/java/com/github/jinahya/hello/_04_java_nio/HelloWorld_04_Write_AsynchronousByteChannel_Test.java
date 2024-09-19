@@ -101,7 +101,7 @@ class HelloWorld_04_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
         final var service = service();
         // stub, <service.put(buffer)> will increase <buffer>'s <position> by <HelloWorld.BYTES>
         BDDMockito.willAnswer(i -> {
-                    var buffer = i.getArgument(0, ByteBuffer.class);
+                    final var buffer = i.getArgument(0, ByteBuffer.class);
                     buffer.position(buffer.position() + HelloWorld.BYTES);
                     return buffer;
                 })

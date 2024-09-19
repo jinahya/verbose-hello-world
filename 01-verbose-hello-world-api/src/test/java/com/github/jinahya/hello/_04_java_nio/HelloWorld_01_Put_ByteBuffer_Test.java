@@ -92,7 +92,7 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
      */
     @DisplayName("""
             should throw aNullPointerException
-            when the buffer argument is null"""
+            when the <buffer> argument is <null>"""
     )
     @Test
     void _ThrowNullPointerException_BufferIsNull() {
@@ -100,7 +100,7 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
         final var service = service();
         final var buffer = (ByteBuffer) null;
         // ------------------------------------------------------------------------------- when/then
-        // assert, <service.put(buffer)> throws a NullPointerException
+        // assert, <service.put(buffer)> throws a <NullPointerException>
         Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.put(buffer)
@@ -115,7 +115,7 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
      */
     @DisplayName("""
             should throw a BufferOverflowException
-            when buffer.remaining() is less than HelloWorld.BYTES"""
+            when <buffer.remaining()> is less than <HelloWorld.BYTES>"""
     )
     @TestFactory
     Stream<DynamicTest> _ThrowBufferOverflowException_BufferRemainingIsLessThanHelloWorldBytes() {
@@ -128,7 +128,7 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
         ).map(b -> DynamicTest.dynamicTest(
                 "should throw a BufferOverflowException for " + b,
                 () -> {
-                    // assert, service.put(b) throws a BufferOverflowException
+                    // assert, <service.put(b)> throws a <BufferOverflowException>
                     Assertions.assertThrows(
                             BufferOverflowException.class,
                             () -> service.put(b)
@@ -146,8 +146,8 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
      * {@link HelloWorld#BYTES}({@value HelloWorld#BYTES}).
      */
     @DisplayName("""
-            should invoke set(buffer.array(), buffer.arrayOffset() + buffer.position())
-            when the buffer has array"""
+            should invoke <set(buffer.array(), buffer.arrayOffset() + buffer.position())>
+            when the <buffer> has a <backing array>"""
     )
     @Test
     void __BufferHasBackingArray() {
