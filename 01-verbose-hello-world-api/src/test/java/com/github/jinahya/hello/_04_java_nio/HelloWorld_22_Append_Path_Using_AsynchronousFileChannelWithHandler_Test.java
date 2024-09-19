@@ -57,7 +57,7 @@ class HelloWorld_22_Append_Path_Using_AsynchronousFileChannelWithHandler_Test
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // stub, <service.write(channel, position, attachment, handler)>
-        //         will write 12 bytes to the <channel>
+        //         will write <12> bytes to the <channel>
         //         and will invoke <handler.completed(channel, attachment)>
         BDDMockito.willAnswer(i -> {
                     final var channel = i.getArgument(0, AsynchronousFileChannel.class);
@@ -116,14 +116,10 @@ class HelloWorld_22_Append_Path_Using_AsynchronousFileChannelWithHandler_Test
         }; // @formatter:on
         final var path = Files.createTempFile(dir, null, null);
         // ------------------------------------------------------------------------------------ when
-        final var channel = AsynchronousFileChannel.open(path, StandardOpenOption.WRITE);
-        service.write(channel, position, latch, handler);
-        try {
+        try (final var channel = AsynchronousFileChannel.open(path, StandardOpenOption.WRITE)) {
+            service.write(channel, position, latch, handler);
             latch.await();
-        } catch (final InterruptedException ie) {
-            channel.force(true);
-            channel.close();
-            throw ie;
+            channel.force(false);
         }
         // ------------------------------------------------------------------------------------ then
         // assert, <path>'s <size> increased by <12>, after the <position>

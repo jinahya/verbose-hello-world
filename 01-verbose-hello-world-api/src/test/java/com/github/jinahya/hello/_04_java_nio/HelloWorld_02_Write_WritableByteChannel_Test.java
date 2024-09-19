@@ -62,7 +62,7 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends HelloWorldTest {
         final var service = service();
         final var channel = (WritableByteChannel) null;
         // ------------------------------------------------------------------------------- when/then
-        // assert, <service.write(channel)> throws a NullPointerException
+        // assert, <service.write(channel)> throws a <NullPointerException>
         Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.write(channel)
@@ -72,13 +72,13 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends HelloWorldTest {
     /**
      * Verifies {@link HelloWorld#write(WritableByteChannel) write(channel)} method invokes
      * {@link HelloWorld#put(ByteBuffer) put(buffer)} method with a byte buffer of
-     * {@value HelloWorld#BYTES} bytes, and writes the buffer to specified channel.
+     * {@value HelloWorld#BYTES} bytes, and writes the {@code buffer} to specified {@code channel}.
      *
      * @throws IOException if an I/O error occurs.
      */
     @DisplayName("""
             should invoke put(buffer[12])
-            and writes the <buffer> to the <channel> while the <buffer> has remaining"""
+            and writes the <buffer> to the <channel> while the <buffer> has <remaining>"""
     )
     @Test
     void __() throws IOException {

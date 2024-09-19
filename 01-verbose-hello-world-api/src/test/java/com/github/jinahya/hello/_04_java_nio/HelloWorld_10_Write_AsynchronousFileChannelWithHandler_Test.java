@@ -227,8 +227,8 @@ class HelloWorld_10_Write_AsynchronousFileChannelWithHandler_Test extends HelloW
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // stub, <service.write(channel, position, attachment, handler)>
-        //         will write 12 bytes
-        //         , and will invoke <handler.completed(channel, attachment)>
+        //         will write 12 bytes,
+        //         and will invoke <handler.completed(channel, attachment)>
         BDDMockito.willAnswer(i -> {
             final var channel = i.getArgument(0, AsynchronousFileChannel.class);
             final var position = i.getArgument(1, Long.class);

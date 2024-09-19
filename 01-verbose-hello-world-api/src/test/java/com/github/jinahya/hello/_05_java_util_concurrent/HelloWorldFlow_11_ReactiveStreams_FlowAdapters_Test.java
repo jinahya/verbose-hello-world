@@ -32,6 +32,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 import org.reactivestreams.FlowAdapters;
+import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
@@ -61,7 +62,7 @@ class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlo
         private ReactiveStreamsSubscriber(final int n) {
             super();
             if (n <= 0) {
-                throw new IllegalArgumentException("n(" + n + ") < 0");
+                throw new IllegalArgumentException("n(" + n + ") <= 0");
             }
             this.n = n;
         }
@@ -70,16 +71,15 @@ class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlo
         }
         @Override public void onSubscribe(final Subscription s) {
             log.debug("{}.onSubscribe({})", this, s);
-            this.s = s;
-            i = 0;
+            this.subscription = s;
             log.debug("  - requesting {} items...", n);
-            this.s.request(n);
+            this.subscription.request(n);
         }
         @Override public void onNext(final T t) {
             log.debug("{}.onNext({})", this, t);
             if (++i == n) {
                 log.debug("  - cancelling the subscription...");
-                this.s.cancel();
+                subscription.cancel();
             }
         }
         @Override public void onError(final Throwable t) {
@@ -89,7 +89,7 @@ class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlo
             log.debug("{}.onComplete()", this);
         }
         private final int n;
-        private Subscription s;
+        private Subscription subscription;
         private int i;
     } // @formatter:on
 
@@ -103,7 +103,7 @@ class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlo
         void __byte() {
             // ------------------------------------------------------------------------------- given
             interface AlienService { // @formatter:off
-                default void doSome(final org.reactivestreams.Publisher<? extends Byte> publisher) {
+                default void doSome(final Publisher<? extends Byte> publisher) {
                     Objects.requireNonNull(publisher, "publisher is null");
                     final var n = ThreadLocalRandom.current().nextInt(HelloWorld.BYTES << 1) + 1;
                     publisher.subscribe(new ReactiveStreamsSubscriber<>(n));
@@ -130,19 +130,28 @@ class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlo
             new AlienService() {
             }.doSome(FlowAdapters.toPublisher(publisher));
             // -------------------------------------------------------------------------------- then
-            // verify, publisher.subscribe(subscriber) invoked, once
-            final var subscriberCaptor = ArgumentCaptor.forClass(Flow.Subscriber.class);
-            Mockito.verify(publisher, Mockito.times(1)).subscribe(subscriberCaptor.capture());
-            final var subscriber = subscriberCaptor.getValue();
-            // verify, subscriber.onSubscribe(subscription) invoked, once
-            final var subscriptionCaptor = ArgumentCaptor.forClass(Flow.Subscription.class);
-            Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(subscriptionCaptor.capture());
-            final var subscription = subscriptionCaptor.getValue();
-            // verify, subscription.request(n) invoked, once
-            final var nCaptor = ArgumentCaptor.forClass(long.class);
-            Mockito.verify(subscription, Mockito.times(1)).request(nCaptor.capture());
-            final var n = Math.toIntExact(nCaptor.getValue());
-            // verify, subscriber.onNext(item) invoked, n-times
+            // verify, <publisher.subscribe(subscriber)> invoked, once
+            final Flow.Subscriber<Byte> subscriber;
+            {
+                final var captor = ArgumentCaptor.forClass(Flow.Subscriber.class);
+                Mockito.verify(publisher, Mockito.times(1)).subscribe(captor.capture());
+                subscriber = captor.getValue();
+            }
+            // verify, <subscriber.onSubscribe(subscription)> invoked, once
+            final Flow.Subscription subscription;
+            {
+                final var captor = ArgumentCaptor.forClass(Flow.Subscription.class);
+                Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(captor.capture());
+                subscription = captor.getValue();
+            }
+            // verify, <subscription.request(n)> invoked, once
+            final int n;
+            {
+                final var captor = ArgumentCaptor.forClass(long.class);
+                Mockito.verify(subscription, Mockito.times(1)).request(captor.capture());
+                n = Math.toIntExact(captor.getValue());
+            }
+            // verify, <subscriber.onNext(item)> invoked, n-times
             Awaitility.await().atMost(Duration.ofSeconds(64L)).untilAsserted(() -> {
                 Mockito.verify(subscriber, Mockito.atMost(n)).onNext(ArgumentMatchers.notNull());
             });
@@ -151,7 +160,8 @@ class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlo
                 Awaitility.await().atMost(Duration.ofSeconds(64L)).untilAsserted(() -> {
                     Mockito.verify(subscription, Mockito.times(1)).cancel();
                 });
-            } else {
+            }
+            if (n >= HelloWorld.BYTES) {
                 // verify, subscriber.onComplete() invoked, once
                 Awaitility.await().atMost(Duration.ofSeconds(64L)).untilAsserted(() -> {
                     Mockito.verify(subscriber, Mockito.times(1)).onComplete();
@@ -164,8 +174,7 @@ class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlo
         void __array() {
             // ------------------------------------------------------------------------------- given
             interface AlienService { // @formatter:off
-                default void doSome(
-                        final org.reactivestreams.Publisher<? extends byte[]> publisher) {
+                default void doSome(final Publisher<? extends byte[]> publisher) {
                     Objects.requireNonNull(publisher, "publisher is null");
                     final var n = ThreadLocalRandom.current().nextInt(HelloWorld.BYTES >> 1) + 1;
                     publisher.subscribe(new ReactiveStreamsSubscriber<>(n));
@@ -192,17 +201,26 @@ class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlo
             }.doSome(FlowAdapters.toPublisher(publisher));
             // -------------------------------------------------------------------------------- then
             // verify, publisher.subscribe(subscriber) invoked, once
-            final var subscriberCaptor = ArgumentCaptor.forClass(Flow.Subscriber.class);
-            Mockito.verify(publisher, Mockito.times(1)).subscribe(subscriberCaptor.capture());
-            final var subscriber = subscriberCaptor.getValue();
+            final Flow.Subscriber<Byte> subscriber;
+            {
+                final var captor = ArgumentCaptor.forClass(Flow.Subscriber.class);
+                Mockito.verify(publisher, Mockito.times(1)).subscribe(captor.capture());
+                subscriber = captor.getValue();
+            }
             // verify, subscriber.onSubscribe(subscription) invoked, once
-            final var subscriptionCaptor = ArgumentCaptor.forClass(Flow.Subscription.class);
-            Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(subscriptionCaptor.capture());
-            final var subscription = subscriptionCaptor.getValue();
+            final Flow.Subscription subscription;
+            {
+                final var captor = ArgumentCaptor.forClass(Flow.Subscription.class);
+                Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(captor.capture());
+                subscription = captor.getValue();
+            }
             // verify, subscription.request(n) invoked, once
-            final var nCaptor = ArgumentCaptor.forClass(long.class);
-            Mockito.verify(subscription, Mockito.times(1)).request(nCaptor.capture());
-            final var n = Math.toIntExact(nCaptor.getValue());
+            final int n;
+            {
+                final var nCaptor = ArgumentCaptor.forClass(long.class);
+                Mockito.verify(subscription, Mockito.times(1)).request(nCaptor.capture());
+                n = Math.toIntExact(nCaptor.getValue());
+            }
             // verify, subscriber.onNext(item) invoked, n-times
             Awaitility.await().atMost(Duration.ofSeconds(64L)).untilAsserted(() -> {
                 Mockito.verify(subscriber, Mockito.atMost(n)).onNext(ArgumentMatchers.notNull());
@@ -245,17 +263,26 @@ class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlo
             }.doSome(FlowAdapters.toPublisher(publisher));
             // -------------------------------------------------------------------------------- then
             // verify, publisher.subscribe(subscriber) invoked, once
-            final var subscriberCaptor = ArgumentCaptor.forClass(Flow.Subscriber.class);
-            Mockito.verify(publisher, Mockito.times(1)).subscribe(subscriberCaptor.capture());
-            final var subscriber = subscriberCaptor.getValue();
+            final Flow.Subscriber<ByteBuffer> subscriber;
+            {
+                final var captor = ArgumentCaptor.forClass(Flow.Subscriber.class);
+                Mockito.verify(publisher, Mockito.times(1)).subscribe(captor.capture());
+                subscriber = (Flow.Subscriber<ByteBuffer>) captor.getValue();
+            }
             // verify, subscriber.onSubscribe(subscription) invoked, once
-            final var subscriptionCaptor = ArgumentCaptor.forClass(Flow.Subscription.class);
-            Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(subscriptionCaptor.capture());
-            final var subscription = subscriptionCaptor.getValue();
+            final Flow.Subscription subscription;
+            {
+                final var captor = ArgumentCaptor.forClass(Flow.Subscription.class);
+                Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(captor.capture());
+                subscription = captor.getValue();
+            }
             // verify, subscription.request(n) invoked, once
-            final var nCaptor = ArgumentCaptor.forClass(long.class);
-            Mockito.verify(subscription, Mockito.times(1)).request(nCaptor.capture());
-            final var n = Math.toIntExact(nCaptor.getValue());
+            final int n;
+            {
+                final var captor = ArgumentCaptor.forClass(long.class);
+                Mockito.verify(subscription, Mockito.times(1)).request(captor.capture());
+                n = Math.toIntExact(captor.getValue());
+            }
             // verify, subscriber.onNext(item) invoked, n-times
             Awaitility.await().untilAsserted(() -> {
                 Mockito.verify(subscriber, Mockito.atMost(n)).onNext(ArgumentMatchers.notNull());
@@ -305,13 +332,19 @@ class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlo
             publisher.subscribe(FlowAdapters.toFlowSubscriber(subscriber));
             // -------------------------------------------------------------------------------- then
             // verify, subscriber.onSubscribe(subscription) invoked, once
-            final var subscriptionCaptor = ArgumentCaptor.forClass(Subscription.class);
-            Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(subscriptionCaptor.capture());
-            final var subscription = subscriptionCaptor.getValue();
+            final Subscription subscription;
+            {
+                final var captor = ArgumentCaptor.forClass(Subscription.class);
+                Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(captor.capture());
+                subscription = captor.getValue();
+            }
             // verify, subscription.request(n) invoked, once
-            final var nCaptor = ArgumentCaptor.forClass(long.class);
-            Mockito.verify(subscription, Mockito.times(1)).request(nCaptor.capture());
-            final var n = Math.toIntExact(nCaptor.getValue());
+            final int n;
+            {
+                final var captor = ArgumentCaptor.forClass(long.class);
+                Mockito.verify(subscription, Mockito.times(1)).request(captor.capture());
+                n = Math.toIntExact(captor.getValue());
+            }
             // verify, subscriber.onNext(item) invoked, n-times
             Awaitility.await().untilAsserted(() -> {
                 Mockito.verify(subscriber, Mockito.atMost(n)).onNext(ArgumentMatchers.notNull());
@@ -355,18 +388,24 @@ class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlo
             publisher.subscribe(FlowAdapters.toFlowSubscriber(subscriber));
             // -------------------------------------------------------------------------------- then
             // verify, subscriber.onSubscribe(subscription) invoked, once
-            final var subscriptionCaptor = ArgumentCaptor.forClass(Subscription.class);
-            Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(subscriptionCaptor.capture());
-            final var subscription = subscriptionCaptor.getValue();
-            // verify, subscription.request(n) invoked, once
-            final var nCaptor = ArgumentCaptor.forClass(long.class);
-            Mockito.verify(subscription, Mockito.times(1)).request(nCaptor.capture());
-            final var n = Math.toIntExact(nCaptor.getValue());
-            // DONE, verify, subscriber.onNext(item) invoked, n-times
+            final Subscription subscription;
+            {
+                final var captor = ArgumentCaptor.forClass(Subscription.class);
+                Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(captor.capture());
+                subscription = captor.getValue();
+            }
+            // verify, <subscription.request(n)> invoked, once
+            final int n;
+            {
+                final var captor = ArgumentCaptor.forClass(long.class);
+                Mockito.verify(subscription, Mockito.times(1)).request(captor.capture());
+                n = Math.toIntExact(captor.getValue());
+            }
+            // verify, <subscriber.onNext(item)> invoked, n-times
             Awaitility.await().untilAsserted(() -> {
                 Mockito.verify(subscriber, Mockito.times(n)).onNext(ArgumentMatchers.notNull());
             });
-            // verify, subscription.cancel() invoked, once
+            // verify, <subscription.cancel()> invoked, once
             Awaitility.await().untilAsserted(() -> {
                 Mockito.verify(subscription, Mockito.times(1)).cancel();
             });
@@ -398,18 +437,24 @@ class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlo
             publisher.subscribe(FlowAdapters.toFlowSubscriber(subscriber));
             // -------------------------------------------------------------------------------- then
             // verify, subscriber.onSubscribe(subscription) invoked, once
-            final var subscriptionCaptor = ArgumentCaptor.forClass(Subscription.class);
-            Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(subscriptionCaptor.capture());
-            final var subscription = subscriptionCaptor.getValue();
-            // verify, subscription.request(n) invoked, once
-            final var nCaptor = ArgumentCaptor.forClass(long.class);
-            Mockito.verify(subscription, Mockito.times(1)).request(nCaptor.capture());
-            final var n = Math.toIntExact(nCaptor.getValue());
-            // verify, subscriber.onNext(item) invoked, n-times
+            final Subscription subscription;
+            {
+                final var captor = ArgumentCaptor.forClass(Subscription.class);
+                Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(captor.capture());
+                subscription = captor.getValue();
+            }
+            // verify, <subscription.request(n)> invoked, once
+            final int n;
+            {
+                final var captor = ArgumentCaptor.forClass(long.class);
+                Mockito.verify(subscription, Mockito.times(1)).request(captor.capture());
+                n = Math.toIntExact(captor.getValue());
+            }
+            // verify, <subscriber.onNext(item)> invoked, n-times
             Awaitility.await().untilAsserted(() -> {
                 Mockito.verify(subscriber, Mockito.times(n)).onNext(ArgumentMatchers.notNull());
             });
-            // verify, subscription.cancel() invoked, once
+            // verify, <subscription.cancel()> invoked, once
             Awaitility.await().untilAsserted(() -> {
                 Mockito.verify(subscription, Mockito.times(1)).cancel();
             });

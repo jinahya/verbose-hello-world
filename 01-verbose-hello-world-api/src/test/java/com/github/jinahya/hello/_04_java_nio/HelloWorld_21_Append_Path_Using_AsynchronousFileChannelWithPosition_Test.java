@@ -55,7 +55,8 @@ class HelloWorld_21_Append_Path_Using_AsynchronousFileChannelWithPosition_Test
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // stub, <service.write(channel, position)>
-        //         will write 12 bytes to the <channel> starting at <position>
+        //         will write <12> bytes to the <channel>,
+        //         starting at <position>
         BDDMockito.willAnswer(i -> {
                     final var channel = i.getArgument(0, AsynchronousFileChannel.class);
                     var position = i.getArgument(1, Long.class);
