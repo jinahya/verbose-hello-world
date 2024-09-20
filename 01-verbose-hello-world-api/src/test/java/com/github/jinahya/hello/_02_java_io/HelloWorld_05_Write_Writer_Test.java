@@ -39,6 +39,8 @@ import java.io.Writer;
  * A class for testing {@link HelloWorld#write(Writer) write(writer)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ * @see <a href="https://github.com/jinahya/verbose-hello-world/issues/1">Implement
+ * HelloWorld#write(Writer)</a> (GitHub Issues)
  */
 @DisplayName("write(writer)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
@@ -51,8 +53,8 @@ class HelloWorld_05_Write_Writer_Test extends HelloWorldTest {
      * {@link NullPointerException} when the {@code writer} argument is {@code null}.
      */
     @DisplayName("""
-            should throw a NullPointerException
-            when the writer argument is null"""
+            should throw a <NullPointerException>
+            when the <writer> argument is <null>"""
     )
     @Test
     void _ThrowNullPointerException_WriterIsNull() {
@@ -60,6 +62,7 @@ class HelloWorld_05_Write_Writer_Test extends HelloWorldTest {
         final var service = service();
         final var writer = (Writer) null;
         // ------------------------------------------------------------------------------- when/then
+        // assert, <service.write(writer)> throws a <NullPointerException>
         Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.write(writer)
@@ -73,7 +76,7 @@ class HelloWorld_05_Write_Writer_Test extends HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("should invoke append(writer)")
+    @DisplayName("should invoke <append(writer)>")
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given

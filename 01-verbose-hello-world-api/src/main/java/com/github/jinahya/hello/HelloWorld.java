@@ -364,17 +364,16 @@ public interface HelloWorld {
      * if (writer == null) {
      *     throw new NullPointerException("writer is null");
      * }
-     * append(writer); // @highlight
-     * return writer;
+     * return append(writer); // @highlight
      *}
      *
      * @param <T>    writer type parameter
-     * @param writer the writer to which bytes are appended.
+     * @param writer the writer to which bytes are written.
      * @return given {@code writer}.
      * @throws NullPointerException if {@code writer} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @implSpec The default implementation invokes {@link #append(Appendable) append(appendable)}
-     * method with {@code writer}, and returns the writer.
+     * method with {@code writer}, and returns the {@code writer}.
      * @see #append(Appendable)
      */
     default <T extends Writer> T write(final T writer) throws IOException {

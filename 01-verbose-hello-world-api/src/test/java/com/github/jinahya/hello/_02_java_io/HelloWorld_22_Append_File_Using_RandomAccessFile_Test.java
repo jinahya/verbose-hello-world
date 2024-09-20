@@ -31,6 +31,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
+import org.mockito.Mockito;
 
 import java.io.File;
 import java.io.IOException;
@@ -67,6 +68,12 @@ class HelloWorld_22_Append_File_Using_RandomAccessFile_Test extends HelloWorldTe
             file.getFD().sync();
         }
         // ------------------------------------------------------------------------------------ then
+        // verify, <service.write(RandomAccessFile)> invoked, once
+        Mockito.verify(service, Mockito.times(1))
+                .write(ArgumentMatchers.<RandomAccessFile>notNull());
+        // verify, no unverified interactions on the <service>
+        Mockito.verifyNoMoreInteractions(service);
+        // assert, <f.length> increased by <12>
         Assertions.assertEquals(
                 pos + HelloWorld.BYTES,
                 f.length()

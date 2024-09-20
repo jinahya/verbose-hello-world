@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
+import org.mockito.Mockito;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -90,6 +91,10 @@ class HelloWorld_23_Append_File_Using_Writer_Test extends HelloWorldTest {
             writer.flush();
         }
         // ------------------------------------------------------------------------------------ then
+        // verify, <service.write(Writer)> invoked, once
+        Mockito.verify(service, Mockito.times(1)).write(ArgumentMatchers.<Writer>notNull());
+        // verify, no unverified interactions on the <service>
+        Mockito.verifyNoMoreInteractions(service);
         // assert, <file.length> increased by <12>
         Assertions.assertEquals(
                 length + HelloWorld.BYTES,

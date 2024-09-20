@@ -31,6 +31,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
+import org.mockito.Mockito;
 
 import java.io.DataOutput;
 import java.io.DataOutputStream;
@@ -71,6 +72,10 @@ class HelloWorld_21_Append_File_Using_DataOutput_Test extends HelloWorldTest {
             output.flush();
         }
         // ------------------------------------------------------------------------------------ then
+        // verify, <service.write(output)> invoked, once
+        Mockito.verify(service, Mockito.times(1)).write(ArgumentMatchers.<DataOutput>notNull());
+        // verify, no unverified interactions on the <service>
+        Mockito.verifyNoMoreInteractions(service);
         // assert, <file.length> increased by <12>
         Assertions.assertEquals(
                 length + HelloWorld.BYTES,
