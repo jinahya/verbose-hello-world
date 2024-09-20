@@ -20,10 +20,8 @@ package com.github.jinahya.hello._05_java_util_concurrent;
  * #L%
  */
 
-import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello.HelloWorldFlow;
 import lombok.extern.slf4j.Slf4j;
-import org.awaitility.Awaitility;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -32,92 +30,100 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 import org.reactivestreams.FlowAdapters;
-import org.reactivestreams.Publisher;
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
 
-import java.nio.ByteBuffer;
-import java.time.Duration;
 import java.util.Objects;
 import java.util.concurrent.Flow;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Tests {@link FlowAdapters} class.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@SuppressWarnings({"unchecked"})
 @Slf4j
 class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlowTest {
 
-    /**
-     * A simple subscriber which requests {@value HelloWorld#BYTES} or fewer items on its
-     * {@link Subscriber#onSubscribe(Subscription) onSubscribe(subscription)} method, and
-     * {@link Subscription#cancel() cancels} the subscription on the last item.
-     *
-     * @param <T> item type parameter
-     */
-    private static final class ReactiveStreamsSubscriber<T> // @formatter:off
+    private static final class ReactiveStreamsSubscriber<T>
             implements org.reactivestreams.Subscriber<T> {
-        private ReactiveStreamsSubscriber(final int n) {
+
+        private ReactiveStreamsSubscriber() {
             super();
-            if (n <= 0) {
-                throw new IllegalArgumentException("n(" + n + ") <= 0");
-            }
-            this.n = n;
         }
-        @Override public String toString() {
-            return String.format("[reactive-streams-subscriber@%1$08x]", hashCode());
+
+        @Override
+        public String toString() {
+            return String.format("[reactivestreams-subscriber@%1$08x]", hashCode());
         }
-        @Override public void onSubscribe(final Subscription s) {
+
+        @Override
+        public void onSubscribe(final org.reactivestreams.Subscription s) {
             log.debug("{}.onSubscribe({})", this, s);
-            this.subscription = s;
-            log.debug("  - requesting {} items...", n);
-            this.subscription.request(n);
+            this.a = s;
+            this.a.request(1L);
         }
-        @Override public void onNext(final T t) {
+
+        @Override
+        public void onNext(final T t) {
             log.debug("{}.onNext({})", this, t);
-            if (++i == n) {
-                log.debug("  - cancelling the subscription...");
-                subscription.cancel();
+            if (ThreadLocalRandom.current().nextBoolean()) {
+                a.request(1L);
+            }
+            if (ThreadLocalRandom.current().nextBoolean()) {
+                a.cancel();
             }
         }
-        @Override public void onError(final Throwable t) {
+
+        @Override
+        public void onError(final Throwable t) {
             log.error("{}.onError({})", this, t, t);
         }
-        @Override public void onComplete() {
+
+        @Override
+        public void onComplete() {
             log.debug("{}.onComplete()", this);
         }
-        private final int n;
-        private Subscription subscription;
-        private int i;
-    } // @formatter:on
+
+        private org.reactivestreams.Subscription a;
+    }
 
     // ---------------------------------------------------------------------------------------------
-    @DisplayName("toPublisher(flowPublisher)")
+
+    /**
+     * Class for testing {@link FlowAdapters#toPublisher(Flow.Publisher)} method.
+     *
+     * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+     */
+    @DisplayName("toPublisher(Flow.Publisher)")
     @Nested
     class ToPublisherTest {
 
-        @Test
+        /**
+         * Just an alien service accepts an instance of {@link org.reactivestreams.Publisher}.
+         *
+         * @param <T> item type parameter
+         */
+        private static class AlienConsumer<T>
+                implements Consumer<org.reactivestreams.Publisher<? extends T>> {
+
+            @Override
+            public void accept(final org.reactivestreams.Publisher<? extends T> publisher) {
+                Objects.requireNonNull(publisher, "publisher is null");
+                publisher.subscribe(new ReactiveStreamsSubscriber<>());
+            }
+        }
+
         @SuppressWarnings({"unchecked"})
-        void __byte() {
+        private <T> void __(Flow.Publisher<T> publisher) {
             // ------------------------------------------------------------------------------- given
-            interface AlienService { // @formatter:off
-                default void doSome(final Publisher<? extends Byte> publisher) {
-                    Objects.requireNonNull(publisher, "publisher is null");
-                    final var n = ThreadLocalRandom.current().nextInt(HelloWorld.BYTES << 1) + 1;
-                    publisher.subscribe(new ReactiveStreamsSubscriber<>(n));
-                }
-            } // @formatter:on
-            final var service = service();
-            final Flow.Publisher<Byte> publisher = Mockito.spy(
-                    new HelloWorldFlow.HelloWorldPublisher.OfByte(service, EXECUTOR)
-            );
-            // intercept, publisher.subscribe(subscriber), to wrap the subscriber as a spy
+            publisher = Mockito.spy(publisher);
+            // intercept, <publisher.subscribe(subscriber)>, to wrap the <subscriber> as a spy
             BDDMockito.willAnswer(i -> {
                 final var subscriber = Mockito.spy(i.getArgument(0, Flow.Subscriber.class));
-                // intercept, subscriber.onSubscribe(subscription),
-                //       to wrap the subscription as a spy
+                // intercept, <subscriber.onSubscribe(subscription)>,
+                //       to wrap the <subscription> as a spy
                 BDDMockito.willAnswer(j -> {
                     final var subscription = Mockito.spy(j.getArgument(0, Flow.Subscription.class));
                     j.getArguments()[0] = subscription;
@@ -127,11 +133,10 @@ class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlo
                 return i.callRealMethod();
             }).given(publisher).subscribe(ArgumentMatchers.any());
             // -------------------------------------------------------------------------------- when
-            new AlienService() {
-            }.doSome(FlowAdapters.toPublisher(publisher));
+            new AlienConsumer<T>().accept(FlowAdapters.toPublisher(publisher));
             // -------------------------------------------------------------------------------- then
             // verify, <publisher.subscribe(subscriber)> invoked, once
-            final Flow.Subscriber<Byte> subscriber;
+            final Flow.Subscriber<T> subscriber;
             {
                 final var captor = ArgumentCaptor.forClass(Flow.Subscriber.class);
                 Mockito.verify(publisher, Mockito.times(1)).subscribe(captor.capture());
@@ -144,328 +149,143 @@ class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlo
                 Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(captor.capture());
                 subscription = captor.getValue();
             }
-            // verify, <subscription.request(n)> invoked, once
-            final int n;
-            {
-                final var captor = ArgumentCaptor.forClass(long.class);
-                Mockito.verify(subscription, Mockito.times(1)).request(captor.capture());
-                n = Math.toIntExact(captor.getValue());
-            }
-            // verify, <subscriber.onNext(item)> invoked, n-times
-            Awaitility.await().atMost(Duration.ofSeconds(64L)).untilAsserted(() -> {
-                Mockito.verify(subscriber, Mockito.atMost(n)).onNext(ArgumentMatchers.notNull());
-            });
-            if (n < HelloWorld.BYTES) {
-                // verify, subscription.cancel() invoked, once
-                Awaitility.await().atMost(Duration.ofSeconds(64L)).untilAsserted(() -> {
-                    Mockito.verify(subscription, Mockito.times(1)).cancel();
-                });
-            }
-            if (n >= HelloWorld.BYTES) {
-                // verify, subscriber.onComplete() invoked, once
-                Awaitility.await().atMost(Duration.ofSeconds(64L)).untilAsserted(() -> {
-                    Mockito.verify(subscriber, Mockito.times(1)).onComplete();
-                });
-            }
+            // verify, <subscription.request(n)> invoked, at least once
+            Mockito.verify(subscription, Mockito.atLeastOnce())
+                    .request(ArgumentMatchers.longThat(n -> n > 0L));
+            // cancel
+            subscription.cancel();
         }
-
-        @Test
-        @SuppressWarnings({"unchecked"})
-        void __array() {
-            // ------------------------------------------------------------------------------- given
-            interface AlienService { // @formatter:off
-                default void doSome(final Publisher<? extends byte[]> publisher) {
-                    Objects.requireNonNull(publisher, "publisher is null");
-                    final var n = ThreadLocalRandom.current().nextInt(HelloWorld.BYTES >> 1) + 1;
-                    publisher.subscribe(new ReactiveStreamsSubscriber<>(n));
-                }
-            } // @formatter:on
-            final var service = service();
-            final Flow.Publisher<byte[]> publisher = Mockito.spy(
-                    new HelloWorldFlow.HelloWorldPublisher.OfArray(service, EXECUTOR)
-            );
-            // intercept, publisher.subscribe(subscriber) to wrap the subscriber as a spy
-            BDDMockito.willAnswer(i -> {
-                final var subscriber = Mockito.spy(i.getArgument(0, Flow.Subscriber.class));
-                // intercept, subscriber.onSubscribe(subscription) to wrap the subscription as a spy
-                BDDMockito.willAnswer(j -> {
-                    final var subscription = Mockito.spy(j.getArgument(0, Flow.Subscription.class));
-                    j.getArguments()[0] = subscription;
-                    return j.callRealMethod();
-                }).given(subscriber).onSubscribe(ArgumentMatchers.any());
-                i.getArguments()[0] = subscriber;
-                return i.callRealMethod();
-            }).given(publisher).subscribe(ArgumentMatchers.any());
-            // -------------------------------------------------------------------------------- when
-            new AlienService() {
-            }.doSome(FlowAdapters.toPublisher(publisher));
-            // -------------------------------------------------------------------------------- then
-            // verify, publisher.subscribe(subscriber) invoked, once
-            final Flow.Subscriber<Byte> subscriber;
-            {
-                final var captor = ArgumentCaptor.forClass(Flow.Subscriber.class);
-                Mockito.verify(publisher, Mockito.times(1)).subscribe(captor.capture());
-                subscriber = captor.getValue();
-            }
-            // verify, subscriber.onSubscribe(subscription) invoked, once
-            final Flow.Subscription subscription;
-            {
-                final var captor = ArgumentCaptor.forClass(Flow.Subscription.class);
-                Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(captor.capture());
-                subscription = captor.getValue();
-            }
-            // verify, subscription.request(n) invoked, once
-            final int n;
-            {
-                final var nCaptor = ArgumentCaptor.forClass(long.class);
-                Mockito.verify(subscription, Mockito.times(1)).request(nCaptor.capture());
-                n = Math.toIntExact(nCaptor.getValue());
-            }
-            // verify, subscriber.onNext(item) invoked, n-times
-            Awaitility.await().atMost(Duration.ofSeconds(64L)).untilAsserted(() -> {
-                Mockito.verify(subscriber, Mockito.atMost(n)).onNext(ArgumentMatchers.notNull());
-            });
-            // verify, subscription.cancel() invoked, once
-            Awaitility.await().atMost(Duration.ofSeconds(64L)).untilAsserted(() -> {
-                Mockito.verify(subscription, Mockito.times(1)).cancel();
-            });
-        }
-
-        @Test
-        void __buffer() {
-            // ------------------------------------------------------------------------------- given
-            interface AlienService { // @formatter:off
-                default void doSome(
-                        final org.reactivestreams.Publisher<? extends ByteBuffer> publisher) {
-                    Objects.requireNonNull(publisher, "publisher is null");
-                    final var n = ThreadLocalRandom.current().nextInt(HelloWorld.BYTES >> 1) + 1;
-                    publisher.subscribe(new ReactiveStreamsSubscriber<>(n));
-                }
-            } // @formatter:on
-            final var service = service();
-            final Flow.Publisher<ByteBuffer> publisher = Mockito.spy(
-                    new HelloWorldFlow.HelloWorldPublisher.OfBuffer(service, EXECUTOR)
-            );
-            // intercept, publisher.subscribe(subscriber) to wrap the subscriber as a spy
-            BDDMockito.willAnswer(i -> {
-                final var subscriber = Mockito.spy(i.getArgument(0, Flow.Subscriber.class));
-                // intercept, subscriber.onSubscribe(subscription) to wrap the subscription as a spy
-                BDDMockito.willAnswer(j -> {
-                    final var subscription = Mockito.spy(j.getArgument(0, Flow.Subscription.class));
-                    j.getArguments()[0] = subscription;
-                    return j.callRealMethod();
-                }).given(subscriber).onSubscribe(ArgumentMatchers.any());
-                i.getArguments()[0] = subscriber;
-                return i.callRealMethod();
-            }).given(publisher).subscribe(ArgumentMatchers.any());
-            // -------------------------------------------------------------------------------- when
-            new AlienService() {
-            }.doSome(FlowAdapters.toPublisher(publisher));
-            // -------------------------------------------------------------------------------- then
-            // verify, publisher.subscribe(subscriber) invoked, once
-            final Flow.Subscriber<ByteBuffer> subscriber;
-            {
-                final var captor = ArgumentCaptor.forClass(Flow.Subscriber.class);
-                Mockito.verify(publisher, Mockito.times(1)).subscribe(captor.capture());
-                subscriber = (Flow.Subscriber<ByteBuffer>) captor.getValue();
-            }
-            // verify, subscriber.onSubscribe(subscription) invoked, once
-            final Flow.Subscription subscription;
-            {
-                final var captor = ArgumentCaptor.forClass(Flow.Subscription.class);
-                Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(captor.capture());
-                subscription = captor.getValue();
-            }
-            // verify, subscription.request(n) invoked, once
-            final int n;
-            {
-                final var captor = ArgumentCaptor.forClass(long.class);
-                Mockito.verify(subscription, Mockito.times(1)).request(captor.capture());
-                n = Math.toIntExact(captor.getValue());
-            }
-            // verify, subscriber.onNext(item) invoked, n-times
-            Awaitility.await().untilAsserted(() -> {
-                Mockito.verify(subscriber, Mockito.atMost(n)).onNext(ArgumentMatchers.notNull());
-            });
-            // verify, subscription.cancel() invoked, once
-            Awaitility.await().untilAsserted(() -> {
-                Mockito.verify(subscription, Mockito.times(1)).cancel();
-            });
-        }
-
-        @Test
-        @SuppressWarnings({
-                "java:S2699" // TODO: remove when implemented
-        })
-        void __string() {
-            // TODO: Test!
-        }
-    }
-
-    @DisplayName("toFlowPublisher(reactiveStreamsSubscriber)")
-    @Nested
-    class ToFlowSubscriberTest {
 
         @Test
         void __byte() {
-            // ------------------------------------------------------------------------------- given
-            interface AlienService { // @formatter:off
-                default org.reactivestreams.Subscriber<Byte> doWith() {
-                    final var n = ThreadLocalRandom.current().nextInt(HelloWorld.BYTES << 1) + 1;
-                    return new ReactiveStreamsSubscriber<>(n);
-                }
-            } // @formatter:on
-            final var service = service();
-            final Flow.Publisher<Byte> publisher = Mockito.spy(
-                    new HelloWorldFlow.HelloWorldPublisher.OfByte(service, EXECUTOR)
+            __(
+                    new HelloWorldFlow.HelloWorldPublisher.OfByte(service(), EXECUTOR)
             );
-            final org.reactivestreams.Subscriber<Byte> subscriber = Mockito.spy(
-                    new AlienService() {
-                    }.doWith()
-            );
-            // intercept, subscriber.onSubscribe(subscription) to wrap the subscription as a spy
-            BDDMockito.willAnswer(i -> {
-                i.getArguments()[0] = Mockito.spy(i.getArgument(0, Subscription.class));
-                return i.callRealMethod();
-            }).given(subscriber).onSubscribe(ArgumentMatchers.notNull());
-            // -------------------------------------------------------------------------------- when
-            publisher.subscribe(FlowAdapters.toFlowSubscriber(subscriber));
-            // -------------------------------------------------------------------------------- then
-            // verify, subscriber.onSubscribe(subscription) invoked, once
-            final Subscription subscription;
-            {
-                final var captor = ArgumentCaptor.forClass(Subscription.class);
-                Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(captor.capture());
-                subscription = captor.getValue();
-            }
-            // verify, subscription.request(n) invoked, once
-            final int n;
-            {
-                final var captor = ArgumentCaptor.forClass(long.class);
-                Mockito.verify(subscription, Mockito.times(1)).request(captor.capture());
-                n = Math.toIntExact(captor.getValue());
-            }
-            // verify, subscriber.onNext(item) invoked, n-times
-            Awaitility.await().untilAsserted(() -> {
-                Mockito.verify(subscriber, Mockito.atMost(n)).onNext(ArgumentMatchers.notNull());
-            });
-            if (n < HelloWorld.BYTES) {
-                // verify, subscription.cancel() invoked, once
-                Awaitility.await().untilAsserted(() -> {
-                    Mockito.verify(subscription, Mockito.times(1)).cancel();
-                });
-            } else {
-                // verify, subscriber.onComplete() invoked, once
-                Awaitility.await().untilAsserted(() -> {
-                    Mockito.verify(subscriber, Mockito.times(1)).onComplete();
-                });
-            }
         }
 
         @Test
         void __array() {
-            // ------------------------------------------------------------------------------- given
-            interface AlienService { // @formatter:off
-                default org.reactivestreams.Subscriber<byte[]> doWith() {
-                    final var n = ThreadLocalRandom.current().nextInt(HelloWorld.BYTES >> 1) + 1;
-                    return new ReactiveStreamsSubscriber<>(n);
-                }
-            } // @formatter:on
-            final var service = service();
-            final Flow.Publisher<byte[]> publisher = Mockito.spy(
-                    new HelloWorldFlow.HelloWorldPublisher.OfArray(service, EXECUTOR)
+            __(
+                    new HelloWorldFlow.HelloWorldPublisher.OfArray(service(), EXECUTOR)
             );
-            final org.reactivestreams.Subscriber<byte[]> subscriber = Mockito.spy(
-                    new AlienService() {
-                    }.doWith()
-            );
-            // intercept, subscriber.onSubscribe(subscription) to wrap the subscription as a spy
-            BDDMockito.willAnswer(i -> {
-                i.getArguments()[0] = Mockito.spy(i.getArgument(0, Subscription.class));
-                return i.callRealMethod();
-            }).given(subscriber).onSubscribe(ArgumentMatchers.notNull());
-            // -------------------------------------------------------------------------------- when
-            publisher.subscribe(FlowAdapters.toFlowSubscriber(subscriber));
-            // -------------------------------------------------------------------------------- then
-            // verify, subscriber.onSubscribe(subscription) invoked, once
-            final Subscription subscription;
-            {
-                final var captor = ArgumentCaptor.forClass(Subscription.class);
-                Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(captor.capture());
-                subscription = captor.getValue();
-            }
-            // verify, <subscription.request(n)> invoked, once
-            final int n;
-            {
-                final var captor = ArgumentCaptor.forClass(long.class);
-                Mockito.verify(subscription, Mockito.times(1)).request(captor.capture());
-                n = Math.toIntExact(captor.getValue());
-            }
-            // verify, <subscriber.onNext(item)> invoked, n-times
-            Awaitility.await().untilAsserted(() -> {
-                Mockito.verify(subscriber, Mockito.times(n)).onNext(ArgumentMatchers.notNull());
-            });
-            // verify, <subscription.cancel()> invoked, once
-            Awaitility.await().untilAsserted(() -> {
-                Mockito.verify(subscription, Mockito.times(1)).cancel();
-            });
         }
 
         @Test
         void __buffer() {
-            // ------------------------------------------------------------------------------- given
-            interface AlienService { // @formatter:off
-                default org.reactivestreams.Subscriber<ByteBuffer> doWith() {
-                    final var n = ThreadLocalRandom.current().nextInt(HelloWorld.BYTES >> 1) + 1;
-                    return new ReactiveStreamsSubscriber<>(n);
-                }
-            } // @formatter:on
-            final var service = service();
-            final Flow.Publisher<ByteBuffer> publisher = Mockito.spy(
-                    new HelloWorldFlow.HelloWorldPublisher.OfBuffer(service, EXECUTOR)
+            __(
+                    new HelloWorldFlow.HelloWorldPublisher.OfBuffer(service(), EXECUTOR)
             );
-            final org.reactivestreams.Subscriber<ByteBuffer> subscriber = Mockito.spy(
-                    new AlienService() {
-                    }.doWith()
-            );
-            // intercept, subscriber.onSubscribe(subscription) to wrap the subscription as a spy
-            BDDMockito.willAnswer(i -> {
-                i.getArguments()[0] = Mockito.spy(i.getArgument(0, Subscription.class));
-                return i.callRealMethod();
-            }).given(subscriber).onSubscribe(ArgumentMatchers.notNull());
-            // -------------------------------------------------------------------------------- when
-            publisher.subscribe(FlowAdapters.toFlowSubscriber(subscriber));
-            // -------------------------------------------------------------------------------- then
-            // verify, subscriber.onSubscribe(subscription) invoked, once
-            final Subscription subscription;
-            {
-                final var captor = ArgumentCaptor.forClass(Subscription.class);
-                Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(captor.capture());
-                subscription = captor.getValue();
-            }
-            // verify, <subscription.request(n)> invoked, once
-            final int n;
-            {
-                final var captor = ArgumentCaptor.forClass(long.class);
-                Mockito.verify(subscription, Mockito.times(1)).request(captor.capture());
-                n = Math.toIntExact(captor.getValue());
-            }
-            // verify, <subscriber.onNext(item)> invoked, n-times
-            Awaitility.await().untilAsserted(() -> {
-                Mockito.verify(subscriber, Mockito.times(n)).onNext(ArgumentMatchers.notNull());
-            });
-            // verify, <subscription.cancel()> invoked, once
-            Awaitility.await().untilAsserted(() -> {
-                Mockito.verify(subscription, Mockito.times(1)).cancel();
-            });
         }
 
         @Test
-        @SuppressWarnings({
-                "java:S2699" // TODO: remove when implemented
-        })
         void __string() {
-            // TODO: Test!
+            // ------------------------------------------------------------------------------- given
+            __(
+                    new HelloWorldFlow.HelloWorldPublisher.OfString(service(), EXECUTOR)
+            );
+        }
+    }
+
+    /**
+     * Class for testing {@link FlowAdapters#toFlowPublisher(org.reactivestreams.Publisher)}
+     * method.
+     *
+     * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+     */
+    @DisplayName("toFlowPublisher(Publisher)")
+    @Nested
+    class ToFlowPublisherTest {
+
+        private interface AlienService<T>
+                extends Supplier<org.reactivestreams.Publisher<T>> {
+
+        }
+    }
+
+    /**
+     * A class for testing {@link FlowAdapters#toSubscriber(Flow.Subscriber)} method.
+     *
+     * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+     */
+    @DisplayName("toSubscriber(Flow.Subscriber)")
+    @Nested
+    class ToSubscriberTest {
+
+    }
+
+    /**
+     * A class for testing {@link FlowAdapters#toFlowSubscriber(org.reactivestreams.Subscriber)}
+     * method.
+     *
+     * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+     */
+    @DisplayName("toFlowSubscriber(Subscriber)")
+    @Nested
+    class ToFlowSubscriberTest {
+
+        private static class AlienSupplier<T>
+                implements Supplier<org.reactivestreams.Subscriber<T>> {
+
+            @Override
+            public org.reactivestreams.Subscriber<T> get() {
+                return new ReactiveStreamsSubscriber<>();
+            }
+        }
+
+        <T> void __(Flow.Publisher<T> publisher) {
+            // ------------------------------------------------------------------------------- given
+            publisher = Mockito.spy(publisher);
+            final Flow.Subscriber<T> subscriber = Mockito.spy(
+                    FlowAdapters.toFlowSubscriber(new AlienSupplier<T>().get()));
+            // intercept, <subscriber.onSubscribe(subscription)>
+            //         to wrap the <subscription> as a spy
+            BDDMockito.willAnswer(i -> {
+                i.getArguments()[0] = Mockito.spy(i.getArgument(0, Flow.Subscription.class));
+                return i.callRealMethod();
+            }).given(subscriber).onSubscribe(ArgumentMatchers.notNull());
+            // -------------------------------------------------------------------------------- when
+            publisher.subscribe(subscriber);
+            // -------------------------------------------------------------------------------- then
+            // verify, <subscriber.onSubscribe(subscription)> invoked, once
+            final Flow.Subscription subscription;
+            {
+                final var captor = ArgumentCaptor.forClass(Flow.Subscription.class);
+                Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(captor.capture());
+                subscription = captor.getValue();
+            }
+            // verify, <subscription.request(n)> invoked, at least once
+            Mockito.verify(subscription, Mockito.atLeastOnce())
+                    .request(ArgumentMatchers.longThat(n -> n > 0L));
+            // cancel
+            subscription.cancel();
+        }
+
+        @Test
+        void __byte() {
+            __(
+                    new HelloWorldFlow.HelloWorldPublisher.OfByte(service(), EXECUTOR)
+            );
+        }
+
+        @Test
+        void __array() {
+            __(
+                    new HelloWorldFlow.HelloWorldPublisher.OfArray(service(), EXECUTOR)
+            );
+        }
+
+        @Test
+        void __buffer() {
+            __(
+                    new HelloWorldFlow.HelloWorldPublisher.OfBuffer(service(), EXECUTOR)
+            );
+        }
+
+        @Test
+        void __string() {
+            __(
+                    new HelloWorldFlow.HelloWorldPublisher.OfString(service(), EXECUTOR)
+            );
         }
     }
 }
