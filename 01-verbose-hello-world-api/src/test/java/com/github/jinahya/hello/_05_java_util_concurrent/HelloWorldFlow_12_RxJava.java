@@ -23,6 +23,7 @@ package com.github.jinahya.hello._05_java_util_concurrent;
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello.HelloWorldFlow;
 import com.github.jinahya.hello.HelloWorldTestUtils;
+import com.github.jinahya.hello.util.JavaLangReflectUtils;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.Disposable;
@@ -32,9 +33,13 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
+import org.mockito.internal.util.MockUtil;
 import org.reactivestreams.FlowAdapters;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Flow;
 import java.util.concurrent.ThreadLocalRandom;
@@ -54,7 +59,7 @@ class HelloWorldFlow_12_RxJava extends _HelloWorldFlowTest {
         }
 
         @Override
-        public Disposable apply(Observable<T> observable) {
+        public Disposable apply(final Observable<T> observable) {
             return Objects.requireNonNull(observable, "observable is null")
                     .take(countSupplier.getAsLong())
                     .doOnNext(itemConsumer)
@@ -66,24 +71,26 @@ class HelloWorldFlow_12_RxJava extends _HelloWorldFlowTest {
         private final io.reactivex.rxjava3.functions.Consumer<? super T> itemConsumer;
     }
 
-    @Test
     @SuppressWarnings({"unchecked"})
-    void __byte() {
+    <T> void __(Flow.Publisher<T> publisher, final LongSupplier countSupplier,
+                final io.reactivex.rxjava3.functions.Consumer<? super T> itemConsumer) {
+        Objects.requireNonNull(publisher, "publisher is null");
         // ----------------------------------------------------------------------------------- given
-        final var service = service();
-        final Flow.Publisher<Byte> publisher = Mockito.spy(
-                new HelloWorldFlow.HelloWorldPublisher.OfByte(
-                        service,
-                        Executors.newVirtualThreadPerTaskExecutor()
-                )
-        );
+        // mock, <publisher> if it's not
+        if (!MockUtil.isMock(publisher)) {
+            publisher = Mockito.spy(publisher);
+        }
         // intercept, <publisher.subscribe(subscriber)> to wrap the <subscriber> as a spy
         BDDMockito.willAnswer(i -> {
-            final var subscriber = Mockito.spy(i.getArgument(0, Flow.Subscriber.class));
+            final var subscriber = Mockito.spy(
+                    (Flow.Subscriber<Byte>) JavaLangReflectUtils.loggingProxy(
+                            Set.of(Flow.Subscriber.class),
+                            i.getArgument(0, Flow.Subscriber.class)
+                    )
+            );
             // intercept, <subscriber.onSubscribe(subscription)> to wrap the <subscription> as a spy
             BDDMockito.willAnswer(j -> {
-                final var subscription = Mockito.spy(j.getArgument(0, Flow.Subscription.class));
-                j.getArguments()[0] = subscription;
+                j.getArguments()[0] = Mockito.spy(j.getArgument(0, Flow.Subscription.class));
                 return j.callRealMethod();
             }).given(subscriber).onSubscribe(ArgumentMatchers.notNull());
             i.getArguments()[0] = subscriber;
@@ -95,12 +102,7 @@ class HelloWorldFlow_12_RxJava extends _HelloWorldFlowTest {
                 ? Observable.fromPublisher(FlowAdapters.toPublisher(publisher))
                 : Flowable.fromPublisher(FlowAdapters.toPublisher(publisher)).toObservable();
         // ------------------------------------------------------------------------------------ when
-        final var disposable = new AlienFunction<Byte>(
-                () -> ThreadLocalRandom.current().nextLong(HelloWorld.BYTES, HelloWorld.BYTES << 1),
-                i -> {
-                    log.debug("item: '{}'", (char) i.byteValue());
-                }
-        ).apply(observable);
+        final var disposable = new AlienFunction<T>(countSupplier, itemConsumer).apply(observable);
         HelloWorldTestUtils.awaitForOneSecond();
         // ------------------------------------------------------------------------------------ then
         // verify, <publisher.subscribe(subscriber)> invoked, once
@@ -122,15 +124,73 @@ class HelloWorldFlow_12_RxJava extends _HelloWorldFlowTest {
         // verify, <subscriber.onNext(item)> invoked, at most <12>
         Mockito.verify(subscriber, Mockito.atMost(HelloWorld.BYTES))
                 .onNext(ArgumentMatchers.notNull());
-//        if (AlienService.countRef.get() >= HelloWorld.BYTES) {
-//            // verify, subscriber.onComplete() invoked, once
-//            Mockito.verify(subscriber, Mockito.times(1)).onComplete();
-//        } else {
-//            // verify, subscriber.onComplete() invoked, never
-//            Mockito.verify(subscriber, Mockito.never()).onComplete();
-//        }
+//        // verify, subscriber.onComplete() invoked, once
+//        Mockito.verify(subscriber, Mockito.times(1)).onComplete();
         // verify, <subscription.cancel()> invoked, once
         Mockito.verify(subscription, Mockito.times(1)).cancel();
-        disposable.dispose();
+        // dispose the <disposable>
+        disposable.dispose(); // idempotent
+        disposable.dispose(); // idempotent
+        disposable.dispose(); // idempotent
+        disposable.dispose(); // idempotent
+    }
+
+    @Test
+    void __byte() {
+        __(
+                new HelloWorldFlow.HelloWorldPublisher.OfByte(
+                        service(),
+                        Executors.newVirtualThreadPerTaskExecutor()
+                ),
+                () -> ThreadLocalRandom.current().nextLong(HelloWorld.BYTES, HelloWorld.BYTES << 1),
+                i -> {
+                    log.debug("item: '{}'", (char) i.byteValue());
+                }
+        );
+    }
+
+    @Test
+    void __array() {
+        __(
+                new HelloWorldFlow.HelloWorldPublisher.OfArray(
+                        service(),
+                        Executors.newVirtualThreadPerTaskExecutor()
+                ),
+
+                () -> ThreadLocalRandom.current().nextLong(1L, 4L),
+                i -> {
+                    log.debug("item: {}", Arrays.toString(i));
+                }
+        );
+    }
+
+    @Test
+    void __buffer() {
+        __(
+                new HelloWorldFlow.HelloWorldPublisher.OfBuffer(
+                        service(),
+                        Executors.newVirtualThreadPerTaskExecutor()
+                ),
+
+                () -> ThreadLocalRandom.current().nextLong(1L, 4L),
+                i -> {
+                    log.debug("item: {}", i);
+                }
+        );
+    }
+
+    @Test
+    void __string() {
+        __(
+                new HelloWorldFlow.HelloWorldPublisher.OfString(
+                        service(),
+                        Executors.newVirtualThreadPerTaskExecutor()
+                ),
+
+                () -> ThreadLocalRandom.current().nextLong(1L, 4L),
+                i -> {
+                    log.debug("item: '{}'", i);
+                }
+        );
     }
 }

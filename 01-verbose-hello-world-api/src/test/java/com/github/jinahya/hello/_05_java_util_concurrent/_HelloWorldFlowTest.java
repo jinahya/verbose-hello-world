@@ -46,11 +46,33 @@ abstract class _HelloWorldFlowTest extends HelloWorldTest {
 
     // ---------------------------------------------------------------------------------------------
     @BeforeEach
+    void stub_set_array_will_set_hello_world_bytes_to_the_array() {
+        // stub, <service.set(array)> will set 'hello, world' to the <array>
+        BDDMockito.willAnswer(i -> {
+                    final var array = i.getArgument(0, byte[].class);
+                    final var src = "hello, world".getBytes(StandardCharsets.US_ASCII);
+                    assert src.length == HelloWorld.BYTES;
+                    System.arraycopy(
+                            src,
+                            0,
+                            array,
+                            0,
+                            src.length
+                    );
+                    return array;
+                })
+                .given(service())
+                .set(ArgumentMatchers.argThat(a -> a != null && a.length >= HelloWorld.BYTES));
+    }
+
+    @BeforeEach
     void stub_put_buffer_will_put_hello_world_bytes_to_the_buffer() {
         // stub, <service.put(buffer)> will put 'hello, world' to the <buffer>
         BDDMockito.willAnswer(i -> {
                     final var buffer = i.getArgument(0, ByteBuffer.class);
-                    buffer.put("hello, world".getBytes(StandardCharsets.US_ASCII));
+                    final var position = buffer.position();
+                    buffer.put(service().set(new byte[HelloWorld.BYTES]));
+                    assert buffer.position() == position + HelloWorld.BYTES;
                     return buffer;
                 })
                 .given(service())

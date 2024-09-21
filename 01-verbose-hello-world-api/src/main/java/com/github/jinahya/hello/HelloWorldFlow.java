@@ -33,7 +33,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Flow;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.LongAdder;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 
@@ -80,27 +82,30 @@ public final class HelloWorldFlow {
             public void subscribe(final Flow.Subscriber<? super Byte> subscriber) {
                 log.debug("{}.subscribe({})", this, subscriber); // NOSONAR
                 Objects.requireNonNull(subscriber, "subscriber is null");
-                final var buffer = service.put(ByteBuffer.allocate(HelloWorld.BYTES)).limit(0);
+                final var array = service.set(new byte[HelloWorld.BYTES]);
+                final var index = new AtomicInteger(); // index of the next item in the <array>
+                final var accumulated = new LongAdder(); // accumulated <n> of the <request(n)>
                 final var lock = new ReentrantLock();
                 final var condition = lock.newCondition();
                 final var future = executor.submit(() -> {
                     while (!Thread.currentThread().isInterrupted()) {
                         lock.lock();
                         try {
-                            while (!buffer.hasRemaining()) {
+                            while (accumulated.sum() == 0L) {
                                 try {
                                     condition.await();
                                 } catch (final InterruptedException ie) {
+                                    log.info("interrupted while awaiting the condition", ie);
                                     Thread.currentThread().interrupt();
                                     break;
                                 }
                             }
-                            while (buffer.hasRemaining()) {
-                                subscriber.onNext(buffer.get());
-                            }
-                            if (buffer.position() == buffer.capacity()) {
-                                subscriber.onComplete();
-                                Thread.currentThread().interrupt();
+                            for (; accumulated.sum() > 0L; accumulated.decrement()) {
+                                subscriber.onNext(array[index.get()]);
+                                if (index.incrementAndGet() == array.length) {
+                                    subscriber.onComplete();
+                                    Thread.currentThread().interrupt();
+                                }
                             }
                         } finally {
                             lock.unlock();
@@ -123,9 +128,7 @@ public final class HelloWorldFlow {
                         }
                         try {
                             lock.lock();
-                            final var a = buffer.capacity() - buffer.limit();
-                            final var d = Math.min(a, n);
-                            buffer.limit((int) (buffer.limit() + d));
+                            accumulated.add(n);
                             condition.signal();
                         } finally {
                             lock.unlock();
@@ -164,52 +167,52 @@ public final class HelloWorldFlow {
             @Override
             public void subscribe(final Flow.Subscriber<? super byte[]> subscriber) {
                 Objects.requireNonNull(subscriber, "subscriber is null");
-                final var accumulated = new AtomicLong();
+                final var accumulated = new AtomicLong(); // accumulated <n> of <request(n)>
                 final var lock = new ReentrantLock();
                 final var condition = lock.newCondition();
+                final var publisher = new OfByte(service, executor);
                 final var future = executor.submit(() -> {
-                    while (!Thread.currentThread().isInterrupted()) {
+                    final var thread = Thread.currentThread();
+                    while (!thread.isInterrupted()) {
                         lock.lock();
                         try {
-                            // await condition while <accumulated> is still zero
+                            // await <condition> while <accumulated> is still <zero>
                             while (accumulated.get() == 0L) {
                                 try {
                                     condition.await();
                                 } catch (final InterruptedException ie) {
-                                    Thread.currentThread().interrupt();
+                                    thread.interrupt();
                                     return;
                                 }
                             }
                         } finally {
                             lock.unlock();
                         }
-                        // decrease the <accumulated>
+                        // decrease the <accumulated> by <one>
                         accumulated.decrementAndGet();
                         // subscribe to a byte-publisher, publish an array on its <onComplete()>
-                        new OfByte(service, executor).subscribe(
-                                new HelloWorldSubscriber.OfByte() { // @formatter:off
-                                    @Override
-                                    public void onSubscribe(final Flow.Subscription subscription) {
-                                        super.onSubscribe(subscription);
-                                        subscription.request(array.length);
-                                    }
-                                    @Override public void onNext(final Byte item) {
-                                        super.onNext(item);
-                                        array[index++] = item;
-                                    }
-                                    @Override public void onError(final Throwable throwable) {
-                                        super.onError(throwable);
-                                        subscriber.onError(throwable);
-                                        Thread.currentThread().interrupt();
-                                    }
-                                    @Override public void onComplete() {
-                                        super.onComplete();
-                                        assert index == array.length;
-                                        subscriber.onNext(array);
-                                    }
-                                    private final byte[] array = new byte[HelloWorld.BYTES];
-                                    private int index = 0;
-                                }); // @formatter:on
+                        publisher.subscribe(new HelloWorldSubscriber.OfByte() { // @formatter:off
+                            @Override public void onSubscribe(final Flow.Subscription subscription) {
+                                super.onSubscribe(subscription);
+                                subscription.request(array.length);
+                            }
+                            @Override public void onNext(final Byte item) {
+                                super.onNext(item);
+                                array[index++] = item;
+                            }
+                            @Override public void onError(final Throwable throwable) {
+                                super.onError(throwable);
+                                subscriber.onError(throwable);
+                                thread.interrupt();
+                            }
+                            @Override public void onComplete() {
+                                super.onComplete();
+                                assert index == array.length;
+                                subscriber.onNext(array);
+                            }
+                            private final byte[] array = new byte[HelloWorld.BYTES];
+                            private int index = 0;
+                        }); // @formatter:on
                     }
                     log.debug("out-of-while-loop: {}", this);
                 });
@@ -228,7 +231,7 @@ public final class HelloWorldFlow {
                         }
                         lock.lock();
                         try {
-                            if (accumulated.addAndGet(n) < 0L) {
+                            if (accumulated.addAndGet(n) < 0L) { // overflow
                                 accumulated.set(Long.MAX_VALUE);
                             }
                             condition.signal();
@@ -259,6 +262,7 @@ public final class HelloWorldFlow {
              */
             public OfBuffer(final HelloWorld service, final ExecutorService executor) {
                 super(service, executor);
+                publisher = new OfArray(service, executor);
             }
 
             @Override
@@ -309,13 +313,15 @@ public final class HelloWorldFlow {
                     }
                     private Flow.Subscription subscription;
                 }; // @formatter:on
-                new OfArray(service, executor).subscribe(processor);
+                publisher.subscribe(processor);
                 processor.subscribe(subscriber);
             }
+
+            private final Flow.Publisher<byte[]> publisher;
         }
 
         /**
-         * A publisher publishes byte buffers of the <em>hello-world-bytes</em>.
+         * A publisher publishes strings of the <em>hello-world-bytes</em>.
          *
          * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
          */
@@ -329,6 +335,7 @@ public final class HelloWorldFlow {
              */
             public OfString(final HelloWorld service, final ExecutorService executor) {
                 super(service, executor);
+                publisher = new OfBuffer(service, executor);
             }
 
             @Override
@@ -339,65 +346,51 @@ public final class HelloWorldFlow {
             @Override
             public void subscribe(final Flow.Subscriber<? super String> subscriber) {
                 super.subscribe(subscriber);
-                final var processor = new Flow.Processor<ByteBuffer, String>() {
-                    @Override
-                    public String toString() {
+                final var processor = new Flow.Processor<ByteBuffer, String>() { // @formatter:off
+                    @Override public String toString() {
                         return String.format("[buffer-to-string-processor@%08x]", hashCode());
                     }
-
                     @Override
                     public void subscribe(final Flow.Subscriber<? super String> subscriber) {
                         log.debug("{}.subscribe({})", this, subscriber);
                         subscriber.onSubscribe(new Flow.Subscription() {
-                            @Override
-                            public String toString() {
+                            @Override public String toString() {
                                 return String.format("[subscription-for-%1$s@%2$08x]", subscriber,
                                                      hashCode());
                             }
-
-                            @Override
-                            public void request(final long n) {
+                            @Override public void request(final long n) {
                                 log.debug("{}.request({})", this, n);
                                 subscription.request(n);
                             }
-
-                            @Override
-                            public void cancel() {
+                            @Override public void cancel() {
                                 log.debug("{}.cancel()", this);
                                 subscription.cancel();
                             }
                         });
                     }
-
-                    @Override
-                    public void onSubscribe(final Flow.Subscription subscription) {
+                    @Override public void onSubscribe(final Flow.Subscription subscription) {
                         log.debug("{}.onSubscribe({})", this, subscription);
                         this.subscription = subscription;
                     }
-
-                    @Override
-                    public void onNext(final ByteBuffer item) {
+                    @Override public void onNext(final ByteBuffer item) {
                         log.debug("{}.onNext({})", this, item);
                         subscriber.onNext(StandardCharsets.US_ASCII.decode(item).toString());
                     }
-
-                    @Override
-                    public void onError(final Throwable throwable) {
+                    @Override public void onError(final Throwable throwable) {
                         log.error("{}.onError({})", this, throwable, throwable);
                         subscriber.onError(throwable);
                     }
-
-                    @Override
-                    public void onComplete() {
+                    @Override public void onComplete() {
                         log.debug("{}.onComplete()", this);
                         subscriber.onComplete();
                     }
-
                     private Flow.Subscription subscription;
-                };
-                new OfBuffer(service, executor).subscribe(processor);
+                }; // @formatter:on
+                publisher.subscribe(processor);
                 processor.subscribe(subscriber);
             }
+
+            private final Flow.Publisher<ByteBuffer> publisher;
         }
 
         private HelloWorldPublisher(final HelloWorld service, final ExecutorService executor) {
@@ -496,6 +489,11 @@ public final class HelloWorldFlow {
             }
         }
 
+        /**
+         * Creates a new instance.
+         *
+         * @param formatter a formatter for formatting items.
+         */
         private HelloWorldSubscriber(final Function<? super T, String> formatter) {
             super();
             this.formatter = Optional.ofNullable(formatter).orElseGet(() -> Objects::toString);

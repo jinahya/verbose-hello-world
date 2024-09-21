@@ -25,6 +25,7 @@ import com.github.jinahya.hello.util.JavaLangObjectUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
@@ -209,6 +210,7 @@ class _Flow_LocalDate_Example_Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("single subscriber for a publisher")
     @Test
     void __() {
         final var reference = new AtomicReference<Flow.Subscription>();
