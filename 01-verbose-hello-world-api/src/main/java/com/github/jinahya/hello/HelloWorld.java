@@ -381,7 +381,7 @@ public interface HelloWorld {
             throw new NullPointerException("writer is null");
         }
         // invoke <append(writer)>
-
+        append(writer);
         // return the <writer>
         return writer;
     }

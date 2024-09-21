@@ -90,7 +90,7 @@ class HelloWorld_05_Write_Writer_Test extends HelloWorldTest {
         final var result = service.write(writer);
         // ------------------------------------------------------------------------------------ then
         // verify, <service.append(writer)> invoked, once
-
+        Mockito.verify(service, Mockito.times(1)).append(writer);
         // assert, <result> is same as <writer>
         Assertions.assertSame(writer, result);
     }
