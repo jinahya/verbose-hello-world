@@ -31,6 +31,7 @@ import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
 import java.nio.ByteBuffer;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Flow;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -43,7 +44,10 @@ class HelloWorldFlow_03_OfBuffer_Test extends _HelloWorldFlowTest {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var publisher = Mockito.spy(
-                new HelloWorldFlow.HelloWorldPublisher.OfBuffer(service, EXECUTOR)
+                new HelloWorldFlow.HelloWorldPublisher.OfBuffer(
+                        service,
+                        Executors.newVirtualThreadPerTaskExecutor()
+                )
         );
         final var subscriber = Mockito.spy(
                 new HelloWorldFlow.HelloWorldSubscriber.OfBuffer() { // @formatter:off

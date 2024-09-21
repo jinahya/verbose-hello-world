@@ -30,6 +30,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
+import java.util.concurrent.Executors;
 import java.util.concurrent.Flow;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -42,7 +43,10 @@ class HelloWorldFlow_04_OfString_Test extends _HelloWorldFlowTest {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var publisher = Mockito.spy(
-                new HelloWorldFlow.HelloWorldPublisher.OfString(service, EXECUTOR)
+                new HelloWorldFlow.HelloWorldPublisher.OfString(
+                        service,
+                        Executors.newVirtualThreadPerTaskExecutor()
+                )
         );
         final var subscriber = Mockito.spy(
                 new HelloWorldFlow.HelloWorldSubscriber.OfString() { // @formatter:off

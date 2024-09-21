@@ -31,6 +31,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
+import java.util.concurrent.Executors;
 import java.util.concurrent.Flow;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -49,7 +50,10 @@ class HelloWorldFlow_01_OfByte_Test extends _HelloWorldFlowTest {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var publisher = Mockito.spy(
-                new HelloWorldFlow.HelloWorldPublisher.OfByte(service, EXECUTOR)
+                new HelloWorldFlow.HelloWorldPublisher.OfByte(
+                        service,
+                        Executors.newVirtualThreadPerTaskExecutor()
+                )
         );
         final var subscriber = Mockito.spy(
                 new HelloWorldFlow.HelloWorldSubscriber.OfByte() { // @formatter:off
@@ -67,7 +71,7 @@ class HelloWorldFlow_01_OfByte_Test extends _HelloWorldFlowTest {
                     }
                 } // @formatter:on
         );
-        // intercept, <subscriber.onSubscribe(subscription)> and wrap the <subscription> as a spy
+        // intercept, <subscriber.onSubscribe(subscription)> to wrap the <subscription> as a spy
         BDDMockito.willAnswer(i -> {
             final var subscription = i.getArgument(0);
             i.getRawArguments()[0] = Mockito.spy(subscription);
@@ -96,7 +100,10 @@ class HelloWorldFlow_01_OfByte_Test extends _HelloWorldFlowTest {
     void _12_() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        final var publisher = new HelloWorldFlow.HelloWorldPublisher.OfByte(service, EXECUTOR);
+        final var publisher = new HelloWorldFlow.HelloWorldPublisher.OfByte(
+                service,
+                Executors.newVirtualThreadPerTaskExecutor()
+        );
         final var subscriber = Mockito.spy(new HelloWorldFlow.HelloWorldSubscriber.OfByte());
         // ------------------------------------------------------------------------------------ when
         publisher.subscribe(subscriber);
@@ -113,7 +120,7 @@ class HelloWorldFlow_01_OfByte_Test extends _HelloWorldFlowTest {
         );
         // await, for a sec
         AwaitilityTestUtils.awaitForOneSecond();
-        // verify, <subscriber.onNext(...)> invoked, at most 12 times
+        // verify, <subscriber.onNext(...)> invoked, at most <12> times
         Mockito.verify(subscriber, Mockito.atMost(HelloWorld.BYTES))
                 .onNext(ArgumentMatchers.notNull());
         // cancel

@@ -39,6 +39,7 @@ import org.mockito.Mockito;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Flow;
 import java.util.concurrent.TimeUnit;
 
@@ -71,7 +72,10 @@ class HelloWorldFlow_14_Mutiny_MultiCreate_Test extends _HelloWorldFlowTest {
             }
             final var service = service();
             final var publisher = Mockito.spy(
-                    new HelloWorldFlow.HelloWorldPublisher.OfByte(service, EXECUTOR)
+                    new HelloWorldFlow.HelloWorldPublisher.OfByte(
+                            service,
+                            Executors.newVirtualThreadPerTaskExecutor()
+                    )
             );
             // intercept, <publisher.subscribe(subscriber)> to wrap the <subscriber> as a spy
             BDDMockito.willAnswer(i -> {
@@ -133,7 +137,10 @@ class HelloWorldFlow_14_Mutiny_MultiCreate_Test extends _HelloWorldFlowTest {
             // ------------------------------------------------------------------------------- given
             final var service = service();
             final var publisher = Mockito.spy(
-                    new HelloWorldFlow.HelloWorldPublisher.OfArray(service, EXECUTOR)
+                    new HelloWorldFlow.HelloWorldPublisher.OfArray(
+                            service,
+                            Executors.newVirtualThreadPerTaskExecutor()
+                    )
             );
             // publisher.subscribe(subscription) will wrap the subscription as a spy
             BDDMockito.willAnswer(i -> {
@@ -186,7 +193,10 @@ class HelloWorldFlow_14_Mutiny_MultiCreate_Test extends _HelloWorldFlowTest {
             // ------------------------------------------------------------------------------- given
             final var service = service();
             final var publisher = Mockito.spy(
-                    new HelloWorldFlow.HelloWorldPublisher.OfBuffer(service, EXECUTOR)
+                    new HelloWorldFlow.HelloWorldPublisher.OfBuffer(
+                            service,
+                            Executors.newVirtualThreadPerTaskExecutor()
+                    )
             );
             // publisher.subscribe(subscriber) will wrap the subscriber as a spy
             BDDMockito.willAnswer(i -> {

@@ -30,8 +30,10 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 import org.reactivestreams.FlowAdapters;
+import org.reactivestreams.Subscriber;
 
 import java.util.Objects;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Flow;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
@@ -61,18 +63,18 @@ class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlo
         @Override
         public void onSubscribe(final org.reactivestreams.Subscription s) {
             log.debug("{}.onSubscribe({})", this, s);
-            this.a = s;
-            this.a.request(1L);
+            this.s = s;
+            this.s.request(1L);
         }
 
         @Override
         public void onNext(final T t) {
             log.debug("{}.onNext({})", this, t);
             if (ThreadLocalRandom.current().nextBoolean()) {
-                a.request(1L);
+                s.request(1L);
             }
             if (ThreadLocalRandom.current().nextBoolean()) {
-                a.cancel();
+                s.cancel();
             }
         }
 
@@ -86,7 +88,7 @@ class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlo
             log.debug("{}.onComplete()", this);
         }
 
-        private org.reactivestreams.Subscription a;
+        private org.reactivestreams.Subscription s;
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -101,11 +103,14 @@ class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlo
     class ToPublisherTest {
 
         /**
-         * Just an alien service accepts an instance of {@link org.reactivestreams.Publisher}.
+         * Just an alien service accepts an instance of {@link org.reactivestreams.Publisher}, and
+         * {@link org.reactivestreams.Publisher#subscribe(Subscriber) subscribes}, to the
+         * {@code publisher}, an instance of
+         * {@link ReactiveStreamsSubscriber ReactiveStreamsSubscriber}.
          *
          * @param <T> item type parameter
          */
-        private static class AlienConsumer<T>
+        private static class AlienService<T>
                 implements Consumer<org.reactivestreams.Publisher<? extends T>> {
 
             @Override
@@ -133,7 +138,7 @@ class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlo
                 return i.callRealMethod();
             }).given(publisher).subscribe(ArgumentMatchers.any());
             // -------------------------------------------------------------------------------- when
-            new AlienConsumer<T>().accept(FlowAdapters.toPublisher(publisher));
+            new AlienService<T>().accept(FlowAdapters.toPublisher(publisher));
             // -------------------------------------------------------------------------------- then
             // verify, <publisher.subscribe(subscriber)> invoked, once
             final Flow.Subscriber<T> subscriber;
@@ -152,6 +157,10 @@ class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlo
             // verify, <subscription.request(n)> invoked, at least once
             Mockito.verify(subscription, Mockito.atLeastOnce())
                     .request(ArgumentMatchers.longThat(n -> n > 0L));
+            // verify, <subscriber.onComplete()> invoked, at most once
+            Mockito.verify(subscriber, Mockito.atMostOnce()).onComplete();
+            // verify, <subscriber.onError(throwable)> invoked, at most once
+            Mockito.verify(subscriber, Mockito.atMostOnce()).onError(ArgumentMatchers.notNull());
             // cancel
             subscription.cancel();
         }
@@ -159,21 +168,30 @@ class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlo
         @Test
         void __byte() {
             __(
-                    new HelloWorldFlow.HelloWorldPublisher.OfByte(service(), EXECUTOR)
+                    new HelloWorldFlow.HelloWorldPublisher.OfByte(
+                            service(),
+                            Executors.newVirtualThreadPerTaskExecutor()
+                    )
             );
         }
 
         @Test
         void __array() {
             __(
-                    new HelloWorldFlow.HelloWorldPublisher.OfArray(service(), EXECUTOR)
+                    new HelloWorldFlow.HelloWorldPublisher.OfArray(
+                            service(),
+                            Executors.newVirtualThreadPerTaskExecutor()
+                    )
             );
         }
 
         @Test
         void __buffer() {
             __(
-                    new HelloWorldFlow.HelloWorldPublisher.OfBuffer(service(), EXECUTOR)
+                    new HelloWorldFlow.HelloWorldPublisher.OfBuffer(
+                            service(),
+                            Executors.newVirtualThreadPerTaskExecutor()
+                    )
             );
         }
 
@@ -181,7 +199,10 @@ class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlo
         void __string() {
             // ------------------------------------------------------------------------------- given
             __(
-                    new HelloWorldFlow.HelloWorldPublisher.OfString(service(), EXECUTOR)
+                    new HelloWorldFlow.HelloWorldPublisher.OfString(
+                            service(),
+                            Executors.newVirtualThreadPerTaskExecutor()
+                    )
             );
         }
     }
@@ -263,28 +284,40 @@ class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlo
         @Test
         void __byte() {
             __(
-                    new HelloWorldFlow.HelloWorldPublisher.OfByte(service(), EXECUTOR)
+                    new HelloWorldFlow.HelloWorldPublisher.OfByte(
+                            service(),
+                            Executors.newVirtualThreadPerTaskExecutor()
+                    )
             );
         }
 
         @Test
         void __array() {
             __(
-                    new HelloWorldFlow.HelloWorldPublisher.OfArray(service(), EXECUTOR)
+                    new HelloWorldFlow.HelloWorldPublisher.OfArray(
+                            service(),
+                            Executors.newVirtualThreadPerTaskExecutor()
+                    )
             );
         }
 
         @Test
         void __buffer() {
             __(
-                    new HelloWorldFlow.HelloWorldPublisher.OfBuffer(service(), EXECUTOR)
+                    new HelloWorldFlow.HelloWorldPublisher.OfBuffer(
+                            service(),
+                            Executors.newVirtualThreadPerTaskExecutor()
+                    )
             );
         }
 
         @Test
         void __string() {
             __(
-                    new HelloWorldFlow.HelloWorldPublisher.OfString(service(), EXECUTOR)
+                    new HelloWorldFlow.HelloWorldPublisher.OfString(
+                            service(),
+                            Executors.newVirtualThreadPerTaskExecutor()
+                    )
             );
         }
     }

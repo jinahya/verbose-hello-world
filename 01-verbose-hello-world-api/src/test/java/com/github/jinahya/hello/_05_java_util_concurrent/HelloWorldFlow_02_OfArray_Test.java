@@ -30,6 +30,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
+import java.util.concurrent.Executors;
 import java.util.concurrent.Flow;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -42,14 +43,17 @@ class HelloWorldFlow_02_OfArray_Test extends _HelloWorldFlowTest {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var publisher = Mockito.spy(
-                new HelloWorldFlow.HelloWorldPublisher.OfArray(service, EXECUTOR)
+                new HelloWorldFlow.HelloWorldPublisher.OfArray(
+                        service,
+                        Executors.newVirtualThreadPerTaskExecutor()
+                )
         );
         final var subscriber = Mockito.spy(
                 new HelloWorldFlow.HelloWorldSubscriber.OfArray() { // @formatter:off
                     @Override public void onSubscribe(final Flow.Subscription subscription) {
                         super.onSubscribe(subscription);
                         if (ThreadLocalRandom.current().nextBoolean()) {
-                            subscription().request(1L);
+                            subscription().request(ThreadLocalRandom.current().nextLong(1L, 8L));
                         }
                     }
                     @Override public void onNext(final byte[] item) {

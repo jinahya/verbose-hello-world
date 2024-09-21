@@ -31,9 +31,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Flow;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
@@ -83,20 +81,18 @@ public final class HelloWorldFlow {
                 log.debug("{}.subscribe({})", this, subscriber); // NOSONAR
                 Objects.requireNonNull(subscriber, "subscriber is null");
                 final var buffer = service.put(ByteBuffer.allocate(HelloWorld.BYTES)).limit(0);
-                final var latch = new CountDownLatch(1);
+                final var lock = new ReentrantLock();
+                final var condition = lock.newCondition();
                 final var future = executor.submit(() -> {
-                    try {
-                        latch.await();
-                    } catch (final InterruptedException ie) {
-                        Thread.currentThread().interrupt();
-                    }
                     while (!Thread.currentThread().isInterrupted()) {
-                        synchronized (buffer) {
+                        lock.lock();
+                        try {
                             while (!buffer.hasRemaining()) {
                                 try {
-                                    buffer.wait();
+                                    condition.await();
                                 } catch (final InterruptedException ie) {
                                     Thread.currentThread().interrupt();
+                                    break;
                                 }
                             }
                             while (buffer.hasRemaining()) {
@@ -106,41 +102,40 @@ public final class HelloWorldFlow {
                                 subscriber.onComplete();
                                 Thread.currentThread().interrupt();
                             }
+                        } finally {
+                            lock.unlock();
                         }
                     }
-                    log.debug("out of while loop");
+                    log.debug("out-of-while-loop: {}", this);
                 });
                 subscriber.onSubscribe(new Flow.Subscription() { // @formatter:off
                     @Override public String toString() {
                         return String.format("[subscription-for-%1$s]", subscriber);
                     }
-                    private void cancelInternal() {
-                        future.cancel(true);
-                    }
                     @Override public void request(final long n) {
                         log.debug("{}.request({})", this, n); // NOSONAR
                         if (n <= 0L) {
-                            cancelInternal();
+                            future.cancel(true);
                             subscriber.onError(new IllegalArgumentException("n(" + n + ") <= 0L"));
                         }
                         if (future.isDone() || future.isCancelled()) {
                             return;
                         }
-                        synchronized (buffer) {
-                            final var delta = Math.min(
-                                    (long) buffer.capacity() - buffer.limit(),
-                                    n
-                            );
-                            buffer.limit((int) (buffer.limit() + delta));
-                            buffer.notifyAll();
+                        try {
+                            lock.lock();
+                            final var a = buffer.capacity() - buffer.limit();
+                            final var d = Math.min(a, n);
+                            buffer.limit((int) (buffer.limit() + d));
+                            condition.signal();
+                        } finally {
+                            lock.unlock();
                         }
                     }
                     @Override public void cancel() {
                         log.debug("{}.cancel()", this); // NOSONAR
-                        cancelInternal();
+                        future.cancel(true);
                     } // @formatter:on
                 });
-                latch.countDown();
             }
         }
 
@@ -172,24 +167,12 @@ public final class HelloWorldFlow {
                 final var accumulated = new AtomicLong();
                 final var lock = new ReentrantLock();
                 final var condition = lock.newCondition();
-                final var latch = new CountDownLatch(1);
                 final var future = executor.submit(() -> {
-                    // await for the latch
-                    //       which will be broken at the end of subscriber.onSubscribe(subscription)
-                    try {
-                        latch.await();
-                    } catch (final InterruptedException ie) {
-                        Thread.currentThread().interrupt();
-                    }
-                    // prepare a single-threaded-executor for the byte-publisher
-                    final var executorForByte = Executors.newSingleThreadExecutor(
-                            Thread.ofVirtual().name("byte-publisher-", 0L).factory()
-                    );
                     while (!Thread.currentThread().isInterrupted()) {
                         lock.lock();
                         try {
-                            // await condition while accumulated is still zero
-                            while (accumulated.get() == 0) {
+                            // await condition while <accumulated> is still zero
+                            while (accumulated.get() == 0L) {
                                 try {
                                     condition.await();
                                 } catch (final InterruptedException ie) {
@@ -197,14 +180,14 @@ public final class HelloWorldFlow {
                                     return;
                                 }
                             }
-                            // decrease the accumulated
-                            accumulated.decrementAndGet();
                         } finally {
                             lock.unlock();
                         }
-                        // subscribe to a byte-publisher
-                        new OfByte(service, executorForByte).subscribe( // @formatter:off
-                                new HelloWorldSubscriber.OfByte() {
+                        // decrease the <accumulated>
+                        accumulated.decrementAndGet();
+                        // subscribe to a byte-publisher, publish an array on its <onComplete()>
+                        new OfByte(service, executor).subscribe(
+                                new HelloWorldSubscriber.OfByte() { // @formatter:off
                                     @Override
                                     public void onSubscribe(final Flow.Subscription subscription) {
                                         super.onSubscribe(subscription);
@@ -216,8 +199,8 @@ public final class HelloWorldFlow {
                                     }
                                     @Override public void onError(final Throwable throwable) {
                                         super.onError(throwable);
-                                        Thread.currentThread().interrupt();
                                         subscriber.onError(throwable);
+                                        Thread.currentThread().interrupt();
                                     }
                                     @Override public void onComplete() {
                                         super.onComplete();
@@ -226,9 +209,9 @@ public final class HelloWorldFlow {
                                     }
                                     private final byte[] array = new byte[HelloWorld.BYTES];
                                     private int index = 0;
-                                } // @formatter:on
-                        );
+                                }); // @formatter:on
                     }
+                    log.debug("out-of-while-loop: {}", this);
                 });
                 subscriber.onSubscribe(new Flow.Subscription() { // @formatter:off
                     @Override public String toString() {
@@ -237,7 +220,7 @@ public final class HelloWorldFlow {
                     @Override public void request(final long n) {
                         log.debug("{}.request({})", this, n);
                         if (n <= 0L) {
-                            cancelInternal();
+                            future.cancel(true);
                             subscriber.onError(new IllegalArgumentException("n(" + n + ") < 0L"));
                         }
                         if (future.isCancelled() || future.isDone()) {
@@ -253,13 +236,11 @@ public final class HelloWorldFlow {
                             lock.unlock();
                         }
                     }
-                    private void cancelInternal() { future.cancel(true); }
                     @Override public void cancel() {
                         log.debug("{}.cancel()", this);
-                        cancelInternal();
+                        future.cancel(true);
                     } // @formatter:on
                 });
-                latch.countDown();
             }
         }
 
@@ -288,62 +269,46 @@ public final class HelloWorldFlow {
             @Override
             public void subscribe(final Flow.Subscriber<? super ByteBuffer> subscriber) {
                 super.subscribe(subscriber);
-                final var processor = new Flow.Processor<byte[], ByteBuffer>() {
-                    @Override
-                    public String toString() {
+                final var processor = new Flow.Processor<byte[], ByteBuffer>() { // @formatter:off
+                    @Override public String toString() {
                         return String.format("[array-to-buffer-processor@%08x]", hashCode());
                     }
-
                     @Override
                     public void subscribe(final Flow.Subscriber<? super ByteBuffer> subscriber) {
                         log.debug("{}.subscribe({})", this, subscriber);
                         subscriber.onSubscribe(new Flow.Subscription() {
-                            @Override
-                            public String toString() {
+                            @Override public String toString() {
                                 return String.format("[subscription-for-%1$s@%2$08x]", subscriber,
                                                      hashCode());
                             }
-
-                            @Override
-                            public void request(final long n) {
+                            @Override public void request(final long n) {
                                 log.debug("{}.request({})", this, n);
                                 subscription.request(n);
                             }
-
-                            @Override
-                            public void cancel() {
+                            @Override public void cancel() {
                                 log.debug("{}.cancel()", this);
                                 subscription.cancel();
                             }
                         });
                     }
-
-                    @Override
-                    public void onSubscribe(final Flow.Subscription subscription) {
-                        log.debug("{}.onSubscribe({})", this, subscription);
+                    @Override public void onSubscribe(final Flow.Subscription subscription) {
+                        log.debug("{}.onSubscribe({})", this, subscription); // NOSONAR
                         this.subscription = subscription;
                     }
-
-                    @Override
-                    public void onNext(final byte[] item) {
-                        log.debug("{}.onNext({})", this, item);
+                    @Override public void onNext(final byte[] item) {
+                        log.debug("{}.onNext({})", this, item); // NOSONAR
                         subscriber.onNext(ByteBuffer.wrap(item));
                     }
-
-                    @Override
-                    public void onError(final Throwable throwable) {
-                        log.error("{}.onError({})", this, throwable, throwable);
+                    @Override public void onError(final Throwable throwable) {
+                        log.error("{}.onError({})", this, throwable, throwable); // NOSONAR
                         subscriber.onError(throwable);
                     }
-
-                    @Override
-                    public void onComplete() {
-                        log.debug("{}.onComplete()", this);
+                    @Override public void onComplete() {
+                        log.debug("{}.onComplete()", this); // NOSONAR
                         subscriber.onComplete();
                     }
-
                     private Flow.Subscription subscription;
-                };
+                }; // @formatter:on
                 new OfArray(service, executor).subscribe(processor);
                 processor.subscribe(subscriber);
             }

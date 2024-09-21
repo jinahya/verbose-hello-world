@@ -31,8 +31,6 @@ import org.mockito.BDDMockito;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * An abstract class for testing interfaces defined in
@@ -43,13 +41,6 @@ import java.util.concurrent.Executors;
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 abstract class _HelloWorldFlowTest extends HelloWorldTest {
-
-    /**
-     * An executor uses a single worker thread.
-     */
-    static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor(
-            Thread.ofVirtual().name("executor-", 0L).factory()
-    );
 
     // -------------------------------------------------------------------------------- CONSTRUCTORS
 
