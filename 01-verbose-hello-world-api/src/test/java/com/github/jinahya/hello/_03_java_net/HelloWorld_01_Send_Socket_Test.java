@@ -52,8 +52,8 @@ class HelloWorld_01_Send_Socket_Test extends HelloWorldTest {
      * {@link NullPointerException} when the {@code socket} argument is {@code null}.
      */
     @DisplayName("""
-            should throw a NullPointerException
-            when the socket argument is null"""
+            should throw a <NullPointerException>
+            when the <socket> argument is <null>"""
     )
     @Test
     void _ThrowNullPointerException_SocketIsNull() {
@@ -75,7 +75,7 @@ class HelloWorld_01_Send_Socket_Test extends HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("should invoke write(socket.outputStream)")
+    @DisplayName("should invoke <write(socket.outputStream)>")
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
