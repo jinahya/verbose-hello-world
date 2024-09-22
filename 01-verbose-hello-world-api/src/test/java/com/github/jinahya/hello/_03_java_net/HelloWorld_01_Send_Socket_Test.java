@@ -52,8 +52,8 @@ class HelloWorld_01_Send_Socket_Test extends HelloWorldTest {
      * {@link NullPointerException} when the {@code socket} argument is {@code null}.
      */
     @DisplayName("""
-            should throw a NullPointerException
-            when the socket argument is null"""
+            should throw a <NullPointerException>
+            when the <socket> argument is <null>"""
     )
     @Test
     void _ThrowNullPointerException_SocketIsNull() {
@@ -61,7 +61,7 @@ class HelloWorld_01_Send_Socket_Test extends HelloWorldTest {
         final var service = service();
         final Socket socket = null;
         // ------------------------------------------------------------------------------- when/then
-        // assert, <service.send(socket)> throws a NullPointerException
+        // assert, <service.send(socket)> throws a <NullPointerException>
         Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.send(socket)
@@ -75,7 +75,7 @@ class HelloWorld_01_Send_Socket_Test extends HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("should invoke write(socket.outputStream)")
+    @DisplayName("should invoke <write(socket.outputStream)>")
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
@@ -93,8 +93,6 @@ class HelloWorld_01_Send_Socket_Test extends HelloWorldTest {
         // verify, <socket.getOutputStream()> invoked, once
         Mockito.verify(socket, Mockito.times(1)).getOutputStream();
         // verify, <service.write(stream)> invoked, once
-
-        // verify, no more interactions with the <stream>
 
         // verify, no more interactions with the <socket>
 

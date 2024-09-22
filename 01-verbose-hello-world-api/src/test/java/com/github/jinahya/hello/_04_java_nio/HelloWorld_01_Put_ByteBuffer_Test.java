@@ -91,7 +91,7 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
      * {@link NullPointerException} when the {@code buffer} argument is {@code null}.
      */
     @DisplayName("""
-            should throw aNullPointerException
+            should throw a <NullPointerException>
             when the <buffer> argument is <null>"""
     )
     @Test
@@ -114,8 +114,8 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
      * {@link HelloWorld#BYTES}({@value HelloWorld#BYTES}).
      */
     @DisplayName("""
-            should throw a BufferOverflowException
-            when <buffer.remaining()> is less than <HelloWorld.BYTES>"""
+            should throw a <BufferOverflowException>
+            when <buffer.remaining()> is less than <12>"""
     )
     @TestFactory
     Stream<DynamicTest> _ThrowBufferOverflowException_BufferRemainingIsLessThanHelloWorldBytes() {
@@ -126,7 +126,7 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
                 ByteBuffer.allocate(ThreadLocalRandom.current().nextInt(HelloWorld.BYTES)),
                 ByteBuffer.allocateDirect(ThreadLocalRandom.current().nextInt(HelloWorld.BYTES))
         ).map(b -> DynamicTest.dynamicTest(
-                "should throw a BufferOverflowException for " + b,
+                "should throw a <BufferOverflowException for> " + b,
                 () -> {
                     // assert, <service.put(b)> throws a <BufferOverflowException>
                     Assertions.assertThrows(
@@ -171,7 +171,7 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
         // ------------------------------------------------------------------------------------ then
         // verify, <service.set(buffer.array(), buffer.arrayOffset() + position)> invoked, once
 
-        // assert, <buffer>'s <position> increased by <HelloWorld.BYTES>
+        // assert, <buffer>'s <position> increased by <12>
         JavaNioByteBufferUtils.print(buffer);
 
         // assert, <result> is same as <buffer>
@@ -185,8 +185,8 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
      * bytes, puts the array to {@code buffer}, and returns the {@code buffer}.
      */
     @DisplayName("""
-            should invoke set(array[HelloWorld.BYTES]),
-            and put the array to the buffer"""
+            should invoke <set(array[12])>,
+            and put the <array> to the <buffer>"""
     )
     @Test
     void __BufferDoesNotHaveBackingArray() {
@@ -205,7 +205,7 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
         // ------------------------------------------------------------------------------------ when
         final var result = service.put(buffer);
         // ------------------------------------------------------------------------------------ then
-        // verify, <service.set(byte[12])> invoked, once
+        // verify, <service.set(array[12])> invoked, once
         final var array = verify_set_array12_invoked_once();
         // verify, <buffer.put(array)> invoked, once
 

@@ -25,7 +25,6 @@ import com.github.jinahya.hello.HelloWorldTest;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.text.RandomStringGenerator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,6 +37,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.RandomAccessFile;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ThreadLocalRandom;
@@ -52,37 +52,24 @@ class HelloWorld_23_Append_File_Using_Writer_Test extends HelloWorldTest {
     void _appendToFileUsingDataOutput_(@TempDir final File dir) throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // prepare <cbuf>
-        final char[] cbuf;
-        {
-            cbuf = new RandomStringGenerator.Builder()
-                    .withinRange(0, 65535)
-                    .get()
-                    .generate(HelloWorld.BYTES).toCharArray();
-            assert cbuf.length == HelloWorld.BYTES;
-            log.debug("cbuf: {}", String.valueOf(cbuf));
-            for (final var c : cbuf) {
-                log.debug("c: {}", String.format("%1$04x", (int) c));
-            }
-        }
-        // stub, <service.set(Writer)> will write <12> empty bytes.
+        // stub, <service.write(writer)> will write 'hello, world' chars
         BDDMockito.willAnswer(i -> {
                     final var writer = i.getArgument(0, Writer.class);
-                    writer.write(cbuf);
+                    writer.write("hello, world".toCharArray());
                     return writer;
                 })
                 .given(service)
-                .write(ArgumentMatchers.<Writer>any());
-        // create a temp file
+                .write(ArgumentMatchers.<Writer>notNull());
+        // create a temp file, and write some dummy bytes
         final File file = File.createTempFile("tmp", null, dir);
-        // write some dummy bytes
         if (ThreadLocalRandom.current().nextBoolean()) {
             try (var stream = new FileOutputStream(file)) {
-                stream.write(new byte[ThreadLocalRandom.current().nextInt(128)]);
+                stream.write(new byte[ThreadLocalRandom.current().nextInt(8)]);
                 stream.flush();
             }
         }
         final var length = file.length();
+        log.debug("file.length before: {}", length);
         // ------------------------------------------------------------------------------------ when
         try (var writer = new OutputStreamWriter(new FileOutputStream(file, true), // appending!
                                                  StandardCharsets.US_ASCII)) {     // US_ASCII!
@@ -100,5 +87,13 @@ class HelloWorld_23_Append_File_Using_Writer_Test extends HelloWorldTest {
                 length + HelloWorld.BYTES,
                 file.length()
         );
+        log.debug("file.length after: {}", file.length());
+        try (var f = new RandomAccessFile(file, "r")) {
+            f.seek(length);
+            final byte[] bytes = new byte[HelloWorld.BYTES];
+            final var r = f.read(bytes);
+            assert r == bytes.length;
+            log.debug("string: {}", new String(bytes, StandardCharsets.US_ASCII));
+        }
     }
 }

@@ -43,6 +43,7 @@ import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.Set;
 
 /**
  * A class for testing {@link HelloWorld#append(Path) append(path)} method.
@@ -60,8 +61,8 @@ class HelloWorld_03_Append_Path_Test extends HelloWorldTest {
      * {@link NullPointerException} when the {@code path} argument is {@code null}.
      */
     @DisplayName("""
-            should throw a NullPointerException
-            when the path argument is null"""
+            should throw a <NullPointerException>
+            when the <path> argument is <null>"""
     )
     @Test
     void _ThrowNullPointerException_PathIsNull() {
@@ -69,14 +70,14 @@ class HelloWorld_03_Append_Path_Test extends HelloWorldTest {
         final var service = service();
         final var path = (Path) null;
         // ------------------------------------------------------------------------------- when/then
-        // assert, service.append(path) throws a NullPointerException
+        // assert, <service.append(path)> throws a <NullPointerException>
         Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.append(path)
         );
     }
 
-    @DisplayName("should invoke write(FileChannel.open(path, CREATE, WRITE, APPEND))")
+    @DisplayName("should invoke <write(FileChannel.open(path, CREATE, WRITE, APPEND))>")
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
@@ -88,14 +89,14 @@ class HelloWorld_03_Append_Path_Test extends HelloWorldTest {
         final var path = Mockito.mock(Path.class);
         final var channel = Mockito.mock(FileChannel.class);
         try (var mockStatic = Mockito.mockStatic(FileChannel.class)) {
-            // stub, FileChannel.open(path, arguments) will return the channel
+            // stub, <FileChannel.open(path, arguments)> will return the <channel>
             mockStatic.when(() -> FileChannel.open(ArgumentMatchers.same(path),
                                                    ArgumentMatchers.any(OpenOption[].class)))
                     .thenReturn(channel);
             // -------------------------------------------------------------------------------- when
             final var result = service.append(path);
             // -------------------------------------------------------------------------------- then
-            // verify, <new FileChannel.open(path, <options>)> invoked, once
+            // verify, <FileChannel.open(path, <options>)> invoked, once
             final var captor = ArgumentCaptor.forClass(OpenOption[].class);
 
             // verify, <options> contains <StandardOpenOption.WRITE>, <StandardOpenOption.CREATE>,

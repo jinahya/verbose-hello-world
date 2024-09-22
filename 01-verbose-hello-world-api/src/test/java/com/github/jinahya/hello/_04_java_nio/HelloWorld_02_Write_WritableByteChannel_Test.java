@@ -53,7 +53,7 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends HelloWorldTest {
      * {@link NullPointerException} when {@code channel} argument is {@code null}.
      */
     @DisplayName("""
-            should throw a NullPointerException
+            should throw a <NullPointerException>
             when the <channel> argument is <null>"""
     )
     @Test
@@ -77,7 +77,7 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends HelloWorldTest {
      * @throws IOException if an I/O error occurs.
      */
     @DisplayName("""
-            should invoke put(buffer[12])
+            should invoke <put(buffer[12])>
             and writes the <buffer> to the <channel> while the <buffer> has <remaining>"""
     )
     @Test
