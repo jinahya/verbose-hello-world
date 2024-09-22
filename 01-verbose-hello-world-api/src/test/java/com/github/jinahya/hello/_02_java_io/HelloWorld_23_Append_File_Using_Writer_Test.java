@@ -87,6 +87,7 @@ class HelloWorld_23_Append_File_Using_Writer_Test extends HelloWorldTest {
                 length + HelloWorld.BYTES,
                 file.length()
         );
+        // print <file>'s content
         log.debug("file.length after: {}", file.length());
         try (var f = new RandomAccessFile(file, "r")) {
             f.seek(length);

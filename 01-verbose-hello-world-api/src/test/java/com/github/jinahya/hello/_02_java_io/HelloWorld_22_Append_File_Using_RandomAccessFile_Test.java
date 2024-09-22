@@ -83,8 +83,9 @@ class HelloWorld_22_Append_File_Using_RandomAccessFile_Test extends HelloWorldTe
                 pos + HelloWorld.BYTES,
                 file.length()
         );
+        // print <file>'s content
         log.debug("file.length after: {}", file.length());
-        try(var f = new RandomAccessFile(file, "r")) {
+        try (var f = new RandomAccessFile(file, "r")) {
             f.seek(pos);
             final byte[] bytes = new byte[HelloWorld.BYTES];
             final var r = f.read(bytes);

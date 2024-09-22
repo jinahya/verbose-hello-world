@@ -52,7 +52,7 @@ class HelloWorld_21_Append_File_Using_DataOutput_Test extends HelloWorldTest {
     void __(@TempDir final File dir) throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // stub, <service.set(DataOutput)> will write <12> empty bytes.
+        // stub, <service.write(output)> will write <hello, world> bytes.
         BDDMockito.willAnswer(i -> {
                     final var output = i.getArgument(0, DataOutput.class);
                     output.write("hello, world".getBytes(StandardCharsets.US_ASCII));
@@ -84,8 +84,9 @@ class HelloWorld_21_Append_File_Using_DataOutput_Test extends HelloWorldTest {
                 length + HelloWorld.BYTES,
                 file.length()
         );
+        // print <file>'s content
         log.debug("file.length after: {}", file.length());
-        try ( var f = new RandomAccessFile(file, "r")) {
+        try (var f = new RandomAccessFile(file, "r")) {
             f.seek(length);
             final byte[] bytes = new byte[HelloWorld.BYTES];
             final var r = f.read(bytes);
