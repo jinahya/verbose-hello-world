@@ -52,7 +52,7 @@ class HelloWorld_23_Append_File_Using_Writer_Test extends HelloWorldTest {
     void _appendToFileUsingDataOutput_(@TempDir final File dir) throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // stub, <service.write(writer)> will write 'hello, world' chars
+        // stub, <service.write(writer)> will write the <hello, world> chars
         BDDMockito.willAnswer(i -> {
                     final var writer = i.getArgument(0, Writer.class);
                     writer.write("hello, world".toCharArray());

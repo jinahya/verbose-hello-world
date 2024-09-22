@@ -119,7 +119,7 @@ class HelloWorld_03_Append_Path_Test extends HelloWorldTest {
     void _添足_畵蛇(@TempDir final Path dir) throws Exception {
         // ----------------------------------------------------------------------------------- given
         var service = service();
-        // stub, <service.append(Path)> will append 12 bytes
+        // stub, <service.append(Path)> will append <12> bytes
         BDDMockito.willAnswer(i -> {
                     final var path = i.getArgument(0, Path.class);
                     try (var channel = FileChannel.open(path, StandardOpenOption.APPEND)) {
@@ -133,7 +133,7 @@ class HelloWorld_03_Append_Path_Test extends HelloWorldTest {
                     return path;
                 })
                 .given(service)
-                .append(ArgumentMatchers.any(Path.class));
+                .append(ArgumentMatchers.notNull(Path.class));
         var path = Files.createTempFile(dir, null, null);
         var size = Files.size(path);
         // ------------------------------------------------------------------------------------ when

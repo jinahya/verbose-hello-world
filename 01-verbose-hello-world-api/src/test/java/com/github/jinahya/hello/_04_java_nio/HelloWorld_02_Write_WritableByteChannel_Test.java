@@ -86,8 +86,8 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends HelloWorldTest {
         final var service = service();
         // stub, <service.put(buffer)> will increase the <buffer>'s <position> by <12>
         stub_put_buffer_will_increase_buffer_position_by_12();
-        // stub, <channel.write(buffer)> will increase the <buffer>'s <position> by a random value
         final var channel = Mockito.mock(WritableByteChannel.class);
+        // stub, <channel.write(buffer)> will increase the <buffer>'s <position> by a random value
         BDDMockito.willAnswer(i -> {
             final var src = i.getArgument(0, ByteBuffer.class);
             final var written = ThreadLocalRandom.current().nextInt(src.remaining()) + 1;

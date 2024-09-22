@@ -49,7 +49,7 @@ class HelloWorld_22_Append_File_Using_RandomAccessFile_Test extends HelloWorldTe
     void __(@TempDir final File dir) throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // stub, <service.write(RandomAccessFile)> will write <12> empty bytes.
+        // stub, <service.write(RandomAccessFile)> will write the <hello, world> bytes.
         BDDMockito.willAnswer(i -> {
                     final var file = i.getArgument(0, RandomAccessFile.class);
                     log.debug("file.filePointer: {}", file.getFilePointer());

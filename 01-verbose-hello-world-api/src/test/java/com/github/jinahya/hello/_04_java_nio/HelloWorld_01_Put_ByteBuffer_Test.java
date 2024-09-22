@@ -197,7 +197,7 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
         // create a direct buffer
         final ByteBuffer buffer = adjust(ByteBuffer.allocateDirect(HelloWorld.BYTES << 1));
         JavaNioByteBufferUtils.print(buffer);
-        // assume the buffer does not have a backing array
+        // assume, the <buffer> does not have a backing array
         Assumptions.assumeFalse(
                 buffer.hasArray(),
                 "failed to assume that a direct buffer does not have a backing array"

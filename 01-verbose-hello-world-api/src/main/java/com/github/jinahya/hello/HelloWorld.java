@@ -590,11 +590,11 @@ public interface HelloWorld {
      */
     default <T extends Path> T append(final T path) throws IOException {
         Objects.requireNonNull(path, "path is null");
-        // open a file channel with path, StandardOpenOption.WRITE, StandardOpenOption.CREATE,
-        //   and StandardOpenOption.APPEND
-        //   use the try-with-resources statement
+        // open a <FileChannel> with <path>, <StandardOpenOption.WRITE>,
+        //         <StandardOpenOption.CREATE>, and <StandardOpenOption.APPEND>
+        //         use the try-with-resources statement
         // invoke <write(channel)> method with it
-        // force changes to both the file's content and metadata
+        // force changes to both the <file>'s content and metadata
         return path;
     }
 
