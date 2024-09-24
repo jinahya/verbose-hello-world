@@ -149,13 +149,22 @@ class HelloWorld_04_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
         Assertions.assertSame(channel, result);
     }
 
-    @Disabled("not implemented yet")
-    @DisplayName("AsynchronousSocketChannel implements AsynchronousByteChannel")
+    @DisplayName("send(AsynchronousSocketChannel)")
     @畵蛇添足
     @Test
     void _添足_畵蛇() throws Exception {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
+        BDDMockito.willAnswer(i -> {
+                    final var channel = i.getArgument(0, AsynchronousByteChannel.class);
+                    final var array = "hello, world".getBytes(StandardCharsets.US_ASCII);
+                    for (final var b = ByteBuffer.wrap(array); b.hasRemaining(); ) {
+                        channel.write(b).get();
+                    }
+                    return channel;
+                })
+                .given(service)
+                .write(ArgumentMatchers.<AsynchronousByteChannel>notNull());
         // start a new thread which
         //           binds to a random port
         //           accepts a client,
@@ -167,23 +176,24 @@ class HelloWorld_04_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
                 server.bind(new InetSocketAddress(addr, 0), 1);
                 log.debug("bound to {}", server.getLocalAddress());
                 port.offer(((InetSocketAddress) server.getLocalAddress()).getPort());
-                final var client = server.accept().get();
-                log.debug("accepted from {} through {}", client.getRemoteAddress(),
-                          client.getLocalAddress());
-                final var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
-                log.debug("reading {} bytes...", buffer.remaining());
-                while (buffer.hasRemaining()) {
-                    client.read(buffer).get();
+                try (var client = server.accept().get()) {
+                    log.debug("accepted from {} through {}", client.getRemoteAddress(),
+                              client.getLocalAddress());
+                    final var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
+                    log.debug("reading {} bytes...", buffer.remaining());
+                    while (buffer.hasRemaining()) {
+                        client.read(buffer).get();
+                    }
+                    buffer.flip();
+                    log.debug("decoded: {}", StandardCharsets.US_ASCII.decode(buffer));
                 }
-                buffer.flip();
-                log.debug("decoded: {}", StandardCharsets.US_ASCII.decode(buffer));
             } catch (final Exception e) {
                 throw new RuntimeException(e);
             }
         });
         // ------------------------------------------------------------------------------------ when
-        // connect to the server,
-        //       and send 12 bytes to the server
+        // connect to the <server>,
+        //       and send <12> bytes to the <server>
         Thread.currentThread().setName("client");
         try (var client = AsynchronousSocketChannel.open()) {
             final var remote = new InetSocketAddress(addr, port.take());

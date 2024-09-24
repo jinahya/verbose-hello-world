@@ -22,6 +22,7 @@ package com.github.jinahya.hello._04_java_nio;
 
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello.HelloWorldTest;
+import com.github.jinahya.hello.畵蛇添足;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,8 +34,15 @@ import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.nio.channels.AsynchronousByteChannel;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
 import java.nio.channels.WritableByteChannel;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -105,5 +113,66 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends HelloWorldTest {
 
         // assert, <result> is same as <channel>
         Assertions.assertSame(channel, result);
+    }
+
+    @畵蛇添足("SocketChannel implements WritableByteChannel")
+    @DisplayName("send(SocketChannel)")
+    @Test
+    void _添足_畵蛇() throws Exception {
+        // ----------------------------------------------------------------------------------- given
+        final var service = service();
+        // stub, <service.write(channel)> will write the 'hello, world' bytes
+        BDDMockito.willAnswer(i -> {
+                    final var channel = i.getArgument(0, WritableByteChannel.class);
+                    final var array = "hello, world".getBytes(StandardCharsets.US_ASCII);
+                    for (final var b = ByteBuffer.wrap(array); b.hasRemaining(); ) {
+                        channel.write(b);
+                    }
+                    return channel;
+                })
+                .given(service)
+                .write(ArgumentMatchers.<WritableByteChannel>notNull());
+        // start a new thread which
+        //           binds to a random port
+        //           accepts a client,
+        //           and reads 12 bytes
+        final var addr = InetAddress.getLoopbackAddress();
+        final var port = new ArrayBlockingQueue<Integer>(1);
+        Thread.ofPlatform().name("server").start(() -> {
+            try (var server = ServerSocketChannel.open()) {
+                server.bind(new InetSocketAddress(addr, 0), 1);
+                log.debug("bound to {}", server.getLocalAddress());
+                port.offer(((InetSocketAddress) server.getLocalAddress()).getPort());
+                try (var client = server.accept()) {
+                    log.debug("accepted from {} through {}", client.getRemoteAddress(),
+                              client.getLocalAddress());
+                    final var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
+                    log.debug("reading {} bytes...", buffer.remaining());
+                    while (buffer.hasRemaining()) {
+                        client.read(buffer);
+                    }
+                    buffer.flip();
+                    log.debug("decoded: {}", StandardCharsets.US_ASCII.decode(buffer));
+                }
+            } catch (final Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+        // ------------------------------------------------------------------------------------ when
+        // connect to the <server>,
+        //       and send <12> bytes to the <server>
+        Thread.currentThread().setName("client");
+        try (var client = SocketChannel.open()) {
+            final var remote = new InetSocketAddress(addr, port.take());
+            log.debug("connecting to {}", remote);
+            client.connect(remote);
+            log.debug("connected to {} through {}", client.getRemoteAddress(),
+                      client.getLocalAddress());
+            log.debug("writing...");
+            service.write(client);
+            log.debug("written");
+        }
+        // ------------------------------------------------------------------------------------ then
+        // empty
     }
 }

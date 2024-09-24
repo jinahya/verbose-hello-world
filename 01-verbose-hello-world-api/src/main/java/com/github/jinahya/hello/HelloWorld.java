@@ -34,8 +34,10 @@ import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.AsynchronousFileChannel;
+import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.channels.FileChannel;
+import java.nio.channels.SocketChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
@@ -552,6 +554,11 @@ public interface HelloWorld {
         return channel;
     }
 
+    default <T extends SocketChannel> T send(final T channel) throws IOException {
+        Objects.requireNonNull(channel, "channel is null");
+        return write(channel);
+    }
+
     /**
      * Appends the <a href="#hello-world-bytes">hello-world-bytes</a> to the end of specified path
      * to a file. The {@link java.nio.file.Files#size(Path) size} of the {@code path}, on successful
@@ -636,6 +643,11 @@ public interface HelloWorld {
 
         // return the <channel>
         return channel;
+    }
+
+    default <T extends AsynchronousSocketChannel> T send(final T channel)
+            throws InterruptedException, ExecutionException {
+        return write(channel);
     }
 
     /**
