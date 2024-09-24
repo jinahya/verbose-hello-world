@@ -84,6 +84,12 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
         );
     }
 
+    private static ByteBuffer adjust(final IntFunction<? extends ByteBuffer> function) {
+        final var capacity = ThreadLocalRandom.current()
+                .nextInt(HelloWorld.BYTES, HelloWorld.BYTES << 1);
+        return adjust(function.apply(capacity));
+    }
+
     // ---------------------------------------------------------------------------------------------
 
     /**
@@ -118,7 +124,7 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
             when <buffer.remaining()> is less than <12>"""
     )
     @TestFactory
-    Stream<DynamicTest> _ThrowBufferOverflowException_BufferRemainingIsLessThanHelloWorldBytes() {
+    Stream<DynamicTest> _ThrowBufferOverflowException_BufferRemainingIsLessThan12() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // ------------------------------------------------------------------------------- when/then
@@ -126,7 +132,7 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
                 ByteBuffer.allocate(ThreadLocalRandom.current().nextInt(HelloWorld.BYTES)),
                 ByteBuffer.allocateDirect(ThreadLocalRandom.current().nextInt(HelloWorld.BYTES))
         ).map(b -> DynamicTest.dynamicTest(
-                "should throw a <BufferOverflowException for> " + b,
+                "should throw a <BufferOverflowException> for " + b,
                 () -> {
                     // assert, <service.put(b)> throws a <BufferOverflowException>
                     Assertions.assertThrows(
@@ -153,19 +159,20 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
     void __BufferHasBackingArray() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        if (false) { // not required actually
-            BDDMockito.willAnswer(i -> i.getArgument(0, byte[].class))
-                    .given(service)
-                    .set(ArgumentMatchers.any(), ArgumentMatchers.anyInt());
-        }
-        final ByteBuffer buffer = adjust(
-                ByteBuffer.allocate(HelloWorld.BYTES << 1),
-                b -> p -> r -> b.slice(p, b.limit() - p - r)
-        );
+        // stub, <set(array, index)> will do nothing
+        BDDMockito.willAnswer(i -> {
+                    final var array = i.getArgument(0, byte[].class);
+                    final var index = i.getArgument(0, int.class); // NOSONAR
+                    return array;
+                })
+                .given(service)
+                .set(ArgumentMatchers.any(), ArgumentMatchers.anyInt());
+        // prepare a byte-buffer
+        final var buffer = adjust(ByteBuffer::allocate);
         JavaNioByteBufferUtils.print(buffer);
         assert buffer.hasArray();
         assert buffer.remaining() >= HelloWorld.BYTES;
-        final var position = buffer.position();
+        final var position = buffer.position(); // NOSONAR
         // ------------------------------------------------------------------------------------ when
         final var result = service.put(buffer);
         // ------------------------------------------------------------------------------------ then
@@ -182,7 +189,7 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
      * Verifies that the {@link HelloWorld#put(ByteBuffer) put(buffer)} method, invoked with a byte
      * buffer which does not {@link ByteBuffer#hasArray() have a backing array}, invokes
      * {@link HelloWorld#set(byte[]) set(array)} method with an array of {@value HelloWorld#BYTES}
-     * bytes, puts the array to {@code buffer}, and returns the {@code buffer}.
+     * bytes, puts the {@code array} to {@code buffer}, and returns the {@code buffer}.
      */
     @DisplayName("""
             should invoke <set(array[12])>,
@@ -195,7 +202,7 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
         // stub, <service.set(array)> will return given <array>
         stub_set_array_will_return_the_array();
         // create a direct buffer
-        final ByteBuffer buffer = adjust(ByteBuffer.allocateDirect(HelloWorld.BYTES << 1));
+        final var buffer = adjust(ByteBuffer::allocateDirect);
         JavaNioByteBufferUtils.print(buffer);
         // assume, the <buffer> does not have a backing array
         Assumptions.assumeFalse(

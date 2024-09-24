@@ -478,8 +478,9 @@ public interface HelloWorld {
      * ({@link ByteBuffer#arrayOffset() buffer.arrayOffset} +
      * {@link ByteBuffer#position() buffer.position}), and then manually increments the buffer"s
      * position by {@value #BYTES}. Otherwise, this method invokes {@link #set(byte[]) #set(array)}
-     * method with an array of {@value #BYTES} bytes, and puts the array on the buffer by invoking
-     * {@link ByteBuffer#put(byte[])} method on {@code buffer} with the array.
+     * method with an array of {@value #BYTES} bytes, and puts the {@code array} on the
+     * {@code buffer} by invoking {@link ByteBuffer#put(byte[])} method, on {@code buffer}, with the
+     * array.
      * @see ByteBuffer#hasArray()
      * @see ByteBuffer#array()
      * @see ByteBuffer#arrayOffset()

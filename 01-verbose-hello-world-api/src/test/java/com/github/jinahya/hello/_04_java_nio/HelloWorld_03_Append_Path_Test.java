@@ -43,7 +43,6 @@ import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.Set;
 
 /**
  * A class for testing {@link HelloWorld#append(Path) append(path)} method.
@@ -113,8 +112,8 @@ class HelloWorld_03_Append_Path_Test extends HelloWorldTest {
         }
     }
 
-    @畵蛇添足("testing with a real path doesn't add any value")
-    @DisplayName("path's size should be increased by HelloWorld.BYTES")
+    @畵蛇添足("testing with an existing file doesn't add any value")
+    @DisplayName("path's size should be increased by <12>")
     @Test
     void _添足_畵蛇(@TempDir final Path dir) throws Exception {
         // ----------------------------------------------------------------------------------- given
@@ -145,6 +144,6 @@ class HelloWorld_03_Append_Path_Test extends HelloWorldTest {
                 Files.size(result)
         );
         // assert, <result> is same as <path>
-        Assertions.assertEquals(path, result);
+        Assertions.assertSame(path, result);
     }
 }

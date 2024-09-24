@@ -52,7 +52,6 @@ class HelloWorld_22_Append_File_Using_RandomAccessFile_Test extends HelloWorldTe
         // stub, <service.write(RandomAccessFile)> will write the <hello, world> bytes.
         BDDMockito.willAnswer(i -> {
                     final var file = i.getArgument(0, RandomAccessFile.class);
-                    log.debug("file.filePointer: {}", file.getFilePointer());
                     file.write("hello, world".getBytes(StandardCharsets.US_ASCII));
                     return file;
                 })
@@ -65,9 +64,7 @@ class HelloWorld_22_Append_File_Using_RandomAccessFile_Test extends HelloWorldTe
         log.debug("pos: {}", pos);
         // ------------------------------------------------------------------------------------ when
         try (var f = new RandomAccessFile(file, "rw")) { // check, rws, rwd
-            assert f.getFD().valid();
             f.seek(pos);
-            log.debug("f.filePointer: {}", f.getFilePointer());
             final var result = service.write(f);
             assert result == f;
             f.getFD().sync();
@@ -84,10 +81,9 @@ class HelloWorld_22_Append_File_Using_RandomAccessFile_Test extends HelloWorldTe
                 file.length()
         );
         // print <file>'s content
-        log.debug("file.length after: {}", file.length());
         try (var f = new RandomAccessFile(file, "r")) {
             f.seek(pos);
-            final byte[] bytes = new byte[HelloWorld.BYTES];
+            final var bytes = new byte[HelloWorld.BYTES];
             final var r = f.read(bytes);
             assert r == bytes.length;
             log.debug("string: {}", new String(bytes, StandardCharsets.US_ASCII));

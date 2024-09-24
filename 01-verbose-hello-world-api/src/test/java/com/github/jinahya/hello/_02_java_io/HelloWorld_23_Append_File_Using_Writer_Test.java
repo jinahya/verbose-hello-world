@@ -69,7 +69,6 @@ class HelloWorld_23_Append_File_Using_Writer_Test extends HelloWorldTest {
             }
         }
         final var length = file.length();
-        log.debug("file.length before: {}", length);
         // ------------------------------------------------------------------------------------ when
         try (var writer = new OutputStreamWriter(new FileOutputStream(file, true), // appending!
                                                  StandardCharsets.US_ASCII)) {     // US_ASCII!
@@ -88,10 +87,9 @@ class HelloWorld_23_Append_File_Using_Writer_Test extends HelloWorldTest {
                 file.length()
         );
         // print <file>'s content
-        log.debug("file.length after: {}", file.length());
         try (var f = new RandomAccessFile(file, "r")) {
             f.seek(length);
-            final byte[] bytes = new byte[HelloWorld.BYTES];
+            final var bytes = new byte[HelloWorld.BYTES];
             final var r = f.read(bytes);
             assert r == bytes.length;
             log.debug("string: {}", new String(bytes, StandardCharsets.US_ASCII));
