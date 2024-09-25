@@ -554,8 +554,21 @@ public interface HelloWorld {
         return channel;
     }
 
+    /**
+     * Sends the <a href="hello-world-bytes">hello-world-bytes</a> to specified socket channel.
+     *
+     * @param channel the socket channel to which the <a
+     *                href="hello-world-bytes">hello-world-bytes</a> be sent.
+     * @param <T>     socket channel type parameter
+     * @return given {@code channel}.
+     * @throws IOException if an I/O error occurs.
+     * @implSpec Default implementation invokes {@link #write(WritableByteChannel)} method with
+     * {@code channel} and returns the result.
+     * @deprecated Use {@link #write(WritableByteChannel)} method.
+     */
+    @屋上架屋("SocketChannel implements WritableByteChannel")
+    @Deprecated(forRemoval = true)
     default <T extends SocketChannel> T send(final T channel) throws IOException {
-        Objects.requireNonNull(channel, "channel is null");
         return write(channel);
     }
 
@@ -645,6 +658,22 @@ public interface HelloWorld {
         return channel;
     }
 
+    /**
+     * Sends the <a href="hello-world-bytes">hello-world-bytes</a> to specified asynchronous socket
+     * channel.
+     *
+     * @param channel the asynchronous socket channel to which the <a
+     *                href="hello-world-bytes">hello-world-bytes</a> be sent.
+     * @param <T>     asynchronous socket channel type parameter
+     * @return given {@code channel}.
+     * @throws InterruptedException interrupted while executing.
+     * @throws ExecutionException   when failed to execute.
+     * @implSpec Default implementation invokes {@link #write(AsynchronousByteChannel)} method with
+     * {@code channel} and returns the result.
+     * @deprecated Use {@link #write(AsynchronousByteChannel)} method.
+     */
+    @屋上架屋("AsynchronousSocketChannel implements AsynchronousByteChannel")
+    @Deprecated(forRemoval = true)
     default <T extends AsynchronousSocketChannel> T send(final T channel)
             throws InterruptedException, ExecutionException {
         return write(channel);

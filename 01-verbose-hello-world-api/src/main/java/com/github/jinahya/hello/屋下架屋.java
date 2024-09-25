@@ -20,9 +20,17 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+/**
+ * A roof underneath a roof.
+ *
+ * @see 屋上架屋
+ * @see 畵蛇添足
+ */
+@Documented
 @Retention(RetentionPolicy.SOURCE)
 public @interface 屋下架屋 {
 

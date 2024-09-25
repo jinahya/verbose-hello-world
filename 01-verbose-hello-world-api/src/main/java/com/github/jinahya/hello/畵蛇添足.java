@@ -20,6 +20,7 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -29,7 +30,10 @@ import java.lang.annotation.RetentionPolicy;
  * @author Jin Kwon &lt;onacit_at_wemakeprice.com&gt;
  * @see <a href="https://en.wiktionary.org/wiki/%E7%95%AB%E8%9B%87%E6%B7%BB%E8%B6%B3">畫蛇添足</a>
  * @see <a href="https://en.wiktionary.org/wiki/%EC%82%AC%EC%A1%B1">사족</a>
+ * @see 屋上架屋
+ * @see 屋下架屋
  */
+@Documented
 @Retention(RetentionPolicy.SOURCE)
 public @interface 畵蛇添足 {
 
