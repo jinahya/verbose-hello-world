@@ -34,7 +34,13 @@ import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketAddress;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ArrayBlockingQueue;
 
 /**
  * A class for testing {@link HelloWorld#send(Socket) send(socket)} method.
@@ -98,5 +104,40 @@ class HelloWorld_01_Send_Socket_Test extends HelloWorldTest {
 
         // assert, <result> is same as <socket>
         Assertions.assertSame(socket, result);
+    }
+
+    @Test
+    void _添足_畵蛇() throws IOException {
+        // ----------------------------------------------------------------------------------- given
+        final var service = service();
+        // stub, <service.write(stream)> will write 'hello, world' bytes to the <stream>
+        BDDMockito.willAnswer(i -> {
+                    final var stream = i.getArgument(0, OutputStream.class);
+                    stream.write("hello, world".getBytes(StandardCharsets.US_ASCII));
+                    return stream;
+                })
+                .given(service)
+                .write(ArgumentMatchers.notNull(OutputStream.class));
+        // ------------------------------------------------------------------------------ when/then
+        try (var server = new ServerSocket()) {
+            // bind to a random port
+            server.bind(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0));
+            // start a new thread which accepts a client, and reads <12> bytes from it
+            Thread.ofPlatform().daemon().start(() -> {
+                try {
+                    try (var client = server.accept()) {
+                        final var array = client.getInputStream().readNBytes(HelloWorld.BYTES);
+                        log.debug("string: {}", new String(array, StandardCharsets.US_ASCII));
+                    }
+                } catch (final IOException ioe) {
+                    throw new RuntimeException(ioe);
+                }
+            });
+            // connect to the <server>, and send the 'hello, world' bytes
+            try (var client = new Socket()) {
+                client.connect(server.getLocalSocketAddress());
+                service.write(client.getOutputStream()).flush();
+            }
+        }
     }
 }
