@@ -56,7 +56,7 @@ public abstract class HelloWorldTest {
     /**
      * Stubs {@link HelloWorld#set(byte[]) service#set(array)} method to return the {@code array}.
      */
-    protected void stub_set_array_will_return_the_array() {
+    protected final void stub_set_array_will_return_the_array() {
         BDDMockito.willAnswer(i -> i.getArgument(0))
                 .given(service)
                 .set(ArgumentMatchers.any());
@@ -68,7 +68,7 @@ public abstract class HelloWorldTest {
      *
      * @return the {@code array} argument captured.
      */
-    protected byte[] verify_set_array12_invoked_once() {
+    protected final byte[] verify_set_array12_invoked_once() {
         final var captor = ArgumentCaptor.forClass(byte[].class);
         Mockito.verify(service, Mockito.times(1)).set(captor.capture());
         final var array = captor.getValue();
@@ -81,7 +81,7 @@ public abstract class HelloWorldTest {
      * Stubs {@link HelloWorld#put(ByteBuffer) service#put(buffer)} method to increase the
      * {@code buffer}'s {@code position} by {@value HelloWorld#BYTES}.
      */
-    protected void stub_put_buffer_will_increase_buffer_position_by_12() {
+    protected final void stub_put_buffer_will_increase_buffer_position_by_12() {
         BDDMockito.willAnswer(i -> {
                     final var buffer = i.getArgument(0, ByteBuffer.class);
                     buffer.position(buffer.position() + HelloWorld.BYTES);
@@ -97,7 +97,7 @@ public abstract class HelloWorldTest {
      *
      * @return the {@code buffer} argument captured.
      */
-    protected ByteBuffer verify_put_buffer12_invoked_once() {
+    protected final ByteBuffer verify_put_buffer12_invoked_once() {
         final var captor = ArgumentCaptor.forClass(ByteBuffer.class);
         Mockito.verify(service, Mockito.times(1)).put(captor.capture());
         final var buffer = captor.getValue();

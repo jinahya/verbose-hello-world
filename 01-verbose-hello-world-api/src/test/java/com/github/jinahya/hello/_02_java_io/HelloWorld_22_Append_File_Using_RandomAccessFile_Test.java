@@ -31,10 +31,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
+import org.mockito.Mockito;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ThreadLocalRandom;
 
 @DisplayName("append using RandomAccessFile")
@@ -47,29 +49,44 @@ class HelloWorld_22_Append_File_Using_RandomAccessFile_Test extends HelloWorldTe
     void __(@TempDir final File dir) throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // stub, <service.write(RandomAccessFile)> will write <12> empty bytes.
+        // stub, <service.write(RandomAccessFile)> will write the <hello, world> bytes.
         BDDMockito.willAnswer(i -> {
                     final var file = i.getArgument(0, RandomAccessFile.class);
-                    file.write(new byte[HelloWorld.BYTES]);
+                    file.write("hello, world".getBytes(StandardCharsets.US_ASCII));
                     return file;
                 })
                 .given(service)
                 .write(ArgumentMatchers.<RandomAccessFile>notNull());
         // create a temp file
-        final File f = File.createTempFile("tmp", "tmp", dir);
-        assert f.length() == 0L;
+        final File file = File.createTempFile("tmp", null, dir);
+        assert file.length() == 0L;
         final var pos = ThreadLocalRandom.current().nextLong(128L);
+        log.debug("pos: {}", pos);
         // ------------------------------------------------------------------------------------ when
-        try (var file = new RandomAccessFile(f, "rw")) { // check, rws, rwd
-            file.seek(pos);
-            final var result = service.write(file);
-            assert result == file;
-            file.getFD().sync();
+        try (var f = new RandomAccessFile(file, "rw")) { // check, rws, rwd
+            f.seek(pos);
+            final var result = service.write(f);
+            assert result == f;
+            f.getFD().sync();
         }
         // ------------------------------------------------------------------------------------ then
+        // verify, <service.write(RandomAccessFile)> invoked, once
+        Mockito.verify(service, Mockito.times(1))
+                .write(ArgumentMatchers.<RandomAccessFile>notNull());
+        // verify, no unverified interactions on the <service>
+        Mockito.verifyNoMoreInteractions(service);
+        // assert, <file.length> increased by <12>
         Assertions.assertEquals(
                 pos + HelloWorld.BYTES,
-                f.length()
+                file.length()
         );
+        // print <file>'s content
+        try (var f = new RandomAccessFile(file, "r")) {
+            f.seek(pos);
+            final var bytes = new byte[HelloWorld.BYTES];
+            final var r = f.read(bytes);
+            assert r == bytes.length;
+            log.debug("string: {}", new String(bytes, StandardCharsets.US_ASCII));
+        }
     }
 }

@@ -25,60 +25,67 @@ import com.github.jinahya.hello.util.JavaLangObjectUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.awaitility.Awaitility;
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 
 import java.time.LocalDate;
 import java.util.Objects;
 import java.util.concurrent.Flow;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.LongAdder;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({
-        "java:S3577" // class _Flow...
+        "java:S3577" // Test classes should comply with a naming convention
 })
 class _Flow_LocalDate_Example_Test {
 
     private static class LocalDateSubscription implements Flow.Subscription {
 
-        /**
-         * Creates a new instance for specified subscriber.
-         *
-         * @param subscriber the subscriber.
-         */
-        LocalDateSubscription(final Flow.Subscriber<? super LocalDate> subscriber) {
+        private LocalDateSubscription(final Flow.Subscriber<? super LocalDate> subscriber) {
             super();
             this.subscriber = Objects.requireNonNull(subscriber, "subscriber is null");
-            this.accumulated = new AtomicLong();
-            Thread.startVirtualThread(() -> {
+            accumulated = new LongAdder();
+            lock = new ReentrantLock();
+            condition = lock.newCondition();
+            Thread.ofPlatform().start(() -> {
                 LocalDate date = null;
-                while (!cancelled) {
-                    while (!cancelled && accumulated.get() == 0L) {
-                        synchronized (accumulated) {
+                while (!Thread.currentThread().isInterrupted()) {
+                    try {
+                        lock.lock();
+                        while (!cancelled && accumulated.sum() == 0L) { // mind the spurious wakeup
                             try {
-                                accumulated.wait();
-                            } catch (final InterruptedException ie) {
-                                break;
+                                condition.await();
+                            } catch (InterruptedException ie) {
+                                Thread.currentThread().interrupt();
                             }
                         }
-                    }
-                    if (cancelled) {
-                        continue;
-                    }
-                    while (!cancelled && accumulated.getAndDecrement() > 0) {
-                        if (date == null) {
-                            date = LocalDate.now();
-                        } else {
-                            date = date.plusDays(1L);
+                        if (cancelled) {
+                            log.debug("cancelled; interrupting self...");
+                            Thread.currentThread().interrupt();
+                            continue;
                         }
-                        subscriber.onNext(date);
+                        while (accumulated.sum() > 0) {
+                            if (date == null) {
+                                date = LocalDate.now();
+                            } else {
+                                date = date.plusDays(1L); // will it ever grow?
+                            }
+                            subscriber.onNext(date);
+                            accumulated.decrement();
+                        }
+                    } finally {
+                        lock.unlock();
                     }
                 }
+                log.debug("out of while loop");
             });
         }
 
@@ -95,12 +102,15 @@ class _Flow_LocalDate_Example_Test {
                 subscriber.onError(new IllegalArgumentException("n(" + n + ") is negative"));
             }
             if (cancelled) {
-                log.debug("cancelled. returns...");
+                log.debug("cancelled, already; returns...");
                 return;
             }
-            accumulated.addAndGet(n);
-            synchronized (accumulated) {
-                accumulated.notifyAll();
+            try {
+                lock.lock();
+                accumulated.add(n);
+                condition.signal();
+            } finally {
+                lock.unlock();
             }
         }
 
@@ -110,25 +120,31 @@ class _Flow_LocalDate_Example_Test {
             if (cancelled) {
                 return;
             }
-            cancelled = true;
-            synchronized (accumulated) {
-                accumulated.notifyAll();
+            try {
+                lock.lock();
+                cancelled = true;
+                condition.signal();
+            } finally {
+                lock.unlock();
             }
         }
 
         private final Flow.Subscriber<? super LocalDate> subscriber;
 
-        private final AtomicLong accumulated;
+        private final LongAdder accumulated;
 
         private volatile boolean cancelled;
+
+        private final Lock lock;
+
+        private final Condition condition;
     }
 
     private static class LocalDatePublisher implements Flow.Publisher<LocalDate> {
 
         private static class InstanceHolder {
 
-            private static final _Flow_LocalDate_Example_Test.LocalDatePublisher INSTANCE
-                    = new _Flow_LocalDate_Example_Test.LocalDatePublisher();
+            private static final LocalDatePublisher INSTANCE = new LocalDatePublisher();
 
             private InstanceHolder() {
                 throw new AssertionError("instantiation is not allowed");
@@ -172,7 +188,7 @@ class _Flow_LocalDate_Example_Test {
         @Override
         public void onSubscribe(final Flow.Subscription subscription) {
             log.debug("onSubscribe({}", subscription);
-            reference.set(subscription);
+            reference.set(Mockito.spy(subscription));
         }
 
         @Override
@@ -194,10 +210,11 @@ class _Flow_LocalDate_Example_Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("single subscriber for a publisher")
     @Test
     void __() {
         final var reference = new AtomicReference<Flow.Subscription>();
-        final var subscriber = new LocalDateSubscriber(reference) { // @formatter:off
+        final var subscriber = Mockito.spy(new LocalDateSubscriber(reference) { // @formatter:off
             @Override public void onSubscribe(final Flow.Subscription subscription) {
                 super.onSubscribe(subscription);
                 if (ThreadLocalRandom.current().nextBoolean()) {
@@ -210,16 +227,21 @@ class _Flow_LocalDate_Example_Test {
                     reference.get().request(1L);
                 }
             } // @formatter:on
-        };
+        });
         // subscribe
         LocalDatePublisher.getInstance().subscribe(subscriber);
+        // verify, <subscriber.onSubscribe(...)> invoked, once
+        Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(ArgumentMatchers.notNull());
+        // subscription
+        final var subscription = reference.get();
+        assert subscription != null;
         // request a random number of items
-        reference.get().request(ThreadLocalRandom.current().nextLong(1, 16));
+        subscription.request(ThreadLocalRandom.current().nextLong(2, 8));
         // await, for 1 sec
         AwaitilityTestUtils.awaitForOneSecond();
-        // cancel the subscription
-        reference.get().cancel();
+        // cancel the <subscription>
+        subscription.cancel();
         // request some after the cancellation
-        reference.get().request(1L);
+        subscription.request(1L);
     }
 }

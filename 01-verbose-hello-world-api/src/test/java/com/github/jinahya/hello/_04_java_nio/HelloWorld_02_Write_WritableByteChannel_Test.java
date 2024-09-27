@@ -22,23 +22,28 @@ package com.github.jinahya.hello._04_java_nio;
 
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello.HelloWorldTest;
+import com.github.jinahya.hello.畵蛇添足;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.AdditionalMatchers;
 import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
 import java.io.IOException;
-import java.nio.Buffer;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.nio.channels.AsynchronousByteChannel;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
 import java.nio.channels.WritableByteChannel;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.atomic.LongAdder;
 
 /**
  * A class for testing {@link HelloWorld#write(WritableByteChannel) write(channel)} method.
@@ -56,7 +61,7 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends HelloWorldTest {
      * {@link NullPointerException} when {@code channel} argument is {@code null}.
      */
     @DisplayName("""
-            should throw a NullPointerException
+            should throw a <NullPointerException>
             when the <channel> argument is <null>"""
     )
     @Test
@@ -65,7 +70,7 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends HelloWorldTest {
         final var service = service();
         final var channel = (WritableByteChannel) null;
         // ------------------------------------------------------------------------------- when/then
-        // assert, <service.write(channel)> throws a NullPointerException
+        // assert, <service.write(channel)> throws a <NullPointerException>
         Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.write(channel)
@@ -75,13 +80,13 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends HelloWorldTest {
     /**
      * Verifies {@link HelloWorld#write(WritableByteChannel) write(channel)} method invokes
      * {@link HelloWorld#put(ByteBuffer) put(buffer)} method with a byte buffer of
-     * {@value HelloWorld#BYTES} bytes, and writes the buffer to specified channel.
+     * {@value HelloWorld#BYTES} bytes, and writes the {@code buffer} to specified {@code channel}.
      *
      * @throws IOException if an I/O error occurs.
      */
     @DisplayName("""
-            should invoke put(buffer[12])
-            and writes the <buffer> to the <channel> while the <buffer> has remaining"""
+            should invoke <put(buffer[12])>
+            and writes the <buffer> to the <channel> while the <buffer> has <remaining>"""
     )
     @Test
     void __() throws IOException {
@@ -89,8 +94,8 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends HelloWorldTest {
         final var service = service();
         // stub, <service.put(buffer)> will increase the <buffer>'s <position> by <12>
         stub_put_buffer_will_increase_buffer_position_by_12();
-        // stub, <channel.write(buffer)> will increase the <buffer>'s <position> by a random value
         final var channel = Mockito.mock(WritableByteChannel.class);
+        // stub, <channel.write(buffer)> will increase the <buffer>'s <position> by a random value
         BDDMockito.willAnswer(i -> {
             final var src = i.getArgument(0, ByteBuffer.class);
             final var written = ThreadLocalRandom.current().nextInt(src.remaining()) + 1;
@@ -108,5 +113,66 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends HelloWorldTest {
 
         // assert, <result> is same as <channel>
         Assertions.assertSame(channel, result);
+    }
+
+    @畵蛇添足("SocketChannel implements WritableByteChannel")
+    @DisplayName("send(SocketChannel)")
+    @Test
+    void _添足_畵蛇() throws Exception {
+        // ----------------------------------------------------------------------------------- given
+        final var service = service();
+        // stub, <service.write(channel)> will write the 'hello, world' bytes
+        BDDMockito.willAnswer(i -> {
+                    final var channel = i.getArgument(0, WritableByteChannel.class);
+                    final var array = "hello, world".getBytes(StandardCharsets.US_ASCII);
+                    for (final var b = ByteBuffer.wrap(array); b.hasRemaining(); ) {
+                        channel.write(b);
+                    }
+                    return channel;
+                })
+                .given(service)
+                .write(ArgumentMatchers.<WritableByteChannel>notNull());
+        // start a new thread which
+        //           binds to a random port
+        //           accepts a client,
+        //           and reads 12 bytes
+        final var addr = InetAddress.getLoopbackAddress();
+        final var port = new ArrayBlockingQueue<Integer>(1);
+        Thread.ofPlatform().name("server").start(() -> {
+            try (var server = ServerSocketChannel.open()) {
+                server.bind(new InetSocketAddress(addr, 0), 1);
+                log.debug("bound to {}", server.getLocalAddress());
+                port.offer(((InetSocketAddress) server.getLocalAddress()).getPort());
+                try (var client = server.accept()) {
+                    log.debug("accepted from {} through {}", client.getRemoteAddress(),
+                              client.getLocalAddress());
+                    final var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
+                    log.debug("reading {} bytes...", buffer.remaining());
+                    while (buffer.hasRemaining()) {
+                        client.read(buffer);
+                    }
+                    buffer.flip();
+                    log.debug("decoded: {}", StandardCharsets.US_ASCII.decode(buffer));
+                }
+            } catch (final Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+        // ------------------------------------------------------------------------------------ when
+        // connect to the <server>,
+        //       and send <12> bytes to the <server>
+        Thread.currentThread().setName("client");
+        try (var client = SocketChannel.open()) {
+            final var remote = new InetSocketAddress(addr, port.take());
+            log.debug("connecting to {}", remote);
+            client.connect(remote);
+            log.debug("connected to {} through {}", client.getRemoteAddress(),
+                      client.getLocalAddress());
+            log.debug("writing...");
+            service.write(client);
+            log.debug("written");
+        }
+        // ------------------------------------------------------------------------------------ then
+        // empty
     }
 }

@@ -129,11 +129,11 @@ class HelloWorld_10_Write_AsynchronousFileChannelWithHandler_Test extends HelloW
     @Test
     void _ThrowNullPointerException_HandlerIsNull() {
         // ----------------------------------------------------------------------------------- given
-        var service = service();
-        var channel = Mockito.mock(AsynchronousFileChannel.class);
-        var position = 0L;
-        var handler = (CompletionHandler<AsynchronousFileChannel, Object>) null;
-        var attachment = ThreadLocalRandom.current().nextBoolean() ? null : new Object();
+        final var service = service();
+        final var channel = Mockito.mock(AsynchronousFileChannel.class);
+        final var position = 0L;
+        final var handler = (CompletionHandler<AsynchronousFileChannel, Object>) null;
+        final var attachment = ThreadLocalRandom.current().nextBoolean() ? null : new Object();
         assert channel != null; // O.K.
         assert position >= 0L;  // O.K.
         assert attachment != null || attachment == null; // don't care
@@ -227,8 +227,8 @@ class HelloWorld_10_Write_AsynchronousFileChannelWithHandler_Test extends HelloW
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // stub, <service.write(channel, position, attachment, handler)>
-        //         will write 12 bytes
-        //         , and will invoke <handler.completed(channel, attachment)>
+        //         will write 12 bytes,
+        //         and will invoke <handler.completed(channel, attachment)>
         BDDMockito.willAnswer(i -> {
             final var channel = i.getArgument(0, AsynchronousFileChannel.class);
             final var position = i.getArgument(1, Long.class);

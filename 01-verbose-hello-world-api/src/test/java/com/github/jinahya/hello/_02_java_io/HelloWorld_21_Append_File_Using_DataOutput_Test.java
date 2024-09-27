@@ -31,12 +31,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
+import org.mockito.Mockito;
 
 import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ThreadLocalRandom;
 
 @DisplayName("appends using DataOutput")
@@ -49,10 +52,10 @@ class HelloWorld_21_Append_File_Using_DataOutput_Test extends HelloWorldTest {
     void __(@TempDir final File dir) throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // stub, <service.set(DataOutput)> will write <12> empty bytes.
+        // stub, <service.write(output)> will write <hello, world> bytes.
         BDDMockito.willAnswer(i -> {
                     final var output = i.getArgument(0, DataOutput.class);
-                    output.write(new byte[HelloWorld.BYTES]);
+                    output.write("hello, world".getBytes(StandardCharsets.US_ASCII));
                     return output;
                 })
                 .given(service)
@@ -60,7 +63,7 @@ class HelloWorld_21_Append_File_Using_DataOutput_Test extends HelloWorldTest {
         // create a temp file, and write some dummy bytes
         final File file = File.createTempFile("tmp", null, dir);
         try (var stream = new FileOutputStream(file)) {
-            stream.write(new byte[ThreadLocalRandom.current().nextInt(128)]);
+            stream.write(new byte[ThreadLocalRandom.current().nextInt(8)]);
             stream.flush();
         }
         final var length = file.length();
@@ -71,10 +74,22 @@ class HelloWorld_21_Append_File_Using_DataOutput_Test extends HelloWorldTest {
             output.flush();
         }
         // ------------------------------------------------------------------------------------ then
+        // verify, <service.write(output)> invoked, once
+        Mockito.verify(service, Mockito.times(1)).write(ArgumentMatchers.<DataOutput>notNull());
+        // verify, no unverified interactions on the <service>
+        Mockito.verifyNoMoreInteractions(service);
         // assert, <file.length> increased by <12>
         Assertions.assertEquals(
                 length + HelloWorld.BYTES,
                 file.length()
         );
+        // print <file>'s content
+        try (var f = new RandomAccessFile(file, "r")) {
+            f.seek(length);
+            final var bytes = new byte[HelloWorld.BYTES];
+            final var r = f.read(bytes);
+            assert r == bytes.length;
+            log.debug("string: {}", new String(bytes, StandardCharsets.US_ASCII));
+        }
     }
 }
