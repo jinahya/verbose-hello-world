@@ -99,9 +99,9 @@ class HelloWorld_01_Send_Socket_Test extends HelloWorldTest {
         // verify, <socket.getOutputStream()> invoked, once
         Mockito.verify(socket, Mockito.times(1)).getOutputStream();
         // verify, <service.write(stream)> invoked, once
-
+        Mockito.verify(service, Mockito.times(1)).write(stream);
         // verify, no more interactions with the <socket>
-
+        Mockito.verifyNoMoreInteractions(socket);
         // assert, <result> is same as <socket>
         Assertions.assertSame(socket, result);
     }
