@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 import org.mockito.ArgumentMatchers;
@@ -37,9 +38,11 @@ import org.mockito.BDDMockito;
 
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Objects;
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.stream.Stream;
 
@@ -54,40 +57,90 @@ import java.util.stream.Stream;
 @SuppressWarnings({"java:S101"})
 class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
 
-    private static <R> R adjust(
-            final ByteBuffer buffer,
-            final Function<
-                    ? super ByteBuffer,
-                    ? extends IntFunction<
-                            ? extends IntFunction<
-                                    ? extends R>>> function) {
-        if (Objects.requireNonNull(buffer, "buffer is null").remaining() < HelloWorld.BYTES) {
+    private static final Random RANDOM;
+
+    static {
+        Random random;
+        try {
+            random = SecureRandom.getInstanceStrong();
+        } catch (final NoSuchAlgorithmException nsme) {
+            random = ThreadLocalRandom.current();
+        }
+        RANDOM = random;
+    }
+
+    private static <R> R slice(final int x, final int m,
+                               final IntFunction<? extends IntFunction<? extends R>> function) {
+        assert x >= m : String.format("x(%1$d) should be GE to m(%2$d)", x, m);
+        final var index = RANDOM.nextInt(0, x - m + 1);
+        final var length = RANDOM.nextInt(m, x - index + 1);
+        assert length >= m;
+        return function.apply(index).apply(length);
+    }
+
+    private static ByteBuffer slice(final ByteBuffer buffer, final int capacity) {
+        if (capacity > Objects.requireNonNull(buffer, "buffer is null").limit()) {
             throw new IllegalArgumentException(
-                    "buffer.remaining(" + buffer.remaining() + ") < " + HelloWorld.BYTES
+                    "capacity(" + capacity + ") > buffer.limit(" + buffer.limit() + ")"
             );
         }
-        Objects.requireNonNull(function, "function is null");
-        final var forwardPosition = ThreadLocalRandom.current().nextInt(
-                buffer.remaining() - HelloWorld.BYTES + 1
-        );
-        final var backwardLimit = ThreadLocalRandom.current().nextInt(
-                buffer.remaining() - HelloWorld.BYTES - forwardPosition + 1
-        );
-        assert (buffer.limit() - backwardLimit - forwardPosition) >= HelloWorld.BYTES;
-        return function.apply(buffer).apply(forwardPosition).apply(backwardLimit);
-    }
-
-    private static ByteBuffer adjust(final ByteBuffer buffer) {
-        return adjust(
-                buffer,
-                b -> fp -> bl -> b.position(b.position() + fp).limit(b.limit() - bl)
+        return slice(
+                buffer.limit(),
+                capacity,
+                i -> l -> {
+                    log.debug("slicing; from {}, into i: {}, l: {}", buffer.limit(), i, l);
+                    final var sliced = buffer.slice(i, l);
+                    assert sliced.capacity() >= capacity;
+                    return sliced;
+                }
         );
     }
 
-    private static ByteBuffer adjust(final IntFunction<? extends ByteBuffer> function) {
-        final var capacity = ThreadLocalRandom.current()
-                .nextInt(HelloWorld.BYTES, HelloWorld.BYTES << 1);
-        return adjust(function.apply(capacity));
+    // ---------------------------------------------------------------------------------------------
+    @Nested
+    class ByteBufferTest {
+
+        @DisplayName("wrap(array)")
+        @Test
+        void __wrapArray() {
+            final var array = new byte[RANDOM.nextInt(16, 32)];
+            final var buffer = ByteBuffer.wrap(array);
+            JavaNioByteBufferUtils.print(buffer);
+            final var sliced = slice(buffer, 0);
+            JavaNioByteBufferUtils.print(sliced);
+            assert sliced != buffer;
+        }
+
+        @DisplayName("wrap(array, offset, length)")
+        @Test
+        void __wrapArrayOffsetAndIndex() {
+            final var array = new byte[RANDOM.nextInt(16, 32)];
+            final var buffer = slice(array.length, 0, i -> l -> ByteBuffer.wrap(array, i, l));
+            JavaNioByteBufferUtils.print(buffer);
+            final var sliced = slice(buffer, 0);
+            JavaNioByteBufferUtils.print(sliced);
+            assert sliced != buffer;
+        }
+
+        @DisplayName("allocate(capacity)")
+        @Test
+        void __allocate() {
+            final var buffer = ByteBuffer.allocate(RANDOM.nextInt(16, 32));
+            JavaNioByteBufferUtils.print(buffer);
+            final var sliced = slice(buffer, 0);
+            JavaNioByteBufferUtils.print(sliced);
+            assert sliced != buffer;
+        }
+
+        @DisplayName("allocateDirect(capacity)")
+        @Test
+        void __allocateDirect() {
+            final var buffer = ByteBuffer.allocateDirect(RANDOM.nextInt(16, 32));
+            JavaNioByteBufferUtils.print(buffer);
+            final var sliced = slice(buffer, 0);
+            JavaNioByteBufferUtils.print(sliced);
+            assert sliced != buffer;
+        }
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -168,7 +221,7 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
                 .given(service)
                 .set(ArgumentMatchers.any(), ArgumentMatchers.anyInt());
         // prepare a byte-buffer
-        final var buffer = adjust(ByteBuffer::allocate);
+        final var buffer = slice(ByteBuffer.allocate(HelloWorld.BYTES << 1), HelloWorld.BYTES);
         JavaNioByteBufferUtils.print(buffer);
         assert buffer.hasArray();
         assert buffer.remaining() >= HelloWorld.BYTES;
@@ -202,8 +255,11 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
         // stub, <service.set(array)> will return given <array>
         stub_set_array_will_return_the_array();
         // create a direct buffer
-        final var buffer = adjust(ByteBuffer::allocateDirect);
+        final var buffer = slice(ByteBuffer.allocateDirect(HelloWorld.BYTES << 1),
+                                 HelloWorld.BYTES);
         JavaNioByteBufferUtils.print(buffer);
+        assert buffer.isDirect();
+        assert buffer.remaining() >= HelloWorld.BYTES;
         // assume, the <buffer> does not have a backing array
         Assumptions.assumeFalse(
                 buffer.hasArray(),

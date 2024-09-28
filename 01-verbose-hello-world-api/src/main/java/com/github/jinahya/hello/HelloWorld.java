@@ -499,7 +499,7 @@ public interface HelloWorld {
         if (buffer.hasArray()) {
             // invoke <set(buffer.array(), (buffer.arrayOffset() + buffer.position())>
 
-            // increment <buffer.position> by <BYTES>
+            // increase <buffer.position> by <BYTES>
 
         } else {
             // get the hello-world-bytes
