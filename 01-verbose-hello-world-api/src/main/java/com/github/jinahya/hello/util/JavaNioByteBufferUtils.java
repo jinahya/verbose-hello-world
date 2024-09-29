@@ -42,8 +42,8 @@ public final class JavaNioByteBufferUtils {
         Objects.requireNonNull(buffer, "buffer is null");
         var padding = 11;
         printer.println("------------------------------------------------------------------------");
-        printer.printf(String.format("%%1$%ds: %%2$s 0x%%3$08X%%n", padding), "buffer",
-                       buffer, Objects.hash(buffer));
+        printer.printf(String.format("%%1$%ds: %%2$s 0x%%3$08X%%n", padding), "buffer", buffer,
+                       System.identityHashCode(buffer));
         printer.printf(String.format("%%1$%ds: %%2$d%%n", padding), "remaining",
                        buffer.remaining());
         printer.printf(String.format("%%1$%ds: %%2$b%%n", padding), "direct", buffer.isDirect());
@@ -88,8 +88,8 @@ public final class JavaNioByteBufferUtils {
             for (int i = buffer.arrayOffset() + buffer.capacity(); i < array.length; i++) {
                 printer.print('-');
             }
-            printer.printf(" %1$c length(%2$d) 0x%3$08X%n", '←', array.length,
-                           Arrays.hashCode(array));
+            printer.printf(" %1$c length(%2$d) 0x%3$08x%n", '←', array.length,
+                           System.identityHashCode(array));
         }
         printer.println("------------------------------------------------------------------------");
         return buffer;

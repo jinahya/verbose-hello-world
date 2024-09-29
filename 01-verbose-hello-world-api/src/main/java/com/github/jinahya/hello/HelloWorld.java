@@ -432,7 +432,7 @@ public interface HelloWorld {
      * <pre>
      * Given,
      *
-     *          4                                        25            31
+     *          4                                        25            32
      *  0    &lt;= position                           &lt;= limit   &lt;= capacity
      *  ↓       ↓                                         ↓             ↓
      * | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |
@@ -441,7 +441,7 @@ public interface HelloWorld {
      *
      * Then, on successful return,
      *
-     *                                 16                25            31
+     *                                 16                25            32
      *  0                     &lt;= position          &lt;= limit   &lt;= capacity
      *  ↓                               ↓                 ↓             ↓
      * | | | | |h|e|l|l|o|,| |w|o|r|l|d| | | | | | | | | | | | | | | | |

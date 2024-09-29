@@ -33,6 +33,8 @@ import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 
@@ -44,6 +46,7 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.IntFunction;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
@@ -69,28 +72,28 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
         RANDOM = random;
     }
 
-    private static <R> R slice(final int x, final int m,
+    private static <R> R slice(final int max, final int min,
                                final IntFunction<? extends IntFunction<? extends R>> function) {
-        assert x >= m : String.format("x(%1$d) should be GE to m(%2$d)", x, m);
-        final var index = RANDOM.nextInt(0, x - m + 1);
-        final var length = RANDOM.nextInt(m, x - index + 1);
-        assert length >= m;
+        assert max >= min : String.format("max(%1$d) should be GE to min(%2$d)", max, min);
+        final var index = RANDOM.nextInt(0, max - min + 1);
+        final var length = RANDOM.nextInt(min, max - index + 1);
+        assert length >= min;
         return function.apply(index).apply(length);
     }
 
-    private static ByteBuffer slice(final ByteBuffer buffer, final int capacity) {
-        if (capacity > Objects.requireNonNull(buffer, "buffer is null").limit()) {
+    private static ByteBuffer slice(final ByteBuffer buffer, final int min) {
+        if (min > Objects.requireNonNull(buffer, "buffer is null").limit()) {
             throw new IllegalArgumentException(
-                    "capacity(" + capacity + ") > buffer.limit(" + buffer.limit() + ")"
+                    "min(" + min + ") > buffer.limit(" + buffer.limit() + ")"
             );
         }
         return slice(
                 buffer.limit(),
-                capacity,
+                min,
                 i -> l -> {
-                    log.debug("slicing; from {}, into i: {}, l: {}", buffer.limit(), i, l);
+                    log.debug("slicing with index({}) and length({})", i, l);
                     final var sliced = buffer.slice(i, l);
-                    assert sliced.capacity() >= capacity;
+                    assert sliced.capacity() >= min;
                     return sliced;
                 }
         );
@@ -100,46 +103,86 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
     @Nested
     class ByteBufferTest {
 
+        private static IntStream getArrayLengthStream() {
+            return IntStream.of(
+                    0,
+                    ThreadLocalRandom.current().nextInt(16, 32)
+            );
+        }
+
+        private static IntStream getCapacityStream() {
+            return getArrayLengthStream();
+        }
+
         @DisplayName("wrap(array)")
-        @Test
-        void __wrapArray() {
-            final var array = new byte[RANDOM.nextInt(16, 32)];
+        @MethodSource({"getArrayLengthStream"})
+        @ParameterizedTest
+        void _wrapArray(final int length) {
+            // ------------------------------------------------------------------------------- given
+            final var array = new byte[length];
             final var buffer = ByteBuffer.wrap(array);
             JavaNioByteBufferUtils.print(buffer);
+            assert buffer.hasArray();
+            // -------------------------------------------------------------------------------- when
             final var sliced = slice(buffer, 0);
             JavaNioByteBufferUtils.print(sliced);
+            // -------------------------------------------------------------------------------- then
             assert sliced != buffer;
+            assert sliced.hasArray();
+            assert sliced.array() == buffer.array();
         }
 
         @DisplayName("wrap(array, offset, length)")
-        @Test
-        void __wrapArrayOffsetAndIndex() {
-            final var array = new byte[RANDOM.nextInt(16, 32)];
+        @MethodSource({"getArrayLengthStream"})
+        @ParameterizedTest
+        void __wrapArrayOffsetAndLength(final int length) {
+            // ------------------------------------------------------------------------------- given
+            final var array = new byte[length];
             final var buffer = slice(array.length, 0, i -> l -> ByteBuffer.wrap(array, i, l));
             JavaNioByteBufferUtils.print(buffer);
+            assert buffer.hasArray();
+            // -------------------------------------------------------------------------------- when
             final var sliced = slice(buffer, 0);
             JavaNioByteBufferUtils.print(sliced);
+            // -------------------------------------------------------------------------------- then
             assert sliced != buffer;
+            assert sliced.hasArray();
+            assert sliced.array() == buffer.array();
         }
 
         @DisplayName("allocate(capacity)")
-        @Test
-        void __allocate() {
-            final var buffer = ByteBuffer.allocate(RANDOM.nextInt(16, 32));
+        @MethodSource({"getCapacityStream"})
+        @ParameterizedTest
+        void __allocate(final int capacity) {
+            // ------------------------------------------------------------------------------- given
+            final var buffer = ByteBuffer.allocate(capacity);
             JavaNioByteBufferUtils.print(buffer);
+            assert buffer.hasArray();
+            // -------------------------------------------------------------------------------- when
             final var sliced = slice(buffer, 0);
             JavaNioByteBufferUtils.print(sliced);
+            // -------------------------------------------------------------------------------- then
             assert sliced != buffer;
+            assert sliced.hasArray();
         }
 
         @DisplayName("allocateDirect(capacity)")
-        @Test
-        void __allocateDirect() {
-            final var buffer = ByteBuffer.allocateDirect(RANDOM.nextInt(16, 32));
+        @MethodSource({"getCapacityStream"})
+        @ParameterizedTest
+        void __allocateDirect(final int capacity) {
+            // ------------------------------------------------------------------------------- given
+            final var buffer = ByteBuffer.allocateDirect(capacity);
             JavaNioByteBufferUtils.print(buffer);
+            assert buffer.isDirect();
+            // > Whether or not it has a backing array is unspecified
+            final var hasArray = buffer.hasArray();
+            // -------------------------------------------------------------------------------- when
             final var sliced = slice(buffer, 0);
             JavaNioByteBufferUtils.print(sliced);
+            // -------------------------------------------------------------------------------- then
             assert sliced != buffer;
+            assert sliced.isDirect();
+            assert sliced.hasArray() == hasArray;
         }
     }
 
