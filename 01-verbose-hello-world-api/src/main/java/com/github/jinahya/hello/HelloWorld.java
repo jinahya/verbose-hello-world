@@ -486,9 +486,8 @@ public interface HelloWorld {
      * @see ByteBuffer#hasArray()
      * @see ByteBuffer#array()
      * @see ByteBuffer#arrayOffset()
-     * @see ByteBuffer#position()
+     * @see ByteBuffer#position(int)
      * @see #set(byte[], int)
-     * @see #set(byte[])
      * @see ByteBuffer#put(byte[])
      */
     default <T extends ByteBuffer> T put(final T buffer) {

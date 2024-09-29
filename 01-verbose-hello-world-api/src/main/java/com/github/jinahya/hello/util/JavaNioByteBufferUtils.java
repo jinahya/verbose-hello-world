@@ -42,7 +42,7 @@ public final class JavaNioByteBufferUtils {
         Objects.requireNonNull(buffer, "buffer is null");
         var padding = 11;
         printer.println("------------------------------------------------------------------------");
-        printer.printf(String.format("%%1$%ds: %%2$s 0x%%3$08X%%n", padding), "buffer", buffer,
+        printer.printf(String.format("%%1$%ds: %%2$s 0x%%3$08x%%n", padding), "buffer", buffer,
                        System.identityHashCode(buffer));
         printer.printf(String.format("%%1$%ds: %%2$d%%n", padding), "remaining",
                        buffer.remaining());

@@ -22,6 +22,7 @@ package com.github.jinahya.hello._04_java_nio;
 
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello.HelloWorldTest;
+import com.github.jinahya.hello.util.JavaNioByteBufferUtils;
 import com.github.jinahya.hello.畵蛇添足;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -37,7 +38,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
-import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.WritableByteChannel;
@@ -107,6 +107,7 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends HelloWorldTest {
         // ------------------------------------------------------------------------------------ then
         // verify, <put(buffer[12])> invoked, once
         final var buffer = verify_put_buffer12_invoked_once();
+        JavaNioByteBufferUtils.print(buffer);
         // verify, <channel.write(buffer)> invoked, at least once
 
         // assert, <buffer> has no <remaining>
@@ -144,7 +145,7 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends HelloWorldTest {
                 log.debug("bound to {}", server.getLocalAddress());
                 port.offer(((InetSocketAddress) server.getLocalAddress()).getPort());
                 try (var client = server.accept()) {
-                    log.debug("accepted from {} through {}", client.getRemoteAddress(),
+                    log.debug("accepted; remote: {}, local: {}", client.getRemoteAddress(),
                               client.getLocalAddress());
                     final var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
                     log.debug("reading {} bytes...", buffer.remaining());
@@ -166,11 +167,11 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends HelloWorldTest {
             final var remote = new InetSocketAddress(addr, port.take());
             log.debug("connecting to {}", remote);
             client.connect(remote);
-            log.debug("connected to {} through {}", client.getRemoteAddress(),
+            log.debug("connected: remote: {}, local: {}", client.getRemoteAddress(),
                       client.getLocalAddress());
             log.debug("writing...");
             service.write(client);
-            log.debug("written");
+            log.debug("written.");
         }
         // ------------------------------------------------------------------------------------ then
         // empty
