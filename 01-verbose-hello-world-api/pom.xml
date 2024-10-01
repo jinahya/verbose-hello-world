@@ -93,24 +93,6 @@
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
       </plugin>
-      <plugin>
-        <groupId>org.pitest</groupId>
-        <artifactId>pitest-maven</artifactId>
-        <configuration>
-          <avoidCallsTo>
-            <avoidCallsTo>java.util.logging</avoidCallsTo>
-            <avoidCallsTo>org.apache.log4j</avoidCallsTo>
-            <avoidCallsTo>org.slf4j</avoidCallsTo>
-            <avoidCallsTo>org.apache.commons.logging</avoidCallsTo>
-          </avoidCallsTo>
-          <targetClasses>
-            <param>com.github.jinahya.hello*</param>
-          </targetClasses>
-          <targetTests>
-            <param>com.github.jinahya.hello*</param>
-          </targetTests>
-        </configuration>
-      </plugin>
     </plugins>
   </build>
 </project>

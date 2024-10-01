@@ -40,6 +40,7 @@ import org.mockito.BDDMockito;
 
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Objects;
@@ -72,12 +73,21 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
         RANDOM = random;
     }
 
+    private static int index(final int max, final int min) {
+        return RANDOM.nextInt(0, ((max - min) >> 1) + 1);
+    }
+
+    private static int length(final int max, final int min, final int index) {
+        final var length = RANDOM.nextInt(min, max - index + 1);
+        assert length >= min;
+        return length;
+    }
+
     private static <R> R slice(final int max, final int min,
                                final IntFunction<? extends IntFunction<? extends R>> function) {
         assert max >= min : String.format("max(%1$d) should be GE to min(%2$d)", max, min);
-        final var index = RANDOM.nextInt(0, max - min + 1);
-        final var length = RANDOM.nextInt(min, max - index + 1);
-        assert length >= min;
+        final var index = index(max, min);
+        final var length = length(max, min, index);
         return function.apply(index).apply(length);
     }
 
@@ -91,9 +101,19 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
                 buffer.limit(),
                 min,
                 i -> l -> {
-                    log.debug("slicing with index({}) and length({})", i, l);
+                    log.debug("slicing; index: {}, length: {}", i, l);
                     final var sliced = buffer.slice(i, l);
                     assert sliced.capacity() >= min;
+                    // > The new buffer's position will be zero
+                    assert sliced.position() == 0;
+                    // > , its capacity and its limit will be <length>,
+                    assert sliced.capacity() == l;
+                    assert sliced.limit() == sliced.capacity();
+                    assert sliced.order() == ByteOrder.BIG_ENDIAN;
+                    // > The new buffer will be direct if, and only if, this buffer is direct
+                    assert sliced.isDirect() == buffer.isDirect();
+                    // > , and it will be read-only if, and only if, this buffer is read-only.
+                    assert sliced.isReadOnly() == buffer.isReadOnly();
                     return sliced;
                 }
         );
@@ -120,9 +140,17 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
         void _wrapArray(final int length) {
             // ------------------------------------------------------------------------------- given
             final var array = new byte[length];
+            // -------------------------------------------------------------------------------- when
             final var buffer = ByteBuffer.wrap(array);
             JavaNioByteBufferUtils.print(buffer);
+            // -------------------------------------------------------------------------------- then
             assert buffer.hasArray();
+            assert buffer.capacity() == array.length;
+            assert buffer.limit() == buffer.capacity();
+            assert buffer.position() == 0;
+            assert buffer.order() == ByteOrder.BIG_ENDIAN;
+            assert buffer.array() == array;
+            assert buffer.arrayOffset() == 0;
             // -------------------------------------------------------------------------------- when
             final var sliced = slice(buffer, 0);
             JavaNioByteBufferUtils.print(sliced);
@@ -135,12 +163,22 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
         @DisplayName("wrap(array, offset, length)")
         @MethodSource({"getArrayLengthStream"})
         @ParameterizedTest
-        void __wrapArrayOffsetAndLength(final int length) {
+        void __wrapArrayOffsetAndLength(final int arrayLength) {
             // ------------------------------------------------------------------------------- given
-            final var array = new byte[length];
-            final var buffer = slice(array.length, 0, i -> l -> ByteBuffer.wrap(array, i, l));
+            final var array = new byte[arrayLength];
+            final var offset = index(array.length, 0);
+            final var length = length(array.length, 0, offset);
+            // -------------------------------------------------------------------------------- when
+            final var buffer = ByteBuffer.wrap(array, offset, length);
             JavaNioByteBufferUtils.print(buffer);
+            // -------------------------------------------------------------------------------- then
             assert buffer.hasArray();
+            assert buffer.capacity() == array.length;
+            assert buffer.position() == offset;
+            assert buffer.limit() == offset + length;
+            assert buffer.order() == ByteOrder.BIG_ENDIAN;
+            assert buffer.array() == array;
+            assert buffer.arrayOffset() == 0;
             // -------------------------------------------------------------------------------- when
             final var sliced = slice(buffer, 0);
             JavaNioByteBufferUtils.print(sliced);
@@ -154,10 +192,14 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
         @MethodSource({"getCapacityStream"})
         @ParameterizedTest
         void __allocate(final int capacity) {
-            // ------------------------------------------------------------------------------- given
+            // -------------------------------------------------------------------------------- when
             final var buffer = ByteBuffer.allocate(capacity);
             JavaNioByteBufferUtils.print(buffer);
+            // -------------------------------------------------------------------------------- then
+            assert buffer.position() == 0;
+            assert buffer.order() == ByteOrder.BIG_ENDIAN;
             assert buffer.hasArray();
+            assert buffer.arrayOffset() == 0;
             // -------------------------------------------------------------------------------- when
             final var sliced = slice(buffer, 0);
             JavaNioByteBufferUtils.print(sliced);
@@ -170,10 +212,14 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
         @MethodSource({"getCapacityStream"})
         @ParameterizedTest
         void __allocateDirect(final int capacity) {
-            // ------------------------------------------------------------------------------- given
+            // -------------------------------------------------------------------------------- when
             final var buffer = ByteBuffer.allocateDirect(capacity);
             JavaNioByteBufferUtils.print(buffer);
+            // -------------------------------------------------------------------------------- then
             assert buffer.isDirect();
+            assert buffer.position() == 0;
+            assert buffer.limit() == buffer.capacity();
+            assert buffer.order() == ByteOrder.BIG_ENDIAN;
             // > Whether or not it has a backing array is unspecified
             final var hasArray = buffer.hasArray();
             // -------------------------------------------------------------------------------- when
@@ -242,8 +288,8 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
     /**
      * Verifies that the {@link HelloWorld#put(ByteBuffer) put(buffer)} method, invoked with a byte
      * buffer which {@link ByteBuffer#hasArray() has a backing array}, invokes
-     * {@link HelloWorld#set(byte[], int) set(array, index)} method with {@code buffer.array} and
-     * ({@code buffer.arrayOffset + buffer.position}), and returns the {@code buffer} as its
+     * {@link HelloWorld#set(byte[], int) set(array, index)} method with {@code buffer.array()} and
+     * ({@code buffer.arrayOffset() + buffer.position()}), and returns the {@code buffer} as its
      * {@link ByteBuffer#position() position} increased by
      * {@link HelloWorld#BYTES}({@value HelloWorld#BYTES}).
      */
@@ -255,7 +301,7 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
     void __BufferHasBackingArray() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // stub, <set(array, index)> will do nothing
+        // stub, <set(array, index)> will return the <array>
         BDDMockito.willAnswer(i -> {
                     final var array = i.getArgument(0, byte[].class);
                     final var index = i.getArgument(0, int.class); // NOSONAR
@@ -263,7 +309,7 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
                 })
                 .given(service)
                 .set(ArgumentMatchers.any(), ArgumentMatchers.anyInt());
-        // prepare a byte-buffer
+        // prepare a byte buffer which has a backing-array, and has enough remaining.
         final var buffer = slice(ByteBuffer.allocate(HelloWorld.BYTES << 1), HelloWorld.BYTES);
         JavaNioByteBufferUtils.print(buffer);
         assert buffer.hasArray();

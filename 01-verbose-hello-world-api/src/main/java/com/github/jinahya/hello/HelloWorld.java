@@ -20,6 +20,7 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import com.github.jinahya.hello.util.JavaNioByteBufferUtils;
 import org.slf4j.Logger;
 
 import java.io.DataOutput;
@@ -456,29 +457,34 @@ public interface HelloWorld {
      *     throw new BufferOverflowException();
      * }
      * if (buffer.hasArray()) {
-     *     set(buffer.array(), buffer.arrayOffset() + buffer.position()); // @highlight region
-     *     buffer.position(buffer.position() + BYTES);                    // @end
+     *     var array = buffer.array();
+     *     var index = buffer.arrayOffset() + buffer.position();
+     *     var position = buffer.position();
+     *     set(array, index); // @highlight region
+     *     assert buffer.position() == position;
+     *     buffer.position(buffer.position() + BYTES); // @end
      * } else {
-     *     final var array = new byte[BYTES];
+     *     var array = new byte[BYTES];
      *     set(array);
+     *     var position = buffer.position();
      *     buffer.put(array); // @highlight
+     *     assert buffer.position() == position + array.length;
      * }
      * return buffer;
      *}
      *
      * @param <T>    buffer type parameter
      * @param buffer the byte buffer on which bytes are put.
-     * @return given {@code buffer} whose {@link ByteBuffer#position() position} increased by
-     * {@value BYTES}.
+     * @return given {@code buffer}.
      * @throws NullPointerException    if {@code buffer} is {@code null}.
      * @throws BufferOverflowException if {@link ByteBuffer#remaining() buffer.remaining} is less
      *                                 than {@value #BYTES}.
      * @implSpec The default implementation, if {@code buffer}
      * {@link ByteBuffer#hasArray() has a backing-array}, invokes
-     * {@link #set(byte[], int) #set(array, index)} method with the buffer's
-     * {@link ByteBuffer#array() backing-array} and
-     * ({@link ByteBuffer#arrayOffset() buffer.arrayOffset} +
-     * {@link ByteBuffer#position() buffer.position}), and then manually increments the buffer"s
+     * {@link #set(byte[], int) #set(array, index)} method with the
+     * {@link ByteBuffer#array() buffer.array()} and
+     * ({@link ByteBuffer#arrayOffset() buffer.arrayOffset()}
+     * + {@link ByteBuffer#position() buffer.position()}), and then manually increments the buffer"s
      * position by {@value #BYTES}. Otherwise, this method invokes {@link #set(byte[]) #set(array)}
      * method with an array of {@value #BYTES} bytes, and puts the {@code array} on the
      * {@code buffer} by invoking {@link ByteBuffer#put(byte[])} method, on {@code buffer}, with the
@@ -486,13 +492,13 @@ public interface HelloWorld {
      * @see ByteBuffer#hasArray()
      * @see ByteBuffer#array()
      * @see ByteBuffer#arrayOffset()
+     * @see ByteBuffer#position()
      * @see ByteBuffer#position(int)
      * @see #set(byte[], int)
      * @see ByteBuffer#put(byte[])
      */
     default <T extends ByteBuffer> T put(final T buffer) {
-        Objects.requireNonNull(buffer, "buffer is null");
-        if (buffer.remaining() < BYTES) {
+        if (Objects.requireNonNull(buffer, "buffer is null").remaining() < BYTES) {
             throw new BufferOverflowException();
         }
         if (buffer.hasArray()) {
@@ -546,7 +552,9 @@ public interface HelloWorld {
         // get the hello-world-bytes
         final var buffer = ByteBuffer.allocate(BYTES);
         put(buffer);
-        buffer.flip();
+        JavaNioByteBufferUtils.print(buffer);
+        buffer.flip(); // limit -> position, position -> zero
+        JavaNioByteBufferUtils.print(buffer);
         // invoke <channel.write(buffer)> while <buffer.hasRemaining()>
 
         // return given <channel>

@@ -35,7 +35,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Flow;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.LongAdder;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 
@@ -80,18 +79,19 @@ public final class HelloWorldFlow {
 
             @Override
             public void subscribe(final Flow.Subscriber<? super Byte> subscriber) {
+                Objects.requireNonNull(subscriber, "subscriber is null");
                 log.debug("{}.subscribe({})", this, subscriber); // NOSONAR
                 Objects.requireNonNull(subscriber, "subscriber is null");
                 final var array = service.set(new byte[HelloWorld.BYTES]);
                 final var index = new AtomicInteger(); // index of the next item in the <array>
-                final var accumulated = new LongAdder(); // accumulated <n> of the <request(n)>
+                final var accumulated = new AtomicLong(); // accumulated <n> of the <request(n)>
                 final var lock = new ReentrantLock();
                 final var condition = lock.newCondition();
                 final var future = executor.submit(() -> {
                     while (!Thread.currentThread().isInterrupted()) {
                         lock.lock();
                         try {
-                            while (accumulated.sum() == 0L) {
+                            while (accumulated.get() == 0L) {
                                 try {
                                     condition.await();
                                 } catch (final InterruptedException ie) {
@@ -100,7 +100,7 @@ public final class HelloWorldFlow {
                                     break;
                                 }
                             }
-                            for (; accumulated.sum() > 0L; accumulated.decrement()) {
+                            while (accumulated.getAndDecrement() > 0L) {
                                 subscriber.onNext(array[index.get()]);
                                 if (index.incrementAndGet() == array.length) {
                                     subscriber.onComplete();
@@ -128,7 +128,9 @@ public final class HelloWorldFlow {
                         }
                         try {
                             lock.lock();
-                            accumulated.add(n);
+                            if (accumulated.addAndGet(n) < 0L) { // overflowed
+                                accumulated.set(Long.MAX_VALUE);
+                            }
                             condition.signal();
                         } finally {
                             lock.unlock();
@@ -167,7 +169,8 @@ public final class HelloWorldFlow {
             @Override
             public void subscribe(final Flow.Subscriber<? super byte[]> subscriber) {
                 Objects.requireNonNull(subscriber, "subscriber is null");
-                final var accumulated = new AtomicLong(); // accumulated <n> of <request(n)>
+                log.debug("{}.subscribe({})", this, subscriber);
+                final var accumulated = new AtomicLong(); // accumulated <n> from <request(n)>
                 final var lock = new ReentrantLock();
                 final var condition = lock.newCondition();
                 final var publisher = new OfByte(service, executor);
@@ -272,7 +275,8 @@ public final class HelloWorldFlow {
 
             @Override
             public void subscribe(final Flow.Subscriber<? super ByteBuffer> subscriber) {
-                super.subscribe(subscriber);
+                Objects.requireNonNull(subscriber, "subscriber is null");
+                log.debug("{}.subscribe({})", this, subscriber);
                 final var processor = new Flow.Processor<byte[], ByteBuffer>() { // @formatter:off
                     @Override public String toString() {
                         return String.format("[array-to-buffer-processor@%08x]", hashCode());
@@ -345,7 +349,8 @@ public final class HelloWorldFlow {
 
             @Override
             public void subscribe(final Flow.Subscriber<? super String> subscriber) {
-                super.subscribe(subscriber);
+                Objects.requireNonNull(subscriber, "subscriber is null");
+                log.debug("{}.subscribe({})", this, subscriber);
                 final var processor = new Flow.Processor<ByteBuffer, String>() { // @formatter:off
                     @Override public String toString() {
                         return String.format("[buffer-to-string-processor@%08x]", hashCode());
@@ -393,15 +398,16 @@ public final class HelloWorldFlow {
             private final Flow.Publisher<ByteBuffer> publisher;
         }
 
-        private HelloWorldPublisher(final HelloWorld service, final ExecutorService executor) {
+        /**
+         * Creates a new instance with specified service and executor.
+         *
+         * @param service  an instance of {@link HelloWorld} interface.
+         * @param executor an executor for asynchronously publish items.
+         */
+        protected HelloWorldPublisher(final HelloWorld service, final ExecutorService executor) {
             super();
             this.service = Objects.requireNonNull(service, "service is null");
             this.executor = Objects.requireNonNull(executor, "executor is null");
-        }
-
-        @Override
-        public void subscribe(final Flow.Subscriber<? super T> subscriber) {
-            log.debug("{}.subscribe({})", this, subscriber);
         }
 
         final HelloWorld service;
