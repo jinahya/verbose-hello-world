@@ -32,8 +32,6 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Flow;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
@@ -84,33 +82,34 @@ public final class HelloWorldFlow {
                 Objects.requireNonNull(subscriber, "subscriber is null");
                 log.debug("{}.subscribe({})", this, subscriber); // NOSONAR
                 Objects.requireNonNull(subscriber, "subscriber is null");
+                final var accumulated = new AtomicLong(); // accumulated <n> from <request(n)>
                 final var lock = new ReentrantLock();
                 final var condition = lock.newCondition();
-                final var accumulated = new AtomicLong(); // accumulated <n> from <request(n)>
                 final var future = executor.submit(() -> {
                     final var array = service.set(new byte[HelloWorld.BYTES]);
                     var index = 0;
-                    while (!Thread.currentThread().isInterrupted()) {
-                        lock.lock();
-                        try {
-                            while (accumulated.get() == 0L) {
+                    final var thread = Thread.currentThread();
+                    while (!thread.isInterrupted()) {
+                        while (accumulated.get() == 0) {
+                            lock.lock();
+                            try {
                                 try {
                                     condition.await();
                                 } catch (final InterruptedException ie) {
                                     log.info("interrupted while awaiting the condition", ie);
-                                    Thread.currentThread().interrupt();
+                                    thread.interrupt();
                                     break;
                                 }
+                            } finally {
+                                lock.unlock();
                             }
-                            while (accumulated.getAndDecrement() > 0L) {
-                                subscriber.onNext(array[index++]);
-                                if (index == array.length) {
-                                    subscriber.onComplete();
-                                    Thread.currentThread().interrupt();
-                                }
+                        }
+                        while (!thread.isInterrupted() && accumulated.getAndDecrement() > 0L) {
+                            subscriber.onNext(array[index++]);
+                            if (index == array.length) {
+                                subscriber.onComplete();
+                                Thread.currentThread().interrupt();
                             }
-                        } finally {
-                            lock.unlock();
                         }
                     }
                     log.debug("out-of-while-loop: {}", this);
@@ -128,11 +127,9 @@ public final class HelloWorldFlow {
                         if (future.isDone() || future.isCancelled()) {
                             return;
                         }
+                        accumulated.accumulateAndGet(n, (c, u) -> (c + u) & Long.MAX_VALUE);
                         try {
                             lock.lock();
-                            if (accumulated.addAndGet(n) < 0L) { // overflowed
-                                accumulated.set(Long.MAX_VALUE); // > effectively unbounded
-                            }
                             condition.signal();
                         } finally {
                             lock.unlock();
@@ -175,10 +172,9 @@ public final class HelloWorldFlow {
                 final var accumulated = new AtomicLong(); // accumulated <n> from <request(n)>
                 final var lock = new ReentrantLock();
                 final var condition = lock.newCondition();
-                final var publisher = new OfByte(service, executor);
                 final var future = executor.submit(() -> {
-                    final var thread = Thread.currentThread();
-                    while (!thread.isInterrupted()) {
+                    final var publisher = new OfByte(service, executor);
+                    while (!Thread.currentThread().isInterrupted()) {
                         lock.lock();
                         try {
                             // await <condition> while <accumulated> is still <zero>
@@ -186,7 +182,7 @@ public final class HelloWorldFlow {
                                 try {
                                     condition.await();
                                 } catch (final InterruptedException ie) {
-                                    thread.interrupt();
+                                    Thread.currentThread().interrupt();
                                     return;
                                 }
                             }
@@ -199,7 +195,7 @@ public final class HelloWorldFlow {
                         publisher.subscribe(new HelloWorldSubscriber.OfByte() { // @formatter:off
                             @Override public void onSubscribe(final Flow.Subscription subscription) {
                                 super.onSubscribe(subscription);
-                                subscription.request(array.length);
+                                subscription().request(array.length);
                             }
                             @Override public void onNext(final Byte item) {
                                 super.onNext(item);
@@ -208,7 +204,6 @@ public final class HelloWorldFlow {
                             @Override public void onError(final Throwable throwable) {
                                 super.onError(throwable);
                                 subscriber.onError(throwable);
-                                thread.interrupt();
                             }
                             @Override public void onComplete() {
                                 super.onComplete();
@@ -234,11 +229,9 @@ public final class HelloWorldFlow {
                         if (future.isCancelled() || future.isDone()) {
                             return;
                         }
+                        accumulated.accumulateAndGet(n, (o, u) -> (o + u) & Long.MAX_VALUE);
                         lock.lock();
                         try {
-                            if (accumulated.addAndGet(n) < 0L) { // overflow
-                                accumulated.set(Long.MAX_VALUE);
-                            }
                             condition.signal();
                         } finally {
                             lock.unlock();
