@@ -38,9 +38,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketAddress;
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.ArrayBlockingQueue;
 
 /**
  * A class for testing {@link HelloWorld#send(Socket) send(socket)} method.

@@ -22,7 +22,6 @@ package com.github.jinahya.hello.util;
 
 import java.io.PrintStream;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 import java.util.Objects;
 
 public final class JavaNioByteBufferUtils {
