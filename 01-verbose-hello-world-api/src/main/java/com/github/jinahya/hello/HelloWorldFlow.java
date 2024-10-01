@@ -30,12 +30,12 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Flow;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -486,7 +486,7 @@ public final class HelloWorldFlow {
              * Creates a new instance.
              */
             public OfString() {
-                super(Function.identity());
+                super(v -> {});
             }
 
             @Override
@@ -496,13 +496,13 @@ public final class HelloWorldFlow {
         }
 
         /**
-         * Creates a new instance.
+         * Creates a new instance with specified consumer.
          *
-         * @param formatter a formatter for formatting items.
+         * @param consumer the consumer accepts each item published via {@link #onNext(Object)}.
          */
-        private HelloWorldSubscriber(final Function<? super T, String> formatter) {
+        private HelloWorldSubscriber(final Consumer<? super T> consumer) {
             super();
-            this.formatter = Optional.ofNullable(formatter).orElseGet(() -> Objects::toString);
+            this.consumer = Objects.requireNonNull(consumer, "consumer is null");
         }
 
         @Override
@@ -516,7 +516,8 @@ public final class HelloWorldFlow {
 
         @Override
         public void onNext(final T item) {
-            log.debug("{}.onNext({})", this, formatter.apply(item));
+            log.debug("{}.onNext({})", this, item);
+            consumer.accept(Objects.requireNonNull(item, "item is null"));
         }
 
         @Override
@@ -529,7 +530,7 @@ public final class HelloWorldFlow {
             log.debug("{}.onComplete()", this);
         }
 
-        private final Function<? super T, String> formatter;
+        private final Consumer<? super T> consumer;
 
         @Accessors(fluent = true)
         @Getter(AccessLevel.PROTECTED)
