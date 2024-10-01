@@ -32,17 +32,19 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Flow;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
  * Interrelated classes for establishing flow-controlled <em>hello-world</em> components based on
  * interfaces defined in {@link Flow} class.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ * @see Flow
+ * @see <a href="https://github.com/reactive-streams/reactive-streams-jvm/">Reactive Streams</a>
  */
 @Slf4j
 public final class HelloWorldFlow {
@@ -82,12 +84,12 @@ public final class HelloWorldFlow {
                 Objects.requireNonNull(subscriber, "subscriber is null");
                 log.debug("{}.subscribe({})", this, subscriber); // NOSONAR
                 Objects.requireNonNull(subscriber, "subscriber is null");
-                final var array = service.set(new byte[HelloWorld.BYTES]);
-                final var index = new AtomicInteger(); // index of the next item in the <array>
-                final var accumulated = new AtomicLong(); // accumulated <n> of the <request(n)>
                 final var lock = new ReentrantLock();
                 final var condition = lock.newCondition();
+                final var accumulated = new AtomicLong(); // accumulated <n> from <request(n)>
                 final var future = executor.submit(() -> {
+                    final var array = service.set(new byte[HelloWorld.BYTES]);
+                    var index = 0;
                     while (!Thread.currentThread().isInterrupted()) {
                         lock.lock();
                         try {
@@ -101,8 +103,8 @@ public final class HelloWorldFlow {
                                 }
                             }
                             while (accumulated.getAndDecrement() > 0L) {
-                                subscriber.onNext(array[index.get()]);
-                                if (index.incrementAndGet() == array.length) {
+                                subscriber.onNext(array[index++]);
+                                if (index == array.length) {
                                     subscriber.onComplete();
                                     Thread.currentThread().interrupt();
                                 }
@@ -129,7 +131,7 @@ public final class HelloWorldFlow {
                         try {
                             lock.lock();
                             if (accumulated.addAndGet(n) < 0L) { // overflowed
-                                accumulated.set(Long.MAX_VALUE);
+                                accumulated.set(Long.MAX_VALUE); // > effectively unbounded
                             }
                             condition.signal();
                         } finally {
@@ -486,7 +488,8 @@ public final class HelloWorldFlow {
              * Creates a new instance.
              */
             public OfString() {
-                super(v -> {});
+                super(v -> {
+                });
             }
 
             @Override
