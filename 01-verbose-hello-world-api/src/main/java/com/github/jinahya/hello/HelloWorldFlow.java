@@ -96,7 +96,6 @@ public final class HelloWorldFlow {
                                 try {
                                     condition.await();
                                 } catch (final InterruptedException ie) {
-                                    log.info("interrupted while awaiting the condition", ie);
                                     thread.interrupt();
                                     break;
                                 }
