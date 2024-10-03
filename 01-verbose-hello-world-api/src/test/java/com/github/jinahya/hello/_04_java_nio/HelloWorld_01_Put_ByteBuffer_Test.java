@@ -54,7 +54,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
- * A class for testing {@link HelloWorld#put(ByteBuffer)} method.
+ * A class for testing {@link HelloWorld#put(ByteBuffer) put(buffer)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
