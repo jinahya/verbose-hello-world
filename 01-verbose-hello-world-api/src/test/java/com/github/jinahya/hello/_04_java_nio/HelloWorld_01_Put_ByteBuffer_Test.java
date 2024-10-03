@@ -30,10 +30,12 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.aggregator.ArgumentsAccessor;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentMatchers;
@@ -138,12 +140,20 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
             );
         }
 
-        private static Stream<byte[]> getArrayStream() {
-            return getArrayLengthStream().mapToObj(byte[]::new);
+        private static Stream<Arguments> getArrayArgumentsStream() {
+            return getArrayLengthStream()
+                    .mapToObj(byte[]::new)
+                    .map(a -> Arguments.of(Named.of(String.format("array[%1$d]", a.length), a)));
         }
 
         private static Stream<Arguments> getArrayOffsetAndLengthArgumentsStream() {
-            return getArrayStream().map(a -> slice(a.length, 0, i -> l -> Arguments.of(a, i, l)));
+            return getArrayLengthStream()
+                    .mapToObj(byte[]::new)
+                    .map(a -> slice(a.length, 0, i -> l -> Arguments.of(
+                            Named.of(String.format("array[%1$d]", a.length), a),
+                            Named.of("offset(" + i + ")", i),
+                            Named.of("length(" + l + ")", l)
+                    )));
         }
 
         private static IntStream getCapacityStream() {
@@ -151,7 +161,7 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
         }
 
         @DisplayName("wrap(array)")
-        @MethodSource({"getArrayStream"})
+        @MethodSource({"getArrayArgumentsStream"})
         @ParameterizedTest
         void _wrap_array(final byte[] array) {
             // ------------------------------------------------------------------------------- given
@@ -179,9 +189,11 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
         @DisplayName("wrap(array, offset, length)")
         @MethodSource({"getArrayOffsetAndLengthArgumentsStream"})
         @ParameterizedTest
-        void _wrap_arrayOffsetAndLength(final byte[] array, final int offset, final int length) {
+        void _wrap_arrayOffsetAndLength(final ArgumentsAccessor accessor) {
             // ------------------------------------------------------------------------------- given
-            // empty
+            final var array = accessor.get(0, byte[].class);
+            final var offset = accessor.getInteger(1);
+            final var length = accessor.getInteger(2);
             // -------------------------------------------------------------------------------- when
             final var buffer = ByteBuffer.wrap(array, offset, length);
             JavaNioByteBufferUtils.print(buffer);
