@@ -332,7 +332,7 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
         // stub, <set(array, index)> to just return the <array>
         Mockito.doAnswer(i -> {
                     final var array = i.getArgument(0, byte[].class);
-                    final var index = i.getArgument(0, int.class); // NOSONAR
+                    final var index = i.getArgument(0, Integer.class); // NOSONAR
                     return array;
                 })
                 .when(service)
@@ -372,8 +372,9 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
         // stub, <service.set(array)> to just return the <array>
         stub_set_array_will_return_the_array();
         // create a direct buffer
-        final var buffer = slice(ByteBuffer.allocateDirect(HelloWorld.BYTES << 1),
-                                 HelloWorld.BYTES);
+        final var buffer = Mockito.spy(
+                slice(ByteBuffer.allocateDirect(HelloWorld.BYTES << 1), HelloWorld.BYTES)
+        );
         JavaNioByteBufferUtils.print(buffer);
         assert buffer.isDirect();
         assert buffer.remaining() >= HelloWorld.BYTES;
