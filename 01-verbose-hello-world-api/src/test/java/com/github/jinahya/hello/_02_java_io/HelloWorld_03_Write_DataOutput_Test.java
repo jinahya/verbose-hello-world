@@ -28,16 +28,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
-import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
 import java.io.DataOutput;
 import java.io.IOException;
 
 /**
- * A class for testing {@link HelloWorld#write(DataOutput) write(data)} method.
+ * A class for testing {@link HelloWorld#write(DataOutput) write(output)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -48,12 +46,12 @@ import java.io.IOException;
 class HelloWorld_03_Write_DataOutput_Test extends HelloWorldTest {
 
     /**
-     * Asserts {@link HelloWorld#write(DataOutput) write(data)} method throws a
+     * Asserts {@link HelloWorld#write(DataOutput) write(output)} method throws a
      * {@link NullPointerException} when the {@code data} argument is {@code null}.
      */
     @DisplayName("""
-            should throw a NullPointerException
-            when the data argument is null"""
+            should throw a <NullPointerException>
+            when the <output> argument is <null>"""
     )
     @Test
     void _ThrowNullPointerException_DataIsNull() {
@@ -61,6 +59,7 @@ class HelloWorld_03_Write_DataOutput_Test extends HelloWorldTest {
         final var service = service();
         final var output = (DataOutput) null;
         // ------------------------------------------------------------------------------- when/then
+        // assert, <service.write(output)> throws a <NullPointerException>
         Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.write(output)
@@ -74,26 +73,24 @@ class HelloWorld_03_Write_DataOutput_Test extends HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("-> set(array[12]) -> output.write(array)")
+    @DisplayName("should invoke <set(array[12])>, and invoke output.write(array)")
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // stub, <service.set(array)> to return the <array>.
-        BDDMockito.willAnswer(i -> i.getArgument(0))
-                .given(service)
+        Mockito.doAnswer(i -> i.getArgument(0))
+                .when(service)
                 .set(ArgumentMatchers.any());
         final var output = Mockito.mock(DataOutput.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(output);
         // ------------------------------------------------------------------------------------ then
         // verify, <set(byte[12])> invoked, once
-        final var arrayCaptor = ArgumentCaptor.forClass(byte[].class);
-        Mockito.verify(service, Mockito.times(1)).set(arrayCaptor.capture());
-        final var array = arrayCaptor.getValue();
-        Assertions.assertNotNull(array);
-        Assertions.assertEquals(HelloWorld.BYTES, array.length);
+        final var array = verify_set_array12_invoked_once();
         // verify, <output.write(array)> invoked, once
+
+        // verify, no more interactions with <output>
 
         // verify <result> is same as <output>
         Assertions.assertSame(output, result);

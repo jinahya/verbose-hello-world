@@ -200,7 +200,9 @@ public interface HelloWorld {
         }
         final var array = new byte[BYTES];
         set(array);
-        // append each byte in array to appendable
+        // append each byte in <array> to <appendable>
+
+        // return given <appendable>
         return appendable;
     }
 

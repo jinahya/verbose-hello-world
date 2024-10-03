@@ -88,7 +88,7 @@ class HelloWorld_03_Append_Path_Test extends HelloWorldTest {
         final var path = Mockito.mock(Path.class);
         final var channel = Mockito.mock(FileChannel.class);
         try (var mockStatic = Mockito.mockStatic(FileChannel.class)) {
-            // stub, <FileChannel.open(path, arguments)> will return the <channel>
+            // stub, <FileChannel.open(path, options)> will return the <channel>
             mockStatic.when(() -> FileChannel.open(ArgumentMatchers.same(path),
                                                    ArgumentMatchers.any(OpenOption[].class)))
                     .thenReturn(channel);
@@ -98,6 +98,7 @@ class HelloWorld_03_Append_Path_Test extends HelloWorldTest {
             // verify, <FileChannel.open(path, <options>)> invoked, once
             final var captor = ArgumentCaptor.forClass(OpenOption[].class);
 
+            final var options = captor.getAllValues();
             // verify, <options> contains <StandardOpenOption.WRITE>, <StandardOpenOption.CREATE>,
             //         <StandardOpenOption.APPEND)>, and no others
 

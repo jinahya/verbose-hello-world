@@ -34,9 +34,10 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentMatchers;
-import org.mockito.BDDMockito;
+import org.mockito.Mockito;
 
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
@@ -74,10 +75,15 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
     }
 
     private static int index(final int max, final int min) {
+        assert max >= min : String.format("max(%1$d) should be GE to min(%2$d)", max, min);
+        assert min >= 0 : String.format("min(%1$d) should be non-negative", min);
         return RANDOM.nextInt(0, ((max - min) >> 1) + 1);
     }
 
     private static int length(final int max, final int min, final int index) {
+        assert max >= min : String.format("max(%1$d) should be GE to min(%2$d)", max, min);
+        assert min >= 0 : String.format("min(%1$d) should be non-negative", min);
+        assert index >= 0;
         final var length = RANDOM.nextInt(min, max - index + 1);
         assert length >= min;
         return length;
@@ -86,6 +92,8 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
     private static <R> R slice(final int max, final int min,
                                final IntFunction<? extends IntFunction<? extends R>> function) {
         assert max >= min : String.format("max(%1$d) should be GE to min(%2$d)", max, min);
+        assert min >= 0 : String.format("min(%1$d) should be non-negative", min);
+        assert function != null;
         final var index = index(max, min);
         final var length = length(max, min, index);
         return function.apply(index).apply(length);
@@ -130,16 +138,24 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
             );
         }
 
+        private static Stream<byte[]> getArrayStream() {
+            return getArrayLengthStream().mapToObj(byte[]::new);
+        }
+
+        private static Stream<Arguments> getArrayOffsetAndLengthArgumentsStream() {
+            return getArrayStream().map(a -> slice(a.length, 0, i -> l -> Arguments.of(a, i, l)));
+        }
+
         private static IntStream getCapacityStream() {
             return getArrayLengthStream();
         }
 
         @DisplayName("wrap(array)")
-        @MethodSource({"getArrayLengthStream"})
+        @MethodSource({"getArrayStream"})
         @ParameterizedTest
-        void _wrapArray(final int length) {
+        void _wrap_array(final byte[] array) {
             // ------------------------------------------------------------------------------- given
-            final var array = new byte[length];
+            // empty
             // -------------------------------------------------------------------------------- when
             final var buffer = ByteBuffer.wrap(array);
             JavaNioByteBufferUtils.print(buffer);
@@ -161,13 +177,11 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
         }
 
         @DisplayName("wrap(array, offset, length)")
-        @MethodSource({"getArrayLengthStream"})
+        @MethodSource({"getArrayOffsetAndLengthArgumentsStream"})
         @ParameterizedTest
-        void __wrapArrayOffsetAndLength(final int arrayLength) {
+        void _wrap_arrayOffsetAndLength(final byte[] array, final int offset, final int length) {
             // ------------------------------------------------------------------------------- given
-            final var array = new byte[arrayLength];
-            final var offset = index(array.length, 0);
-            final var length = length(array.length, 0, offset);
+            // empty
             // -------------------------------------------------------------------------------- when
             final var buffer = ByteBuffer.wrap(array, offset, length);
             JavaNioByteBufferUtils.print(buffer);
@@ -192,6 +206,8 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
         @MethodSource({"getCapacityStream"})
         @ParameterizedTest
         void __allocate(final int capacity) {
+            // ------------------------------------------------------------------------------- given
+            // empty
             // -------------------------------------------------------------------------------- when
             final var buffer = ByteBuffer.allocate(capacity);
             JavaNioByteBufferUtils.print(buffer);
@@ -274,7 +290,7 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
                 ByteBuffer.allocate(ThreadLocalRandom.current().nextInt(HelloWorld.BYTES)),
                 ByteBuffer.allocateDirect(ThreadLocalRandom.current().nextInt(HelloWorld.BYTES))
         ).map(b -> DynamicTest.dynamicTest(
-                "should throw a <BufferOverflowException> for " + b,
+                "should throw a <BufferOverflowException> for " + b + " (" + b.remaining() + ")",
                 () -> {
                     // assert, <service.put(b)> throws a <BufferOverflowException>
                     Assertions.assertThrows(
@@ -286,8 +302,8 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
     }
 
     /**
-     * Verifies that the {@link HelloWorld#put(ByteBuffer) put(buffer)} method, invoked with a byte
-     * buffer which {@link ByteBuffer#hasArray() has a backing array}, invokes
+     * Verifies that the {@link HelloWorld#put(ByteBuffer) put(buffer)} method, when invoked with a
+     * byte buffer which {@link ByteBuffer#hasArray() has a backing array}, invokes
      * {@link HelloWorld#set(byte[], int) set(array, index)} method with {@code buffer.array()} and
      * ({@code buffer.arrayOffset() + buffer.position()}), and returns the {@code buffer} as its
      * {@link ByteBuffer#position() position} increased by
@@ -295,19 +311,19 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
      */
     @DisplayName("""
             should invoke <set(buffer.array(), buffer.arrayOffset() + buffer.position())>
-            when the <buffer> has a <backing array>"""
+            when the <buffer> has a backing array"""
     )
     @Test
     void __BufferHasBackingArray() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // stub, <set(array, index)> will return the <array>
-        BDDMockito.willAnswer(i -> {
+        // stub, <set(array, index)> to just return the <array>
+        Mockito.doAnswer(i -> {
                     final var array = i.getArgument(0, byte[].class);
                     final var index = i.getArgument(0, int.class); // NOSONAR
                     return array;
                 })
-                .given(service)
+                .when(service)
                 .set(ArgumentMatchers.any(), ArgumentMatchers.anyInt());
         // prepare a byte buffer which has a backing-array, and has enough remaining.
         final var buffer = slice(ByteBuffer.allocate(HelloWorld.BYTES << 1), HelloWorld.BYTES);
@@ -328,8 +344,8 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
     }
 
     /**
-     * Verifies that the {@link HelloWorld#put(ByteBuffer) put(buffer)} method, invoked with a byte
-     * buffer which does not {@link ByteBuffer#hasArray() have a backing array}, invokes
+     * Verifies that the {@link HelloWorld#put(ByteBuffer) put(buffer)} method, when invoked with a
+     * byte buffer which does not {@link ByteBuffer#hasArray() have a backing array}, invokes
      * {@link HelloWorld#set(byte[]) set(array)} method with an array of {@value HelloWorld#BYTES}
      * bytes, puts the {@code array} to {@code buffer}, and returns the {@code buffer}.
      */
@@ -341,7 +357,7 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
     void __BufferDoesNotHaveBackingArray() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // stub, <service.set(array)> will return given <array>
+        // stub, <service.set(array)> to just return the <array>
         stub_set_array_will_return_the_array();
         // create a direct buffer
         final var buffer = slice(ByteBuffer.allocateDirect(HelloWorld.BYTES << 1),

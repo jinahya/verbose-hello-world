@@ -31,7 +31,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
-import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
 import java.io.IOException;
@@ -96,12 +95,14 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends HelloWorldTest {
         stub_put_buffer_will_increase_buffer_position_by_12();
         final var channel = Mockito.mock(WritableByteChannel.class);
         // stub, <channel.write(buffer)> will increase the <buffer>'s <position> by a random value
-        BDDMockito.willAnswer(i -> {
-            final var src = i.getArgument(0, ByteBuffer.class);
-            final var written = ThreadLocalRandom.current().nextInt(src.remaining()) + 1;
-            src.position(src.position() + written);
-            return written;
-        }).given(channel).write(ArgumentMatchers.argThat(b -> b != null && b.hasRemaining()));
+        Mockito.doAnswer(i -> {
+                    final var src = i.getArgument(0, ByteBuffer.class);
+                    final var written = ThreadLocalRandom.current().nextInt(src.remaining()) + 1;
+                    src.position(src.position() + written);
+                    return written;
+                })
+                .when(channel)
+                .write(ArgumentMatchers.argThat(b -> b != null && b.hasRemaining()));
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(channel);
         // ------------------------------------------------------------------------------------ then
@@ -123,7 +124,7 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends HelloWorldTest {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // stub, <service.write(channel)> will write the 'hello, world' bytes
-        BDDMockito.willAnswer(i -> {
+        Mockito.doAnswer(i -> {
                     final var channel = i.getArgument(0, WritableByteChannel.class);
                     final var array = "hello, world".getBytes(StandardCharsets.US_ASCII);
                     for (final var b = ByteBuffer.wrap(array); b.hasRemaining(); ) {
@@ -131,7 +132,7 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends HelloWorldTest {
                     }
                     return channel;
                 })
-                .given(service)
+                .when(service)
                 .write(ArgumentMatchers.<WritableByteChannel>notNull());
         // start a new thread which
         //           binds to a random port

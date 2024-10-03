@@ -29,7 +29,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
-import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
 import java.io.IOException;
@@ -85,8 +84,8 @@ class HelloWorld_01_Send_Socket_Test extends HelloWorldTest {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // stub, <service.write(stream)> will return the <stream>
-        BDDMockito.willAnswer(i -> i.getArgument(0))
-                .given(service)
+        Mockito.doAnswer(i -> i.getArgument(0))
+                .when(service)
                 .write(ArgumentMatchers.any(OutputStream.class));
         final var socket = Mockito.mock(Socket.class);                 // <1>
         final var stream = Mockito.mock(OutputStream.class);           // <2>
@@ -109,12 +108,12 @@ class HelloWorld_01_Send_Socket_Test extends HelloWorldTest {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // stub, <service.write(stream)> will write 'hello, world' bytes to the <stream>
-        BDDMockito.willAnswer(i -> {
+        Mockito.doAnswer(i -> {
                     final var stream = i.getArgument(0, OutputStream.class);
                     stream.write("hello, world".getBytes(StandardCharsets.US_ASCII));
                     return stream;
                 })
-                .given(service)
+                .when(service)
                 .write(ArgumentMatchers.notNull(OutputStream.class));
         // ------------------------------------------------------------------------------ when/then
         try (var server = new ServerSocket()) {

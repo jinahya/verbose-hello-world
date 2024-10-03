@@ -30,7 +30,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentMatchers;
-import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
 import java.io.File;
@@ -53,12 +52,12 @@ class HelloWorld_23_Append_File_Using_Writer_Test extends HelloWorldTest {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // stub, <service.write(writer)> will write the <hello, world> chars
-        BDDMockito.willAnswer(i -> {
+        Mockito.doAnswer(i -> {
                     final var writer = i.getArgument(0, Writer.class);
                     writer.write("hello, world".toCharArray());
                     return writer;
                 })
-                .given(service)
+                .when(service)
                 .write(ArgumentMatchers.<Writer>notNull());
         // create a temp file, and write some dummy bytes
         final File file = File.createTempFile("tmp", null, dir);

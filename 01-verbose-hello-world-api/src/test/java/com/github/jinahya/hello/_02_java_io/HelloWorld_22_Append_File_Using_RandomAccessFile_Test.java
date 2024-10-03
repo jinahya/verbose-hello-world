@@ -30,7 +30,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentMatchers;
-import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
 import java.io.File;
@@ -50,12 +49,12 @@ class HelloWorld_22_Append_File_Using_RandomAccessFile_Test extends HelloWorldTe
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // stub, <service.write(RandomAccessFile)> will write the <hello, world> bytes.
-        BDDMockito.willAnswer(i -> {
+        Mockito.doAnswer(i -> {
                     final var file = i.getArgument(0, RandomAccessFile.class);
                     file.write("hello, world".getBytes(StandardCharsets.US_ASCII));
                     return file;
                 })
-                .given(service)
+                .when(service)
                 .write(ArgumentMatchers.<RandomAccessFile>notNull());
         // create a temp file
         final File file = File.createTempFile("tmp", null, dir);

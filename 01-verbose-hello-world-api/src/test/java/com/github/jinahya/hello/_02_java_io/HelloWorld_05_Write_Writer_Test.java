@@ -29,7 +29,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
-import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
 import java.io.IOException;
@@ -82,8 +81,8 @@ class HelloWorld_05_Write_Writer_Test extends HelloWorldTest {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // stub, <service.append(appendable)> will return given <appendable>
-        BDDMockito.willAnswer(i -> i.getArgument(0))
-                .given(service)
+        Mockito.doAnswer(i -> i.getArgument(0))
+                .when(service)
                 .append(ArgumentMatchers.any(Appendable.class));
         final var writer = Mockito.mock(Writer.class);
         // ------------------------------------------------------------------------------------ when
