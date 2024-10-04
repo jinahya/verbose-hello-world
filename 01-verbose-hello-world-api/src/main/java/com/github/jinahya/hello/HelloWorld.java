@@ -548,6 +548,12 @@ public interface HelloWorld {
      * @see ByteBuffer#flip()
      * @see ByteBuffer#hasRemaining()
      * @see WritableByteChannel#write(ByteBuffer)
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/ByteBuffer.html#flip()">ByteBuffer#flip()</a>
+     * (Java 21)
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/channels/WritableByteChannel.html#write(java.nio.ByteBuffer)">WritableByteChannel#write(ByteBuffer)</a>
+     * (Java 21)
      */
     default <T extends WritableByteChannel> T write(final T channel) throws IOException {
         Objects.requireNonNull(channel, "channel is null");
