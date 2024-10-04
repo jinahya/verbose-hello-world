@@ -72,7 +72,7 @@ class HelloWorld_03_Send_SocketChannel_Test extends HelloWorldTest {
         // assert, <service.send(channel)> throws a <NullPointerException>
         Assertions.assertThrows(
                 NullPointerException.class,
-                () -> service.write(channel)
+                () -> service.send(channel)
         );
     }
 

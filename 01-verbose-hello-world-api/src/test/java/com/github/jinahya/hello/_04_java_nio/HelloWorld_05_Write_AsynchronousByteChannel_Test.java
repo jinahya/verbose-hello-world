@@ -59,7 +59,7 @@ import java.util.concurrent.atomic.LongAdder;
 @SuppressWarnings({
         "java:S101"
 })
-class HelloWorld_04_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
+class HelloWorld_05_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
 
     /**
      * Verifies {@link HelloWorld#write(AsynchronousByteChannel) write(channel)} method throws a

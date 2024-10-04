@@ -32,7 +32,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
-import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
 import java.io.IOException;
@@ -82,8 +81,8 @@ class HelloWorld_04_Append_Path_Test extends HelloWorldTest {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // stub, <service.write(channel)> will return the <channel>
-        BDDMockito.willAnswer(i -> i.getArgument(0))
-                .given(service)
+        Mockito.doAnswer(i -> i.getArgument(0))
+                .when(service)
                 .write(ArgumentMatchers.<WritableByteChannel>any());
         final var path = Mockito.mock(Path.class);
         final var channel = Mockito.mock(FileChannel.class);
@@ -120,7 +119,7 @@ class HelloWorld_04_Append_Path_Test extends HelloWorldTest {
         // ----------------------------------------------------------------------------------- given
         var service = service();
         // stub, <service.append(Path)> will append <12> bytes
-        BDDMockito.willAnswer(i -> {
+        Mockito.doAnswer(i -> {
                     final var path = i.getArgument(0, Path.class);
                     try (var channel = FileChannel.open(path, StandardOpenOption.APPEND)) {
                         for (final var b = ByteBuffer.allocate(HelloWorld.BYTES);
@@ -132,10 +131,10 @@ class HelloWorld_04_Append_Path_Test extends HelloWorldTest {
                     }
                     return path;
                 })
-                .given(service)
+                .when(service)
                 .append(ArgumentMatchers.notNull(Path.class));
-        var path = Files.createTempFile(dir, null, null);
-        var size = Files.size(path);
+        final var path = Files.createTempFile(dir, null, null);
+        final var size = Files.size(path);
         // ------------------------------------------------------------------------------------ when
         final var result = service.append(path);
         // ------------------------------------------------------------------------------------ then

@@ -28,11 +28,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentMatchers;
-import org.mockito.BDDMockito;
+import org.mockito.Mockito;
 
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousFileChannel;
-import java.nio.channels.CompletionHandler;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -40,14 +39,13 @@ import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * A class for testing
- * {@link HelloWorld#write(AsynchronousFileChannel, long, Object, CompletionHandler) write(channel,
- * position, handler, attachment)} method.
+ * {@link HelloWorld#write(AsynchronousFileChannel, long) write(channel, position)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @DisplayName("write(channel, position)")
 @Slf4j
-class HelloWorld_21_Append_Path_Using_AsynchronousFileChannelWithPosition_Test
+class HelloWorld_21_Append_Path_Using_AsynchronousFileChannel_Test
         extends HelloWorldTest {
 
     @Test
@@ -57,7 +55,7 @@ class HelloWorld_21_Append_Path_Using_AsynchronousFileChannelWithPosition_Test
         // stub, <service.write(channel, position)>
         //         will write <12> bytes to the <channel>,
         //         starting at <position>
-        BDDMockito.willAnswer(i -> {
+        Mockito.doAnswer(i -> {
                     final var channel = i.getArgument(0, AsynchronousFileChannel.class);
                     var position = i.getArgument(1, Long.class);
                     for (final var b = ByteBuffer.allocate(HelloWorld.BYTES); b.hasRemaining(); ) {
@@ -65,7 +63,7 @@ class HelloWorld_21_Append_Path_Using_AsynchronousFileChannelWithPosition_Test
                     }
                     return channel;
                 })
-                .given(service)
+                .when(service)
                 .write(ArgumentMatchers.notNull(), ArgumentMatchers.longThat(v -> v >= 0L));
         final var path = Files.createTempFile(dir, null, null);
         final var position = ThreadLocalRandom.current().nextLong(128L);
