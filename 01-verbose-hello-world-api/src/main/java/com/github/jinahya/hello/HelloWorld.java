@@ -505,14 +505,14 @@ public interface HelloWorld {
         }
         if (buffer.hasArray()) {
             // invoke <set(buffer.array(), (buffer.arrayOffset() + buffer.position())>
-
+            set(buffer.array(), buffer.arrayOffset() + buffer.position());
             // increase <buffer.position> by <BYTES>
-
+            buffer.position(buffer.position() + HelloWorld.BYTES);
         } else {
             // get the hello-world-bytes
             final var array = set(new byte[BYTES]);
             // invoke <buffer.put(array)>
-
+            buffer.put(array);
         }
         // return given <buffer>
         return buffer;

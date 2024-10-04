@@ -332,7 +332,7 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
         // stub, <set(array, index)> to just return the <array>
         Mockito.doAnswer(i -> {
                     final var array = i.getArgument(0, byte[].class);
-                    final var index = i.getArgument(0, Integer.class); // NOSONAR
+                    final var index = i.getArgument(1, Integer.class); // NOSONAR
                     return array;
                 })
                 .when(service)
@@ -349,12 +349,11 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
         final var result = service.put(buffer);
         // ------------------------------------------------------------------------------------ then
         // verify, <service.set(buffer.array(), buffer.arrayOffset() + position)> invoked, once
-
-        // verify, <buffer.position(position + 12)> invoked, once
+        Mockito.verify(service, Mockito.times(1))
+                .set(buffer.array(), buffer.arrayOffset() + position);
+        // verify, <buffer>'s <position> increased by <12>
+        Assertions.assertEquals(position + HelloWorld.BYTES, buffer.position());
         JavaNioByteBufferUtils.print(buffer);
-
-        // verify, no more interactions with <buffer>
-
         // assert, <result> is same as <buffer>
         Assertions.assertSame(buffer, result);
     }
@@ -393,9 +392,7 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
         // verify, <service.set(array[12])> invoked, once
         final var array = verify_set_array12_invoked_once();
         // verify, <buffer.put(array)> invoked, once
-
-        // verify, no more interactions with <buffer.
-
+        Mockito.verify(buffer, Mockito.times(1)).put(array);
         // assert, <result> is same as <buffer>
         Assertions.assertSame(buffer, result);
     }
