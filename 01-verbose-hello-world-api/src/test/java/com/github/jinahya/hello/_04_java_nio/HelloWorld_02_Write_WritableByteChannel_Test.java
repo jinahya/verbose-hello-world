@@ -90,12 +90,10 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends HelloWorldTest {
         // prepare, a <WritableByteChannel> mock
         final var channel = Mockito.mock(WritableByteChannel.class);
         // stub, <channel.write(buffer)> will increase the <buffer>'s <position> by a random value
-        final var adder = new LongAdder();
         Mockito.doAnswer(i -> {
                     final var src = i.getArgument(0, ByteBuffer.class);
                     final var written = ThreadLocalRandom.current().nextInt(src.remaining()) + 1;
                     src.position(src.position() + written);
-                    adder.add(written);
                     return written;
                 })
                 .when(channel)
@@ -103,9 +101,9 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends HelloWorldTest {
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(channel);
         // ------------------------------------------------------------------------------------ then
-        // verify, <put(buffer[12])> invoked, once
+        // verify, <service.put(buffer[12])> invoked, once
         final var buffer = verify_put_buffer12_invoked_once();
-        // verify, <channel.write(buffer)> invoked at least once
+        // verify, <channel.write(buffer)> invoked, at least once
 
         // assert, <buffer> has no <remaining>
 
