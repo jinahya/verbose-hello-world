@@ -526,7 +526,7 @@ public interface HelloWorld {
      * Objects.requireNonNull(channel, "channel is null");
      * final var buffer = ByteBuffer.allocate(BYTES);
      * put(buffer);
-     * buffer.flip();
+     * buffer.flip(); // @highlight
      * while (buffer.hasRemaining()) { // @highlight region
      *     final var written = channel.write(buffer);
      *     assert written >= 0; // why?
@@ -555,9 +555,10 @@ public interface HelloWorld {
         final var buffer = ByteBuffer.allocate(BYTES);
         put(buffer);
         JavaNioByteBufferUtils.print(buffer);
+        // flip the <buffer>
         buffer.flip(); // limit -> position, position -> zero
         JavaNioByteBufferUtils.print(buffer);
-        // invoke <channel.write(buffer)> while <buffer.hasRemaining()>
+        // invoke <channel.write(buffer)> while the <buffer> has <remaining>
 
         // return given <channel>
         return channel;
@@ -572,8 +573,8 @@ public interface HelloWorld {
      * @return given {@code channel}.
      * @throws IOException if an I/O error occurs.
      * @implSpec Default implementation invokes {@link #write(WritableByteChannel)} method with
-     * {@code channel} and returns the result.
-     * @deprecated Use {@link #write(WritableByteChannel)} method.
+     * {@code channel}, and returns the result.
+     * @deprecated Invoke {@link #write(WritableByteChannel)} method with the {@code channel}.
      */
     @屋上架屋("SocketChannel implements WritableByteChannel")
     @Deprecated(forRemoval = true)

@@ -23,7 +23,6 @@ package com.github.jinahya.hello._04_java_nio;
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello.HelloWorldTest;
 import com.github.jinahya.hello.util.JavaNioByteBufferUtils;
-import com.github.jinahya.hello.畵蛇添足;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,15 +33,10 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
-import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
 import java.nio.channels.WritableByteChannel;
-import java.nio.charset.StandardCharsets;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.LongAdder;
 
 /**
  * A class for testing {@link HelloWorld#write(WritableByteChannel) write(channel)} method.
@@ -96,10 +90,12 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends HelloWorldTest {
         // prepare, a <WritableByteChannel> mock
         final var channel = Mockito.mock(WritableByteChannel.class);
         // stub, <channel.write(buffer)> will increase the <buffer>'s <position> by a random value
+        final var adder = new LongAdder();
         Mockito.doAnswer(i -> {
                     final var src = i.getArgument(0, ByteBuffer.class);
                     final var written = ThreadLocalRandom.current().nextInt(src.remaining()) + 1;
                     src.position(src.position() + written);
+                    adder.add(written);
                     return written;
                 })
                 .when(channel)
@@ -109,77 +105,11 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends HelloWorldTest {
         // ------------------------------------------------------------------------------------ then
         // verify, <put(buffer[12])> invoked, once
         final var buffer = verify_put_buffer12_invoked_once();
-        JavaNioByteBufferUtils.print(buffer);
-        // verify, <buffer.flip()> invoked, once
-
-        // verify, <channel.write(buffer)> invoked, at least once
+        // verify, <channel.write(buffer)> invoked at least once
 
         // assert, <buffer> has no <remaining>
 
         // assert, <result> is same as <channel>
         Assertions.assertSame(channel, result);
-    }
-
-    @畵蛇添足("does not add any value")
-    @畵蛇添足("SocketChannel implements WritableByteChannel")
-    @DisplayName("write(SocketChannel)")
-    @Test
-    void _添足_畵蛇() throws Exception {
-        // ----------------------------------------------------------------------------------- given
-        final var service = service();
-        // stub, <service.write(channel)> will write the 'hello, world' bytes
-        Mockito.doAnswer(i -> {
-                    final var channel = i.getArgument(0, WritableByteChannel.class);
-                    final var array = "hello, world".getBytes(StandardCharsets.US_ASCII);
-                    for (final var b = ByteBuffer.wrap(array); b.hasRemaining(); ) {
-                        final var written = channel.write(b);
-                        assert written >= 0; // why?
-                    }
-                    return channel;
-                })
-                .when(service)
-                .write(ArgumentMatchers.<WritableByteChannel>notNull());
-        // -----------------------------------------------------------------------------------------
-        // start a new thread which
-        //           binds to a random port
-        //           accepts a client,
-        //           and reads 12 bytes
-        final var addr = InetAddress.getLoopbackAddress();
-        final var port = new ArrayBlockingQueue<Integer>(1);
-        Thread.ofPlatform().name("server").start(() -> {
-            try (var server = ServerSocketChannel.open()) {
-                server.bind(new InetSocketAddress(addr, 0), 1);
-                log.debug("bound to {}", server.getLocalAddress());
-                port.offer(((InetSocketAddress) server.getLocalAddress()).getPort());
-                try (var client = server.accept()) {
-                    log.debug("accepted; remote: {}, local: {}", client.getRemoteAddress(),
-                              client.getLocalAddress());
-                    final var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
-                    log.debug("reading {} bytes...", buffer.remaining());
-                    while (buffer.hasRemaining()) {
-                        client.read(buffer);
-                    }
-                    buffer.flip();
-                    log.debug("decoded: {}", StandardCharsets.US_ASCII.decode(buffer));
-                }
-            } catch (final Exception e) {
-                throw new RuntimeException(e);
-            }
-        });
-        // -----------------------------------------------------------------------------------------
-        // connect to the <server>,
-        //       and send <12> bytes to the <server>
-        Thread.currentThread().setName("client");
-        try (var client = SocketChannel.open()) {
-            final var remote = new InetSocketAddress(addr, port.take());
-            log.debug("connecting to {}", remote);
-            client.connect(remote);
-            log.debug("connected: remote: {}, local: {}", client.getRemoteAddress(),
-                      client.getLocalAddress());
-            log.debug("writing...");
-            final var result = service.write(client);
-            assert result == client;
-            log.debug("written.");
-        }
     }
 }

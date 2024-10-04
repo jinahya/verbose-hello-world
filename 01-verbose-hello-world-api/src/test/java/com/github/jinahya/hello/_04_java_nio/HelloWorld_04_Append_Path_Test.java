@@ -53,7 +53,7 @@ import java.nio.file.StandardOpenOption;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_03_Append_Path_Test extends HelloWorldTest {
+class HelloWorld_04_Append_Path_Test extends HelloWorldTest {
 
     /**
      * Verifies that the {@link HelloWorld#append(Path) append(path)} method throws a
