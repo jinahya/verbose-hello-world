@@ -21,21 +21,9 @@ package com.github.jinahya.hello;
  */
 
 import java.lang.annotation.Documented;
-import java.lang.annotation.Repeatable;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 
-/**
- * A roof above a roof.
- *
- * @see <a href="https://namu.wiki/w/%EC%98%A5%EC%83%81%EA%B0%80%EC%98%A5">옥상가옥</a> (manu.wiki)
- * @see 屋下架屋
- * @see 畵蛇添足
- */
 @Documented
-@Repeatable(屋上架屋Container.class)
-@Retention(RetentionPolicy.SOURCE)
-public @interface 屋上架屋 {
+public @interface 屋下架屋Container {
 
-    String value() default "";
+    屋下架屋[] value();
 }

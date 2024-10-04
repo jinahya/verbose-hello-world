@@ -21,6 +21,7 @@ package com.github.jinahya.hello;
  */
 
 import java.lang.annotation.Documented;
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -31,6 +32,7 @@ import java.lang.annotation.RetentionPolicy;
  * @see 畵蛇添足
  */
 @Documented
+@Repeatable(屋下架屋Container.class)
 @Retention(RetentionPolicy.SOURCE)
 public @interface 屋下架屋 {
 

@@ -93,6 +93,7 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends HelloWorldTest {
         final var service = service();
         // stub, <service.put(buffer)> will increase the <buffer>'s <position> by <12>
         stub_put_buffer_will_increase_buffer_position_by_12();
+        // prepare, a <WritableByteChannel> mock
         final var channel = Mockito.mock(WritableByteChannel.class);
         // stub, <channel.write(buffer)> will increase the <buffer>'s <position> by a random value
         Mockito.doAnswer(i -> {
@@ -109,6 +110,8 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends HelloWorldTest {
         // verify, <put(buffer[12])> invoked, once
         final var buffer = verify_put_buffer12_invoked_once();
         JavaNioByteBufferUtils.print(buffer);
+        // verify, <buffer.flip()> invoked, once
+
         // verify, <channel.write(buffer)> invoked, at least once
 
         // assert, <buffer> has no <remaining>
@@ -117,8 +120,9 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends HelloWorldTest {
         Assertions.assertSame(channel, result);
     }
 
+    @畵蛇添足("does not add any value")
     @畵蛇添足("SocketChannel implements WritableByteChannel")
-    @DisplayName("send(SocketChannel)")
+    @DisplayName("write(SocketChannel)")
     @Test
     void _添足_畵蛇() throws Exception {
         // ----------------------------------------------------------------------------------- given
@@ -128,12 +132,14 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends HelloWorldTest {
                     final var channel = i.getArgument(0, WritableByteChannel.class);
                     final var array = "hello, world".getBytes(StandardCharsets.US_ASCII);
                     for (final var b = ByteBuffer.wrap(array); b.hasRemaining(); ) {
-                        channel.write(b);
+                        final var written = channel.write(b);
+                        assert written >= 0; // why?
                     }
                     return channel;
                 })
                 .when(service)
                 .write(ArgumentMatchers.<WritableByteChannel>notNull());
+        // -----------------------------------------------------------------------------------------
         // start a new thread which
         //           binds to a random port
         //           accepts a client,
@@ -160,7 +166,7 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends HelloWorldTest {
                 throw new RuntimeException(e);
             }
         });
-        // ------------------------------------------------------------------------------------ when
+        // -----------------------------------------------------------------------------------------
         // connect to the <server>,
         //       and send <12> bytes to the <server>
         Thread.currentThread().setName("client");
@@ -171,10 +177,9 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends HelloWorldTest {
             log.debug("connected: remote: {}, local: {}", client.getRemoteAddress(),
                       client.getLocalAddress());
             log.debug("writing...");
-            service.write(client);
+            final var result = service.write(client);
+            assert result == client;
             log.debug("written.");
         }
-        // ------------------------------------------------------------------------------------ then
-        // empty
     }
 }
