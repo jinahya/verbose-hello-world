@@ -51,22 +51,23 @@ class HelloWorld_21_Append_Path_Using_AsynchronousFileChannelWithPosition_Test
         extends HelloWorldTest {
 
     @Test
-    void __(@TempDir final Path tempDir) throws Exception {
+    void __(@TempDir final Path dir) throws Exception {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // stub, <service.write(channel, position)>
-        //         will write 12 bytes to the <channel> starting at <position>
+        //         will write <12> bytes to the <channel>,
+        //         starting at <position>
         BDDMockito.willAnswer(i -> {
                     final var channel = i.getArgument(0, AsynchronousFileChannel.class);
                     var position = i.getArgument(1, Long.class);
-                    for (final var b = ByteBuffer.allocate(HelloWorld.BYTES); b.hasRemaining();) {
+                    for (final var b = ByteBuffer.allocate(HelloWorld.BYTES); b.hasRemaining(); ) {
                         position += channel.write(b, position).get();
                     }
                     return channel;
                 })
                 .given(service)
                 .write(ArgumentMatchers.notNull(), ArgumentMatchers.longThat(v -> v >= 0L));
-        final var path = Files.createTempFile(tempDir, null, null);
+        final var path = Files.createTempFile(dir, null, null);
         final var position = ThreadLocalRandom.current().nextLong(128L);
         // ------------------------------------------------------------------------------------ when
         try (var channel = AsynchronousFileChannel.open(path, StandardOpenOption.WRITE)) {

@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
@@ -59,8 +60,8 @@ class HelloWorld_03_Append_Path_Test extends HelloWorldTest {
      * {@link NullPointerException} when the {@code path} argument is {@code null}.
      */
     @DisplayName("""
-            should throw a NullPointerException
-            when the path argument is null"""
+            should throw a <NullPointerException>
+            when the <path> argument is <null>"""
     )
     @Test
     void _ThrowNullPointerException_PathIsNull() {
@@ -68,33 +69,36 @@ class HelloWorld_03_Append_Path_Test extends HelloWorldTest {
         final var service = service();
         final var path = (Path) null;
         // ------------------------------------------------------------------------------- when/then
-        // assert, service.append(path) throws a NullPointerException
+        // assert, <service.append(path)> throws a <NullPointerException>
         Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.append(path)
         );
     }
 
-    @DisplayName("should invoke write(FileChannel.open(path, CREATE, WRITE, APPEND))")
+    @DisplayName("should invoke <write(FileChannel.open(path, CREATE, WRITE, APPEND))>")
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // stub, <service.write(channel)> will return the <channel>
-        BDDMockito.willAnswer(i -> i.getArgument(0, WritableByteChannel.class))
+        BDDMockito.willAnswer(i -> i.getArgument(0))
                 .given(service)
-                .write(ArgumentMatchers.any(WritableByteChannel.class));
+                .write(ArgumentMatchers.<WritableByteChannel>any());
         final var path = Mockito.mock(Path.class);
         final var channel = Mockito.mock(FileChannel.class);
         try (var mockStatic = Mockito.mockStatic(FileChannel.class)) {
-            // FileChannel.open(path, arguments) will return the channel
+            // stub, <FileChannel.open(path, options)> will return the <channel>
             mockStatic.when(() -> FileChannel.open(ArgumentMatchers.same(path),
                                                    ArgumentMatchers.any(OpenOption[].class)))
                     .thenReturn(channel);
             // -------------------------------------------------------------------------------- when
             final var result = service.append(path);
             // -------------------------------------------------------------------------------- then
-            // verify, <new FileChannel.open(path, <options>)> invoked, once
+            // verify, <FileChannel.open(path, <options>)> invoked, once
+            final var captor = ArgumentCaptor.forClass(OpenOption[].class);
+
+            final var options = captor.getAllValues();
             // verify, <options> contains <StandardOpenOption.WRITE>, <StandardOpenOption.CREATE>,
             //         <StandardOpenOption.APPEND)>, and no others
 
@@ -109,29 +113,31 @@ class HelloWorld_03_Append_Path_Test extends HelloWorldTest {
         }
     }
 
-    @畵蛇添足("testing with a real path doesn't add any value")
-    @DisplayName("path's size should be increased by HelloWorld.BYTES")
+    @畵蛇添足("testing with an existing file doesn't add any value")
+    @DisplayName("path's size should be increased by <12>")
     @Test
-    void _添足_畵蛇(@TempDir final Path tempDir) throws Exception {
+    void _添足_畵蛇(@TempDir final Path dir) throws Exception {
         // ----------------------------------------------------------------------------------- given
         var service = service();
-        // stub, <service.append(Path)> will append 12 bytes
+        // stub, <service.append(Path)> will append <12> bytes
         BDDMockito.willAnswer(i -> {
-                    var path = i.getArgument(0, Path.class);
+                    final var path = i.getArgument(0, Path.class);
                     try (var channel = FileChannel.open(path, StandardOpenOption.APPEND)) {
-                        for (var b = ByteBuffer.allocate(HelloWorld.BYTES); b.hasRemaining(); ) {
+                        for (final var b = ByteBuffer.allocate(HelloWorld.BYTES);
+                             b.hasRemaining(); ) {
                             final var w = channel.write(b);
-                            assert w >= 0;
+                            assert w >= 0; // why?
                         }
+                        channel.force(true);
                     }
                     return path;
                 })
                 .given(service)
-                .append(ArgumentMatchers.any(Path.class));
-        var path = Files.createTempFile(tempDir, null, null);
+                .append(ArgumentMatchers.notNull(Path.class));
+        var path = Files.createTempFile(dir, null, null);
         var size = Files.size(path);
         // ------------------------------------------------------------------------------------ when
-        var result = service.append(path);
+        final var result = service.append(path);
         // ------------------------------------------------------------------------------------ then
         // assert, <path>'s <size> has been increased by <12>
         Assertions.assertEquals(
@@ -139,6 +145,6 @@ class HelloWorld_03_Append_Path_Test extends HelloWorldTest {
                 Files.size(result)
         );
         // assert, <result> is same as <path>
-        Assertions.assertEquals(path, result);
+        Assertions.assertSame(path, result);
     }
 }

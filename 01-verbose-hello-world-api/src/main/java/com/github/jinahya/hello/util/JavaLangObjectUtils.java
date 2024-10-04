@@ -23,15 +23,28 @@ package com.github.jinahya.hello.util;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Objects;
+import java.util.Optional;
 
 @Slf4j
 public final class JavaLangObjectUtils {
 
-    public static String toSimpleString(final Object obj) {
+    public static <T> String toSimpleString(final Class<T> cls, final T obj) {
+        Objects.requireNonNull(cls, "cls is null");
         if (obj == null) {
             return Objects.toString(obj);
         }
-        return String.format("%1$s@%2$08x", obj.getClass().getSimpleName(), obj.hashCode());
+        final var name = Optional.of(obj.getClass().getSimpleName())
+                .filter(v -> !v.isBlank())
+                .orElseGet(cls::getSimpleName);
+        return String.format("%1$s@%2$08x", name, obj.hashCode());
+    }
+
+    private static <T> String toSimpleStringHelper(final Class<T> cls, final Object obj) {
+        return toSimpleString(Objects.requireNonNull(cls, "cls is null"), cls.cast(obj));
+    }
+
+    public static String toSimpleString(final Object obj) {
+        return toSimpleStringHelper(obj.getClass(), obj);
     }
 
     @_ExcludeFromCoverage_PrivateConstructor_Obviously

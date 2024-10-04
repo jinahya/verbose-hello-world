@@ -26,9 +26,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
-import org.mockito.BDDMockito;
+import org.mockito.Mockito;
+import org.mockito.verification.VerificationMode;
 
-import java.awt.event.HierarchyListener;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -85,24 +85,29 @@ class HelloWorld_02_Set_Array_Test extends HelloWorldTest {
      * Verifies that the {@link HelloWorld#set(byte[]) set(array)} method invokes
      * {@link HelloWorld#set(byte[], int) set(array, index)} method with given {@code array} and
      * {@code 0}, and returns the {@code array}.
+     *
+     * @see Mockito#verify(Object, VerificationMode)
+     * @see org.junit.jupiter.api.Assertions#assertSame(Object, Object)
      */
     @DisplayName("""
-            should invoke set(array, 0)
-            and returns the array"""
+            should invoke <set(array, 0)>
+            and returns the <array>"""
     )
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // service.set(array, index) will just return the <array>
-        BDDMockito.willAnswer(i -> i.getArgument(0))
-                .given(service)
+        Mockito.doAnswer(i -> i.getArgument(0))
+                .when(service)
                 .set(ArgumentMatchers.any(), ArgumentMatchers.anyInt());
         final var array = new byte[HelloWorld.BYTES];
         // ------------------------------------------------------------------------------------ when
         final var result = service.set(array);
         // ------------------------------------------------------------------------------------ then
-        // verify, service.set(array, 0) invoked, once
-        // verify, result is same as array
+        // verify, <service.set(array, 0)> invoked, once
+
+        // verify, <result> is same as <array>
+
     }
 }

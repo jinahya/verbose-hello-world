@@ -20,7 +20,6 @@ package com.github.jinahya.hello.misc.c01rfc863;
  * #L%
  */
 
-import com.github.jinahya.hello.util.JavaNioByteBufferUtils;
 import com.github.jinahya.hello.util.JavaSecurityMessageDigestUtils;
 import com.github.jinahya.hello.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;

@@ -29,12 +29,15 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
-import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 
 /**
  * A class for testing {@link HelloWorld#send(Socket) send(socket)} method.
@@ -52,8 +55,8 @@ class HelloWorld_01_Send_Socket_Test extends HelloWorldTest {
      * {@link NullPointerException} when the {@code socket} argument is {@code null}.
      */
     @DisplayName("""
-            should throw a NullPointerException
-            when the socket argument is null"""
+            should throw a <NullPointerException>
+            when the <socket> argument is <null>"""
     )
     @Test
     void _ThrowNullPointerException_SocketIsNull() {
@@ -61,7 +64,7 @@ class HelloWorld_01_Send_Socket_Test extends HelloWorldTest {
         final var service = service();
         final Socket socket = null;
         // ------------------------------------------------------------------------------- when/then
-        // assert, service.send((Socket) null)) throws a NullPointerException
+        // assert, <service.send(socket)> throws a <NullPointerException>
         Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.send(socket)
@@ -75,18 +78,18 @@ class HelloWorld_01_Send_Socket_Test extends HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("should invoke write(socket.getOutputStream())")
+    @DisplayName("should invoke <write(socket.outputStream)>")
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // stub, service.write(stream) will return the stream
-        BDDMockito.willAnswer(i -> i.getArgument(0, OutputStream.class))
-                .given(service)
+        // stub, <service.write(stream)> will return the <stream>
+        Mockito.doAnswer(i -> i.getArgument(0))
+                .when(service)
                 .write(ArgumentMatchers.any(OutputStream.class));
         final var socket = Mockito.mock(Socket.class);                 // <1>
         final var stream = Mockito.mock(OutputStream.class);           // <2>
-        BDDMockito.willReturn(stream).given(socket).getOutputStream(); // <3>
+        Mockito.when(socket.getOutputStream()).thenReturn(stream);     // <3>
         // ------------------------------------------------------------------------------------ when
         final var result = service.send(socket);
         // ------------------------------------------------------------------------------------ then
@@ -94,9 +97,44 @@ class HelloWorld_01_Send_Socket_Test extends HelloWorldTest {
         Mockito.verify(socket, Mockito.times(1)).getOutputStream();
         // verify, <service.write(stream)> invoked, once
 
-        // verify, no more interaction with the <stream>
+        // verify, no more interactions with the <socket>
 
         // assert, <result> is same as <socket>
         Assertions.assertSame(socket, result);
+    }
+
+    @Test
+    void _添足_畵蛇() throws IOException {
+        // ----------------------------------------------------------------------------------- given
+        final var service = service();
+        // stub, <service.write(stream)> will write 'hello, world' bytes to the <stream>
+        Mockito.doAnswer(i -> {
+                    final var stream = i.getArgument(0, OutputStream.class);
+                    stream.write("hello, world".getBytes(StandardCharsets.US_ASCII));
+                    return stream;
+                })
+                .when(service)
+                .write(ArgumentMatchers.notNull(OutputStream.class));
+        // ------------------------------------------------------------------------------ when/then
+        try (var server = new ServerSocket()) {
+            // bind to a random port
+            server.bind(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0));
+            // start a new thread which accepts a client, and reads <12> bytes from it
+            Thread.ofPlatform().daemon().start(() -> {
+                try {
+                    try (var client = server.accept()) {
+                        final var array = client.getInputStream().readNBytes(HelloWorld.BYTES);
+                        log.debug("string: {}", new String(array, StandardCharsets.US_ASCII));
+                    }
+                } catch (final IOException ioe) {
+                    throw new RuntimeException(ioe);
+                }
+            });
+            // connect to the <server>, and send the 'hello, world' bytes
+            try (var client = new Socket()) {
+                client.connect(server.getLocalSocketAddress());
+                service.write(client.getOutputStream()).flush();
+            }
+        }
     }
 }

@@ -25,7 +25,6 @@ import com.github.jinahya.hello.HelloWorldTest;
 import com.github.jinahya.hello.畵蛇添足;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -116,25 +115,19 @@ class HelloWorld_08_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
     void _PutBufferWriteBufferToChannel_() throws InterruptedException, ExecutionException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // service.put(buffer) will increase the buffer's position by 12
-        BDDMockito.willAnswer(i -> {
-                    final var buffer = i.getArgument(0, ByteBuffer.class);
-                    buffer.position(buffer.position() + HelloWorld.BYTES);
-                    return buffer;
-                })
-                .given(service)
-                .put(ArgumentMatchers.argThat(b -> b != null && b.remaining() >= HelloWorld.BYTES));
+        // stub, <service.put(buffer)> will increase the <buffer>'s <position> by <12>
+        stub_put_buffer_will_increase_buffer_position_by_12();
         final var writtenSoFar = new LongAdder();
         final var channel = Mockito.mock(AsynchronousFileChannel.class);
-        // channel.write(src, position) will return a future
-        final var previousFutureRef = new AtomicReference<Future<?>>();
+        // <channel.write(src, position)> will return a future
+        final var reference = new AtomicReference<Future<?>>();
         BDDMockito.willAnswer(w -> { // invocation of channel.write
-            final var previousFuture = previousFutureRef.get();
-            if (previousFuture != null) {
-                Mockito.verify(previousFuture, Mockito.times(1)).get();
+            final var previous = reference.get();
+            if (previous != null) {
+                Mockito.verify(previous, Mockito.times(1)).get();
             }
             final var future = Mockito.mock(Future.class);
-            // future.get() will increase src's position by a random value
+            // stub, <future.get()> will increase <src>'s <position> by a random value
             BDDMockito.willAnswer(g -> {
                 final var src = w.getArgument(0, ByteBuffer.class);
                 final var position = w.getArgument(1, Long.class);
@@ -143,54 +136,60 @@ class HelloWorld_08_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
                 writtenSoFar.add(result);
                 return result;
             }).given(future).get();
-            previousFutureRef.set(future);
+            reference.set(future);
             return future;
         }).given(channel).write(
                 ArgumentMatchers.argThat(b -> b != null && b.hasRemaining()), // <src>
-                ArgumentMatchers.longThat(v -> v >= 0L)                       // <position>
+                ArgumentMatchers.longThat(p -> p >= 0L)                       // <position>
         );
         final var position = ThreadLocalRandom.current().nextLong(8L);
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(channel, position);
         // ------------------------------------------------------------------------------------ then
-        // verify, service.put(buffer[12]) invoked, once
-        final var bufferCaptor = ArgumentCaptor.forClass(ByteBuffer.class);
-        Mockito.verify(service, Mockito.times(1)).put(bufferCaptor.capture());
-        final var buffer = bufferCaptor.getValue();
-        Assertions.assertNotNull(buffer);
-        Assertions.assertEquals(HelloWorld.BYTES, buffer.capacity());
-        // verify, channel.write(buffer, position) invoked, at least once
-        final var positionCaptor = ArgumentCaptor.forClass(long.class);
+        // verify, <service.put(buffer[12])> invoked, once
+        final var buffer = verify_put_buffer12_invoked_once();
+        // verify, <channel.write(buffer, position)> invoked, at least once
+        final var captor = ArgumentCaptor.forClass(long.class);
         Mockito.verify(channel, Mockito.atLeastOnce())
-                .write(ArgumentMatchers.same(buffer), positionCaptor.capture());   // <1>
-        final var positionArguments = positionCaptor.getAllValues();               // <2>
-        Assertions.assertEquals(position, positionArguments.getFirst());           // <3>
-        final var lastPosition = positionArguments.stream().reduce((p1, p2) -> {   // <4>
+                .write(ArgumentMatchers.same(buffer), captor.capture());  // <1>
+        final var positions = captor.getAllValues();                      // <2>
+        Assertions.assertEquals(position, positions.getFirst());          // <3>
+        final var first = positions.stream().reduce((p1, p2) -> {         // <4>
             Assertions.assertTrue(p1 < p2);
             return p2;
         });
-        Assertions.assertTrue(lastPosition.isPresent());                           // <5>
-        Assertions.assertTrue(lastPosition.get() < (position + HelloWorld.BYTES)); // <6>
-        // assert, 12 bytes written
+        Assertions.assertTrue(first.isPresent());                           // <5>
+        Assertions.assertTrue(first.get() < (position + HelloWorld.BYTES)); // <6>
+        // assert, <12> bytes written
         Assertions.assertEquals(HelloWorld.BYTES, writtenSoFar.intValue());
-        // assert, result is same as chanel
+        // assert, <result> is same as <channel>
         Assertions.assertSame(channel, result);
     }
 
-    @Disabled("not implemented yet")
-    @畵蛇添足
+    @畵蛇添足("testing with a real file doesn't add any value")
     @Test
-    void _添足_畵蛇(@TempDir final Path tempDir) throws Exception {
+    void _添足_畵蛇(@TempDir final Path dir) throws Exception {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        final var path = Files.createTempFile(tempDir, null, null);
+        // stub, <service.write(channel, position)> will write <12> bytes starting at <position>
+        BDDMockito.willAnswer(i -> {
+                    final var channel = i.getArgument(0, AsynchronousFileChannel.class);
+                    var position = i.getArgument(1, Long.class);
+                    for (final var b = ByteBuffer.allocate(HelloWorld.BYTES); b.hasRemaining(); ) {
+                        position += channel.write(b, position).get();
+                    }
+                    return channel;
+                })
+                .given(service)
+                .write(ArgumentMatchers.notNull(), ArgumentMatchers.longThat(p -> p >= 0L));
+        final var path = Files.createTempFile(dir, null, null);
         final var position = ThreadLocalRandom.current().nextLong(8L);
         // ------------------------------------------------------------------------------------ when
         try (var channel = AsynchronousFileChannel.open(path, StandardOpenOption.WRITE)) {
             service.write(channel, position).force(false);
         }
         // ------------------------------------------------------------------------------------ then
-        // assert, 12 bytes written starting at <position>
+        // assert, <12> bytes written starting at <position>
         Assertions.assertEquals(
                 position + HelloWorld.BYTES,
                 Files.size(path)

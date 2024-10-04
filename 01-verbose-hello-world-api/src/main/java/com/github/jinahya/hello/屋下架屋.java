@@ -2,9 +2,9 @@ package com.github.jinahya.hello;
 
 /*-
  * #%L
- * verbose-hello-world-lib
+ * verbose-hello-world-api
  * %%
- * Copyright (C) 2018 - 2019 Jinahya, Inc.
+ * Copyright (C) 2018 - 2023 Jinahya, Inc.
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,23 +20,19 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import com.google.inject.BindingAnnotation;
-
-import java.lang.annotation.ElementType;
+import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 
 /**
- * An injection qualifier for {@link HelloWorldDemo}.
+ * A roof underneath a roof.
  *
- * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ * @see 屋上架屋
+ * @see 畵蛇添足
  */
-@BindingAnnotation
-@__QualifiedDemo
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE,
-         ElementType.ANNOTATION_TYPE})
-@interface _BindingQualifiedDemo {
+@Documented
+@Retention(RetentionPolicy.SOURCE)
+public @interface 屋下架屋 {
 
+    String value() default "";
 }

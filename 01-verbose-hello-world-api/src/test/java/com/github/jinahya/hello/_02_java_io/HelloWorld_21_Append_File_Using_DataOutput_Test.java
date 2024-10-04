@@ -30,56 +30,65 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentMatchers;
-import org.mockito.BDDMockito;
+import org.mockito.Mockito;
 
 import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ThreadLocalRandom;
 
-/**
- * Tests appending the {@code hello, world} to an instance of {@link File} using
- * {@link HelloWorld#write(DataOutput)} method.
- *
- * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- */
 @DisplayName("appends using DataOutput")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_11_Append_File_Using_DataOutput_Test extends HelloWorldTest {
+class HelloWorld_21_Append_File_Using_DataOutput_Test extends HelloWorldTest {
 
     @Test
-    void _appendToFileUsingDataOutput_(@TempDir final File tempDir) throws IOException {
+    void __(@TempDir final File dir) throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // stub service.set(DataOutput) will write 12 empty bytes.
-        BDDMockito.willAnswer(i -> {
+        // stub, <service.write(output)> will write <hello, world> bytes.
+        Mockito.doAnswer(i -> {
                     final var output = i.getArgument(0, DataOutput.class);
-                    output.write(new byte[HelloWorld.BYTES]);
+                    output.write("hello, world".getBytes(StandardCharsets.US_ASCII));
                     return output;
                 })
-                .given(service)
-                .write(ArgumentMatchers.<DataOutput>any());
-        // create a temp file
-        final File file = File.createTempFile("tmp", "tmp", tempDir);
-        // write some dummy bytes
-        if (ThreadLocalRandom.current().nextBoolean()) {
-            try (var stream = new FileOutputStream(file)) {
-                stream.write(new byte[ThreadLocalRandom.current().nextInt(128)]);
-                stream.flush();
-            }
+                .when(service)
+                .write(ArgumentMatchers.<DataOutput>notNull());
+        // create a temp file, and write some dummy bytes
+        final File file = File.createTempFile("tmp", null, dir);
+        try (var stream = new FileOutputStream(file)) {
+            stream.write(new byte[ThreadLocalRandom.current().nextInt(8)]);
+            stream.flush();
         }
         final var length = file.length();
         // ------------------------------------------------------------------------------------ when
         try (var output = new DataOutputStream(new FileOutputStream(file, true))) { // appending!
-            service.write((DataOutput) output);
+            final var result = service.write((DataOutput) output);
+            assert result == output;
             output.flush();
         }
         // ------------------------------------------------------------------------------------ then
-        // assert, file.length increased by 12
-        Assertions.assertSame(length + HelloWorld.BYTES, file.length());
+        // verify, <service.write(output)> invoked, once
+        Mockito.verify(service, Mockito.times(1)).write(ArgumentMatchers.<DataOutput>notNull());
+        // verify, no unverified interactions on the <service>
+        Mockito.verifyNoMoreInteractions(service);
+        // assert, <file.length> increased by <12>
+        Assertions.assertEquals(
+                length + HelloWorld.BYTES,
+                file.length()
+        );
+        // print <file>'s content
+        try (var f = new RandomAccessFile(file, "r")) {
+            f.seek(length);
+            final var bytes = new byte[HelloWorld.BYTES];
+            final var r = f.read(bytes);
+            assert r == bytes.length;
+            log.debug("string: {}", new String(bytes, StandardCharsets.US_ASCII));
+        }
     }
 }

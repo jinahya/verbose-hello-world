@@ -37,6 +37,7 @@ import reactor.core.publisher.Flux;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Flow;
 
 @DisplayName("JdkFlowAdapter")
@@ -67,7 +68,10 @@ class HelloWorldFlow_13_Reactor_JdkFlowAdapter_Test extends _HelloWorldFlowTest 
             } // @formatter:on
             final var service = service();
             final var publisher = Mockito.spy(
-                    new HelloWorldFlow.HelloWorldPublisher.OfByte(service, EXECUTOR)
+                    new HelloWorldFlow.HelloWorldPublisher.OfByte(
+                            service,
+                            Executors.newVirtualThreadPerTaskExecutor()
+                    )
             );
             // intercept, publisher.subscribe(subscriber) to wrap the subscriber as a spy
             BDDMockito.willAnswer(i -> {
@@ -128,7 +132,10 @@ class HelloWorldFlow_13_Reactor_JdkFlowAdapter_Test extends _HelloWorldFlowTest 
             } // @formatter:on
             final var service = service();
             final var publisher = Mockito.spy(
-                    new HelloWorldFlow.HelloWorldPublisher.OfArray(service, EXECUTOR)
+                    new HelloWorldFlow.HelloWorldPublisher.OfArray(
+                            service,
+                            Executors.newVirtualThreadPerTaskExecutor()
+                    )
             );
             // intercept, publisher.subscribe(subscriber) to wrap the subscriber as a spy
             BDDMockito.willAnswer(i -> {
@@ -186,7 +193,10 @@ class HelloWorldFlow_13_Reactor_JdkFlowAdapter_Test extends _HelloWorldFlowTest 
             } // @formatter:on
             final var service = service();
             final var publisher = Mockito.spy(
-                    new HelloWorldFlow.HelloWorldPublisher.OfBuffer(service, EXECUTOR)
+                    new HelloWorldFlow.HelloWorldPublisher.OfBuffer(
+                            service,
+                            Executors.newVirtualThreadPerTaskExecutor()
+                    )
             );
             // intercept, publisher.subscribe(subscriber) to wrap the subscriber as a spy
             BDDMockito.willAnswer(i -> {

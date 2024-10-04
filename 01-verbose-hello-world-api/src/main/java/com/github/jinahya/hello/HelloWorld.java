@@ -20,6 +20,7 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import com.github.jinahya.hello.util.JavaNioByteBufferUtils;
 import org.slf4j.Logger;
 
 import java.io.DataOutput;
@@ -34,8 +35,10 @@ import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.AsynchronousFileChannel;
+import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.channels.FileChannel;
+import java.nio.channels.SocketChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
@@ -43,7 +46,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.LongAccumulator;
 
 /**
  * An interface for generating <a href="#hello-world-bytes">hello-world-bytes</a> to various
@@ -197,7 +200,9 @@ public interface HelloWorld {
         }
         final var array = new byte[BYTES];
         set(array);
-        // append each byte in array to appendable
+        // append each byte in <array> to <appendable>
+
+        // return given <appendable>
         return appendable;
     }
 
@@ -339,7 +344,7 @@ public interface HelloWorld {
      * @throws IOException          if an I/O error occurs.
      * @implSpec The default implementation invokes {@link #set(byte[])} method with an array of
      * {@value #BYTES} bytes, writes the array to specified random access file by invoking
-     * {@link DataOutput#write(byte[])} method on {@code file} with the array, and returns the
+     * {@link RandomAccessFile#write(byte[])} method on {@code file} with the array, and returns the
      * {@code file}.
      * @see #set(byte[])
      * @see RandomAccessFile#write(byte[])
@@ -364,17 +369,16 @@ public interface HelloWorld {
      * if (writer == null) {
      *     throw new NullPointerException("writer is null");
      * }
-     * append(writer); // @highlight
-     * return writer;
+     * return append(writer); // @highlight
      *}
      *
      * @param <T>    writer type parameter
-     * @param writer the writer to which bytes are appended.
+     * @param writer the writer to which bytes are written.
      * @return given {@code writer}.
      * @throws NullPointerException if {@code writer} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @implSpec The default implementation invokes {@link #append(Appendable) append(appendable)}
-     * method with {@code writer}, and returns the writer.
+     * method with {@code writer}, and returns the {@code writer}.
      * @see #append(Appendable)
      */
     default <T extends Writer> T write(final T writer) throws IOException {
@@ -431,7 +435,7 @@ public interface HelloWorld {
      * <pre>
      * Given,
      *
-     *          4                                        25            31
+     *          4                                        25            32
      *  0    &lt;= position                           &lt;= limit   &lt;= capacity
      *  ↓       ↓                                         ↓             ↓
      * | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |
@@ -440,7 +444,7 @@ public interface HelloWorld {
      *
      * Then, on successful return,
      *
-     *                                 16                25            31
+     *                                 16                25            32
      *  0                     &lt;= position          &lt;= limit   &lt;= capacity
      *  ↓                               ↓                 ↓             ↓
      * | | | | |h|e|l|l|o|,| |w|o|r|l|d| | | | | | | | | | | | | | | | |
@@ -455,49 +459,54 @@ public interface HelloWorld {
      *     throw new BufferOverflowException();
      * }
      * if (buffer.hasArray()) {
-     *     set(buffer.array(), buffer.arrayOffset() + buffer.position()); // @highlight region
-     *     buffer.position(buffer.position() + BYTES);                    // @end
+     *     var array = buffer.array();
+     *     var index = buffer.arrayOffset() + buffer.position();
+     *     var position = buffer.position();
+     *     set(array, index); // @highlight region
+     *     assert buffer.position() == position;
+     *     buffer.position(buffer.position() + BYTES); // @end
      * } else {
-     *     final var array = new byte[BYTES];
+     *     var array = new byte[BYTES];
      *     set(array);
+     *     var position = buffer.position();
      *     buffer.put(array); // @highlight
+     *     assert buffer.position() == position + array.length;
      * }
      * return buffer;
      *}
      *
      * @param <T>    buffer type parameter
      * @param buffer the byte buffer on which bytes are put.
-     * @return given {@code buffer} whose {@link ByteBuffer#position() position} increased by
-     * {@value BYTES}.
+     * @return given {@code buffer}.
      * @throws NullPointerException    if {@code buffer} is {@code null}.
      * @throws BufferOverflowException if {@link ByteBuffer#remaining() buffer.remaining} is less
      *                                 than {@value #BYTES}.
      * @implSpec The default implementation, if {@code buffer}
      * {@link ByteBuffer#hasArray() has a backing-array}, invokes
-     * {@link #set(byte[], int) #set(array, index)} method with the buffer's
-     * {@link ByteBuffer#array() backing-array} and
-     * ({@link ByteBuffer#arrayOffset() buffer.arrayOffset} +
-     * {@link ByteBuffer#position() buffer.position}), and then manually increments the buffer"s
+     * {@link #set(byte[], int) #set(array, index)} method with the
+     * {@link ByteBuffer#array() buffer.array()} and
+     * ({@link ByteBuffer#arrayOffset() buffer.arrayOffset()}
+     * + {@link ByteBuffer#position() buffer.position()}), and then manually increments the buffer"s
      * position by {@value #BYTES}. Otherwise, this method invokes {@link #set(byte[]) #set(array)}
-     * method with an array of {@value #BYTES} bytes, and puts the array on the buffer by invoking
-     * {@link ByteBuffer#put(byte[])} method on {@code buffer} with the array.
+     * method with an array of {@value #BYTES} bytes, and puts the {@code array} on the
+     * {@code buffer} by invoking {@link ByteBuffer#put(byte[])} method, on {@code buffer}, with the
+     * array.
      * @see ByteBuffer#hasArray()
      * @see ByteBuffer#array()
      * @see ByteBuffer#arrayOffset()
      * @see ByteBuffer#position()
+     * @see ByteBuffer#position(int)
      * @see #set(byte[], int)
-     * @see #set(byte[])
      * @see ByteBuffer#put(byte[])
      */
     default <T extends ByteBuffer> T put(final T buffer) {
-        Objects.requireNonNull(buffer, "buffer is null");
-        if (buffer.remaining() < BYTES) {
+        if (Objects.requireNonNull(buffer, "buffer is null").remaining() < BYTES) {
             throw new BufferOverflowException();
         }
         if (buffer.hasArray()) {
             // invoke <set(buffer.array(), (buffer.arrayOffset() + buffer.position())>
 
-            // increment <buffer.position> by <BYTES>
+            // increase <buffer.position> by <BYTES>
 
         } else {
             // get the hello-world-bytes
@@ -545,11 +554,31 @@ public interface HelloWorld {
         // get the hello-world-bytes
         final var buffer = ByteBuffer.allocate(BYTES);
         put(buffer);
-        buffer.flip();
+        JavaNioByteBufferUtils.print(buffer);
+        buffer.flip(); // limit -> position, position -> zero
+        JavaNioByteBufferUtils.print(buffer);
         // invoke <channel.write(buffer)> while <buffer.hasRemaining()>
 
         // return given <channel>
         return channel;
+    }
+
+    /**
+     * Sends the <a href="hello-world-bytes">hello-world-bytes</a> to specified socket channel.
+     *
+     * @param channel the socket channel to which the <a
+     *                href="hello-world-bytes">hello-world-bytes</a> be sent.
+     * @param <T>     socket channel type parameter
+     * @return given {@code channel}.
+     * @throws IOException if an I/O error occurs.
+     * @implSpec Default implementation invokes {@link #write(WritableByteChannel)} method with
+     * {@code channel} and returns the result.
+     * @deprecated Use {@link #write(WritableByteChannel)} method.
+     */
+    @屋上架屋("SocketChannel implements WritableByteChannel")
+    @Deprecated(forRemoval = true)
+    default <T extends SocketChannel> T send(final T channel) throws IOException {
+        return write(channel);
     }
 
     /**
@@ -591,11 +620,11 @@ public interface HelloWorld {
      */
     default <T extends Path> T append(final T path) throws IOException {
         Objects.requireNonNull(path, "path is null");
-        // open a file channel with path, StandardOpenOption.WRITE, StandardOpenOption.CREATE,
-        //   and StandardOpenOption.APPEND
-        //   use the try-with-resources statement
+        // open a <FileChannel> with <path>, <StandardOpenOption.WRITE>,
+        //         <StandardOpenOption.CREATE>, and <StandardOpenOption.APPEND>
+        //         use the try-with-resources statement
         // invoke <write(channel)> method with it
-        // force changes to both the file's content and metadata
+        // force changes to both the <file>'s content and metadata
         return path;
     }
 
@@ -630,12 +659,33 @@ public interface HelloWorld {
     default <T extends AsynchronousByteChannel> T write(final T channel)
             throws InterruptedException, ExecutionException {
         Objects.requireNonNull(channel, "channel is null");
-        // get the hello, world bytes
+        // get the hello-world-bytes
         final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
-        // write buffer to channel while buffer has remaining
+        // write <buffer> to <channel> while <buffer> has <remaining>
 
         // return the <channel>
         return channel;
+    }
+
+    /**
+     * Sends the <a href="hello-world-bytes">hello-world-bytes</a> to specified asynchronous socket
+     * channel.
+     *
+     * @param channel the asynchronous socket channel to which the <a
+     *                href="hello-world-bytes">hello-world-bytes</a> be sent.
+     * @param <T>     asynchronous socket channel type parameter
+     * @return given {@code channel}.
+     * @throws InterruptedException interrupted while executing.
+     * @throws ExecutionException   when failed to execute.
+     * @implSpec Default implementation invokes {@link #write(AsynchronousByteChannel)} method with
+     * {@code channel} and returns the result.
+     * @deprecated Use {@link #write(AsynchronousByteChannel)} method.
+     */
+    @屋上架屋("AsynchronousSocketChannel implements AsynchronousByteChannel")
+    @Deprecated(forRemoval = true)
+    default <T extends AsynchronousSocketChannel> T send(final T channel)
+            throws InterruptedException, ExecutionException {
+        return write(channel);
     }
 
     /**
@@ -653,8 +703,7 @@ public interface HelloWorld {
      *         null,                                      // <attachment>
      *         new CompletionHandler<Integer, Object>() { // <handler>
      *                 @Override
-     *                 public void completed(final AsynchronousSocketChannel client,
-     *                                       final Object a) {
+     *                 public void completed(final Integer result, final Object a) {
      *                     if (!buffer.hasRemaining()) {
      *                         handler.completed(channel, attachment);
      *                         return;
@@ -748,7 +797,7 @@ public interface HelloWorld {
         if (position < 0L) {
             throw new IllegalArgumentException("position(" + position + ") is negative");
         }
-        // get the hello, world bytes
+        // get the hello-world-bytes
         final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
         while (buffer.hasRemaining()) {
             final var future = channel.write(buffer, position);
@@ -761,8 +810,8 @@ public interface HelloWorld {
 
     /**
      * Writes, asynchronously, the <a href="hello-world-bytes">hello-world-bytes</a> to specified
-     * channel, starting at specified position, and notifies a completion (or a failure) to
-     * specified handler.
+     * channel, starting at specified position, and notifies a completion (or a failure) to the
+     * handler.
      *
      * @param <T>        channel type parameter
      * @param <A>        attachment type parameter
@@ -784,27 +833,29 @@ public interface HelloWorld {
         }
         Objects.requireNonNull(handler, "handler is null");
         final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
-        final var cursor = new AtomicLong(position);
+        final var accumulator = new LongAccumulator(Long::sum, position);
         channel.write(
                 buffer,                     // <src>
-                position,                   // <position>
+                accumulator.get(),          // <position>
                 attachment,                 // <attachment>
                 new CompletionHandler<>() { // <handler>
-                    @Override public void completed(final Integer result, final A attachment) {
-                        assert result > 0; // why?
+                    @Override public void completed(final Integer r, final A a) {
+                        log().debug("written: {}", r);
+                        assert r > 0; // why?
+                        accumulator.accumulate(r);
                         if (!buffer.hasRemaining()) {
-                            handler.completed(channel, attachment);
+                            handler.completed(channel, a);
                             return;
                         }
                         channel.write(
-                                buffer,                   // <src>
-                                cursor.addAndGet(result), // <position>
-                                attachment,               // <attachment>
-                                this                      // <handler>
+                                buffer,            // <src>
+                                accumulator.get(), // <position>
+                                a,                 // <attachment>
+                                this               // <handler>
                         );
                     }
-                    @Override public void failed(final Throwable exc, final A attachment) {
-                        handler.failed(exc, attachment);
+                    @Override public void failed(final Throwable t, final A a) {
+                        handler.failed(t, a);
                     }
                 }
         );

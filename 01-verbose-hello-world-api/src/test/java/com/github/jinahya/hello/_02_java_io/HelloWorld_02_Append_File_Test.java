@@ -27,12 +27,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentMatchers;
-import org.mockito.BDDMockito;
 import org.mockito.MockedConstruction;
 import org.mockito.Mockito;
 
@@ -58,8 +56,8 @@ class HelloWorld_02_Append_File_Test extends HelloWorldTest {
      * {@link NullPointerException} when the {@code file} argument is {@code null}.
      */
     @DisplayName("""
-            should throw a NullPointerException
-            when the file argument is null"""
+            should throw a <NullPointerException>
+            when the <file> argument is <null>"""
     )
     @Test
     void _ThrowNullPointerException_FileIsNull() {
@@ -67,7 +65,7 @@ class HelloWorld_02_Append_File_Test extends HelloWorldTest {
         final var service = service();
         final var file = (File) null;
         // ------------------------------------------------------------------------------- when/then
-        // service.append(file) will throw a NullPointerException
+        // assert, <service.append(file)> will throw a <NullPointerException>
         Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.append(file)
@@ -83,45 +81,46 @@ class HelloWorld_02_Append_File_Test extends HelloWorldTest {
      * @throws IOException if an I/O error occurs.
      */
     @DisplayName("""
-            should create a new FileOutputStream as appending mode
-            and invoke write(stream) method with it
-            and flushes/closes the stream"""
+            should create a <new FileOutputStream> as <appending mode>
+            and invoke <write(stream)> method with it
+            and <flushes/closes> the stream"""
     )
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // service.write(stream) will return the stream
-        BDDMockito.willAnswer(i -> i.getArgument(0, OutputStream.class))
-                .given(service)
+        // stub, <service.write(stream)> will just return the <stream>
+        Mockito.doAnswer(i -> i.getArgument(0, OutputStream.class))
+                .when(service)
                 .write(ArgumentMatchers.any(OutputStream.class));
         final var file = Mockito.mock(File.class);
+        // mock, constructions of <FileOutputStream>
         final var contexts = new LinkedHashMap<FileOutputStream, MockedConstruction.Context>();
         try (var mock = Mockito.mockConstruction(FileOutputStream.class, contexts::put)) {
             // -------------------------------------------------------------------------------- when
             final var result = service.append(file);
             // ---------------------------------------------------------------------------------then
-            // assert, FileOutputStream(file, true)<stream> invoked, once
+            // verify, <new FileOutputStream(file, true)<stream>> invoked, once
 
-            // verify, service.write(<stream>) invoked, once
+            // verify, <service.write(<stream>)> invoked, once
 
-            // verify, <stream>.flush() invoked, once
+            // verify, <<stream>.flush()> invoked, once
 
-            // verify, <stream>.close() invoked, once
+            // verify, <<stream>.close()> invoked, once
 
             // assert, <result> is same as <file>
             Assertions.assertSame(file, result);
         }
     }
 
-    @畵蛇添足
-    @DisplayName("file's length should be increased by HelloWorld.BYTES")
+    @畵蛇添足("testing with an existing file doesn't add any value")
+    @DisplayName("<file>'s length should be increased by <12>")
     @Test
-    void _添足_畵蛇(@TempDir File tempDir) throws IOException {
+    void _添足_畵蛇(@TempDir final File dir) throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // stub, <service.append(file)> will append 12 bytes
-        BDDMockito.willAnswer(i -> {
+        // stub, <service.append(file)> will append <12> bytes, and will return the <file>
+        Mockito.doAnswer(i -> {
                     var file = i.getArgument(0, File.class);
                     try (var stream = new FileOutputStream(file, true)) {
                         stream.write(new byte[HelloWorld.BYTES]);
@@ -129,10 +128,10 @@ class HelloWorld_02_Append_File_Test extends HelloWorldTest {
                     }
                     return file;
                 })
-                .given(service())
-                .append(ArgumentMatchers.any(File.class));
-        var file = File.createTempFile("tmp", null, tempDir);
-        var length = file.length();
+                .when(service)
+                .append(ArgumentMatchers.<File>argThat(File::isFile));
+        final var file = File.createTempFile("tmp", null, dir);
+        final var length = file.length();
         // ------------------------------------------------------------------------------------ when
         final var result = service.append(file);
         // ------------------------------------------------------------------------------------ then

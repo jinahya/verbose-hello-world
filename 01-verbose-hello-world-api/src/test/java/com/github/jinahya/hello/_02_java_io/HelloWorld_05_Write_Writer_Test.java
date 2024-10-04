@@ -29,7 +29,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
-import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
 import java.io.IOException;
@@ -39,6 +38,8 @@ import java.io.Writer;
  * A class for testing {@link HelloWorld#write(Writer) write(writer)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ * @see <a href="https://github.com/jinahya/verbose-hello-world/issues/1">Implement
+ * HelloWorld#write(Writer)</a> (GitHub Issues)
  */
 @DisplayName("write(writer)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
@@ -51,8 +52,8 @@ class HelloWorld_05_Write_Writer_Test extends HelloWorldTest {
      * {@link NullPointerException} when the {@code writer} argument is {@code null}.
      */
     @DisplayName("""
-            should throw a NullPointerException
-            when the writer argument is null"""
+            should throw a <NullPointerException>
+            when the <writer> argument is <null>"""
     )
     @Test
     void _ThrowNullPointerException_WriterIsNull() {
@@ -60,6 +61,7 @@ class HelloWorld_05_Write_Writer_Test extends HelloWorldTest {
         final var service = service();
         final var writer = (Writer) null;
         // ------------------------------------------------------------------------------- when/then
+        // assert, <service.write(writer)> throws a <NullPointerException>
         Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.write(writer)
@@ -73,22 +75,22 @@ class HelloWorld_05_Write_Writer_Test extends HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("should invoke append(writer)")
+    @DisplayName("should invoke <append(writer)>")
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // stub, service.append(appendable) will return given appendable
-        BDDMockito.willAnswer(i -> i.getArgument(0))
-                .given(service())
+        // stub, <service.append(appendable)> will return given <appendable>
+        Mockito.doAnswer(i -> i.getArgument(0))
+                .when(service)
                 .append(ArgumentMatchers.any(Appendable.class));
         final var writer = Mockito.mock(Writer.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(writer);
         // ------------------------------------------------------------------------------------ then
-        // verify, service.append(writer) invoked, once
+        // verify, <service.append(writer)> invoked, once
 
-        // assert, result is same as writer
+        // assert, <result> is same as <writer>
         Assertions.assertSame(writer, result);
     }
 }

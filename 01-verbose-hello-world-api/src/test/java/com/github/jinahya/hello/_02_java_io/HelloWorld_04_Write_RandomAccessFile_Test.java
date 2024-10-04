@@ -28,9 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
-import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
 import java.io.IOException;
@@ -55,8 +53,8 @@ class HelloWorld_04_Write_RandomAccessFile_Test extends HelloWorldTest {
      * {@link NullPointerException} when the {@code file} argument is {@code null}.
      */
     @DisplayName("""
-            should throw a NullPointerException
-            when the file argument is null"""
+            should throw a <NullPointerException>
+            when the <file> argument is <null>"""
     )
     @Test
     void _ThrowNullPointerException_FileIsNull() {
@@ -64,7 +62,7 @@ class HelloWorld_04_Write_RandomAccessFile_Test extends HelloWorldTest {
         final var service = service();
         final var file = (RandomAccessFile) null;
         // ------------------------------------------------------------------------------- when/then
-        // assert, <service.write(file)> throws NullPointerException
+        // assert, <service.write(file)> throws a <NullPointerException>
         Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.write(file)
@@ -79,25 +77,21 @@ class HelloWorld_04_Write_RandomAccessFile_Test extends HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("-> set(array[12]) -> file.write(array)")
+    @DisplayName("should invoke <set(array[12])>, <file.write(array)>, and returns <file>")
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // stub, <service.set(array)> returns the <array>
-        BDDMockito.willAnswer(i -> i.getArgument(0))
-                .given(service)
+        // stub, <service.set(array)> to just return the <array>
+        Mockito.doAnswer(i -> i.getArgument(0))
+                .when(service)
                 .set(ArgumentMatchers.any());
         final var file = Mockito.mock(RandomAccessFile.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(file);
         // ------------------------------------------------------------------------------------ then
         // verify, <service.set(byte[12])> invoked, once
-        final var arrayCaptor = ArgumentCaptor.forClass(byte[].class);
-        Mockito.verify(service, Mockito.times(1)).set(arrayCaptor.capture());
-        final var array = arrayCaptor.getValue();
-        Assertions.assertNotNull(array);
-        Assertions.assertEquals(HelloWorld.BYTES, array.length);
+        final var array = verify_set_array12_invoked_once();
         // verify, <file.write(array)> invoked, once and only
 
         // assert, <result> is same as <file>
