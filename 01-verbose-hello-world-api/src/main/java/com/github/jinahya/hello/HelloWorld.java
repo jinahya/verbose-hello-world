@@ -734,10 +734,11 @@ public interface HelloWorld {
             final CompletionHandler<? super T, ? super A> handler) {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(handler, "handler is null");
-        // get the hello, world bytes
+        // get the <hello, world> bytes
         final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
-        // keep invoking channel.write(buffer, attachment, a-handler), while buffer has remaining
-        // and, eventually, invoke handler.complete(channel, attachment)
+        // keep invoking <channel.write(buffer, attachment, a-handler)>,
+        //         while <buffer> has <remaining>
+        // and, eventually, invoke <handler.complete(channel, attachment)>
 
     }
 

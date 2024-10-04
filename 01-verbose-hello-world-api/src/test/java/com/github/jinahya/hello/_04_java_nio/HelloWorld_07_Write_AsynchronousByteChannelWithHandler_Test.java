@@ -71,7 +71,7 @@ class HelloWorld_07_Write_AsynchronousByteChannelWithHandler_Test extends HelloW
      * argument is {@code null}.
      */
     @DisplayName("""
-            should throw a NullPointerException
+            should throw a <NullPointerException>
             when the <channel> argument is <null>"""
     )
     @Test
@@ -83,6 +83,7 @@ class HelloWorld_07_Write_AsynchronousByteChannelWithHandler_Test extends HelloW
         final var handler = Mockito.mock(CompletionHandler.class);
         final var attachment = (Void) null;
         // ------------------------------------------------------------------------------- when/then
+        // assert, <service.write(channel, attachment, handler)> throws a <NullPointerException>
         Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.write(channel, attachment, handler)
@@ -96,7 +97,7 @@ class HelloWorld_07_Write_AsynchronousByteChannelWithHandler_Test extends HelloW
      * argument is {@code null}.
      */
     @DisplayName("""
-            should throw a NullPointerException
+            should throw a <eNullPointerException>
             when the <handler> argument is <null>"""
     )
     @Test
@@ -107,6 +108,7 @@ class HelloWorld_07_Write_AsynchronousByteChannelWithHandler_Test extends HelloW
         final var handler = (CompletionHandler<AsynchronousByteChannel, Void>) null;
         final var attachment = (Void) null;
         // ------------------------------------------------------------------------------- when/then
+        // assert, <service.write(channel, attachment, handler)> throws a <NullPointerException>
         Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.write(channel, attachment, handler)
@@ -124,7 +126,7 @@ class HelloWorld_07_Write_AsynchronousByteChannelWithHandler_Test extends HelloW
      * {@link CompletionHandler#completed(Object, Object) handler.completed(channel, attachment)}.
      */
     @DisplayName("""
-            should invoke put(buffer[12])
+            should invoke <put(buffer[12])>,
             and write the <buffer> to the <channel> while the <buffer> has remaining"""
     )
     @Test
@@ -133,13 +135,7 @@ class HelloWorld_07_Write_AsynchronousByteChannelWithHandler_Test extends HelloW
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // stub, <service.put(buffer)> will increase <buffer>'s <position> by <12>
-        BDDMockito.willAnswer(i -> {
-                    final var buffer = i.getArgument(0, ByteBuffer.class);
-                    buffer.position(buffer.position() + HelloWorld.BYTES);
-                    return buffer;
-                })
-                .given(service)
-                .put(ArgumentMatchers.argThat(b -> b != null && b.remaining() >= HelloWorld.BYTES));
+        stub_put_buffer_will_increase_buffer_position_by_12();
         final var writtenSoFar = new LongAdder();
         final var channel = Mockito.mock(AsynchronousByteChannel.class);
         // stub, <channel.write(src, attachment, handler)> will drain the <src>
