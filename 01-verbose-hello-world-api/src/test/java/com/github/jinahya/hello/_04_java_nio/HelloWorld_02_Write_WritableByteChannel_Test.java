@@ -89,13 +89,13 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends HelloWorldTest {
         // prepare, a <channel>
         //         whose <write(buffer)> will increase the <buffer>'s <position> by a random value
         final var channel = Mockito.mock(WritableByteChannel.class);
-        final var adder = new LongAdder();
+        final var written = new LongAdder();
         Mockito.doAnswer(i -> {
                     final var src = i.getArgument(0, ByteBuffer.class);
-                    final var written = ThreadLocalRandom.current().nextInt(src.remaining() + 1);
-                    src.position(src.position() + written);
-                    adder.add(written);
-                    return written;
+                    final var w = ThreadLocalRandom.current().nextInt(src.remaining() + 1);
+                    src.position(src.position() + w);
+                    written.add(w);
+                    return w;
                 })
                 .when(channel)
                 .write(ArgumentMatchers.argThat(b -> b != null && b.hasRemaining()));
@@ -106,8 +106,8 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends HelloWorldTest {
         final var buffer = verify_put_buffer12_invoked_once();
         // verify, <channel.write(buffer)> invoked, at least once
 //        Mockito.verify(channel, Mockito.atLeastOnce()).write(buffer);
-        // assert, <adder.sum()> is equal to <12>
-//        Assertions.assertEquals(HelloWorld.BYTES, adder.sum());
+        // assert, <written.sum()> is equal to <12>
+//        Assertions.assertEquals(HelloWorld.BYTES, written.sum());
         // assert, <result> is same as <channel>
         Assertions.assertSame(channel, result);
     }
