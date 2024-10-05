@@ -562,14 +562,17 @@ public interface HelloWorld {
     default <T extends WritableByteChannel> T write(final T channel) throws IOException {
         Objects.requireNonNull(channel, "channel is null");
         // get the hello-world-bytes
-        final var buffer = ByteBuffer.allocate(BYTES);
-        put(buffer);
+        final var buffer = put(ByteBuffer.allocate(BYTES));
         JavaNioByteBufferUtils.print(buffer);
         // flip the <buffer>
-
+//        buffer.flip(); // limit -> position, position -> zero
         JavaNioByteBufferUtils.print(buffer);
         // invoke <channel.write(buffer)> while <buffer> has <remaining>
-
+//        while (buffer.hasRemaining()) {
+//            final var written = channel.write(buffer);
+//            assert written >= 0; // why
+//            JavaNioByteBufferUtils.print(buffer);
+//        }
         // return given <channel>
         return channel;
     }

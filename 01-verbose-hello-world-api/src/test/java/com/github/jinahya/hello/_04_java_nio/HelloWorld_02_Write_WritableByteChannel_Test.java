@@ -30,6 +30,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
+import org.mockito.internal.util.MockUtil;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -87,16 +88,17 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends HelloWorldTest {
         Mockito.doAnswer(i -> {
                     final var buffer = i.getArgument(0, ByteBuffer.class);
                     if (buffer != null && buffer.remaining() >= HelloWorld.BYTES) {
-                        buffer.position(buffer.position() + HelloWorld.BYTES);
-                        return Mockito.spy(buffer);
+                        final var spy = Mockito.spy(buffer);
+                        i.getArguments()[0] = spy;
+                        spy.position(buffer.position() + HelloWorld.BYTES);
                     }
-                    return buffer;
+                    return i.getArgument(0);
                 })
                 .when(service)
                 .put(ArgumentMatchers.any());
-        // prepare, a <WritableByteChannel> mock
+        // prepare, a <channel>
+        //         whose <write(buffer)> will increase the <buffer>'s <position> by a random value
         final var channel = Mockito.mock(WritableByteChannel.class);
-        // stub, <channel.write(buffer)> will increase the <buffer>'s <position> by a random value
         Mockito.doAnswer(i -> {
                     final var src = i.getArgument(0, ByteBuffer.class);
                     if (src == null) {
@@ -113,12 +115,13 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends HelloWorldTest {
         // ------------------------------------------------------------------------------------ then
         // verify, <service.put(buffer[12])> invoked, once
         final var buffer = verify_put_buffer12_invoked_once();
+        MockUtil.isMock(buffer);
         // verify, <buffer.flip()> invoked, once
-
+//        Mockito.verify(buffer, Mockito.times(1)).flip();
         // verify, <channel.write(buffer)> invoked, at least once
-
+//        Mockito.verify(channel, Mockito.atLeastOnce()).write(buffer);
         // assert, <buffer> has no <remaining>
-
+//        Assertions.assertFalse(buffer.hasRemaining());
         // assert, <result> is same as <channel>
         Assertions.assertSame(channel, result);
     }
