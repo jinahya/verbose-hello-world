@@ -40,12 +40,10 @@ import java.nio.channels.CompletionHandler;
 import java.nio.channels.FileChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.WritableByteChannel;
-import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.LongAccumulator;
@@ -528,8 +526,7 @@ public interface HelloWorld {
      * Default implementation would look like,
      * {@snippet lang = "java":
      * Objects.requireNonNull(channel, "channel is null");
-     * final var buffer = ByteBuffer.allocate(BYTES);
-     * put(buffer);
+     * final var buffer = put(ByteBuffer.allocate(BYTES));
      * buffer.flip(); // @highlight
      * while (buffer.hasRemaining()) { // @highlight region
      *     final var written = channel.write(buffer);
@@ -552,12 +549,6 @@ public interface HelloWorld {
      * @see ByteBuffer#flip()
      * @see ByteBuffer#hasRemaining()
      * @see WritableByteChannel#write(ByteBuffer)
-     * @see <a
-     * href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/ByteBuffer.html#flip()">ByteBuffer#flip()</a>
-     * (Java 21)
-     * @see <a
-     * href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/channels/WritableByteChannel.html#write(java.nio.ByteBuffer)">WritableByteChannel#write(ByteBuffer)</a>
-     * (Java 21)
      */
     default <T extends WritableByteChannel> T write(final T channel) throws IOException {
         Objects.requireNonNull(channel, "channel is null");
