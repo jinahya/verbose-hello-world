@@ -30,7 +30,6 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
-import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -61,8 +60,8 @@ public abstract class HelloWorldTest {
      * @see #verify_set_array12_invoked_once()
      */
     protected final void stub_set_array_will_return_the_array() {
-        BDDMockito.willAnswer(i -> i.getArgument(0))
-                .given(service)
+        Mockito.doAnswer(i -> i.getArgument(0))
+                .when(service)
                 .set(ArgumentMatchers.any());
     }
 
@@ -89,12 +88,12 @@ public abstract class HelloWorldTest {
      * @see #verify_put_buffer12_invoked_once()
      */
     protected final void stub_put_buffer_will_increase_buffer_position_by_12() {
-        BDDMockito.willAnswer(i -> {
+        Mockito.doAnswer(i -> {
                     final var buffer = i.getArgument(0, ByteBuffer.class);
                     buffer.position(buffer.position() + HelloWorld.BYTES);
                     return buffer;
                 })
-                .given(service)
+                .when(service)
                 .put(ArgumentMatchers.argThat(b -> b != null && b.remaining() >= HelloWorld.BYTES));
     }
 

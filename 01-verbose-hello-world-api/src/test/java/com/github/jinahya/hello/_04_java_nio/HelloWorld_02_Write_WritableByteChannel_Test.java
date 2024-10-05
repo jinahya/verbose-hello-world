@@ -22,7 +22,6 @@ package com.github.jinahya.hello._04_java_nio;
 
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello.HelloWorldTest;
-import com.github.jinahya.hello.util.JavaNioByteBufferUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +35,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.atomic.LongAdder;
 
 /**
  * A class for testing {@link HelloWorld#write(WritableByteChannel) write(channel)} method.
@@ -86,23 +84,37 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends HelloWorldTest {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // stub, <service.put(buffer)> will increase the <buffer>'s <position> by <12>
-        stub_put_buffer_will_increase_buffer_position_by_12();
+        Mockito.doAnswer(i -> {
+                    final var buffer = i.getArgument(0, ByteBuffer.class);
+                    if (buffer != null && buffer.remaining() >= HelloWorld.BYTES) {
+                        buffer.position(buffer.position() + HelloWorld.BYTES);
+                        return Mockito.spy(buffer);
+                    }
+                    return buffer;
+                })
+                .when(service)
+                .put(ArgumentMatchers.any());
         // prepare, a <WritableByteChannel> mock
         final var channel = Mockito.mock(WritableByteChannel.class);
         // stub, <channel.write(buffer)> will increase the <buffer>'s <position> by a random value
         Mockito.doAnswer(i -> {
                     final var src = i.getArgument(0, ByteBuffer.class);
-                    final var written = ThreadLocalRandom.current().nextInt(src.remaining()) + 1;
+                    if (src == null) {
+                        return 0;
+                    }
+                    final var written = ThreadLocalRandom.current().nextInt(src.remaining() + 1);
                     src.position(src.position() + written);
                     return written;
                 })
                 .when(channel)
-                .write(ArgumentMatchers.argThat(b -> b != null && b.hasRemaining()));
+                .write(ArgumentMatchers.any());
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(channel);
         // ------------------------------------------------------------------------------------ then
         // verify, <service.put(buffer[12])> invoked, once
         final var buffer = verify_put_buffer12_invoked_once();
+        // verify, <buffer.flip()> invoked, once
+
         // verify, <channel.write(buffer)> invoked, at least once
 
         // assert, <buffer> has no <remaining>

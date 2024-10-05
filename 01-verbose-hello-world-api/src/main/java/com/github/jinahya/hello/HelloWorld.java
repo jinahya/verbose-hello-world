@@ -40,13 +40,16 @@ import java.nio.channels.CompletionHandler;
 import java.nio.channels.FileChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.WritableByteChannel;
+import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.LongAccumulator;
+import java.util.function.Function;
 
 /**
  * An interface for generating <a href="#hello-world-bytes">hello-world-bytes</a> to various
@@ -65,6 +68,7 @@ import java.util.concurrent.atomic.LongAccumulator;
  */
 @FunctionalInterface
 @SuppressWarnings({
+        "java:S112",  // Generic exceptions should never be thrown
         "java:S1168", // Empty arrays and collections should be returned instead of null
         "java:S1481", // Unused local variables should be removed
         "java:S1854", // Unused assignments should be removed
@@ -562,9 +566,9 @@ public interface HelloWorld {
         put(buffer);
         JavaNioByteBufferUtils.print(buffer);
         // flip the <buffer>
-        buffer.flip(); // limit -> position, position -> zero
+
         JavaNioByteBufferUtils.print(buffer);
-        // invoke <channel.write(buffer)> while the <buffer> has <remaining>
+        // invoke <channel.write(buffer)> while <buffer> has <remaining>
 
         // return given <channel>
         return channel;
@@ -816,6 +820,23 @@ public interface HelloWorld {
         return channel;
     }
 
+    @屋上架屋
+    default <T extends Path, R> R append(final T path,
+                                         final Function<? super T, ? extends R> function)
+            throws IOException, InterruptedException, ExecutionException {
+        Objects.requireNonNull(path, "path is null");
+        Objects.requireNonNull(function, "function is null");
+        final var options = new StandardOpenOption[] {
+                StandardOpenOption.CREATE,
+                StandardOpenOption.WRITE,
+                StandardOpenOption.APPEND
+        };
+        try (var channel = AsynchronousFileChannel.open(path, options)) {
+            write(channel, channel.size());
+        }
+        return function.apply(path);
+    }
+
     /**
      * Writes, asynchronously, the <a href="hello-world-bytes">hello-world-bytes</a> to specified
      * channel, starting at specified position, and notifies a completion (or a failure) to the
@@ -867,6 +888,40 @@ public interface HelloWorld {
                     }
                 }
         );
+    } // @formatter:on
+
+    @屋上架屋
+    default <T extends Path, A> void append(final T path, final A attachment,
+                                            final CompletionHandler<? super T, ? super A> handler)
+            throws IOException {
+        Objects.requireNonNull(path, "path is null");
+        Objects.requireNonNull(handler, "handler is null");
+        final var options = new StandardOpenOption[] {
+                StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.APPEND
+        };
+        @SuppressWarnings({
+                "java:S2095" // Resources should be closed
+        })
+        final var channel = AsynchronousFileChannel.open(path, options); // @formatter:off
+        write(channel, channel.size(), attachment, new CompletionHandler<>() {
+            @Override
+            public void completed(final AsynchronousFileChannel result, final A attachment) {
+                assert result == channel;
+                try {
+                    result.close();
+                } catch (final IOException ioe) {
+                    throw new RuntimeException("failed to close channel", ioe);
+                }
+                handler.completed(path, attachment);
+            }
+            @Override public void failed(final Throwable exc, final A attachment) {
+                try {
+                    channel.close();
+                } catch (final IOException ioe) {
+                    throw new RuntimeException("failed to close channel", ioe);
+                }
+                handler.failed(exc, attachment);
+            }
+        }); // @formatter:on
     }
-    // @formatter:off
 }
