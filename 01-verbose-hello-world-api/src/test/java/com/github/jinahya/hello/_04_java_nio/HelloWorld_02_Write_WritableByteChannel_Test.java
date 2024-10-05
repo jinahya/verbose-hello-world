@@ -105,9 +105,9 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends HelloWorldTest {
         // verify, <service.put(buffer[12])> invoked, once
         final var buffer = verify_put_buffer12_invoked_once();
         // verify, <channel.write(buffer)> invoked, at least once
-//        Mockito.verify(channel, Mockito.atLeastOnce()).write(buffer);
+        Mockito.verify(channel, Mockito.atLeastOnce()).write(buffer);
         // assert, <written.sum()> is equal to <12>
-//        Assertions.assertEquals(HelloWorld.BYTES, written.sum());
+        Assertions.assertEquals(HelloWorld.BYTES, written.sum());
         // assert, <result> is same as <channel>
         Assertions.assertSame(channel, result);
     }
