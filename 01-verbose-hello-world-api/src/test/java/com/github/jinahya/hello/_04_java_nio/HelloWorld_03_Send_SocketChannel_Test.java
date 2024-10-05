@@ -130,9 +130,12 @@ class HelloWorld_03_Send_SocketChannel_Test extends HelloWorldTest {
             log.debug("connected: remote: {}, local: {}", client.getRemoteAddress(),
                       client.getLocalAddress());
             log.debug("writing...");
+            // -------------------------------------------------------------------------------- when
             final var result = service.write(client);
-            assert result == client;
             log.debug("written.");
+            // -------------------------------------------------------------------------------- then
+            Mockito.verify(service, Mockito.times(1)).write(client);
+            Assertions.assertSame(client, result);
         }
     }
 }

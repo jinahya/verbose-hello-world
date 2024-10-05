@@ -85,18 +85,7 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends HelloWorldTest {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // stub, <service.put(buffer)> will increase the <buffer>'s <position> by <12>
-        Mockito.doAnswer(i -> {
-                    var buffer = i.getArgument(0, ByteBuffer.class);
-                    if (buffer != null) {
-                        i.getArguments()[0] = (buffer = Mockito.spy(buffer));
-                        if (buffer.remaining() >= HelloWorld.BYTES) {
-                            buffer.position(buffer.position() + HelloWorld.BYTES);
-                        }
-                    }
-                    return buffer;
-                })
-                .when(service)
-                .put(ArgumentMatchers.any());
+        stub_put_buffer_will_increase_buffer_position_by_12();
         // prepare, a <channel>
         //         whose <write(buffer)> will increase the <buffer>'s <position> by a random value
         final var channel = Mockito.mock(WritableByteChannel.class);
@@ -116,10 +105,6 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends HelloWorldTest {
         // ------------------------------------------------------------------------------------ then
         // verify, <service.put(buffer[12])> invoked, once
         final var buffer = verify_put_buffer12_invoked_once();
-        if (MockUtil.isMock(buffer)) {
-            // verify, <buffer.flip()> invoked, once
-//            Mockito.verify(buffer, Mockito.times(1)).flip();
-        }
         // verify, <channel.write(buffer)> invoked, at least once
 //        Mockito.verify(channel, Mockito.atLeastOnce()).write(buffer);
         // assert, <buffer> has no <remaining>
