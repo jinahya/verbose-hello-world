@@ -30,12 +30,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
-import org.mockito.internal.util.MockUtil;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.LongAdder;
 
 /**
  * A class for testing {@link HelloWorld#write(WritableByteChannel) write(channel)} method.
@@ -89,17 +89,16 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends HelloWorldTest {
         // prepare, a <channel>
         //         whose <write(buffer)> will increase the <buffer>'s <position> by a random value
         final var channel = Mockito.mock(WritableByteChannel.class);
+        final var adder = new LongAdder();
         Mockito.doAnswer(i -> {
                     final var src = i.getArgument(0, ByteBuffer.class);
-                    if (src == null) {
-                        return 0;
-                    }
                     final var written = ThreadLocalRandom.current().nextInt(src.remaining() + 1);
                     src.position(src.position() + written);
+                    adder.add(written);
                     return written;
                 })
                 .when(channel)
-                .write(ArgumentMatchers.any());
+                .write(ArgumentMatchers.argThat(b -> b != null && b.hasRemaining()));
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(channel);
         // ------------------------------------------------------------------------------------ then
@@ -107,8 +106,8 @@ class HelloWorld_02_Write_WritableByteChannel_Test extends HelloWorldTest {
         final var buffer = verify_put_buffer12_invoked_once();
         // verify, <channel.write(buffer)> invoked, at least once
 //        Mockito.verify(channel, Mockito.atLeastOnce()).write(buffer);
-        // assert, <buffer> has no <remaining>
-//        Assertions.assertFalse(buffer.hasRemaining());
+        // assert, <adder.sum()> is equal to <12>
+//        Assertions.assertEquals(HelloWorld.BYTES, adder.sum());
         // assert, <result> is same as <channel>
         Assertions.assertSame(channel, result);
     }
