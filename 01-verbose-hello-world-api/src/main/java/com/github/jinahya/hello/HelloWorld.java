@@ -570,6 +570,11 @@ public interface HelloWorld {
 
     /**
      * Sends the <a href="hello-world-bytes">hello-world-bytes</a> to specified socket channel.
+     * <p>
+     * Default implementation would look like,
+     * {@snippet lang = "java":
+     * return write(Objects.requireNonNull(channel, "channel is null")); // @highlight
+     *}
      *
      * @param channel the socket channel to which the <a
      *                href="hello-world-bytes">hello-world-bytes</a> be sent.

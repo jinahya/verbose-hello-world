@@ -47,34 +47,13 @@ import java.util.concurrent.ArrayBlockingQueue;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @deprecated The {@link HelloWorld#send(SocketChannel) send(channel)} method has been deprecated.
  */
-@Deprecated(forRemoval = true)
 @屋上架屋("SocketChannel implements WritableByteChannel")
+@Deprecated(forRemoval = true)
 @DisplayName("send(channel)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
 class HelloWorld_03_Send_SocketChannel_Test extends HelloWorldTest {
-
-    /**
-     * Verifies {@link HelloWorld#send(SocketChannel) send(channel)} method throws a
-     * {@link NullPointerException} when {@code channel} argument is {@code null}.
-     */
-    @DisplayName("""
-            should throw a <NullPointerException>
-            when the <channel> argument is <null>"""
-    )
-    @Test
-    void _ThrowNullPointerException_ChannelIsNull() {
-        // ----------------------------------------------------------------------------------- given
-        final var service = service();
-        final var channel = (SocketChannel) null;
-        // ------------------------------------------------------------------------------- when/then
-        // assert, <service.send(channel)> throws a <NullPointerException>
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> service.send(channel)
-        );
-    }
 
     @Test
     void __() throws Exception {
