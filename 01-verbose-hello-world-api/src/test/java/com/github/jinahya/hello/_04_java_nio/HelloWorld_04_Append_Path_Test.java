@@ -84,8 +84,11 @@ class HelloWorld_04_Append_Path_Test extends HelloWorldTest {
         Mockito.doAnswer(i -> i.getArgument(0))
                 .when(service)
                 .write(ArgumentMatchers.<WritableByteChannel>any());
+        // preapare, a mock object of <java.nio.file.Path>
         final var path = Mockito.mock(Path.class);
+        // prepare, a mock object of <java.nio.channels.FileChannel>
         final var channel = Mockito.mock(FileChannel.class);
+        // mock, static methods of <java.nio.channels.FileChannel>
         try (var mockStatic = Mockito.mockStatic(FileChannel.class)) {
             // stub, <FileChannel.open(path, options)> will return the <channel>
             mockStatic.when(() -> FileChannel.open(ArgumentMatchers.same(path),
@@ -98,7 +101,7 @@ class HelloWorld_04_Append_Path_Test extends HelloWorldTest {
             final var captor = ArgumentCaptor.forClass(OpenOption[].class);
 
             final var options = captor.getAllValues();
-            // verify, <options> contains <StandardOpenOption.WRITE>, <StandardOpenOption.CREATE>,
+            // verify, <options> contains <StandardOpenOption.CREATE>,
             //         <StandardOpenOption.APPEND)>, and no others
 
             // verify, <write(channel)> invoked, once.
@@ -118,14 +121,14 @@ class HelloWorld_04_Append_Path_Test extends HelloWorldTest {
     void _添足_畵蛇(@TempDir final Path dir) throws Exception {
         // ----------------------------------------------------------------------------------- given
         var service = service();
-        // stub, <service.append(Path)> will append <12> bytes
+        // stub, <service.append(path)> will append <12> <zero> bytes
         Mockito.doAnswer(i -> {
                     final var path = i.getArgument(0, Path.class);
                     try (var channel = FileChannel.open(path, StandardOpenOption.APPEND)) {
                         for (final var b = ByteBuffer.allocate(HelloWorld.BYTES);
                              b.hasRemaining(); ) {
-                            final var w = channel.write(b);
-                            assert w >= 0; // why?
+                            final var written = channel.write(b);
+                            assert written >= 0;
                         }
                         channel.force(true);
                     }
@@ -134,9 +137,13 @@ class HelloWorld_04_Append_Path_Test extends HelloWorldTest {
                 .when(service)
                 .append(ArgumentMatchers.notNull(Path.class));
         final var path = Files.createTempFile(dir, null, null);
+        log.debug("size: {}", Files.size(path));
+        log.debug("lastModifiedTime: {}", Files.getLastModifiedTime(path));
         final var size = Files.size(path);
         // ------------------------------------------------------------------------------------ when
         final var result = service.append(path);
+        log.debug("size: {}", Files.size(path));
+        log.debug("lastModifiedTime: {}", Files.getLastModifiedTime(path));
         // ------------------------------------------------------------------------------------ then
         // assert, <path>'s <size> has been increased by <12>
         Assertions.assertEquals(
