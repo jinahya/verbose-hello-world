@@ -663,7 +663,7 @@ public interface HelloWorld {
     default <T extends AsynchronousByteChannel> T write(final T channel)
             throws InterruptedException, ExecutionException {
         Objects.requireNonNull(channel, "channel is null");
-        // get the hello-world-bytes
+        // get the <hello-world-bytes>
         final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
         // write <buffer> to <channel> while <buffer> has <remaining>
 

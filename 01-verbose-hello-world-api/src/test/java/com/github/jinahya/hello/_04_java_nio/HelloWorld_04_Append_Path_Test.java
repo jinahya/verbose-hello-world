@@ -84,7 +84,7 @@ class HelloWorld_04_Append_Path_Test extends HelloWorldTest {
         Mockito.doAnswer(i -> i.getArgument(0))
                 .when(service)
                 .write(ArgumentMatchers.<WritableByteChannel>any());
-        // preapare, a mock object of <java.nio.file.Path>
+        // prepare, a mock object of <java.nio.file.Path>
         final var path = Mockito.mock(Path.class);
         // prepare, a mock object of <java.nio.channels.FileChannel>
         final var channel = Mockito.mock(FileChannel.class);
