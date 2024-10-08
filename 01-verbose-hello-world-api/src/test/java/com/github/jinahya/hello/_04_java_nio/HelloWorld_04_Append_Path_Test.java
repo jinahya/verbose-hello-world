@@ -43,6 +43,8 @@ import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
+import java.util.HashSet;
 
 /**
  * A class for testing {@link HelloWorld#append(Path) append(path)} method.
@@ -100,17 +102,23 @@ class HelloWorld_04_Append_Path_Test extends HelloWorldTest {
             // -------------------------------------------------------------------------------- then
             // verify, <FileChannel.open(path, <options>)> invoked, once
             final var captor = ArgumentCaptor.forClass(OpenOption[].class);
-
-            final var options = captor.getAllValues();
-            // verify, <options> contains <StandardOpenOption.CREATE>,
+//            mockStatic.verify(
+//                    () -> FileChannel.open(ArgumentMatchers.same(path), captor.capture())
+//            );
+            final var values = captor.getAllValues();
+            // verify, <values[0]> contains <StandardOpenOption.CREATE>,
             //         <StandardOpenOption.APPEND)>, and no others
-
+//            Assertions.assertEquals(1, values.size());
+//            final var options = new HashSet<>(Arrays.asList(values.getFirst()));
+//            Assertions.assertTrue(options.remove(StandardOpenOption.CREATE));
+//            Assertions.assertTrue(options.remove(StandardOpenOption.APPEND));
+//            Assertions.assertTrue(options.isEmpty());
             // verify, <write(channel)> invoked, once.
-
+//            Mockito.verify(service, Mockito.times(1)).write(channel);
             // verify, <channel.force(true)> invoked, once.
-
+//            Mockito.verify(channel, Mockito.times(1)).force(true);
             // verify, <channel.close()> invoked, once.
-
+//            Mockito.verify(channel, Mockito.times(1)).close();
             // assert, <result> is same as <path>
             Assertions.assertSame(path, result);
         }

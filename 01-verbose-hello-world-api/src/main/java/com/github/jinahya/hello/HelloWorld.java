@@ -631,9 +631,13 @@ public interface HelloWorld {
         // open a <FileChannel> with <path>,
         //         <StandardOpenOption.CREATE>, and <StandardOpenOption.APPEND>
         // use the try-with-resources statement
-        // invoke <write(channel)> method with it
-        // force changes to both the <file>'s content and metadata
-
+//        try(var channel = FileChannel.open(path, StandardOpenOption.CREATE,
+//                                           StandardOpenOption.APPEND)) {
+//            // invoke <write(channel)> method with it
+////            write(channel);
+//            // force changes to both the <file>'s content and metadata
+////            channel.force(true);
+//        }
         return path;
     }
 
@@ -649,7 +653,7 @@ public interface HelloWorld {
      *     assert written > 0; // why?
      * } // @end
      * return channel;
-     *}
+     * }
      *
      * @param <T>     channel type parameter
      * @param channel the channel to which bytes are written.
@@ -729,7 +733,7 @@ public interface HelloWorld {
      *                 }
      *         }
      * ); // @end
-     *}
+     * }
      *
      * @param <T>        channel type parameter
      * @param channel    the channel to which bytes are written.
