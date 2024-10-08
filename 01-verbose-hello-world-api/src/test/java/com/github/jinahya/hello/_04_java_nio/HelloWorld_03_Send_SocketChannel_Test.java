@@ -39,7 +39,6 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.ArrayBlockingQueue;
 
 /**
  * A class for testing {@link HelloWorld#send(SocketChannel) send(channel)} method.
@@ -49,12 +48,13 @@ import java.util.concurrent.ArrayBlockingQueue;
  */
 @屋上架屋("SocketChannel implements WritableByteChannel")
 @Deprecated(forRemoval = true)
-@DisplayName("send(channel)")
+@DisplayName("send(SocketChannel)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
 class HelloWorld_03_Send_SocketChannel_Test extends HelloWorldTest {
 
+    @DisplayName("send(SocketChannel)")
     @Test
     void __() throws Exception {
         // ----------------------------------------------------------------------------------- given
@@ -76,13 +76,14 @@ class HelloWorld_03_Send_SocketChannel_Test extends HelloWorldTest {
         //           binds to a random port
         //           accepts a client,
         //           and reads 12 bytes
-        final var addr = InetAddress.getLoopbackAddress();
-        final var port = new ArrayBlockingQueue<Integer>(1);
-        Thread.ofPlatform().name("server").start(() -> {
-            try (var server = ServerSocketChannel.open()) {
-                server.bind(new InetSocketAddress(addr, 0), 1);
-                log.debug("bound to {}", server.getLocalAddress());
-                port.offer(((InetSocketAddress) server.getLocalAddress()).getPort());
+        Thread.currentThread().setName("server");
+        try (var server = ServerSocketChannel.open()) {
+            server.bind(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0), 1);
+            log.debug("bound to {}", server.getLocalAddress());
+            // -------------------------------------------------------------------------------------
+            // accept a <client>
+            //           read 12 bytes
+            Thread.ofPlatform().name("server").start(() -> {
                 try (var client = server.accept()) {
                     log.debug("accepted; remote: {}, local: {}", client.getRemoteAddress(),
                               client.getLocalAddress());
@@ -93,28 +94,28 @@ class HelloWorld_03_Send_SocketChannel_Test extends HelloWorldTest {
                     }
                     buffer.flip();
                     log.debug("decoded: {}", StandardCharsets.US_ASCII.decode(buffer));
+                } catch (final Exception e) {
+                    throw new RuntimeException(e);
                 }
-            } catch (final Exception e) {
-                throw new RuntimeException(e);
+            });
+            // -------------------------------------------------------------------------------------
+            // connect to the <server>,
+            //       and send <hello, world> to the <server>
+            Thread.currentThread().setName("client");
+            try (var client = SocketChannel.open()) {
+                final var remote = server.getLocalAddress();
+                log.debug("connecting to {}", remote);
+                client.connect(remote);
+                log.debug("connected: remote: {}, local: {}", client.getRemoteAddress(),
+                          client.getLocalAddress());
+                log.debug("writing...");
+                // ---------------------------------------------------------------------------- when
+                final var result = service.send(client);
+                log.debug("written.");
+                // ---------------------------------------------------------------------------- then
+                Mockito.verify(service, Mockito.times(1)).write(client);
+                Assertions.assertSame(client, result);
             }
-        });
-        // -----------------------------------------------------------------------------------------
-        // connect to the <server>,
-        //       and send <12> bytes to the <server>
-        Thread.currentThread().setName("client");
-        try (var client = SocketChannel.open()) {
-            final var remote = new InetSocketAddress(addr, port.take());
-            log.debug("connecting to {}", remote);
-            client.connect(remote);
-            log.debug("connected: remote: {}, local: {}", client.getRemoteAddress(),
-                      client.getLocalAddress());
-            log.debug("writing...");
-            // -------------------------------------------------------------------------------- when
-            final var result = service.write(client);
-            log.debug("written.");
-            // -------------------------------------------------------------------------------- then
-            Mockito.verify(service, Mockito.times(1)).write(client);
-            Assertions.assertSame(client, result);
         }
     }
 }

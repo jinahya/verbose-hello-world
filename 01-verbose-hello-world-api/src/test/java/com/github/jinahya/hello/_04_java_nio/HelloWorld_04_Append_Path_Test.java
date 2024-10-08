@@ -22,6 +22,7 @@ package com.github.jinahya.hello._04_java_nio;
 
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello.HelloWorldTest;
+import com.github.jinahya.hello.HelloWorldTestUtils;
 import com.github.jinahya.hello.畵蛇添足;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -48,7 +49,7 @@ import java.nio.file.StandardOpenOption;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("append(path)")
+@DisplayName("append(Path)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
@@ -116,7 +117,7 @@ class HelloWorld_04_Append_Path_Test extends HelloWorldTest {
     }
 
     @畵蛇添足("testing with an existing file doesn't add any value")
-    @DisplayName("path's size should be increased by <12>")
+    @DisplayName("<path>'s size should be increased by <12>")
     @Test
     void _添足_畵蛇(@TempDir final Path dir) throws Exception {
         // ----------------------------------------------------------------------------------- given
@@ -136,7 +137,10 @@ class HelloWorld_04_Append_Path_Test extends HelloWorldTest {
                 })
                 .when(service)
                 .append(ArgumentMatchers.notNull(Path.class));
+        // create, a temp file
         final var path = Files.createTempFile(dir, null, null);
+        // write, some
+        HelloWorldTestUtils.writeSome(path);
         log.debug("size: {}", Files.size(path));
         log.debug("lastModifiedTime: {}", Files.getLastModifiedTime(path));
         final var size = Files.size(path);
@@ -145,7 +149,7 @@ class HelloWorld_04_Append_Path_Test extends HelloWorldTest {
         log.debug("size: {}", Files.size(path));
         log.debug("lastModifiedTime: {}", Files.getLastModifiedTime(path));
         // ------------------------------------------------------------------------------------ then
-        // assert, <path>'s <size> has been increased by <12>
+        // assert, <path>'s <size> increased by <12>
         Assertions.assertEquals(
                 size + HelloWorld.BYTES,
                 Files.size(result)
