@@ -631,7 +631,7 @@ public interface HelloWorld {
         // open a <FileChannel> with <path>,
         //         <StandardOpenOption.CREATE>, and <StandardOpenOption.APPEND>
         // use the try-with-resources statement
-//        try(var channel = FileChannel.open(path, StandardOpenOption.CREATE,
+//        try (var channel = FileChannel.open(path, StandardOpenOption.CREATE,
 //                                           StandardOpenOption.APPEND)) {
 //            // invoke <write(channel)> method with it
 ////            write(channel);
