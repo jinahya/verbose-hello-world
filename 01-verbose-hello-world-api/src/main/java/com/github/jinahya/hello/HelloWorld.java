@@ -675,7 +675,10 @@ public interface HelloWorld {
         // get the <hello-world-bytes>
         final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
         // write <buffer> to <channel> while <buffer> has <remaining>
-
+//        while (buffer.hasRemaining()) {
+//            final var future = channel.write(buffer);
+////            final var result = future.get();
+//        }
         // return the <channel>
         return channel;
     }

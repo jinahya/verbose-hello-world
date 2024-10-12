@@ -106,8 +106,8 @@ class HelloWorld_04_Append_Path_Test extends HelloWorldTest {
 //                    () -> FileChannel.open(ArgumentMatchers.same(path), captor.capture()),
 //                    Mockito.times(1)
 //            );
-            final var value = captor.getValue();
-            // verify, <values[0]> contains <StandardOpenOption.CREATE>,
+//            final var value = captor.getValue();
+            // verify, value contains <StandardOpenOption.CREATE>,
             //         <StandardOpenOption.APPEND)>, and no others
 //            final var options = new HashSet<>(Arrays.asList(value));
 //            Assertions.assertTrue(options.remove(StandardOpenOption.CREATE));

@@ -57,7 +57,7 @@ class HelloWorld_05_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
      * {@link NullPointerException} when the {@code channel} argument is {@code null}.
      */
     @DisplayName("""
-            should throw a NullPointerException
+            should throw a <NullPointerException>
             when the <channel> argument is <null>"""
     )
     @Test
@@ -91,46 +91,53 @@ class HelloWorld_05_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
         final var service = service();
         // stub, <service.put(buffer)> will increase <buffer>'s <position> by <HelloWorld.BYTES>
         Mockito.doAnswer(i -> {
-                    var buffer = i.getArgument(0, ByteBuffer.class);
+                    final var buffer = i.getArgument(0, ByteBuffer.class);
                     buffer.position(buffer.position() + HelloWorld.BYTES);
                     return buffer;
                 })
                 .when(service)
                 .put(ArgumentMatchers.argThat(b -> b != null && b.remaining() >= HelloWorld.BYTES));
-        final var writtenSoFar = new LongAdder();
+        // prepare, a mock object of <AsynchronousByteChannel>
         final var channel = Mockito.mock(AsynchronousByteChannel.class);
+        // number of bytes written so far
+        final var written = new LongAdder();
+        // a reference to the result of <channel.write(buffer)>
+        final var reference = new AtomicReference<Future<Integer>>();
         // stub, <channel.write(buffer)> will return a <future> drains the <buffer>
-        final var futureReference = new AtomicReference<Future<Integer>>();
         Mockito.doAnswer(w -> {
-            // preceding future's get() should be invoked
-            final var previousFuture = futureReference.get();
-            if (previousFuture != null) {
-                Mockito.verify(previousFuture, Mockito.times(1)).get();
-            }
-            final var src = w.getArgument(0, ByteBuffer.class);
-            @SuppressWarnings({"unchecked"})
-            final var future = (Future<Integer>) Mockito.mock(Future.class);
-            // stub, <future.get()> will increase <buffer>'s <position> by a random value
-            Mockito.doAnswer(g -> {
-                final var result = ThreadLocalRandom.current().nextInt(src.remaining()) + 1;
-                src.position(src.position() + result);
-                writtenSoFar.add(result);
-                return result;
-            }).when(future).get();
-            futureReference.set(future);
-            return future;
-        }).when(channel).write(ArgumentMatchers.argThat(b -> b != null && b.hasRemaining()));
+                    // preceding <future>'s <get()> should be invoked
+                    final var previous = reference.get();
+                    if (previous != null) {
+                        Mockito.verify(previous, Mockito.times(1)).get();
+                    }
+                    final var src = w.getArgument(0, ByteBuffer.class);
+                    @SuppressWarnings({"unchecked"})
+                    final var future = (Future<Integer>) Mockito.mock(Future.class);
+                    // stub, <future.get()> will increase <buffer>'s <position> by a random value
+                    Mockito.doAnswer(g -> {
+                                final var result = ThreadLocalRandom.current().nextInt(src.remaining()) + 1;
+                                src.position(src.position() + result);
+                                written.add(result);
+                                return result;
+                            })
+                            .when(future)
+                            .get();
+                    reference.set(future);
+                    return future;
+                })
+                .when(channel)
+                .write(ArgumentMatchers.argThat(b -> b != null && b.hasRemaining()));
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(channel);
         // ------------------------------------------------------------------------------------ then
         // verify, <service.put(buffer[12])> invoked, once
         final var buffer = verify_put_buffer12_invoked_once();
         // verify, <channel.write(buffer)> invoked, at least once
-
+//        Mockito.verify(channel, Mockito.atLeastOnce()).write(buffer);
         // assert, <buffer> has no <remaining>
-
-        // assert, total number of bytes written is equal to <HelloWorld.BYTES>
-
+//        Assertions.assertFalse(buffer.hasRemaining());
+        // assert, <written.sum()> is equal to <HelloWorld.BYTES>
+//        Assertions.assertEquals(HelloWorld.BYTES, written.sum());
         // assert, <result> is same as <channel>
         Assertions.assertSame(channel, result);
     }
