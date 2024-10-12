@@ -674,11 +674,13 @@ public interface HelloWorld {
         Objects.requireNonNull(channel, "channel is null");
         // get the <hello-world-bytes>
         final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
+        JavaNioByteBufferUtils.print(buffer);
         // write <buffer> to <channel> while <buffer> has <remaining>
-//        while (buffer.hasRemaining()) {
-//            final var future = channel.write(buffer);
-////            final var result = future.get();
-//        }
+        while (buffer.hasRemaining()) {
+            final var future = channel.write(buffer);
+            final var result = future.get();
+            assert result > 0; // why?
+        }
         // return the <channel>
         return channel;
     }

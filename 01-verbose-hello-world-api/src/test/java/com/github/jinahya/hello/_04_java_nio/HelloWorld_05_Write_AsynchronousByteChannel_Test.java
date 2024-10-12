@@ -133,11 +133,11 @@ class HelloWorld_05_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
         // verify, <service.put(buffer[12])> invoked, once
         final var buffer = verify_put_buffer12_invoked_once();
         // verify, <channel.write(buffer)> invoked, at least once
-//        Mockito.verify(channel, Mockito.atLeastOnce()).write(buffer);
+        Mockito.verify(channel, Mockito.atLeastOnce()).write(buffer);
         // assert, <buffer> has no <remaining>
-//        Assertions.assertFalse(buffer.hasRemaining());
+        Assertions.assertFalse(buffer.hasRemaining());
         // assert, <written.sum()> is equal to <HelloWorld.BYTES>
-//        Assertions.assertEquals(HelloWorld.BYTES, written.sum());
+        Assertions.assertEquals(HelloWorld.BYTES, written.sum());
         // assert, <result> is same as <channel>
         Assertions.assertSame(channel, result);
     }
