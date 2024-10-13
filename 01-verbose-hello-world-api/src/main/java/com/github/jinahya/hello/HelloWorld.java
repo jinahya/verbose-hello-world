@@ -653,7 +653,7 @@ public interface HelloWorld {
      *     assert written > 0; // why?
      * } // @end
      * return channel;
-     * }
+     *}
      *
      * @param <T>     channel type parameter
      * @param channel the channel to which bytes are written.
@@ -736,7 +736,7 @@ public interface HelloWorld {
      *                 }
      *         }
      * ); // @end
-     * }
+     *}
      *
      * @param <T>        channel type parameter
      * @param channel    the channel to which bytes are written.
@@ -755,6 +755,28 @@ public interface HelloWorld {
         //         while <buffer> has <remaining>
         // and, eventually, invoke <handler.complete(channel, attachment)>
 
+    }
+
+    /**
+     * Sends, asynchronously, the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>
+     * to specified channel, and notifies a completion (or a failure) to specified handler with
+     * specified attachment.
+     *
+     * @param channel    the channel to which the <a
+     *                   href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> is sent.
+     * @param attachment an attachment.
+     * @param handler    the handler to be notified with a completion(or a failure).
+     * @param <T>        channel type parameter
+     * @param <A>        attachment type parameter
+     * @implSpec The default implementation invokes
+     * {@link #write(AsynchronousByteChannel) write(channel)} method with given arguments.
+     */
+    @屋上架屋("AsynchronousSocketChannel implements AsynchronousByteChannel")
+    @Deprecated(forRemoval = true)
+    default <T extends AsynchronousSocketChannel, A> void send(
+            final T channel, final A attachment,
+            final CompletionHandler<? super T, ? super A> handler) {
+        write(channel, attachment, handler);
     }
 
     /**
@@ -814,8 +836,9 @@ public interface HelloWorld {
         if (position < 0L) {
             throw new IllegalArgumentException("position(" + position + ") is negative");
         }
-        // get the hello-world-bytes
+        // get the <hello-world-bytes>
         final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
+        // keep writing the <buffer> to the <channel>, while the <buffer> has <remaining>
         while (buffer.hasRemaining()) {
             final var future = channel.write(buffer, position);
             final var written = future.get();
@@ -825,6 +848,33 @@ public interface HelloWorld {
         return channel;
     }
 
+    /**
+     * Appends the <a href="#hello-world-bytes">hello-world-bytes</a> to the end of specified path
+     * to a file. The {@link java.nio.file.Files#size(Path) size} of the {@code path}, on successful
+     * return, is increased by {@value #BYTES}.
+     * <p>
+     * Default implementation would look like,
+     * {@snippet lang = "java":
+     * Objects.requireNonNull(path, "path is null");
+     * Objects.requireNonNull(function, "function is null");
+     * try (var channel = AsynchronousFileChannel.open(path, StandardOpenOption.CREATE, // @highlight region
+     *                                                 StandardOpenOption.APPEND)) {
+     *     write(channel, channel.size());
+     *     channel.force(true);
+     * } // @end
+     * return function.apply(path);
+     *}
+     *
+     * @param path     the path to a file to which the <a
+     *                 href="#hello-world-bytes">hello-world-bytes</a> is appended.
+     * @param function the function applies with the {@code path}.
+     * @param <T>      path type parameter
+     * @param <R>      result type parameter
+     * @return the result of the {@code function}.
+     * @throws IOException          if an I/O error occurs.
+     * @throws InterruptedException if interrupted while working.
+     * @throws ExecutionException   if failed to execute.
+     */
     @屋上架屋
     default <T extends Path, R> R append(final T path,
                                          final Function<? super T, ? extends R> function)
@@ -837,6 +887,7 @@ public interface HelloWorld {
         };
         try (var channel = AsynchronousFileChannel.open(path, options)) {
             write(channel, channel.size());
+            channel.force(true);
         }
         return function.apply(path);
     }

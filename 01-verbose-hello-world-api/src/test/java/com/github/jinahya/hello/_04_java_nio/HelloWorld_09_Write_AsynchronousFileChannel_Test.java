@@ -52,7 +52,7 @@ import java.util.concurrent.atomic.LongAdder;
  */
 @DisplayName("write(channel, position)")
 @Slf4j
-class HelloWorld_08_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
+class HelloWorld_09_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
 
     /**
      * Verifies that the
@@ -60,7 +60,7 @@ class HelloWorld_08_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
      * throws a {@link NullPointerException} when the {@code channel} argument is {@code null}.
      */
     @DisplayName("""
-            should throw a NullPointerException
+            should throw a <NullPointerException>
             when the <channel> argument is <null>"""
     )
     @Test
@@ -68,8 +68,11 @@ class HelloWorld_08_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var channel = (AsynchronousFileChannel) null;
-        final var position = 0L;
+        final var position = ThreadLocalRandom.current().nextLong() >>> 1;
+        assert channel == null;
+        assert position >= 0L;
         // ------------------------------------------------------------------------------- when/then
+        // assert, <service.write(channel, position)> throws a <NullPointerException>
         Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.write(channel, position)
@@ -82,7 +85,7 @@ class HelloWorld_08_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
      * throws a {@link IllegalArgumentException} when the {@code position} argument is negative.
      */
     @DisplayName("""
-            should throw an IllegalArgumentException
+            should throw an <IllegalArgumentException>
             when the <position> argument is <not positive>"""
     )
     @Test
@@ -91,7 +94,10 @@ class HelloWorld_08_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
         final var service = service();
         final var channel = Mockito.mock(AsynchronousFileChannel.class);
         final var position = ThreadLocalRandom.current().nextLong() | Long.MIN_VALUE;
+        assert channel != null;
+        assert position < 0L;
         // ------------------------------------------------------------------------------- when/then
+        // assert, <service.write(channel, position)> throws an <IllegalArgumentException>
         Assertions.assertThrows(
                 IllegalArgumentException.class,
                 () -> service.write(channel, position)

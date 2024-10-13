@@ -37,6 +37,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 
 /**
  * An abstract class for testing methods defined in {@link HelloWorld} interface.
@@ -51,6 +52,24 @@ import java.nio.ByteBuffer;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Slf4j
 public abstract class HelloWorldTest {
+
+    /**
+     * Returns an array bytes of {@code hello, world}.
+     *
+     * @return an array bytes of {@code hello, world}.
+     */
+    protected static byte[] bytes() {
+        return "hello, world".getBytes(StandardCharsets.US_ASCII);
+    }
+
+    /**
+     * Returns a byte buffer wraps {@link #bytes()}.
+     *
+     * @return a byte buffer wraps {@link #bytes()}.
+     */
+    protected static ByteBuffer buffer() {
+        return ByteBuffer.wrap(bytes());
+    }
 
     // ------------------------------------------------------------------------------------- service
 
