@@ -790,11 +790,13 @@ public interface HelloWorld {
      * @param channel    the channel to which the <a
      *                   href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> is sent.
      * @param attachment an attachment.
-     * @param handler    the handler to be notified with a completion(or a failure).
+     * @param handler    the handler to be notified with a completion (or a failure).
      * @param <T>        channel type parameter
      * @param <A>        attachment type parameter
      * @implSpec The default implementation invokes
-     * {@link #write(AsynchronousByteChannel) write(channel)} method with given arguments.
+     * {@link #write(AsynchronousByteChannel, Object, CompletionHandler)} method with given
+     * arguments.
+     * @deprecated Use {@link #write(AsynchronousByteChannel, Object, CompletionHandler)} method.
      */
     @屋上架屋("AsynchronousSocketChannel implements AsynchronousByteChannel")
     @Deprecated(forRemoval = true)

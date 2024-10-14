@@ -24,14 +24,12 @@ import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello.HelloWorldTest;
 import com.github.jinahya.hello.util.JavaNioByteBufferUtils;
 import com.github.jinahya.hello.畵蛇添足;
-import jakarta.validation.constraints.AssertTrue;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -44,11 +42,9 @@ import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.charset.StandardCharsets;
-import java.util.HashSet;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.LongAdder;
 
 /**
@@ -171,7 +167,7 @@ class HelloWorld_07_Write_AsynchronousByteChannelWithHandler_Test extends HelloW
         // verify, <service.put(buffer[12])> invoked, once
         final var buffer = verify_put_buffer12_invoked_once();
         // verify, <handler.completed(channel, attachment)> invoked, once, within some time.
-//        Mockito.verify(handler, Mockito.timeout(TimeUnit.SECONDS.toMillis(16L)).times(1))
+//        Mockito.verify(handler, Mockito.timeout(TimeUnit.SECONDS.toMillis(1L)).times(1))
 //                .completed(channel, attachment);
         // verify, <channel.write(buffer, attachment, a-handler)> invoked, at least once.
 //        final var captor = ArgumentCaptor.forClass(CompletionHandler.class);
@@ -189,7 +185,8 @@ class HelloWorld_07_Write_AsynchronousByteChannelWithHandler_Test extends HelloW
     }
 
     @DisplayName("write(AsynchronousSocketChannel)")
-    @畵蛇添足
+    @畵蛇添足("testing with a real socket doesn't add any value")
+    @SuppressWarnings({"unchecked"})
     @Test
     void _添足_畵蛇() throws Exception {
         // -----------------------------------------------------------------------------------------
@@ -198,12 +195,11 @@ class HelloWorld_07_Write_AsynchronousByteChannelWithHandler_Test extends HelloW
         Mockito.doAnswer(i -> {
             final var channel = i.getArgument(0, AsynchronousByteChannel.class);
             final var attachment = i.getArgument(1);
-            @SuppressWarnings({"unchecked"})
-            final var handler = (CompletionHandler<AsynchronousByteChannel, Object>)
-                    i.getArgument(2, CompletionHandler.class);
+            final var handler = i.getArgument(2, CompletionHandler.class);
             final var buffer = buffer();
             channel.write(buffer, null, new CompletionHandler<>() { // @formatter:off
                 @Override public void completed(final Integer result, final Object a) {
+                    log.debug("channel.write.completed({}, {})", result, a);
                     if (!buffer.hasRemaining()) {
                         handler.completed(channel, attachment);
                         return;
@@ -211,7 +207,7 @@ class HelloWorld_07_Write_AsynchronousByteChannelWithHandler_Test extends HelloW
                     channel.write(buffer, null, this);
                 }
                 @Override public void failed(final Throwable exc, final Object a) {
-                    log.error("failed to write", exc);
+                    log.error("channel.write.failed({}, {})", exc, a, exc);
                     handler.failed(exc, attachment);
                 }
             }); // @formatter:on
@@ -232,29 +228,31 @@ class HelloWorld_07_Write_AsynchronousByteChannelWithHandler_Test extends HelloW
             server.accept(null, new CompletionHandler<>() { // @formatter:off
                 @Override public void completed(final AsynchronousSocketChannel client,
                                                 final Object a) {
+                    log.debug("server.accept.completed({}, {})", client, a);
                     try {
-                        log.debug("accepted from {}", client.getRemoteAddress());
+                        log.debug("\taccepted from {}", client.getRemoteAddress());
                     } catch (final IOException ioe) {
                         throw new RuntimeException(ioe);
                     }
                     final var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
                     client.read(buffer, null, new CompletionHandler<>() {
-                        @Override public void completed(final Integer r, final Object a) {
+                        @Override public void completed(final Integer result, final Object a) {
+                            log.debug("accepted.read.completed({}, {})", result, a);
                             if (!buffer.hasRemaining()) {
-                                log.debug("decoded: {}",
+                                log.debug("\tdecoded: {}",
                                           StandardCharsets.US_ASCII.decode(buffer.flip()));
                                 latch.countDown();
                                 return;
                             }
                             client.write(buffer, null, this);
                         }
-                        @Override public void failed(final Throwable t, final Object a) {
-                            log.error("failed to read", t);
+                        @Override public void failed(final Throwable exc, final Object a) {
+                            log.error("accepted.read.failed({}, {})", exc, a, exc);
                             latch.countDown();
                         }});
                 }
-                @Override public void failed(final Throwable t, final Object a) {
-                    log.error("failed to accept", t);
+                @Override public void failed(final Throwable exc, final Object a) {
+                    log.error("server.accept.failed({}, {})", exc, a, exc);
                     latch.countDown();
                 } // @formatter:on
             });
@@ -268,26 +266,26 @@ class HelloWorld_07_Write_AsynchronousByteChannelWithHandler_Test extends HelloW
             semaphore.acquire();
             client.connect(remote, null, new CompletionHandler<>() { // @formatter:off
                 @Override public void completed(final Void r, final Object a) {
+                    log.debug("client.connect.completed({}, {})", r, a);
                     try {
-                        log.debug("connected to {}", client.getRemoteAddress());
+                        log.debug("\tconnected to {}", client.getRemoteAddress());
                     } catch (final IOException e) {
                         throw new RuntimeException(e);
                     }
-                    log.debug("writing");
                     service.write(client, null, new CompletionHandler<>() {
                         @Override public void completed(final AsynchronousSocketChannel c,
                                                         final Object a) {
-                            log.debug("written");
+                            log.debug("service.write.completed({}, {})", c, a);
                             semaphore.release();
                         }
-                        @Override public void failed(final Throwable t, final Object a) {
-                            log.error("failed to write", t);
+                        @Override public void failed(final Throwable exc, final Object a) {
+                            log.error("service.write.failed({}, {})", exc, a, exc);
                             semaphore.release();
                         }
                     });
                 }
-                @Override public void failed(final Throwable t, final Object a) {
-                    log.error("failed to connect", t);
+                @Override public void failed(final Throwable exc, final Object a) {
+                    log.error("client.connect.failed({}, {})", exc, a, exc);
                     semaphore.release();
                 } // @formatter:on
             });
