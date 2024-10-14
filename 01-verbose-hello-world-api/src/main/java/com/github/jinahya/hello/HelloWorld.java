@@ -161,8 +161,8 @@ public interface HelloWorld {
      * @throws NullPointerException           if {@code array} is {@code null}.
      * @throws ArrayIndexOutOfBoundsException if {@code array.length} is less than
      *                                        {@link #BYTES}({@value #BYTES}).
-     * @implSpec The default implementation invokes {@link #set(byte[], int) set(array, index)}
-     * method with {@code array} and {@code 0}, and returns the {@code array}.
+     * @implSpec Default implementation invokes {@link #set(byte[], int) set(array, index)} method
+     * with {@code array} and {@code 0}, and returns the {@code array}.
      * @see #set(byte[], int)
      */
     default byte[] set(final byte[] array) {
@@ -190,9 +190,9 @@ public interface HelloWorld {
      * @return given {@code appendable}.
      * @throws NullPointerException if {@code appendable} is {@code null}.
      * @throws IOException          if an I/O error occurs.
-     * @implSpec The default implementation invokes {@link #set(byte[]) set(array)} method with an
-     * array of {@value #BYTES} bytes, and {@link Appendable#append(char) appends} each byte in the
-     * array, as a {@code char}, to {@code appendable}.
+     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
+     * of {@value #BYTES} bytes, and {@link Appendable#append(char) appends} each byte in the array,
+     * as a {@code char}, to {@code appendable}.
      * @see #set(byte[])
      * @see Appendable#append(char)
      */
@@ -229,8 +229,8 @@ public interface HelloWorld {
      * @throws NullPointerException if {@code stream} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @apiNote This method does not {@link OutputStream#flush() flush} the {@code stream}.
-     * @implSpec The default implementation invokes {@link #set(byte[]) set(array)} method with an
-     * array of {@value #BYTES} bytes, writes the array to {@code stream} by invoking
+     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
+     * of {@value #BYTES} bytes, writes the array to {@code stream} by invoking
      * {@link OutputStream#write(byte[])} method on {@code stream} with the array, and returns the
      * {@code stream}.
      * @see #set(byte[])
@@ -268,9 +268,9 @@ public interface HelloWorld {
      * @return given {@code file}.
      * @throws NullPointerException if {@code file} is {@code null}.
      * @throws IOException          if an I/O error occurs.
-     * @implSpec The default implementation creates a new {@link FileOutputStream} with
-     * {@code file}, in {@link FileOutputStream#FileOutputStream(File, boolean) appending mode},
-     * invokes the {@link #write(OutputStream) write(stream)} method with it,
+     * @implSpec Default implementation creates a new {@link FileOutputStream} with {@code file}, in
+     * {@link FileOutputStream#FileOutputStream(File, boolean) appending mode}, invokes the
+     * {@link #write(OutputStream) write(stream)} method with it,
      * {@link OutputStream#flush() flushes} and {@link OutputStream#close() closes} the stream, and
      * returns {@code file}.
      * @see java.io.FileOutputStream#FileOutputStream(File, boolean)
@@ -305,7 +305,7 @@ public interface HelloWorld {
      * @return given {@code output}.
      * @throws NullPointerException if {@code output} is {@code null}.
      * @throws IOException          if an I/O error occurs.
-     * @implSpec The default implementation invokes {@link #set(byte[])} method with an array of
+     * @implSpec Default implementation invokes {@link #set(byte[])} method with an array of
      * {@value #BYTES} bytes, writes the array to {@code output} by invoking
      * {@link DataOutput#write(byte[])} method on {@code output} with the array, and returns
      * {@code output}.
@@ -344,7 +344,7 @@ public interface HelloWorld {
      * @return given {@code file}.
      * @throws NullPointerException if {@code file} argument is {@code null}.
      * @throws IOException          if an I/O error occurs.
-     * @implSpec The default implementation invokes {@link #set(byte[])} method with an array of
+     * @implSpec Default implementation invokes {@link #set(byte[])} method with an array of
      * {@value #BYTES} bytes, writes the array to specified random access file by invoking
      * {@link RandomAccessFile#write(byte[])} method on {@code file} with the array, and returns the
      * {@code file}.
@@ -379,7 +379,7 @@ public interface HelloWorld {
      * @return given {@code writer}.
      * @throws NullPointerException if {@code writer} is {@code null}.
      * @throws IOException          if an I/O error occurs.
-     * @implSpec The default implementation invokes {@link #append(Appendable) append(appendable)}
+     * @implSpec Default implementation invokes {@link #append(Appendable) append(appendable)}
      * method with {@code writer}, and returns the {@code writer}.
      * @see #append(Appendable)
      */
@@ -412,7 +412,7 @@ public interface HelloWorld {
      * @return given {@code socket}.
      * @throws NullPointerException if {@code socket} is {@code null}.
      * @throws IOException          if an I/O error occurs.
-     * @implSpec The default implementation invokes {@link #write(OutputStream)} method with
+     * @implSpec Default implementation invokes {@link #write(OutputStream)} method with
      * {@link Socket#getOutputStream() socket.outputStream}, and returns {@code socket}.
      * @see Socket#getOutputStream()
      * @see #write(OutputStream)
@@ -483,7 +483,7 @@ public interface HelloWorld {
      * @throws NullPointerException    if {@code buffer} is {@code null}.
      * @throws BufferOverflowException if {@link ByteBuffer#remaining() buffer.remaining} is less
      *                                 than {@value #BYTES}.
-     * @implSpec The default implementation, if {@code buffer}
+     * @implSpec Default implementation, if {@code buffer}
      * {@link ByteBuffer#hasArray() has a backing-array}, invokes
      * {@link #set(byte[], int) #set(array, index)} method with the
      * {@link ByteBuffer#array() buffer.array()} and
@@ -540,7 +540,7 @@ public interface HelloWorld {
      * @return given {@code channel}.
      * @throws NullPointerException if {@code channel} is {@code null}.
      * @throws IOException          if an I/O error occurs.
-     * @implSpec The default implementation invokes {@link #put(ByteBuffer)} method with a buffer of
+     * @implSpec Default implementation invokes {@link #put(ByteBuffer)} method with a buffer of
      * {@value #BYTES} bytes, {@link ByteBuffer#flip() flips} it, writes the buffer to
      * {@code channel}, by continuously invoking
      * {@link WritableByteChannel#write(ByteBuffer) channel.write(buffer)} while the buffer has
@@ -612,7 +612,7 @@ public interface HelloWorld {
      * @return given {@code path}.
      * @throws NullPointerException if {@code path} is {@code null}.
      * @throws IOException          if an I/O error occurs.
-     * @implSpec The default implementation opens a {@link FileChannel} from {@code path} with
+     * @implSpec Default implementation opens a {@link FileChannel} from {@code path} with
      * {@link StandardOpenOption#CREATE CREATE} and {@link StandardOpenOption#APPEND APPEND},
      * invokes {@link #write(WritableByteChannel) write(channel)} method with it,
      * {@link FileChannel#force(boolean) forces channel including metadata},
@@ -660,8 +660,8 @@ public interface HelloWorld {
      * @return given {@code channel}.
      * @throws InterruptedException if interrupted while executing.
      * @throws ExecutionException   if failed to execute.
-     * @implSpec The default implementation invokes {@link #put(ByteBuffer) put(buffer)} method with
-     * a byte buffer of {@value #BYTES} bytes, {@link ByteBuffer#flip() flips} it, and writes the
+     * @implSpec Default implementation invokes {@link #put(ByteBuffer) put(buffer)} method with a
+     * byte buffer of {@value #BYTES} bytes, {@link ByteBuffer#flip() flips} it, and writes the
      * buffer to the {@code channel} by, while the {@code buffer}
      * {@link ByteBuffer#hasRemaining() has remaining}, continuously invoking and
      * {@link Future#get() getting the result} of {@link AsynchronousByteChannel#write(ByteBuffer)}
@@ -742,6 +742,11 @@ public interface HelloWorld {
      * @param channel    the channel to which bytes are written.
      * @param attachment the attachment for the {@code handler}; may be {@code null}.
      * @param handler    the completion handler.
+     * @implSpec Default implementation invokes {@link #put(ByteBuffer) put(buffer)} method with a
+     * byte buffer of {@value #BYTES} bytes, {@link ByteBuffer#flip() flips} it, writes the buffer
+     * the {@code channel} while the buffer has remaining, and notifies a completion (or a failure)
+     * to the {@code channel}.
+     * @see #put(ByteBuffer)
      * @see AsynchronousByteChannel#write(ByteBuffer, Object, CompletionHandler)
      */
     default <T extends AsynchronousByteChannel, A> void write(
@@ -758,11 +763,9 @@ public interface HelloWorld {
 //                buffer,                     // <src>
 //                null,                       // <attachment>
 //                new CompletionHandler<>() { // <handler>
-//                    @Override
-//                    public void completed(final Integer result, final Object a) {
+//                    @Override public void completed(final Integer result, final Object a) { // @formatter:off
 //                        assert result > 0; // why?
 //                        if (!buffer.hasRemaining()) {
-//                            log().debug("buffer has no remaining");
 //                            handler.completed(channel, attachment);
 //                            return;
 //                        }
@@ -772,11 +775,9 @@ public interface HelloWorld {
 //                                this    // <handler>
 //                        );
 //                    }
-//
-//                    @Override
-//                    public void failed(final Throwable exc, final Object a) {
+//                    @Override public void failed(final Throwable exc, final Object a) {
 //                        handler.failed(exc, attachment);
-//                    }
+//                    } // @formatter:on
 //                }
 //        );
     }
@@ -792,7 +793,7 @@ public interface HelloWorld {
      * @param handler    the handler to be notified with a completion (or a failure).
      * @param <T>        channel type parameter
      * @param <A>        attachment type parameter
-     * @implSpec The default implementation invokes
+     * @implSpec Default implementation invokes
      * {@link #write(AsynchronousByteChannel, Object, CompletionHandler)} method with given
      * arguments.
      * @deprecated Use {@link #write(AsynchronousByteChannel, Object, CompletionHandler)} method.
@@ -846,7 +847,7 @@ public interface HelloWorld {
      * @return given {@code channel}.
      * @throws InterruptedException if interrupted while executing.
      * @throws ExecutionException   if failed to execute.
-     * @implSpec The default implementation invokes {@link #put(ByteBuffer) put(buffer)} with a byte
+     * @implSpec Default implementation invokes {@link #put(ByteBuffer) put(buffer)} with a byte
      * buffer of {@value #BYTES} bytes, flips it, and writes the {@code buffer} to {@code channel},
      * while the {@code buffer} {@link ByteBuffer#hasRemaining() has remaining}, by continuously
      * invoking
