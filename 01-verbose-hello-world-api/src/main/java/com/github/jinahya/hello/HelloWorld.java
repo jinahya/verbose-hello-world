@@ -741,7 +741,8 @@ public interface HelloWorld {
      * @param <T>        channel type parameter
      * @param channel    the channel to which bytes are written.
      * @param attachment the attachment for the {@code handler}; may be {@code null}.
-     * @param handler    the completion handler.
+     * @param handler    the completion handler to be notified with a completion (or a failure).
+     * @throws NullPointerException either {@code channel} or {@code handler} is {@code null}.
      * @implSpec Default implementation invokes {@link #put(ByteBuffer) put(buffer)} method with a
      * byte buffer of {@value #BYTES} bytes, {@link ByteBuffer#flip() flips} it, writes the buffer
      * the {@code channel} while the buffer has remaining, and notifies a completion (or a failure)
