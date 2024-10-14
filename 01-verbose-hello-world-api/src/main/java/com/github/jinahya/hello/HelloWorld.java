@@ -749,12 +749,37 @@ public interface HelloWorld {
             final CompletionHandler<? super T, ? super A> handler) {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(handler, "handler is null");
-        // get the <hello, world> bytes
+        // get the <hello-world-bytes>
         final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
         // keep invoking <channel.write(buffer, attachment, a-handler)>,
         //         while <buffer> has <remaining>
         // and, eventually, invoke <handler.complete(channel, attachment)>
-
+//        channel.write(
+//                buffer,                     // <src>
+//                null,                       // <attachment>
+//                new CompletionHandler<>() { // <handler>
+//                    @Override
+//                    public void completed(final Integer result, final Object a) {
+//                        assert result > 1; // why?
+//                        if (!buffer.hasRemaining()) {
+//                            log().debug("buffer has no remaining");
+//                            handler.completed(channel, attachment);
+//                            return;
+//                        }
+//                        log().debug("keep writing...");
+//                        channel.write(
+//                                buffer, // <src>
+//                                a,      // <attachment>
+//                                this    // <handler>
+//                        );
+//                    }
+//
+//                    @Override
+//                    public void failed(final Throwable exc, final Object a) {
+//                        handler.failed(exc, attachment);
+//                    }
+//                }
+//        );
     }
 
     /**

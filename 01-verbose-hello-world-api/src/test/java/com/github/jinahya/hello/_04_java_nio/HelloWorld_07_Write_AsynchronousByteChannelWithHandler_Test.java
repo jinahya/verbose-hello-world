@@ -22,13 +22,16 @@ package com.github.jinahya.hello._04_java_nio;
 
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello.HelloWorldTest;
+import com.github.jinahya.hello.util.JavaNioByteBufferUtils;
 import com.github.jinahya.hello.畵蛇添足;
+import jakarta.validation.constraints.AssertTrue;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -41,10 +44,11 @@ import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.LongAdder;
 
 /**
@@ -134,50 +138,54 @@ class HelloWorld_07_Write_AsynchronousByteChannelWithHandler_Test extends HelloW
         final var service = service();
         // stub, <service.put(buffer)> will increase <buffer>'s <position> by <12>
         stub_put_buffer_will_increase_buffer_position_by_12();
+        // total number of bytes written
         final var written = new LongAdder();
+        // a mock object of <AsynchronousByteChannel>
         final var channel = Mockito.mock(AsynchronousByteChannel.class);
         // stub, <channel.write(src, attachment, handler)> will drain the <src>
-        final var reference = new AtomicReference<Thread>();
         Mockito.doAnswer(i -> {
             final var src = i.getArgument(0, ByteBuffer.class);
             final var attachment = i.getArgument(1);
             final var handler = i.getArgument(2, CompletionHandler.class);
-            final var thread = Thread.ofVirtual().start(() -> {
-                final var previous = reference.get();
-                if (previous != null) {
-                    try {
-                        previous.join();
-                    } catch (final InterruptedException ie) {
-                        Thread.currentThread().interrupt();
-                        throw new RuntimeException("interrupted while joining previous thread", ie);
-                    }
-                }
+            Thread.ofPlatform().start(() -> {
+                // increase the <src>'s position by a random (positive) value
                 final var result = ThreadLocalRandom.current().nextInt(src.remaining()) + 1;
                 src.position(src.position() + result);
+                JavaNioByteBufferUtils.print(src);
                 handler.completed(result, attachment);
                 written.add(result);
             });
-            reference.set(thread);
             return null;
         }).when(channel).write(
                 ArgumentMatchers.argThat(b -> b != null && b.hasRemaining()), // <src>
                 ArgumentMatchers.any(),                                       // <attachment>
                 ArgumentMatchers.notNull()                                    // <handler>
         );
-        final var handler = Mockito.mock(CompletionHandler.class);
+        // an attachment; <null> or non-<null>
         final var attachment = ThreadLocalRandom.current().nextBoolean() ? null : new Object();
+        // a mock object of <CompletionHandler>
+        final var handler = Mockito.mock(CompletionHandler.class);
         // ------------------------------------------------------------------------------------ when
         service.write(channel, attachment, handler);
         // ------------------------------------------------------------------------------------ then
         // verify, <service.put(buffer[12])> invoked, once
         final var buffer = verify_put_buffer12_invoked_once();
         // verify, <handler.completed(channel, attachment)> invoked, once, within some time.
-
+//        Mockito.verify(handler, Mockito.timeout(TimeUnit.SECONDS.toMillis(16L)).times(1))
+//                .completed(channel, attachment);
         // verify, <channel.write(buffer, attachment, a-handler)> invoked, at least once.
-
-        // assert, <written.sum()> is equal to <HelloWorld.BYTES>
-
+//        final var captor = ArgumentCaptor.forClass(CompletionHandler.class);
+//        Mockito.verify(channel, Mockito.atLeastOnce()).write(
+//                ArgumentMatchers.same(buffer),
+//                ArgumentMatchers.any(),
+//                captor.capture()
+//        );
+//        final var handlers = captor.getAllValues();
+//        Assertions.assertEquals(1, new HashSet<>(handlers).size());
         // assert, <buffer> ha no <remaining>
+//        Assertions.assertFalse(buffer.hasRemaining());
+        // assert, <written.sum()> is equal to <HelloWorld.BYTES>
+//        Assertions.assertEquals(HelloWorld.BYTES, written.sum());
     }
 
     @DisplayName("write(AsynchronousSocketChannel)")
@@ -216,41 +224,39 @@ class HelloWorld_07_Write_AsynchronousByteChannelWithHandler_Test extends HelloW
         // -----------------------------------------------------------------------------------------
         try (var server = AsynchronousServerSocketChannel.open()) {
             server.bind(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0), 1);
-            log.debug("listening on {}", server.getLocalAddress());
+            log.debug("bound to {}", server.getLocalAddress());
             final var latch = new CountDownLatch(1);
             // start a thread which
             //         accepts a client,
             //         and reads 12 bytes
-            Thread.ofPlatform().start(() -> {
-                server.accept(null, new CompletionHandler<>() { // @formatter:off
-                    @Override public void completed(final AsynchronousSocketChannel client,
-                                                    final Object a) {
-                        try {
-                            log.debug("accepted from {}", client.getRemoteAddress());
-                        } catch (final IOException ioe) {
-                            throw new RuntimeException(ioe);
-                        }
-                        final var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
-                        client.read(buffer, null, new CompletionHandler<>() {
-                            @Override public void completed(final Integer r, final Object a) {
-                                if (!buffer.hasRemaining()) {
-                                    log.debug("decoded: {}",
-                                              StandardCharsets.US_ASCII.decode(buffer.flip()));
-                                    latch.countDown();
-                                    return;
-                                }
-                                client.write(buffer, null, this);
-                            }
-                            @Override public void failed(final Throwable t, final Object a) {
-                                log.error("failed to read", t);
-                                latch.countDown();
-                            }});
+            server.accept(null, new CompletionHandler<>() { // @formatter:off
+                @Override public void completed(final AsynchronousSocketChannel client,
+                                                final Object a) {
+                    try {
+                        log.debug("accepted from {}", client.getRemoteAddress());
+                    } catch (final IOException ioe) {
+                        throw new RuntimeException(ioe);
                     }
-                    @Override public void failed(final Throwable t, final Object a) {
-                        log.error("failed to accept", t);
-                        latch.countDown();
-                    } // @formatter:on
-                });
+                    final var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
+                    client.read(buffer, null, new CompletionHandler<>() {
+                        @Override public void completed(final Integer r, final Object a) {
+                            if (!buffer.hasRemaining()) {
+                                log.debug("decoded: {}",
+                                          StandardCharsets.US_ASCII.decode(buffer.flip()));
+                                latch.countDown();
+                                return;
+                            }
+                            client.write(buffer, null, this);
+                        }
+                        @Override public void failed(final Throwable t, final Object a) {
+                            log.error("failed to read", t);
+                            latch.countDown();
+                        }});
+                }
+                @Override public void failed(final Throwable t, final Object a) {
+                    log.error("failed to accept", t);
+                    latch.countDown();
+                } // @formatter:on
             });
             // -------------------------------------------------------------------------------------
             // connect to the server
@@ -285,10 +291,10 @@ class HelloWorld_07_Write_AsynchronousByteChannelWithHandler_Test extends HelloW
                     semaphore.release();
                 } // @formatter:on
             });
-            // await, semaphore, close <client>
+            // acquire the <semaphore>, and close the <client>
             semaphore.acquire();
             client.close();
-            // await, <latch>, <server-thread> finishes
+            // await the <latch>, till <server-thread> finishes
             latch.await();
         } // try-with-<server>
     }
