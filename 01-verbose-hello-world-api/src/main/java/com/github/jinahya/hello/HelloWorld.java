@@ -760,13 +760,12 @@ public interface HelloWorld {
 //                new CompletionHandler<>() { // <handler>
 //                    @Override
 //                    public void completed(final Integer result, final Object a) {
-//                        assert result > 1; // why?
+//                        assert result > 0; // why?
 //                        if (!buffer.hasRemaining()) {
 //                            log().debug("buffer has no remaining");
 //                            handler.completed(channel, attachment);
 //                            return;
 //                        }
-//                        log().debug("keep writing...");
 //                        channel.write(
 //                                buffer, // <src>
 //                                a,      // <attachment>

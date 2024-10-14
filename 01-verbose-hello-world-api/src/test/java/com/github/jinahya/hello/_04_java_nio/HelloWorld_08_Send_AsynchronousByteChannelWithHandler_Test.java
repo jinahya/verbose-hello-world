@@ -141,8 +141,9 @@ class HelloWorld_08_Send_AsynchronousByteChannelWithHandler_Test extends HelloWo
         Mockito.verify(service, Mockito.times(1)).write(channel, attachment, handler);
     }
 
-    @DisplayName("send(AsynchronousSocketChannel, Object, CompletionHandler)")
-    @畵蛇添足("testing with a real socket does not add any value")
+    @DisplayName("write(AsynchronousSocketChannel)")
+    @畵蛇添足("testing with a real socket doesn't add any value")
+    @SuppressWarnings({"unchecked"})
     @Test
     void _添足_畵蛇() throws Exception {
         // -----------------------------------------------------------------------------------------
@@ -151,12 +152,11 @@ class HelloWorld_08_Send_AsynchronousByteChannelWithHandler_Test extends HelloWo
         Mockito.doAnswer(i -> {
             final var channel = i.getArgument(0, AsynchronousByteChannel.class);
             final var attachment = i.getArgument(1);
-            @SuppressWarnings({"unchecked"})
-            final var handler = (CompletionHandler<AsynchronousByteChannel, Object>)
-                    i.getArgument(2, CompletionHandler.class);
-            final var buffer = buffer();
+            final var handler = i.getArgument(2, CompletionHandler.class);
+            final var buffer = helloWorldBuffer();
             channel.write(buffer, null, new CompletionHandler<>() { // @formatter:off
                 @Override public void completed(final Integer result, final Object a) {
+                    log.debug("channel.write.completed({}, {})", result, a);
                     if (!buffer.hasRemaining()) {
                         handler.completed(channel, attachment);
                         return;
@@ -164,7 +164,7 @@ class HelloWorld_08_Send_AsynchronousByteChannelWithHandler_Test extends HelloWo
                     channel.write(buffer, null, this);
                 }
                 @Override public void failed(final Throwable exc, final Object a) {
-                    log.error("failed to write", exc);
+                    log.error("channel.write.failed({}, {})", exc, a, exc);
                     handler.failed(exc, attachment);
                 }
             }); // @formatter:on
@@ -179,83 +179,80 @@ class HelloWorld_08_Send_AsynchronousByteChannelWithHandler_Test extends HelloWo
             server.bind(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0), 1);
             log.debug("bound to {}", server.getLocalAddress());
             final var latch = new CountDownLatch(1);
-            // start accepting and reading 12 bytes
-            log.debug("accepting...");
-            server.<Void>accept(null, new CompletionHandler<>() { // @formatter:off
+            // start a thread which
+            //         accepts a client,
+            //         and reads 12 bytes
+            server.accept(null, new CompletionHandler<>() { // @formatter:off
                 @Override public void completed(final AsynchronousSocketChannel client,
-                                                final Void a) {
+                                                final Object a) {
+                    log.debug("server.accept.completed({}, {})", client, a);
                     try {
-                        log.debug("accepted from {}", client.getRemoteAddress());
+                        log.debug("\taccepted from {}", client.getRemoteAddress());
                     } catch (final IOException ioe) {
                         throw new RuntimeException(ioe);
                     }
                     final var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
-                    client.<Void>read(buffer, null, new CompletionHandler<>() {
-                        @Override public void completed(final Integer r, final Void a) {
+                    client.read(buffer, null, new CompletionHandler<>() {
+                        @Override public void completed(final Integer result, final Object a) {
+                            log.debug("accepted.read.completed({}, {})", result, a);
+                            if (result == -1) {
+                                throw new RuntimeException("eof");
+                            }
+                            assert result > 0; // why?
                             if (!buffer.hasRemaining()) {
-                                log.debug("decoded: {}",
+                                log.debug("\tdecoded: {}",
                                           StandardCharsets.US_ASCII.decode(buffer.flip()));
-                                try {
-                                    client.close();
-                                } catch (final IOException ioe) {
-                                    throw new RuntimeException(ioe);
-                                }
                                 latch.countDown();
                                 return;
                             }
-                            client.write(buffer, null, this);
+                            client.read(buffer, null, this);
                         }
-                        @Override public void failed(final Throwable t, final Void a) {
-                            log.error("failed to read", t);
-                            try {
-                                client.close();
-                            } catch (final IOException ioe) {
-                                throw new RuntimeException(ioe);
-                            }
+                        @Override public void failed(final Throwable exc, final Object a) {
+                            log.error("accepted.read.failed({}, {})", exc, a, exc);
                             latch.countDown();
                         }});
                 }
-                @Override public void failed(final Throwable t, final Void a) {
-                    log.error("failed to accept", t);
+                @Override public void failed(final Throwable exc, final Object a) {
+                    log.error("server.accept.failed({}, {})", exc, a, exc);
                     latch.countDown();
                 } // @formatter:on
             });
             // -------------------------------------------------------------------------------------
-            // start connecting and sending 12 bytes
-            final var remote = server.getLocalAddress();
-            log.debug("connecting to {}", remote);
-            final var client = AsynchronousSocketChannel.open(); // why no try-with-<client>?
-            final var semaphore = new Semaphore(1);
-            semaphore.acquire();
-            client.<Void>connect(remote, null, new CompletionHandler<>() { // @formatter:off
-                @Override public void completed(final Void r, final Void a) {
-                    try {
-                        log.debug("connected to {}", client.getRemoteAddress());
-                    } catch (final IOException e) {
-                        throw new RuntimeException(e);
+            // connect to the server
+            //         send 12 bytes to the server
+            try (final var client = AsynchronousSocketChannel.open()) {
+                final var semaphore = new Semaphore(1);
+                semaphore.acquire();
+                final var remote = server.getLocalAddress();
+                log.debug("connecting to {}", remote);
+                client.connect(remote, null, new CompletionHandler<>() { // @formatter:off
+                    @Override public void completed(final Void r, final Object a) {
+                        log.debug("client.connect.completed({}, {})", r, a);
+                        try {
+                            log.debug("\tconnected to {}", client.getRemoteAddress());
+                        } catch (final IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                        service.send(client, null, new CompletionHandler<>() {
+                            @Override public void completed(final AsynchronousSocketChannel c,
+                                                            final Object a) {
+                                log.debug("service.write.completed({}, {})", c, a);
+                                semaphore.release();
+                            }
+                            @Override public void failed(final Throwable exc, final Object a) {
+                                log.error("service.write.failed({}, {})", exc, a, exc);
+                                semaphore.release();
+                            }
+                        });
                     }
-                    log.debug("sending...");
-                    service.send(client, null, new CompletionHandler<>() {
-                        @Override public void completed(final AsynchronousSocketChannel c,
-                                                        final Object a) {
-                            log.debug("sent");
-                            semaphore.release();
-                        }
-                        @Override public void failed(final Throwable t, final Object a) {
-                            log.error("failed to sent", t);
-                            semaphore.release();
-                        }
-                    });
-                }
-                @Override public void failed(final Throwable t, final Void a) {
-                    log.error("failed to connect", t);
-                    semaphore.release();
-                } // @formatter:on
-            });
-            // acquire, semaphore, close <client>
-            semaphore.acquire();
-            client.close();
-            // await, <latch>, <server-thread> finishes
+                    @Override public void failed(final Throwable exc, final Object a) {
+                        log.error("client.connect.failed({}, {})", exc, a, exc);
+                        semaphore.release();
+                    } // @formatter:on
+                });
+                // acquire the <semaphore>, and close the <client>
+                semaphore.acquire();
+            } // try-with-<client>
             latch.await();
         } // try-with-<server>
     }

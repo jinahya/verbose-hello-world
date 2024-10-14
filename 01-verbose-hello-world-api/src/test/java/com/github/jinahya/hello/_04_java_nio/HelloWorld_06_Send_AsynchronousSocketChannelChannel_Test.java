@@ -113,7 +113,7 @@ class HelloWorld_06_Send_AsynchronousSocketChannelChannel_Test extends HelloWorl
         // stub, <service.write(channel)> will write the <hello, world> bytes
         Mockito.doAnswer(i -> {
                     final var channel = i.getArgument(0, AsynchronousByteChannel.class);
-                    for (final var buffer = buffer(); buffer.hasRemaining(); ) {
+                    for (final var buffer = helloWorldBuffer(); buffer.hasRemaining(); ) {
                         final var w = channel.write(buffer).get();
                         assert w > 0;
                     }
