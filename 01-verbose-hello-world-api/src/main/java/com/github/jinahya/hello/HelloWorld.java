@@ -47,7 +47,6 @@ import java.nio.file.StandardOpenOption;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.atomic.LongAccumulator;
 import java.util.function.Function;
 
 /**
@@ -129,6 +128,8 @@ public interface HelloWorld {
      *                                        {@link #BYTES}({@value #BYTES})).
      * @see <a href="https://docs.oracle.com/javase/specs/jls/se21/html/jls-9.html#jls-9.4">9.4.
      * Method Declarations </a> (The Java® Language Specification / Java SE 21 Edition)
+     * @see <a href="https://docs.oracle.com/javase/specs/jls/se21/html/jls-10.html#jls-10.4">10.4.
+     * Array Access</a> (Java Language Specification / Java SE 21 Edition)
      */
     public   // redundant
     abstract // discouraged
@@ -146,12 +147,12 @@ public interface HelloWorld {
      * </pre>
      * <p>
      * Default implementation would look like,
-     * {@snippet :
+     * {@snippet lang = "java":
      * if (array == null) {
      *     throw new NullPointerException("array is null");
      * }
      * if (array.length < BYTES) {
-     *     throw new IndexOutOfBoundsException("array.length(" + array.length +") < " + BYTES);
+     *     throw new ArrayIndexOutOfBoundsException("array.length(" + array.length +") < " + BYTES);
      * }
      * set(array, 0); // @highlight
      * return array;
@@ -165,16 +166,30 @@ public interface HelloWorld {
      * @implSpec Default implementation invokes {@link #set(byte[], int) set(array, index)} method
      * with {@code array} and {@code 0}, and returns the {@code array}.
      * @see #set(byte[], int)
+     * @see <a href="https://docs.oracle.com/javase/specs/jls/se21/html/jls-10.html#jls-10.4">10.4.
+     * Array Access</a> (Java Language Specification / Java SE 21 Edition)
      */
     default byte[] set(final byte[] array) {
-        return null;
+        // throw a <NullPointerException> when the <array> is <null>
+//        if (array == null) {
+//            throw new NullPointerException("array is null");
+//        }
+        // throw a <ArrayIndexOutOfBoundsException> when <array.length> is less than <BYTES>
+//        if (array.length < BYTES) {
+//            throw new ArrayIndexOutOfBoundsException("array.length(" + array.length + ") < " + BYTES)
+//        }
+        // invoke <set(array, 0)>
+//        set(array, 0);
+        // return <array>
+//        return array;
+        return null; // TODO: remove!
     }
 
     /**
      * Appends the <a href="#hello-world-bytes">hello-world-bytes</a> to specified appendable.
      * <p>
      * Default implementation would look like,
-     * {@snippet :
+     * {@snippet lang = "java":
      * if (appendable == null) {
      *     throw new NullPointerException("appendable is null");
      * }
@@ -196,6 +211,11 @@ public interface HelloWorld {
      * as a {@code char}, to {@code appendable}.
      * @see #set(byte[])
      * @see Appendable#append(char)
+     * @see <a href="https://docs.oracle.com/javase/specs/jls/se21/html/jls-5.html#jls-5.5">5.5.
+     * Casting Contexts</a> (Java Language Specification / Java SE 21 Edition)
+     * @see <a href="https://docs.oracle.com/javase/specs/jls/se21/html/jls-5.html#jls-5.1.4">5.1.4.
+     * Widening and Narrowing Primitive Conversion</a> (Java Language Specification / Java SE 21
+     * Edition)
      */
     default <T extends Appendable> T append(final T appendable) throws IOException {
         if (appendable == null) {
@@ -203,8 +223,10 @@ public interface HelloWorld {
         }
         final var array = new byte[BYTES];
         set(array);
-        // append each byte in <array> to <appendable>
-
+        // append each byte in <array>, cast as <char>, to <appendable>
+//        for (final var b : array) {
+//            appendable.append((char) b);
+//        }
         // return given <appendable>
         return appendable;
     }
@@ -241,11 +263,11 @@ public interface HelloWorld {
         if (stream == null) {
             throw new NullPointerException("stream is null");
         }
-        // get the hello, world bytes
+        // get the <hello-world-bytes>
         final var array = set(new byte[BYTES]);
-        // write the array to the <stream>
-
-        // return the stream
+        // invoke <stream.write(array)>
+//        stream.write(array);
+        // return the <stream>
         return stream;
     }
 
@@ -282,8 +304,13 @@ public interface HelloWorld {
             throw new NullPointerException("file is null");
         }
         // create a new <FileOutputStream> with <file> and <true>
+        //         use the try-with-resources statement
         // invoke <write(stream)> method with it
         // <flush> (and <close>) the stream
+//        try (var stream = new FileOutputStream(file, true)) {
+//            write(stream);
+//            stream.flush();
+//        }
         return file;
     }
 
@@ -317,10 +344,10 @@ public interface HelloWorld {
         if (output == null) {
             throw new NullPointerException("output is null");
         }
-        // get the hello-world-bytes
+        // get the <hello-world-bytes>
         final var array = set(new byte[BYTES]);
         // invoke <output.write(array)>
-
+//        output.write(array);
         // return the <output>
         return output;
     }
@@ -356,11 +383,11 @@ public interface HelloWorld {
         if (file == null) {
             throw new NullPointerException("file is null");
         }
-        // get the hello-world-bytes
+        // get the <hello-world-bytes>
         final var array = set(new byte[BYTES]);
         // invoke <file.write(array)>
-
-        // return the <file>
+//        file.write(array);
+        // return given <file>
         return file;
     }
 
@@ -389,7 +416,7 @@ public interface HelloWorld {
             throw new NullPointerException("writer is null");
         }
         // invoke <append(writer)>
-
+//        append(writer);
         // return the <writer>
         return writer;
     }
@@ -424,7 +451,7 @@ public interface HelloWorld {
         }
         final var stream = socket.getOutputStream();
         // invoke <write(stream)>
-
+//        write(stream);
         // return the <socket>
         return socket;
     }
@@ -508,14 +535,16 @@ public interface HelloWorld {
         }
         if (buffer.hasArray()) {
             // invoke <set(buffer.array(), (buffer.arrayOffset() + buffer.position())>
-
+//            final var array = buffer.array();
+//            final var index = buffer.arrayOffset() + buffer.position();
+//            set(array, index);
             // increase <buffer.position> by <BYTES>
-
+//            buffer.position(buffer.position() + BYTES);
         } else {
             // get the hello-world-bytes
             final var array = set(new byte[BYTES]);
             // invoke <buffer.put(array)>
-
+//            buffer.put(array);
         }
         // return given <buffer>
         return buffer;
@@ -946,29 +975,29 @@ public interface HelloWorld {
         }
         Objects.requireNonNull(handler, "handler is null");
         final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
-        final var accumulator = new LongAccumulator(Long::sum, position);
         channel.write(
                 buffer,                     // <src>
-                accumulator.get(),          // <position>
-                attachment,                 // <attachment>
+                position,                   // <position>
+                position,                   // <attachment>
                 new CompletionHandler<>() { // <handler>
-                    @Override public void completed(final Integer r, final A a) {
-                        log().debug("written: {}", r);
+                    @Override public void completed(final Integer r, final Long p) {
+                        log().debug("completed({}, {})", r, p);
                         assert r > 0; // why?
-                        accumulator.accumulate(r);
                         if (!buffer.hasRemaining()) {
-                            handler.completed(channel, a);
+                            handler.completed(channel, attachment);
                             return;
                         }
+                        final var position = p + r;
                         channel.write(
-                                buffer,            // <src>
-                                accumulator.get(), // <position>
-                                a,                 // <attachment>
-                                this               // <handler>
+                                buffer,   // <src>
+                                position, // <position>
+                                position, // <attachment>
+                                this      // <handler>
                         );
                     }
-                    @Override public void failed(final Throwable t, final A a) {
-                        handler.failed(t, a);
+                    @Override public void failed(final Throwable t, final Long p) {
+                        log().debug("failed({}, {})", t, p, t);
+                        handler.failed(t, attachment);
                     }
                 }
         );
@@ -988,25 +1017,27 @@ public interface HelloWorld {
                 "java:S2095" // Resources should be closed
         })
         final var channel = AsynchronousFileChannel.open(path, options); // no try-with-resources?
-        write(channel, channel.size(), attachment, new CompletionHandler<>() {
-            @Override // @formatter:off
-            public void completed(final AsynchronousFileChannel result, final A attachment) {
+        write(channel, channel.size(), null, new CompletionHandler<>() {
+            @Override
+            public void completed(final AsynchronousFileChannel result, final Object a) {
                 assert result == channel;
                 try {
+                    result.force(true);
                     result.close();
                 } catch (final IOException ioe) {
-                    throw new UncheckedIOException("failed to close channel", ioe);
+                    throw new UncheckedIOException("failed to force/close the channel", ioe);
                 }
                 handler.completed(path, attachment);
-            }
-            @Override public void failed(final Throwable exc, final A attachment) {
+            } // @formatter:off
+            @Override // @formatter:on
+            public void failed(final Throwable exc, final Object a) {
                 try {
                     channel.close();
                 } catch (final IOException ioe) {
-                    throw new UncheckedIOException("failed to close channel", ioe);
+                    throw new UncheckedIOException("failed to close the channel", ioe);
                 }
                 handler.failed(exc, attachment);
-            } // @formatter:on
+            }
         });
     }
 }

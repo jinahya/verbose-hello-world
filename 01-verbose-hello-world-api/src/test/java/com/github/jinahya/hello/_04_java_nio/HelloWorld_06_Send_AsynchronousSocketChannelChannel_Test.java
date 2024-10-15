@@ -115,7 +115,7 @@ class HelloWorld_06_Send_AsynchronousSocketChannelChannel_Test extends HelloWorl
                     final var channel = i.getArgument(0, AsynchronousByteChannel.class);
                     for (final var buffer = helloWorldBuffer(); buffer.hasRemaining(); ) {
                         final var w = channel.write(buffer).get();
-                        assert w > 0;
+                        assert w > 0; // why?
                     }
                     return channel;
                 })
@@ -124,15 +124,19 @@ class HelloWorld_06_Send_AsynchronousSocketChannelChannel_Test extends HelloWorl
         // ------------------------------------------------------------------------------------ when
         try (var server = AsynchronousServerSocketChannel.open()) {
             server.bind(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0), 1);
-            log.debug("listening on {}", server.getLocalAddress());
+            log.debug("bound to {}", server.getLocalAddress());
             final var thread = Thread.ofPlatform().start(() -> {
-                try {
-                    final var client = server.accept().get();
+                try (final var client = server.accept().get()) {
                     log.debug("accepted from {}", client.getRemoteAddress());
                     final var b = ByteBuffer.allocate(HelloWorld.BYTES);
                     while (b.hasRemaining()) {
-                        final var r = client.read(b).get();
-                        assert r > 0; // why?
+                        try {
+                            final var r = client.read(b).get();
+                            assert r > 0; // why?
+                        } catch (final InterruptedException ie) {
+                            Thread.currentThread().interrupt();
+                            throw ie;
+                        }
                     }
                     log.debug("decoded: {}", StandardCharsets.US_ASCII.decode(b.flip()));
                 } catch (final Exception e) {
@@ -144,7 +148,7 @@ class HelloWorld_06_Send_AsynchronousSocketChannelChannel_Test extends HelloWorl
                 log.debug("connecting to {}", remote);
                 client.connect(remote).get();
                 log.debug("connected to {}", client.getRemoteAddress());
-                log.debug("sending");
+                log.debug("sending...");
                 final var result = service.send(client);
                 log.debug("sent");
                 // ---------------------------------------------------------------------------- then
@@ -152,7 +156,7 @@ class HelloWorld_06_Send_AsynchronousSocketChannelChannel_Test extends HelloWorl
                 Mockito.verify(service, Mockito.times(1)).write(client);
                 // assert, <result> is same as <client>
                 Assertions.assertSame(client, result);
-            }
+            } // try-with-<client>
             // join, the <thread> to finish
             thread.join();
         } // try-with-<server>
