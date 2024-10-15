@@ -792,30 +792,30 @@ public interface HelloWorld {
         // keep invoking <channel.write(buffer, attachment, same-handler)>,
         //         while <buffer> has <remaining>
         // and, eventually, invoke <handler.complete(channel, attachment)>
-//        channel.write(
-//                buffer,                     // <src>
-//                null,                       // <attachment>
-//                new CompletionHandler<>() { // <handler>
-//                    @Override // @formatter:off
-//                    public void completed(final Integer result, final Object a) {
-//                        log().debug("completed({}, {})", result, a);
-//                        assert result > 0; // why?
-//                        if (!buffer.hasRemaining()) {
-//                            handler.completed(channel, attachment);
-//                            return;
-//                        }
-//                        channel.write(
-//                                buffer, // <src>
-//                                a,      // <attachment>
-//                                this    // <handler>; what does the `this` expression denote?
-//                        );
-//                    }
-//                    @Override public void failed(final Throwable exc, final Object a) {
-//                        log().debug("failed({}, {})", exc, a, exc);
-//                        handler.failed(exc, attachment);
-//                    } // @formatter:on
-//                }
-//        );
+        channel.write(
+                buffer,                     // <src>
+                null,                       // <attachment>
+                new CompletionHandler<>() { // <handler>
+                    @Override // @formatter:off
+                    public void completed(final Integer result, final Object a) {
+                        log().debug("completed({}, {})", result, a);
+                        assert result > 0; // why?
+                        if (!buffer.hasRemaining()) {
+                            handler.completed(channel, attachment);
+                            return;
+                        }
+                        channel.write(
+                                buffer, // <src>
+                                a,      // <attachment>
+                                this    // <handler>; what does the `this` expression denote?
+                        );
+                    }
+                    @Override public void failed(final Throwable exc, final Object a) {
+                        log().debug("failed({}, {})", exc, a, exc);
+                        handler.failed(exc, attachment);
+                    } // @formatter:on
+                }
+        );
     }
 
     /**

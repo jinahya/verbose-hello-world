@@ -35,6 +35,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.LongAdder;
 
 /**
@@ -164,20 +165,20 @@ class HelloWorld_07_Write_AsynchronousByteChannelWithHandler_Test extends HelloW
         // verify, <service.put(buffer[12])> invoked, once
         final var buffer = verify_put_buffer12_invoked_once();
         // verify, <handler.completed(channel, attachment)> invoked, once, within some time.
-//        Mockito.verify(handler, Mockito.timeout(TimeUnit.SECONDS.toMillis(1L)).times(1))
-//                .completed(channel, attachment);
+        Mockito.verify(handler, Mockito.timeout(TimeUnit.SECONDS.toMillis(1L)).times(1))
+                .completed(channel, attachment);
         // verify, <channel.write(buffer, attachment, same-handler)> invoked, at least once.
-//        final var captor = org.mockito.ArgumentCaptor.forClass(CompletionHandler.class);
-//        Mockito.verify(channel, Mockito.atLeastOnce()).write(
-//                ArgumentMatchers.same(buffer),
-//                ArgumentMatchers.any(),
-//                captor.capture()
-//        );
-//        final var handlers = captor.getAllValues();
-//        Assertions.assertEquals(1, new java.util.HashSet<>(handlers).size());
+        final var captor = org.mockito.ArgumentCaptor.forClass(CompletionHandler.class);
+        Mockito.verify(channel, Mockito.atLeastOnce()).write(
+                ArgumentMatchers.same(buffer),
+                ArgumentMatchers.any(),
+                captor.capture()
+        );
+        final var handlers = captor.getAllValues();
+        Assertions.assertEquals(1, new java.util.HashSet<>(handlers).size());
         // assert, <buffer> ha no <remaining>
-//        Assertions.assertFalse(buffer.hasRemaining());
+        Assertions.assertFalse(buffer.hasRemaining());
         // assert, <written.sum()> is equal to <HelloWorld.BYTES>
-//        Assertions.assertEquals(HelloWorld.BYTES, written.sum());
+        Assertions.assertEquals(HelloWorld.BYTES, written.sum());
     }
 }
