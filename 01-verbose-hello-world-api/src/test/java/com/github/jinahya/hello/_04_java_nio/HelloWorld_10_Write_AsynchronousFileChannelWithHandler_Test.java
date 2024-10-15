@@ -63,7 +63,7 @@ class HelloWorld_10_Write_AsynchronousFileChannelWithHandler_Test extends HelloW
      * when the {@code channel} argument is {@code null}.
      */
     @DisplayName("""
-            should throw a NullPointerException
+            should throw a <NullPointerException>
             when the <channel> argument is <null>"""
     )
     @Test
@@ -75,10 +75,10 @@ class HelloWorld_10_Write_AsynchronousFileChannelWithHandler_Test extends HelloW
         final var position = 0L;
         final var attachment = ThreadLocalRandom.current().nextBoolean() ? null : new Object();
         final var handler = Mockito.mock(CompletionHandler.class);
-        assert channel == null; // NOT O.K.
-        assert position >= 0L;  // O.K.
+        assert channel == null;                          // Not O.K.
+        assert position >= 0L;                           // O.K.
         assert attachment != null || attachment == null; // don't care
-        assert handler != null; // O.K.
+        assert handler != null;                          // O.K.
         // ------------------------------------------------------------------------------- when/then
         Assertions.assertThrows(
                 NullPointerException.class,
@@ -93,7 +93,7 @@ class HelloWorld_10_Write_AsynchronousFileChannelWithHandler_Test extends HelloW
      * {@link IllegalArgumentException} when the {@code position} argument is negative.
      */
     @DisplayName("""
-            should throw an IllegalArgumentException
+            should throw an <IllegalArgumentException>
             when the <position> argument is <negative>"""
     )
     @Test
@@ -105,10 +105,10 @@ class HelloWorld_10_Write_AsynchronousFileChannelWithHandler_Test extends HelloW
         final var position = ThreadLocalRandom.current().nextLong() | Long.MIN_VALUE;
         final var attachment = ThreadLocalRandom.current().nextBoolean() ? null : new Object();
         final var handler = Mockito.mock(CompletionHandler.class);
-        assert channel != null; // O.K.
-        assert position < 0L;   // NOT O.K.
+        assert channel != null;                          // O.K.
+        assert position < 0L;                            // Not O.K.
         assert attachment != null || attachment == null; // don't care
-        assert handler != null; // O.K.
+        assert handler != null;                          // O.K.
         // ------------------------------------------------------------------------------- when/then
         Assertions.assertThrows(
                 IllegalArgumentException.class,
@@ -123,7 +123,7 @@ class HelloWorld_10_Write_AsynchronousFileChannelWithHandler_Test extends HelloW
      * when the {@code handler} argument is {@code null}.
      */
     @DisplayName("""
-            should throw a NullPointerException
+            should throw a <NullPointerException>
             when the <handler> argument is <null>"""
     )
     @Test
@@ -134,10 +134,10 @@ class HelloWorld_10_Write_AsynchronousFileChannelWithHandler_Test extends HelloW
         final var position = 0L;
         final var handler = (CompletionHandler<AsynchronousFileChannel, Object>) null;
         final var attachment = ThreadLocalRandom.current().nextBoolean() ? null : new Object();
-        assert channel != null; // O.K.
-        assert position >= 0L;  // O.K.
+        assert channel != null;                          // O.K.
+        assert position >= 0L;                           // O.K.
         assert attachment != null || attachment == null; // don't care
-        assert handler == null; // NOT O.K.
+        assert handler == null;                          // Not O.K.
         // ------------------------------------------------------------------------------- when/then
         Assertions.assertThrows(
                 NullPointerException.class,
@@ -152,37 +152,33 @@ class HelloWorld_10_Write_AsynchronousFileChannelWithHandler_Test extends HelloW
      * {@link CompletionHandler#completed(Object, Object) handler.completed(channel, attachment)}.
      */
     @DisplayName("""
-            should invoke put(buffer[12])
+            should invoke <put(buffer[12])>
             and write the <buffer> to the <channel> starting at <position>""")
     @Test
     @SuppressWarnings({"unchecked"})
     void __() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // stub, <service.put(buffer)> will increase the <buffer>'s <position> by <HelloWorld.BYTES>
-        BDDMockito.willAnswer(i -> {
-                    final var buffer = i.getArgument(0, ByteBuffer.class);
-                    buffer.position(buffer.position() + HelloWorld.BYTES);
-                    return buffer;
-                })
-                .given(service)
-                .put(ArgumentMatchers.argThat(b -> b != null && b.remaining() >= HelloWorld.BYTES));
+        // stub, <service.put(buffer)> will increase the <buffer>'s <position> by <12>
+        stub_put_buffer_will_increase_buffer_position_by_12();
+        // number of bytes written
+        final var written = new LongAdder();
+        // prepare a mock object of <AsynchronousFileChannel>
         final var channel = Mockito.mock(AsynchronousFileChannel.class);
         // stub, <channel.write(src, position, attachment, handler)>
-        //         will increase <channel>'s <position> by <12>
-        //         and will invoke <handler.completed>
-        final var writtenSoFar = new LongAdder();
-        BDDMockito.willAnswer(i -> {
+        //         will increase the <src>'s <position> by a random value
+        //         , and will invoke <handler.completed(result, attachment)>
+        Mockito.doAnswer(i -> {
             final var src = i.getArgument(0, ByteBuffer.class);
             final var position = i.getArgument(1, Long.class);
             final var attachment = i.getArgument(2);
             final var handler = i.getArgument(3, CompletionHandler.class);
             final var result = ThreadLocalRandom.current().nextInt(src.remaining()) + 1;
             src.position(src.position() + result);
-            writtenSoFar.add(result);
+            written.add(result);
             handler.completed(result, attachment);
             return null;
-        }).given(channel).write(
+        }).when(channel).write(
                 ArgumentMatchers.argThat(s -> s != null && s.hasRemaining()), // <src>
                 ArgumentMatchers.longThat(p -> p >= 0L),                      // <position>
                 ArgumentMatchers.any(),                                       // <attachment>
@@ -214,10 +210,10 @@ class HelloWorld_10_Write_AsynchronousFileChannelWithHandler_Test extends HelloW
 
         // verify, <handlers> are all same
 
-        // assert, writtenSoFar.intValue() equals to HelloWorld.BYTES
+        // assert, <written.sum()> is equal to <HelloWorld.BYTES>
         Assertions.assertEquals(
                 HelloWorld.BYTES,
-                writtenSoFar.intValue()
+                written.sum()
         );
     }
 

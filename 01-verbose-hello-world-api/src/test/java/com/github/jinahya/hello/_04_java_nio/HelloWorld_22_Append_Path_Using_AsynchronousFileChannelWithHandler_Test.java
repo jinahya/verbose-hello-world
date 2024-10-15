@@ -28,7 +28,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentMatchers;
-import org.mockito.BDDMockito;
+import org.mockito.Mockito;
 
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousFileChannel;
@@ -52,6 +52,7 @@ import java.util.concurrent.atomic.LongAccumulator;
 class HelloWorld_22_Append_Path_Using_AsynchronousFileChannelWithHandler_Test
         extends HelloWorldTest {
 
+    @SuppressWarnings({"unchecked"})
     @Test
     void __(@TempDir final Path dir) throws Exception {
         // ----------------------------------------------------------------------------------- given
@@ -59,13 +60,11 @@ class HelloWorld_22_Append_Path_Using_AsynchronousFileChannelWithHandler_Test
         // stub, <service.write(channel, position, attachment, handler)>
         //         will write <12> bytes to the <channel>
         //         and will invoke <handler.completed(channel, attachment)>
-        BDDMockito.willAnswer(i -> {
+        Mockito.doAnswer(i -> {
                     final var channel = i.getArgument(0, AsynchronousFileChannel.class);
                     final var position = i.getArgument(1, Long.class);
                     final var attachment = i.getArgument(2);
-                    @SuppressWarnings({"unchecked"})
-                    final var handler = (CompletionHandler<AsynchronousFileChannel, Object>)
-                            i.getArgument(3, CompletionHandler.class);
+                    final var handler = i.getArgument(3, CompletionHandler.class);
                     final var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
                     final var accumulator = new LongAccumulator(Long::sum, position);
                     channel.write( // @formatter:off
@@ -86,17 +85,17 @@ class HelloWorld_22_Append_Path_Using_AsynchronousFileChannelWithHandler_Test
                                         return;
                                     }
                                     assert accumulator.get() == position + HelloWorld.BYTES;
-                                    handler.completed(channel, a);
+                                    handler.completed(channel, a); // unchecked
                                 }
                                 @Override
                                 public void failed(final Throwable t, final Object a) {
-                                    handler.failed(t, a);
+                                    handler.failed(t, a); // unchecked
                                 }
                             }
                     ); // @formatter:on
                     return channel;
                 })
-                .given(service)
+                .when(service)
                 .write(ArgumentMatchers.notNull(),              // <channel>
                        ArgumentMatchers.longThat(v -> v >= 0L), // <position>
                        ArgumentMatchers.any(),                  // <attachment>

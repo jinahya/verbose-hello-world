@@ -29,6 +29,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
+import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.net.Socket;
 import java.nio.BufferOverflowException;
@@ -980,20 +981,21 @@ public interface HelloWorld {
         Objects.requireNonNull(path, "path is null");
         Objects.requireNonNull(handler, "handler is null");
         final var options = new StandardOpenOption[] {
-                StandardOpenOption.CREATE, StandardOpenOption.APPEND
+                StandardOpenOption.CREATE
+                // no StandardOpenOption.APPEND? why?
         };
         @SuppressWarnings({
                 "java:S2095" // Resources should be closed
         })
-        final var channel = AsynchronousFileChannel.open(path, options); // @formatter:off
+        final var channel = AsynchronousFileChannel.open(path, options); // no try-with-resources?
         write(channel, channel.size(), attachment, new CompletionHandler<>() {
-            @Override
+            @Override // @formatter:off
             public void completed(final AsynchronousFileChannel result, final A attachment) {
                 assert result == channel;
                 try {
                     result.close();
                 } catch (final IOException ioe) {
-                    throw new RuntimeException("failed to close channel", ioe);
+                    throw new UncheckedIOException("failed to close channel", ioe);
                 }
                 handler.completed(path, attachment);
             }
@@ -1001,10 +1003,10 @@ public interface HelloWorld {
                 try {
                     channel.close();
                 } catch (final IOException ioe) {
-                    throw new RuntimeException("failed to close channel", ioe);
+                    throw new UncheckedIOException("failed to close channel", ioe);
                 }
                 handler.failed(exc, attachment);
-            }
-        }); // @formatter:on
+            } // @formatter:on
+        });
     }
 }
