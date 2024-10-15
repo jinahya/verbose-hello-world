@@ -90,7 +90,7 @@
       <dependency><!-- https://search.maven.org/artifact/ch.qos.logback/logback-classic -->
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
-        <version>1.5.10</version>
+        <version>1.5.11</version>
       </dependency>
       <dependency>
         <groupId>com.formdev</groupId>

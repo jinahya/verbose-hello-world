@@ -22,7 +22,6 @@ package com.github.jinahya.hello._04_java_nio;
 
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello.HelloWorldTest;
-import com.github.jinahya.hello.util.JavaNioByteBufferUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +35,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.LongAdder;
 
 /**
@@ -126,20 +124,23 @@ class HelloWorld_07_Write_AsynchronousByteChannelWithHandler_Test extends HelloW
         final var service = service();
         // stub, <service.put(buffer)> will increase <buffer>'s <position> by <12>
         stub_put_buffer_will_increase_buffer_position_by_12();
-        // total number of bytes written
-        final var written = new LongAdder();
         // a mock object of <AsynchronousByteChannel>
         final var channel = Mockito.mock(AsynchronousByteChannel.class);
+        // the total number of bytes written to the <channel>
+        final var written = new LongAdder();
         // stub, <channel.write(src, attachment, handler)> will start a new thread
         //         which increases <src>'s <position> by a random value.
         Mockito.doAnswer(i -> {
             final var src = i.getArgument(0, ByteBuffer.class);
             final var attachment = i.getArgument(1);
             final var handler = i.getArgument(2, CompletionHandler.class);
+            // completes, immediately with zero when the <src> has no <remaining>
             if (!src.hasRemaining()) {
+                log.warn("<src> has no remaining");
                 handler.completed(0, attachment);
                 return null;
             }
+            // start a new thread which increases <src>'s <position> by a random value.
             Thread.ofPlatform().start(() -> {
                 final var result = ThreadLocalRandom.current().nextInt(src.remaining()) + 1;
                 src.position(src.position() + result);
