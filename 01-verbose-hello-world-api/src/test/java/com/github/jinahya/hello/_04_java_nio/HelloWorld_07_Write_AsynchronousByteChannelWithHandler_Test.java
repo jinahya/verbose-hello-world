@@ -36,6 +36,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.LongAdder;
 
 /**
@@ -129,29 +130,33 @@ class HelloWorld_07_Write_AsynchronousByteChannelWithHandler_Test extends HelloW
         final var written = new LongAdder();
         // a mock object of <AsynchronousByteChannel>
         final var channel = Mockito.mock(AsynchronousByteChannel.class);
-        // stub, <channel.write(src, attachment, handler)> will drain the <src>
+        // stub, <channel.write(src, attachment, handler)> will start a new thread
+        //         which increases <src>'s <position> by a random value.
         Mockito.doAnswer(i -> {
             final var src = i.getArgument(0, ByteBuffer.class);
             final var attachment = i.getArgument(1);
             final var handler = i.getArgument(2, CompletionHandler.class);
+            if (!src.hasRemaining()) {
+                handler.completed(0, attachment);
+                return null;
+            }
             Thread.ofPlatform().start(() -> {
-                // increase the <src>'s position by a random (positive) value
                 final var result = ThreadLocalRandom.current().nextInt(src.remaining()) + 1;
                 src.position(src.position() + result);
-                JavaNioByteBufferUtils.print(src);
                 handler.completed(result, attachment);
                 written.add(result);
             });
             return null;
         }).when(channel).write(
-                ArgumentMatchers.argThat(b -> b != null && b.hasRemaining()), // <src>
-                ArgumentMatchers.any(),                                       // <attachment>
-                ArgumentMatchers.notNull()                                    // <handler>
+                ArgumentMatchers.notNull(), // <src>
+                ArgumentMatchers.any(),     // <attachment>
+                ArgumentMatchers.notNull()  // <handler>
         );
         // an attachment; <null> or non-<null>
         final var attachment = ThreadLocalRandom.current().nextBoolean() ? null : new Object();
-        // a mock object of <CompletionHandler>
-        final var handler = Mockito.mock(CompletionHandler.class);
+        // a mock object of <CompletionHandler> whose methods are logged-out
+        final var handler = Mockito.mock(CompletionHandler.class,
+                                         Mockito.withSettings().verboseLogging());
         // ------------------------------------------------------------------------------------ when
         service.write(channel, attachment, handler);
         // ------------------------------------------------------------------------------------ then
@@ -160,15 +165,15 @@ class HelloWorld_07_Write_AsynchronousByteChannelWithHandler_Test extends HelloW
         // verify, <handler.completed(channel, attachment)> invoked, once, within some time.
 //        Mockito.verify(handler, Mockito.timeout(TimeUnit.SECONDS.toMillis(1L)).times(1))
 //                .completed(channel, attachment);
-        // verify, <channel.write(buffer, attachment, a-handler)> invoked, at least once.
-//        final var captor = ArgumentCaptor.forClass(CompletionHandler.class);
+        // verify, <channel.write(buffer, attachment, same-handler)> invoked, at least once.
+//        final var captor = org.mockito.ArgumentCaptor.forClass(CompletionHandler.class);
 //        Mockito.verify(channel, Mockito.atLeastOnce()).write(
 //                ArgumentMatchers.same(buffer),
 //                ArgumentMatchers.any(),
 //                captor.capture()
 //        );
 //        final var handlers = captor.getAllValues();
-//        Assertions.assertEquals(1, new HashSet<>(handlers).size());
+//        Assertions.assertEquals(1, new java.util.HashSet<>(handlers).size());
         // assert, <buffer> ha no <remaining>
 //        Assertions.assertFalse(buffer.hasRemaining());
         // assert, <written.sum()> is equal to <HelloWorld.BYTES>

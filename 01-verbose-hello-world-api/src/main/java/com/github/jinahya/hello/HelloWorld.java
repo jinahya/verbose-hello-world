@@ -714,17 +714,16 @@ public interface HelloWorld {
     }
 
     /**
-     * Sends the <a href="hello-world-bytes">hello-world-bytes</a> to specified asynchronous socket
-     * channel.
+     * Sends the <a href="hello-world-bytes">hello-world-bytes</a> to specified socket channel.
      *
-     * @param channel the asynchronous socket channel to which the <a
+     * @param channel the socket channel to which the <a
      *                href="hello-world-bytes">hello-world-bytes</a> be sent.
-     * @param <T>     asynchronous socket channel type parameter
+     * @param <T>     socket channel type parameter
      * @return given {@code channel}.
      * @throws InterruptedException interrupted while executing.
      * @throws ExecutionException   when failed to execute.
      * @implSpec Default implementation invokes {@link #write(AsynchronousByteChannel)} method with
-     * {@code channel} and returns the result.
+     * {@code channel}, and returns the result.
      * @deprecated Use {@link #write(AsynchronousByteChannel)} method.
      */
     @屋上架屋("AsynchronousSocketChannel implements AsynchronousByteChannel")
@@ -779,6 +778,9 @@ public interface HelloWorld {
      * to the {@code channel}.
      * @see #put(ByteBuffer)
      * @see AsynchronousByteChannel#write(ByteBuffer, Object, CompletionHandler)
+     * @see <a
+     * href="https://docs.oracle.com/javase/specs/jls/se21/html/jls-15.html#jls-15.8.3">15.8.3.
+     * this</a> (The Java® Language Specification / Java SE 21 Edition)
      */
     default <T extends AsynchronousByteChannel, A> void write(
             final T channel, final A attachment,
@@ -787,14 +789,16 @@ public interface HelloWorld {
         Objects.requireNonNull(handler, "handler is null");
         // get the <hello-world-bytes>
         final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
-        // keep invoking <channel.write(buffer, attachment, a-handler)>,
+        // keep invoking <channel.write(buffer, attachment, same-handler)>,
         //         while <buffer> has <remaining>
         // and, eventually, invoke <handler.complete(channel, attachment)>
 //        channel.write(
 //                buffer,                     // <src>
 //                null,                       // <attachment>
 //                new CompletionHandler<>() { // <handler>
-//                    @Override public void completed(final Integer result, final Object a) { // @formatter:off
+//                    @Override // @formatter:off
+//                    public void completed(final Integer result, final Object a) {
+//                        log().debug("completed({}, {})", result, a);
 //                        assert result > 0; // why?
 //                        if (!buffer.hasRemaining()) {
 //                            handler.completed(channel, attachment);
@@ -803,10 +807,11 @@ public interface HelloWorld {
 //                        channel.write(
 //                                buffer, // <src>
 //                                a,      // <attachment>
-//                                this    // <handler>
+//                                this    // <handler>; what does the `this` expression denote?
 //                        );
 //                    }
 //                    @Override public void failed(final Throwable exc, final Object a) {
+//                        log().debug("failed({}, {})", exc, a, exc);
 //                        handler.failed(exc, attachment);
 //                    } // @formatter:on
 //                }
