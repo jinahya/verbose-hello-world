@@ -30,7 +30,6 @@ import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.file.Files;
@@ -38,7 +37,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.atomic.LongAccumulator;
 
 /**
  * A class for testing
@@ -58,73 +56,85 @@ class HelloWorld_22_Append_Path_Using_AsynchronousFileChannelWithHandler_Test
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // stub, <service.write(channel, position, attachment, handler)>
-        //         will write <12> bytes to the <channel>
+        //         will write the <hello-world-bytes> to the <channel>,
         //         and will invoke <handler.completed(channel, attachment)>
         Mockito.doAnswer(i -> {
-                    final var channel = i.getArgument(0, AsynchronousFileChannel.class);
-                    final var position = i.getArgument(1, Long.class);
-                    final var attachment = i.getArgument(2);
-                    final var handler = i.getArgument(3, CompletionHandler.class);
-                    final var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
-                    final var accumulator = new LongAccumulator(Long::sum, position);
-                    channel.write( // @formatter:off
-                            buffer,                     // <src>
-                            accumulator.get(),          // <position>
-                            attachment,                 // <attachment>
-                            new CompletionHandler<>() { // <handler>
-                                @Override
-                                public void completed(final Integer r, final Object a) {
-                                    accumulator.accumulate(r);
-                                    if (buffer.hasRemaining()) {
-                                        channel.write(
-                                                buffer,            // <src>
-                                                accumulator.get(), // <position>
-                                                a,                 // <attachment>
-                                                this               // <handler>
-                                        );
-                                        return;
-                                    }
-                                    assert accumulator.get() == position + HelloWorld.BYTES;
-                                    handler.completed(channel, a); // unchecked
-                                }
-                                @Override
-                                public void failed(final Throwable t, final Object a) {
-                                    handler.failed(t, a); // unchecked
-                                }
+            final var channel = i.getArgument(0, AsynchronousFileChannel.class);
+            final var position = i.getArgument(1, Long.class);
+            final var attachment = i.getArgument(2);
+            final var handler = i.getArgument(3, CompletionHandler.class);
+            log.debug("write({}, {}, {}, {})", channel, position, attachment, handler);
+            final var buffer = helloWorldBuffer();
+            channel.write(
+                    buffer,                     // <src>
+                    position,                   // <position>
+                    attachment,                 // <attachment>
+                    new CompletionHandler<>() { // <handler>
+                        @Override // @formatter:off
+                        public void completed(final Integer r, final Object a) {
+                            log.debug("completed({}, {})", r, a);
+                            assert r > 0; // why?
+                            if (buffer.hasRemaining()) {
+                                channel.write(
+                                        buffer,       // <src>
+                                        position + r, // <position>
+                                        a,            // <attachment>
+                                        this          // <handler>
+                                );
+                                return;
                             }
-                    ); // @formatter:on
-                    return channel;
-                })
-                .when(service)
-                .write(ArgumentMatchers.notNull(),              // <channel>
-                       ArgumentMatchers.longThat(v -> v >= 0L), // <position>
-                       ArgumentMatchers.any(),                  // <attachment>
-                       ArgumentMatchers.notNull()               // <handler>
-                );
-        final var position = ThreadLocalRandom.current().nextLong(1024L);
-        final var latch = new CountDownLatch(1);
-        final var handler = new CompletionHandler<AsynchronousFileChannel, CountDownLatch>() {
-            @Override public void completed(final AsynchronousFileChannel r, // @formatter:off
-                                            final CountDownLatch a) {
-                a.countDown();
-            }
-            @Override public void failed(final Throwable t, final CountDownLatch a) {
-                log.error("failed to write", t);
-                a.countDown();
-            }
-        }; // @formatter:on
+                            handler.completed(channel, a); // unchecked
+                        }
+                        @Override
+                        public void failed(final Throwable t, final Object a) {
+                            log.error("completed({}, {})", t, a, t);
+                            handler.failed(t, a); // unchecked
+                        } // @formatter:on
+                    }
+            );
+            return channel;
+        }).when(service).write(
+                ArgumentMatchers.notNull(),              // <channel>
+                ArgumentMatchers.longThat(v -> v >= 0L), // <position>
+                ArgumentMatchers.any(),                  // <attachment>
+                ArgumentMatchers.notNull()               // <handler>
+        );
+        // create, a real file
         final var path = Files.createTempFile(dir, null, null);
+        // prepare a random <position>
+        final var position = ThreadLocalRandom.current().nextLong(128);
         // ------------------------------------------------------------------------------------ when
         try (final var channel = AsynchronousFileChannel.open(path, StandardOpenOption.WRITE)) {
-            service.write(channel, position, latch, handler);
+            final var latch = new CountDownLatch(1);
+            // -------------------------------------------------------------------------------- when
+            service.write(
+                    channel,                    // <channel>
+                    position,                   // <position>
+                    latch,                      // <attachment>
+                    new CompletionHandler<>() { // <handler>
+                        @Override // @formatter:off
+                        public void completed(final AsynchronousFileChannel result,
+                                              final CountDownLatch attachment) {
+                            log.debug("completed({}, {})", result, attachment);
+                            attachment.countDown();
+                        }
+                        @Override
+                        public void failed(final Throwable exc, final CountDownLatch attachment) {
+                            log.error("failed({}, {})", exc, attachment, exc);
+                            attachment.countDown();
+                        } // @formatter:on
+                    }
+            );
             latch.await();
             channel.force(false);
         }
         // ------------------------------------------------------------------------------------ then
-        // assert, <path>'s <size> increased by <12>, after the <position>
+        // assert, <path>'s <size> is equal to <position + 12>
+        final var size = Files.size(path);
+        log.debug("size: {}", size);
         Assertions.assertEquals(
                 position + HelloWorld.BYTES,
-                Files.size(path)
+                size
         );
     }
 }

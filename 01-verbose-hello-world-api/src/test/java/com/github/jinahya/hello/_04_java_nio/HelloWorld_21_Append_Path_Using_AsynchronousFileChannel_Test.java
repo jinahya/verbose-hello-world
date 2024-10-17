@@ -64,7 +64,8 @@ class HelloWorld_21_Append_Path_Using_AsynchronousFileChannel_Test
                     return channel;
                 })
                 .when(service)
-                .write(ArgumentMatchers.notNull(), ArgumentMatchers.longThat(v -> v >= 0L));
+                .write(ArgumentMatchers.<AsynchronousFileChannel>notNull(),
+                       ArgumentMatchers.longThat(v -> v >= 0L));
         final var path = Files.createTempFile(dir, null, null);
         final var position = ThreadLocalRandom.current().nextLong(128L);
         // ------------------------------------------------------------------------------------ when

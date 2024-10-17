@@ -47,7 +47,6 @@ import java.nio.file.StandardOpenOption;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.function.Function;
 
 /**
  * An interface for generating <a href="#hello-world-bytes">hello-world-bytes</a> to various
@@ -724,7 +723,8 @@ public interface HelloWorld {
      * @throws ExecutionException   when failed to execute.
      * @implSpec Default implementation invokes {@link #write(AsynchronousByteChannel)} method with
      * {@code channel}, and returns the result.
-     * @deprecated Use {@link #write(AsynchronousByteChannel)} method.
+     * @deprecated Invoke directly the {@link #write(AsynchronousByteChannel)} method with
+     * {@code channel}.
      */
     @屋上架屋("AsynchronousSocketChannel implements AsynchronousByteChannel")
     @Deprecated(forRemoval = true)
@@ -832,7 +832,9 @@ public interface HelloWorld {
      * @implSpec Default implementation invokes
      * {@link #write(AsynchronousByteChannel, Object, CompletionHandler)} method with given
      * arguments.
-     * @deprecated Use {@link #write(AsynchronousByteChannel, Object, CompletionHandler)} method.
+     * @deprecated Invoke, directly, the
+     * {@link #write(AsynchronousByteChannel, Object, CompletionHandler)} method with
+     * {@code channel}.
      */
     @屋上架屋("AsynchronousSocketChannel implements AsynchronousByteChannel")
     @Deprecated(forRemoval = true)
@@ -895,6 +897,7 @@ public interface HelloWorld {
      */
     default <T extends AsynchronousFileChannel> T write(final T channel, long position)
             throws InterruptedException, ExecutionException {
+        log().debug("write({}, {})", channel, position);
         Objects.requireNonNull(channel, "channel is null");
         if (position < 0L) {
             throw new IllegalArgumentException("position(" + position + ") is negative");
@@ -909,50 +912,6 @@ public interface HelloWorld {
             position += written;
         }
         return channel;
-    }
-
-    /**
-     * Appends the <a href="#hello-world-bytes">hello-world-bytes</a> to the end of specified path
-     * to a file. The {@link java.nio.file.Files#size(Path) size} of the {@code path}, on successful
-     * return, is increased by {@value #BYTES}.
-     * <p>
-     * Default implementation would look like,
-     * {@snippet lang = "java":
-     * Objects.requireNonNull(path, "path is null");
-     * Objects.requireNonNull(function, "function is null");
-     * try (var channel = AsynchronousFileChannel.open(path, StandardOpenOption.CREATE, // @highlight region
-     *                                                 StandardOpenOption.APPEND)) {
-     *     write(channel, channel.size());
-     *     channel.force(true);
-     * } // @end
-     * return function.apply(path);
-     *}
-     *
-     * @param path     the path to a file to which the <a
-     *                 href="#hello-world-bytes">hello-world-bytes</a> is appended.
-     * @param function the function applies with the {@code path}.
-     * @param <T>      path type parameter
-     * @param <R>      result type parameter
-     * @return the result of the {@code function}.
-     * @throws IOException          if an I/O error occurs.
-     * @throws InterruptedException if interrupted while working.
-     * @throws ExecutionException   if failed to execute.
-     */
-    @屋上架屋
-    default <T extends Path, R> R append(final T path,
-                                         final Function<? super T, ? extends R> function)
-            throws IOException, InterruptedException, ExecutionException {
-        Objects.requireNonNull(path, "path is null");
-        Objects.requireNonNull(function, "function is null");
-        final var options = new StandardOpenOption[] {
-                StandardOpenOption.CREATE,
-                StandardOpenOption.APPEND
-        };
-        try (var channel = AsynchronousFileChannel.open(path, options)) {
-            write(channel, channel.size());
-            channel.force(true);
-        }
-        return function.apply(path);
     }
 
     /**
@@ -974,6 +933,7 @@ public interface HelloWorld {
     default <T extends AsynchronousFileChannel, A> void write(
             final T channel, final long position, final A attachment,
             final CompletionHandler<? super T, ? super A> handler) {
+        log().debug("write({}, {}, {}, {})", channel, position, attachment, handler);
         Objects.requireNonNull(channel, "channel is null");
         if (position < 0L) {
             throw new IllegalArgumentException("position(" + position + ") is negative");
