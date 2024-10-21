@@ -97,17 +97,18 @@ class HelloWorld_02_Set_Array_Test extends HelloWorldTest {
     void __() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // service.set(array, index) will just return the <array>
-        Mockito.doAnswer(i -> i.getArgument(0))
-                .when(service)
-                .set(ArgumentMatchers.any(), ArgumentMatchers.anyInt());
+        // stub, <service.set(array, index)> will just return the <array>
+        Mockito.doAnswer(i -> i.getArgument(0)).when(service).set(
+                ArgumentMatchers.any(),   // <array>
+                ArgumentMatchers.anyInt() // <index>
+        );
         final var array = new byte[HelloWorld.BYTES];
         // ------------------------------------------------------------------------------------ when
         final var result = service.set(array);
         // ------------------------------------------------------------------------------------ then
         // verify, <service.set(array, 0)> invoked, once
-
-        // verify, <result> is same as <array>
-
+//        Mockito.verify(service, Mockito.times(1)).set(array, 0);
+        // assert, <result> is same as <array>
+//        Assertions.assertSame(array, result);
     }
 }

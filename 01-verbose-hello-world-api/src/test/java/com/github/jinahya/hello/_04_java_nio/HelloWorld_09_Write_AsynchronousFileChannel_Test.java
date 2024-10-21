@@ -119,7 +119,8 @@ class HelloWorld_09_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
         // stub, <service.put(buffer)> will increase the <buffer>'s <position> by <12>
         stub_put_buffer_will_increase_buffer_position_by_12();
         // prepare, a mock object of <AsynchronousFileChannel>
-        final var channel = Mockito.mock(AsynchronousFileChannel.class);
+        final var channel = Mockito.mock(AsynchronousFileChannel.class,
+                                         Mockito.withSettings().verboseLogging());
         // total number of bytes written to <channel>
         final var written = new LongAdder();
         // stub, <channel.write(src, position)> will return a future
@@ -152,6 +153,7 @@ class HelloWorld_09_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
         final var captor = ArgumentCaptor.forClass(long.class);
         Mockito.verify(channel, Mockito.atLeastOnce())
                 .write(ArgumentMatchers.same(buffer), captor.capture());  // <1>
+        // all <position>s are incremental
         final var positions = captor.getAllValues();                      // <2>
         Assertions.assertEquals(position, positions.getFirst());          // <3>
         final var last = positions.stream().reduce((p1, p2) -> {          // <4>
@@ -160,7 +162,7 @@ class HelloWorld_09_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
         });
         Assertions.assertTrue(last.isPresent());                           // <5>
         Assertions.assertTrue(last.get() < (position + HelloWorld.BYTES)); // <6>
-        // assert, <12> bytes written
+        // assert, <12> bytes has been written
         Assertions.assertEquals(HelloWorld.BYTES, written.intValue());
         // assert, <result> is same as <channel>
         Assertions.assertSame(channel, result);
@@ -175,6 +177,7 @@ class HelloWorld_09_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
         Mockito.doAnswer(i -> {
             final var channel = i.getArgument(0, AsynchronousFileChannel.class);
             var position = i.getArgument(1, Long.class);
+            log.debug("write({}, {})", channel, position);
             for (final var b = helloWorldBuffer(); b.hasRemaining(); ) {
                 final var future = channel.write(b, position);
                 final var written = future.get();

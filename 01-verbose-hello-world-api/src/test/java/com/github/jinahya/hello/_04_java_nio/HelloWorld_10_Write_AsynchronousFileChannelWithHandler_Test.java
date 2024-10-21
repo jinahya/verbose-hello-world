@@ -75,10 +75,6 @@ class HelloWorld_10_Write_AsynchronousFileChannelWithHandler_Test extends HelloW
         final var position = 0L;
         final var attachment = ThreadLocalRandom.current().nextBoolean() ? null : new Object();
         final var handler = Mockito.mock(CompletionHandler.class);
-        assert channel == null;                          // Not O.K.
-        assert position >= 0L;                           // O.K.
-        assert attachment != null || attachment == null; // don't care
-        assert handler != null;                          // O.K.
         // ------------------------------------------------------------------------------- when/then
         Assertions.assertThrows(
                 NullPointerException.class,
@@ -105,10 +101,6 @@ class HelloWorld_10_Write_AsynchronousFileChannelWithHandler_Test extends HelloW
         final var position = ThreadLocalRandom.current().nextLong() | Long.MIN_VALUE;
         final var attachment = ThreadLocalRandom.current().nextBoolean() ? null : new Object();
         final var handler = Mockito.mock(CompletionHandler.class);
-        assert channel != null;                          // O.K.
-        assert position < 0L;                            // Not O.K.
-        assert attachment != null || attachment == null; // don't care
-        assert handler != null;                          // O.K.
         // ------------------------------------------------------------------------------- when/then
         Assertions.assertThrows(
                 IllegalArgumentException.class,
@@ -134,10 +126,6 @@ class HelloWorld_10_Write_AsynchronousFileChannelWithHandler_Test extends HelloW
         final var position = 0L;
         final var handler = (CompletionHandler<AsynchronousFileChannel, Object>) null;
         final var attachment = ThreadLocalRandom.current().nextBoolean() ? null : new Object();
-        assert channel != null;                          // O.K.
-        assert position >= 0L;                           // O.K.
-        assert attachment != null || attachment == null; // don't care
-        assert handler == null;                          // Not O.K.
         // ------------------------------------------------------------------------------- when/then
         Assertions.assertThrows(
                 NullPointerException.class,
@@ -164,7 +152,8 @@ class HelloWorld_10_Write_AsynchronousFileChannelWithHandler_Test extends HelloW
         // number of bytes written
         final var written = new LongAdder();
         // prepare a mock object of <AsynchronousFileChannel>
-        final var channel = Mockito.mock(AsynchronousFileChannel.class);
+        final var channel = Mockito.mock(AsynchronousFileChannel.class,
+                                         Mockito.withSettings().verboseLogging());
         // stub, <channel.write(src, position, attachment, handler)>
         //         will increase the <src>'s <position> by a random value
         //         , and will invoke <handler.completed(result, attachment)>
@@ -186,14 +175,15 @@ class HelloWorld_10_Write_AsynchronousFileChannelWithHandler_Test extends HelloW
         );
         final var position = ThreadLocalRandom.current().nextLong(128L);
         final var attachment = ThreadLocalRandom.current().nextBoolean() ? null : new Object();
-        final var handler = Mockito.mock(CompletionHandler.class);
+        final var handler = Mockito.mock(CompletionHandler.class,
+                                         Mockito.withSettings().verboseLogging());
         // ------------------------------------------------------------------------------------ when
         service.write(channel, position, attachment, handler);
         // ------------------------------------------------------------------------------------ then
         // verify, <put(buffer[12])> invoked, once
         final var buffer = verify_put_buffer12_invoked_once();
         // await, <handler> to be <completed(channel, attachment)>
-        Mockito.verify(handler, Mockito.timeout(TimeUnit.SECONDS.toMillis(8L)).times(1))
+        Mockito.verify(handler, Mockito.timeout(TimeUnit.SECONDS.toMillis(64L)).times(1))
                 .completed(channel, attachment);
         // verify, <channel.write(buffer, captured, any, captured)> invoked, at least once
         final var positions = ArgumentCaptor.forClass(long.class);

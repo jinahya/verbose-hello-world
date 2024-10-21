@@ -100,8 +100,14 @@ class HelloWorld_03_Append_Appendable_Test extends HelloWorldTest {
         Assertions.assertNotNull(array);                                      // <4>
         Assertions.assertEquals(HelloWorld.BYTES, array.length);              // <5>
         // verify, each byte in <array>, cast as a <char>, appended to <appendable>
-        final var charsCaptor = ArgumentCaptor.forClass(char.class);
-
+        final var charCaptor = ArgumentCaptor.forClass(char.class);
+        // verify, <appendable.append(c)> invoked, <12> times
+//        Mockito.verify(appendable, Mockito.times(array.length)).append(charCaptor.capture());
+//        final var chars = charCaptor.getAllValues();
+        // assert, <chars[i]> is equal to <array[i]>
+//        for (int i = 0; i < chars.size(); i++) {
+//            Assertions.assertEquals(array[i], (byte) chars.get(i).charValue());
+//        }
         // verify, <result> is same as <appendable>
         Assertions.assertSame(appendable, result);
     }
