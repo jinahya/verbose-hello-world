@@ -60,7 +60,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @SuppressWarnings({
         "java:S101"
 })
-class HelloWorld_08_Send_AsynchronousByteChannelWithHandler_Test extends HelloWorldTest {
+class HelloWorld_08_Send_AsynchronousSocketChannelWithHandler_Test extends HelloWorldTest {
 
     /**
      * Verifies that the
@@ -153,7 +153,7 @@ class HelloWorld_08_Send_AsynchronousByteChannelWithHandler_Test extends HelloWo
             final var channel = i.getArgument(0, AsynchronousByteChannel.class);
             final var attachment = i.getArgument(1);
             final var handler = i.getArgument(2, CompletionHandler.class);
-            final var buffer = helloWorldBuffer();
+            final var buffer = new_hello_world_buffer();
             channel.write(buffer, null, new CompletionHandler<>() { // @formatter:off
                 @Override public void completed(final Integer result, final Object a) {
                     log.debug("channel.write.completed({}, {})", result, a);

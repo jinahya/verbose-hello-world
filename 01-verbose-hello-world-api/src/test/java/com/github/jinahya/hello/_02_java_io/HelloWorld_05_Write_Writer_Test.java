@@ -61,7 +61,7 @@ class HelloWorld_05_Write_Writer_Test extends HelloWorldTest {
         final var service = service();
         final var writer = (Writer) null;
         // ------------------------------------------------------------------------------- when/then
-        // assert, <service.write(writer)> throws a <NullPointerException>
+        // assert: <service.write(writer:null)> throws a <NullPointerException>
         Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.write(writer)
@@ -80,17 +80,19 @@ class HelloWorld_05_Write_Writer_Test extends HelloWorldTest {
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // stub, <service.append(appendable)> will return given <appendable>
+        // stub: <service.append(appendable)> will return given <appendable>
         Mockito.doAnswer(i -> i.getArgument(0))
                 .when(service)
                 .append(ArgumentMatchers.any(Appendable.class));
+        // prepare: a mock object of <Writer>
         final var writer = Mockito.mock(Writer.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(writer);
         // ------------------------------------------------------------------------------------ then
-        // verify, <service.append(writer)> invoked, once
-
-        // assert, <result> is same as <writer>
+        // verify: <service.append(writer)> invoked, once
+//        Mockito.verify(service, Mockito.times(1)).append(writer);
+//        Mockito.verifyNoMoreInteractions(writer);
+        // assert: <result> is same as <writer>
         Assertions.assertSame(writer, result);
     }
 }

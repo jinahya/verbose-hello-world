@@ -29,7 +29,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
-import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.net.Socket;
 import java.nio.BufferOverflowException;
@@ -303,12 +302,12 @@ public interface HelloWorld {
             throw new NullPointerException("file is null");
         }
         // create a new <FileOutputStream> with <file> and <true>
-        //         use the try-with-resources statement
-        // invoke <write(stream)> method with it
-        // <flush> (and <close>) the stream
-//        try (var stream = new FileOutputStream(file, true)) {
-//            write(stream);
-//            stream.flush();
+//        try (var stream = new FileOutputStream(file, true)) { // appending mode
+//            // invoke <write(stream)> method with it
+////            final var result = write(stream);
+////            assert result == stream;
+//            // flush the <stream>
+////            stream.flush();
 //        }
         return file;
     }
@@ -587,6 +586,7 @@ public interface HelloWorld {
         // flip the <buffer>
 //        buffer.flip(); // limit -> position, position -> zero
         JavaNioByteBufferUtils.print(buffer);
+//        assert buffer.remaining() == BYTES;
         // invoke <channel.write(buffer)> while <buffer> has <remaining>
 //        while (buffer.hasRemaining()) {
 //            final var written = channel.write(buffer);
@@ -904,6 +904,7 @@ public interface HelloWorld {
         }
         // get the <hello-world-bytes>
         final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
+        JavaNioByteBufferUtils.print(buffer);
         // keep writing the <buffer> to the <channel>, while the <buffer> has <remaining>
         while (buffer.hasRemaining()) {
             final var future = channel.write(buffer, position);
@@ -939,7 +940,9 @@ public interface HelloWorld {
             throw new IllegalArgumentException("position(" + position + ") is negative");
         }
         Objects.requireNonNull(handler, "handler is null");
+        // get the <hello-world-bytes>
         final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
+        // write the <buffer> to the <channel>
         channel.write(
                 buffer,                     // <src>
                 position,                   // <position>
@@ -968,41 +971,55 @@ public interface HelloWorld {
         );
     } // @formatter:on
 
-    @屋上架屋
+    /**
+     * Appends the <a href="hello-world-bytes">hello-world-bytes</a> to the end of specified path to
+     * a file, and notifies a completion (or a failure) to specified handler.
+     *
+     * @param path       the path to a file to which the bytes are appended.
+     * @param attachment an attachment for the handler.
+     * @param handler    the handler to be notified with a completion (or a failure).
+     * @param <T>        path type parameter
+     * @param <A>        attachment type parameter
+     * @throws IOException if an I/O error occurs.
+     */
     default <T extends Path, A> void append(final T path, final A attachment,
                                             final CompletionHandler<? super T, ? super A> handler)
             throws IOException {
         Objects.requireNonNull(path, "path is null");
         Objects.requireNonNull(handler, "handler is null");
         final var options = new StandardOpenOption[] {
-                StandardOpenOption.CREATE
-                // no StandardOpenOption.APPEND? why?
+                StandardOpenOption.CREATE,
+                StandardOpenOption.WRITE
         };
         @SuppressWarnings({
                 "java:S2095" // Resources should be closed
         })
         final var channel = AsynchronousFileChannel.open(path, options); // no try-with-resources?
-        write(channel, channel.size(), null, new CompletionHandler<>() {
-            @Override
-            public void completed(final AsynchronousFileChannel result, final Object a) {
-                assert result == channel;
+        write(channel, channel.size(), null, new CompletionHandler<>() { // @formatter:off
+            @Override public void completed(final AsynchronousFileChannel r, final Object a) {
+                log().debug("completed({}, {})", r, a);
+                assert r == channel;
                 try {
-                    result.force(true);
-                    result.close();
+                    r.force(true);
+                    r.close();
                 } catch (final IOException ioe) {
-                    throw new UncheckedIOException("failed to force/close the channel", ioe);
+                    log().error("failed to force/close the channel", ioe);
+                    handler.failed(ioe, attachment);
+                    return;
                 }
                 handler.completed(path, attachment);
-            } // @formatter:off
-            @Override // @formatter:on
-            public void failed(final Throwable exc, final Object a) {
+            }
+            @Override public void failed(final Throwable t, final Object a) {
+                log().error("failed({}, {})", t, a, t);
                 try {
                     channel.close();
                 } catch (final IOException ioe) {
-                    throw new UncheckedIOException("failed to close the channel", ioe);
+                    log().error("failed to close the channel", ioe);
+                    handler.failed(ioe, attachment);
+                    return;
                 }
-                handler.failed(exc, attachment);
-            }
+                handler.failed(t, attachment);
+            } // @formatter:on
         });
     }
 }

@@ -38,7 +38,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.LinkedHashMap;
+import java.io.RandomAccessFile;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * A class for testing {@link HelloWorld#append(File) append(file)} method.
@@ -65,7 +66,7 @@ class HelloWorld_02_Append_File_Test extends HelloWorldTest {
         final var service = service();
         final var file = (File) null;
         // ------------------------------------------------------------------------------- when/then
-        // assert, <service.append(file)> will throw a <NullPointerException>
+        // assert: <service.append(file:null)> will throw a <NullPointerException>
         Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.append(file)
@@ -81,34 +82,39 @@ class HelloWorld_02_Append_File_Test extends HelloWorldTest {
      * @throws IOException if an I/O error occurs.
      */
     @DisplayName("""
-            should create a <new FileOutputStream> as <appending mode>
-            and invoke <write(stream)> method with it
+            should create a <new FileOutputStream> as <appending mode>,
+            and invoke <write(stream)> method with it,
             and <flushes/closes> the stream"""
     )
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // stub, <service.write(stream)> will just return the <stream>
+        // stub: <service.write(stream)> will just return the <stream>
         Mockito.doAnswer(i -> i.getArgument(0, OutputStream.class))
                 .when(service)
                 .write(ArgumentMatchers.any(OutputStream.class));
+        // prepare: a mock object of <File>
         final var file = Mockito.mock(File.class);
-        // mock, constructions of <FileOutputStream>
-        final var contexts = new LinkedHashMap<FileOutputStream, MockedConstruction.Context>();
-        try (var mock = Mockito.mockConstruction(FileOutputStream.class, contexts::put)) {
+        // mock: constructions of <FileOutputStream>
+        final MockedConstruction.MockInitializer<FileOutputStream> initializer = (m, c) -> {
+            // does nothing
+        };
+        try (var construction = Mockito.mockConstruction(FileOutputStream.class, initializer)) {
             // -------------------------------------------------------------------------------- when
             final var result = service.append(file);
             // ---------------------------------------------------------------------------------then
-            // verify, <new FileOutputStream(file, true)<stream>> invoked, once
-
-            // verify, <service.write(<stream>)> invoked, once
-
-            // verify, <<stream>.flush()> invoked, once
-
-            // verify, <<stream>.close()> invoked, once
-
-            // assert, <result> is same as <file>
+            // verify: <new FileOutputStream(file, true)<stream>> invoked, once
+            final var constructed = construction.constructed();
+//            Assertions.assertEquals(1, constructed.size());
+//            final var stream = constructed.getFirst();
+            // verify: <service.write(<stream>)> invoked, once
+//            Mockito.verify(service, Mockito.times(1)).write(stream);
+            // verify: <<stream>.flush()> invoked, once
+//            Mockito.verify(stream, Mockito.times(1)).flush();
+            // verify: <<stream>.close()> invoked, once
+//            Mockito.verify(stream, Mockito.times(1)).close();
+            // assert: <result> is same as <file>
             Assertions.assertSame(file, result);
         }
     }
@@ -119,7 +125,7 @@ class HelloWorld_02_Append_File_Test extends HelloWorldTest {
     void _添足_畵蛇(@TempDir final File dir) throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // stub, <service.append(file)> will append <12> bytes, and will return the <file>
+        // stub: <service.append(file)> will append the <12> bytes, and will return the <file>
         Mockito.doAnswer(i -> {
                     var file = i.getArgument(0, File.class);
                     try (var stream = new FileOutputStream(file, true)) {
@@ -130,17 +136,26 @@ class HelloWorld_02_Append_File_Test extends HelloWorldTest {
                 })
                 .when(service)
                 .append(ArgumentMatchers.<File>argThat(File::isFile));
+        // prepare: crate a temporary file, and write some bytes
         final var file = File.createTempFile("tmp", null, dir);
+        try (var f = new RandomAccessFile(file, "rw")) {
+            f.seek(ThreadLocalRandom.current().nextInt(128));
+            f.write(ThreadLocalRandom.current().nextInt(256));
+            f.getFD().sync();
+        }
+        // prepare: mark <file>'s current <length>
         final var length = file.length();
+        log.debug("length: {}", length);
         // ------------------------------------------------------------------------------------ when
         final var result = service.append(file);
+        log.debug("length: {}", file.length());
         // ------------------------------------------------------------------------------------ then
-        // assert, <file>'s <length> increased by <12>
+        // assert: <file>'s <length> increased by <12>
         Assertions.assertEquals(
                 length + HelloWorld.BYTES,
                 file.length()
         );
-        // assert, <result> is same as <file>
+        // assert: <result> is same as <file>
         Assertions.assertSame(file, result);
     }
 }

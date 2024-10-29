@@ -28,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 
 /**
- * A class for unit-testing {@link HelloWorld#set(byte[], int) set(array, index)} method.
+ * A class for testing {@link HelloWorld#set(byte[], int) set(array, index)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */

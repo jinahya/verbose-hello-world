@@ -62,7 +62,7 @@ class HelloWorld_04_Write_RandomAccessFile_Test extends HelloWorldTest {
         final var service = service();
         final var file = (RandomAccessFile) null;
         // ------------------------------------------------------------------------------- when/then
-        // assert, <service.write(file)> throws a <NullPointerException>
+        // assert: <service.write(file:null)> throws a <NullPointerException>
         Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.write(file)
@@ -82,19 +82,21 @@ class HelloWorld_04_Write_RandomAccessFile_Test extends HelloWorldTest {
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // stub, <service.set(array)> to just return the <array>
+        // stub: <service.set(array)> to return the <array>
         Mockito.doAnswer(i -> i.getArgument(0))
                 .when(service)
                 .set(ArgumentMatchers.any());
+        // prepare: a mock object of <RandomAccessFile>
         final var file = Mockito.mock(RandomAccessFile.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(file);
         // ------------------------------------------------------------------------------------ then
-        // verify, <service.set(byte[12])> invoked, once
+        // verify: <service.set(byte[12])> invoked, once
         final var array = verify_set_array12_invoked_once();
-        // verify, <file.write(array)> invoked, once and only
-
-        // assert, <result> is same as <file>
+        // verify: <file.write(array)> invoked, once and only
+//        Mockito.verify(file, Mockito.times(1)).write(array);
+//        Mockito.verifyNoMoreInteractions(file);
+        // assert: <result> is same as <file>
         Assertions.assertSame(file, result);
     }
 }

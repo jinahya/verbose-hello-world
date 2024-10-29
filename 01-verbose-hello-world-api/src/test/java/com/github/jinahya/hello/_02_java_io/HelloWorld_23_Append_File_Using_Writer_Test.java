@@ -48,25 +48,22 @@ import java.util.concurrent.ThreadLocalRandom;
 class HelloWorld_23_Append_File_Using_Writer_Test extends HelloWorldTest {
 
     @Test
-    void _appendToFileUsingDataOutput_(@TempDir final File dir) throws IOException {
+    void __(@TempDir final File dir) throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // stub, <service.write(writer)> will write the <hello, world> chars
+        // stub: <service.write(writer)> will write the <hello, world> chars
         Mockito.doAnswer(i -> {
-                    final var writer = i.getArgument(0, Writer.class);
-                    writer.write("hello, world".toCharArray());
-                    return writer;
-                })
-                .when(service)
-                .write(ArgumentMatchers.<Writer>notNull());
-        // create a temp file, and write some dummy bytes
+            final var writer = i.getArgument(0, Writer.class);
+            writer.write("hello, world".toCharArray());
+            return writer;
+        }).when(service).write(ArgumentMatchers.<Writer>notNull());
+        // prepare: create a temp file, and write some dummy bytes
         final File file = File.createTempFile("tmp", null, dir);
-        if (ThreadLocalRandom.current().nextBoolean()) {
-            try (var stream = new FileOutputStream(file)) {
-                stream.write(new byte[ThreadLocalRandom.current().nextInt(8)]);
-                stream.flush();
-            }
+        try (var stream = new FileOutputStream(file)) {
+            stream.write(new byte[ThreadLocalRandom.current().nextInt(8)]);
+            stream.flush();
         }
+        // prepare: mark the <file>'s current <length>
         final var length = file.length();
         // ------------------------------------------------------------------------------------ when
         try (var writer = new OutputStreamWriter(new FileOutputStream(file, true), // appending!
@@ -76,22 +73,21 @@ class HelloWorld_23_Append_File_Using_Writer_Test extends HelloWorldTest {
             writer.flush();
         }
         // ------------------------------------------------------------------------------------ then
-        // verify, <service.write(Writer)> invoked, once
+        // verify: <service.write(a-writer)> invoked, once
         Mockito.verify(service, Mockito.times(1)).write(ArgumentMatchers.<Writer>notNull());
-        // verify, no unverified interactions on the <service>
         Mockito.verifyNoMoreInteractions(service);
-        // assert, <file.length> increased by <12>
+        // assert: <file>'s <length> increased by <12>
         Assertions.assertEquals(
                 length + HelloWorld.BYTES,
                 file.length()
         );
-        // print <file>'s content
+        // verify: print <file>'s content at <length>
         try (var f = new RandomAccessFile(file, "r")) {
             f.seek(length);
-            final var bytes = new byte[HelloWorld.BYTES];
-            final var r = f.read(bytes);
-            assert r == bytes.length;
-            log.debug("string: {}", new String(bytes, StandardCharsets.US_ASCII));
+            final var b = new byte[HelloWorld.BYTES];
+            final var r = f.read(b);
+            assert r == b.length;
+            log.debug("decoded: {}", new String(b, StandardCharsets.US_ASCII));
         }
     }
 }

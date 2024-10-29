@@ -58,19 +58,19 @@ public abstract class HelloWorldTest {
      *
      * @return an array of bytes contains {@code hello, world}.
      */
-    protected static byte[] helloWorldArray() {
+    protected static byte[] new_hello_world_array() {
         final var array = "hello, world".getBytes(StandardCharsets.US_ASCII);
         assert array.length == HelloWorld.BYTES;
         return array;
     }
 
     /**
-     * Returns a read-only byte buffer wraps {@link #helloWorldArray()}.
+     * Returns a read-only byte buffer wraps {@link #new_hello_world_array()}.
      *
-     * @return a read-only byte buffer wraps {@link #helloWorldArray()}.
+     * @return a read-only byte buffer wraps {@link #new_hello_world_array()}.
      */
-    protected static ByteBuffer helloWorldBuffer() {
-        final var buffer = ByteBuffer.wrap(helloWorldArray());
+    protected static ByteBuffer new_hello_world_buffer() {
+        final var buffer = ByteBuffer.wrap(new_hello_world_array());
         assert buffer.remaining() == HelloWorld.BYTES;
         return buffer.asReadOnlyBuffer();
     }

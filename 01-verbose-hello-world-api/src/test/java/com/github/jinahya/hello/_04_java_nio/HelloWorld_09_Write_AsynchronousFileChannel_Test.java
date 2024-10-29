@@ -22,7 +22,6 @@ package com.github.jinahya.hello._04_java_nio;
 
 import com.github.jinahya.hello.HelloWorld;
 import com.github.jinahya.hello.HelloWorldTest;
-import com.github.jinahya.hello.util.JavaNioByteBufferUtils;
 import com.github.jinahya.hello.畵蛇添足;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
@@ -69,7 +68,7 @@ class HelloWorld_09_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
         final var channel = (AsynchronousFileChannel) null;
         final var position = ThreadLocalRandom.current().nextLong() >>> 1;
         // ------------------------------------------------------------------------------- when/then
-        // assert, <service.write(channel, position)> throws a <NullPointerException>
+        // assert: <service.write(channel, position)> throws a <NullPointerException>
         Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.write(channel, position)
@@ -92,7 +91,7 @@ class HelloWorld_09_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
         final var channel = Mockito.mock(AsynchronousFileChannel.class);
         final var position = ThreadLocalRandom.current().nextLong() | Long.MIN_VALUE;
         // ------------------------------------------------------------------------------- when/then
-        // assert, <service.write(channel, position)> throws an <IllegalArgumentException>
+        // assert: <service.write(channel, position)> throws an <IllegalArgumentException>
         Assertions.assertThrows(
                 IllegalArgumentException.class,
                 () -> service.write(channel, position)
@@ -116,25 +115,27 @@ class HelloWorld_09_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
     void _PutBufferWriteBufferToChannel_() throws InterruptedException, ExecutionException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // stub, <service.put(buffer)> will increase the <buffer>'s <position> by <12>
+        // stub: <service.put(buffer)> will increase the <buffer>'s <position> by <12>
         stub_put_buffer_will_increase_buffer_position_by_12();
-        // prepare, a mock object of <AsynchronousFileChannel>
+        // prepare: a mock object of <AsynchronousFileChannel>
         final var channel = Mockito.mock(AsynchronousFileChannel.class,
                                          Mockito.withSettings().verboseLogging());
-        // total number of bytes written to <channel>
-        final var written = new LongAdder();
-        // stub, <channel.write(src, position)> will return a future
-        //         which increases the <src>'s <position> by a random value.
-        Mockito.doAnswer(w -> { // invocation of channel.write
+        final var written = new LongAdder(); // total number of bytes written to <channel>
+        // stub: <channel.write(src, position)> will return a future
+        //       which increases the <src>'s <position> by a random value.
+        Mockito.doAnswer(w -> { // invocation of <channel.write(src, position)>
+            // prepare: a mock of <Future>
             final var future = Mockito.mock(Future.class);
-            // stub, <future.get()> will increase <src>'s <position> by a random value
+            // stub: <future.get()> will increase <src>'s <position> by a random value
             Mockito.doAnswer(g -> {
                 final var src = w.getArgument(0, ByteBuffer.class);
+                assert src.hasRemaining();
                 final var position = w.getArgument(1, Long.class);
+                assert position >= 0L;
                 final var result = ThreadLocalRandom.current().nextInt(src.remaining()) + 1;
-                log.debug("result: {}", result);
+                assert result > 0;
+                assert result <= src.remaining();
                 src.position(src.position() + result);
-                JavaNioByteBufferUtils.print(src);
                 written.add(result);
                 return result;
             }).when(future).get();
@@ -147,13 +148,13 @@ class HelloWorld_09_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(channel, position);
         // ------------------------------------------------------------------------------------ then
-        // verify, <service.put(buffer[12])> invoked, once
+        // verify: <service.put(buffer[12])> invoked, once
         final var buffer = verify_put_buffer12_invoked_once();
-        // verify, <channel.write(buffer, position)> invoked, at least once
+        // verify: <channel.write(buffer, a-position)> invoked, at least once
         final var captor = ArgumentCaptor.forClass(long.class);
         Mockito.verify(channel, Mockito.atLeastOnce())
                 .write(ArgumentMatchers.same(buffer), captor.capture());  // <1>
-        // all <position>s are incremental
+        // verify: all <position>s are incremental
         final var positions = captor.getAllValues();                      // <2>
         Assertions.assertEquals(position, positions.getFirst());          // <3>
         final var last = positions.stream().reduce((p1, p2) -> {          // <4>
@@ -162,9 +163,11 @@ class HelloWorld_09_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
         });
         Assertions.assertTrue(last.isPresent());                           // <5>
         Assertions.assertTrue(last.get() < (position + HelloWorld.BYTES)); // <6>
-        // assert, <12> bytes has been written
+        // verify: <12> bytes has been written
         Assertions.assertEquals(HelloWorld.BYTES, written.intValue());
-        // assert, <result> is same as <channel>
+        // verify: <buffer> has no remaining
+        Assertions.assertFalse(buffer.hasRemaining());
+        // assert: <result> is same as <channel>
         Assertions.assertSame(channel, result);
     }
 
@@ -178,7 +181,7 @@ class HelloWorld_09_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
             final var channel = i.getArgument(0, AsynchronousFileChannel.class);
             var position = i.getArgument(1, Long.class);
             log.debug("write({}, {})", channel, position);
-            for (final var b = helloWorldBuffer(); b.hasRemaining(); ) {
+            for (final var b = new_hello_world_buffer(); b.hasRemaining(); ) {
                 final var future = channel.write(b, position);
                 final var written = future.get();
                 log.debug("written: {}", written);

@@ -329,7 +329,7 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
     void __BufferHasBackingArray() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // stub, <set(array, index)> to just return the <array>
+        // stub: <set(array, index)> to just return the <array>
         Mockito.doAnswer(i -> {
                     final var array = i.getArgument(0, byte[].class);
                     final var index = i.getArgument(1, Integer.class); // NOSONAR
@@ -337,7 +337,7 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
                 })
                 .when(service)
                 .set(ArgumentMatchers.any(), ArgumentMatchers.anyInt());
-        // prepare a byte buffer which has a backing-array, and has enough remaining.
+        // prepare: a byte buffer which has a backing-array, and has enough remaining.
         final var buffer = Mockito.spy(
                 slice(ByteBuffer.allocate(HelloWorld.BYTES << 1), HelloWorld.BYTES)
         );
@@ -348,12 +348,12 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
         // ------------------------------------------------------------------------------------ when
         final var result = service.put(buffer);
         // ------------------------------------------------------------------------------------ then
-        // verify, <service.set(buffer.array(), buffer.arrayOffset() + position)> invoked, once
+        // verify: <service.set(buffer.array(), buffer.arrayOffset() + position)> invoked, once
 
-        // verify, <buffer>'s <position> increased by <12>
+        // verify: <buffer>'s <position> increased by <12>
 
         JavaNioByteBufferUtils.print(buffer);
-        // assert, <result> is same as <buffer>
+        // assert: <result> is same as <buffer>
         Assertions.assertSame(buffer, result);
     }
 
@@ -371,16 +371,16 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
     void __BufferDoesNotHaveBackingArray() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // stub, <service.set(array)> to just return the <array>
+        // stub: <service.set(array)> to just return the <array>
         stub_set_array_will_return_the_array();
-        // create a direct buffer
+        // prepare: create a spy object of a direct buffer
         final var buffer = Mockito.spy(
                 slice(ByteBuffer.allocateDirect(HelloWorld.BYTES << 1), HelloWorld.BYTES)
         );
         JavaNioByteBufferUtils.print(buffer);
         assert buffer.isDirect();
         assert buffer.remaining() >= HelloWorld.BYTES;
-        // assume, the <buffer> does not have a backing array
+        // assume: the <buffer> does not have a backing array
         Assumptions.assumeFalse(
                 buffer.hasArray(),
                 "failed to assume that a direct buffer does not have a backing array"
@@ -388,11 +388,11 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
         // ------------------------------------------------------------------------------------ when
         final var result = service.put(buffer);
         // ------------------------------------------------------------------------------------ then
-        // verify, <service.set(array[12])> invoked, once
+        // verify: <service.set(array[12])> invoked, once
         final var array = verify_set_array12_invoked_once();
-        // verify, <buffer.put(array)> invoked, once
+        // verify: <buffer.put(array)> invoked, once
 
-        // assert, <result> is same as <buffer>
+        // verify: <result> is same as <buffer>
         Assertions.assertSame(buffer, result);
     }
 }

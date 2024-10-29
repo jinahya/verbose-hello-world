@@ -59,7 +59,7 @@ class HelloWorld_03_Write_DataOutput_Test extends HelloWorldTest {
         final var service = service();
         final var output = (DataOutput) null;
         // ------------------------------------------------------------------------------- when/then
-        // assert, <service.write(output)> throws a <NullPointerException>
+        // assert: <service.write(output:null)> throws a <NullPointerException>
         Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.write(output)
@@ -78,7 +78,7 @@ class HelloWorld_03_Write_DataOutput_Test extends HelloWorldTest {
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // stub, <service.set(array)> to return the <array>.
+        // stub: <service.set(array)> to return the <array>.
         Mockito.doAnswer(i -> i.getArgument(0))
                 .when(service)
                 .set(ArgumentMatchers.any());
@@ -86,13 +86,12 @@ class HelloWorld_03_Write_DataOutput_Test extends HelloWorldTest {
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(output);
         // ------------------------------------------------------------------------------------ then
-        // verify, <set(byte[12])> invoked, once
+        // verify: <set(byte[12])> invoked, once
         final var array = verify_set_array12_invoked_once();
-        // verify, <output.write(array)> invoked, once
-
-        // verify, no more interactions with <output>
-
-        // verify <result> is same as <output>
+        // verify: <output.write(array)> invoked, once
+//        Mockito.verify(output, Mockito.times(1)).write(array);
+//        Mockito.verifyNoMoreInteractions(output);
+        // assert: <result> is same as <output>
         Assertions.assertSame(output, result);
     }
 }

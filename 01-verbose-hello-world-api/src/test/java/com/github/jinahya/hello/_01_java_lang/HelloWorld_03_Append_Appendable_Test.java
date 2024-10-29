@@ -59,6 +59,7 @@ class HelloWorld_03_Append_Appendable_Test extends HelloWorldTest {
         final var service = service();
         final var appendable = (Appendable) null;
         // ------------------------------------------------------------------------------- when/then
+        // assert: <service.append(appendable:null)> throws a <NullPointerException>
         Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.append(appendable)
@@ -81,34 +82,31 @@ class HelloWorld_03_Append_Appendable_Test extends HelloWorldTest {
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // stub, <service.set(array)> will return given <array>, as randomized
+        // stub: <service.set(array)> will return given <array>, as randomized
         Mockito.doAnswer(i -> {
-                    final var array = i.getArgument(0, byte[].class);
-                    ThreadLocalRandom.current().nextBytes(array);
-                    return array;
-                })
-                .when(service)
-                .set(ArgumentMatchers.any());
+            final var array = i.getArgument(0, byte[].class);
+            ThreadLocalRandom.current().nextBytes(array);
+            return array;
+        }).when(service).set(ArgumentMatchers.any());
+        // prepare: a mock object of <Appendable>
         final var appendable = Mockito.mock(Appendable.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.append(appendable);
         // ------------------------------------------------------------------------------------ then
-        // verify, <service.set(array[12])> invoked, once
+        // verify: <service.set(array[12])> invoked, once
         final var arrayCaptor = ArgumentCaptor.forClass(byte[].class);        // <1>
         Mockito.verify(service, Mockito.times(1)).set(arrayCaptor.capture()); // <2>
         final var array = arrayCaptor.getValue();                             // <3>
         Assertions.assertNotNull(array);                                      // <4>
         Assertions.assertEquals(HelloWorld.BYTES, array.length);              // <5>
-        // verify, each byte in <array>, cast as a <char>, appended to <appendable>
+        // verify: each byte in <array>, cast as a <char>, appended to <appendable>
         final var charCaptor = ArgumentCaptor.forClass(char.class);
-        // verify, <appendable.append(c)> invoked, <12> times
 //        Mockito.verify(appendable, Mockito.times(array.length)).append(charCaptor.capture());
 //        final var chars = charCaptor.getAllValues();
-        // assert, <chars[i]> is equal to <array[i]>
 //        for (int i = 0; i < chars.size(); i++) {
 //            Assertions.assertEquals(array[i], (byte) chars.get(i).charValue());
 //        }
-        // verify, <result> is same as <appendable>
+        // verify: <result> is same as <appendable>
         Assertions.assertSame(appendable, result);
     }
 }

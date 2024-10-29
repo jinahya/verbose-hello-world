@@ -48,19 +48,17 @@ class HelloWorld_22_Append_File_Using_RandomAccessFile_Test extends HelloWorldTe
     void __(@TempDir final File dir) throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // stub, <service.write(RandomAccessFile)> will write the <hello, world> bytes.
+        // stub: <service.write(RandomAccessFile)> will write the <hello, world> bytes.
         Mockito.doAnswer(i -> {
-                    final var file = i.getArgument(0, RandomAccessFile.class);
-                    file.write("hello, world".getBytes(StandardCharsets.US_ASCII));
-                    return file;
-                })
-                .when(service)
-                .write(ArgumentMatchers.<RandomAccessFile>notNull());
-        // create a temp file
+            final var file = i.getArgument(0, RandomAccessFile.class);
+            file.write(new_hello_world_array());
+            return file;
+        }).when(service).write(ArgumentMatchers.<RandomAccessFile>notNull());
+        // prepare: create a temp file
         final File file = File.createTempFile("tmp", null, dir);
         assert file.length() == 0L;
+        // prepare: a random <pos>
         final var pos = ThreadLocalRandom.current().nextLong(128L);
-        log.debug("pos: {}", pos);
         // ------------------------------------------------------------------------------------ when
         try (var f = new RandomAccessFile(file, "rw")) { // check, rws, rwd
             f.seek(pos);
@@ -69,23 +67,22 @@ class HelloWorld_22_Append_File_Using_RandomAccessFile_Test extends HelloWorldTe
             f.getFD().sync();
         }
         // ------------------------------------------------------------------------------------ then
-        // verify, <service.write(RandomAccessFile)> invoked, once
+        // verify: <service.write(RandomAccessFile)> invoked, once
         Mockito.verify(service, Mockito.times(1))
                 .write(ArgumentMatchers.<RandomAccessFile>notNull());
-        // verify, no unverified interactions on the <service>
         Mockito.verifyNoMoreInteractions(service);
-        // assert, <file.length> increased by <12>
+        // assert: <file>'s <length> increased by <12>
         Assertions.assertEquals(
                 pos + HelloWorld.BYTES,
                 file.length()
         );
-        // print <file>'s content
+        // verify: print <file>'s content
         try (var f = new RandomAccessFile(file, "r")) {
             f.seek(pos);
-            final var bytes = new byte[HelloWorld.BYTES];
-            final var r = f.read(bytes);
-            assert r == bytes.length;
-            log.debug("string: {}", new String(bytes, StandardCharsets.US_ASCII));
+            final var b = new byte[HelloWorld.BYTES];
+            final var r = f.read(b);
+            assert r == b.length;
+            log.debug("decoded: {}", new String(b, StandardCharsets.US_ASCII));
         }
     }
 }

@@ -32,7 +32,7 @@ import org.mockito.verification.VerificationMode;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * A class for unit-testing {@link HelloWorld#set(byte[])} method.
+ * A class for testing {@link HelloWorld#set(byte[])} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -50,7 +50,7 @@ class HelloWorld_02_Set_Array_Test extends HelloWorldTest {
      * {@link NullPointerException} when the {@code array} argument is {@code null}.
      */
     @DisplayName("""
-            should throw a NullPointerException
+            should throw a <NullPointerException>
             when the <array> argument is <null>"""
     )
     @Test
@@ -59,7 +59,11 @@ class HelloWorld_02_Set_Array_Test extends HelloWorldTest {
         final var service = service();
         final var array = (byte[]) null;
         // ------------------------------------------------------------------------------- when/then
-        // verify, service.set(array) throws a NullPointerException.
+        // verify: <service.set(null)> throws a <NullPointerException>
+//        Assertions.assertThrows(
+//                NullPointerException.class,
+//                () -> service.set(array)
+//        );
     }
 
     /**
@@ -68,17 +72,21 @@ class HelloWorld_02_Set_Array_Test extends HelloWorldTest {
      * {@link HelloWorld#BYTES}({@value HelloWorld#BYTES}).
      */
     @DisplayName("""
-            should throw an ArrayIndexOutOfBoundsException
-            when <array.length> is less than HelloWorld.BYTES"""
+            should throw an <ArrayIndexOutOfBoundsException>
+            when <array.length> is less than <HelloWorld.BYTES>"""
     )
     @Test
     void _ThrowArrayIndexOutOfBoundsException_ArrayLengthIsLessThan12() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var array = new byte[ThreadLocalRandom.current().nextInt(HelloWorld.BYTES)];
-        assert array.length < HelloWorld.BYTES;
+        assert array.length < HelloWorld.BYTES; // always 'true', I know
         // ------------------------------------------------------------------------------- when/then
-        // verify, service.set(array) throws an ArrayIndexOutOfBoundsException.
+        // verify: <service.set(array(.length<12))> throws an <ArrayIndexOutOfBoundsException>
+//        Assertions.assertThrows(
+//                ArrayIndexOutOfBoundsException.class, // <expectedType>
+//                () -> service.set(array)              // <executable>
+//        );
     }
 
     /**
@@ -97,18 +105,20 @@ class HelloWorld_02_Set_Array_Test extends HelloWorldTest {
     void __() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // stub, <service.set(array, index)> will just return the <array>
+        // stub: <service.set(array, index)> will just return the <array>
         Mockito.doAnswer(i -> i.getArgument(0)).when(service).set(
                 ArgumentMatchers.any(),   // <array>
                 ArgumentMatchers.anyInt() // <index>
         );
+        // prepare: an array of 12 bytes
         final var array = new byte[HelloWorld.BYTES];
+        assert array.length >= HelloWorld.BYTES; // always 'true', I know
         // ------------------------------------------------------------------------------------ when
         final var result = service.set(array);
         // ------------------------------------------------------------------------------------ then
-        // verify, <service.set(array, 0)> invoked, once
+        // verify: <service.set(array, 0)> invoked, once
 //        Mockito.verify(service, Mockito.times(1)).set(array, 0);
-        // assert, <result> is same as <array>
+        // assert: <result> is same as <array>
 //        Assertions.assertSame(array, result);
     }
 }
