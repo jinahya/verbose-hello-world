@@ -28,7 +28,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 
-import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
@@ -43,9 +42,9 @@ import java.util.stream.Stream;
 abstract class _HelloWorldTest {
 
     /**
-     * Returns a stream of {@link HelloWorld} interface to test.
+     * Returns a stream of instances of {@link HelloWorld} interface to test.
      *
-     * @return a stream of {@link HelloWorld} interface.
+     * @return a stream of instances of {@link HelloWorld} interface.
      */
     abstract Stream<HelloWorld> services();
 
@@ -54,8 +53,8 @@ abstract class _HelloWorldTest {
      * {@link NullPointerException} when the {@code array} argument is {@code null}.
      */
     @DisplayName("""
-            should throw a NullPointerException
-            when the array argument is null"""
+            should throw a <NullPointerException>
+            when the <array> argument is <null>"""
     )
     @TestFactory
     Stream<DynamicTest> _ThrowNullPointerException_ArrayIsNull() {
@@ -67,6 +66,7 @@ abstract class _HelloWorldTest {
                     String.format("%1$s.set(%2$s, %3$d)", s, Arrays.toString(array), index),
                     () -> {
                         // --------------------------------------------------------------- when/then
+                        // assert: s.set(array:null, index) throws a <NullPointerException>
                         Assertions.assertThrows(
                                 NullPointerException.class,
                                 () -> s.set(array, index)
@@ -78,14 +78,14 @@ abstract class _HelloWorldTest {
 
     /**
      * Verifies {@link HelloWorld#set(byte[], int) set(array, index)} method throws an
-     * {@link IndexOutOfBoundsException} when the {@code index} argument is negative.
+     * {@link ArrayIndexOutOfBoundsException} when the {@code index} argument is negative.
      */
     @DisplayName("""
-            should throw an IndexOutOfBoundsException
-            when the index argument is negative"""
+            should throw an <ArrayIndexOutOfBoundsException>
+            when the <index> argument is negative"""
     )
     @TestFactory
-    Stream<DynamicTest> _ThrowIndexOutOfBoundsException_IndexIsNegative() {
+    Stream<DynamicTest> _ThrowArrayIndexOutOfBoundsException_IndexIsNegative() {
         return services().map(s -> {
             // ------------------------------------------------------------------------------- given
             final var array = new byte[0];
@@ -94,8 +94,10 @@ abstract class _HelloWorldTest {
                     String.format("%1$s.set(%2$s, %3$d)", s, Arrays.toString(array), index),
                     () -> {
                         // --------------------------------------------------------------- when/then
+                        // assert: <service<array, index:negative)>
+                        //         throws an <ArrayIndexOutOfBoundsException>
                         Assertions.assertThrows(
-                                IndexOutOfBoundsException.class,
+                                ArrayIndexOutOfBoundsException.class,
                                 () -> s.set(array, index)
                         );
                     }
@@ -105,15 +107,15 @@ abstract class _HelloWorldTest {
 
     /**
      * Verifies {@link HelloWorld#set(byte[], int) set(array, index)} method throws an
-     * {@link IndexOutOfBoundsException} when the {@code array.length} is less than
+     * {@link ArrayIndexOutOfBoundsException} when the {@code array.length} is less than
      * ({@code index + }{@value HelloWorld#BYTES}).
      */
     @DisplayName("""
-            should throw an IndexOutOfBoundsException
-            when array.length is less than (index + HelloWorld.BYTES)"""
+            should throw an <ArrayIndexOutOfBoundsException>
+            when <array.length> is less than <index + HelloWorld.BYTES>"""
     )
     @TestFactory
-    Stream<DynamicTest> _ThrowIndexOutOfBoundsException_ArrayLengthLessThanIndexPlusBytes() {
+    Stream<DynamicTest> _ThrowArrayIndexOutOfBoundsException_ArrayLengthLessThanIndexPlusBytes() {
         return services().map(s -> {
             // ------------------------------------------------------------------------------- given
             final var array = new byte[ThreadLocalRandom.current().nextInt(HelloWorld.BYTES << 1)];
@@ -126,8 +128,9 @@ abstract class _HelloWorldTest {
                     String.format("%1$s.set(%2$s, %3$d)", s, Arrays.toString(array), index),
                     () -> {
                         // --------------------------------------------------------------- when/then
+                        // assert: <s.set(array, index)> throws an <ArrayIndexOutOfBoundsException>
                         Assertions.assertThrows(
-                                IndexOutOfBoundsException.class,
+                                ArrayIndexOutOfBoundsException.class,
                                 () -> s.set(array, index)
                         );
                     }
@@ -137,10 +140,10 @@ abstract class _HelloWorldTest {
 
     /**
      * Verifies {@link HelloWorldImpl#set(byte[], int) set(array, index)} method sets the
-     * <em>hello-world-bytes</em> on {@code array} starting at {@code index}, and returns given
+     * <em>hello-world-bytes</em> on {@code array} starting at {@code index}, and returns the
      * {@code array}.
      */
-    @DisplayName("should set hello-world-bytes on array starting at index")
+    @DisplayName("should set <hello-world-bytes> on <array> starting at <index>")
     @TestFactory
     Stream<DynamicTest> _SetHelloWorldBytesOnArrayStartingAtIndex_() {
         return services().map(s -> {
@@ -158,21 +161,21 @@ abstract class _HelloWorldTest {
                         // -------------------------------------------------------------------- when
                         final var result = s.set(array, index);
                         // -------------------------------------------------------------------- then
-                        // assert, 'hello, world' set on array starting at index
-                        final var buffer = ByteBuffer.wrap(array, index, HelloWorld.BYTES);
-                        Assertions.assertEquals('h', buffer.get());
-                        Assertions.assertEquals('e', buffer.get());
-                        Assertions.assertEquals('l', buffer.get());
-                        Assertions.assertEquals('l', buffer.get());
-                        Assertions.assertEquals('o', buffer.get());
-                        Assertions.assertEquals(',', buffer.get());
-                        Assertions.assertEquals(' ', buffer.get());
-                        Assertions.assertEquals('w', buffer.get());
-                        Assertions.assertEquals('o', buffer.get());
-                        Assertions.assertEquals('r', buffer.get());
-                        Assertions.assertEquals('l', buffer.get());
-                        Assertions.assertEquals('d', buffer.get());
-                        // assert, result is same as array
+                        // assert: 'hello, world' set on <array> starting at <index>
+                        var i = index;
+                        Assertions.assertEquals('h', array[i++]);
+                        Assertions.assertEquals('e', array[i++]);
+                        Assertions.assertEquals('l', array[i++]);
+                        Assertions.assertEquals('l', array[i++]);
+                        Assertions.assertEquals('o', array[i++]);
+                        Assertions.assertEquals(',', array[i++]);
+                        Assertions.assertEquals(' ', array[i++]);
+                        Assertions.assertEquals('w', array[i++]);
+                        Assertions.assertEquals('o', array[i++]);
+                        Assertions.assertEquals('r', array[i++]);
+                        Assertions.assertEquals('l', array[i++]);
+                        Assertions.assertEquals('d', array[i++]); // NOSONAR
+                        // assert: result is same as array
                         Assertions.assertSame(array, result);
                     }
             );
