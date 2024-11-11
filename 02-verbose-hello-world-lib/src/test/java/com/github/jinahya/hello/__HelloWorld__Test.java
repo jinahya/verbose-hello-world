@@ -39,7 +39,7 @@ import java.util.stream.Stream;
  */
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-abstract class _HelloWorldTest {
+abstract class __HelloWorld__Test {
 
     /**
      * Returns a stream of instances of {@link HelloWorld} interface to test.
@@ -161,22 +161,21 @@ abstract class _HelloWorldTest {
                         // -------------------------------------------------------------------- when
                         final var result = s.set(array, index);
                         // -------------------------------------------------------------------- then
-                        // assert: 'hello, world' set on <array> starting at <index>
-                        var i = index;
-                        Assertions.assertEquals('h', array[i++]);
-                        Assertions.assertEquals('e', array[i++]);
-                        Assertions.assertEquals('l', array[i++]);
-                        Assertions.assertEquals('l', array[i++]);
-                        Assertions.assertEquals('o', array[i++]);
-                        Assertions.assertEquals(',', array[i++]);
-                        Assertions.assertEquals(' ', array[i++]);
-                        Assertions.assertEquals('w', array[i++]);
-                        Assertions.assertEquals('o', array[i++]);
-                        Assertions.assertEquals('r', array[i++]);
-                        Assertions.assertEquals('l', array[i++]);
-                        Assertions.assertEquals('d', array[i++]); // NOSONAR
-                        // assert: result is same as array
+                        // assert: <result> is same as <array>
                         Assertions.assertSame(array, result);
+                        // assert: 'hello, world' set on the <array> starting at <index>
+                        Assertions.assertEquals('h', array[index]);
+                        Assertions.assertEquals('e', array[index + 0x1]);
+                        Assertions.assertEquals('l', array[index + 0x2]);
+                        Assertions.assertEquals('l', array[index + 0x3]);
+                        Assertions.assertEquals('o', array[index + 0x4]);
+                        Assertions.assertEquals(',', array[index + 005]); // ?
+                        Assertions.assertEquals(' ', array[index + 0x6]);
+                        Assertions.assertEquals('w', array[index + 0x7]);
+                        Assertions.assertEquals('o', array[index + 010]); // ?
+                        Assertions.assertEquals('r', array[index + 011]); // ?
+                        Assertions.assertEquals('l', array[index + 0xa]);
+                        Assertions.assertEquals(0x64, array[index + 11]);
                     }
             );
         });

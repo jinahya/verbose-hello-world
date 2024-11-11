@@ -20,6 +20,8 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.stream.Stream;
 
 /**
@@ -27,17 +29,13 @@ import java.util.stream.Stream;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-class HelloWorldImplTest extends _HelloWorldTest {
+@Slf4j
+class __HelloWorld_ImplTest extends __HelloWorld__Test {
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return {@inheritDoc}
-     * @implSpec The {@code services()} method of {@code HelloWorldImplTest} class returns a new
-     * instance of {@link HelloWorldImpl} class.
-     */
     @Override
     Stream<HelloWorld> services() {
-        return Stream.of(new HelloWorldImpl());
+        return Stream.of(
+                new HelloWorldImpl()
+        );
     }
 }

@@ -37,7 +37,7 @@ import java.util.stream.StreamSupport;
  */
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorldSpiTest extends _HelloWorldTest {
+class HelloWorldSpiTest extends __HelloWorld__Test {
 
     @Override
     Stream<HelloWorld> services() {

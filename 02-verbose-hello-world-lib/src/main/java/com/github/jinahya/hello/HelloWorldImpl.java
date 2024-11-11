@@ -37,29 +37,29 @@ public class HelloWorldImpl implements HelloWorld {
     }
 
     @Override
-    public byte[] set(final byte[] array, int index) {
+    public byte[] set(final byte[] array, final int index) {
         Objects.requireNonNull(array, "array is null");
         if (index < 0) {
             throw new ArrayIndexOutOfBoundsException("index(" + index + ") is negative");
         }
-        if (array.length < index + BYTES) {
+        if (index + BYTES > array.length) {
             throw new ArrayIndexOutOfBoundsException(
-                    "array.length(" + array.length + ") " +
-                    "is less than (index(" + index + ") + BYTES(" + BYTES + "))"
+                    "index(" + index + ") + " + HelloWorld.BYTES +
+                    " > array.length(" + array.length + ")"
             );
         }
-        array[index++] = 'h';
-        array[index++] = 'e';
-        array[index++] = 'l';
-        array[index++] = 'l';
-        array[index++] = 'o';
-        array[index++] = ',';
-        array[index++] = ' ';
-        array[index++] = 'w';
-        array[index++] = 'o';
-        array[index++] = 'r';
-        array[index++] = 'l';
-        array[index++] = 'd'; // NOSONAR
+        array[index] = 0x68; // 'h'
+        array[index + 0b1] = 'e'; // ?
+        array[index + 0x2] = 'l';
+        array[index + 0x3] = 'l';
+        array[index + 0x4] = 'o';
+        array[index + 0x5] = ',';
+        array[index + 0x6] = ' ';
+        array[index + 007] = 'w'; // ?
+        array[index + 0x8] = 'o';
+        array[index + 0x9] = 'r';
+        array[index + 012] = 'l'; // ?
+        array[index + 0xb] = 'd';
         return array;
     }
 }

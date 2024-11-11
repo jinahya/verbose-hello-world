@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -72,9 +73,9 @@
     <version.org.jboss.weld>6.0.0.Alpha1</version.org.jboss.weld> <!-- weld-junit5 -->
     <version.org.jboss.weld-junit>4.0.1.Final</version.org.jboss.weld-junit> <!-- weld-se-core -->
     <version.org.jboss.weld.se>${version.org.jboss.weld}</version.org.jboss.weld.se> <!-- weld-se-core -->
-    <version.org.junit>5.11.2</version.org.junit>
+    <version.org.junit>5.11.3</version.org.junit>
     <version.org.junit.jupiter>${version.org.junit}</version.org.junit.jupiter>
-    <version.org.mockito>5.14.1</version.org.mockito>
+    <version.org.mockito>5.14.2</version.org.mockito>
     <version.org.projectlombok>1.18.34</version.org.projectlombok>
     <version.org.reactivestreams>1.0.4</version.org.reactivestreams>
     <version.org.slf4j>2.1.0-alpha1</version.org.slf4j> <!-- https://central.sonatype.com/artifact/org.slf4j/slf4j-api -->
@@ -90,7 +91,7 @@
       <dependency><!-- https://search.maven.org/artifact/ch.qos.logback/logback-classic -->
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
-        <version>1.5.11</version>
+        <version>1.5.12</version>
       </dependency>
       <dependency>
         <groupId>com.formdev</groupId>
@@ -572,6 +573,14 @@
           <artifactId>versions-maven-plugin</artifactId>
           <version>2.16.2</version>
           <configuration>
+            <ruleSet>
+              <ignoreVersions>
+                <ignoreVersion>
+                  <type>regex</type>
+                  <version>.+[\.-](alpha|beta|Alpha|Beta).+</version>
+                </ignoreVersion>
+              </ignoreVersions>
+            </ruleSet>
             <processDependencyManagementTransitive>false</processDependencyManagementTransitive>
           </configuration>
         </plugin>

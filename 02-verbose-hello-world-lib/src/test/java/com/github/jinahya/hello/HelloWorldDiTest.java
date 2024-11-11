@@ -35,7 +35,7 @@ import java.util.stream.Stream;
  */
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-abstract class HelloWorldDiTest extends _HelloWorldTest {
+abstract class HelloWorldDiTest extends __HelloWorld__Test {
 
     // ---------------------------------------------------------------------------------------------
     @Override
