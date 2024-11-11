@@ -9,21 +9,21 @@ Too verbose?, See [succinct-hello-world](https://github.com/jinahya/succinct-hel
 
 ## Modules
 
-| module                                 | description                             |
-|----------------------------------------|-----------------------------------------|
-| `01-verbose-hello-world-api`           | Defines the `HelloWorld` interface      |
-| `02-verbose-hello-world-lib`           | Implements the `HelloWorld` interface   |
-| `03-verbose-hello-world-app`           | Prints `hello, world`                   |
-| `\- 01-verbose-hello-world-app1`       | Uses the `HelloWorldImpl`               |
-| `\- 02-verbose-hello-world-app2`       | &nbsp;&nbsp;-&nbsp;Service Provider Interface |
-| `\- 03-verbose-hello-world-app3`       | &nbsp;&nbsp;-&nbsp;Dependency Injection                    |
-| `\- 04-verbose-hello-world-app4`       | &nbsp;&nbsp;-&nbsp;Contexts and Dependency Injection       |
-| `04-verbose-hello-world-srv`           | Serves `hello, world` to clients        |
-| `\- 00-verbose-hello-world-srv-common` | &nbsp;&nbsp;-&nbsp;Common classes for `srv*`               |
-| `\- 01-verbose-hello-world-srv1`       |                                         |
-| `\- 02-verbose-hello-world-srv2`       |                                         |
-| `\- 03-verbose-hello-world-srv3`       |                                         |
-| `\- 04-verbose-hello-world-srv4`       |                                         |
+| module                           | description                                               |
+|----------------------------------|-----------------------------------------------------------|
+| `01-verbose-hello-world-api`     | Defines the `HelloWorld` interface                        |
+| `02-verbose-hello-world-lib`     | Implements the `HelloWorld` interface                     |
+| `03-verbose-hello-world-app`     | Prints `hello, world`                                     |
+| `\- 01-verbose-hello-world-app1` | Uses the `HelloWorldImpl`                                 |
+| `\- 02-verbose-hello-world-app2` | &nbsp;&nbsp;-&nbsp;SPI(Service Provider Interface)        |
+| `\- 03-verbose-hello-world-app3` | &nbsp;&nbsp;-&nbsp;DI(Dependency Injection)               |
+| `\- 04-verbose-hello-world-app4` | &nbsp;&nbsp;-&nbsp;CDI(Contexts and Dependency Injection) |
+
+## Issues to solve
+
+* [`hello-world-api`](https://github.com/jinahya/verbose-hello-world/issues/4)
+* [`hello-world-lib`](https://github.com/jinahya/verbose-hello-world/issues/12)
+* [`hello-world-app`](https://github.com/jinahya/verbose-hello-world/issues/13)
 
 ## Links
 
