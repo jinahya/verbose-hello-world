@@ -23,7 +23,7 @@ package com.github.jinahya.hello;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
-class HelloWorldImplRevisited extends HelloWorldImpl {
+class HelloWorldWrap extends HelloWorldImpl {
 
     @Override
     public byte[] set(final byte[] array, final int index) {

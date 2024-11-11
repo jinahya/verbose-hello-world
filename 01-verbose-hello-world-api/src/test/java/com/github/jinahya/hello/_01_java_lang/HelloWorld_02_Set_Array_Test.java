@@ -68,23 +68,23 @@ class HelloWorld_02_Set_Array_Test extends HelloWorldTest {
 
     /**
      * Verifies that the {@link HelloWorld#set(byte[]) set(array)} method throws an
-     * {@link ArrayIndexOutOfBoundsException} when {@code array.length} is less than
+     * {@link IndexOutOfBoundsException} when {@code array.length} is less than
      * {@link HelloWorld#BYTES}({@value HelloWorld#BYTES}).
      */
     @DisplayName("""
-            should throw an <ArrayIndexOutOfBoundsException>
+            should throw an <IndexOutOfBoundsException>
             when <array.length> is less than <HelloWorld.BYTES>"""
     )
     @Test
-    void _ThrowArrayIndexOutOfBoundsException_ArrayLengthIsLessThan12() {
+    void _ThrowIndexOutOfBoundsException_ArrayLengthIsLessThan12() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var array = new byte[ThreadLocalRandom.current().nextInt(HelloWorld.BYTES)];
         assert array.length < HelloWorld.BYTES; // always 'true', I know
         // ------------------------------------------------------------------------------- when/then
-        // verify: <service.set(array(.length<12))> throws an <ArrayIndexOutOfBoundsException>
+        // verify: <service.set(array(.length<12))> throws an <IndexOutOfBoundsException>
 //        Assertions.assertThrows(
-//                ArrayIndexOutOfBoundsException.class, // <expectedType>
+//                IndexOutOfBoundsException.class, // <expectedType>
 //                () -> service.set(array)              // <executable>
 //        );
     }

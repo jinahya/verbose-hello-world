@@ -120,10 +120,9 @@ public interface HelloWorld {
      * @param array the array on which bytes are set.
      * @param index the starting index of the {@code array} to which bytes are set.
      * @return given {@code array}.
-     * @throws NullPointerException           if {@code array} is {@code null}.
-     * @throws ArrayIndexOutOfBoundsException if {@code index} is negative, or ({@code index} plus
-     *                                        {@value #BYTES}) is greater than
-     *                                        {@code array.length}.
+     * @throws NullPointerException      if {@code array} is {@code null}.
+     * @throws IndexOutOfBoundsException if {@code index} is negative, or ({@code index} plus
+     *                                   {@value #BYTES}) is greater than {@code array.length}.
      * @see <a href="https://docs.oracle.com/javase/specs/jls/se21/html/jls-9.html#jls-9.4">9.4.
      * Method Declarations </a> (The Java® Language Specification / Java SE 21 Edition)
      * @see <a href="https://docs.oracle.com/javase/specs/jls/se21/html/jls-10.html#jls-10.4">10.4.
@@ -150,7 +149,7 @@ public interface HelloWorld {
      *     throw new NullPointerException("array is null");
      * }
      * if (array.length < BYTES) {
-     *     throw new ArrayIndexOutOfBoundsException("array.length(" + array.length +") < " + BYTES);
+     *     throw new IndexOutOfBoundsException("array.length(" + array.length +") < " + BYTES);
      * }
      * set(array, 0); // @highlight
      * return array;
@@ -158,9 +157,9 @@ public interface HelloWorld {
      *
      * @param array the array on which bytes are set.
      * @return given {@code array}.
-     * @throws NullPointerException           if {@code array} is {@code null}.
-     * @throws ArrayIndexOutOfBoundsException if {@code array.length} is less than
-     *                                        {@link #BYTES}({@value #BYTES}).
+     * @throws NullPointerException      if {@code array} is {@code null}.
+     * @throws IndexOutOfBoundsException if {@code array.length} is less than
+     *                                   {@link #BYTES}({@value #BYTES}).
      * @implSpec Default implementation invokes {@link #set(byte[], int) set(array, index)} method
      * with {@code array} and {@code 0}, and returns the {@code array}.
      * @see #set(byte[], int)
@@ -172,9 +171,9 @@ public interface HelloWorld {
 //        if (array == null) {
 //            throw new NullPointerException("array is null");
 //        }
-        // throw a <ArrayIndexOutOfBoundsException> when <array.length> is less than <BYTES>
+        // throw a <IndexOutOfBoundsException> when <array.length> is less than <BYTES>
 //        if (array.length < BYTES) {
-//            throw new ArrayIndexOutOfBoundsException("array.length(" + array.length + ") < " + BYTES)
+//            throw new IndexOutOfBoundsException("array.length(" + array.length + ") < " + BYTES)
 //        }
         // invoke <set(array, 0)>
 //        set(array, 0);

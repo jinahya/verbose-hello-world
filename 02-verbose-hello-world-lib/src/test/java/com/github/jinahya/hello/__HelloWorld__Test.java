@@ -48,6 +48,8 @@ abstract class __HelloWorld__Test {
      */
     abstract Stream<HelloWorld> services();
 
+    // ---------------------------------------------------------------------------------------------
+
     /**
      * Verifies {@link HelloWorld#set(byte[], int) set(array, index)} method throws a
      * {@link NullPointerException} when the {@code array} argument is {@code null}.
@@ -78,14 +80,14 @@ abstract class __HelloWorld__Test {
 
     /**
      * Verifies {@link HelloWorld#set(byte[], int) set(array, index)} method throws an
-     * {@link ArrayIndexOutOfBoundsException} when the {@code index} argument is negative.
+     * {@link IndexOutOfBoundsException} when the {@code index} argument is negative.
      */
     @DisplayName("""
-            should throw an <ArrayIndexOutOfBoundsException>
+            should throw an <IndexOutOfBoundsException>
             when the <index> argument is negative"""
     )
     @TestFactory
-    Stream<DynamicTest> _ThrowArrayIndexOutOfBoundsException_IndexIsNegative() {
+    Stream<DynamicTest> _ThrowIndexOutOfBoundsException_IndexIsNegative() {
         return services().map(s -> {
             // ------------------------------------------------------------------------------- given
             final var array = new byte[0];
@@ -95,9 +97,9 @@ abstract class __HelloWorld__Test {
                     () -> {
                         // --------------------------------------------------------------- when/then
                         // assert: <service<array, index:negative)>
-                        //         throws an <ArrayIndexOutOfBoundsException>
+                        //         throws an <IndexOutOfBoundsException>
                         Assertions.assertThrows(
-                                ArrayIndexOutOfBoundsException.class,
+                                IndexOutOfBoundsException.class,
                                 () -> s.set(array, index)
                         );
                     }
@@ -107,15 +109,15 @@ abstract class __HelloWorld__Test {
 
     /**
      * Verifies {@link HelloWorld#set(byte[], int) set(array, index)} method throws an
-     * {@link ArrayIndexOutOfBoundsException} when the {@code array.length} is less than
+     * {@link IndexOutOfBoundsException} when the {@code array.length} is less than
      * ({@code index + }{@value HelloWorld#BYTES}).
      */
     @DisplayName("""
-            should throw an <ArrayIndexOutOfBoundsException>
+            should throw an <IndexOutOfBoundsException>
             when <array.length> is less than <index + HelloWorld.BYTES>"""
     )
     @TestFactory
-    Stream<DynamicTest> _ThrowArrayIndexOutOfBoundsException_ArrayLengthLessThanIndexPlusBytes() {
+    Stream<DynamicTest> _ThrowIndexOutOfBoundsException_ArrayLengthLessThanIndexPlusBytes() {
         return services().map(s -> {
             // ------------------------------------------------------------------------------- given
             final var array = new byte[ThreadLocalRandom.current().nextInt(HelloWorld.BYTES << 1)];
@@ -128,9 +130,9 @@ abstract class __HelloWorld__Test {
                     String.format("%1$s.set(%2$s, %3$d)", s, Arrays.toString(array), index),
                     () -> {
                         // --------------------------------------------------------------- when/then
-                        // assert: <s.set(array, index)> throws an <ArrayIndexOutOfBoundsException>
+                        // assert: <s.set(array, index)> throws an <IndexOutOfBoundsException>
                         Assertions.assertThrows(
-                                ArrayIndexOutOfBoundsException.class,
+                                IndexOutOfBoundsException.class,
                                 () -> s.set(array, index)
                         );
                     }

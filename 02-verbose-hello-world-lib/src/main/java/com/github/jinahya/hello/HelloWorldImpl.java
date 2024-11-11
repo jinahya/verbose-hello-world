@@ -40,10 +40,10 @@ public class HelloWorldImpl implements HelloWorld {
     public byte[] set(final byte[] array, final int index) {
         Objects.requireNonNull(array, "array is null");
         if (index < 0) {
-            throw new ArrayIndexOutOfBoundsException("index(" + index + ") is negative");
+            throw new IndexOutOfBoundsException("index(" + index + ") is negative");
         }
         if (index + BYTES > array.length) {
-            throw new ArrayIndexOutOfBoundsException(
+            throw new IndexOutOfBoundsException(
                     "index(" + index + ") + " + HelloWorld.BYTES +
                     " > array.length(" + array.length + ")"
             );

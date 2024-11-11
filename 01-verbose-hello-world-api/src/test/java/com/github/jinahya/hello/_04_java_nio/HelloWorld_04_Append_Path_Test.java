@@ -43,8 +43,6 @@ import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.Arrays;
-import java.util.HashSet;
 
 /**
  * A class for testing {@link HelloWorld#append(Path) append(path)} method.
