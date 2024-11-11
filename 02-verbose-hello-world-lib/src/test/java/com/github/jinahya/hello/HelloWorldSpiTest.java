@@ -41,7 +41,7 @@ class HelloWorldSpiTest extends __HelloWorld__Test {
 
     @Override
     Stream<HelloWorld> services() {
-        // uncomment elements in /META-INF/services/com.github.jinahya.hello.HelloWorld
+        // see /META-INF/services/com.github.jinahya.hello.HelloWorld
         return StreamSupport.stream(
                 Spliterators.spliteratorUnknownSize(
                         ServiceLoader.load(HelloWorld.class).iterator(),
