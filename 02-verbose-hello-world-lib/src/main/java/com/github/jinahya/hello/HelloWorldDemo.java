@@ -31,6 +31,8 @@ import java.nio.charset.StandardCharsets;
  */
 public class HelloWorldDemo implements HelloWorld {
 
+    private static final String SRC = "hello, world";
+
     @Override
     public String toString() {
         return JavaLangObjectUtils.toSimpleString(this);
@@ -38,7 +40,8 @@ public class HelloWorldDemo implements HelloWorld {
 
     @Override
     public byte[] set(final byte[] array, final int index) {
-        final var src = "hello, world".getBytes(StandardCharsets.US_ASCII);
+        final var src = SRC.getBytes(StandardCharsets.US_ASCII);
+        assert src.length == BYTES;
         System.arraycopy(
                 src,       // <src>
                 0,         // <srcPos>

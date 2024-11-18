@@ -20,8 +20,16 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+/**
+ * A {@link HelloWorldServiceProvider} for {@link HelloWorldDemo}.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 public class HelloWorldServiceProvider_Demo extends HelloWorldServiceProvider_<HelloWorldDemo> {
 
+    /**
+     * Creates a new instance.
+     */
     public HelloWorldServiceProvider_Demo() {
         super(HelloWorldDemo.class);
     }

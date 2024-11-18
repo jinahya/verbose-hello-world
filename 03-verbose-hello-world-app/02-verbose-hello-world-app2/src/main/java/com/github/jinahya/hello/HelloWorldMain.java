@@ -21,6 +21,7 @@ package com.github.jinahya.hello;
  */
 
 import java.io.IOException;
+import java.util.ServiceLoader;
 
 /**
  * A program whose {@link #main(String[])} method prints {@code hello, world} to
@@ -39,15 +40,14 @@ public class HelloWorldMain {
      * @see java.util.ServiceLoader#load(Class)
      * @see System#lineSeparator()
      */
-    public static void main(String... args)
-            throws IOException {
-        // TODO: Load a service of HelloWorld.class
-        // TODO: Print the 'hello, world' to System.out using the service
-        // TODO: Print a system-specific line separator to System.out
+    public static void main(String... args) throws IOException {
+        final var loader = ServiceLoader.load(HelloWorld.class);
+        final var service = loader.iterator().next(); // NoSuchElementException
+        service.write(System.out).println();
     }
 
     /**
-     * Creates a new instance, which is no possible.
+     * Creates a new instance, which is not possible.
      */
     private HelloWorldMain() {
         throw new AssertionError("instantiation is not allowed");

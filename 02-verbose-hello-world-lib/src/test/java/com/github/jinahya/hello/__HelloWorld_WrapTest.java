@@ -21,7 +21,9 @@ package com.github.jinahya.hello;
  */
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Test;
 
+import java.nio.ByteBuffer;
 import java.util.stream.Stream;
 
 /**
@@ -37,5 +39,41 @@ class __HelloWorld_WrapTest extends __HelloWorld__Test {
         return Stream.of(
                 new HelloWorldWrap()
         );
+    }
+
+    @Test
+    void __ArrayIsNull() {
+        try {
+            ByteBuffer.wrap(null, 0, 0);
+        } catch (final Exception t) {
+            t.printStackTrace();
+        }
+    }
+
+    @Test
+    void __IndexIsNegative() {
+        try {
+            ByteBuffer.wrap(new byte[0], -1, 0);
+        } catch (final Exception t) {
+            t.printStackTrace();
+        }
+    }
+
+    @Test
+    void __1() {
+        try {
+            ByteBuffer.wrap(new byte[12], 1, 12);
+        } catch (final Exception t) {
+            t.printStackTrace();
+        }
+    }
+
+    @Test
+    void __2() {
+        try {
+            ByteBuffer.wrap(new byte[11], 0, 12);
+        } catch (final Exception t) {
+            t.printStackTrace();
+        }
     }
 }

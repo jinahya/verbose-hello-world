@@ -130,7 +130,8 @@ abstract class __HelloWorld__Test {
                     String.format("%1$s.set(%2$s, %3$d)", s, Arrays.toString(array), index),
                     () -> {
                         // --------------------------------------------------------------- when/then
-                        // assert: <s.set(array, index)> throws an <IndexOutOfBoundsException>
+                        // assert: <s.set(array, index(> array.length - 12))>
+                        //         throws an <IndexOutOfBoundsException>
                         Assertions.assertThrows(
                                 IndexOutOfBoundsException.class,
                                 () -> s.set(array, index)

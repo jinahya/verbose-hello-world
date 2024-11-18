@@ -47,9 +47,9 @@ public class HelloWorldMain {
      */
     public static void main(final String... args) throws IOException {
         try (var container = SeContainerInitializer.newInstance().initialize()) {
-            final var main = CDI.current().select(HelloWorldMain.class).get();
-            // TODO: Print the 'hello, world' to System.out using main.service
-            // TODO: Print a system-dependent line separator the the System.out
+            final var instance = CDI.current().select(HelloWorldMain.class).get();
+            assert instance.service != null;
+            instance.service.write(System.out).println();
         }
     }
 

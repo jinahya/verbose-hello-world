@@ -25,10 +25,12 @@ import java.nio.charset.StandardCharsets;
 
 class HelloWorldWrap extends HelloWorldImpl {
 
+    private static final String STRING = "hello, world";
+
     @Override
     public byte[] set(final byte[] array, final int index) {
         return ByteBuffer.wrap(array, index, HelloWorld.BYTES)
-                .put("hello, world".getBytes(StandardCharsets.US_ASCII))
+                .put(STRING.getBytes(StandardCharsets.US_ASCII))
                 .array();
     }
 }
