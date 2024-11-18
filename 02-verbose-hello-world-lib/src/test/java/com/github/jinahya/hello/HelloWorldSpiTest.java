@@ -39,15 +39,20 @@ import java.util.stream.StreamSupport;
 @Slf4j
 class HelloWorldSpiTest extends __HelloWorld__Test {
 
-    @Override
-    Stream<HelloWorld> services() {
-        // see /META-INF/services/com.github.jinahya.hello.HelloWorld
+    private static Stream<HelloWorldServiceProvider> serviceProviderStream() {
+        // see /META-INF/services/com.github.jinahya.hello.HelloWorldServiceProvider
         return StreamSupport.stream(
                 Spliterators.spliteratorUnknownSize(
-                        ServiceLoader.load(HelloWorld.class).iterator(),
+                        ServiceLoader.load(HelloWorldServiceProvider.class).iterator(),
                         Spliterator.ORDERED
                 ),
                 false
         );
+    }
+
+    @Override
+    Stream<HelloWorld> services() {
+        return serviceProviderStream()
+                .map(HelloWorldServiceProvider::getService);
     }
 }
