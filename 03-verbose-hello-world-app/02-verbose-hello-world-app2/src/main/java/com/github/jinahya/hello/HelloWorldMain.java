@@ -20,7 +20,7 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ServiceLoader;
 
 /**
@@ -36,14 +36,16 @@ public class HelloWorldMain {
      * followed by a system-dependent line separator.
      *
      * @param args an array of command line arguments
-     * @throws IOException if an I/O error occurs.
      * @see java.util.ServiceLoader#load(Class)
-     * @see System#lineSeparator()
      */
-    public static void main(String... args) throws IOException {
+    public static void main(String... args) {
         final var loader = ServiceLoader.load(HelloWorld.class);
         final var service = loader.iterator().next(); // NoSuchElementException
-        service.write(System.out).println();
+        final var string = new String(
+                service.set(new byte[HelloWorld.BYTES]),
+                StandardCharsets.US_ASCII
+        );
+        System.out.printf("%1$s%n", string);
     }
 
     /**
