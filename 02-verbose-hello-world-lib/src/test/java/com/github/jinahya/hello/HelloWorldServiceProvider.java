@@ -20,6 +20,14 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import java.util.Objects;
+import java.util.function.Function;
+
+/**
+ * An interface for providing an instance of {@link HelloWorld} interface.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 interface HelloWorldServiceProvider {
 
     /**
@@ -30,17 +38,16 @@ interface HelloWorldServiceProvider {
     HelloWorld getService();
 
     /**
-     * Sets the {@code hello, world} bytes on specified array starting at specified index.
+     * Applies an instance of {@link HelloWorld} interface, returned from {@link #getService()}
+     * method, to specified function, and returns the result.
      *
-     * @param array the array on which the {@code hello, world} bytes are set.
-     * @param index the starting index in the {@code array}.
-     * @return given {@code array}.
-     * @implSpec default implementation invokes
-     * {@link HelloWorld#set(byte[], int) set(array, index)} method on a service returned from
-     * {@link #getService()}, with {@code array} and {@code index}, and returns the result.
-     * @see HelloWorld#set(byte[], int)
+     * @param function the function.
+     * @param <R>      result type parameter
+     * @return the result of the {@code function}.
+     * @see #getService()
      */
-    default byte[] set(final byte[] array, final int index) {
-        return getService().set(array, index);
+    default <R> R applyService(final Function<? super HelloWorld, ? extends R> function) {
+        return Objects.requireNonNull(function, "function is null")
+                .apply(getService());
     }
 }

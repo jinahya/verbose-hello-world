@@ -2,26 +2,41 @@ package com.github.jinahya.hello;
 
 import java.util.Objects;
 
+/**
+ * An abstract class for implementing {@link HelloWorldServiceProvider} interface.
+ *
+ * @param <T> service type parameter
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 abstract class HelloWorldServiceProvider_<T extends HelloWorld>
         implements HelloWorldServiceProvider {
 
-    HelloWorldServiceProvider_(final Class<T> implClass) {
+    // -------------------------------------------------------------------------------- CONSTRUCTORS
+
+    /**
+     * Creates a new instance with specified service class.
+     *
+     * @param serviceClass the service class.
+     */
+    HelloWorldServiceProvider_(final Class<T> serviceClass) {
         super();
-        this.implClass = Objects.requireNonNull(implClass, "implClass is null");
+        this.serviceClass = Objects.requireNonNull(serviceClass, "serviceClass is null");
     }
 
+    // ------------------------------------------------------------------- HelloWorldServiceProvider
     @Override
     public HelloWorld getService() {
         try {
-            final var constructor = implClass.getDeclaredConstructor();
+            final var constructor = serviceClass.getDeclaredConstructor();
             if (!constructor.canAccess(null)) {
                 constructor.setAccessible(true);
             }
             return constructor.newInstance();
         } catch (final ReflectiveOperationException roe) {
-            throw new RuntimeException("failed to instantiate " + implClass, roe);
+            throw new RuntimeException("failed to instantiate " + serviceClass, roe);
         }
     }
 
-    private final Class<T> implClass;
+    // ----------------------------------------------------------------------------- INSTANCE_FIELDS
+    private final Class<T> serviceClass;
 }
