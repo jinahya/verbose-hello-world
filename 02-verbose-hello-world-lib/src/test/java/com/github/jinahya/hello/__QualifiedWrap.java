@@ -20,27 +20,24 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-@SuppressWarnings(
-        "java:S115" // Constant names should comply with a naming convention
-                    )
-final class HelloWorldDiConstants {
+import jakarta.inject.Qualifier;
 
-    /**
-     * An injection qualifier for {@link HelloWorldDemo}.
-     */
-    static final String _NAME_DEMO = "demo";
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-    /**
-     * An injection qualifier for {@link HelloWorldImpl}.
-     */
-    static final String _NAME_IMPL = "impl";
+/**
+ * An injection qualifier for {@link HelloWorldWrap}.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
+@Documented
+@Qualifier
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE,
+         ElementType.ANNOTATION_TYPE})
+@interface __QualifiedWrap {
 
-    /**
-     * An injection qualifier for {@link HelloWorldWrap}.
-     */
-    static final String _NAME_WRAP = "wrap";
-
-    private HelloWorldDiConstants() {
-        throw new AssertionError("instantiation is not allowed");
-    }
 }

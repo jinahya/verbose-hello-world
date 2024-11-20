@@ -41,12 +41,12 @@ class HelloWorldCdiSeTestInstanceFactory implements TestInstanceFactory {
             throws TestInstantiationException {
         final var testClass = factoryContext.getTestClass();
         log.debug("testClass: {}", testClass);
-        final var containerInitializer = SeContainerInitializer.newInstance()
+        final var seContainerInitializer = SeContainerInitializer.newInstance()
                 .addBeanClasses(HelloWorldCdiFactory.class, testClass);
-        log.debug("containerInitializer: {}", containerInitializer);
-        try (var container = containerInitializer.initialize()) {
-            log.debug("container: {}", container);
-            return container.select(testClass).get();
+        log.debug("seContainerInitializer: {}", seContainerInitializer);
+        try (var seContainer = seContainerInitializer.initialize()) {
+            log.debug("seContainer: {}", seContainer);
+            return seContainer.select(testClass).get();
         }
     }
 }
