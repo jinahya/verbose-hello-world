@@ -49,6 +49,18 @@ jobs:
         run: mvn -Pcdi-se-openwebbeans -pl 02-verbose-hello-world-lib test
       - name: cdi-se-openwebbeans-junit5
         run: mvn -Pcdi-se-openwebbeans-junit5 -pl 02-verbose-hello-world-lib test
+      - name: cdi-se-weld
+        run: mvn -Pcdi-se-weld -pl 02-verbose-hello-world-lib test
+      - name: cdi-se-weld-junit5
+        run: mvn -Pcdi-se-weld-junit5 -pl 02-verbose-hello-world-lib test
+      - name: di-dagger
+        run: mvn -Pdi-dagger -pl 02-verbose-hello-world-lib test
+      - name: di-guice
+        run: mvn -Pdi-guice -pl 02-verbose-hello-world-lib test
+      - name: di-hk2
+        run: mvn -Phk2 -pl 02-verbose-hello-world-lib test
+      - name: di-spring
+        run: mvn -Pspring -pl 02-verbose-hello-world-lib test
 
       # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
       - name: Update dependency graph
