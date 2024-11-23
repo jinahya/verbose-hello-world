@@ -42,12 +42,10 @@ class HelloWorldSpiTest extends __HelloWorld__Test {
     @Override
     Stream<HelloWorld> services() {
         // see /META-INF/services/com.github.jinahya.hello.HelloWorldServiceProvider
-        return StreamSupport.stream(
-                Spliterators.spliteratorUnknownSize(
-                        ServiceLoader.load(HelloWorldServiceProvider.class).iterator(),
-                        Spliterator.ORDERED
-                ),
-                false
-        ).map(HelloWorldServiceProvider::getService);
+        final var provider = ServiceLoader.load(HelloWorldServiceProvider.class);
+        final var iterator = provider.iterator();
+        final var spliterator = Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED);
+        final var stream = StreamSupport.stream(spliterator, false);
+        return stream.map(HelloWorldServiceProvider::getService);
     }
 }
