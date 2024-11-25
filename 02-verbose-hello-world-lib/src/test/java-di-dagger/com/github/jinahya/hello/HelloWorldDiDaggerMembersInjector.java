@@ -20,23 +20,10 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import com.google.inject.BindingAnnotation;
+import dagger.MembersInjector;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-/**
- * An injection qualifier for {@link HelloWorldImpl}.
- *
- * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- */
-@BindingAnnotation
-@__QualifiedDemo
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE,
-         ElementType.ANNOTATION_TYPE})
-@interface _BindingQualifiedImpl {
+@dagger.Component(modules = {HelloWorldDiDaggerModule.class})
+interface HelloWorldDiDaggerMembersInjector
+        extends MembersInjector<HelloWorldDiDaggerTest> {
 
 }

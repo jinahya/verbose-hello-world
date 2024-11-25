@@ -28,15 +28,17 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * An injection qualifier for {@link HelloWorldDemo}.
+ * An injection qualifier for {@link HelloWorldWrap}.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ * @deprecated Use {@link __QualifiedWrap}
  */
+@Deprecated(forRemoval = true)
 @BindingAnnotation
 @__QualifiedDemo
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE,
          ElementType.ANNOTATION_TYPE})
-@interface _BindingQualifiedDemo {
+@interface ___BindingQualifiedWrap {
 
 }

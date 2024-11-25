@@ -49,6 +49,13 @@ class HelloWorldDiSpringConfiguration {
         return new HelloWorldImpl();
     }
 
+    @Named(HelloWorldDiConstants._NAME_WRAP)
+    @Bean
+    HelloWorld namedWrap() {
+        return new HelloWorldWrap();
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
     @__QualifiedDemo
     @Bean
     HelloWorld qualifiedDemo() {
@@ -59,5 +66,11 @@ class HelloWorldDiSpringConfiguration {
     @Bean
     HelloWorld qualifiedImpl() {
         return new HelloWorldImpl();
+    }
+
+    @__QualifiedWrap
+    @Bean
+    HelloWorld qualifiedWrap() {
+        return new HelloWorldWrap();
     }
 }

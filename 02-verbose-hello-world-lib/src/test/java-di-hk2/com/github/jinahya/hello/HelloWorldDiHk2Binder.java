@@ -27,17 +27,20 @@ import org.glassfish.hk2.api.AnnotationLiteral;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 
 import java.io.Serial;
+import java.lang.annotation.Annotation;
 
 /**
  * A binder for injecting {@link HelloWorld} instances.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ * @see <a href="https://stackoverflow.com/q/29767581/330457">How can I bind a factory to a
+ * annotation-qualified injection point?</a>
  */
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorldDiHk2Binder extends AbstractBinder {
 
-    private static class _QualifiedDemo_
+    private static class __QualifiedDemo_Literal
             extends AnnotationLiteral<__QualifiedDemo>
             implements __QualifiedDemo {
 
@@ -45,7 +48,7 @@ class HelloWorldDiHk2Binder extends AbstractBinder {
         private static final long serialVersionUID = 8947668889394516822L;
     }
 
-    private static class _QualifiedImpl_
+    private static class __QualifiedImpl_Literal
             extends AnnotationLiteral<__QualifiedImpl>
             implements __QualifiedImpl {
 
@@ -53,19 +56,41 @@ class HelloWorldDiHk2Binder extends AbstractBinder {
         private static final long serialVersionUID = 9084623087464727990L;
     }
 
+    private static class __QualifiedWrap_Literal
+            extends AnnotationLiteral<__QualifiedWrap>
+            implements __QualifiedWrap {
+
+        @Serial
+        private static final long serialVersionUID = 6283966703912042049L;
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    private void bindNamed(final Class<? extends HelloWorld> serviceClass, String name) {
+        log.debug("binding {}, named as '{}', to {}", serviceClass.getSimpleName(), name,
+                  HelloWorld.class.getSimpleName());
+        bind(serviceClass)
+                .named(name)
+                .to(HelloWorld.class);
+    }
+
+    private void bindQualified(final Class<? extends HelloWorld> serviceClass,
+                               final Annotation annotation) {
+        log.debug("binding {}, qualified by @{}, to {}", serviceClass.getSimpleName(),
+                  annotation.annotationType().getSimpleName(), HelloWorld.class.getSimpleName());
+        bind(serviceClass)
+                .qualifiedBy(annotation)
+                .to(HelloWorld.class);
+    }
+
+    // ---------------------------------------------------------------------------------------------
     @Override
     protected void configure() {
-        bind(HelloWorldDemo.class)
-                .named(HelloWorldDiConstants._NAME_DEMO)
-                .to(HelloWorld.class);
-        bind(HelloWorldImpl.class)
-                .named(HelloWorldDiConstants._NAME_IMPL)
-                .to(HelloWorld.class);
-        bind(HelloWorldDemo.class)
-                .qualifiedBy(new _QualifiedDemo_())
-                .to(HelloWorld.class);
-        bind(HelloWorldImpl.class)
-                .qualifiedBy(new _QualifiedImpl_())
-                .to(HelloWorld.class);
+        bindNamed(HelloWorldDemo.class, HelloWorldDiConstants._NAME_DEMO);
+        bindNamed(HelloWorldImpl.class, HelloWorldDiConstants._NAME_IMPL);
+        bindNamed(HelloWorldWrap.class, HelloWorldDiConstants._NAME_WRAP);
+        // -----------------------------------------------------------------------------------------
+        bindQualified(HelloWorldDemo.class, new __QualifiedDemo_Literal());
+        bindQualified(HelloWorldImpl.class, new __QualifiedImpl_Literal());
+        bindQualified(HelloWorldWrap.class, new __QualifiedWrap_Literal());
     }
 }

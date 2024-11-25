@@ -23,6 +23,7 @@ package com.github.jinahya.hello;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,10 +33,24 @@ import java.util.stream.Stream;
  * An abstract class for testing {@link HelloWorld} implementations using Dependency Injection.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ * @see <a href="https://jcp.org/en/jsr/detail?id=330">JSR 330: Dependency Injection for Java</a>
  */
+@Getter(AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 abstract class HelloWorldDiTest extends __HelloWorld__Test {
+
+    @Override
+    public String toString() {
+        return super.toString() + '{' +
+               "namedDemo=" + namedDemo +
+               ",namedImpl=" + namedImpl +
+               ",namedWrap=" + namedWrap +
+               ",qualifiedDemo=" + qualifiedDemo +
+               ",qualifiedImpl=" + qualifiedImpl +
+               ",qualifiedWrap=" + qualifiedWrap +
+               '}';
+    }
 
     // ---------------------------------------------------------------------------------------------
     @Override
@@ -43,8 +58,10 @@ abstract class HelloWorldDiTest extends __HelloWorld__Test {
         return Stream.of(
                 namedDemo,
                 namedImpl,
+                namedWrap,
                 qualifiedDemo,
-                qualifiedImpl
+                qualifiedImpl,
+                qualifiedWrap
         );
     }
 
@@ -57,6 +74,11 @@ abstract class HelloWorldDiTest extends __HelloWorld__Test {
     @Inject
     HelloWorld namedImpl;
 
+    @Named(HelloWorldDiConstants._NAME_WRAP)
+    @Inject
+    HelloWorld namedWrap;
+
+    // ---------------------------------------------------------------------------------------------
     @__QualifiedDemo
     @Inject
     HelloWorld qualifiedDemo;
@@ -64,4 +86,8 @@ abstract class HelloWorldDiTest extends __HelloWorld__Test {
     @__QualifiedImpl
     @Inject
     HelloWorld qualifiedImpl;
+
+    @__QualifiedWrap
+    @Inject
+    HelloWorld qualifiedWrap;
 }

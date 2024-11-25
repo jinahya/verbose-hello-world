@@ -20,39 +20,64 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import dagger.Module;
 import dagger.Provides;
 import jakarta.inject.Named;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@Module
+import java.lang.annotation.Annotation;
+
+@dagger.Module
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorldDiDaggerModule {
 
+    private static HelloWorld provideNamed(final String name, final HelloWorld bean) {
+        log.debug("providing {} for '{}'", bean, name);
+        return bean;
+    }
+
     @Named(HelloWorldDiConstants._NAME_DEMO)
     @Provides
     static HelloWorld provideNamedDemo() {
-        return new HelloWorldDemo();
+        return provideNamed(HelloWorldDiConstants._NAME_DEMO, new HelloWorldDemo());
     }
 
     @Named(HelloWorldDiConstants._NAME_IMPL)
     @Provides
     static HelloWorld provideNamedImpl() {
-        return new HelloWorldImpl();
+        return provideNamed(HelloWorldDiConstants._NAME_IMPL, new HelloWorldImpl());
+    }
+
+    @Named(HelloWorldDiConstants._NAME_WRAP)
+    @Provides
+    static HelloWorld provideNamedWrap() {
+        return provideNamed(HelloWorldDiConstants._NAME_WRAP, new HelloWorldWrap());
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    private static HelloWorld provideQualified(final HelloWorld bean,
+                                               final Class<? extends Annotation> annotationClass) {
+        log.debug("providing {} for '{}'", bean, annotationClass.getSimpleName());
+        return bean;
     }
 
     @__QualifiedDemo
     @Provides
     static HelloWorld provideQualifiedDemo() {
-        return new HelloWorldDemo();
+        return provideQualified(new HelloWorldDemo(), __QualifiedDemo.class);
     }
 
     @__QualifiedImpl
     @Provides
     static HelloWorld provideQualifiedImpl() {
-        return new HelloWorldImpl();
+        return provideQualified(new HelloWorldImpl(), __QualifiedImpl.class);
+    }
+
+    @__QualifiedWrap
+    @Provides
+    static HelloWorld provideQualifiedWrap() {
+        return provideQualified(new HelloWorldWrap(), __QualifiedWrap.class);
     }
 }

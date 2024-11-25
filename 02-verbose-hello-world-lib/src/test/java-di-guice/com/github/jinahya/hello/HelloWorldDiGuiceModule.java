@@ -26,8 +26,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.lang.annotation.Annotation;
+
 /**
- * A Guice module for injecting {@link HelloWorld} instances.
+ * A module for injecting {@link HelloWorld} instances.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -35,28 +37,36 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 class HelloWorldDiGuiceModule extends AbstractModule {
 
+    private void bindNamed(final String name, final Class<? extends HelloWorld> serviceClass) {
+        log.debug("binding {} annotated with '{}' to {}", HelloWorld.class.getSimpleName(),
+                  name, serviceClass.getSimpleName());
+        bind(HelloWorld.class)
+                .annotatedWith(Names.named(name))
+                .to(serviceClass);
+    }
+
+    private void bindAnnotated(final Class<? extends Annotation> annotationClass,
+                               final Class<? extends HelloWorld> serviceClass) {
+        log.debug("binding {} annotated with @{} to {}", HelloWorld.class.getSimpleName(),
+                  annotationClass.getSimpleName(), serviceClass.getSimpleName());
+        bind(HelloWorld.class)
+                .annotatedWith(annotationClass)
+                .to(serviceClass);
+    }
+
     @Override
     protected void configure() {
         // -----------------------------------------------------------------------------------------
-        bind(HelloWorld.class)
-                .annotatedWith(Names.named(HelloWorldDiConstants._NAME_DEMO))
-                .to(HelloWorldDemo.class);
-        bind(HelloWorld.class)
-                .annotatedWith(Names.named(HelloWorldDiConstants._NAME_IMPL))
-                .to(HelloWorldImpl.class);
+        bindNamed(HelloWorldDiConstants._NAME_DEMO, HelloWorldDemo.class);
+        bindNamed(HelloWorldDiConstants._NAME_IMPL, HelloWorldImpl.class);
+        bindNamed(HelloWorldDiConstants._NAME_WRAP, HelloWorldWrap.class);
         // -----------------------------------------------------------------------------------------
-        bind((HelloWorld.class))
-                .annotatedWith(__QualifiedDemo.class)
-                .to(HelloWorldDemo.class);
-        bind((HelloWorld.class))
-                .annotatedWith(__QualifiedImpl.class)
-                .to(HelloWorldImpl.class);
+        bindAnnotated(__QualifiedDemo.class, HelloWorldDemo.class);
+        bindAnnotated(__QualifiedImpl.class, HelloWorldImpl.class);
+        bindAnnotated(__QualifiedWrap.class, HelloWorldWrap.class);
         // -----------------------------------------------------------------------------------------
-        bind((HelloWorld.class))
-                .annotatedWith(_BindingQualifiedDemo.class)
-                .to(HelloWorldDemo.class);
-        bind((HelloWorld.class))
-                .annotatedWith(_BindingQualifiedImpl.class)
-                .to(HelloWorldImpl.class);
+        bindAnnotated(___BindingQualifiedDemo.class, HelloWorldDemo.class);
+        bindAnnotated(___BindingQualifiedImpl.class, HelloWorldImpl.class);
+        bindAnnotated(___BindingQualifiedWrap.class, HelloWorldWrap.class);
     }
 }

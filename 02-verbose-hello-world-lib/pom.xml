@@ -94,7 +94,7 @@
             <artifactId>build-helper-maven-plugin</artifactId>
             <executions>
               <execution>
-                <id>add-test-source</id>
+                <id>add-test-source-java-cdi-se-openwebbeans</id>
                 <goals>
                   <goal>add-test-source</goal>
                 </goals>
@@ -156,7 +156,7 @@
             <artifactId>build-helper-maven-plugin</artifactId>
             <executions>
               <execution>
-                <id>add-test-source</id>
+                <id>add-test-source-java-cdi-se-openwebbeans</id>
                 <goals>
                   <goal>add-test-source</goal>
                 </goals>
@@ -208,7 +208,7 @@
             <artifactId>build-helper-maven-plugin</artifactId>
             <executions>
               <execution>
-                <id>add-test-source</id>
+                <id>add-test-source-java-cdi-se-weld</id>
                 <goals>
                   <goal>add-test-source</goal>
                 </goals>
@@ -255,7 +255,7 @@
             <artifactId>build-helper-maven-plugin</artifactId>
             <executions>
               <execution>
-                <id>add-test-source</id>
+                <id>add-test-source-java-cdi-se-weld-junit5</id>
                 <goals>
                   <goal>add-test-source</goal>
                 </goals>
@@ -325,7 +325,7 @@
             <artifactId>build-helper-maven-plugin</artifactId>
             <executions>
               <execution>
-                <id>add-test-source</id>
+                <id>add-test-source-java-di-dagger</id>
                 <goals>
                   <goal>add-test-source</goal>
                 </goals>
@@ -372,7 +372,7 @@
             <artifactId>build-helper-maven-plugin</artifactId>
             <executions>
               <execution>
-                <id>add-test-source</id>
+                <id>add-test-source-java-di-guice</id>
                 <goals>
                   <goal>add-test-source</goal>
                 </goals>
@@ -419,7 +419,7 @@
             <artifactId>build-helper-maven-plugin</artifactId>
             <executions>
               <execution>
-                <id>add-test-source</id>
+                <id>add-test-source-java-di-hk2</id>
                 <goals>
                   <goal>add-test-source</goal>
                 </goals>
@@ -466,7 +466,7 @@
             <artifactId>build-helper-maven-plugin</artifactId>
             <executions>
               <execution>
-                <id>add-test-source</id>
+                <id>add-test-source-java-di-spring</id>
                 <goals>
                   <goal>add-test-source</goal>
                 </goals>

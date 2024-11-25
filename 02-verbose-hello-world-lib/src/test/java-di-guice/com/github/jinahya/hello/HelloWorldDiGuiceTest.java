@@ -37,8 +37,7 @@ import java.util.stream.Stream;
  */
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorldDiGuiceTest
-        extends HelloWorldDiTest {
+class HelloWorldDiGuiceTest extends HelloWorldDiTest {
 
     @BeforeEach
     void _beforeEach() {
@@ -46,6 +45,7 @@ class HelloWorldDiGuiceTest
         injector.injectMembers(this);
     }
 
+    // ---------------------------------------------------------------------------------------------
     @Override
     Stream<HelloWorld> services() {
         return Stream.concat(
@@ -57,11 +57,16 @@ class HelloWorldDiGuiceTest
         );
     }
 
-    @_BindingQualifiedDemo
+    // ---------------------------------------------------------------------------------------------
+    @___BindingQualifiedDemo
     @Inject
     private HelloWorld bindingQualifiedDemo;
 
-    @_BindingQualifiedImpl
+    @___BindingQualifiedImpl
     @Inject
     private HelloWorld bindingQualifiedImpl;
+
+    @___BindingQualifiedWrap
+    @Inject
+    private HelloWorld bindingQualifiedWrap;
 }
