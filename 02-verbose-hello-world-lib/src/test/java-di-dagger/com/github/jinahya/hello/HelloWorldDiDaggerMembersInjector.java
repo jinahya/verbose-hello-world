@@ -20,10 +20,10 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import dagger.Component;
 import dagger.MembersInjector;
 
-@dagger.Component(modules = {HelloWorldDiDaggerModule.class})
-interface HelloWorldDiDaggerMembersInjector
-        extends MembersInjector<HelloWorldDiDaggerTest> {
+@Component(modules = {HelloWorldDiDaggerModule.class})
+interface HelloWorldDiDaggerMembersInjector extends MembersInjector<HelloWorldDiDaggerTest> {
 
 }

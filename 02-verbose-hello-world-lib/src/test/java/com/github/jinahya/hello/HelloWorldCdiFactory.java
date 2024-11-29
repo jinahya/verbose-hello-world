@@ -94,6 +94,35 @@ class HelloWorldCdiFactory {
     // ---------------------------------------------------------------------------------------------
 
     /**
+     * Produces an instance of {@link HelloWorld} qualified with
+     * {@link HelloWorldDiConstants#_NAME_WRAP}.
+     *
+     * @param injectionPoint the injection point to be injected.
+     * @return an instance of {@link HelloWorldWrap}
+     */
+    @Named(HelloWorldDiConstants._NAME_WRAP)
+    @Produces
+    HelloWorld produceNamedWrap(final InjectionPoint injectionPoint) {
+        final var bean = new HelloWorldWrap();
+        log.debug("producing {} for {}", bean, injectionPoint);
+        return bean;
+    }
+
+    /**
+     * Disposes specified {@link HelloWorld} instance qualified with
+     * {@link HelloWorldDiConstants#_NAME_WRAP}.
+     *
+     * @param bean the {@link HelloWorld} instance to dispose.
+     */
+    void disposeNamedWrap(
+            @Named(HelloWorldDiConstants._NAME_WRAP) @Disposes final HelloWorld bean) {
+        log.debug("disposing {}", bean);
+        Assertions.assertInstanceOf(HelloWorldWrap.class, bean);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    /**
      * Produces an instance of {@link HelloWorld} qualified with {@link __QualifiedDemo}.
      *
      * @param injectionPoint the injection point
@@ -141,5 +170,30 @@ class HelloWorldCdiFactory {
     void disposeQualifiedImpl(@__QualifiedImpl @Disposes final HelloWorld bean) {
         log.debug("disposing {}", bean);
         Assertions.assertInstanceOf(HelloWorldImpl.class, bean);
+    }
+    // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Produces an instance of {@link HelloWorld} qualified with {@link __QualifiedWrap}.
+     *
+     * @param injectionPoint the injection point
+     * @return an instance of {@link HelloWorld}
+     */
+    @__QualifiedWrap
+    @Produces
+    HelloWorld produceQualifiedWrap(final InjectionPoint injectionPoint) {
+        final var bean = new HelloWorldWrap();
+        log.debug("producing {} for {}", bean, injectionPoint);
+        return bean;
+    }
+
+    /**
+     * Disposes specified {@link HelloWorld} instance qualified with {@link __QualifiedWrap}.
+     *
+     * @param bean the {@link HelloWorld} instance to dispose
+     */
+    void disposeQualifiedWrap(@__QualifiedWrap @Disposes final HelloWorld bean) {
+        log.debug("disposing {}", bean);
+        Assertions.assertInstanceOf(HelloWorldWrap.class, bean);
     }
 }

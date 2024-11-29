@@ -20,6 +20,7 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import dagger.Module;
 import dagger.Provides;
 import jakarta.inject.Named;
 import lombok.AccessLevel;
@@ -28,10 +29,10 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.lang.annotation.Annotation;
 
-@dagger.Module
+@Module
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorldDiDaggerModule {
+public class HelloWorldDiDaggerModule {
 
     private static HelloWorld provideNamed(final String name, final HelloWorld bean) {
         log.debug("providing {} for '{}'", bean, name);

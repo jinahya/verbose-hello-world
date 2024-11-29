@@ -28,7 +28,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 
-import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
 
@@ -65,7 +64,7 @@ abstract class __HelloWorld__Test {
             final var array = (byte[]) null;
             final var index = ThreadLocalRandom.current().nextInt() & Integer.MAX_VALUE;
             return DynamicTest.dynamicTest(
-                    String.format("%1$s.set(%2$s, %3$d)", s, Arrays.toString(array), index),
+                    String.format("%1$s.set(%2$s, %3$d)", s, array, index),
                     () -> {
                         // --------------------------------------------------------------- when/then
                         // assert: s.set(array:null, index) throws a <NullPointerException>
@@ -93,7 +92,7 @@ abstract class __HelloWorld__Test {
             final var array = new byte[0];
             final var index = ThreadLocalRandom.current().nextInt() | Integer.MIN_VALUE;
             return DynamicTest.dynamicTest(
-                    String.format("%1$s.set(%2$s, %3$d)", s, Arrays.toString(array), index),
+                    String.format("%1$s.set(%2$s, %3$d)", s, array, index),
                     () -> {
                         // --------------------------------------------------------------- when/then
                         // assert: <service<array, index:negative)>
@@ -127,7 +126,7 @@ abstract class __HelloWorld__Test {
             );
             assert array.length < (index + HelloWorld.BYTES);
             return DynamicTest.dynamicTest(
-                    String.format("%1$s.set(%2$s, %3$d)", s, Arrays.toString(array), index),
+                    String.format("%1$s.set(%2$s, %3$d)", s, array, index),
                     () -> {
                         // --------------------------------------------------------------- when/then
                         // assert: <s.set(array, index(> array.length - 12))>
@@ -159,7 +158,7 @@ abstract class __HelloWorld__Test {
             );
             assert array.length >= index + HelloWorld.BYTES;
             return DynamicTest.dynamicTest(
-                    String.format("%1$s.set(%2$s, %3$d)", s, Arrays.toString(array), index),
+                    String.format("%1$s.set(%2$s, %3$d)", s, array, index),
                     () -> {
                         // -------------------------------------------------------------------- when
                         final var result = s.set(array, index);

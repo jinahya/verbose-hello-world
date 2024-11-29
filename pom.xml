@@ -66,7 +66,8 @@
     <version.maven-failsafe>${version.maven-surefire}</version.maven-failsafe>
     <version.maven-javadoc-plugin>3.11.1</version.maven-javadoc-plugin>
     <!-- https://central.sonatype.com/artifact/io.smallrye.reactive/mutiny-bom -->
-    <version.io.smallrye.reactive>2.6.2</version.io.smallrye.reactive>
+<!--    <version.io.smallrye.reactive>2.6.2</version.io.smallrye.reactive>-->
+    <version.io.smallrye.reactive>2.7.0</version.io.smallrye.reactive>
     <version.org.apache.openwebbeans>4.0.2</version.org.apache.openwebbeans>
     <version.org.aspectj>1.9.22.1</version.org.aspectj>
     <version.org.glassfish.hk2>4.0.0-M3</version.org.glassfish.hk2>
@@ -143,7 +144,7 @@
       <dependency>
         <groupId>io.reactivex.rxjava3</groupId>
         <artifactId>rxjava</artifactId>
-        <version>3.1.9</version>
+        <version>3.1.10</version>
       </dependency>
       <dependency>
         <groupId>io.smallrye.reactive</groupId>
