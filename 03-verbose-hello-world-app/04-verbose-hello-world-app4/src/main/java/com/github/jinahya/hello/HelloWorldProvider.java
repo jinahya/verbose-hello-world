@@ -52,7 +52,7 @@ class HelloWorldProvider {
      * @param bean the instance of {@link HelloWorld} interface to dispose.
      * @see #produce()
      */
-    void dispose(@HelloWorldQualifier @Disposes HelloWorld bean) {
+    void dispose(@HelloWorldQualifier @Disposes final HelloWorld bean) {
         // empty
     }
 }
