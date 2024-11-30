@@ -29,7 +29,7 @@ import java.nio.charset.StandardCharsets;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-public class HelloWorldDemo implements HelloWorld {
+class HelloWorldDemo implements HelloWorld {
 
     private static final String SRC = "hello, world";
 

@@ -20,14 +20,14 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.inject.se.SeContainerInitializer;
 import jakarta.enterprise.inject.spi.CDI;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
 
 /**
  * A program whose {@link #main(String[])} method prints {@code hello, world} to
@@ -36,6 +36,10 @@ import java.io.IOException;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
+@SuppressWarnings({
+        "java:S106",  // Standard outputs should not be used directly to log anything
+        "java:S6813"  // Field dependency injection should be avoided
+})
 public class HelloWorldMain {
 
     /**
@@ -48,8 +52,11 @@ public class HelloWorldMain {
     public static void main(final String... args) throws IOException {
         try (var container = SeContainerInitializer.newInstance().initialize()) {
             final var instance = CDI.current().select(HelloWorldMain.class).get();
-            assert instance.service != null;
-            instance.service.write(System.out).println();
+            final var channel = instance.service.write(Channels.newChannel(System.out));
+            for (var b = ByteBuffer.wrap(System.lineSeparator().getBytes()); b.hasRemaining(); ) {
+                final var written = channel.write(b);
+                assert written >= 0;
+            }
         }
     }
 
@@ -60,17 +67,10 @@ public class HelloWorldMain {
         super();
     }
 
-    @PostConstruct
-    private void onPostConstruct() {
-    }
-
-    @PreDestroy
-    private void onPreDestroy() {
-    }
-
     /**
      * An injected instance of {@link HelloWorld} interface.
      */
+    @HelloWorldQualifier
     @Inject
     private HelloWorld service;
 }

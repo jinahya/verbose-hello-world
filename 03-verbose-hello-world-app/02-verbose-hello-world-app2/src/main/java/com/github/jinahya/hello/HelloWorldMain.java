@@ -38,13 +38,11 @@ public class HelloWorldMain {
      * @param args an array of command line arguments
      * @see java.util.ServiceLoader#load(Class)
      */
-    public static void main(String... args) {
+    public static void main(final String... args) {
         final var loader = ServiceLoader.load(HelloWorld.class);
         final var service = loader.iterator().next(); // NoSuchElementException
-        final var string = new String(
-                service.set(new byte[HelloWorld.BYTES]),
-                StandardCharsets.US_ASCII
-        );
+        final var array = service.set(new byte[HelloWorld.BYTES]);
+        final var string = new String(array, StandardCharsets.US_ASCII);
         System.out.printf("%1$s%n", string);
     }
 

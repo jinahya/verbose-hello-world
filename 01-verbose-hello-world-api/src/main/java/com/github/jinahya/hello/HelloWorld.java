@@ -167,19 +167,18 @@ public interface HelloWorld {
      * Array Access</a> (Java Language Specification / Java SE 21 Edition)
      */
     default byte[] set(final byte[] array) {
-        // throw a <NullPointerException> when the <array> is <null>
-//        if (array == null) {
-//            throw new NullPointerException("array is null");
-//        }
-        // throw a <IndexOutOfBoundsException> when <array.length> is less than <BYTES>
-//        if (array.length < BYTES) {
-//            throw new IndexOutOfBoundsException("array.length(" + array.length + ") < " + BYTES)
-//        }
-        // invoke <set(array, 0)>
-//        set(array, 0);
-        // return <array>
-//        return array;
-        return null; // TODO: remove!
+        // specified: throw a <NullPointerException> when the <array> is <null>
+        if (array == null) {
+            throw new NullPointerException("array is null");
+        }
+        // specified: throw a <IndexOutOfBoundsException> when <array.length> is less than <BYTES>
+        if (array.length < BYTES) {
+            throw new IndexOutOfBoundsException("array.length(" + array.length + ") < " + BYTES);
+        }
+        // specified: invoke <set(array, 0)>
+        set(array, 0);
+        // specified: return <array>
+        return array;
     }
 
     /**
@@ -263,7 +262,7 @@ public interface HelloWorld {
         // get the <hello-world-bytes>
         final var array = set(new byte[BYTES]);
         // invoke <stream.write(array)>
-//        stream.write(array);
+        stream.write(array);
         // return the <stream>
         return stream;
     }
@@ -512,8 +511,8 @@ public interface HelloWorld {
      * {@link ByteBuffer#hasArray() has a backing-array}, invokes
      * {@link #set(byte[], int) #set(array, index)} method with the
      * {@link ByteBuffer#array() buffer.array()} and
-     * ({@link ByteBuffer#arrayOffset() buffer.arrayOffset()}
-     * + {@link ByteBuffer#position() buffer.position()}), and then manually increments the buffer"s
+     * ({@link ByteBuffer#arrayOffset() buffer.arrayOffset()} +
+     * {@link ByteBuffer#position() buffer.position()}), and then manually increments the buffer"s
      * position by {@value #BYTES}. Otherwise, this method invokes {@link #set(byte[]) #set(array)}
      * method with an array of {@value #BYTES} bytes, and puts the {@code array} on the
      * {@code buffer} by invoking {@link ByteBuffer#put(byte[])} method, on {@code buffer}, with the
@@ -532,16 +531,16 @@ public interface HelloWorld {
         }
         if (buffer.hasArray()) {
             // invoke <set(buffer.array(), (buffer.arrayOffset() + buffer.position())>
-//            final var array = buffer.array();
-//            final var index = buffer.arrayOffset() + buffer.position();
-//            set(array, index);
+            final var array = buffer.array();
+            final var index = buffer.arrayOffset() + buffer.position();
+            set(array, index);
             // increase <buffer.position> by <BYTES>
-//            buffer.position(buffer.position() + BYTES);
+            buffer.position(buffer.position() + BYTES);
         } else {
             // get the hello-world-bytes
             final var array = set(new byte[BYTES]);
             // invoke <buffer.put(array)>
-//            buffer.put(array);
+            buffer.put(array);
         }
         // return given <buffer>
         return buffer;
@@ -579,19 +578,16 @@ public interface HelloWorld {
      */
     default <T extends WritableByteChannel> T write(final T channel) throws IOException {
         Objects.requireNonNull(channel, "channel is null");
-        // get the hello-world-bytes
+        // specified: get the hello-world-bytes
         final var buffer = put(ByteBuffer.allocate(BYTES));
-        JavaNioByteBufferUtils.print(buffer);
         // flip the <buffer>
-//        buffer.flip(); // limit -> position, position -> zero
-        JavaNioByteBufferUtils.print(buffer);
-//        assert buffer.remaining() == BYTES;
+        buffer.flip(); // limit -> position, position -> zero
+        assert buffer.remaining() == BYTES;
         // invoke <channel.write(buffer)> while <buffer> has <remaining>
-//        while (buffer.hasRemaining()) {
-//            final var written = channel.write(buffer);
-//            assert written >= 0; // why
-//            JavaNioByteBufferUtils.print(buffer);
-//        }
+        while (buffer.hasRemaining()) {
+            final var written = channel.write(buffer);
+            assert written >= 0; // why
+        }
         // return given <channel>
         return channel;
     }

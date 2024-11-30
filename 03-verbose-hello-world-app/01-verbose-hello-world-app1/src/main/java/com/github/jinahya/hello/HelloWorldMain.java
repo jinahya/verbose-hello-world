@@ -41,8 +41,11 @@ class HelloWorldMain {
      * @see HelloWorld#write(OutputStream)
      * @see System#lineSeparator()
      */
-    public static void main(String... args) throws IOException {
-        new HelloWorldImpl().write(System.out).println();
+    public static void main(final String[] args) throws IOException {
+        final var service = new HelloWorldImpl();
+        final var array = service.set(new byte[HelloWorld.BYTES]);
+        System.out.write(array);
+        System.out.println();
     }
 
     /**

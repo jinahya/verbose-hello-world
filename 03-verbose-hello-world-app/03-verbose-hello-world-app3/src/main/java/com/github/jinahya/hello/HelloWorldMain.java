@@ -40,14 +40,17 @@ public class HelloWorldMain {
      * @param args an array of command line arguments
      * @throws IOException if an I/O error occurs.
      */
-    public static void main(String... args) throws IOException {
+    public static void main(final String... args) throws IOException {
         final var injector = Guice.createInjector(new HelloWorldModule());
         final var instance = new HelloWorldMain();
         injector.injectMembers(instance);
         assert instance.service != null;
-        instance.service.write(System.out).println();
+        instance.service
+                .write(System.out)
+                .println();
     }
 
+    // ---------------------------------------------------------------------------------------------
     /**
      * Creates a new instance.
      */
@@ -55,6 +58,7 @@ public class HelloWorldMain {
         super();
     }
 
+    // ---------------------------------------------------------------------------------------------
     /**
      * An injected instance of {@link HelloWorld} interface.
      */

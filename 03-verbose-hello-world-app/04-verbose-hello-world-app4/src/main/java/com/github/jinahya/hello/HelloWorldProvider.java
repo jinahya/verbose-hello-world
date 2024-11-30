@@ -40,8 +40,9 @@ class HelloWorldProvider {
      * @return an instance of {@link HelloWorld} interface.
      * @see #dispose(HelloWorld)
      */
+    @HelloWorldQualifier
     @Produces
-    public HelloWorld produce() {
+    HelloWorld produce() {
         return ServiceLoader.load(HelloWorld.class).iterator().next();
     }
 
@@ -51,7 +52,7 @@ class HelloWorldProvider {
      * @param bean the instance of {@link HelloWorld} interface to dispose.
      * @see #produce()
      */
-    void dispose(@Disposes HelloWorld bean) {
+    void dispose(@HelloWorldQualifier @Disposes HelloWorld bean) {
         // empty
     }
 }

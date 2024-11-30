@@ -30,5 +30,10 @@
       <artifactId>guice</artifactId>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>jakarta.inject</groupId>
+      <artifactId>jakarta.inject-api</artifactId>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
 </project>
