@@ -22,7 +22,6 @@ package com.github.jinahya.hello;
 
 import jakarta.enterprise.inject.Disposes;
 import jakarta.enterprise.inject.Produces;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.ServiceLoader;
 
@@ -31,7 +30,6 @@ import java.util.ServiceLoader;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@Slf4j
 class HelloWorldProvider {
 
     /**

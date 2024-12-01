@@ -29,7 +29,7 @@ import java.util.ServiceLoader;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-public class HelloWorldMain {
+class HelloWorldMain {
 
     /**
      * The main method of this program which prints {@code hello, world} to {@link System#out}

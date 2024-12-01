@@ -31,7 +31,7 @@ import java.io.IOException;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-public class HelloWorldMain {
+class HelloWorldMain {
 
     /**
      * The main method of this program which prints {@code hello, world} to {@link System#out}
@@ -50,7 +50,6 @@ public class HelloWorldMain {
                 .println();
     }
 
-    // ---------------------------------------------------------------------------------------------
     /**
      * Creates a new instance.
      */
@@ -58,10 +57,6 @@ public class HelloWorldMain {
         super();
     }
 
-    // ---------------------------------------------------------------------------------------------
-    /**
-     * An injected instance of {@link HelloWorld} interface.
-     */
     @Inject
     HelloWorld service;
 }

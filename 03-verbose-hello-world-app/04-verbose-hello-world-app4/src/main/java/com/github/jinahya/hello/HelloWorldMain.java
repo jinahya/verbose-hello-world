@@ -23,7 +23,6 @@ package com.github.jinahya.hello;
 import jakarta.enterprise.inject.se.SeContainerInitializer;
 import jakarta.enterprise.inject.spi.CDI;
 import jakarta.inject.Inject;
-import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -35,12 +34,11 @@ import java.nio.channels.Channels;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@Slf4j
 @SuppressWarnings({
         "java:S106",  // Standard outputs should not be used directly to log anything
         "java:S6813"  // Field dependency injection should be avoided
 })
-public class HelloWorldMain {
+class HelloWorldMain {
 
     /**
      * The main method of this program which prints {@code hello, world} to {@link System#out}
@@ -60,16 +58,10 @@ public class HelloWorldMain {
         }
     }
 
-    /**
-     * Creates a new instance.
-     */
     private HelloWorldMain() {
         super();
     }
 
-    /**
-     * An injected instance of {@link HelloWorld} interface.
-     */
     @HelloWorldQualifier
     @Inject
     private HelloWorld service;
