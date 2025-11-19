@@ -108,7 +108,7 @@ class HelloWorld_01_Write_OutputStream_Test extends HelloWorldTest {
         Assertions.assertSame(stream, result);
     }
 
-    @畵蛇添足("testing with an existing file doesn't add any value")
+    @畵蛇添足("testing with an existing file doesn't add any extra value")
     @DisplayName("<file>'s length should be increased by <12>")
     @Test
     void _添足_畵蛇(@TempDir final File dir) throws IOException {
@@ -121,7 +121,7 @@ class HelloWorld_01_Write_OutputStream_Test extends HelloWorldTest {
             return stream;
         }).when(service).write(ArgumentMatchers.<OutputStream>notNull());
         // prepare: create a temp file, and write some dummy bytes
-        final File file = File.createTempFile("tmp", null, dir);
+        final var file = File.createTempFile("tmp", null, dir);
         // ------------------------------------------------------------------------------------ when
         try (var stream = new FileOutputStream(file)) {
             final var result = service.write(stream);
