@@ -81,7 +81,8 @@
     <version.org.mockito>5.20.0</version.org.mockito>
     <version.org.projectlombok>1.18.42</version.org.projectlombok>
     <version.org.reactivestreams>1.0.4</version.org.reactivestreams>
-    <version.org.slf4j>2.1.0-alpha1</version.org.slf4j> <!-- https://central.sonatype.com/artifact/org.slf4j/slf4j-api -->
+    <!-- https://central.sonatype.com/artifact/ch.qos.logback/logback-parent/versions -->
+    <version.org.slf4j>2.0.17</version.org.slf4j>
     <!-- https://docs.spring.io/spring-boot/docs/current/reference/html/dependency-versions.html -->
     <!-- https://docs.spring.io/spring-boot/appendix/dependency-versions/coordinates.html -->
     <version.org.springframework>6.2.12</version.org.springframework>
@@ -92,7 +93,9 @@
 
   <dependencyManagement>
     <dependencies>
-      <dependency><!-- https://search.maven.org/artifact/ch.qos.logback/logback-classic -->
+      <dependency>
+        <!-- https://central.sonatype.com/artifact/ch.qos.logback/logback-parent/versions -->
+        <!-- https://central.sonatype.com/artifact/ch.qos.logback/logback-classic/versions -->
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
         <version>1.5.21</version>

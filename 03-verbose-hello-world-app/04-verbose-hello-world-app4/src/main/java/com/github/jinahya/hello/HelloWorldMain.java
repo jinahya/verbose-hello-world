@@ -58,10 +58,12 @@ class HelloWorldMain {
         }
     }
 
+    // -------------------------------------------------------------------------------- CONSTRUCTORS
     private HelloWorldMain() {
         super();
     }
 
+    // ---------------------------------------------------------------------------------------------
     @HelloWorldQualifier
     @Inject
     private HelloWorld service;
