@@ -34,6 +34,7 @@ import java.lang.annotation.RetentionPolicy;
 @Documented
 @Repeatable(屋下架屋Container.class)
 @Retention(RetentionPolicy.SOURCE)
+@SuppressWarnings({"UnicodeInCode"})
 public @interface 屋下架屋 {
 
     String value() default "";

@@ -37,6 +37,7 @@ import java.lang.annotation.RetentionPolicy;
 @Documented
 @Repeatable(畵蛇添足Container.class)
 @Retention(RetentionPolicy.SOURCE)
+@SuppressWarnings({"UnicodeInCode"})
 public @interface 畵蛇添足 {
 
     String value() default "";

@@ -23,6 +23,7 @@ package com.github.jinahya.hello;
 import java.lang.annotation.Documented;
 
 @Documented
+@SuppressWarnings({"UnicodeInCode"})
 public @interface 屋下架屋Container {
 
     屋下架屋[] value();

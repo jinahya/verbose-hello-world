@@ -69,7 +69,8 @@ import java.util.concurrent.Future;
         "java:S1481", // Unused local variables should be removed
         "java:S1854", // Unused assignments should be removed
         "java:S1865", // useless assignments
-        "java:S4274"  // assert ...
+        "java:S4274", // assert ...
+        "UnicodeInCode" // https://errorprone.info/bugpattern/UnicodeInCode
 })
 public interface HelloWorld {
 
@@ -107,8 +108,8 @@ public interface HelloWorld {
     // ----------------------------------------------------------------------------------- java.lang
 
     /**
-     * Sets the <a href="#hello-world-bytes">hello-world-bytes</a> on specified array starting at
-     * specified index.
+     * Sets the <a href="#hello-world-bytes">hello-world-bytes</a> on the specified array starting
+     * at the specified index.
      * <p>
      * The elements in the array, on successful return, will be set as follows.
      * <pre>
@@ -133,8 +134,8 @@ public interface HelloWorld {
     byte[] set(byte[] array, int index);
 
     /**
-     * Sets the <a href="#hello-world-bytes">hello-world-bytes</a> on specified array starting at
-     * {@code 0}.
+     * Sets the <a href="#hello-world-bytes">hello-world-bytes</a> on the specified array starting
+     * at {@code 0}.
      * <p>
      * The elements in the array, on successful return, will be set as follows.
      * <pre>
@@ -143,7 +144,7 @@ public interface HelloWorld {
      * |h|e|l|l|o|,| |w|o|r|l|d| |....| |
      * </pre>
      * <p>
-     * Default implementation would look like,
+     * The default implementation would look like as follows.
      * {@snippet lang = "java":
      * if (array == null) {
      *     throw new NullPointerException("array is null");
@@ -184,7 +185,7 @@ public interface HelloWorld {
     /**
      * Appends the <a href="#hello-world-bytes">hello-world-bytes</a> to specified appendable.
      * <p>
-     * Default implementation would look like,
+     * The default implementation would look like as follows.
      * {@snippet lang = "java":
      * if (appendable == null) {
      *     throw new NullPointerException("appendable is null");
@@ -230,9 +231,10 @@ public interface HelloWorld {
     // ------------------------------------------------------------------------------------- java.io
 
     /**
-     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified output stream.
+     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified output
+     * stream.
      * <p>
-     * Default implementation would look like,
+     * The default implementation would look like as follows.
      * {@snippet lang = "java":
      * if (stream == null) {
      *     throw new NullPointerException("stream is null");
@@ -268,9 +270,10 @@ public interface HelloWorld {
     }
 
     /**
-     * Appends the <a href="#hello-world-bytes">hello-world-bytes</a> to the end of specified file.
+     * Appends the <a href="#hello-world-bytes">hello-world-bytes</a> to the end of the specified
+     * file.
      * <p>
-     * Default implementation would look like,
+     * The default implementation would look like as follows.
      * {@snippet lang = "java":
      * if (file == null) {
      *     throw new NullPointerException("file is null");
@@ -313,7 +316,7 @@ public interface HelloWorld {
     /**
      * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified data output.
      * <p>
-     * Default implementation would look like,
+     * The default implementation would look like as follows.
      * {@snippet lang = "java":
      * if (output == null) {
      *     throw new NullPointerException("output is null");
@@ -352,7 +355,7 @@ public interface HelloWorld {
      * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified random access file
      * starting at its current file pointer.
      * <p>
-     * Default implementation would look like,
+     * The default implementation would look like as follows.
      * {@snippet lang = "java":
      * if (file == null) {
      *     throw new NullPointerException("file is null");
@@ -390,7 +393,7 @@ public interface HelloWorld {
     /**
      * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified writer.
      * <p>
-     * Default implementation would look like,
+     * The default implementation would look like as follows.
      * {@snippet lang = "java":
      * if (writer == null) {
      *     throw new NullPointerException("writer is null");
@@ -422,7 +425,7 @@ public interface HelloWorld {
     /**
      * Sends the <a href="#hello-world-bytes">hello-world-bytes</a> through specified socket.
      * <p>
-     * Default implementation would look like,
+     * The default implementation would look like as follows.
      * {@snippet lang = "java":
      * if (socket == null) {
      *     throw new NullPointerException("socket is null");
@@ -478,7 +481,7 @@ public interface HelloWorld {
      *                                              9
      * </pre>
      * <p>
-     * Default implementation would look like,
+     * The default implementation would look like as follows.
      * {@snippet lang = "java":
      * Objects.requireNonNull(buffer, "buffer is null");
      * if (buffer.remaining() < BYTES) {
@@ -549,7 +552,7 @@ public interface HelloWorld {
     /**
      * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified channel.
      * <p>
-     * Default implementation would look like,
+     * The default implementation would look like as follows.
      * {@snippet lang = "java":
      * Objects.requireNonNull(channel, "channel is null");
      * final var buffer = put(ByteBuffer.allocate(BYTES));
@@ -595,7 +598,7 @@ public interface HelloWorld {
     /**
      * Sends the <a href="hello-world-bytes">hello-world-bytes</a> to specified socket channel.
      * <p>
-     * Default implementation would look like,
+     * The default implementation would look like as follows.
      * {@snippet lang = "java":
      * return write(Objects.requireNonNull(channel, "channel is null")); // @highlight
      *}
@@ -620,7 +623,7 @@ public interface HelloWorld {
      * to a file. The {@link java.nio.file.Files#size(Path) size} of the {@code path}, on successful
      * return, is increased by {@value #BYTES}.
      * <p>
-     * Default implementation would look like,
+     * The default implementation would look like as follows.
      * {@snippet lang = "java":
      * Objects.requireNonNull(path, "path is null");
      * try (var channel = FileChannel.open(path, StandardOpenOption.CREATE, // @highlight region
@@ -668,7 +671,7 @@ public interface HelloWorld {
     /**
      * Writes the <a href="hello-world-bytes">hello-world-bytes</a> to specified channel.
      * <p>
-     * Default implementation would look like,
+     * The default implementation would look like as follows.
      * {@snippet lang = "java":
      * Objects.requireNonNull(channel, "channel is null");
      * final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
@@ -733,7 +736,7 @@ public interface HelloWorld {
      * to specified channel, and notifies a completion (or a failure) to specified handler with
      * specified attachment.
      * <p>
-     * Default implementation would look like,
+     * The default implementation would look like as follows.
      * {@snippet lang = "java":
      * Objects.requireNonNull(channel, "channel is null");
      * Objects.requireNonNull(handler, "handler is null");

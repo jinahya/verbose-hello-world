@@ -425,6 +425,7 @@ public final class HelloWorldFlow {
             /**
              * Creates a new instance.
              */
+            @SuppressWarnings("ReturnValueIgnored")
             public OfByte() {
                 super(i -> String.format("0x%1$02x('%2$c')", i, (char) i.byteValue()));
             }
@@ -443,6 +444,7 @@ public final class HelloWorldFlow {
             /**
              * Creates a new instance.
              */
+            @SuppressWarnings("ReturnValueIgnored")
             public OfArray() {
                 super(Arrays::toString);
             }
@@ -461,6 +463,7 @@ public final class HelloWorldFlow {
             /**
              * Creates a new instance.
              */
+            @SuppressWarnings("ReturnValueIgnored")
             public OfBuffer() {
                 super(Objects::toString);
             }
