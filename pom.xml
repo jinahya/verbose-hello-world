@@ -93,8 +93,7 @@
 
   <dependencyManagement>
     <dependencies>
-      <dependency>
-        <!-- https://central.sonatype.com/artifact/ch.qos.logback/logback-parent/versions -->
+      <dependency><!-- https://central.sonatype.com/artifact/ch.qos.logback/logback-parent/versions -->
         <!-- https://central.sonatype.com/artifact/ch.qos.logback/logback-classic/versions -->
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
