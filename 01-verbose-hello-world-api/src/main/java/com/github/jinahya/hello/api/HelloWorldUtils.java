@@ -30,7 +30,7 @@ import java.util.concurrent.FutureTask;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public final class HelloWorldUtils {
+final class HelloWorldUtils {
 
     public static <T> Future<T> executeAsync(
             final Supplier<? extends HelloWorld> supplier,
