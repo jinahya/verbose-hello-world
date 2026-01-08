@@ -29,6 +29,8 @@ class HelloWorldWrap extends HelloWorldImpl {
 
     private static final String STRING = "hello, world";
 
+    private static final byte[] ARRAY = STRING.getBytes(StandardCharsets.US_ASCII);
+
     @Override
     public byte[] set(final byte[] array, final int index) {
         return ByteBuffer.wrap(array, index, HelloWorld.BYTES)

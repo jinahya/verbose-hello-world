@@ -124,10 +124,10 @@ public interface HelloWorld {
      * @throws NullPointerException      if {@code array} is {@code null}.
      * @throws IndexOutOfBoundsException if {@code index} is negative, or ({@code index} plus
      *                                   {@value #BYTES}) is greater than {@code array.length}.
-     * @see <a href="https://docs.oracle.com/javase/specs/jls/se21/html/jls-9.html#jls-9.4">9.4.
-     * Method Declarations </a> (The Java® Language Specification / Java SE 21 Edition)
-     * @see <a href="https://docs.oracle.com/javase/specs/jls/se21/html/jls-10.html#jls-10.4">10.4.
-     * Array Access</a> (Java Language Specification / Java SE 21 Edition)
+     * @see <a href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-9.html#jls-9.4">9.4.
+     * Method Declarations </a> (The Java® Language Specification)
+     * @see <a href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-10.html#jls-10.4">10.4.
+     * Array Access</a> (Java Language Specification)
      */
     public   // redundant
     abstract // discouraged
@@ -172,7 +172,7 @@ public interface HelloWorld {
         if (array == null) {
             throw new NullPointerException("array is null");
         }
-        // specified: throw a <IndexOutOfBoundsException> when <array.length> is less than <BYTES>
+        // specified: throw an <IndexOutOfBoundsException> when <array.length> is less than <BYTES>
         if (array.length < BYTES) {
             throw new IndexOutOfBoundsException("array.length(" + array.length + ") < " + BYTES);
         }
@@ -970,8 +970,8 @@ public interface HelloWorld {
     } // @formatter:on
 
     /**
-     * Appends the <a href="hello-world-bytes">hello-world-bytes</a> to the end of specified path to
-     * a file, and notifies a completion (or a failure) to specified handler.
+     * Appends the <a href="hello-world-bytes">hello-world-bytes</a> to the end of the specified
+     * path to a file, and notifies a completion (or a failure) to the specified handler.
      *
      * @param path       the path to a file to which the bytes are appended.
      * @param attachment an attachment for the handler.
