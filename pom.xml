@@ -33,7 +33,6 @@
     <module>01-verbose-hello-world-api</module>
     <module>02-verbose-hello-world-lib</module>
     <module>03-verbose-hello-world-app</module>
-    <module>04-verbose-hello-world-srv</module>
   </modules>
 
   <scm>
@@ -60,10 +59,10 @@
     <version.asciidoctorj>3.0.1</version.asciidoctorj>
     <version.asciidoctorj-pdf>2.3.23</version.asciidoctorj-pdf>
     <!--    <version.com.formdev>3.3</version.com.formdev>-->
-<!--    <version.com.formdev>3.5.2</version.com.formdev>-->
+    <!--    <version.com.formdev>3.5.2</version.com.formdev>-->
     <version.com.formdev>3.7</version.com.formdev>
     <version.com.google.dagger>2.57.2</version.com.google.dagger>
-<!--    <version.com.google.guava>33.3.1-jre</version.com.google.guava>-->
+    <!--    <version.com.google.guava>33.3.1-jre</version.com.google.guava>-->
     <version.com.google.guava>33.5.0-jre</version.com.google.guava>
     <!-- https://central.sonatype.com/artifact/com.google.errorprone/error_prone_core/versions -->
     <version.com.google.errorprone>2.45.0</version.com.google.errorprone>
@@ -73,16 +72,16 @@
     <version.maven-javadoc-plugin>3.12.0</version.maven-javadoc-plugin>
     <!-- https://central.sonatype.com/artifact/io.smallrye.reactive/mutiny-bom -->
     <!--    <version.io.smallrye.reactive>2.6.2</version.io.smallrye.reactive>-->
-<!--    <version.io.smallrye.reactive>2.7.0</version.io.smallrye.reactive>-->
+    <!--    <version.io.smallrye.reactive>2.7.0</version.io.smallrye.reactive>-->
     <version.io.smallrye.reactive>3.1.0</version.io.smallrye.reactive>
     <version.org.apache.openwebbeans>4.0.3</version.org.apache.openwebbeans>
     <version.org.aspectj>1.9.25.1</version.org.aspectj>
     <version.org.glassfish.hk2>4.0.0-M3</version.org.glassfish.hk2>
     <version.org.hibernate.validator>8.0.1.Final</version.org.hibernate.validator>
     <version.org.jboss.weld>6.0.0.Alpha1</version.org.jboss.weld> <!-- weld-junit5 -->
-<!--    <version.org.jboss.weld-junit>4.0.3.Final</version.org.jboss.weld-junit> &lt;!&ndash; weld-se-core &ndash;&gt;-->
+    <!--    <version.org.jboss.weld-junit>4.0.3.Final</version.org.jboss.weld-junit> &lt;!&ndash; weld-se-core &ndash;&gt;-->
     <version.org.jboss.weld-junit>5.0.3.Final</version.org.jboss.weld-junit> <!-- weld-se-core -->
-<!--    <version.org.jboss.weld.se>${version.org.jboss.weld}</version.org.jboss.weld.se> &lt;!&ndash; weld-se-core &ndash;&gt;-->
+    <!--    <version.org.jboss.weld.se>${version.org.jboss.weld}</version.org.jboss.weld.se> &lt;!&ndash; weld-se-core &ndash;&gt;-->
     <version.org.jboss.weld.se>6.0.3.Final</version.org.jboss.weld.se> <!-- weld-se-core -->
     <version.org.jspecify>1.0.0</version.org.jspecify>
     <!--    <version.org.junit>5.11.3</version.org.junit>-->
@@ -95,12 +94,12 @@
     <version.org.slf4j>2.0.17</version.org.slf4j>
     <!-- https://docs.spring.io/spring-boot/docs/current/reference/html/dependency-versions.html -->
     <!-- https://docs.spring.io/spring-boot/appendix/dependency-versions/coordinates.html -->
-<!--    <version.org.springframework>6.2.12</version.org.springframework>-->
+    <!--    <version.org.springframework>6.2.12</version.org.springframework>-->
     <version.org.springframework>7.0.2</version.org.springframework>
-<!--    <version.org.springframework.boot>3.5.7</version.org.springframework.boot>-->
+    <!--    <version.org.springframework.boot>3.5.7</version.org.springframework.boot>-->
     <version.org.springframework.boot>4.0.1</version.org.springframework.boot>
     <!-- https://central.sonatype.com/artifact/io.vertx/vertx-reactive-streams -->
-<!--    <version.org.vertx>4.5.11</version.org.vertx>-->
+    <!--    <version.org.vertx>4.5.11</version.org.vertx>-->
     <version.org.vertx>5.0.6</version.org.vertx>
   </properties>
 
@@ -426,7 +425,7 @@
               <arg>-XDcompilePolicy=simple</arg>
               <arg>--should-stop=ifError=FLOW</arg>
               <!-- https://github.com/google/error-prone/issues/5354 -->
-<!--              <arg>-Xplugin:ErrorProne -Xep:NullAway:ERROR -XepOpt:NullAway:OnlyNullMarked=true</arg>-->
+              <!--              <arg>-Xplugin:ErrorProne -Xep:NullAway:ERROR -XepOpt:NullAway:OnlyNullMarked=true</arg>-->
             </compilerArgs>
             <annotationProcessorPaths>
               <path>
