@@ -21,6 +21,7 @@ package com.github.jinahya.hello.api;
  */
 
 import com.github.jinahya.hello.api.util.JavaNioByteBufferUtils;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.io.DataOutput;
@@ -183,7 +184,7 @@ public interface HelloWorld {
     }
 
     /**
-     * Appends the <a href="#hello-world-bytes">hello-world-bytes</a> to specified appendable.
+     * Appends the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified appendable.
      * <p>
      * The default implementation would look like as follows.
      * {@snippet lang = "java":
@@ -314,7 +315,7 @@ public interface HelloWorld {
     }
 
     /**
-     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified data output.
+     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified data output.
      * <p>
      * The default implementation would look like as follows.
      * {@snippet lang = "java":
@@ -352,8 +353,8 @@ public interface HelloWorld {
     }
 
     /**
-     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified random access file
-     * starting at its current file pointer.
+     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified random access
+     * file starting at its current file pointer.
      * <p>
      * The default implementation would look like as follows.
      * {@snippet lang = "java":
@@ -372,7 +373,7 @@ public interface HelloWorld {
      * @throws NullPointerException if {@code file} argument is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @implSpec Default implementation invokes {@link #set(byte[])} method with an array of
-     * {@value #BYTES} bytes, writes the array to specified random access file by invoking
+     * {@value #BYTES} bytes, writes the array to the specified random access file by invoking
      * {@link RandomAccessFile#write(byte[])} method on {@code file} with the array, and returns the
      * {@code file}.
      * @see #set(byte[])
@@ -391,14 +392,15 @@ public interface HelloWorld {
     }
 
     /**
-     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified writer.
+     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified writer.
      * <p>
      * The default implementation would look like as follows.
      * {@snippet lang = "java":
      * if (writer == null) {
      *     throw new NullPointerException("writer is null");
      * }
-     * return append(writer); // @highlight
+     * append(writer); // @highlight
+     * return writer;
      *}
      *
      * @param <T>    writer type parameter
@@ -492,7 +494,7 @@ public interface HelloWorld {
      *     var index = buffer.arrayOffset() + buffer.position();
      *     var position = buffer.position();
      *     set(array, index); // @highlight region
-     *     assert buffer.position() == position;
+     *     assert buffer.position() == position; // still
      *     buffer.position(buffer.position() + BYTES); // @end
      * } else {
      *     var array = new byte[BYTES];
@@ -516,10 +518,10 @@ public interface HelloWorld {
      * {@link ByteBuffer#array() buffer.array()} and
      * ({@link ByteBuffer#arrayOffset() buffer.arrayOffset()} +
      * {@link ByteBuffer#position() buffer.position()}), and then manually increments the buffer"s
-     * position by {@value #BYTES}. Otherwise, this method invokes {@link #set(byte[]) #set(array)}
+     * position by {@value #BYTES}. Otherwise, this method invokes {@link #set(byte[]) set(array)}
      * method with an array of {@value #BYTES} bytes, and puts the {@code array} on the
      * {@code buffer} by invoking {@link ByteBuffer#put(byte[])} method, on {@code buffer}, with the
-     * array.
+     * {@code array}.
      * @see ByteBuffer#hasArray()
      * @see ByteBuffer#array()
      * @see ByteBuffer#arrayOffset()
@@ -550,7 +552,7 @@ public interface HelloWorld {
     }
 
     /**
-     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to specified channel.
+     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified channel.
      * <p>
      * The default implementation would look like as follows.
      * {@snippet lang = "java":
@@ -596,11 +598,13 @@ public interface HelloWorld {
     }
 
     /**
-     * Sends the <a href="hello-world-bytes">hello-world-bytes</a> to specified socket channel.
+     * Sends the <a href="hello-world-bytes">hello-world-bytes</a> to the specified socket channel.
      * <p>
      * The default implementation would look like as follows.
      * {@snippet lang = "java":
-     * return write(Objects.requireNonNull(channel, "channel is null")); // @highlight
+     * Objects.requireNonNull(channel, "channel is null");
+     * write(channel); // @highlight
+     * return channel;
      *}
      *
      * @param channel the socket channel to which the <a
@@ -626,7 +630,8 @@ public interface HelloWorld {
      * The default implementation would look like as follows.
      * {@snippet lang = "java":
      * Objects.requireNonNull(path, "path is null");
-     * try (var channel = FileChannel.open(path, StandardOpenOption.CREATE, // @highlight region
+     * try (var channel = FileChannel.open(path, // @highlight region
+     *                                     StandardOpenOption.CREATE,
      *                                     StandardOpenOption.APPEND)) {
      *     write(channel);
      *     channel.force(true);
@@ -650,16 +655,19 @@ public interface HelloWorld {
      * @see #write(WritableByteChannel)
      * @see FileChannel#force(boolean)
      * @see <a
-     * href="https://docs.oracle.com/javase/specs/jls/se21/html/jls-14.html#jls-14.20.3">14.20.3.
-     * try-with-resources</a> (The Java® Language Specification /  Java SE 21 Edition)
+     * href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-14.html#jls-14.20.3">14.20.3.
+     * try-with-resources</a> (The Java® Language Specification)
      */
     default <T extends Path> T append(final T path) throws IOException {
         Objects.requireNonNull(path, "path is null");
         // open a <FileChannel> with <path>,
         //         <StandardOpenOption.CREATE>, and <StandardOpenOption.APPEND>
         // use the try-with-resources statement
-//        try (var channel = FileChannel.open(path, StandardOpenOption.CREATE,
-//                                           StandardOpenOption.APPEND)) {
+//        final var options = new OpenOption[] {
+//                StandardOpenOption.CREATE,
+//                StandardOpenOption.APPEND
+//        };
+//        try (var channel = FileChannel.open(path, options)) {
 //            // invoke <write(channel)> method with it
 ////            write(channel);
 //            // force changes to both the <file>'s content and metadata
@@ -669,7 +677,7 @@ public interface HelloWorld {
     }
 
     /**
-     * Writes the <a href="hello-world-bytes">hello-world-bytes</a> to specified channel.
+     * Writes the <a href="hello-world-bytes">hello-world-bytes</a> to the specified channel.
      * <p>
      * The default implementation would look like as follows.
      * {@snippet lang = "java":
@@ -711,7 +719,7 @@ public interface HelloWorld {
     }
 
     /**
-     * Sends the <a href="hello-world-bytes">hello-world-bytes</a> to specified socket channel.
+     * Sends the <a href="hello-world-bytes">hello-world-bytes</a> to the specified socket channel.
      *
      * @param channel the socket channel to which the <a
      *                href="hello-world-bytes">hello-world-bytes</a> be sent.
@@ -733,8 +741,8 @@ public interface HelloWorld {
 
     /**
      * Writes, asynchronously, the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>
-     * to specified channel, and notifies a completion (or a failure) to specified handler with
-     * specified attachment.
+     * to the specified channel, and notifies a completion (or a failure) to the specified handler
+     * with specified attachment.
      * <p>
      * The default implementation would look like as follows.
      * {@snippet lang = "java":
@@ -773,7 +781,7 @@ public interface HelloWorld {
      * @implSpec Default implementation invokes {@link #put(ByteBuffer) put(buffer)} method with a
      * byte buffer of {@value #BYTES} bytes, {@link ByteBuffer#flip() flips} it, writes the buffer
      * the {@code channel} while the buffer has remaining, and notifies a completion (or a failure)
-     * to the {@code channel}.
+     * to the {@code handler}.
      * @see #put(ByteBuffer)
      * @see AsynchronousByteChannel#write(ByteBuffer, Object, CompletionHandler)
      * @see <a
@@ -781,7 +789,7 @@ public interface HelloWorld {
      * this</a> (The Java® Language Specification / Java SE 21 Edition)
      */
     default <T extends AsynchronousByteChannel, A> void write(
-            final T channel, final A attachment,
+            final T channel, @Nullable final A attachment,
             final CompletionHandler<? super T, ? super A> handler) {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(handler, "handler is null");
@@ -796,7 +804,6 @@ public interface HelloWorld {
 //                new CompletionHandler<>() { // <handler>
 //                    @Override // @formatter:off
 //                    public void completed(final Integer result, final Object a) {
-//                        log().debug("completed({}, {})", result, a);
 //                        assert result > 0; // why?
 //                        if (!buffer.hasRemaining()) {
 //                            handler.completed(channel, attachment);
@@ -809,7 +816,6 @@ public interface HelloWorld {
 //                        );
 //                    }
 //                    @Override public void failed(final Throwable exc, final Object a) {
-//                        log().debug("failed({}, {})", exc, a, exc);
 //                        handler.failed(exc, attachment);
 //                    } // @formatter:on
 //                }
@@ -818,8 +824,8 @@ public interface HelloWorld {
 
     /**
      * Sends, asynchronously, the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>
-     * to specified channel, and notifies a completion (or a failure) to specified handler with
-     * specified attachment.
+     * to the specified channel, and notifies a completion (or a failure) to the specified handler
+     * with the specified attachment.
      *
      * @param channel    the channel to which the <a
      *                   href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> is sent.
@@ -832,7 +838,7 @@ public interface HelloWorld {
      * arguments.
      * @deprecated Invoke, directly, the
      * {@link #write(AsynchronousByteChannel, Object, CompletionHandler)} method with
-     * {@code channel}.
+     * {@code channel}, {@code attachment}, and {@code handler}.
      */
     @屋上架屋("AsynchronousSocketChannel implements AsynchronousByteChannel")
     @Deprecated(forRemoval = true)
@@ -843,8 +849,8 @@ public interface HelloWorld {
     }
 
     /**
-     * Writes the <a href="hello-world-bytes">hello-world-bytes</a> to specified file channel,
-     * starting at given file position.
+     * Writes the <a href="hello-world-bytes">hello-world-bytes</a> to the specified file channel,
+     * starting at the given file position.
      * <pre>
      * Given,
      *
@@ -888,14 +894,13 @@ public interface HelloWorld {
      * while the {@code buffer} {@link ByteBuffer#hasRemaining() has remaining}, by continuously
      * invoking
      * {@link AsynchronousFileChannel#write(ByteBuffer, long) channel.write(buffer, position)}
-     * method with the {@code buffer} and {@code position} adjusted with the result of previous
+     * method with the {@code buffer} and {@code position} adjusted with the result of a previous
      * result.
      * @see #put(ByteBuffer)
      * @see AsynchronousFileChannel#write(ByteBuffer, long)
      */
     default <T extends AsynchronousFileChannel> T write(final T channel, long position)
             throws InterruptedException, ExecutionException {
-        log().debug("write({}, {})", channel, position);
         Objects.requireNonNull(channel, "channel is null");
         if (position < 0L) {
             throw new IllegalArgumentException("position(" + position + ") is negative");
@@ -914,9 +919,9 @@ public interface HelloWorld {
     }
 
     /**
-     * Writes, asynchronously, the <a href="hello-world-bytes">hello-world-bytes</a> to specified
-     * channel, starting at specified position, and notifies a completion (or a failure) to the
-     * handler.
+     * Writes, asynchronously, the <a href="hello-world-bytes">hello-world-bytes</a> to the
+     * specified channel, starting at the specified position, and notifies a completion (or a
+     * failure) to the specified handler.
      *
      * @param <T>        channel type parameter
      * @param <A>        attachment type parameter
@@ -932,7 +937,6 @@ public interface HelloWorld {
     default <T extends AsynchronousFileChannel, A> void write(
             final T channel, final long position, final A attachment,
             final CompletionHandler<? super T, ? super A> handler) {
-        log().debug("write({}, {}, {}, {})", channel, position, attachment, handler);
         Objects.requireNonNull(channel, "channel is null");
         if (position < 0L) {
             throw new IllegalArgumentException("position(" + position + ") is negative");
@@ -947,7 +951,6 @@ public interface HelloWorld {
                 position,                   // <attachment>
                 new CompletionHandler<>() { // <handler>
                     @Override public void completed(final Integer r, final Long p) {
-                        log().debug("completed({}, {})", r, p);
                         assert r > 0; // why?
                         if (!buffer.hasRemaining()) {
                             handler.completed(channel, attachment);
@@ -962,7 +965,6 @@ public interface HelloWorld {
                         );
                     }
                     @Override public void failed(final Throwable t, final Long p) {
-                        log().debug("failed({}, {})", t, p, t);
                         handler.failed(t, attachment);
                     }
                 }
@@ -980,12 +982,12 @@ public interface HelloWorld {
      * @param <A>        attachment type parameter
      * @throws IOException if an I/O error occurs.
      */
-    default <T extends Path, A> void append(final T path, final A attachment,
+    default <T extends Path, A> void append(final T path, @Nullable final A attachment,
                                             final CompletionHandler<? super T, ? super A> handler)
             throws IOException {
         Objects.requireNonNull(path, "path is null");
         Objects.requireNonNull(handler, "handler is null");
-        final var options = new StandardOpenOption[] {
+        final var options = new OpenOption[] {
                 StandardOpenOption.CREATE,
                 StandardOpenOption.WRITE
         };
@@ -993,30 +995,29 @@ public interface HelloWorld {
                 "java:S2095" // Resources should be closed
         })
         final var channel = AsynchronousFileChannel.open(path, options); // no try-with-resources?
-        write(channel, channel.size(), null, new CompletionHandler<>() { // @formatter:off
-            @Override public void completed(final AsynchronousFileChannel r, final Object a) {
-                log().debug("completed({}, {})", r, a);
+        write(channel, channel.size(), attachment, new CompletionHandler<>() { // @formatter:off
+            @Override public void completed(final AsynchronousFileChannel r, final A a) {
                 assert r == channel;
                 try {
                     r.force(true);
                     r.close();
                 } catch (final IOException ioe) {
                     log().error("failed to force/close the channel", ioe);
-                    handler.failed(ioe, attachment);
+                    handler.failed(ioe, a);
                     return;
                 }
-                handler.completed(path, attachment);
+                handler.completed(path, a);
             }
-            @Override public void failed(final Throwable t, final Object a) {
+            @Override public void failed(final Throwable t, final A a) {
                 log().error("failed({}, {})", t, a, t);
                 try {
                     channel.close();
                 } catch (final IOException ioe) {
                     log().error("failed to close the channel", ioe);
-                    handler.failed(ioe, attachment);
+                    handler.failed(ioe, a);
                     return;
                 }
-                handler.failed(t, attachment);
+                handler.failed(t, a);
             } // @formatter:on
         });
     }
