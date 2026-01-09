@@ -69,26 +69,26 @@ abstract class HelloWorldDiTest extends __HelloWorld__Test {
     // ---------------------------------------------------------------------------------------------
     @Named(HelloWorldDiConstants._NAME_DEMO)
     @Inject
-    HelloWorld namedDemo;
+    protected HelloWorld namedDemo;
 
     @Named(HelloWorldDiConstants._NAME_IMPL)
     @Inject
-    HelloWorld namedImpl;
+    protected HelloWorld namedImpl;
 
     @Named(HelloWorldDiConstants._NAME_WRAP)
     @Inject
-    HelloWorld namedWrap;
+    protected HelloWorld namedWrap;
 
     // ---------------------------------------------------------------------------------------------
     @__QualifiedDemo
     @Inject
-    HelloWorld qualifiedDemo;
+    protected HelloWorld qualifiedDemo;
 
     @__QualifiedImpl
     @Inject
-    HelloWorld qualifiedImpl;
+    protected HelloWorld qualifiedImpl;
 
     @__QualifiedWrap
     @Inject
-    HelloWorld qualifiedWrap;
+    protected HelloWorld qualifiedWrap;
 }

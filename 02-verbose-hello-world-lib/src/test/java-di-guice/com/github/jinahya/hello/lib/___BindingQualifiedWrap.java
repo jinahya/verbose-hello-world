@@ -1,4 +1,4 @@
-package com.github.jinahya.hello;
+package com.github.jinahya.hello.lib;
 
 /*-
  * #%L
@@ -20,25 +20,25 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
-import org.junit.jupiter.api.BeforeEach;
+import com.google.inject.BindingAnnotation;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * An extended {@link HelloWorldDiTest} which uses {@link HelloWorldDiHk2Binder} as a binder.
+ * An injection qualifier for {@link HelloWorldWrap}.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ * @deprecated Use {@link __QualifiedWrap}
  */
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
-@Slf4j
-class HelloWorldDiHk2Test extends HelloWorldDiTest {
+@Deprecated(forRemoval = true)
+@BindingAnnotation
+@__QualifiedDemo
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE,
+         ElementType.ANNOTATION_TYPE})
+@interface ___BindingQualifiedWrap {
 
-    @BeforeEach
-    void inject() {
-        final var binder = new HelloWorldDiHk2Binder();
-        final var locator = ServiceLocatorUtilities.bind(binder);
-        locator.inject(this);
-    }
 }

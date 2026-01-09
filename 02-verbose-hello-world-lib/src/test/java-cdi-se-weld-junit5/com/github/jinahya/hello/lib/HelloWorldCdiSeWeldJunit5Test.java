@@ -1,4 +1,4 @@
-package com.github.jinahya.hello;
+package com.github.jinahya.hello.lib;
 
 /*-
  * #%L
@@ -20,10 +20,16 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import dagger.Component;
-import dagger.MembersInjector;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.jboss.weld.junit5.auto.AddBeanClasses;
+import org.jboss.weld.junit5.auto.EnableAutoWeld;
 
-@Component(modules = {HelloWorldDiDaggerModule.class})
-interface HelloWorldDiDaggerMembersInjector extends MembersInjector<HelloWorldDiDaggerTest> {
+@AddBeanClasses({HelloWorldCdiFactory.class})
+@EnableAutoWeld
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
+@Slf4j
+class HelloWorldCdiSeWeldJunit5Test extends HelloWorldDiTest {
 
 }

@@ -1,4 +1,4 @@
-package com.github.jinahya.hello;
+package com.github.jinahya.hello.lib;
 
 /*-
  * #%L
@@ -23,19 +23,22 @@ package com.github.jinahya.hello;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.jupiter.api.BeforeEach;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+/**
+ * An extended {@link HelloWorldDiTest} which uses {@link HelloWorldDiHk2Binder} as a binder.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorldDiSpringTest extends HelloWorldDiTest {
+class HelloWorldDiHk2Test extends HelloWorldDiTest {
 
     @BeforeEach
-    void autowireBean() {
-        final var context = new AnnotationConfigApplicationContext(
-                HelloWorldDiSpringConfiguration.class
-        );
-        final var factory = context.getAutowireCapableBeanFactory();
-        factory.autowireBean(this);
+    void inject() {
+        final var binder = new HelloWorldDiHk2Binder();
+        final var locator = ServiceLocatorUtilities.bind(binder);
+        locator.inject(this);
     }
 }

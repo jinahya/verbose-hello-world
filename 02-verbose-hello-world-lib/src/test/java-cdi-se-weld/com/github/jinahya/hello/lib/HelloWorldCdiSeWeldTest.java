@@ -1,4 +1,4 @@
-package com.github.jinahya.hello;
+package com.github.jinahya.hello.lib;
 
 /*-
  * #%L
@@ -20,25 +20,14 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import com.google.inject.BindingAnnotation;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-/**
- * An injection qualifier for {@link HelloWorldImpl}.
- *
- * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @deprecated Use {@link __QualifiedImpl}
- */
-@Deprecated(forRemoval = true)
-@BindingAnnotation
-@__QualifiedDemo
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE,
-         ElementType.ANNOTATION_TYPE})
-@interface ___BindingQualifiedImpl {
+@ExtendWith({HelloWorldCdiSeTestInstanceFactory.class})
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
+@Slf4j
+class HelloWorldCdiSeWeldTest extends HelloWorldCdiSeTest {
 
 }

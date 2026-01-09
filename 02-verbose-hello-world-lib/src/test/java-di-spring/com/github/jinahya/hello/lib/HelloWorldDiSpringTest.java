@@ -1,4 +1,4 @@
-package com.github.jinahya.hello;
+package com.github.jinahya.hello.lib;
 
 /*-
  * #%L
@@ -20,25 +20,22 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import com.google.inject.BindingAnnotation;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
+@Slf4j
+class HelloWorldDiSpringTest extends HelloWorldDiTest {
 
-/**
- * An injection qualifier for {@link HelloWorldWrap}.
- *
- * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @deprecated Use {@link __QualifiedWrap}
- */
-@Deprecated(forRemoval = true)
-@BindingAnnotation
-@__QualifiedDemo
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE,
-         ElementType.ANNOTATION_TYPE})
-@interface ___BindingQualifiedWrap {
-
+    @BeforeEach
+    void autowireBean() {
+        final var context = new AnnotationConfigApplicationContext(
+                HelloWorldDiSpringConfiguration.class
+        );
+        final var factory = context.getAutowireCapableBeanFactory();
+        factory.autowireBean(this);
+    }
 }

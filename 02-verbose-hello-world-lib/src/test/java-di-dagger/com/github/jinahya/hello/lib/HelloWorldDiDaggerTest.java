@@ -1,4 +1,5 @@
-package com.github.jinahya.hello;
+package com.github.jinahya.hello.lib;
+
 
 /*-
  * #%L
@@ -23,13 +24,15 @@ package com.github.jinahya.hello;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jboss.weld.junit5.auto.AddBeanClasses;
-import org.jboss.weld.junit5.auto.EnableAutoWeld;
+import org.junit.jupiter.api.BeforeEach;
 
-@AddBeanClasses({HelloWorldCdiFactory.class})
-@EnableAutoWeld
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorldCdiSeWeldJunit5Test extends HelloWorldDiTest {
+class HelloWorldDiDaggerTest extends HelloWorldDiTest {
 
+    @BeforeEach
+    void injectMembers() {
+        final var injector = DaggerHelloWorldDiDaggerMembersInjector.create();
+        injector.injectMembers(this);
+    }
 }

@@ -1,4 +1,4 @@
-package com.github.jinahya.hello;
+package com.github.jinahya.hello.lib;
 
 /*-
  * #%L
@@ -20,6 +20,7 @@ package com.github.jinahya.hello;
  * #L%
  */
 
+import com.github.jinahya.hello.api.HelloWorld;
 import com.google.inject.Guice;
 import jakarta.inject.Inject;
 import lombok.AccessLevel;

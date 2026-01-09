@@ -1,4 +1,4 @@
-package com.github.jinahya.hello;
+package com.github.jinahya.hello.lib;
 
 /*-
  * #%L
@@ -20,18 +20,10 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
+import dagger.Component;
+import dagger.MembersInjector;
 
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
-@Slf4j
-class HelloWorldDiDaggerTest extends HelloWorldDiTest {
+@Component(modules = {HelloWorldDiDaggerModule.class})
+interface HelloWorldDiDaggerMembersInjector extends MembersInjector<HelloWorldDiDaggerTest> {
 
-    @BeforeEach
-    void injectMembers() {
-        final var injector = DaggerHelloWorldDiDaggerMembersInjector.create();
-        injector.injectMembers(this);
-    }
 }
