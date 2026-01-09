@@ -80,7 +80,7 @@ public final class JavaLangUtils {
 
     /**
      * Starts a new {@link Thread#isDaemon() daemon} thread which continuously reads lines from
-     * {@link System#in}, calls specified callable when a line tests with specified predicate,
+     * {@link System#in}, calls specified callable when a line tests with the specified predicate,
      * otherwise accepts each line to, if a non-null specified,  specified consumer.
      *
      * @param predicate the predicate to test.
@@ -118,7 +118,7 @@ public final class JavaLangUtils {
 
     /**
      * Starts a new {@link Thread#isDaemon() daemon} thread which continuously reads lines from
-     * {@link System#in}, calls specified callable when a line tests with specified predicate.
+     * {@link System#in}, calls specified callable when a line tests with the specified predicate.
      *
      * @param predicate the predicate to test.
      * @param callable  the callable to be called when a line passes the {@code predicate}.
@@ -131,8 +131,8 @@ public final class JavaLangUtils {
     /**
      * Starts a new {@link Thread#isDaemon() daemon} thread which continuously reads lines from
      * {@link System#in}, {@link Closeable#close() closes} specified closeable when a line tests
-     * with specified predicate, otherwise accepts each line to, if a non-null specified,  specified
-     * consumer.
+     * with the specified predicate, otherwise accepts each line to, if a non-null specified,
+     * specified consumer.
      *
      * @param predicate the predicate to test.
      * @param closeable the closeable to be closed when a line passes {@code predicate}.
@@ -155,7 +155,7 @@ public final class JavaLangUtils {
     /**
      * Starts a new {@link Thread#isDaemon() daemon} thread which continuously reads lines from
      * {@link System#in}, {@link Closeable#close() closes} specified closeable when a line tests
-     * with specified predicate.
+     * with the specified predicate.
      *
      * @param predicate the predicate to test.
      * @param closeable the closeable to be closed when a line passes {@code predicate}.

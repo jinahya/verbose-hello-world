@@ -150,7 +150,7 @@ public final class HelloWorldFlow {
         public static class OfArray extends HelloWorldPublisher<byte[]> {
 
             /**
-             * Creates a new instance with specified service and executor.
+             * Creates a new instance with the specified service and executor.
              *
              * @param service  the service for the <em>hello-world-bytes</em>.
              * @param executor the executor for publishing items asynchronously.
@@ -252,7 +252,7 @@ public final class HelloWorldFlow {
         public static class OfBuffer extends HelloWorldPublisher<ByteBuffer> {
 
             /**
-             * Creates a new instance with specified service and executor.
+             * Creates a new instance with the specified service and executor.
              *
              * @param service  the service for the <em>hello-world-bytes</em>.
              * @param executor the executor for publishing items asynchronously.
@@ -326,7 +326,7 @@ public final class HelloWorldFlow {
         public static class OfString extends HelloWorldPublisher<String> {
 
             /**
-             * Creates a new instance with specified service and executor.
+             * Creates a new instance with the specified service and executor.
              *
              * @param service  the service for the <em>hello-world-bytes</em>.
              * @param executor the executor for publishing items asynchronously.
@@ -393,7 +393,7 @@ public final class HelloWorldFlow {
         }
 
         /**
-         * Creates a new instance with specified service and executor.
+         * Creates a new instance with the specified service and executor.
          *
          * @param service  an instance of {@link HelloWorld} interface.
          * @param executor an executor for asynchronously publish items.
@@ -494,7 +494,7 @@ public final class HelloWorldFlow {
         }
 
         /**
-         * Creates a new instance with specified consumer.
+         * Creates a new instance with the specified consumer.
          *
          * @param consumer the consumer accepts each item published via {@link #onNext(Object)}.
          */

@@ -33,7 +33,7 @@ public final class JavaSecurityMessageDigestUtils {
     // ------------------------------------------------------------------------------- MessageDigest
 
     /**
-     * Updates specified message digest with specified number of bytes preceding specified byte
+     * Updates specified message digest with the specified number of bytes preceding specified byte
      * buffer's current position.
      *
      * @param digest the message digest to be updated.

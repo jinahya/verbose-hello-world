@@ -20,8 +20,8 @@ package com.github.jinahya.hello.api._05_java_util_concurrent;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorldFlow;
 import com.github.jinahya.hello.api.HelloWorld;
+import com.github.jinahya.hello.api.HelloWorldFlow;
 import com.github.jinahya.hello.api.HelloWorldTest;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -34,8 +34,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
 /**
- * An abstract class for testing interfaces defined in
- * {@link HelloWorldFlow} class.
+ * An abstract class for testing interfaces defined in {@link HelloWorldFlow} class.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
