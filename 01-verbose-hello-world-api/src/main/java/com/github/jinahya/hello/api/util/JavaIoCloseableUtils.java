@@ -20,10 +20,9 @@ package com.github.jinahya.hello.api.util;
  * #L%
  */
 
-import lombok.extern.slf4j.Slf4j;
-
 import java.io.Closeable;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -32,8 +31,10 @@ import java.util.function.Consumer;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@Slf4j
 public final class JavaIoCloseableUtils {
+
+    private static final System.Logger logger =
+            System.getLogger(MethodHandles.lookup().lookupClass().getName());
 
     public static void closeUnchecked(final Closeable closeable,
                                       final Consumer<? super IOException> consumer) {
@@ -67,7 +68,7 @@ public final class JavaIoCloseableUtils {
         try {
             closeable.close();
         } catch (final IOException ioe) {
-            log.error("failed to close {}", closeable, ioe);
+            logger.log(System.Logger.Level.ERROR, "failed to close {}", closeable, ioe);
         }
     }
 
