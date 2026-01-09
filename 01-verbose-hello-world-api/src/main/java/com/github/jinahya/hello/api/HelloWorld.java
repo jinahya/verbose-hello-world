@@ -259,11 +259,8 @@ public interface HelloWorld {
         if (stream == null) {
             throw new NullPointerException("stream is null");
         }
-        // get the <hello-world-bytes>
         final var array = set(new byte[BYTES]);
-        // invoke <stream.write(array)>
         stream.write(array);
-        // return the <stream>
         return stream;
     }
 
@@ -332,8 +329,8 @@ public interface HelloWorld {
      * @throws IOException          if an I/O error occurs.
      * @implSpec Default implementation invokes {@link #set(byte[])} method with an array of
      * {@value #BYTES} bytes, writes the array to {@code output} by invoking
-     * {@link DataOutput#write(byte[])} method on {@code output} with the array, and returns
-     * {@code output}.
+     * {@link DataOutput#write(byte[])} method on the {@code output} with the {@code array}, and
+     * returns the {@code output}.
      * @see #set(byte[])
      * @see DataOutput#write(byte[])
      */
@@ -341,11 +338,8 @@ public interface HelloWorld {
         if (output == null) {
             throw new NullPointerException("output is null");
         }
-        // get the <hello-world-bytes>
         final var array = set(new byte[BYTES]);
-        // invoke <output.write(array)>
 //        output.write(array);
-        // return the <output>
         return output;
     }
 
@@ -380,11 +374,8 @@ public interface HelloWorld {
         if (file == null) {
             throw new NullPointerException("file is null");
         }
-        // get the <hello-world-bytes>
         final var array = set(new byte[BYTES]);
-        // invoke <file.write(array)>
 //        file.write(array);
-        // return given <file>
         return file;
     }
 
@@ -413,9 +404,7 @@ public interface HelloWorld {
         if (writer == null) {
             throw new NullPointerException("writer is null");
         }
-        // invoke <append(writer)>
 //        append(writer);
-        // return the <writer>
         return writer;
     }
 
@@ -448,9 +437,7 @@ public interface HelloWorld {
             throw new NullPointerException("socket is null");
         }
         final var stream = socket.getOutputStream();
-        // invoke <write(stream)>
 //        write(stream);
-        // return the <socket>
         return socket;
     }
 
@@ -532,19 +519,15 @@ public interface HelloWorld {
             throw new BufferOverflowException();
         }
         if (buffer.hasArray()) {
-            // invoke <set(buffer.array(), (buffer.arrayOffset() + buffer.position())>
             final var array = buffer.array();
             final var index = buffer.arrayOffset() + buffer.position();
             set(array, index);
-            // increase <buffer.position> by <BYTES>
             buffer.position(buffer.position() + BYTES);
         } else {
-            // get the hello-world-bytes
-            final var array = set(new byte[BYTES]);
-            // invoke <buffer.put(array)>
+            final var array = new byte[BYTES];
+            set(array);
             buffer.put(array);
         }
-        // return given <buffer>
         return buffer;
     }
 
@@ -580,17 +563,13 @@ public interface HelloWorld {
      */
     default <T extends WritableByteChannel> T write(final T channel) throws IOException {
         Objects.requireNonNull(channel, "channel is null");
-        // specified: get the hello-world-bytes
         final var buffer = put(ByteBuffer.allocate(BYTES));
-        // flip the <buffer>
-        buffer.flip(); // limit -> position, position -> zero
+        buffer.flip();
         assert buffer.remaining() == BYTES;
-        // invoke <channel.write(buffer)> while <buffer> has <remaining>
         while (buffer.hasRemaining()) {
             final var written = channel.write(buffer);
             assert written >= 0; // why
         }
-        // return given <channel>
         return channel;
     }
 
@@ -788,7 +767,8 @@ public interface HelloWorld {
      * this</a> (The Java® Language Specification / Java SE 21 Edition)
      */
     default <T extends AsynchronousByteChannel, A> void write(
-            final T channel, @Nullable final A attachment,
+            final T channel,
+            @Nullable final A attachment,
             final CompletionHandler<? super T, ? super A> handler) {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(handler, "handler is null");
@@ -934,7 +914,9 @@ public interface HelloWorld {
      */
     // @formatter:off
     default <T extends AsynchronousFileChannel, A> void write(
-            final T channel, final long position, final A attachment,
+            final T channel,
+            final long position,
+            final @Nullable A attachment,
             final CompletionHandler<? super T, ? super A> handler) {
         Objects.requireNonNull(channel, "channel is null");
         if (position < 0L) {
