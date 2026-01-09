@@ -54,7 +54,7 @@ Too verbose?, See [succinct-hello-world](https://github.com/jinahya/succinct-hel
 
 ### [Dagger](https://github.com/google/dagger) (GitHub)
 
-* [jakarta.inject support #2058](https://github.com/google/dagger/issues/2058) (assertj/assertj)
+* [jakarta.inject support #2058](https://github.com/google/dagger/issues/2058) (google/dagger)
 
 ### [JUnit](https://github.com/junit-team) (GitHub)
 

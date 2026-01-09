@@ -65,9 +65,9 @@ public final class Stopwatch {
     }
 
     /**
-     * Returns a duration elapsed since {@link #startStopwatch()} method invoked.
+     * Returns the duration elapsed since {@link #startStopwatch()} was invoked.
      *
-     * @param carrier a carrier resulted from {@link #startStopwatch()}.
+     * @param carrier a carrier resulting from {@link #startStopwatch()}.
      */
     public static Duration stopStopwatch(final Object carrier) {
         return stopStopwatch(carrier, StopwatchProvider.DEFAULT_MAPPER);

@@ -145,7 +145,7 @@ public interface HelloWorld {
      * |h|e|l|l|o|,| |w|o|r|l|d| |....| |
      * </pre>
      * <p>
-     * The default implementation would look like as follows.
+     * The default implementation would be as follows.
      * {@snippet lang = "java":
      * if (array == null) {
      *     throw new NullPointerException("array is null");
@@ -169,24 +169,21 @@ public interface HelloWorld {
      * Array Access</a> (Java Language Specification / Java SE 21 Edition)
      */
     default byte[] set(final byte[] array) {
-        // specified: throw a <NullPointerException> when the <array> is <null>
         if (array == null) {
-            throw new NullPointerException("array is null");
+//            throw new NullPointerException("array is null");
         }
-        // specified: throw an <IndexOutOfBoundsException> when <array.length> is less than <BYTES>
         if (array.length < BYTES) {
-            throw new IndexOutOfBoundsException("array.length(" + array.length + ") < " + BYTES);
+//            throw new IndexOutOfBoundsException("array.length(" + array.length + ") < " + BYTES);
         }
-        // specified: invoke <set(array, 0)>
-        set(array, 0);
-        // specified: return <array>
-        return array;
+//        set(array, 0);
+//        return array;
+        return null;
     }
 
     /**
      * Appends the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified appendable.
      * <p>
-     * The default implementation would look like as follows.
+     * The default implementation would be as follows.
      * {@snippet lang = "java":
      * if (appendable == null) {
      *     throw new NullPointerException("appendable is null");
@@ -235,7 +232,7 @@ public interface HelloWorld {
      * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified output
      * stream.
      * <p>
-     * The default implementation would look like as follows.
+     * The default implementation would be as follows.
      * {@snippet lang = "java":
      * if (stream == null) {
      *     throw new NullPointerException("stream is null");
@@ -274,7 +271,7 @@ public interface HelloWorld {
      * Appends the <a href="#hello-world-bytes">hello-world-bytes</a> to the end of the specified
      * file.
      * <p>
-     * The default implementation would look like as follows.
+     * The default implementation would be as follows.
      * {@snippet lang = "java":
      * if (file == null) {
      *     throw new NullPointerException("file is null");
@@ -317,7 +314,7 @@ public interface HelloWorld {
     /**
      * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified data output.
      * <p>
-     * The default implementation would look like as follows.
+     * The default implementation would be as follows.
      * {@snippet lang = "java":
      * if (output == null) {
      *     throw new NullPointerException("output is null");
@@ -356,7 +353,7 @@ public interface HelloWorld {
      * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified random access
      * file starting at its current file pointer.
      * <p>
-     * The default implementation would look like as follows.
+     * The default implementation would be as follows.
      * {@snippet lang = "java":
      * if (file == null) {
      *     throw new NullPointerException("file is null");
@@ -394,7 +391,7 @@ public interface HelloWorld {
     /**
      * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified writer.
      * <p>
-     * The default implementation would look like as follows.
+     * The default implementation would be as follows.
      * {@snippet lang = "java":
      * if (writer == null) {
      *     throw new NullPointerException("writer is null");
@@ -427,7 +424,7 @@ public interface HelloWorld {
     /**
      * Sends the <a href="#hello-world-bytes">hello-world-bytes</a> through specified socket.
      * <p>
-     * The default implementation would look like as follows.
+     * The default implementation would be as follows.
      * {@snippet lang = "java":
      * if (socket == null) {
      *     throw new NullPointerException("socket is null");
@@ -483,7 +480,7 @@ public interface HelloWorld {
      *                                              9
      * </pre>
      * <p>
-     * The default implementation would look like as follows.
+     * The default implementation would be as follows.
      * {@snippet lang = "java":
      * Objects.requireNonNull(buffer, "buffer is null");
      * if (buffer.remaining() < BYTES) {
@@ -517,7 +514,7 @@ public interface HelloWorld {
      * {@link #set(byte[], int) #set(array, index)} method with the
      * {@link ByteBuffer#array() buffer.array()} and
      * ({@link ByteBuffer#arrayOffset() buffer.arrayOffset()} +
-     * {@link ByteBuffer#position() buffer.position()}), and then manually increments the buffer"s
+     * {@link ByteBuffer#position() buffer.position()}), and then manually increments the buffer's
      * position by {@value #BYTES}. Otherwise, this method invokes {@link #set(byte[]) set(array)}
      * method with an array of {@value #BYTES} bytes, and puts the {@code array} on the
      * {@code buffer} by invoking {@link ByteBuffer#put(byte[])} method, on {@code buffer}, with the
@@ -554,7 +551,7 @@ public interface HelloWorld {
     /**
      * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified channel.
      * <p>
-     * The default implementation would look like as follows.
+     * The default implementation would be as follows.
      * {@snippet lang = "java":
      * Objects.requireNonNull(channel, "channel is null");
      * final var buffer = put(ByteBuffer.allocate(BYTES));
@@ -598,9 +595,10 @@ public interface HelloWorld {
     }
 
     /**
-     * Sends the <a href="hello-world-bytes">hello-world-bytes</a> to the specified socket channel.
+     * Sends the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified socket
+     * channel.
      * <p>
-     * The default implementation would look like as follows.
+     * The default implementation would be as follows.
      * {@snippet lang = "java":
      * Objects.requireNonNull(channel, "channel is null");
      * write(channel); // @highlight
@@ -608,7 +606,7 @@ public interface HelloWorld {
      *}
      *
      * @param channel the socket channel to which the <a
-     *                href="hello-world-bytes">hello-world-bytes</a> be sent.
+     *                href="#hello-world-bytes">hello-world-bytes</a> are sent.
      * @param <T>     socket channel type parameter
      * @return given {@code channel}.
      * @throws IOException if an I/O error occurs.
@@ -627,7 +625,7 @@ public interface HelloWorld {
      * to a file. The {@link java.nio.file.Files#size(Path) size} of the {@code path}, on successful
      * return, is increased by {@value #BYTES}.
      * <p>
-     * The default implementation would look like as follows.
+     * The default implementation would be as follows.
      * {@snippet lang = "java":
      * Objects.requireNonNull(path, "path is null");
      * try (var channel = FileChannel.open(path, // @highlight region
@@ -640,7 +638,7 @@ public interface HelloWorld {
      *}
      *
      * @param <T>  path type parameter
-     * @param path the path a file to which bytes are appended.
+     * @param path the path to a file to which bytes are appended.
      * @return given {@code path}.
      * @throws NullPointerException if {@code path} is {@code null}.
      * @throws IOException          if an I/O error occurs.
@@ -677,9 +675,9 @@ public interface HelloWorld {
     }
 
     /**
-     * Writes the <a href="hello-world-bytes">hello-world-bytes</a> to the specified channel.
+     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified channel.
      * <p>
-     * The default implementation would look like as follows.
+     * The default implementation would be as follows.
      * {@snippet lang = "java":
      * Objects.requireNonNull(channel, "channel is null");
      * final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
@@ -719,10 +717,11 @@ public interface HelloWorld {
     }
 
     /**
-     * Sends the <a href="hello-world-bytes">hello-world-bytes</a> to the specified socket channel.
+     * Sends the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified socket
+     * channel.
      *
      * @param channel the socket channel to which the <a
-     *                href="hello-world-bytes">hello-world-bytes</a> be sent.
+     *                href="#hello-world-bytes">hello-world-bytes</a> are sent.
      * @param <T>     socket channel type parameter
      * @return given {@code channel}.
      * @throws InterruptedException interrupted while executing.
@@ -742,9 +741,9 @@ public interface HelloWorld {
     /**
      * Writes, asynchronously, the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>
      * to the specified channel, and notifies a completion (or a failure) to the specified handler
-     * with specified attachment.
+     * with the specified attachment.
      * <p>
-     * The default implementation would look like as follows.
+     * The default implementation would be as follows.
      * {@snippet lang = "java":
      * Objects.requireNonNull(channel, "channel is null");
      * Objects.requireNonNull(handler, "handler is null");
@@ -849,7 +848,7 @@ public interface HelloWorld {
     }
 
     /**
-     * Writes the <a href="hello-world-bytes">hello-world-bytes</a> to the specified file channel,
+     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified file channel,
      * starting at the given file position.
      * <pre>
      * Given,
@@ -919,7 +918,7 @@ public interface HelloWorld {
     }
 
     /**
-     * Writes, asynchronously, the <a href="hello-world-bytes">hello-world-bytes</a> to the
+     * Writes, asynchronously, the <a href="#hello-world-bytes">hello-world-bytes</a> to the
      * specified channel, starting at the specified position, and notifies a completion (or a
      * failure) to the specified handler.
      *
@@ -972,7 +971,7 @@ public interface HelloWorld {
     } // @formatter:on
 
     /**
-     * Appends the <a href="hello-world-bytes">hello-world-bytes</a> to the end of the specified
+     * Appends the <a href="#hello-world-bytes">hello-world-bytes</a> to the end of the specified
      * path to a file, and notifies a completion (or a failure) to the specified handler.
      *
      * @param path       the path to a file to which the bytes are appended.

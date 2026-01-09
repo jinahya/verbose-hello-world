@@ -59,7 +59,6 @@ class HelloWorld_02_Set_Array_Test extends HelloWorldTest {
         final var service = service();
         final var array = (byte[]) null;
         // ------------------------------------------------------------------------------- when/then
-        // verify: <service.set(null)> throws a <NullPointerException>
 //        Assertions.assertThrows(
 //                NullPointerException.class,
 //                () -> service.set(array)
@@ -82,10 +81,9 @@ class HelloWorld_02_Set_Array_Test extends HelloWorldTest {
         final var array = new byte[ThreadLocalRandom.current().nextInt(HelloWorld.BYTES)];
         assert array.length < HelloWorld.BYTES; // always 'true', I know
         // ------------------------------------------------------------------------------- when/then
-        // verify: <service.set(array(.length<12))> throws an <IndexOutOfBoundsException>
 //        Assertions.assertThrows(
 //                IndexOutOfBoundsException.class, // <expectedType>
-//                () -> service.set(array)              // <executable>
+//                () -> service.set(array)         // <executable>
 //        );
     }
 
@@ -105,20 +103,15 @@ class HelloWorld_02_Set_Array_Test extends HelloWorldTest {
     void __() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // stub: <service.set(array, index)> will just return the <array>
         Mockito.doAnswer(i -> i.getArgument(0)).when(service).set(
                 ArgumentMatchers.any(),   // <array>
                 ArgumentMatchers.anyInt() // <index>
         );
-        // prepare: an array of 12 bytes
         final var array = new byte[HelloWorld.BYTES];
-        assert array.length >= HelloWorld.BYTES; // always 'true', I know
         // ------------------------------------------------------------------------------------ when
         final var result = service.set(array);
         // ------------------------------------------------------------------------------------ then
-        // verify: <service.set(array, 0)> invoked, once
 //        Mockito.verify(service, Mockito.times(1)).set(array, 0);
-        // assert: <result> is same as <array>
 //        Assertions.assertSame(array, result);
     }
 }
