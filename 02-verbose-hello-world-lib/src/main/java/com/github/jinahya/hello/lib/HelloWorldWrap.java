@@ -21,6 +21,7 @@ package com.github.jinahya.hello.lib;
  */
 
 import com.github.jinahya.hello.api.HelloWorld;
+import com.github.jinahya.hello.lib.util.JavaLangObjectUtils;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -30,6 +31,11 @@ class HelloWorldWrap extends HelloWorldImpl {
     private static final String STRING = "hello, world";
 
     private static final byte[] ARRAY = STRING.getBytes(StandardCharsets.US_ASCII);
+
+    @Override
+    public String toString() {
+        return JavaLangObjectUtils.toSimpleString(this);
+    }
 
     @Override
     public byte[] set(final byte[] array, final int index) {

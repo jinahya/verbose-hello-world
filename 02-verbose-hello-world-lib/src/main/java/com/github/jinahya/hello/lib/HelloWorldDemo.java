@@ -21,7 +21,7 @@ package com.github.jinahya.hello.lib;
  */
 
 import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.util.JavaLangObjectUtils;
+import com.github.jinahya.hello.lib.util.JavaLangObjectUtils;
 
 import java.nio.charset.StandardCharsets;
 

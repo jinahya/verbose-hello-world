@@ -1,5 +1,6 @@
-module verbose.hello.world.api {
+module jinahya.verbose.hello.world.api {
     requires static lombok;
-    requires org.jspecify;
-    requires org.slf4j;
+    requires transitive org.jspecify;
+    requires transitive org.slf4j;
+    exports com.github.jinahya.hello.api;
 }
