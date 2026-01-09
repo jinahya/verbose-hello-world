@@ -81,14 +81,12 @@ class HelloWorld_03_Append_Appendable_Test extends HelloWorldTest {
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        Mockito.doAnswer(i -> {               // <1>
-                    final var array = i.getArgument(0, byte[].class);
-                    ThreadLocalRandom.current().nextBytes(array);
-                    return array;
-                })
-                .when(service)                // <2>
-                .set(ArgumentMatchers.any()); // <3>
-        final var appendable = Mockito.mock(Appendable.class);
+        Mockito.doAnswer(i -> { // <1>
+            final var array = i.getArgument(0, byte[].class);
+            ThreadLocalRandom.current().nextBytes(array);
+            return array;
+        }).when(service).set(ArgumentMatchers.any());
+        final var appendable = Mockito.mock(Appendable.class); // <2>
         // ------------------------------------------------------------------------------------ when
         final var result = service.append(appendable);
         // ------------------------------------------------------------------------------------ then
