@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.lib;
+package com.github.jinahya.hello.api.spi;
 
 /*-
  * #%L
@@ -30,7 +30,7 @@ import java.util.function.Function;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-interface HelloWorldServiceProvider {
+public interface HelloWorldServiceProvider {
 
     /**
      * Returns an instance of {@link HelloWorld} interface.

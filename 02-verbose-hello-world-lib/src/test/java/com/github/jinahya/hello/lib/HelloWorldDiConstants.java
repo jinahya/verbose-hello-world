@@ -20,9 +20,9 @@ package com.github.jinahya.hello.lib;
  * #L%
  */
 
-@SuppressWarnings(
+@SuppressWarnings({
         "java:S115" // Constant names should comply with a naming convention
-                    )
+})
 final class HelloWorldDiConstants {
 
     /**

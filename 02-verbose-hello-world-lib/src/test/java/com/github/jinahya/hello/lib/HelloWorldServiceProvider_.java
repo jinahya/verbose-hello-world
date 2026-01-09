@@ -1,6 +1,7 @@
 package com.github.jinahya.hello.lib;
 
 import com.github.jinahya.hello.api.HelloWorld;
+import com.github.jinahya.hello.api.spi.HelloWorldServiceProvider;
 
 import java.util.Objects;
 
@@ -16,7 +17,7 @@ abstract class HelloWorldServiceProvider_<T extends HelloWorld>
     // -------------------------------------------------------------------------------- CONSTRUCTORS
 
     /**
-     * Creates a new instance with specified service class.
+     * Creates a new instance with the specified service class.
      *
      * @param serviceClass the service class.
      */
@@ -28,6 +29,15 @@ abstract class HelloWorldServiceProvider_<T extends HelloWorld>
     // ------------------------------------------------------------------- HelloWorldServiceProvider
     @Override
     public HelloWorld getService() {
+        var result = serviceInstance;
+        if (result == null) {
+            result = serviceInstance = newServiceInstance();
+        }
+        return result;
+    }
+
+    // -------------------------------------------------------------------------------- serviceClass
+    private T newServiceInstance() {
         try {
             final var constructor = serviceClass.getDeclaredConstructor();
             if (!constructor.canAccess(null)) {
@@ -39,6 +49,8 @@ abstract class HelloWorldServiceProvider_<T extends HelloWorld>
         }
     }
 
-    // ----------------------------------------------------------------------------- INSTANCE_FIELDS
+    // ---------------------------------------------------------------------------------------------
     private final Class<T> serviceClass;
+
+    private T serviceInstance;
 }

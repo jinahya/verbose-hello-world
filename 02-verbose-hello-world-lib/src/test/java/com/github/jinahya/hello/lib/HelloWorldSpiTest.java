@@ -21,6 +21,7 @@ package com.github.jinahya.hello.lib;
  */
 
 import com.github.jinahya.hello.api.HelloWorld;
+import com.github.jinahya.hello.api.spi.HelloWorldServiceProvider;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,11 +43,11 @@ class HelloWorldSpiTest extends __HelloWorld__Test {
 
     @Override
     Stream<HelloWorld> services() {
-        // see /META-INF/services/com.github.jinahya.hello.lib.HelloWorldServiceProvider
+        // see /META-INF/services/com.github.jinahya.hello.api.spi.HelloWorldServiceProvider
         final var provider = ServiceLoader.load(HelloWorldServiceProvider.class);
         final var iterator = provider.iterator();
         final var spliterator = Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED);
         final var stream = StreamSupport.stream(spliterator, false);
-        return stream.map(com.github.jinahya.hello.lib.HelloWorldServiceProvider::getService);
+        return stream.map(HelloWorldServiceProvider::getService);
     }
 }
