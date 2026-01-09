@@ -243,3 +243,6 @@ venv
 
 .DS_Store
 *.dylib
+
+
+.ai
