@@ -21,6 +21,7 @@ package com.github.jinahya.hello.app;
  */
 
 import com.github.jinahya.hello.api.HelloWorld;
+import com.github.jinahya.hello.api.spi.HelloWorldServiceProvider;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ServiceLoader;

@@ -1,6 +1,6 @@
-module jinahya.verbose.hello.world.lib {
+module jinahya.hello.lib {
     requires static lombok;
-    requires jinahya.verbose.hello.world.api;
+    requires transitive jinahya.hello.api;
     exports com.github.jinahya.hello.lib;
     uses com.github.jinahya.hello.api.spi.HelloWorldServiceProvider;
 }

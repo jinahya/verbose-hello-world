@@ -21,6 +21,7 @@ package com.github.jinahya.hello.app;
  */
 
 import com.github.jinahya.hello.api.HelloWorld;
+import com.github.jinahya.hello.api.spi.HelloWorldServiceProvider;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provider;
 
@@ -36,7 +37,9 @@ class HelloWorldModule extends AbstractModule {
     @Override
     protected void configure() {
         final Provider<HelloWorld> provider =
-                () -> ServiceLoader.load(HelloWorld.class).iterator().next();
+                () -> ServiceLoader.load(HelloWorld.class)
+                        .iterator()
+                        .next();
         bind(HelloWorld.class).toProvider(provider);
     }
 }
