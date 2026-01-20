@@ -1,18 +1,30 @@
 package com.github.jinahya.hello.api;
 
-import java.util.concurrent.CompletableFuture;
+import java.io.OutputStream;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public interface AsynchronousHelloWorld {
 
-    static AsynchronousHelloWorld from(final HelloWorld delegate) {
-        return new DefaultAsynchronousHelloWorld(delegate);
+    static AsynchronousHelloWorld from(final HelloWorld underlying, final Executor executor) {
+        return new DefaultAsynchronousHelloWorld(underlying, executor);
     }
 
-    // ---------------------------------------------------------------------------------------------
-    CompletableFuture<byte[]> set(byte[] array, int index);
+    static AsynchronousHelloWorld from(final HelloWorld underlying) {
+        return from(underlying, Executors.newVirtualThreadPerTaskExecutor());
+    }
 
-    default CompletableFuture<byte[]> set(final byte[] array) {
+    // ----------------------------------------------------------------------------------- java.lang
+    CompletionStage<byte[]> set(byte[] array, int index);
+
+    default CompletionStage<byte[]> set(final byte[] array) {
         HelloWorldValidator.requireValid(array);
         return set(array, 0);
     }
+
+    <T extends Appendable> CompletionStage<T> append(final T appendable);
+
+    // ------------------------------------------------------------------------------------- java.io
+    <T extends OutputStream> CompletionStage<T> write(final T stream);
 }
