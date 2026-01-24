@@ -3,6 +3,7 @@ package com.github.jinahya.hello.api;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
+import java.io.Writer;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -62,6 +63,76 @@ class DefaultAsynchronousHelloWorld implements AsynchronousHelloWorld {
         Objects.requireNonNull(stream, "stream is null");
         return CompletableFuture.supplyAsync(
                 () -> execute(() -> service.write(stream)),
+                executor
+        );
+    }
+
+    @Override
+    public <T extends Writer> CompletionStage<T> write(final T writer) {
+        Objects.requireNonNull(writer, "writer is null");
+        return CompletableFuture.supplyAsync(
+                () -> execute(() -> service.write(writer)),
+                executor
+        );
+    }
+
+    // ------------------------------------------------------------------------------------- more java.io
+
+    @Override
+    public <T extends java.io.DataOutput> CompletionStage<T> write(final T output) {
+        Objects.requireNonNull(output, "output is null");
+        return CompletableFuture.supplyAsync(
+                () -> execute(() -> service.write(output)),
+                executor
+        );
+    }
+
+    @Override
+    public <T extends java.io.RandomAccessFile> CompletionStage<T> write(final T file) {
+        Objects.requireNonNull(file, "file is null");
+        return CompletableFuture.supplyAsync(
+                () -> execute(() -> service.write(file)),
+                executor
+        );
+    }
+
+    // ------------------------------------------------------------------------------------- java.net
+
+    @Override
+    public <T extends java.net.Socket> CompletionStage<T> send(final T socket) {
+        Objects.requireNonNull(socket, "socket is null");
+        return CompletableFuture.supplyAsync(
+                () -> execute(() -> service.send(socket)),
+                executor
+        );
+    }
+
+    // ------------------------------------------------------------------------------------- java.nio
+
+    @Override
+    public <T extends java.nio.ByteBuffer> CompletionStage<T> put(final T buffer) {
+        Objects.requireNonNull(buffer, "buffer is null");
+        return CompletableFuture.supplyAsync(
+                () -> service.put(buffer),
+                executor
+        );
+    }
+
+    @Override
+    public <T extends java.nio.channels.WritableByteChannel> CompletionStage<T> write(
+            final T channel) {
+        Objects.requireNonNull(channel, "channel is null");
+        return CompletableFuture.supplyAsync(
+                () -> execute(() -> service.write(channel)),
+                executor
+        );
+    }
+
+    @Override
+    public <T extends java.nio.file.Path> CompletionStage<T> append(final T path) {
+        Objects.requireNonNull(path, "path is null");
+        return CompletableFuture.supplyAsync(
+                () -> execute(() -> service.append(path)),
                 executor
         );
     }

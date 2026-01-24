@@ -411,7 +411,7 @@ public interface HelloWorld {
     // ------------------------------------------------------------------------------------ java.net
 
     /**
-     * Sends the <a href="#hello-world-bytes">hello-world-bytes</a> through specified socket.
+     * Sends the <a href="#hello-world-bytes">hello-world-bytes</a> through the specified socket.
      * <p>
      * The default implementation would be as follows.
      * {@snippet lang = "java":
