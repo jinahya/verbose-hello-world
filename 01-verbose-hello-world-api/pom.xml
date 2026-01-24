@@ -17,6 +17,11 @@
 
   <dependencies>
     <dependency>
+      <groupId>com.typesafe.akka</groupId>
+      <artifactId>akka-stream_3</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
       <scope>compile</scope>

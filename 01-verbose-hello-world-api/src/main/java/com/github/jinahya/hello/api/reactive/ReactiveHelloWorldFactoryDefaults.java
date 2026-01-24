@@ -1,5 +1,6 @@
-package com.github.jinahya.hello.api;
+package com.github.jinahya.hello.api.reactive;
 
+import com.github.jinahya.hello.api.HelloWorld;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
@@ -200,12 +201,12 @@ final class ReactiveHelloWorldFactoryDefaults {
      *
      * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
      */
-    static final class DefaultBytePublisher implements Publisher<Byte> {
+    static final class DefaultOctetPublisher implements Publisher<Byte> {
 
         /**
          * Creates a new instance.
          */
-        DefaultBytePublisher() {
+        DefaultOctetPublisher() {
             super();
         }
 

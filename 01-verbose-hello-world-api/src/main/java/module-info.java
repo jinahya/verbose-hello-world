@@ -6,4 +6,5 @@ module jinahya.hello.api {
     requires org.reactivestreams;
     exports com.github.jinahya.hello.api;
     exports com.github.jinahya.hello.api.spi;
+    exports com.github.jinahya.hello.api.reactive;
 }

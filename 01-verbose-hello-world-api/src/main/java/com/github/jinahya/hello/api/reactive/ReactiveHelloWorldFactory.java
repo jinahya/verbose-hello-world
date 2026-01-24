@@ -1,5 +1,6 @@
-package com.github.jinahya.hello.api;
+package com.github.jinahya.hello.api.reactive;
 
+import com.github.jinahya.hello.api.HelloWorld;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscription;
 
@@ -13,14 +14,14 @@ public interface ReactiveHelloWorldFactory {
      *
      * @return a publisher that publishes each byte individually
      */
-    default Publisher<Byte> newBytePublisher() {
-        return new ReactiveHelloWorldFactoryDefaults.DefaultBytePublisher();
+    default Publisher<Byte> newOctetPublisher() {
+        return new ReactiveHelloWorldFactoryDefaults.DefaultOctetPublisher();
     }
 
     /**
      * Returns a publisher that publishes the hello-world-bytes as a single byte array.
      * <p>
-     * The default implementation collects bytes from {@link #newBytePublisher()} and publishes them
+     * The default implementation collects bytes from {@link #newOctetPublisher()} and publishes them
      * as a complete byte array.
      * <p>
      * This is a naive implementation: when a subscriber requests {@code n} items of {@code byte[]},
@@ -38,7 +39,7 @@ public interface ReactiveHelloWorldFactory {
         return s -> s.onSubscribe(
                 new ReactiveHelloWorldFactoryDefaults.ArraySubscription(
                         s,
-                        newBytePublisher()
+                        newOctetPublisher()
                 )
         );
     }

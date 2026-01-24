@@ -1,4 +1,6 @@
-package com.github.jinahya.hello.api;
+package com.github.jinahya.hello.api.reactive;
+
+import com.github.jinahya.hello.api.HelloWorld;
 
 import java.util.Objects;
 

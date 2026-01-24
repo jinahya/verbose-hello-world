@@ -1,5 +1,6 @@
-package com.github.jinahya.hello.api;
+package com.github.jinahya.hello.api.reactive;
 
+import com.github.jinahya.hello.api.HelloWorld;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import reactor.core.scheduler.Scheduler;

@@ -1,14 +1,15 @@
-package com.github.jinahya.hello.api;
+package com.github.jinahya.hello.api.reactive;
 
+import com.github.jinahya.hello.api.HelloWorld;
 import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
-import org.reactivestreams.Subscriber;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.IntStream;
 
 /**
@@ -40,7 +41,7 @@ public final class ReactorReactiveHelloWorldFactory extends AbstractReactiveHell
 
     // ---------------------------------------------------------------------------------------------
     @Override
-    public Publisher<Byte> newBytePublisher() {
+    public Publisher<Byte> newOctetPublisher() {
         final var array = service.set(new byte[HelloWorld.BYTES], 0);
         return Flux.fromStream(IntStream.range(0, array.length).mapToObj(i -> array[i]))
                 .publishOn(scheduler)
@@ -50,74 +51,14 @@ public final class ReactorReactiveHelloWorldFactory extends AbstractReactiveHell
 
     @Override
     public Publisher<byte[]> newArrayPublisher() {
-        if (false) {
-            // FIRST ATTEMPT - using repeat() - FAILED because:
-            // - repeat() makes Flux infinite, never completes
-            // - Tests expect completion after requested items
-            return Flux.defer(() -> Flux.from(newBytePublisher())
-                            .collectList()
-                            .map(l -> {
-                                final var array = new byte[l.size()];
-                                for (var i = 0; i < array.length; i++) {
-                                    array[i] = l.get(i);
-                                }
-                                return array;
-                            }))
-                    .repeat()
-                    .publishOn(scheduler)
-                    .doOnNext(bytes -> log.debug("publishing array: {}", bytes));
-        }
-        if (false) {
-            // SECOND ATTEMPT - using Flux.create with reused Mono - FAILED because:
-            // 1. Reused the same Mono instance for all requests (Mono only completes once)
-            // 2. Incorrect completion logic (only checked last item of single request)
-            // 3. Race conditions with currentRequested tracking
-            return Flux.create(sink -> {
-                final var singleArrayMono = Flux.from(newBytePublisher())
-                        .collectList()
-                        .map(l -> {
-                            final var array = new byte[l.size()];
-                            for (var i = 0; i < array.length; i++) {
-                                array[i] = l.get(i);
-                            }
-                            return array;
-                        })
-                        .publishOn(scheduler);
-                final var requested = new java.util.concurrent.atomic.AtomicLong(0);
-                final var completed = new java.util.concurrent.atomic.AtomicLong(0);
-                sink.onRequest(n -> {
-                    final var currentRequested = requested.addAndGet(n);
-                    for (long i = 0; i < n && !sink.isCancelled(); i++) {
-                        final var index = i;
-                        singleArrayMono.subscribe(
-                                array -> {
-                                    log.debug("publishing array: {}", array);
-                                    sink.next(array);
-                                    final var done = completed.incrementAndGet();
-                                    if (done == currentRequested) {
-                                        sink.complete();
-                                    }
-                                },
-                                sink::error
-                        );
-                    }
-                });
-            });
-        }
         return Flux.create(sink -> {
-            final var pending = new java.util.concurrent.atomic.AtomicLong(0);
+            final var pending = new AtomicLong(0);
             sink.onRequest(n -> {
-                final var currentPending = pending.addAndGet(n);
+                pending.addAndGet(n); // no overflow handled
                 for (long i = 0; i < n && !sink.isCancelled(); i++) {
-                    Flux.from(newBytePublisher())
+                    Flux.from(newOctetPublisher())
                             .collectList()
-                            .map(l -> {
-                                final var array = new byte[l.size()];
-                                for (var j = 0; j < array.length; j++) {
-                                    array[j] = l.get(j);
-                                }
-                                return array;
-                            })
+                            .map(ReactiveHelloWorldFactoryUtils::toByteArray)
                             .publishOn(scheduler)
                             .subscribe(
                                     array -> {
@@ -138,13 +79,14 @@ public final class ReactorReactiveHelloWorldFactory extends AbstractReactiveHell
     @Override
     public Publisher<String> newStringPublisher() {
         return Flux.create(sink -> {
-            final var pending = new java.util.concurrent.atomic.AtomicLong(0);
+            final var pending = new AtomicLong(0);
             sink.onRequest(n -> {
-                final var currentPending = pending.addAndGet(n);
+                pending.addAndGet(n); // no overflow handled
                 for (long i = 0; i < n && !sink.isCancelled(); i++) {
                     Flux.from(newArrayPublisher())
                             .next()
-                            .map(array -> java.nio.charset.StandardCharsets.US_ASCII.decode(ByteBuffer.wrap(array)).toString())
+                            .map(array -> StandardCharsets.US_ASCII.decode(ByteBuffer.wrap(array))
+                                    .toString())
                             .publishOn(scheduler)
                             .subscribe(
                                     string -> {
