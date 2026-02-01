@@ -149,15 +149,12 @@ interface HelloWorldRevisited extends HelloWorld {
             try {
                 channel.write(buffer).get();
             } catch (ExecutionException ee) {
-                Throwable cause = ee.getCause();
-                // Pattern matching allows the compiler to see the specific type
-                if (cause instanceof IOException ioe) throw ioe;
+                final var cause = ee.getCause();
                 if (cause instanceof InterruptedException ie) throw ie;
-                if (cause instanceof RuntimeException re) throw re;
                 if (cause instanceof Error err) throw err;
-
-                // Fallback for any other checked exception type
-                throw new IOException("Unexpected failure", cause);
+                if (cause instanceof RuntimeException re) throw re;
+                if (cause instanceof IOException ioe) throw ioe;
+                throw new RuntimeException("failed to write", cause);
             }
         }
         return channel;
@@ -187,10 +184,19 @@ interface HelloWorldRevisited extends HelloWorld {
 
     @Override
     default <T extends AsynchronousFileChannel> T write(final T channel, long position)
-            throws InterruptedException, ExecutionException {
+            throws InterruptedException, IOException {
         final var b = put(ByteBuffer.allocate(BYTES)).flip();
         while (b.hasRemaining()) {
-            position += channel.write(b, position).get();
+            try {
+                position += channel.write(b, position).get();
+            } catch (final ExecutionException ee) {
+                final var cause = ee.getCause();
+                if (cause instanceof InterruptedException ie) throw ie;
+                if (cause instanceof Error err) throw err;
+                if (cause instanceof RuntimeException re) throw re;
+                if (cause instanceof IOException ioe) throw ioe;
+                throw new RuntimeException("failed to write", cause);
+            }
         }
         return channel;
     }

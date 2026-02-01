@@ -32,6 +32,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.file.Files;
@@ -112,7 +113,7 @@ class HelloWorld_09_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
             and write the <buffer> to the <channel>"""
     )
     @Test
-    void _PutBufferWriteBufferToChannel_() throws InterruptedException, ExecutionException {
+    void _PutBufferWriteBufferToChannel_() throws InterruptedException, IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // stub: <service.put(buffer)> will increase the <buffer>'s <position> by <12>

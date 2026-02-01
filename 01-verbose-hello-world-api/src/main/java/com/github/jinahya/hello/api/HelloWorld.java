@@ -645,17 +645,6 @@ public interface HelloWorld {
 
     /**
      * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified channel.
-     * <p>
-     * The default implementation would be as follows.
-     * {@snippet lang = "java":
-     * Objects.requireNonNull(channel, "channel is null");
-     * final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
-     * while (buffer.hasRemaining()) { // @highlight region
-     *     final var written = channel.write(buffer).get();
-     *     assert written > 0; // why?
-     * } // @end
-     * return channel;
-     *}
      *
      * @param <T>     channel type parameter
      * @param channel the channel to which bytes are written.
@@ -680,14 +669,11 @@ public interface HelloWorld {
                 channel.write(buffer).get();
             } catch (final ExecutionException ee) {
                 final var cause = ee.getCause();
-// Pattern matching allows the compiler to see the specific type
-                if (cause instanceof IOException ioe) throw ioe;
                 if (cause instanceof InterruptedException ie) throw ie;
-                if (cause instanceof RuntimeException re) throw re;
                 if (cause instanceof Error err) throw err;
-
-                // Fallback for any other checked exception type
-                throw new IOException("Unexpected failure", cause);
+                if (cause instanceof RuntimeException re) throw re;
+                if (cause instanceof IOException ioe) throw ioe;
+                throw new RuntimeException("failed to write", cause);
             }
         }
         return channel;
@@ -865,7 +851,7 @@ public interface HelloWorld {
      * @param position the file position at which the transfer is to begin; must be non-negative.
      * @return given {@code channel}.
      * @throws InterruptedException if interrupted while executing.
-     * @throws ExecutionException   if failed to execute.
+     * @throws IOException          if an I/O error occurs.
      * @implSpec Default implementation invokes {@link #put(ByteBuffer) put(buffer)} with a byte
      * buffer of {@value #BYTES} bytes, flips it, and writes the {@code buffer} to {@code channel},
      * while the {@code buffer} {@link ByteBuffer#hasRemaining() has remaining}, by continuously
@@ -877,20 +863,26 @@ public interface HelloWorld {
      * @see AsynchronousFileChannel#write(ByteBuffer, long)
      */
     default <T extends AsynchronousFileChannel> T write(final T channel, long position)
-            throws InterruptedException, ExecutionException {
+            throws InterruptedException, IOException {
         Objects.requireNonNull(channel, "channel is null");
         if (position < 0L) {
             throw new IllegalArgumentException("position(" + position + ") is negative");
         }
-        // get the <hello-world-bytes>
         final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
-        JavaNioByteBufferUtils.print(buffer);
-        // keep writing the <buffer> to the <channel>, while the <buffer> has <remaining>
         while (buffer.hasRemaining()) {
             final var future = channel.write(buffer, position);
-            final var written = future.get();
-            assert written > 0; // why?
-            position += written;
+            try {
+                final var written = future.get();
+                assert written > 0; // why?
+                position += written;
+            } catch (final ExecutionException ee) {
+                final var cause = ee.getCause();
+                if (cause instanceof InterruptedException ie) throw ie;
+                if (cause instanceof Error err) throw err;
+                if (cause instanceof RuntimeException re) throw re;
+                if (cause instanceof IOException ioe) throw ioe;
+                throw new RuntimeException("failed to write", cause);
+            }
         }
         return channel;
     }
