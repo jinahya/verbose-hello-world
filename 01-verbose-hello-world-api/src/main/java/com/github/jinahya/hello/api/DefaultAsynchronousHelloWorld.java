@@ -1,9 +1,15 @@
 package com.github.jinahya.hello.api;
 
+import org.jspecify.annotations.Nullable;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
 import java.io.Writer;
+import java.lang.invoke.MethodHandles;
+import java.nio.ByteBuffer;
+import java.nio.channels.AsynchronousByteChannel;
+import java.nio.channels.CompletionHandler;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -11,6 +17,10 @@ import java.util.concurrent.Executor;
 
 class DefaultAsynchronousHelloWorld implements AsynchronousHelloWorld {
 
+    private static final System.Logger logger =
+            System.getLogger(MethodHandles.lookup().lookupClass().getName());
+
+    // ---------------------------------------------------------------------------------------------
     @FunctionalInterface
     private interface ThrowableSupplier<R, T extends Throwable> {
 
@@ -135,6 +145,41 @@ class DefaultAsynchronousHelloWorld implements AsynchronousHelloWorld {
                 () -> execute(() -> service.append(path)),
                 executor
         );
+    }
+
+    // --------------------------------------------------------------------------- java.nio.channels
+    @Override
+    public <T extends AsynchronousByteChannel, A> void write(
+            final T channel,
+            final @Nullable A attachment,
+            final CompletionHandler<? super T, ? super A> handler) { // @formatter:off
+        Objects.requireNonNull(channel, "channel is null");
+        Objects.requireNonNull(handler, "handler is null");
+        final var buffer = service.put(ByteBuffer.allocate(HelloWorld.BYTES)).flip();
+        channel.write(
+                buffer,                     // <src>
+                attachment,                 // <attachment>
+                new CompletionHandler<>() { // <handler>
+                    @Override
+                    public void completed(final Integer result, final A attachment) {
+                        logger.log(System.Logger.Level.DEBUG, "completed({0}, {1})", result,
+                                   attachment);
+                        if (!buffer.hasRemaining()) {               // <1>
+                            handler.completed(channel, attachment); // <2>
+                            return;                                 // <3>
+                        }
+                        channel.write(                              // <4>
+                                buffer,     // <src>
+                                attachment, // <attachment>
+                                this        // <handler>            // <5>
+                        );
+                    }
+                    @Override
+                    public void failed(final Throwable exc, final A attachment) {
+                        handler.failed(exc, attachment); // <1>
+                    }
+                }
+        ); // @formatter:on
     }
 
     // ---------------------------------------------------------------------------------------------

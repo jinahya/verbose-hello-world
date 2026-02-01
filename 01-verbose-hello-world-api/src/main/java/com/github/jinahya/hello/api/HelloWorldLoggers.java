@@ -24,6 +24,10 @@ import com.github.jinahya.hello.api.util._ExcludeFromCoverage_PrivateConstructor
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * A helper class for managing loggers.
  *
@@ -46,6 +50,18 @@ final class HelloWorldLoggers {
         return result;
     }
 
+    // ---------------------------------------------------------------------------------------------
+    private static final Map<Class<?>, System.Logger> LOGGERS = new ConcurrentHashMap<>();
+
+    static System.Logger logger(final Class<?> clazz) {
+        Objects.requireNonNull(clazz, "clazz is null");
+        return LOGGERS.computeIfAbsent(
+                clazz,
+                k -> System.getLogger(k.getName())
+        );
+    }
+
+    // ---------------------------------------------------------------------------------------------
     private static System.Logger logger;
 
     /**

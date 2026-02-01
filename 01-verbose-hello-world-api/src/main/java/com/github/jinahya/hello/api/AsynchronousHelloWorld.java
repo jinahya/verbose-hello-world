@@ -1,11 +1,17 @@
 package com.github.jinahya.hello.api;
 
+import org.jspecify.annotations.Nullable;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
 import java.io.Writer;
+import java.nio.ByteBuffer;
+import java.nio.channels.AsynchronousByteChannel;
+import java.nio.channels.AsynchronousSocketChannel;
+import java.nio.channels.CompletionHandler;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -345,4 +351,81 @@ public interface AsynchronousHelloWorld {
      * @return a {@link CompletionStage} that, when completed, returns the given {@code path}
      */
     <T extends java.nio.file.Path> CompletionStage<T> append(final T path);
+
+    // --------------------------------------------------------------------------- java.nio.channels
+
+    /**
+     * Writes the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to the specified
+     * channel, and then, notifies a completion (or a failure) to the specified handler with the
+     * specified attachment.
+     * <p>
+     * The default implementation would be as follows.
+     * {@snippet lang = "java":
+     * Objects.requireNonNull(channel, "channel is null");
+     * Objects.requireNonNull(handler, "handler is null");
+     * final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
+     * channel.write( // @highlight region
+     *         buffer,                                    // <src>
+     *         null,                                      // <attachment>
+     *         new CompletionHandler<Integer, Object>() { // <handler>
+     *                 @Override
+     *                 public void completed(final Integer result, final Object a) {
+     *                     if (!buffer.hasRemaining()) {
+     *                         handler.completed(channel, attachment);
+     *                         return;
+     *                     }
+     *                     channel.write(
+     *                             buffer, // <src>
+     *                             a,      // <attachment>
+     *                             this    // <handler>
+     *                     );
+     *                 }
+     *                 @Override
+     *                 public void failed(final Throwable exc, final Object a) {
+     *                     handler.failed(exc, attachment);
+     *                 }
+     *         }
+     * ); // @end
+     *}
+     *
+     * @param <T>        channel type parameter
+     * @param channel    the channel to which bytes are written.
+     * @param attachment the attachment for the {@code handler}; may be {@code null}.
+     * @param handler    the completion handler to be notified with a completion (or a failure).
+     * @throws NullPointerException either {@code channel} or {@code handler} is {@code null}.
+     * @see HelloWorld#put(ByteBuffer)
+     * @see AsynchronousByteChannel#write(ByteBuffer, Object, CompletionHandler)
+     */
+    <T extends AsynchronousByteChannel, A> void write(
+            final T channel,
+            @Nullable final A attachment,
+            final CompletionHandler<? super T, ? super A> handler);
+
+    /**
+     * Sends the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to the specified
+     * socket channel, and then, notifies a completion (or a failure) to the specified handler with
+     * the specified attachment.
+     *
+     * @param channel    the channel to which the <a
+     *                   href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> is sent.
+     * @param attachment an attachment.
+     * @param handler    the handler to be notified with a completion (or a failure).
+     * @param <T>        channel type parameter
+     * @param <A>        attachment type parameter
+     * @implSpec Default implementation invokes
+     * {@link #write(AsynchronousByteChannel, Object, CompletionHandler)} method with
+     * {@code channel}, {@code attachment}, and {@code handler}.
+     * @deprecated Invoke, directly, the
+     * {@link #write(AsynchronousByteChannel, Object, CompletionHandler)} method with
+     * {@code channel}, {@code attachment}, and {@code handler}.
+     */
+    @屋上架屋("AsynchronousSocketChannel implements AsynchronousByteChannel")
+    @Deprecated(forRemoval = true)
+    default <T extends AsynchronousSocketChannel, A> void send(
+            final T channel, final A attachment,
+            final CompletionHandler<? super T, ? super A> handler) {
+        Objects.requireNonNull(channel, "channel is null");
+        Objects.requireNonNull(handler, "handler is null");
+        write(channel, attachment, handler);
+    }
 }

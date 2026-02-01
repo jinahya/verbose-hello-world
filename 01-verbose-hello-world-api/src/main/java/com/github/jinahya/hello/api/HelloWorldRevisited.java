@@ -36,6 +36,7 @@ import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.channels.WritableByteChannel;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
@@ -47,6 +48,13 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 interface HelloWorldRevisited extends HelloWorld {
+
+    @Override
+    default byte[] set(final byte[] array, final int index) {
+        final var src = "hello, world".getBytes(StandardCharsets.US_ASCII);
+        System.arraycopy(src, 0, array, index, src.length);
+        return array;
+    }
 
     @Override
     default byte[] set(final byte[] array) {
@@ -61,6 +69,7 @@ interface HelloWorldRevisited extends HelloWorld {
         return appendable;
     }
 
+    // ------------------------------------------------------------------------------------- java.io
     @Override
     default <T extends OutputStream> T write(final T stream) throws IOException {
         stream.write(set(new byte[BYTES]));

@@ -49,13 +49,13 @@ import java.nio.charset.StandardCharsets;
  */
 @屋上架屋("AsynchronousSocketChannel implements AsynchronousByteChannel")
 @Deprecated(forRemoval = true)
-@DisplayName("send(AsynchronousServerSocketChannel)")
+@DisplayName("send(AsynchronousSocketChannel)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({
         "java:S101"
 })
-class HelloWorld_06_Send_AsynchronousSocketChannelChannel_Test extends HelloWorldTest {
+class HelloWorld_06_Send_AsynchronousSocketChannel_Test extends HelloWorldTest {
 
     /**
      * Verifies {@link HelloWorld#send(AsynchronousSocketChannel) send(channel)} method throws a
