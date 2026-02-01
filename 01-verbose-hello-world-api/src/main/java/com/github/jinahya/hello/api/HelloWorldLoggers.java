@@ -35,20 +35,20 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 final class HelloWorldLoggers {
 
-    private static Logger log;
-
-    /**
-     * Returns a logger for {@link HelloWorld} interface.
-     *
-     * @return a logger for {@link HelloWorld} interface.
-     */
-    static Logger log() {
-        var result = log;
-        if (result == null) {
-            result = log = LoggerFactory.getLogger(HelloWorld.class);
-        }
-        return result;
-    }
+//    private static Logger log;
+//
+//    /**
+//     * Returns a logger for {@link HelloWorld} interface.
+//     *
+//     * @return a logger for {@link HelloWorld} interface.
+//     */
+//    static Logger log() {
+//        var result = log;
+//        if (result == null) {
+//            result = log = LoggerFactory.getLogger(HelloWorld.class);
+//        }
+//        return result;
+//    }
 
     // ---------------------------------------------------------------------------------------------
     private static final Map<Class<?>, System.Logger> LOGGERS = new ConcurrentHashMap<>();

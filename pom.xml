@@ -47,7 +47,7 @@
   </issueManagement>
 
   <properties>
-    <maven.compiler.source>21</maven.compiler.source>
+    <maven.compiler.source>25</maven.compiler.source>
     <maven.compiler.target>${maven.compiler.source}</maven.compiler.target>
     <maven.compiler.release>${maven.compiler.target}</maven.compiler.release>
     <maven.compiler.testSource>${maven.compiler.source}</maven.compiler.testSource>
@@ -449,6 +449,7 @@
               <!--              <arg>&#45;&#45;should-stop=ifError=FLOW</arg>-->
               <!--              &lt;!&ndash; https://github.com/google/error-prone/issues/5354 &ndash;&gt;-->
               <!--              &lt;!&ndash;              <arg>-Xplugin:ErrorProne -Xep:NullAway:ERROR -XepOpt:NullAway:OnlyNullMarked=true</arg>&ndash;&gt;-->
+              <arg>--enable-preview</arg>
             </compilerArgs>
             <annotationProcessorPaths>
               <path>
@@ -604,6 +605,7 @@
             <!-- https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#0.3 -->
             <!--            <argLine>@{argLine} -XX:+EnableDynamicAgentLoading -javaagent:${org.mockito:mockito-core:jar}</argLine>-->
             <!--            <argLine>@{argLine} -javaagent:${org.mockito:mockito-core:jar}</argLine>-->
+            <argLine>--enable-preview</argLine>
           </configuration>
         </plugin>
         <plugin>

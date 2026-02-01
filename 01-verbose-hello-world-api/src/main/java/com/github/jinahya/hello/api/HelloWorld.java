@@ -22,7 +22,6 @@ package com.github.jinahya.hello.api;
 
 import com.github.jinahya.hello.api.util.JavaNioByteBufferUtils;
 import org.jspecify.annotations.Nullable;
-import org.slf4j.Logger;
 
 import java.io.DataOutput;
 import java.io.File;
@@ -76,15 +75,6 @@ import java.util.concurrent.Future;
 public interface HelloWorld {
 
     // ---------------------------------------------------------------------------------- log/logger
-
-    /**
-     * Returns a logger for this interface.
-     *
-     * @return a logger for this interface.
-     */
-    private Logger log() {
-        return HelloWorldLoggers.log();
-    }
 
     /**
      * Returns a logger for this interface.
@@ -684,14 +674,10 @@ public interface HelloWorld {
     default <T extends AsynchronousByteChannel> T write(final T channel)
             throws InterruptedException, ExecutionException {
         Objects.requireNonNull(channel, "channel is null");
-        // get the <hello-world-bytes>
         final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
-        // write <buffer> to <channel> while <buffer> has <remaining>
 //        while (buffer.hasRemaining()) {
-//            final var future = channel.write(buffer);
-////            final var result = future.get();
+//            channel.write(buffer).get();
 //        }
-        // return the <channel>
         return channel;
     }
 
@@ -983,18 +969,18 @@ public interface HelloWorld {
                     r.force(true);
                     r.close();
                 } catch (final IOException ioe) {
-                    log().error("failed to force/close the channel", ioe);
+//                    log().error("failed to force/close the channel", ioe);
                     handler.failed(ioe, a);
                     return;
                 }
                 handler.completed(path, a);
             }
             @Override public void failed(final Throwable t, final A a) {
-                log().error("failed({}, {})", t, a, t);
+//                log().error("failed({}, {})", t, a, t);
                 try {
                     channel.close();
                 } catch (final IOException ioe) {
-                    log().error("failed to close the channel", ioe);
+//                    log().error("failed to close the channel", ioe);
                     handler.failed(ioe, a);
                     return;
                 }

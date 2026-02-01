@@ -49,6 +49,7 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 interface HelloWorldRevisited extends HelloWorld {
 
+    // ----------------------------------------------------------------------------------- java.lang
     @Override
     default byte[] set(final byte[] array, final int index) {
         final var src = "hello, world".getBytes(StandardCharsets.US_ASCII);
@@ -101,11 +102,13 @@ interface HelloWorldRevisited extends HelloWorld {
         return append(writer);
     }
 
+    // ------------------------------------------------------------------------------------ java.net
     @Override
     default <T extends Socket> T send(final T socket) throws IOException {
         return HelloWorld.super.send(socket);
     }
 
+    // ------------------------------------------------------------------------------------ java.nio
     @Override
     default <T extends ByteBuffer> T put(final T buffer) {
         if (Objects.requireNonNull(buffer, "buffer is null").remaining() < BYTES) {
@@ -120,6 +123,7 @@ interface HelloWorldRevisited extends HelloWorld {
         return buffer;
     }
 
+    // --------------------------------------------------------------------------- java.nio.channels
     @Override
     default <T extends WritableByteChannel> T write(final T channel) throws IOException {
         Objects.requireNonNull(channel, "channel is null");
@@ -129,16 +133,19 @@ interface HelloWorldRevisited extends HelloWorld {
         return channel;
     }
 
+    // ------------------------------------------------------------------------------- java.nio.file
     @Override
     default <T extends Path> T append(final T path) throws IOException {
         return HelloWorld.super.append(path);
     }
 
+    // --------------------------------------------------------------------------- java.nio.channels
     @Override
     default <T extends AsynchronousByteChannel> T write(final T channel)
             throws InterruptedException, ExecutionException {
         Objects.requireNonNull(channel, "channel is null");
-        for (final var b = put(ByteBuffer.allocate(BYTES)).flip(); b.hasRemaining(); ) {
+        final var b = put(ByteBuffer.allocate(BYTES)).flip();
+        while (b.hasRemaining()) {
             channel.write(b).get();
         }
         return channel;
@@ -169,7 +176,8 @@ interface HelloWorldRevisited extends HelloWorld {
     @Override
     default <T extends AsynchronousFileChannel> T write(final T channel, long position)
             throws InterruptedException, ExecutionException {
-        for (final var b = put(ByteBuffer.allocate(BYTES)).flip(); b.hasRemaining(); ) {
+        final var b = put(ByteBuffer.allocate(BYTES)).flip();
+        while (b.hasRemaining()) {
             position += channel.write(b, position).get();
         }
         return channel;
