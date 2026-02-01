@@ -20,7 +20,6 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import com.github.jinahya.hello.api.util.JavaNioByteBufferUtils;
 import org.jspecify.annotations.Nullable;
 
 import java.io.DataOutput;
@@ -688,7 +687,7 @@ public interface HelloWorld {
      * @param <T>     socket channel type parameter
      * @return given {@code channel}.
      * @throws InterruptedException interrupted while executing.
-     * @throws ExecutionException   when failed to execute.
+     * @throws IOException          if an I/O error occurs.
      * @implSpec Default implementation invokes {@link #write(AsynchronousByteChannel)} method with
      * {@code channel}, and returns the result.
      * @deprecated Invoke directly the {@link #write(AsynchronousByteChannel)} method with

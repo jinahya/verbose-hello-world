@@ -185,20 +185,7 @@ interface HelloWorldRevisited extends HelloWorld {
     @Override
     default <T extends AsynchronousFileChannel> T write(final T channel, long position)
             throws InterruptedException, IOException {
-        final var b = put(ByteBuffer.allocate(BYTES)).flip();
-        while (b.hasRemaining()) {
-            try {
-                position += channel.write(b, position).get();
-            } catch (final ExecutionException ee) {
-                final var cause = ee.getCause();
-                if (cause instanceof InterruptedException ie) throw ie;
-                if (cause instanceof Error err) throw err;
-                if (cause instanceof RuntimeException re) throw re;
-                if (cause instanceof IOException ioe) throw ioe;
-                throw new RuntimeException("failed to write", cause);
-            }
-        }
-        return channel;
+        return HelloWorld.super.write(channel, position);
     }
 
     @Override
