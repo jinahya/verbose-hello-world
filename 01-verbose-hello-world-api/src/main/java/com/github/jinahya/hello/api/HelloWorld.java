@@ -661,7 +661,7 @@ public interface HelloWorld {
      * @param channel the channel to which bytes are written.
      * @return given {@code channel}.
      * @throws InterruptedException if interrupted while executing.
-     * @throws ExecutionException   if failed to execute.
+     * @throws IOException          if an I/O error occurs.
      * @implSpec Default implementation invokes {@link #put(ByteBuffer) put(buffer)} method with a
      * byte buffer of {@value #BYTES} bytes, {@link ByteBuffer#flip() flips} it, and writes the
      * buffer to the {@code channel} by, while the {@code buffer}
@@ -672,12 +672,24 @@ public interface HelloWorld {
      * @see AsynchronousByteChannel#write(ByteBuffer)
      */
     default <T extends AsynchronousByteChannel> T write(final T channel)
-            throws InterruptedException, ExecutionException {
+            throws InterruptedException, IOException {
         Objects.requireNonNull(channel, "channel is null");
         final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
-//        while (buffer.hasRemaining()) {
-//            channel.write(buffer).get();
-//        }
+        while (buffer.hasRemaining()) {
+            try {
+                channel.write(buffer).get();
+            } catch (final ExecutionException ee) {
+                final var cause = ee.getCause();
+// Pattern matching allows the compiler to see the specific type
+                if (cause instanceof IOException ioe) throw ioe;
+                if (cause instanceof InterruptedException ie) throw ie;
+                if (cause instanceof RuntimeException re) throw re;
+                if (cause instanceof Error err) throw err;
+
+                // Fallback for any other checked exception type
+                throw new IOException("Unexpected failure", cause);
+            }
+        }
         return channel;
     }
 
@@ -699,7 +711,7 @@ public interface HelloWorld {
     @屋上架屋("AsynchronousSocketChannel implements AsynchronousByteChannel")
     @Deprecated(forRemoval = true)
     default <T extends AsynchronousSocketChannel> T send(final T channel)
-            throws InterruptedException, ExecutionException {
+            throws InterruptedException, IOException {
         return write(channel);
     }
 

@@ -142,11 +142,23 @@ interface HelloWorldRevisited extends HelloWorld {
     // --------------------------------------------------------------------------- java.nio.channels
     @Override
     default <T extends AsynchronousByteChannel> T write(final T channel)
-            throws InterruptedException, ExecutionException {
+            throws InterruptedException, IOException {
         Objects.requireNonNull(channel, "channel is null");
-        final var b = put(ByteBuffer.allocate(BYTES)).flip();
-        while (b.hasRemaining()) {
-            channel.write(b).get();
+        final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
+        while (buffer.hasRemaining()) {
+            try {
+                channel.write(buffer).get();
+            } catch (ExecutionException ee) {
+                Throwable cause = ee.getCause();
+                // Pattern matching allows the compiler to see the specific type
+                if (cause instanceof IOException ioe) throw ioe;
+                if (cause instanceof InterruptedException ie) throw ie;
+                if (cause instanceof RuntimeException re) throw re;
+                if (cause instanceof Error err) throw err;
+
+                // Fallback for any other checked exception type
+                throw new IOException("Unexpected failure", cause);
+            }
         }
         return channel;
     }

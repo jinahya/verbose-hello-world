@@ -31,9 +31,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicReference;
@@ -79,14 +79,14 @@ class HelloWorld_05_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
      * {@value HelloWorld#BYTES} bytes, and writes the buffer to specified {@code channel}.
      *
      * @throws InterruptedException if interrupted while testing.
-     * @throws ExecutionException   if failed to execute.
+     * @throws IOException          if an I/O error occurs.
      */
     @DisplayName("""
             should invoke put(buffer[12])
             and write the <buffer> to the <channel> while the the <buffer> has remaining"""
     )
     @Test
-    void __() throws InterruptedException, ExecutionException {
+    void __() throws InterruptedException, IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // stub, <service.put(buffer)> will increase <buffer>'s <position> by <HelloWorld.BYTES>
