@@ -103,7 +103,7 @@ public interface HelloWorld {
      * <p>
      * The elements in the array, on successful return, will be set as follows.
      * <pre>
-     *  0  &lt;= index            index+12    &lt;= array.length
+     *  0  &lt;= index          index + 12  &lt;=   array.length
      *  ↓     ↓                       ↓       ↓
      * | |...|h|e|l|l|o|,| |w|o|r|l|d| |...| |
      * </pre>
@@ -170,8 +170,8 @@ public interface HelloWorld {
     }
 
     /**
-     * Returns an array of {@value #BYTES} bytes contains the <a
-     * href="#hello-world-bytes">hello-world-bytes</a>.
+     * Returns an array of {@value #BYTES} bytes on which the <a
+     * href="#hello-world-bytes">hello-world-bytes</a> are set.
      * <p>
      * The result array, on successful return, will be set as follows.
      * <pre>
