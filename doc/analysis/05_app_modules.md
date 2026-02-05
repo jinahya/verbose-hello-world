@@ -16,12 +16,13 @@ The application layer consists of four variants, each demonstrating a different 
 All application modules share:
 
 ```xml
+
 <parent>
-    <artifactId>03-verbose-hello-world-app</artifactId>
+  <artifactId>03-verbose-hello-world-app</artifactId>
 </parent>
 
 <properties>
-    <mainClass>com.github.jinahya.hello.app.HelloWorldMain</mainClass>
+<mainClass>com.github.jinahya.hello.app2_.HelloWorldMain</mainClass>
 </properties>
 ```
 

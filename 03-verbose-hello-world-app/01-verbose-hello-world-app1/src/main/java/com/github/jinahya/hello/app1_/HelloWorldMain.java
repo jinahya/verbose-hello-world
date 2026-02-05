@@ -1,8 +1,8 @@
-package com.github.jinahya.hello.app;
+package com.github.jinahya.hello.app1_;
 
 /*-
  * #%L
- * verbose-hello-world-app2
+ * verbose-hello-world-app1
  * %%
  * Copyright (C) 2018 - 2019 Jinahya, Inc.
  * %%
@@ -21,10 +21,10 @@ package com.github.jinahya.hello.app;
  */
 
 import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.spi.HelloWorldServiceProvider;
+import com.github.jinahya.hello.lib.HelloWorldImpl;
 
-import java.nio.charset.StandardCharsets;
-import java.util.ServiceLoader;
+import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * A program whose {@link #main(String[])} method prints {@code hello, world} to
@@ -32,6 +32,9 @@ import java.util.ServiceLoader;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@SuppressWarnings({
+        "java:S106" // Standard outputs should not be used directly to log anything
+})
 class HelloWorldMain {
 
     /**
@@ -39,14 +42,16 @@ class HelloWorldMain {
      * followed by a system-dependent line separator.
      *
      * @param args an array of command line arguments
-     * @see java.util.ServiceLoader#load(Class)
+     * @throws IOException if an I/O error occurs.
+     * @see HelloWorldImpl
+     * @see HelloWorld#write(OutputStream)
+     * @see System#lineSeparator()
      */
-    public static void main(final String... args) {
-        final var loader = ServiceLoader.load(HelloWorld.class);
-        final var service = loader.iterator().next(); // NoSuchElementException
+    public static void main(final String[] args) throws IOException {
+        final var service = new HelloWorldImpl();
         final var array = service.set(new byte[HelloWorld.BYTES]);
-        final var string = new String(array, StandardCharsets.US_ASCII);
-        System.out.printf("%1$s%n", string);
+        System.out.write(array);
+        System.out.println();
     }
 
     /**

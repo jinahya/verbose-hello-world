@@ -71,7 +71,7 @@ The project follows a clean three-layer architecture with clear separation of co
 **Purpose**: Parent POM for application modules
 
 **Common Configuration**:
-- Main class: `com.github.jinahya.hello.app.HelloWorldMain`
+- Main class: `com.github.jinahya.hello.app2_.HelloWorldMain`
 - Executable generation enabled
 - Shade, Assembly, and Spring Boot plugins configured
 

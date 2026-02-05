@@ -1,4 +1,4 @@
-module jinahya.hello.api {
+module com.github.jinahya.hello.api {
     requires static lombok;
     requires transitive org.jspecify;
     requires transitive org.slf4j;

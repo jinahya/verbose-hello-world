@@ -170,6 +170,35 @@ public interface HelloWorld {
     }
 
     /**
+     * Returns an array of {@value #BYTES} bytes contains the <a
+     * href="#hello-world-bytes">hello-world-bytes</a>.
+     * <p>
+     * The result array, on successful return, will be set as follows.
+     * <pre>
+     *  0                      12
+     *  ↓                       ↓
+     * |h|e|l|l|o|,| |w|o|r|l|d|
+     * </pre>
+     * <p>
+     * The default implementation would be as follows.
+     * {@snippet lang = "java":
+     * final var array = new byte[BYTES];
+     * set(array);
+     * return array;
+     *}
+     *
+     * @return an array of {@value #BYTES} bytes contains the <a
+     * href="#hello-world-bytes">hello-world-bytes</a>.
+     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
+     * of {@value #BYTES} bytes, and returns the result.
+     */
+    default byte[] set() {
+        final var array = new byte[BYTES];
+        set(array);
+        return array;
+    }
+
+    /**
      * Appends the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified appendable.
      * <p>
      * The default implementation would be as follows.
@@ -517,6 +546,39 @@ public interface HelloWorld {
             set(array);
             buffer.put(array);
         }
+        return buffer;
+    }
+
+    /**
+     * Returns a byte buffer of {@value #BYTES} bytes, containing the <a
+     * href="#hello-world-bytes">hello-world-bytes</a> which is ready to be written.
+     * <p>
+     * The result buffer's state, on successful return, is as follows.
+     * <pre>
+     *  0                         12
+     *  position                  limit = capacity
+     *  ↓                         ↓
+     * |h|e|l|l|l|o|,| |w|o|r|l|d|
+     * |------- remaining -------|
+     *                 12
+     * </pre>
+     * <p>
+     * The default implementation would be as follows.
+     * {@snippet lang = "java":
+     * final var buffer = ByteBuffer.allocate(BYTES);
+     * put(buffer);
+     * buffer.flip();
+     * return buffer;
+     *}
+     *
+     * @return a byte buffer ready to be written.
+     * @implSpec Default implementation, invokes {@link #put(ByteBuffer)} with a byte buffer of
+     * {@value #BYTES}, and return the result.
+     * @see #put(ByteBuffer)
+     */
+    default ByteBuffer put() {
+        final var buffer = put(ByteBuffer.allocate(BYTES));
+        buffer.flip();
         return buffer;
     }
 

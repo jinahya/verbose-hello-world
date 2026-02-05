@@ -1,8 +1,8 @@
-package com.github.jinahya.hello.app;
+package com.github.jinahya.hello.app3_;
 
 /*-
  * #%L
- * verbose-hello-world-app1
+ * verbose-hello-world-app3
  * %%
  * Copyright (C) 2018 - 2019 Jinahya, Inc.
  * %%
@@ -21,10 +21,10 @@ package com.github.jinahya.hello.app;
  */
 
 import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.lib.HelloWorldImpl;
+import com.google.inject.Guice;
+import jakarta.inject.Inject;
 
 import java.io.IOException;
-import java.io.OutputStream;
 
 /**
  * A program whose {@link #main(String[])} method prints {@code hello, world} to
@@ -32,9 +32,6 @@ import java.io.OutputStream;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@SuppressWarnings({
-        "java:S106" // Standard outputs should not be used directly to log anything
-})
 class HelloWorldMain {
 
     /**
@@ -43,21 +40,24 @@ class HelloWorldMain {
      *
      * @param args an array of command line arguments
      * @throws IOException if an I/O error occurs.
-     * @see HelloWorldImpl
-     * @see HelloWorld#write(OutputStream)
-     * @see System#lineSeparator()
      */
-    public static void main(final String[] args) throws IOException {
-        final var service = new HelloWorldImpl();
-        final var array = service.set(new byte[HelloWorld.BYTES]);
-        System.out.write(array);
-        System.out.println();
+    public static void main(final String... args) throws IOException {
+        final var injector = Guice.createInjector(new HelloWorldModule());
+        final var instance = new HelloWorldMain();
+        injector.injectMembers(instance);
+        assert instance.service != null;
+        instance.service
+                .write(System.out)
+                .println();
     }
 
     /**
-     * Creates a new instance, which is not possible.
+     * Creates a new instance.
      */
     private HelloWorldMain() {
-        throw new AssertionError("instantiation is not allowed");
+        super();
     }
+
+    @Inject
+    HelloWorld service;
 }

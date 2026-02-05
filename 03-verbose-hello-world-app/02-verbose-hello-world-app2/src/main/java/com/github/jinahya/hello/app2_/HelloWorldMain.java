@@ -1,8 +1,8 @@
-package com.github.jinahya.hello.app;
+package com.github.jinahya.hello.app2_;
 
 /*-
  * #%L
- * verbose-hello-world-app3
+ * verbose-hello-world-app2
  * %%
  * Copyright (C) 2018 - 2019 Jinahya, Inc.
  * %%
@@ -21,10 +21,9 @@ package com.github.jinahya.hello.app;
  */
 
 import com.github.jinahya.hello.api.HelloWorld;
-import com.google.inject.Guice;
-import jakarta.inject.Inject;
 
-import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ServiceLoader;
 
 /**
  * A program whose {@link #main(String[])} method prints {@code hello, world} to
@@ -39,25 +38,20 @@ class HelloWorldMain {
      * followed by a system-dependent line separator.
      *
      * @param args an array of command line arguments
-     * @throws IOException if an I/O error occurs.
+     * @see java.util.ServiceLoader#load(Class)
      */
-    public static void main(final String... args) throws IOException {
-        final var injector = Guice.createInjector(new HelloWorldModule());
-        final var instance = new HelloWorldMain();
-        injector.injectMembers(instance);
-        assert instance.service != null;
-        instance.service
-                .write(System.out)
-                .println();
+    public static void main(final String... args) {
+        final var loader = ServiceLoader.load(HelloWorld.class);
+        final var service = loader.iterator().next(); // NoSuchElementException
+        final var array = service.set(new byte[HelloWorld.BYTES]);
+        final var string = new String(array, StandardCharsets.US_ASCII);
+        System.out.printf("%1$s%n", string);
     }
 
     /**
-     * Creates a new instance.
+     * Creates a new instance, which is not possible.
      */
     private HelloWorldMain() {
-        super();
+        throw new AssertionError("instantiation is not allowed");
     }
-
-    @Inject
-    HelloWorld service;
 }

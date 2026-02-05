@@ -43,7 +43,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @DisplayName("append(appendable)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_03_Append_Appendable_Test extends HelloWorldTest {
+class HelloWorld_04_Append_Appendable_Test extends HelloWorldTest {
 
     /**
      * Verifies that the {@link HelloWorld#append(Appendable) append(appendable)} method throws a

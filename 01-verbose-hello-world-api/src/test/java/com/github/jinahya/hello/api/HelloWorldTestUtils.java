@@ -24,6 +24,9 @@ import com.github.jinahya.hello.api.util._ExcludeFromCoverage_PrivateConstructor
 import lombok.extern.slf4j.Slf4j;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Assertions;
+import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -44,6 +47,68 @@ import java.util.concurrent.ThreadLocalRandom;
 })
 public final class HelloWorldTestUtils {
 
+    static HelloWorld requireMock(final HelloWorld service) {
+        Objects.requireNonNull(service, "service is null");
+        if (!Mockito.mockingDetails(service).isMock()) {
+            throw new IllegalArgumentException("not a mock: " + service);
+        }
+        return service;
+    }
+
+    /**
+     * Stubs given mock serivce's {@link HelloWorld#set(byte[]) set(array)} method to just return
+     * the {@code array}.
+     *
+     * @param service the mock service.
+     * @see #verify_set_array12_invoked_once(HelloWorld)
+     */
+    static void stub_set_array_will_return_the_array(final HelloWorld service) {
+        requireMock(service);
+        Mockito.doAnswer(i -> i.getArgument(0))
+                .when(service)
+                .set(ArgumentMatchers.any());
+    }
+
+    static byte[] verify_set_array12_invoked_once(final HelloWorld service) {
+        requireMock(service);
+        final var captor = ArgumentCaptor.forClass(byte[].class);
+        Mockito.verify(service, Mockito.times(1)).set(captor.capture());
+        final var array = captor.getValue();
+        Assertions.assertNotNull(array);
+        Assertions.assertEquals(HelloWorld.BYTES, array.length);
+        return array;
+    }
+
+    /**
+     * Stubs given mock service's {@link HelloWorld#put(ByteBuffer) put(buffer)} method to just
+     * return the {@code bufefer} whose {@link ByteBuffer#position() position} is increased by
+     * {@value HelloWorld#BYTES}.
+     *
+     * @param service the mock service.
+     * @see #verify_put_buffer12_invoked_once(HelloWorld)
+     */
+    static void stub_put_buffer_will_increase_buffer_position_by_12(final HelloWorld service) {
+        requireMock(service);
+        Mockito.doAnswer(i -> {
+                    final var buffer = i.getArgument(0, ByteBuffer.class);
+                    buffer.position(buffer.position() + HelloWorld.BYTES);
+                    return buffer;
+                })
+                .when(service)
+                .put(ArgumentMatchers.argThat(b -> b != null && b.remaining() >= HelloWorld.BYTES));
+    }
+
+    static ByteBuffer verify_put_buffer12_invoked_once(final HelloWorld service) {
+        requireMock(service);
+        final var captor = ArgumentCaptor.forClass(ByteBuffer.class);
+        Mockito.verify(service, Mockito.times(1)).put(captor.capture());
+        final var buffer = captor.getValue();
+        Assertions.assertNotNull(buffer);
+        Assertions.assertEquals(HelloWorld.BYTES, buffer.capacity());
+        return buffer;
+    }
+
+    // ---------------------------------------------------------------------------------------------
     private static <T extends File> T writeSome_(final T file) throws IOException {
         Objects.requireNonNull(file, "file is null");
         try (var stream = new FileOutputStream(file)) {

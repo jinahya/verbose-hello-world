@@ -353,7 +353,6 @@ public interface AsynchronousHelloWorld {
     <T extends java.nio.file.Path> CompletionStage<T> append(final T path);
 
     // --------------------------------------------------------------------------- java.nio.channels
-
     /**
      * Writes the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to the specified
      * channel, and then, notifies a completion (or a failure) to the specified handler with the

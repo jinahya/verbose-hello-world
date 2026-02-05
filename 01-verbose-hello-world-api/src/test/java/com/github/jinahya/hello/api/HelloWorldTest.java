@@ -25,12 +25,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -75,17 +71,18 @@ public abstract class HelloWorldTest {
         return buffer.asReadOnlyBuffer();
     }
 
+    // -------------------------------------------------------------------------------- CONSTRUCTORS
+
     // ------------------------------------------------------------------------------------- service
 
     /**
      * Stubs {@link HelloWorld#set(byte[]) service#set(array)} method to return the {@code array}.
      *
+     * @see HelloWorldTestUtils#stub_set_array_will_return_the_array(HelloWorld)
      * @see #verify_set_array12_invoked_once()
      */
     protected final void stub_set_array_will_return_the_array() {
-        Mockito.doAnswer(i -> i.getArgument(0))
-                .when(service)
-                .set(ArgumentMatchers.any());
+        HelloWorldTestUtils.stub_set_array_will_return_the_array(service);
     }
 
     /**
@@ -94,14 +91,10 @@ public abstract class HelloWorldTest {
      *
      * @return the {@code array} argument captured.
      * @see #stub_set_array_will_return_the_array()
+     * @see HelloWorldTestUtils#verify_set_array12_invoked_once(HelloWorld)
      */
     protected final byte[] verify_set_array12_invoked_once() {
-        final var captor = ArgumentCaptor.forClass(byte[].class);
-        Mockito.verify(service, Mockito.times(1)).set(captor.capture());
-        final var array = captor.getValue();
-        Assertions.assertNotNull(array);
-        Assertions.assertEquals(HelloWorld.BYTES, array.length);
-        return array;
+        return HelloWorldTestUtils.verify_set_array12_invoked_once(service);
     }
 
     /**
@@ -111,13 +104,7 @@ public abstract class HelloWorldTest {
      * @see #verify_put_buffer12_invoked_once()
      */
     protected final void stub_put_buffer_will_increase_buffer_position_by_12() {
-        Mockito.doAnswer(i -> {
-                    final var buffer = i.getArgument(0, ByteBuffer.class);
-                    buffer.position(buffer.position() + HelloWorld.BYTES);
-                    return buffer;
-                })
-                .when(service)
-                .put(ArgumentMatchers.argThat(b -> b != null && b.remaining() >= HelloWorld.BYTES));
+        HelloWorldTestUtils.stub_put_buffer_will_increase_buffer_position_by_12(service);
     }
 
     /**
@@ -128,12 +115,7 @@ public abstract class HelloWorldTest {
      * @see #stub_put_buffer_will_increase_buffer_position_by_12()
      */
     protected final ByteBuffer verify_put_buffer12_invoked_once() {
-        final var captor = ArgumentCaptor.forClass(ByteBuffer.class);
-        Mockito.verify(service, Mockito.times(1)).put(captor.capture());
-        final var buffer = captor.getValue();
-        Assertions.assertNotNull(buffer);
-        Assertions.assertEquals(HelloWorld.BYTES, buffer.capacity());
-        return buffer;
+        return HelloWorldTestUtils.verify_put_buffer12_invoked_once(service);
     }
 
     // ---------------------------------------------------------------------------------------------

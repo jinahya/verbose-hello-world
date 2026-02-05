@@ -1,8 +1,8 @@
-package com.github.jinahya.hello.app;
+package com.github.jinahya.hello.app3_;
 
 /*-
  * #%L
- * verbose-hello-world-lib
+ * verbose-hello-world-app3
  * %%
  * Copyright (C) 2018 - 2019 Jinahya, Inc.
  * %%
@@ -21,24 +21,24 @@ package com.github.jinahya.hello.app;
  */
 
 import com.github.jinahya.hello.api.HelloWorld;
-import jakarta.inject.Qualifier;
+import com.google.inject.AbstractModule;
+import com.google.inject.Provider;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.util.ServiceLoader;
 
 /**
- * An injection qualifier for {@link HelloWorld}.
+ * A module for binding injection points of {@link HelloWorld} interface.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@Documented
-@Qualifier
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE,
-         ElementType.ANNOTATION_TYPE})
-@interface HelloWorldQualifier {
+class HelloWorldModule extends AbstractModule {
 
+    @Override
+    protected void configure() {
+        final Provider<HelloWorld> provider =
+                () -> ServiceLoader.load(HelloWorld.class)
+                        .iterator()
+                        .next();
+        bind(HelloWorld.class).toProvider(provider);
+    }
 }
