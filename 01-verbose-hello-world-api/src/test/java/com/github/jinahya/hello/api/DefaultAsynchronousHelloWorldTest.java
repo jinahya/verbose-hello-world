@@ -15,8 +15,7 @@ class DefaultAsynchronousHelloWorldTest
     DefaultAsynchronousHelloWorld newTypeInstance() {
         return new DefaultAsynchronousHelloWorld(
                 new HelloWorldRevisited() {
-                },
-                Executors.newVirtualThreadPerTaskExecutor()
+                }
         );
     }
 

@@ -22,6 +22,8 @@ package com.github.jinahya.hello.api;
 
 import org.jspecify.annotations.Nullable;
 
+import javax.crypto.Cipher;
+import javax.crypto.Mac;
 import java.io.DataOutput;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -29,6 +31,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.io.Writer;
+import java.lang.foreign.MemorySegment;
+import java.lang.foreign.ValueLayout;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.Socket;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
@@ -36,19 +42,23 @@ import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
+import java.nio.channels.DatagramChannel;
 import java.nio.channels.FileChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.security.MessageDigest;
+import java.security.Signature;
+import java.security.SignatureException;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.zip.Deflater;
 
 /**
- * An interface for generating <a href="#hello-world-bytes">hello-world-bytes</a> to various
- * targets.
+ * An interface for writing <a href="#hello-world-bytes">hello-world-bytes</a> to various targets.
  * <p>
  * All methods defined in this interface are thread-safe.
  *
@@ -89,8 +99,8 @@ public interface HelloWorld {
     /**
      * The length of the <a href="#hello-world-bytes">hello-world-bytes</a> which is {@value}.
      *
-     * @see <a href="https://docs.oracle.com/javase/specs/jls/se21/html/jls-9.html#jls-9.3">9.3.
-     * Field (Constant) Declarations</a> (The Java® Language Specification / Java SE 21 Edition)
+     * @see <a href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-9.html#jls-9.3">9.3.
+     * Field (Constant) Declarations</a> (The Java® Language Specification)
      */
     public static final // redundant
             int BYTES = 12;
@@ -110,7 +120,7 @@ public interface HelloWorld {
      *
      * @param array the array on which bytes are set.
      * @param index the starting index of the {@code array} to which bytes are set.
-     * @return given {@code array}.
+     * @return the given {@code array}.
      * @throws NullPointerException      if {@code array} is {@code null}.
      * @throws IndexOutOfBoundsException if {@code index} is negative, or ({@code index} plus
      *                                   {@value #BYTES}) is greater than {@code array.length}.
@@ -129,7 +139,7 @@ public interface HelloWorld {
      * <p>
      * The elements in the array, on successful return, will be set as follows.
      * <pre>
-     *  0                      12     &lt;= array.length
+     *  0                       12    &lt;= array.length
      *  ↓                       ↓        ↓
      * |h|e|l|l|o|,| |w|o|r|l|d| |....| |
      * </pre>
@@ -147,15 +157,15 @@ public interface HelloWorld {
      *}
      *
      * @param array the array on which bytes are set.
-     * @return given {@code array}.
+     * @return the given {@code array}.
      * @throws NullPointerException      if {@code array} is {@code null}.
      * @throws IndexOutOfBoundsException if {@code array.length} is less than
      *                                   {@link #BYTES}({@value #BYTES}).
      * @implSpec Default implementation invokes {@link #set(byte[], int) set(array, index)} method
      * with {@code array} and {@code 0}, and returns the {@code array}.
      * @see #set(byte[], int)
-     * @see <a href="https://docs.oracle.com/javase/specs/jls/se21/html/jls-10.html#jls-10.4">10.4.
-     * Array Access</a> (Java Language Specification / Java SE 21 Edition)
+     * @see <a href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-10.html#jls-10.4">10.4.
+     * Array Access</a> (Java Language Specification)
      */
     default byte[] set(final byte[] array) {
         if (array == null) {
@@ -175,7 +185,7 @@ public interface HelloWorld {
      * <p>
      * The result array, on successful return, will be set as follows.
      * <pre>
-     *  0                      12
+     *  0                       12
      *  ↓                       ↓
      * |h|e|l|l|o|,| |w|o|r|l|d|
      * </pre>
@@ -187,7 +197,7 @@ public interface HelloWorld {
      * return array;
      *}
      *
-     * @return an array of {@value #BYTES} bytes contains the <a
+     * @return an array of {@value #BYTES} bytes containing the <a
      * href="#hello-world-bytes">hello-world-bytes</a>.
      * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
      * of {@value #BYTES} bytes, and returns the result.
@@ -216,7 +226,7 @@ public interface HelloWorld {
      *
      * @param <T>        appendable type parameter
      * @param appendable the appendable to which bytes are appended.
-     * @return given {@code appendable}.
+     * @return the given {@code appendable}.
      * @throws NullPointerException if {@code appendable} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
@@ -224,11 +234,10 @@ public interface HelloWorld {
      * as a {@code char}, to {@code appendable}.
      * @see #set(byte[])
      * @see Appendable#append(char)
-     * @see <a href="https://docs.oracle.com/javase/specs/jls/se21/html/jls-5.html#jls-5.5">5.5.
-     * Casting Contexts</a> (Java Language Specification / Java SE 21 Edition)
-     * @see <a href="https://docs.oracle.com/javase/specs/jls/se21/html/jls-5.html#jls-5.1.4">5.1.4.
-     * Widening and Narrowing Primitive Conversion</a> (Java Language Specification / Java SE 21
-     * Edition)
+     * @see <a href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-5.html#jls-5.5">5.5.
+     * Casting Contexts</a> (The Java® Language Specification)
+     * @see <a href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-5.html#jls-5.1.4">5.1.4.
+     * Widening and Narrowing Primitive Conversion</a> (The Java® Language Specification)
      */
     default <T extends Appendable> T append(final T appendable) throws IOException {
         if (appendable == null) {
@@ -242,6 +251,63 @@ public interface HelloWorld {
 //        }
         // return given <appendable>
         return appendable;
+    }
+
+    // --------------------------------------------------------------------------- java.lang.foreign
+
+    /**
+     * Sets the <a href="#hello-world-bytes">hello-world-bytes</a> on the specified memory segment
+     * starting at offset {@code 0}.
+     * <p>
+     * The memory segment must have at least {@value #BYTES} bytes available.
+     * <pre>
+     *  0                       12    &lt;=   segment.byteSize()
+     *  ↓                       ↓         ↓
+     * |h|e|l|l|o|,| |w|o|r|l|d| |...| |
+     * </pre>
+     * <p>
+     * The default implementation copies bytes using {@link MemorySegment#copy}.
+     * {@snippet lang = "java":
+     * Objects.requireNonNull(segment, "segment is null");
+     * if (segment.byteSize() < BYTES) {
+     *     throw new IndexOutOfBoundsException(
+     *         "byteSize(" + segment.byteSize() + ") < BYTES(" + BYTES + ")"
+     *     );
+     * }
+     * var array = new byte[BYTES];
+     * set(array, 0);
+     * MemorySegment.copy(array, 0, segment, ValueLayout.JAVA_BYTE, 0, BYTES);
+     * return segment;
+     *}
+     *
+     * @param segment the memory segment on which bytes are set.
+     * @return the given {@code segment}.
+     * @throws NullPointerException      if {@code segment} is {@code null}.
+     * @throws IndexOutOfBoundsException if {@code segment.byteSize()} is less than
+     *                                   {@value #BYTES}.
+     * @apiNote Callers can use {@link MemorySegment#asSlice(long)} to set at a specific offset.
+     * @see MemorySegment#asSlice(long)
+     * @see #set(byte[])
+     * @see MemorySegment#copy(Object, int, MemorySegment, ValueLayout, long, int)
+     */
+    default <T extends MemorySegment> T copy(final T segment) {
+        Objects.requireNonNull(segment, "segment is null");
+        if (segment.byteSize() < BYTES) {
+            throw new IndexOutOfBoundsException(
+                    "byteSize(" + segment.byteSize() + ") < BYTES(" + BYTES + ")"
+            );
+        }
+        final var array = new byte[BYTES];
+        set(array);
+        MemorySegment.copy(
+                array,
+                0,
+                segment,
+                ValueLayout.JAVA_BYTE,
+                0,
+                array.length
+        );
+        return segment;
     }
 
     // ------------------------------------------------------------------------------------- java.io
@@ -262,7 +328,7 @@ public interface HelloWorld {
      *
      * @param <T>    stream type parameter
      * @param stream the output stream to which bytes are written.
-     * @return given {@code stream}.
+     * @return the given {@code stream}.
      * @throws NullPointerException if {@code stream} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @apiNote This method does not {@link OutputStream#flush() flush} the {@code stream}.
@@ -300,7 +366,7 @@ public interface HelloWorld {
      *
      * @param <T>  file type parameter
      * @param file the file to which bytes are appended.
-     * @return given {@code file}.
+     * @return the given {@code file}.
      * @throws NullPointerException if {@code file} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @implSpec Default implementation creates a new {@link FileOutputStream} with {@code file}, in
@@ -342,7 +408,7 @@ public interface HelloWorld {
      *
      * @param <T>    data output type parameter
      * @param output the data output to which bytes are written.
-     * @return given {@code output}.
+     * @return the given {@code output}.
      * @throws NullPointerException if {@code output} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @implSpec Default implementation invokes {@link #set(byte[])} method with an array of
@@ -378,7 +444,7 @@ public interface HelloWorld {
      *
      * @param <T>  random access file type parameter
      * @param file the random access file to which bytes are written.
-     * @return given {@code file}.
+     * @return the given {@code file}.
      * @throws NullPointerException if {@code file} argument is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @implSpec Default implementation invokes {@link #set(byte[])} method with an array of
@@ -411,7 +477,7 @@ public interface HelloWorld {
      *
      * @param <T>    writer type parameter
      * @param writer the writer to which bytes are written.
-     * @return given {@code writer}.
+     * @return the given {@code writer}.
      * @throws NullPointerException if {@code writer} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @implSpec Default implementation invokes {@link #append(Appendable) append(appendable)}
@@ -427,6 +493,28 @@ public interface HelloWorld {
     }
 
     // ------------------------------------------------------------------------------------ java.net
+    default DatagramPacket data(final DatagramPacket packet) throws IOException {
+        if (packet == null) {
+            throw new NullPointerException("packet is null");
+        }
+        final var array = new byte[BYTES];
+        set(packet.getData());
+        packet.setData(array);
+        return packet;
+    }
+
+    default <T extends DatagramSocket> T send(final T socket) throws IOException {
+        if (socket == null) {
+            throw new NullPointerException("socket is null");
+        }
+        if (!socket.isConnected()) {
+            throw new IllegalArgumentException("not connected; " + socket);
+        }
+        final var packet = new DatagramPacket(new byte[BYTES], BYTES);
+        data(packet);
+        socket.send(packet);
+        return socket;
+    }
 
     /**
      * Sends the <a href="#hello-world-bytes">hello-world-bytes</a> through the specified socket.
@@ -442,11 +530,11 @@ public interface HelloWorld {
      *
      * @param <T>    socket type parameter
      * @param socket the socket through which bytes are sent.
-     * @return given {@code socket}.
+     * @return the given {@code socket}.
      * @throws NullPointerException if {@code socket} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @implSpec Default implementation invokes {@link #write(OutputStream)} method with
-     * {@link Socket#getOutputStream() socket.outputStream}, and returns {@code socket}.
+     * {@link Socket#getOutputStream() socket.outputStream}, and returns the {@code socket}.
      * @see Socket#getOutputStream()
      * @see #write(OutputStream)
      */
@@ -462,7 +550,7 @@ public interface HelloWorld {
     // ------------------------------------------------------------------------------------ java.nio
 
     /**
-     * Puts the <a href="#hello-world-bytes">hello-world-bytes</a> on specified byte buffer.
+     * Puts the <a href="#hello-world-bytes">hello-world-bytes</a> on the specified byte buffer.
      * <p>
      * The buffer's position, on successful return, is incremented by {@value #BYTES}.
      * <pre>
@@ -473,7 +561,7 @@ public interface HelloWorld {
      *  ↓       ↓                                         ↓             ↓
      * | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |
      *         |--------------- remaining ---------------|
-     *                                 21
+     *                               (21)
      *
      * Then, on successful return,
      *
@@ -482,7 +570,7 @@ public interface HelloWorld {
      *  ↓                               ↓                 ↓             ↓
      * | | | | |h|e|l|l|o|,| |w|o|r|l|d| | | | | | | | | | | | | | | | |
      *                                 |--- remaining ---|
-     *                                              9
+     *                                            (9)
      * </pre>
      * <p>
      * The default implementation would be as follows.
@@ -510,7 +598,7 @@ public interface HelloWorld {
      *
      * @param <T>    buffer type parameter
      * @param buffer the byte buffer on which bytes are put.
-     * @return given {@code buffer}.
+     * @return the given {@code buffer}.
      * @throws NullPointerException    if {@code buffer} is {@code null}.
      * @throws BufferOverflowException if {@link ByteBuffer#remaining() buffer.remaining} is less
      *                                 than {@value #BYTES}.
@@ -551,16 +639,16 @@ public interface HelloWorld {
 
     /**
      * Returns a byte buffer of {@value #BYTES} bytes, containing the <a
-     * href="#hello-world-bytes">hello-world-bytes</a> which is ready to be written.
+     * href="#hello-world-bytes">hello-world-bytes</a> which is ready to be drained.
      * <p>
      * The result buffer's state, on successful return, is as follows.
      * <pre>
-     *  0                         12
-     *  position                  limit = capacity
-     *  ↓                         ↓
-     * |h|e|l|l|l|o|,| |w|o|r|l|d|
-     * |------- remaining -------|
-     *                 12
+     *  0                       12
+     *  position                limit = capacity
+     *  ↓                       ↓
+     * |h|e|l|l|o|,| |w|o|r|l|d|
+     * |------ remaining ------|
+     *              (12)
      * </pre>
      * <p>
      * The default implementation would be as follows.
@@ -571,9 +659,9 @@ public interface HelloWorld {
      * return buffer;
      *}
      *
-     * @return a byte buffer ready to be written.
-     * @implSpec Default implementation, invokes {@link #put(ByteBuffer)} with a byte buffer of
-     * {@value #BYTES}, and return the result.
+     * @return a byte buffer ready to be drained.
+     * @implSpec Default implementation invokes {@link #put(ByteBuffer)} with a byte buffer of
+     * {@value #BYTES}, and returns the result as {@link ByteBuffer#flip() flipped}.
      * @see #put(ByteBuffer)
      */
     default ByteBuffer put() {
@@ -599,7 +687,7 @@ public interface HelloWorld {
      *
      * @param <T>     channel type parameter
      * @param channel the channel to which bytes are written.
-     * @return given {@code channel}.
+     * @return the given {@code channel}.
      * @throws NullPointerException if {@code channel} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @implSpec Default implementation invokes {@link #put(ByteBuffer)} method with a buffer of
@@ -624,6 +712,16 @@ public interface HelloWorld {
         return channel;
     }
 
+    // --------------------------------------------------------------------------- java.nio.channels
+    @Deprecated(forRemoval = true)
+    default <T extends DatagramChannel> T send(final T channel) throws IOException {
+        Objects.requireNonNull(channel, "channel is null");
+        if (!channel.isConnected()) {
+            throw new IllegalArgumentException("not connected: " + channel);
+        }
+        return write(channel);
+    }
+
     /**
      * Sends the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified socket
      * channel.
@@ -638,7 +736,7 @@ public interface HelloWorld {
      * @param channel the socket channel to which the <a
      *                href="#hello-world-bytes">hello-world-bytes</a> are sent.
      * @param <T>     socket channel type parameter
-     * @return given {@code channel}.
+     * @return the given {@code channel}.
      * @throws IOException if an I/O error occurs.
      * @implSpec Default implementation invokes {@link #write(WritableByteChannel)} method with
      * {@code channel}, and returns the result.
@@ -650,66 +748,14 @@ public interface HelloWorld {
         return write(channel);
     }
 
-    /**
-     * Appends the <a href="#hello-world-bytes">hello-world-bytes</a> to the end of specified path
-     * to a file. The {@link java.nio.file.Files#size(Path) size} of the {@code path}, on successful
-     * return, is increased by {@value #BYTES}.
-     * <p>
-     * The default implementation would be as follows.
-     * {@snippet lang = "java":
-     * Objects.requireNonNull(path, "path is null");
-     * try (var channel = FileChannel.open(path, // @highlight region
-     *                                     StandardOpenOption.CREATE,
-     *                                     StandardOpenOption.APPEND)) {
-     *     write(channel);
-     *     channel.force(true);
-     * } // @end
-     * return path;
-     *}
-     *
-     * @param <T>  path type parameter
-     * @param path the path to a file to which bytes are appended.
-     * @return given {@code path}.
-     * @throws NullPointerException if {@code path} is {@code null}.
-     * @throws IOException          if an I/O error occurs.
-     * @implSpec Default implementation opens a {@link FileChannel} from {@code path} with
-     * {@link StandardOpenOption#CREATE CREATE} and {@link StandardOpenOption#APPEND APPEND},
-     * invokes {@link #write(WritableByteChannel) write(channel)} method with it,
-     * {@link FileChannel#force(boolean) forces channel including metadata},
-     * {@link WritableByteChannel#close() closes} the channel, and returns the {@code path}.
-     * @see FileChannel#open(Path, OpenOption...)
-     * @see StandardOpenOption#CREATE
-     * @see StandardOpenOption#APPEND
-     * @see #write(WritableByteChannel)
-     * @see FileChannel#force(boolean)
-     * @see <a
-     * href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-14.html#jls-14.20.3">14.20.3.
-     * try-with-resources</a> (The Java® Language Specification)
-     */
-    default <T extends Path> T append(final T path) throws IOException {
-        Objects.requireNonNull(path, "path is null");
-        // open a <FileChannel> with <path>,
-        //         <StandardOpenOption.CREATE>, and <StandardOpenOption.APPEND>
-        // use the try-with-resources statement
-//        final var options = new OpenOption[] {
-//                StandardOpenOption.CREATE,
-//                StandardOpenOption.APPEND
-//        };
-//        try (var channel = FileChannel.open(path, options)) {
-//            // invoke <write(channel)> method with it
-////            write(channel);
-//            // force changes to both the <file>'s content and metadata
-////            channel.force(true);
-//        }
-        return path;
-    }
+    // --------------------------------------------------------------------------- java.nio.channels
 
     /**
      * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified channel.
      *
      * @param <T>     channel type parameter
      * @param channel the channel to which bytes are written.
-     * @return given {@code channel}.
+     * @return the given {@code channel}.
      * @throws InterruptedException if interrupted while executing.
      * @throws IOException          if an I/O error occurs.
      * @implSpec Default implementation invokes {@link #put(ByteBuffer) put(buffer)} method with a
@@ -747,8 +793,8 @@ public interface HelloWorld {
      * @param channel the socket channel to which the <a
      *                href="#hello-world-bytes">hello-world-bytes</a> are sent.
      * @param <T>     socket channel type parameter
-     * @return given {@code channel}.
-     * @throws InterruptedException interrupted while executing.
+     * @return the given {@code channel}.
+     * @throws InterruptedException if interrupted while executing.
      * @throws IOException          if an I/O error occurs.
      * @implSpec Default implementation invokes {@link #write(AsynchronousByteChannel)} method with
      * {@code channel}, and returns the result.
@@ -800,16 +846,16 @@ public interface HelloWorld {
      * @param channel    the channel to which bytes are written.
      * @param attachment the attachment for the {@code handler}; may be {@code null}.
      * @param handler    the completion handler to be notified with a completion (or a failure).
-     * @throws NullPointerException either {@code channel} or {@code handler} is {@code null}.
+     * @throws NullPointerException if either {@code channel} or {@code handler} is {@code null}.
      * @implSpec Default implementation invokes {@link #put(ByteBuffer) put(buffer)} method with a
      * byte buffer of {@value #BYTES} bytes, {@link ByteBuffer#flip() flips} it, writes the buffer
-     * the {@code channel} while the buffer has remaining, and notifies a completion (or a failure)
-     * to the {@code handler}.
+     * to the {@code channel} while the buffer has remaining, and notifies a completion (or a
+     * failure) to the {@code handler}.
      * @see #put(ByteBuffer)
      * @see AsynchronousByteChannel#write(ByteBuffer, Object, CompletionHandler)
      * @see <a
-     * href="https://docs.oracle.com/javase/specs/jls/se21/html/jls-15.html#jls-15.8.3">15.8.3.
-     * this</a> (The Java® Language Specification / Java SE 21 Edition)
+     * href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-15.html#jls-15.8.3">15.8.3.
+     * this</a> (The Java® Language Specification)
      */
     default <T extends AsynchronousByteChannel, A> void write(
             final T channel,
@@ -852,13 +898,13 @@ public interface HelloWorld {
      * with the specified attachment.
      *
      * @param channel    the channel to which the <a
-     *                   href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> is sent.
+     *                   href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> are sent.
      * @param attachment an attachment.
      * @param handler    the handler to be notified with a completion (or a failure).
      * @param <T>        channel type parameter
      * @param <A>        attachment type parameter
      * @implSpec Default implementation invokes
-     * {@link #write(AsynchronousByteChannel, Object, CompletionHandler)} method with given
+     * {@link #write(AsynchronousByteChannel, Object, CompletionHandler)} method with the given
      * arguments.
      * @deprecated Invoke, directly, the
      * {@link #write(AsynchronousByteChannel, Object, CompletionHandler)} method with
@@ -873,8 +919,8 @@ public interface HelloWorld {
     }
 
     /**
-     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified file channel,
-     * starting at the given file position.
+     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified asynchronous
+     * file channel, starting at the given file position.
      * <pre>
      * Given,
      *
@@ -908,9 +954,9 @@ public interface HelloWorld {
      * </pre>
      *
      * @param <T>      channel type parameter
-     * @param channel  the file channel to which bytes are written.
+     * @param channel  the asynchronous file channel to which bytes are written.
      * @param position the file position at which the transfer is to begin; must be non-negative.
-     * @return given {@code channel}.
+     * @return the given {@code channel}.
      * @throws InterruptedException if interrupted while executing.
      * @throws IOException          if an I/O error occurs.
      * @implSpec Default implementation invokes {@link #put(ByteBuffer) put(buffer)} with a byte
@@ -918,8 +964,7 @@ public interface HelloWorld {
      * while the {@code buffer} {@link ByteBuffer#hasRemaining() has remaining}, by continuously
      * invoking
      * {@link AsynchronousFileChannel#write(ByteBuffer, long) channel.write(buffer, position)}
-     * method with the {@code buffer} and {@code position} adjusted with the result of a previous
-     * result.
+     * method with the {@code buffer} and {@code position} adjusted by the previous result.
      * @see #put(ByteBuffer)
      * @see AsynchronousFileChannel#write(ByteBuffer, long)
      */
@@ -955,12 +1000,13 @@ public interface HelloWorld {
      *
      * @param <T>        channel type parameter
      * @param <A>        attachment type parameter
-     * @param channel    the file channel to which bytes are written.
+     * @param channel    the asynchronous file channel to which bytes are written.
      * @param position   the file position at which the transfer is to begin; must be non-negative.
      * @param attachment an attachment for the {@code handler}; may be {@code null}.
      * @param handler    the handler.
-     * @throws NullPointerException  if either {@code channel} or {@code handler} is {@code null}.
-     * @throws IllegalStateException if {@code position} is negative.
+     * @throws NullPointerException     if either {@code channel} or {@code handler} is
+     *                                  {@code null}.
+     * @throws IllegalArgumentException if {@code position} is negative.
      * @see AsynchronousFileChannel#write(ByteBuffer, long, Object, CompletionHandler)
      */
     // @formatter:off
@@ -1052,5 +1098,104 @@ public interface HelloWorld {
                 handler.failed(t, a);
             } // @formatter:on
         });
+    }
+
+    // ------------------------------------------------------------------------------- java.nio.file
+
+    /**
+     * Appends the <a href="#hello-world-bytes">hello-world-bytes</a> to the end of the specified
+     * path to a file. The {@link java.nio.file.Files#size(Path) size} of the file, on successful
+     * return, is increased by {@value #BYTES}.
+     * <p>
+     * The default implementation would be as follows.
+     * {@snippet lang = "java":
+     * Objects.requireNonNull(path, "path is null");
+     * try (var channel = FileChannel.open(path, // @highlight region
+     *                                     StandardOpenOption.CREATE,
+     *                                     StandardOpenOption.APPEND)) {
+     *     write(channel);
+     *     channel.force(true);
+     * } // @end
+     * return path;
+     *}
+     *
+     * @param <T>  path type parameter
+     * @param path the path to a file to which bytes are appended.
+     * @return the given {@code path}.
+     * @throws NullPointerException if {@code path} is {@code null}.
+     * @throws IOException          if an I/O error occurs.
+     * @implSpec Default implementation opens a {@link FileChannel} from {@code path} with
+     * {@link StandardOpenOption#CREATE CREATE} and {@link StandardOpenOption#APPEND APPEND},
+     * invokes {@link #write(WritableByteChannel) write(channel)} method with it,
+     * {@link FileChannel#force(boolean) forces channel including metadata},
+     * {@link WritableByteChannel#close() closes} the channel, and returns the {@code path}.
+     * @see FileChannel#open(Path, OpenOption...)
+     * @see StandardOpenOption#CREATE
+     * @see StandardOpenOption#APPEND
+     * @see #write(WritableByteChannel)
+     * @see FileChannel#force(boolean)
+     * @see <a
+     * href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-14.html#jls-14.20.3">14.20.3.
+     * try-with-resources</a> (The Java® Language Specification)
+     */
+    default <T extends Path> T append(final T path) throws IOException {
+        Objects.requireNonNull(path, "path is null");
+        // open a <FileChannel> with <path>,
+        //         <StandardOpenOption.CREATE>, and <StandardOpenOption.APPEND>
+        // use the try-with-resources statement
+//        final var options = new OpenOption[] {
+//                StandardOpenOption.CREATE,
+//                StandardOpenOption.APPEND
+//        };
+//        try (var channel = FileChannel.open(path, options)) {
+//            // invoke <write(channel)> method with it
+////            write(channel);
+//            // force changes to both the <file>'s content and metadata
+////            channel.force(true);
+//        }
+        return path;
+    }
+
+    // ---------------------------------------------------------------- java.security / javax.crypto
+    default <T extends MessageDigest> T update(final T digest) {
+        Objects.requireNonNull(digest, "digest is null");
+        final var array = new byte[BYTES];
+        set(array);
+        digest.update(array);
+        return digest;
+    }
+
+    default <T extends Signature> T update(final T signature) throws SignatureException {
+        Objects.requireNonNull(signature, "signature is null");
+        final var array = new byte[BYTES];
+        set(array);
+        signature.update(array);
+        return signature;
+    }
+
+    default <T extends Cipher> T update(final T cipher) {
+        Objects.requireNonNull(cipher, "cipher is null");
+        final var array = new byte[BYTES];
+        set(array);
+        cipher.update(array);
+        return cipher;
+    }
+
+    default <T extends Mac> T update(final T mac) {
+        Objects.requireNonNull(mac, "mac is null");
+        final var array = new byte[BYTES];
+        set(array);
+        mac.update(array);
+        return mac;
+    }
+
+    // ------------------------------------------------------------------------------- java.util.jar
+
+    // ------------------------------------------------------------------------------- java.util.zip
+    default <T extends Deflater> T input(final T deflater) {
+        final var array = new byte[BYTES];
+        set(array);
+        deflater.setInput(array);
+        return deflater;
     }
 }

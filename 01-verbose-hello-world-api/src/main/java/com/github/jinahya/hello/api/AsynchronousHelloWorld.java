@@ -2,357 +2,82 @@ package com.github.jinahya.hello.api;
 
 import org.jspecify.annotations.Nullable;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.UncheckedIOException;
-import java.io.Writer;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
+import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
+import java.nio.file.OpenOption;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
+import java.util.function.BiFunction;
 
 public interface AsynchronousHelloWorld {
 
+    // ---------------------------------------------------------------------- STATIC_FACTORY_METHODS
+
     /**
-     * Creates a new instance of {@link AsynchronousHelloWorld} from the specified underlying
-     * {@link HelloWorld} service and executor.
+     * Creates a new instance wrapping the specified service.
      *
-     * @param underlying the underlying {@link HelloWorld} service.
-     * @param executor   the executor to use for asynchronous operations.
-     * @return a new instance of {@link AsynchronousHelloWorld}.
-     * @throws NullPointerException if either {@code underlying} or {@code executor} is
-     *                              {@code null}.
+     * @param service the service to wrap.
+     * @return a new instance wrapping the {@code service}.
+     * @throws NullPointerException if {@code service} is {@code null}.
      */
-    static AsynchronousHelloWorld from(final HelloWorld underlying, final Executor executor) {
-        return new DefaultAsynchronousHelloWorld(underlying, executor);
+    static AsynchronousHelloWorld from(final HelloWorld service) {
+        return new DefaultAsynchronousHelloWorld(service);
     }
 
+    // ---------------------------------------------------------------------------------------------
+
     /**
-     * Creates a new instance of {@link AsynchronousHelloWorld} from the specified underlying
-     * {@link HelloWorld} service using a virtual thread executor.
+     * Applies the specified mapper to the specified target asynchronously using the specified
+     * executor, and returns the result as a {@link CompletionStage}.
      * <p>
-     * This is equivalent to:
+     * Example usage:
      * {@snippet lang = "java":
-     * from(underlying, Executors.newVirtualThreadPerTaskExecutor());
+     * var asyncHelloWorld = AsynchronousHelloWorld.from(helloWorld);
+     * asyncHelloWorld.applyAsync(outputStream, HelloWorld::write, executor)
+     *     .thenAccept(stream -> System.out.println("written"));
      *}
      *
-     * @param underlying the underlying {@link HelloWorld} service.
-     * @return a new instance of {@link AsynchronousHelloWorld}.
-     * @throws NullPointerException if {@code underlying} is {@code null}.
-     * @implSpec This method delegates to
-     * {@link #from(HelloWorld, Executor) from(underlying, executor)} with an executor created by
-     * {@link Executors#newVirtualThreadPerTaskExecutor()}.
-     * @see Executors#newVirtualThreadPerTaskExecutor()
+     * @param <T>      target type parameter
+     * @param target   the target to be passed to the {@code mapper}.
+     * @param mapper   the mapper to apply; receives a {@link HelloWorld} instance and the
+     *                 {@code target}, and returns a result.
+     * @param executor the executor to use for async execution.
+     * @return a {@link CompletionStage} representing the async operation.
+     * @throws NullPointerException if {@code mapper} or {@code executor} is {@code null}.
      */
-    static AsynchronousHelloWorld from(final HelloWorld underlying) {
-        return from(underlying, Executors.newVirtualThreadPerTaskExecutor());
+    <T> CompletionStage<T> applyAsync(T target,
+                                      BiFunction<? super HelloWorld, ? super T, ? extends T> mapper,
+                                      Executor executor);
+
+    /**
+     * Applies the specified mapper to the specified target asynchronously using
+     * {@link ForkJoinPool#commonPool()}, and returns the result as a {@link CompletionStage}.
+     *
+     * @param <T>    target type parameter
+     * @param target the target to be passed to the {@code mapper}.
+     * @param mapper the mapper to apply; receives a {@link HelloWorld} instance and the
+     *               {@code target}, and returns a result.
+     * @return a {@link CompletionStage} representing the async operation.
+     * @throws NullPointerException if {@code mapper} is {@code null}.
+     * @implSpec Default implementation invokes {@link #applyAsync(Object, BiFunction, Executor)}
+     * with the {@code target}, {@code mapper}, and {@link ForkJoinPool#commonPool()}.
+     */
+    default <T> CompletionStage<T> applyAsync(
+            final T target,
+            final BiFunction<? super HelloWorld, ? super T, ? extends T> mapper) {
+        return applyAsync(target, mapper, ForkJoinPool.commonPool());
     }
-
-    // ----------------------------------------------------------------------------------- java.lang
-
-    /**
-     * Sets, asynchronously, the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>
-     * on the specified array starting at the specified index.
-     * <p>
-     * The elements in the array, on successful completion, will be set as follows.
-     * <pre>
-     *  0  &lt;= index            index+12    &lt;= array.length
-     *  ↓     ↓                       ↓       ↓
-     * | |...|h|e|l|l|o|,| |w|o|r|l|d| |...| |
-     * </pre>
-     *
-     * @param array the array on which bytes are set.
-     * @param index the starting index of the {@code array} to which bytes are set.
-     * @return a {@link CompletionStage} that, when completed, returns the given {@code array}.
-     * @throws NullPointerException      if {@code array} is {@code null}.
-     * @throws IndexOutOfBoundsException if {@code index} is negative, or ({@code index} plus
-     *                                   {@value HelloWorld#BYTES}) is greater than
-     *                                   {@code array.length}.
-     * @implSpec Default implementation invokes, asynchronously, the underlying
-     * {@link HelloWorld#set(byte[], int) set(array, index)} method.
-     * @see HelloWorld#set(byte[], int)
-     */
-    CompletionStage<byte[]> set(byte[] array, int index);
-
-    /**
-     * Sets, asynchronously, the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>
-     * on the specified array starting at {@code 0}.
-     * <p>
-     * The elements in the array, on successful completion, will be set as follows.
-     * <pre>
-     *  0                      12     &lt;= array.length
-     *  ↓                       ↓        ↓
-     * |h|e|l|l|o|,| |w|o|r|l|d| |....| |
-     * </pre>
-     * <p>
-     * The default implementation would be as follows.
-     * {@snippet lang = "java":
-     * HelloWorldValidator.requireValid(array);
-     * return set(array, 0);
-     *}
-     *
-     * @param array the array on which bytes are set.
-     * @return a {@link CompletionStage} that, when completed, returns the given {@code array}.
-     * @throws NullPointerException      if {@code array} is {@code null}.
-     * @throws IndexOutOfBoundsException if {@code array.length} is less than
-     *                                   {@link HelloWorld#BYTES}({@value HelloWorld#BYTES}).
-     * @implSpec Default implementation validates the {@code array} using
-     * {@link HelloWorldValidator#requireValid(byte[])}, and then invokes
-     * {@link #set(byte[], int) set(array, 0)}.
-     * @see #set(byte[], int)
-     * @see HelloWorldValidator#requireValid(byte[])
-     */
-    default CompletionStage<byte[]> set(final byte[] array) {
-        HelloWorldValidator.requireValid(array);
-        return set(array, 0);
-    }
-
-    /**
-     * Appends, asynchronously, the <a
-     * href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to the specified appendable.
-     * <p>
-     * The default implementation would be as follows.
-     * {@snippet lang = "java":
-     * Objects.requireNonNull(appendable, "appendable is null");
-     * return CompletableFuture.supplyAsync(
-     *         () -> {
-     *             try {
-     *                 return service.append(appendable);
-     *             } catch (final IOException ioe) {
-     *                 throw new UncheckedIOException(ioe);
-     *             }
-     *         },
-     *         executor
-     * );
-     *}
-     *
-     * @param <T>        appendable type parameter
-     * @param appendable the appendable to which bytes are appended.
-     * @return a {@link CompletionStage} that, when completed, returns the given {@code appendable}.
-     * If an I/O error occurs, the stage completes exceptionally with an
-     * {@link UncheckedIOException} wrapping the underlying {@link IOException}.
-     * @throws NullPointerException if {@code appendable} is {@code null}.
-     * @implSpec Default implementation invokes, asynchronously, the underlying
-     * {@link HelloWorld#append(Appendable) append(appendable)} method. Any {@link IOException}
-     * thrown during the operation is wrapped in an {@link UncheckedIOException} and propagated
-     * through the returned {@link CompletionStage}.
-     * @see HelloWorld#append(Appendable)
-     * @see UncheckedIOException
-     */
-    <T extends Appendable> CompletionStage<T> append(final T appendable);
-
-    // ------------------------------------------------------------------------------------- java.io
-
-    /**
-     * Writes, asynchronously, the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>
-     * to the specified output stream.
-     * <p>
-     * The default implementation would be as follows.
-     * {@snippet lang = "java":
-     * Objects.requireNonNull(stream, "stream is null");
-     * return CompletableFuture.supplyAsync(
-     *         () -> {
-     *             try {
-     *                 return service.write(stream);
-     *             } catch (final IOException ioe) {
-     *                 throw new UncheckedIOException(ioe);
-     *             }
-     *         },
-     *         executor
-     * );
-     *}
-     *
-     * @param <T>    stream type parameter
-     * @param stream the output stream to which bytes are written.
-     * @return a {@link CompletionStage} that, when completed, returns the given {@code stream}. If
-     * an I/O error occurs, the stage completes exceptionally with an {@link UncheckedIOException}
-     * wrapping the underlying {@link IOException}.
-     * @throws NullPointerException if {@code stream} is {@code null}.
-     * @apiNote This method does not {@link OutputStream#flush() flush} the {@code stream}.
-     * @implSpec Default implementation invokes, asynchronously, the underlying
-     * {@link HelloWorld#write(OutputStream) write(stream)} method. Any {@link IOException} thrown
-     * during the operation is wrapped in an {@link UncheckedIOException} and propagated through the
-     * returned {@link CompletionStage}.
-     * @see HelloWorld#write(OutputStream)
-     * @see OutputStream#write(byte[])
-     * @see UncheckedIOException
-     */
-    <T extends OutputStream> CompletionStage<T> write(final T stream);
-
-    /**
-     * Appends, asynchronously, the <a
-     * href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to the end of the specified
-     * file.
-     * <p>
-     * The default implementation would be as follows.
-     * {@snippet lang = "java":
-     * Objects.requireNonNull(file, "file is null");
-     * return CompletableFuture
-     *         .supplyAsync(() -> {
-     *             try {
-     *                 return new FileOutputStream(file, true);
-     *             } catch (final IOException ioe) {
-     *                 throw new UncheckedIOException(ioe);
-     *             }
-     *         })
-     *         .thenCompose(s -> write(s).thenApply(r -> {
-     *             try {
-     *                 r.flush();
-     *                 r.close();
-     *             } catch (final IOException ioe) {
-     *                 throw new UncheckedIOException(ioe);
-     *             }
-     *             return file;
-     *         }));
-     *}
-     *
-     * @param <T>  file type parameter
-     * @param file the file to which bytes are appended.
-     * @return a {@link CompletionStage} that, when completed, returns the given {@code file}. If an
-     * I/O error occurs, the stage completes exceptionally with an {@link UncheckedIOException}
-     * wrapping the underlying {@link IOException}.
-     * @throws NullPointerException if {@code file} is {@code null}.
-     * @implSpec Default implementation creates, asynchronously, a new {@link FileOutputStream} with
-     * {@code file} in {@link FileOutputStream#FileOutputStream(File, boolean) appending mode},
-     * invokes the {@link #write(OutputStream) write(stream)} method with it, and then
-     * {@link OutputStream#flush() flushes} and {@link OutputStream#close() closes} the stream. Any
-     * {@link IOException} thrown during these operations is wrapped in an
-     * {@link UncheckedIOException} and propagated through the returned {@link CompletionStage}.
-     * @see java.io.FileOutputStream#FileOutputStream(File, boolean)
-     * @see #write(OutputStream)
-     * @see UncheckedIOException
-     */
-    default <T extends File> CompletionStage<T> append(final T file) {
-        Objects.requireNonNull(file, "file is null");
-        return CompletableFuture
-                .supplyAsync(() -> {
-                    try {
-                        return new FileOutputStream(file, true);
-                    } catch (final IOException ioe) {
-                        throw new UncheckedIOException(ioe);
-                    }
-                })
-                .thenCompose(s -> write(s).thenApply(r -> {
-                    try {
-                        r.flush();
-                        r.close();
-                    } catch (final IOException ioe) {
-                        throw new UncheckedIOException(ioe);
-                    }
-                    return file;
-                }))
-                ;
-    }
-
-    /**
-     * Writes, asynchronously, the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>
-     * to the specified writer.
-     * <p>
-     * The default implementation would be as follows.
-     * {@snippet lang = "java":
-     * Objects.requireNonNull(writer, "writer is null");
-     * return CompletableFuture.supplyAsync(
-     *         () -> {
-     *             try {
-     *                 return service.write(writer);
-     *             } catch (final IOException ioe) {
-     *                 throw new UncheckedIOException(ioe);
-     *             }
-     *         },
-     *         executor
-     * );
-     *}
-     *
-     * @param <T>    writer type parameter
-     * @param writer the writer to which bytes are written.
-     * @return a {@link CompletionStage} that, when completed, returns the given {@code writer}. If
-     * an I/O error occurs, the stage completes exceptionally with an {@link UncheckedIOException}
-     * wrapping the underlying {@link IOException}.
-     * @throws NullPointerException if {@code writer} is {@code null}.
-     * @implSpec Default implementation invokes, asynchronously, the underlying
-     * {@link HelloWorld#write(Writer) write(writer)} method, which internally calls
-     * {@link HelloWorld#append(Appendable) append(writer)}. Any {@link IOException} thrown during
-     * the operation is wrapped in an {@link UncheckedIOException} and propagated through the
-     * returned {@link CompletionStage}.
-     * @see HelloWorld#write(Writer)
-     * @see HelloWorld#append(Appendable)
-     * @see UncheckedIOException
-     */
-    <T extends Writer> CompletionStage<T> write(final T writer);
-
-    /**
-     * Writes, asynchronously, the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>
-     * to the specified data output.
-     *
-     * @param <T>    data output type parameter
-     * @param output the data output to which bytes are written
-     * @return a {@link CompletionStage} that, when completed, returns the given {@code output}
-     */
-    <T extends java.io.DataOutput> CompletionStage<T> write(final T output);
-
-    /**
-     * Writes, asynchronously, the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>
-     * to the specified random access file starting at its current file pointer.
-     *
-     * @param <T>  random access file type parameter
-     * @param file the random access file to which bytes are written
-     * @return a {@link CompletionStage} that, when completed, returns the given {@code file}
-     */
-    <T extends java.io.RandomAccessFile> CompletionStage<T> write(final T file);
-
-    // ------------------------------------------------------------------------------------ java.net
-
-    /**
-     * Sends, asynchronously, the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>
-     * through the specified socket.
-     *
-     * @param <T>    socket type parameter
-     * @param socket the socket through which bytes are sent
-     * @return a {@link CompletionStage} that, when completed, returns the given {@code socket}
-     */
-    <T extends java.net.Socket> CompletionStage<T> send(final T socket);
-
-    // ------------------------------------------------------------------------------------ java.nio
-
-    /**
-     * Puts, asynchronously, the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>
-     * into the specified byte buffer.
-     *
-     * @param <T>    byte buffer type parameter
-     * @param buffer the byte buffer into which bytes are put
-     * @return a {@link CompletionStage} that, when completed, returns the given {@code buffer}
-     */
-    <T extends java.nio.ByteBuffer> CompletionStage<T> put(final T buffer);
-
-    /**
-     * Writes, asynchronously, the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>
-     * to the specified writable byte channel.
-     *
-     * @param <T>     channel type parameter
-     * @param channel the channel to which bytes are written
-     * @return a {@link CompletionStage} that, when completed, returns the given {@code channel}
-     */
-    <T extends java.nio.channels.WritableByteChannel> CompletionStage<T> write(final T channel);
-
-    /**
-     * Appends, asynchronously, the <a
-     * href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to the end of the specified
-     * path to a file.
-     *
-     * @param <T>  path type parameter
-     * @param path the path to a file to which bytes are appended
-     * @return a {@link CompletionStage} that, when completed, returns the given {@code path}
-     */
-    <T extends java.nio.file.Path> CompletionStage<T> append(final T path);
 
     // --------------------------------------------------------------------------- java.nio.channels
+
     /**
      * Writes the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to the specified
      * channel, and then, notifies a completion (or a failure) to the specified handler with the
@@ -426,5 +151,76 @@ public interface AsynchronousHelloWorld {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(handler, "handler is null");
         write(channel, attachment, handler);
+    }
+
+    /**
+     * Writes, asynchronously, the <a href="#hello-world-bytes">hello-world-bytes</a> to the
+     * specified channel, starting at the specified position, and notifies a completion (or a
+     * failure) to the specified handler.
+     *
+     * @param <T>        channel type parameter
+     * @param <A>        attachment type parameter
+     * @param channel    the asynchronous file channel to which bytes are written.
+     * @param position   the file position at which the transfer is to begin; must be non-negative.
+     * @param attachment an attachment for the {@code handler}; may be {@code null}.
+     * @param handler    the handler.
+     * @throws NullPointerException     if either {@code channel} or {@code handler} is
+     *                                  {@code null}.
+     * @throws IllegalArgumentException if {@code position} is negative.
+     * @see AsynchronousFileChannel#write(ByteBuffer, long, Object, CompletionHandler)
+     */
+    // @formatter:off
+    <T extends AsynchronousFileChannel, A> void write(
+            final T channel,
+            final long position,
+            final @Nullable A attachment,
+            final CompletionHandler<? super T, ? super A> handler);
+
+    /**
+     * Appends the <a href="#hello-world-bytes">hello-world-bytes</a> to the end of the specified
+     * path to a file, and notifies a completion (or a failure) to the specified handler.
+     *
+     * @param path       the path to a file to which the bytes are appended.
+     * @param attachment an attachment for the handler.
+     * @param handler    the handler to be notified with a completion (or a failure).
+     * @param <T>        path type parameter
+     * @param <A>        attachment type parameter
+     * @throws IOException if an I/O error occurs.
+     */
+    default <T extends Path, A> void append(final T path, @Nullable final A attachment,
+                                            final CompletionHandler<? super T, ? super A> handler)
+            throws IOException {
+        Objects.requireNonNull(path, "path is null");
+        Objects.requireNonNull(handler, "handler is null");
+        final var options = new OpenOption[] {
+                StandardOpenOption.CREATE,
+                StandardOpenOption.WRITE
+        };
+        @SuppressWarnings({
+                "java:S2095" // Resources should be closed
+        })
+        final var channel = AsynchronousFileChannel.open(path, options); // no try-with-resources?
+        write(channel, channel.size(), attachment, new CompletionHandler<>() { // @formatter:off
+            @Override public void completed(final AsynchronousFileChannel r, final A a) {
+                assert r == channel;
+                try {
+                    r.force(true);
+                    r.close();
+                } catch (final IOException ioe) {
+                    handler.failed(ioe, a);
+                    return;
+                }
+                handler.completed(path, a);
+            }
+            @Override public void failed(final Throwable t, final A a) {
+                try {
+                    channel.close();
+                } catch (final IOException ioe) {
+                    handler.failed(ioe, a);
+                    return;
+                }
+                handler.failed(t, a);
+            } // @formatter:on
+        });
     }
 }
