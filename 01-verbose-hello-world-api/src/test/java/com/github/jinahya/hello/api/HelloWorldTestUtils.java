@@ -33,6 +33,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.time.Duration;
@@ -56,6 +57,15 @@ public final class HelloWorldTestUtils {
     }
 
     /**
+     * Returns a new byte array containing the "hello, world" bytes.
+     *
+     * @return a new byte array containing the "hello, world" bytes.
+     */
+    public static byte[] helloWorldBytes() {
+        return HelloWorldTestConstants.HELLO_WORLD_STRING.getBytes(StandardCharsets.US_ASCII);
+    }
+
+    /**
      * Stubs given mock serivce's {@link HelloWorld#set(byte[]) set(array)} method to just return
      * the {@code array}.
      *
@@ -67,6 +77,18 @@ public final class HelloWorldTestUtils {
         Mockito.doAnswer(i -> i.getArgument(0))
                 .when(service)
                 .set(ArgumentMatchers.any());
+    }
+
+    public static void stub_set_array_will_set_hello_world_bytes(final HelloWorld service) {
+        requireMock(service);
+        Mockito
+                .doAnswer(i -> {
+                    final var array = i.getArgument(0, byte[].class);
+                    System.arraycopy(helloWorldBytes(), 0, array, 0, HelloWorld.BYTES);
+                    return array;
+                })
+                .when(service)
+                .set(ArgumentMatchers.any(byte[].class));
     }
 
     static byte[] verify_set_array12_invoked_once(final HelloWorld service) {

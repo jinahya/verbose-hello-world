@@ -3,21 +3,19 @@ package com.github.jinahya.hello.api._java_security;
 import com.github.jinahya.hello.api.HelloWorldTest;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.mockito.Mockito;
 
 import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.Signature;
 import java.security.spec.AlgorithmParameterSpec;
@@ -26,9 +24,6 @@ import java.security.spec.MGF1ParameterSpec;
 import java.security.spec.PSSParameterSpec;
 import java.util.HexFormat;
 import java.util.List;
-import java.util.Objects;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 /**
@@ -77,28 +72,6 @@ class HelloWorld_Update_Signature_Test extends HelloWorldTest {
         return generator.generateKeyPair();
     }
 
-    static <R> R applyKeyPair(final String algorithm, final int keysize,
-                              final Function<? super KeyPair, ? extends R> function)
-            throws NoSuchAlgorithmException {
-        Objects.requireNonNull(function, "function is null");
-        final var generator = KeyPairGenerator.getInstance(algorithm);
-        final var random = SecureRandom.getInstanceStrong();
-        generator.initialize(keysize, random);
-        final var generated = generator.generateKeyPair();
-        return function.apply(generated);
-    }
-
-    static <R> R applyKeyPair(
-            final String algorithm, final int keysize,
-            final BiFunction<? super PublicKey, ? super PrivateKey, ? extends R> function)
-            throws NoSuchAlgorithmException {
-        return applyKeyPair(
-                algorithm,
-                keysize,
-                p -> function.apply(p.getPublic(), p.getPrivate())
-        );
-    }
-
     // ---------------------------------------------------------------------------------------------
     @Test
     void _ThrowNullPointerException_DigestIsNull() {
@@ -109,25 +82,7 @@ class HelloWorld_Update_Signature_Test extends HelloWorldTest {
         Assertions.assertThrows(NullPointerException.class, () -> service.update(digest));
     }
 
-    @MethodSource({"algorithms"})
-    @ParameterizedTest
-    void __(final String algorithm) throws NoSuchAlgorithmException {
-        // ----------------------------------------------------------------------------------- given
-        final var service = service();
-        final var digest = Mockito.spy(MessageDigest.getInstance(algorithm));
-        // ----------------------------------------------------------------------------- when / then
-        final var result = service.update(digest);
-        // ------------------------------------------------------------------------------------ then
-        final var array = verify_set_array12_invoked_once();
-        Mockito.verify(digest, Mockito.times(1)).update(array);
-        Assertions.assertEquals(digest, result);
-        {
-            final var digested = digest.digest();
-            log.debug("{}: [{}] ({} bytes, {} bits)", String.format("%1$7s", algorithm),
-                      HexFormat.of().formatHex(digested), digested.length, digested.length << 3);
-        }
-    }
-
+    @DisplayName("RSASSA-PSS")
     @Nested
     class RSASSA_PSS_Test {
 
@@ -189,6 +144,7 @@ class HelloWorld_Update_Signature_Test extends HelloWorldTest {
      *
      * @see <a href="https://docs.oracle.com/en/java/javase/25/security/oracle-providers.html"></a>
      */
+    @DisplayName("SHA1withDSA")
     @Nested
     class SHA1WithDSATest {
 
@@ -220,6 +176,7 @@ class HelloWorld_Update_Signature_Test extends HelloWorldTest {
         }
     }
 
+    @DisplayName("SHA256withDSA")
     @Nested
     class SHA256WithDSATest {
 
@@ -251,6 +208,7 @@ class HelloWorld_Update_Signature_Test extends HelloWorldTest {
         }
     }
 
+    @DisplayName("SHA256withECDSA")
     @Nested
     class SHA256WithECDSA_Test {
 
@@ -282,6 +240,7 @@ class HelloWorld_Update_Signature_Test extends HelloWorldTest {
         }
     }
 
+    @DisplayName("SHA384withECDSA")
     @Nested
     class SHA384withECDSA_Test {
 
@@ -313,6 +272,7 @@ class HelloWorld_Update_Signature_Test extends HelloWorldTest {
         }
     }
 
+    @DisplayName("SHA1withRSA")
     @Nested
     class SHA1withRSA_Test {
 
@@ -344,6 +304,7 @@ class HelloWorld_Update_Signature_Test extends HelloWorldTest {
         }
     }
 
+    @DisplayName("SHA256withRSA")
     @Nested
     class SHA256withRSA_Test {
 
@@ -375,6 +336,7 @@ class HelloWorld_Update_Signature_Test extends HelloWorldTest {
         }
     }
 
+    @DisplayName("SHA384withRSA")
     @Nested
     class SHA384withRSA_Test {
 

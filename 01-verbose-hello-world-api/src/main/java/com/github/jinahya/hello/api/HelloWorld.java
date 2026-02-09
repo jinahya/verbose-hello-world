@@ -55,6 +55,7 @@ import java.security.SignatureException;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.function.Consumer;
 import java.util.zip.Deflater;
 
 /**
@@ -1173,11 +1174,12 @@ public interface HelloWorld {
         return signature;
     }
 
-    default <T extends Cipher> T update(final T cipher) {
+    default <T extends Cipher> T update(final T cipher, final Consumer<? super byte[]> consumer) {
         Objects.requireNonNull(cipher, "cipher is null");
         final var array = new byte[BYTES];
         set(array);
-        cipher.update(array);
+        final var result = cipher.update(array);
+        consumer.accept(result);
         return cipher;
     }
 
