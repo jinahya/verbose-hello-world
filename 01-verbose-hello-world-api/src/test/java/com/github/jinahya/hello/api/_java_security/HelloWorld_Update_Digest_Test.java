@@ -38,17 +38,16 @@ class HelloWorld_Update_Digest_Test extends HelloWorldTest {
 
     @MethodSource({"algorithms"})
     @ParameterizedTest
-    void _ThrowNullPointerException_DigestIsNull(final String algorithm)
-            throws NoSuchAlgorithmException {
+    void __(final String algorithm) throws NoSuchAlgorithmException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var digest = Mockito.spy(MessageDigest.getInstance(algorithm));
         // ----------------------------------------------------------------------------- when / then
         final var result = service.update(digest);
         // ------------------------------------------------------------------------------------ then
-        Assertions.assertEquals(digest, result);
         final var array = verify_set_array12_invoked_once();
         Mockito.verify(digest, Mockito.times(1)).update(array);
+        Assertions.assertEquals(digest, result);
         {
             final var digested = digest.digest();
             log.debug("{}: [{}] ({} bytes, {} bits)", String.format("%1$7s", algorithm),
