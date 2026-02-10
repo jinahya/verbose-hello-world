@@ -79,7 +79,7 @@ public final class HelloWorldTestUtils {
                 .set(ArgumentMatchers.any());
     }
 
-    public static void stub_set_array_will_set_hello_world_bytes(final HelloWorld service) {
+    public static void stub_set_array_will_set_actual_hello_world_bytes(final HelloWorld service) {
         requireMock(service);
         Mockito
                 .doAnswer(i -> {

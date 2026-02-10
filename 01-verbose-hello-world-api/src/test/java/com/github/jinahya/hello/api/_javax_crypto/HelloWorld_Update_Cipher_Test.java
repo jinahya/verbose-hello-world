@@ -65,7 +65,7 @@ class HelloWorld_Update_Cipher_Test extends HelloWorldTest {
     // -----------------------------------------------------------------------------------------------------------------
     @BeforeEach
     void __() {
-        HelloWorldTestUtils.stub_set_array_will_set_hello_world_bytes(service());
+        HelloWorldTestUtils.stub_set_array_will_set_actual_hello_world_bytes(service());
     }
 
     // -----------------------------------------------------------------------------------------------------------------

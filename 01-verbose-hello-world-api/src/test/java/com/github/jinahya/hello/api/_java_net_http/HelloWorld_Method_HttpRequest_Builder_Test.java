@@ -104,7 +104,7 @@ class HelloWorld_Method_HttpRequest_Builder_Test extends HelloWorldTest {
     void __HttpServer() throws Exception {
         // ----------------------------------------------------------------------------------- given
         final var service = Mockito.spy(PrivateHelloWorld.class);
-        HelloWorldTestUtils.stub_set_array_will_set_hello_world_bytes(service);
+        HelloWorldTestUtils.stub_set_array_will_set_actual_hello_world_bytes(service);
         final var server = HttpServer.create(new InetSocketAddress(0), 0);
         final var port = server.getAddress().getPort();
         final var path = "/post";

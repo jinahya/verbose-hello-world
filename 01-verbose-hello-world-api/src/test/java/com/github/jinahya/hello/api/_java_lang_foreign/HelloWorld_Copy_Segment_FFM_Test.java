@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.api.condition.OS;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mockito;
 
 import java.lang.foreign.Arena;
@@ -17,9 +18,14 @@ import java.lang.foreign.Linker;
 import java.lang.foreign.MemorySegment;
 import java.lang.foreign.SymbolLookup;
 import java.lang.foreign.ValueLayout;
+import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Tests {@link HelloWorld#copy(MemorySegment)} with various native libraries via FFM API. Tests are
@@ -70,6 +76,7 @@ class HelloWorld_Copy_Segment_FFM_Test {
                 .when(service)
                 .set(Mockito.any());
     }
+
 
     // -------------------------------------------------------------------------------------- C/libc
 
