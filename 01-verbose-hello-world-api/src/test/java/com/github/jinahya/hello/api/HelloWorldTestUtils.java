@@ -72,7 +72,7 @@ public final class HelloWorldTestUtils {
      * @param service the mock service.
      * @see #verify_set_array12_invoked_once(HelloWorld)
      */
-    static void stub_set_array_will_return_the_array(final HelloWorld service) {
+    public static void stub_set_array_will_return_the_array(final HelloWorld service) {
         requireMock(service);
         Mockito.doAnswer(i -> i.getArgument(0))
                 .when(service)
@@ -91,7 +91,7 @@ public final class HelloWorldTestUtils {
                 .set(ArgumentMatchers.any(byte[].class));
     }
 
-    static byte[] verify_set_array12_invoked_once(final HelloWorld service) {
+    public static byte[] verify_set_array12_invoked_once(final HelloWorld service) {
         requireMock(service);
         final var captor = ArgumentCaptor.forClass(byte[].class);
         Mockito.verify(service, Mockito.times(1)).set(captor.capture());

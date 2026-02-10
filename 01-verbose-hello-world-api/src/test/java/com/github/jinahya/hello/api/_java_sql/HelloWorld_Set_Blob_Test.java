@@ -7,6 +7,7 @@ import com.github.jinahya.hello.api.畵蛇添足;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
@@ -53,7 +54,6 @@ class HelloWorld_Set_Blob_Test extends HelloWorldTest {
         );
     }
 
-    @畵蛇添足
     @Test
     void __() throws SQLException {
         // ----------------------------------------------------------------------------------- given
@@ -159,6 +159,38 @@ class HelloWorld_Set_Blob_Test extends HelloWorldTest {
                     Blob blob = connection.createBlob();
                     blob.setBytes(1, new byte[128]);
                     ps.setBlob(2, blob);
+                    ps.executeUpdate();
+                }
+            }
+            try (var rs = connection.createStatement().executeQuery("SELECT * FROM assets")) {
+                Assertions.assertTrue(rs.next());
+                final var blob = rs.getBlob(2);
+                final var mutableBlob = new javax.sql.rowset.serial.SerialBlob(blob);
+                final var pos = ThreadLocalRandom.current().nextLong(1L, 128L);
+                final var result = service.set(mutableBlob, pos);
+            }
+        }
+    }
+
+    @Disabled("java.sql.SQLFeatureNotSupportedException: not implemented by SQLite JDBC driver")
+    @畵蛇添足
+    @Test
+    void __sqlite() throws SQLException {
+        final var service = service();
+        final var url = "jdbc:sqlite::memory:";
+        try (var connection = DriverManager.getConnection(url)) {
+            {
+                final var sql = "CREATE TABLE assets (id INTEGER PRIMARY KEY, data BLOB)";
+                connection.createStatement().execute(sql);
+            }
+            {
+                final var sql = "INSERT INTO assets (id, data) VALUES (?, ?)";
+                try (var ps = connection.prepareStatement(sql)) {
+                    ps.setInt(1, 1);
+
+                    // SQLite Fix: Don't use connection.createBlob()
+                    // Just send the bytes directly to the table
+                    ps.setBytes(2, new byte[128]);
                     ps.executeUpdate();
                 }
             }

@@ -341,6 +341,11 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
+      <dependency>
+        <groupId>org.xerial</groupId>
+        <artifactId>sqlite-jdbc</artifactId>
+        <version>3.51.2.0</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
   <dependencies>
@@ -616,7 +621,9 @@
             <!-- https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#0.3 -->
             <!--            <argLine>@{argLine} -XX:+EnableDynamicAgentLoading -javaagent:${org.mockito:mockito-core:jar}</argLine>-->
             <!--            <argLine>@{argLine} -javaagent:${org.mockito:mockito-core:jar}</argLine>-->
-            <argLine>--enable-preview</argLine>
+            <argLine>--enable-preview -Djdk.httpclient.HttpClient.log=all</argLine>
+            <redirectTestOutputToFile>false</redirectTestOutputToFile>
+<!--            <trimStackTrace>false</trimStackTrace>-->
           </configuration>
         </plugin>
         <plugin>
