@@ -104,8 +104,8 @@ class HelloWorld_02_Set_Array_Test extends HelloWorldTest {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         Mockito.doAnswer(i -> i.getArgument(0)).when(service).set(
-                ArgumentMatchers.any(),   // <array>
-                ArgumentMatchers.anyInt() // <index>
+                ArgumentMatchers.any(byte[].class),   // <array>
+                ArgumentMatchers.anyInt()             // <index>
         );
         final var array = new byte[HelloWorld.BYTES];
         // ------------------------------------------------------------------------------------ when

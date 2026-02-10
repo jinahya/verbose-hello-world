@@ -4,6 +4,8 @@ module com.github.jinahya.hello.api {
     requires transitive org.slf4j;
     requires jakarta.validation;
     requires org.reactivestreams;
+    requires java.sql;
+    requires java.sql.rowset;
     exports com.github.jinahya.hello.api;
     exports com.github.jinahya.hello.api.spi;
     exports com.github.jinahya.hello.api.reactive;

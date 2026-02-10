@@ -94,9 +94,22 @@ Analysis of `HelloWorld.java` interface methods organized by target type and Jav
 ### javax.crypto.Mac
 - `update(T extends Mac)` - Updates MAC with hello-world-bytes
 
+## java.sql
+
+### java.sql.Blob
+- `set(T extends Blob, long pos)` - Sets hello-world-bytes in BLOB at position
+
+## java.util.zip
+
+### java.util.zip.Deflater
+- `input(T extends Deflater)` - Sets hello-world-bytes as deflater input
+
+### java.util.zip.Checksum
+- `update(T extends Checksum)` - Updates checksum with hello-world-bytes
+
 ## Summary
 
-- **Total methods**: 32 (28 unique + 4 deprecated)
+- **Total methods**: 35 (31 unique + 4 deprecated)
 - **Abstract methods**: 1 (`set(byte[], int)`)
 - **Deprecated methods**: 4
   - `send(DatagramChannel)` → use `write(WritableByteChannel)`
@@ -172,7 +185,8 @@ Analysis of `HelloWorld.java` interface methods organized by target type and Jav
 - **REDUNDANT**: `GZIPOutputStream` - Covered by OutputStream
 - **REDUNDANT**: `ZipOutputStream` - Covered by OutputStream
 - **REDUNDANT**: `JarOutputStream` - Covered by OutputStream
-- `Deflater` - Raw compression (not a stream, direct API)
+- ~~`Deflater`~~ - **ADDED** to HelloWorld.java (input with hello-world-bytes)
+- ~~`Checksum`~~ - **ADDED** to HelloWorld.java (update CRC32, CRC32C, Adler32 with hello-world-bytes)
 
 ### java.security / javax.crypto
 - ~~`MessageDigest`~~ - **ADDED** to HelloWorld.java (update with hello-world-bytes)
@@ -220,3 +234,62 @@ Analysis of `HelloWorld.java` interface methods organized by target type and Jav
 ### Module System
 - **REDUNDANT**: Module layer - Not an I/O target
 - **REDUNDANT**: Module resource - Not an I/O target
+
+### java.net.http (HTTP Client API - Java 11+)
+- `HttpRequest.BodyPublisher` - Publish hello-world-bytes as HTTP request body (`BodyPublishers.ofByteArray(byte[])`)
+- `WebSocket` - Send hello-world-bytes as binary frame (`sendBinary(ByteBuffer, boolean)`)
+
+### javax.sound.sampled (Audio I/O)
+- `SourceDataLine` - Write hello-world-bytes to audio output (`write(byte[], int, int)`)
+- **REDUNDANT**: `AudioInputStream` - Reading, not writing
+- **REDUNDANT**: `Clip` - Uses AudioInputStream for loading
+
+### javax.imageio.stream (Image I/O Streams)
+- `ImageOutputStream` - Write hello-world-bytes to image output stream (`write(byte[])`)
+- **REDUNDANT**: `ImageInputStream` - Reading, not writing
+
+### java.sql (JDBC)
+- ~~`Blob`~~ - **ADDED** to HelloWorld.java (`set(Blob, long pos)`)
+- `PreparedStatement` - Bind hello-world-bytes as parameter (`setBytes(int, byte[])`)
+- **Note**: Requires JDBC context/connection, may not fit the HelloWorld pattern cleanly
+
+### java.util.BitSet
+- `BitSet` - Set bits from hello-world-bytes (`valueOf(byte[])` returns new BitSet, or manual bit setting)
+- **Note**: Transformation rather than I/O
+
+### java.lang.invoke
+- `VarHandle` - Low-level memory access via VarHandle operations
+- **Note**: Complex setup, educational for advanced memory access patterns
+
+### java.nio.channels (Additional)
+- `Pipe` - Write to Pipe.SinkChannel (educational: inter-thread communication)
+  - **REDUNDANT** as target (SinkChannel is WritableByteChannel), but useful as a pattern demo
+- `ScatteringByteChannel` / `GatheringByteChannel` - Scatter/gather I/O (in MoreHelloWorld.java)
+
+### java.util.Formatter
+- `Formatter` - Format hello-world-bytes via `%s` with new String(bytes) or hex format
+- **Note**: Text formatting rather than byte I/O
+
+### java.io.Console
+- **REDUNDANT**: `Console.writer()` - Covered by Writer
+- **REDUNDANT**: `Console.printf()` - Text output, not byte I/O
+
+### javax.xml.transform.stream
+- **REDUNDANT**: `StreamResult` - Wraps OutputStream/Writer, already covered
+
+### java.rmi (Remote Method Invocation)
+- **REDUNDANT**: RMI streams - Use standard I/O streams
+
+### java.util.jar
+- `JarEntry` / `Manifest` - Not byte I/O targets
+- **REDUNDANT**: `JarOutputStream` - Covered by OutputStream
+
+### jdk.jfr (Java Flight Recorder)
+- **REDUNDANT**: Event recording - Not a byte I/O target
+
+### javax.net.ssl
+- **REDUNDANT**: `SSLSocket` - Extends Socket, covered
+- **REDUNDANT**: `SSLEngine` - Uses ByteBuffer, already covered
+
+### java.util.UUID
+- **Note**: Could construct UUID from hello-world-bytes (transformation, not I/O)

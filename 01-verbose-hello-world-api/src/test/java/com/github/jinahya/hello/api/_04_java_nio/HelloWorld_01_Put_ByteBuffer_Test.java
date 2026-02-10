@@ -336,7 +336,7 @@ class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
                     return array;
                 })
                 .when(service)
-                .set(ArgumentMatchers.any(), ArgumentMatchers.anyInt());
+                .set(ArgumentMatchers.any(byte[].class), ArgumentMatchers.anyInt());
         // prepare: a byte buffer which has a backing-array, and has enough remaining.
         final var buffer = Mockito.spy(
                 slice(ByteBuffer.allocate(HelloWorld.BYTES << 1), HelloWorld.BYTES)

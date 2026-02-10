@@ -61,9 +61,11 @@ verbose-hello-world (root POM aggregator)
 The core `HelloWorld` interface is a `@FunctionalInterface` whose single abstract method is `set(byte[], int)` — writing the 12-byte `"hello, world"` string. All other methods are `default` implementations covering diverse I/O patterns:
 
 - `java.lang` — byte arrays, `Appendable`
+- `java.lang.foreign` — `MemorySegment`
 - `java.io` — streams, files, writers
-- `java.net` — sockets
+- `java.net` — sockets, datagram sockets
 - `java.nio` — `ByteBuffer`, channels (sync + async), `CompletionHandler`
+- `java.security` / `javax.crypto` — `MessageDigest`, `Signature`, `Cipher`, `Mac`
 - Reactive Streams — via `HelloWorldFlow` and `ReactiveHelloWorldFactory`
 
 Also contains utility classes under subpackages for reflection, NIO, concurrency, security, and logging.
@@ -98,6 +100,7 @@ The `generate-executables` profile (active by default) produces multiple artifac
 - Null safety: JSpecify annotations (`@NullMarked`, `@Nullable`)
 - Custom annotations `@屋上架屋` and `@屋下架屋` are used as code documentation markers
 - Logging: SLF4J API with Logback runtime, plus `jul-to-slf4j` bridge
+- **No static imports**: This codebase is educational material for books/lectures; explicit qualified names (e.g., `HelloWorld.BYTES`, `Assertions.assertEquals`) improve readability for learners
 
 ## Javadoc Conventions
 

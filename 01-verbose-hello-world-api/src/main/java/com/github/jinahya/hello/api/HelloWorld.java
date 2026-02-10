@@ -20,6 +20,7 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
+import jakarta.validation.constraints.Positive;
 import org.jspecify.annotations.Nullable;
 
 import javax.crypto.Cipher;
@@ -52,10 +53,13 @@ import java.nio.file.StandardOpenOption;
 import java.security.MessageDigest;
 import java.security.Signature;
 import java.security.SignatureException;
+import java.sql.Blob;
+import java.sql.SQLException;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
+import java.util.zip.Checksum;
 import java.util.zip.Deflater;
 
 /**
@@ -1158,6 +1162,21 @@ public interface HelloWorld {
     }
 
     // ---------------------------------------------------------------- java.security / javax.crypto
+
+    /**
+     * Updates the specified message digest with the <a
+     * href="#hello-world-bytes">hello-world-bytes</a>.
+     *
+     * @param digest the message digest to be updated.
+     * @param <T>    message digest type parameter
+     * @return the given {@code digest}.
+     * @throws NullPointerException if {@code digest} is {@code null}.
+     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
+     * of {@value #BYTES} bytes, and {@link MessageDigest#update(byte[]) updates} the {@code digest}
+     * with the array.
+     * @see #set(byte[])
+     * @see MessageDigest#update(byte[])
+     */
     default <T extends MessageDigest> T update(final T digest) {
         Objects.requireNonNull(digest, "digest is null");
         final var array = new byte[BYTES];
@@ -1166,6 +1185,20 @@ public interface HelloWorld {
         return digest;
     }
 
+    /**
+     * Updates the specified signature with the <a href="#hello-world-bytes">hello-world-bytes</a>.
+     *
+     * @param signature the signature to be updated.
+     * @param <T>       signature type parameter
+     * @return the given {@code signature}.
+     * @throws NullPointerException if {@code signature} is {@code null}.
+     * @throws SignatureException   if the signature is not initialized properly.
+     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
+     * of {@value #BYTES} bytes, and {@link Signature#update(byte[]) updates} the {@code signature}
+     * with the array.
+     * @see #set(byte[])
+     * @see Signature#update(byte[])
+     */
     default <T extends Signature> T update(final T signature) throws SignatureException {
         Objects.requireNonNull(signature, "signature is null");
         final var array = new byte[BYTES];
@@ -1174,8 +1207,27 @@ public interface HelloWorld {
         return signature;
     }
 
+    /**
+     * Updates the specified cipher with the <a href="#hello-world-bytes">hello-world-bytes</a>, and
+     * accepts the result to the specified consumer.
+     *
+     * @param cipher   the cipher to be updated.
+     * @param consumer the consumer to accept the result of
+     *                 {@link Cipher#update(byte[]) cipher.update(array)}.
+     * @param <T>      cipher type parameter
+     * @return the given {@code cipher}.
+     * @throws NullPointerException if {@code cipher} is {@code null} or {@code consumer} is
+     *                              {@code null}.
+     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
+     * of {@value #BYTES} bytes, {@link Cipher#update(byte[]) updates} the {@code cipher} with the
+     * array, and {@link Consumer#accept(Object) accepts} the result to the {@code consumer}.
+     * @see #set(byte[])
+     * @see Cipher#update(byte[])
+     * @see Consumer#accept(Object)
+     */
     default <T extends Cipher> T update(final T cipher, final Consumer<? super byte[]> consumer) {
         Objects.requireNonNull(cipher, "cipher is null");
+        Objects.requireNonNull(consumer, "consumer is null");
         final var array = new byte[BYTES];
         set(array);
         final var result = cipher.update(array);
@@ -1183,6 +1235,19 @@ public interface HelloWorld {
         return cipher;
     }
 
+    /**
+     * Updates the specified MAC with the <a href="#hello-world-bytes">hello-world-bytes</a>.
+     *
+     * @param mac the MAC to be updated.
+     * @param <T> MAC type parameter
+     * @return the given {@code mac}.
+     * @throws NullPointerException if {@code mac} is {@code null}.
+     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
+     * of {@value #BYTES} bytes, and {@link Mac#update(byte[]) updates} the {@code mac} with the
+     * array.
+     * @see #set(byte[])
+     * @see Mac#update(byte[])
+     */
     default <T extends Mac> T update(final T mac) {
         Objects.requireNonNull(mac, "mac is null");
         final var array = new byte[BYTES];
@@ -1191,9 +1256,39 @@ public interface HelloWorld {
         return mac;
     }
 
+    // ------------------------------------------------------------------------------------ java.sql
+    default <T extends Blob> T set(final T blob, @Positive long pos) throws SQLException {
+        Objects.requireNonNull(blob, "blob is null");
+        if (pos <= 0L) {
+            throw new IllegalArgumentException("non-positive pos: " + pos);
+        }
+        final var array = new byte[BYTES];
+        set(array);
+        for (int offset = 0; offset < array.length; ) {
+            final var written = blob.setBytes(
+                    pos,                  // <pos>
+                    array,                // <bytes>
+                    offset,               // <offset>
+                    array.length - offset // <len>
+            );
+            assert written >= 0;
+            offset += written;
+            pos += written;
+        }
+        return blob;
+    }
+
     // ------------------------------------------------------------------------------- java.util.jar
 
     // ------------------------------------------------------------------------------- java.util.zip
+    default <T extends Checksum> T update(final T checksum) {
+        Objects.requireNonNull(checksum, "checksum is null");
+        final var array = new byte[BYTES];
+        set(array);
+        checksum.update(array);
+        return checksum;
+    }
+
     default <T extends Deflater> T input(final T deflater) {
         final var array = new byte[BYTES];
         set(array);

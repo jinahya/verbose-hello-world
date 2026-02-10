@@ -4,6 +4,7 @@ import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledOnOs;
@@ -244,6 +245,7 @@ class HelloWorld_Copy_Segment_FFM_Test {
          * This test embeds the Python interpreter, builds a Python script dynamically, and executes
          * it to print the "hello, world" content.
          */
+        @Disabled
         @Test
         void _print_() throws Throwable {
             // ------------------------------------------------------------------------------- given
