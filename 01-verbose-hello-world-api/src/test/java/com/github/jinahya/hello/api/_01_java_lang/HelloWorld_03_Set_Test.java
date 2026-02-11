@@ -56,7 +56,9 @@ class HelloWorld_03_Set_Test extends HelloWorldTest {
     void __() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        Mockito.doAnswer(i -> i.getArgument(0)).when(service).set(ArgumentMatchers.any());
+        Mockito.doAnswer(i -> i.getArgument(0))
+                .when(service)
+                .set(ArgumentMatchers.any(byte[].class));
         // ------------------------------------------------------------------------------------ when
         final var result = service.set();
         // ------------------------------------------------------------------------------------ then

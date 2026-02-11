@@ -3,6 +3,7 @@ package com.github.jinahya.hello.api;
 import org.jspecify.annotations.Nullable;
 
 import java.lang.invoke.MethodHandles;
+import java.net.http.WebSocket;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.AsynchronousFileChannel;
@@ -36,6 +37,26 @@ class DefaultAsynchronousHelloWorld implements AsynchronousHelloWorld {
                 () -> mapper.apply(service, target),
                 executor
         );
+    }
+
+    // ------------------------------------------------------------------------------- java.net.http
+    @Override
+    public CompletableFuture<WebSocket> send(final WebSocket socket, final boolean last) {
+        Objects.requireNonNull(socket, "socket is null");
+        final var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
+        service.put(buffer);
+        buffer.flip();
+        return socket.sendBinary(buffer, last);
+    }
+
+    @Override
+    public <T extends WebSocket> CompletableFuture<T> ping(T socket) {
+        return null;
+    }
+
+    @Override
+    public <T extends WebSocket> CompletableFuture<T> pong(T socket) {
+        return null;
     }
 
     // --------------------------------------------------------------------------- java.nio.channels

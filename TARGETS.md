@@ -1,295 +1,168 @@
 # TARGETS
 
-Analysis of `HelloWorld.java` interface methods organized by target type and Java API package.
+Analysis of `HelloWorld.java` interface methods organized by Java API package.
+
+> **Note**: The `→` in Notes column shows the call-chain (e.g., `→ set(byte[])` means the method delegates to `set(byte[])`). Methods are ordered by dependency within each package.
 
 ## java.lang
 
-### byte[]
-- `set(byte[], int)` - Sets hello-world-bytes on array at index (abstract method)
-- `set(byte[])` - Sets hello-world-bytes on array at index 0
-- `set()` - Returns new array with hello-world-bytes
-
-### java.lang.Appendable
-- `append(T extends Appendable)` - Appends hello-world-bytes to appendable
-
-## java.io
-
-### java.io.OutputStream
-- `write(T extends OutputStream)` - Writes hello-world-bytes to output stream
-
-### java.io.File
-- `append(T extends File)` - Appends hello-world-bytes to end of file
-
-### java.io.DataOutput
-- `write(T extends DataOutput)` - Writes hello-world-bytes to data output
-
-### java.io.RandomAccessFile
-- `write(T extends RandomAccessFile)` - Writes hello-world-bytes to random access file
-
-### java.io.Writer
-- `write(T extends Writer)` - Writes hello-world-bytes to writer
-
-## java.net
-
-### java.net.DatagramPacket
-- `set(DatagramPacket)` - Sets hello-world-bytes in datagram packet
-
-### java.net.DatagramSocket
-- `send(T extends DatagramSocket)` - Sends hello-world-bytes via connected datagram socket
-
-### java.net.Socket
-- `send(T extends Socket)` - Sends hello-world-bytes through socket
-
-## java.nio
-
-### java.nio.ByteBuffer
-- `put(T extends ByteBuffer)` - Puts hello-world-bytes on byte buffer
-- `put()` - Returns new buffer with hello-world-bytes (ready to drain)
-
-## java.nio.channels
-
-### java.nio.channels.WritableByteChannel
-- `write(T extends WritableByteChannel)` - Writes hello-world-bytes to writable byte channel (sync)
-
-### java.nio.channels.DatagramChannel (deprecated)
-- ~~`send(T extends DatagramChannel)`~~ - Use `write(WritableByteChannel)` instead
-
-### java.nio.channels.SocketChannel (deprecated)
-- ~~`send(T extends SocketChannel)`~~ - Use `write(WritableByteChannel)` instead
-
-### java.nio.channels.AsynchronousByteChannel
-- `write(T extends AsynchronousByteChannel)` - Writes hello-world-bytes (Future-based)
-- `write(T, A, CompletionHandler)` - Writes hello-world-bytes async with completion handler
-
-### java.nio.channels.AsynchronousSocketChannel (deprecated)
-- ~~`send(T extends AsynchronousSocketChannel)`~~ - Use `write(AsynchronousByteChannel)` instead
-- ~~`send(T, A, CompletionHandler)`~~ - Use `write(AsynchronousByteChannel, A, CompletionHandler)` instead
-
-### java.nio.channels.AsynchronousFileChannel
-- `write(T, long position)` - Writes to async file channel at position (Future-based)
-- `write(T, long position, A, CompletionHandler)` - Writes to async file channel async with handler
-
-## java.nio.file
-
-### java.nio.file.Path
-- `append(T extends Path)` - Appends hello-world-bytes to end of file at path (sync)
-- `append(T, A, CompletionHandler)` - Appends to file at path async with handler
+| Target Class | Method | Status | Notes |
+|--------------|--------|--------|-------|
+| `byte[]` | `set(byte[], int)` | Active | Abstract method |
+| `byte[]` | `set(byte[])` | Active | → `set(array, 0)` |
+| `byte[]` | `set()` | Active | → `set(new byte[BYTES])` |
+| `Appendable` | `append(T)` | Active | → `set(byte[])` |
 
 ## java.lang.foreign
 
-### java.lang.foreign.MemorySegment
-- `set(MemorySegment)` - Sets hello-world-bytes on memory segment at offset 0
+| Target Class | Method | Status | Notes |
+|--------------|--------|--------|-------|
+| `MemorySegment` | `copy(T)` | Active | → `set(byte[])` |
 
-## java.security
+## java.io
 
-### java.security.MessageDigest
-- `update(T extends MessageDigest)` - Updates message digest with hello-world-bytes
+| Target Class | Method | Status | Notes |
+|--------------|--------|--------|-------|
+| `OutputStream` | `write(T)` | Active | → `set(byte[])` |
+| `DataOutput` | `write(T)` | Active | → `set(byte[])` |
+| `RandomAccessFile` | `write(T)` | Active | → `write(DataOutput)` |
+| `Writer` | `write(T)` | Active | → `append(Appendable)` |
+| `File` | `append(T)` | Active | → `write(OutputStream)` |
 
-### java.security.Signature
-- `update(T extends Signature)` - Updates signature with hello-world-bytes
+## java.net
 
-### javax.crypto.Cipher
-- `update(T extends Cipher)` - Updates cipher with hello-world-bytes
+| Target Class | Method | Status | Notes |
+|--------------|--------|--------|-------|
+| `DatagramPacket` | `set(DatagramPacket)` | Active | → `set(byte[])` |
+| `DatagramPacket` | `append(DatagramPacket)` | Active | → `put(ByteBuffer)` |
+| `DatagramSocket` | `send(T)` | Active | → `set(DatagramPacket)` |
+| `DatagramSocket` | `send(T, SocketAddress)` | Active | → `set(DatagramPacket)` |
+| `MulticastSocket` | `send(T)` | Deprecated | → `send(DatagramSocket)` |
+| `MulticastSocket` | `send(T, SocketAddress)` | Deprecated | → `send(DatagramSocket, SocketAddress)` |
+| `Socket` | `send(T)` | Active | → `write(OutputStream)` |
 
-### javax.crypto.Mac
-- `update(T extends Mac)` - Updates MAC with hello-world-bytes
+## java.net.http
+
+| Target Class | Method | Status | Notes |
+|--------------|--------|--------|-------|
+| `HttpRequest.Builder` | `method(T, String)` | Active | → `set(byte[])` |
+
+## java.nio
+
+| Target Class | Method | Status | Notes |
+|--------------|--------|--------|-------|
+| `ByteBuffer` | `put(T)` | Active | → `set(byte[])` |
+| `ByteBuffer` | `put()` | Active | → `put(ByteBuffer.allocate(BYTES))` |
+
+## java.nio.channels
+
+| Target Class | Method | Status | Notes |
+|--------------|--------|--------|-------|
+| `WritableByteChannel` | `write(T)` | Active | → `put(ByteBuffer)` |
+| `DatagramChannel` | `write(T)` | Active | → `write(WritableByteChannel)` |
+| `DatagramChannel` | `send(T, SocketAddress)` | Active | → `put(ByteBuffer)` |
+| `SocketChannel` | `send(T)` | Deprecated | → `write(WritableByteChannel)` |
+| `AsynchronousByteChannel` | `write(T)` | Active | → `put(ByteBuffer)` |
+| `AsynchronousByteChannel` | `write(T, A, CompletionHandler)` | Active | → `put(ByteBuffer)` |
+| `AsynchronousFileChannel` | `write(T, long)` | Active | → `put(ByteBuffer)` |
+| `AsynchronousFileChannel` | `write(T, long, A, CompletionHandler)` | Active | → `put(ByteBuffer)` |
+| `AsynchronousSocketChannel` | `send(T)` | Deprecated | → `write(AsynchronousByteChannel)` |
+| `AsynchronousSocketChannel` | `send(T, A, CompletionHandler)` | Deprecated | → `write(AsynchronousByteChannel, ...)` |
+
+## java.nio.file
+
+| Target Class | Method | Status | Notes |
+|--------------|--------|--------|-------|
+| `Path` | `append(T)` | Active | → `write(WritableByteChannel)` |
+| `Path` | `append(T, A, CompletionHandler)` | Active | → `write(AsynchronousFileChannel, ...)` |
+
+## java.security / javax.crypto
+
+| Target Class | Method | Status | Notes |
+|--------------|--------|--------|-------|
+| `MessageDigest` | `update(T)` | Active | → `set(byte[])` |
+| `Signature` | `update(T)` | Active | → `set(byte[])` |
+| `Mac` | `update(T)` | Active | → `set(byte[])` |
+| `Cipher` | `update(T, Consumer)` | Active | → `set(byte[])` |
 
 ## java.sql
 
-### java.sql.Blob
-- `set(T extends Blob, long pos)` - Sets hello-world-bytes in BLOB at position
+| Target Class | Method | Status | Notes |
+|--------------|--------|--------|-------|
+| `Blob` | `set(T, long)` | Active | → `write(OutputStream)` |
 
 ## java.util.zip
 
-### java.util.zip.Deflater
-- `input(T extends Deflater)` - Sets hello-world-bytes as deflater input
+| Target Class | Method | Status | Notes |
+|--------------|--------|--------|-------|
+| `Checksum` | `update(T)` | Active | → `set(byte[])` |
+| `Deflater` | `input(T)` | Active | → `set(byte[])` |
 
-### java.util.zip.Checksum
-- `update(T extends Checksum)` - Updates checksum with hello-world-bytes
+---
 
 ## Summary
 
-- **Total methods**: 35 (31 unique + 4 deprecated)
-- **Abstract methods**: 1 (`set(byte[], int)`)
-- **Deprecated methods**: 4
-  - `send(DatagramChannel)` → use `write(WritableByteChannel)`
-  - `send(SocketChannel)` → use `write(WritableByteChannel)`
-  - `send(AsynchronousSocketChannel)` → use `write(AsynchronousByteChannel)`
-  - `send(AsynchronousSocketChannel, A, CompletionHandler)` → use `write(AsynchronousByteChannel, A, CompletionHandler)`
-- **Asynchronous methods**: 4
-  - Future-based: `write(AsynchronousByteChannel)`, `write(AsynchronousFileChannel, long)`
-  - CompletionHandler-based: `write(AsynchronousByteChannel, A, CompletionHandler)`, `write(AsynchronousFileChannel, long, A, CompletionHandler)`, `append(Path, A, CompletionHandler)`
+| Metric | Count |
+|--------|-------|
+| **Total methods** | 40 |
+| **Active methods** | 35 |
+| **Deprecated methods** | 5 |
+| **Abstract methods** | 1 |
+| **Async (Future-based)** | 2 |
+| **Async (CompletionHandler)** | 3 |
+| **Factory methods** | 2 |
+
+### Deprecated Methods
+
+| Method | Use Instead |
+|--------|-------------|
+| `send(SocketChannel)` | `write(WritableByteChannel)` |
+| `send(AsynchronousSocketChannel)` | `write(AsynchronousByteChannel)` |
+| `send(AsynchronousSocketChannel, A, CompletionHandler)` | `write(AsynchronousByteChannel, A, CompletionHandler)` |
+| `send(MulticastSocket)` | `send(DatagramSocket)` |
+| `send(MulticastSocket, SocketAddress)` | `send(DatagramSocket, SocketAddress)` |
+
+---
 
 ## Method Patterns
 
-1. **Synchronous blocking**: Most methods (OutputStream, Writer, File, Socket, channels, etc.)
-2. **Asynchronous Future-based**: Return type allows `.get()` blocking or async chaining
-3. **Asynchronous CompletionHandler**: Callback-based async operations
-4. **Factory methods**: `set()`, `put()` - create and return new objects pre-populated with hello-world-bytes
+| Pattern | Description | Examples |
+|---------|-------------|----------|
+| Sync blocking | Most methods | `write(OutputStream)`, `send(Socket)` |
+| Async Future | Returns channel, use `.get()` | `write(AsynchronousByteChannel)` |
+| Async Callback | CompletionHandler notification | `write(T, A, CompletionHandler)` |
+| Factory | Creates and returns new object | `set()`, `put()` |
 
-## To be added
+---
 
-### java.net
-- ~~`DatagramSocket`~~ - **ADDED** to HelloWorld.java (send via connected socket)
-- ~~`DatagramChannel`~~ - **ADDED** to HelloWorld.java (redundant, use WritableByteChannel)
-- `MulticastSocket` - Multicast datagram transmission
-- **REDUNDANT**: `ServerSocket` - Covered by Socket via accept().getOutputStream()
-- **REDUNDANT**: `URLConnection` / `HttpURLConnection` - Covered by OutputStream via getOutputStream()
+## Potential Additions
 
-### java.nio.channels
-- `GatheringByteChannel` - Scatter/gather I/O (already in MoreHelloWorld.java)
-- `SeekableByteChannel` - Positioned writes
-- `DatagramChannel` - Non-blocking datagram I/O
-- **REDUNDANT**: `Pipe.SinkChannel` - Covered by WritableByteChannel (educational: pipe pattern)
-- **REDUNDANT**: `SelectableChannel` with `Selector` - Covered by WritableByteChannel (educational: multiplexed I/O)
+### To Add
 
-### java.nio (Buffers)
-- **REDUNDANT**: `CharBuffer` - Covered by Appendable
-- **REDUNDANT**: `MappedByteBuffer` - Covered by ByteBuffer (force/load are caller's responsibility)
-- **REDUNDANT**: Direct vs Heap `ByteBuffer` - Covered by ByteBuffer
+| Package | Target | Method | Notes |
+|---------|--------|--------|-------|
+| `java.net.http` | `WebSocket` | | `sendBinary(ByteBuffer, boolean)` |
+| `java.nio.channels` | `GatheringByteChannel` | | Scatter/gather I/O |
+| `java.nio.channels` | `SeekableByteChannel` | | Positioned writes |
+| `java.util.concurrent.Flow` | `Publisher<ByteBuffer>` | | Reactive streams |
+| `javax.imageio.stream` | `ImageOutputStream` | | `write(byte[])` |
+| `javax.sound.sampled` | `SourceDataLine` | | Audio output |
 
-### java.lang.foreign (Foreign Function & Memory API)
-- ~~`MemorySegment`~~ - **ADDED** to HelloWorld.java
-- **REDUNDANT**: `Arena` - Factory pattern, callers can allocate and call write(segment)
-- **REDUNDANT**: `SegmentAllocator` - Factory pattern, callers can allocate and call write(segment)
-- `VarHandle` - Low-level memory access
+### Redundant (Covered by Existing Methods)
 
-### java.io (Additional)
-- **REDUNDANT**: `PrintStream` - Covered by OutputStream (educational: print/println methods)
-- **REDUNDANT**: `PrintWriter` - Covered by Writer (educational: print/println methods)
-- **REDUNDANT**: `BufferedOutputStream` - Covered by OutputStream
-- **REDUNDANT**: `BufferedWriter` - Covered by Writer
-- **REDUNDANT**: `DataOutputStream` - Covered by DataOutput (already handled)
-- **REDUNDANT**: `ObjectOutputStream` - Covered by OutputStream (educational: serialization)
-- **REDUNDANT**: `PipedOutputStream` - Covered by OutputStream (educational: pipe pattern)
-- **REDUNDANT**: `FileDescriptor` - Not a writable target, requires wrapping in FileOutputStream (covered by OutputStream)
-
-### java.nio.file (Additional)
-- `Files.write(Path, byte[])` - High-level utility method
-- **REDUNDANT**: `Files.newOutputStream(Path)` - Returns OutputStream, covered
-- **REDUNDANT**: `Files.newBufferedWriter(Path)` - Returns Writer, covered
-- **REDUNDANT**: `FileStore` - Not an I/O target
-
-### java.util.concurrent
-- **REDUNDANT**: `BlockingQueue<Byte>` - Not an I/O target (concurrency pattern)
-- **REDUNDANT**: `Exchanger<byte[]>` - Not an I/O target (concurrency pattern)
-- **REDUNDANT**: `CompletableFuture<byte[]>` - Not an I/O target (async pattern)
-- **REDUNDANT**: `ForkJoinPool` - Not an I/O target
-
-### Reactive Streams (java.util.concurrent.Flow)
-- `Flow.Publisher<Byte>` - Reactive byte publisher
-- `Flow.Subscriber<Byte>` - Reactive byte consumer
-- `SubmissionPublisher<Byte>` - Concrete publisher implementation
-
-### java.util.zip / java.util.jar
-- **REDUNDANT**: `GZIPOutputStream` - Covered by OutputStream
-- **REDUNDANT**: `ZipOutputStream` - Covered by OutputStream
-- **REDUNDANT**: `JarOutputStream` - Covered by OutputStream
-- ~~`Deflater`~~ - **ADDED** to HelloWorld.java (input with hello-world-bytes)
-- ~~`Checksum`~~ - **ADDED** to HelloWorld.java (update CRC32, CRC32C, Adler32 with hello-world-bytes)
-
-### java.security / javax.crypto
-- ~~`MessageDigest`~~ - **ADDED** to HelloWorld.java (update with hello-world-bytes)
-- ~~`Signature`~~ - **ADDED** to HelloWorld.java (update with hello-world-bytes)
-- ~~`Cipher`~~ - **ADDED** to HelloWorld.java (update with hello-world-bytes)
-- ~~`Mac`~~ - **ADDED** to HelloWorld.java (update with hello-world-bytes)
-- **REDUNDANT**: `CipherOutputStream` - Covered by OutputStream
-
-### java.nio.charset
-- `CharsetEncoder` - Explicit encoding (transformation, not I/O)
-- **REDUNDANT**: `CoderResult` - Not an I/O target
-
-### JMX (javax.management)
-- **REDUNDANT**: `MBeanServer` - Not an I/O target
-- **REDUNDANT**: Notification - Not an I/O target
-
-### Logging Frameworks
-- **REDUNDANT**: `java.util.logging.Logger` - Not an I/O target
-- **REDUNDANT**: SLF4J `Logger` - Not an I/O target
-
-### Network Protocols
-- `HttpClient` - Modern HTTP request body (java.net.http)
-- `WebSocket` - Send as binary frame
-- **REDUNDANT**: UNIX Domain Sockets - Covered by SocketChannel (just different address)
-
-### Serialization
-- **REDUNDANT**: `Externalizable` - Uses ObjectOutput → DataOutput, covered
-- **REDUNDANT**: Java Serialization - Covered by ObjectOutputStream
-
-### Memory-Mapped I/O
-- **REDUNDANT**: `FileChannel.map()` - Returns MappedByteBuffer, covered by put(ByteBuffer)
-
-### Process I/O
-- **REDUNDANT**: `Process.getOutputStream()` - Covered by OutputStream (educational: process stdin)
-- **REDUNDANT**: `ProcessBuilder` - Not an I/O target, uses Process
-
-### Console
-- **REDUNDANT**: `System.console().writer()` - Covered by Writer
-- **REDUNDANT**: `System.out` vs `System.err` - Covered by PrintStream
-
-### NIO.2 (Async I/O)
-- **REDUNDANT**: `AsynchronousServerSocketChannel` - Covered by AsynchronousSocketChannel via accept()
-- **REDUNDANT**: Completion handlers with timeout - Already covered in async methods
-
-### Module System
-- **REDUNDANT**: Module layer - Not an I/O target
-- **REDUNDANT**: Module resource - Not an I/O target
-
-### java.net.http (HTTP Client API - Java 11+)
-- `HttpRequest.BodyPublisher` - Publish hello-world-bytes as HTTP request body (`BodyPublishers.ofByteArray(byte[])`)
-- `WebSocket` - Send hello-world-bytes as binary frame (`sendBinary(ByteBuffer, boolean)`)
-
-### javax.sound.sampled (Audio I/O)
-- `SourceDataLine` - Write hello-world-bytes to audio output (`write(byte[], int, int)`)
-- **REDUNDANT**: `AudioInputStream` - Reading, not writing
-- **REDUNDANT**: `Clip` - Uses AudioInputStream for loading
-
-### javax.imageio.stream (Image I/O Streams)
-- `ImageOutputStream` - Write hello-world-bytes to image output stream (`write(byte[])`)
-- **REDUNDANT**: `ImageInputStream` - Reading, not writing
-
-### java.sql (JDBC)
-- ~~`Blob`~~ - **ADDED** to HelloWorld.java (`set(Blob, long pos)`)
-- `PreparedStatement` - Bind hello-world-bytes as parameter (`setBytes(int, byte[])`)
-- **Note**: Requires JDBC context/connection, may not fit the HelloWorld pattern cleanly
-
-### java.util.BitSet
-- `BitSet` - Set bits from hello-world-bytes (`valueOf(byte[])` returns new BitSet, or manual bit setting)
-- **Note**: Transformation rather than I/O
-
-### java.lang.invoke
-- `VarHandle` - Low-level memory access via VarHandle operations
-- **Note**: Complex setup, educational for advanced memory access patterns
-
-### java.nio.channels (Additional)
-- `Pipe` - Write to Pipe.SinkChannel (educational: inter-thread communication)
-  - **REDUNDANT** as target (SinkChannel is WritableByteChannel), but useful as a pattern demo
-- `ScatteringByteChannel` / `GatheringByteChannel` - Scatter/gather I/O (in MoreHelloWorld.java)
-
-### java.util.Formatter
-- `Formatter` - Format hello-world-bytes via `%s` with new String(bytes) or hex format
-- **Note**: Text formatting rather than byte I/O
-
-### java.io.Console
-- **REDUNDANT**: `Console.writer()` - Covered by Writer
-- **REDUNDANT**: `Console.printf()` - Text output, not byte I/O
-
-### javax.xml.transform.stream
-- **REDUNDANT**: `StreamResult` - Wraps OutputStream/Writer, already covered
-
-### java.rmi (Remote Method Invocation)
-- **REDUNDANT**: RMI streams - Use standard I/O streams
-
-### java.util.jar
-- `JarEntry` / `Manifest` - Not byte I/O targets
-- **REDUNDANT**: `JarOutputStream` - Covered by OutputStream
-
-### jdk.jfr (Java Flight Recorder)
-- **REDUNDANT**: Event recording - Not a byte I/O target
-
-### javax.net.ssl
-- **REDUNDANT**: `SSLSocket` - Extends Socket, covered
-- **REDUNDANT**: `SSLEngine` - Uses ByteBuffer, already covered
-
-### java.util.UUID
-- **Note**: Could construct UUID from hello-world-bytes (transformation, not I/O)
+| Target | Covered By | Reason |
+|--------|------------|--------|
+| `BufferedOutputStream` | `OutputStream` | Subclass |
+| `BufferedWriter` | `Writer` | Subclass |
+| `CharBuffer` | `Appendable` | Implements Appendable |
+| `CipherOutputStream` | `OutputStream` | Subclass |
+| `DataOutputStream` | `DataOutput` | Implements DataOutput |
+| `GZIPOutputStream` | `OutputStream` | Subclass |
+| `JarOutputStream` | `OutputStream` | Subclass |
+| `MappedByteBuffer` | `ByteBuffer` | Subclass |
+| `ObjectOutputStream` | `OutputStream` | Subclass |
+| `Pipe.SinkChannel` | `WritableByteChannel` | Implements interface |
+| `PrintStream` | `OutputStream` | Subclass |
+| `PrintWriter` | `Writer` | Subclass |
+| `SSLSocket` | `Socket` | Subclass |
+| `ZipOutputStream` | `OutputStream` | Subclass |

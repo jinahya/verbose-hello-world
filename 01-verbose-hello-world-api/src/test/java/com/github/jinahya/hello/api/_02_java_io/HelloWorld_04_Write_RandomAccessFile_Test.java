@@ -85,7 +85,7 @@ class HelloWorld_04_Write_RandomAccessFile_Test extends HelloWorldTest {
         // stub: <service.set(array)> to return the <array>
         Mockito.doAnswer(i -> i.getArgument(0))
                 .when(service)
-                .set(ArgumentMatchers.any());
+                .set(ArgumentMatchers.any(byte[].class));
         // prepare: a mock object of <RandomAccessFile>
         final var file = Mockito.mock(RandomAccessFile.class);
         // ------------------------------------------------------------------------------------ when

@@ -62,7 +62,8 @@ abstract class _HelloWorldFlowTest extends HelloWorldTest {
                     return array;
                 })
                 .given(service())
-                .set(ArgumentMatchers.argThat(a -> a != null && a.length >= HelloWorld.BYTES));
+                .set(ArgumentMatchers.<byte[]>argThat(
+                        a -> a != null && a.length >= HelloWorld.BYTES));
     }
 
     @BeforeEach

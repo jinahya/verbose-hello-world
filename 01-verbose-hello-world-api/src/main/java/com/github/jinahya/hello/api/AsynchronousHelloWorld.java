@@ -3,6 +3,7 @@ package com.github.jinahya.hello.api;
 import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
+import java.net.http.WebSocket;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.AsynchronousFileChannel;
@@ -12,6 +13,7 @@ import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
@@ -76,6 +78,13 @@ public interface AsynchronousHelloWorld {
         return applyAsync(target, mapper, ForkJoinPool.commonPool());
     }
 
+    // ------------------------------------------------------------------------------- java.net.http
+    CompletableFuture<WebSocket> send(WebSocket socket, boolean last);
+
+    <T extends WebSocket> CompletableFuture<T> ping(T socket);
+
+    <T extends WebSocket> CompletableFuture<T> pong(T socket);
+
     // --------------------------------------------------------------------------- java.nio.channels
 
     /**
@@ -120,7 +129,9 @@ public interface AsynchronousHelloWorld {
      * @see HelloWorld#put(ByteBuffer)
      * @see AsynchronousByteChannel#write(ByteBuffer, Object, CompletionHandler)
      */
-    <T extends AsynchronousByteChannel, A> void write(
+    <T extends AsynchronousByteChannel, A>
+
+    void write(
             final T channel,
             @Nullable final A attachment,
             final CompletionHandler<? super T, ? super A> handler);

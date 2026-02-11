@@ -81,7 +81,7 @@ class HelloWorld_03_Write_DataOutput_Test extends HelloWorldTest {
         // stub: <service.set(array)> to return the <array>.
         Mockito.doAnswer(i -> i.getArgument(0))
                 .when(service)
-                .set(ArgumentMatchers.any());
+                .set(ArgumentMatchers.any(byte[].class));
         final var output = Mockito.mock(DataOutput.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(output);

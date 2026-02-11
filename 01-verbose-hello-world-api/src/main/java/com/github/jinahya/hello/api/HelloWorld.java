@@ -36,7 +36,11 @@ import java.lang.foreign.MemorySegment;
 import java.lang.foreign.ValueLayout;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.MulticastSocket;
 import java.net.Socket;
+import java.net.SocketAddress;
+import java.net.StandardSocketOptions;
+import java.net.http.HttpRequest;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
@@ -498,16 +502,115 @@ public interface HelloWorld {
     }
 
     // ------------------------------------------------------------------------------------ java.net
-    default DatagramPacket data(final DatagramPacket packet) throws IOException {
+
+    /**
+     * Sets the <a href="#hello-world-bytes">hello-world-bytes</a> in the specified datagram
+     * packet.
+     * <p>
+     * If the packet's data buffer is at least {@value #BYTES} bytes long, the buffer is reused.
+     * Otherwise, a new buffer is allocated and set on the packet. In either case, the packet's
+     * offset is reset to {@code 0} and its length is set to {@value #BYTES}.
+     *
+     * @param packet the datagram packet in which bytes are set.
+     * @return the given {@code packet}.
+     * @throws NullPointerException if {@code packet} is {@code null}.
+     * @implSpec Default implementation checks if the packet's data buffer has at least
+     * {@value #BYTES} bytes. If so, it invokes {@link #set(byte[])} with the buffer and resets the
+     * packet's offset and length via {@link DatagramPacket#setData(byte[], int, int)}. Otherwise,
+     * it creates a new array of {@value #BYTES} bytes, invokes {@link #set(byte[])} with it, and
+     * sets the array on the packet via {@link DatagramPacket#setData(byte[])}.
+     * @see DatagramPacket#getData()
+     * @see DatagramPacket#setData(byte[], int, int)
+     * @see DatagramPacket#setData(byte[])
+     */
+    default DatagramPacket set(final DatagramPacket packet) {
         if (packet == null) {
             throw new NullPointerException("packet is null");
         }
-        final var array = new byte[BYTES];
-        set(packet.getData());
-        packet.setData(array);
+        if (packet.getData().length >= BYTES) {
+            set(packet.getData());
+            packet.setData(packet.getData(), 0, BYTES);
+        } else {
+            final var array = new byte[BYTES];
+            set(array);
+            packet.setData(array);
+        }
         return packet;
     }
 
+    /**
+     * Appends the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified datagram
+     * packet.
+     * <p>
+     * The bytes are written starting at ({@link DatagramPacket#getOffset() offset} +
+     * {@link DatagramPacket#getLength() length}), and the packet's length is extended by
+     * {@value #BYTES}.
+     * <pre>
+     * Given,
+     *
+     *          4                   14
+     *  0    &lt;= offset           <= offset + length      &lt;= data.length
+     *  ↓       ↓                   ↓                       ↓
+     * | | | | |e|x|i|s|t|i|n|g|.|.| | | | | | | | | | | | |
+     *         |---- length (10) --|
+     *
+     * Then, on successful return,
+     *
+     *          4                   14
+     *  0    &lt;= offset           <= offset + length        &lt;= data.length
+     *  ↓       ↓                   ↓                         ↓
+     * | | | | |e|x|i|s|t|i|n|g|.|.|h|e|l|l|o|,| |w|o|r|l|d| |
+     *         |--------------- length (22) --------------|
+     * </pre>
+     *
+     * @param packet the datagram packet to which bytes are appended.
+     * @return the given {@code packet}.
+     * @throws NullPointerException    if {@code packet} is {@code null}.
+     * @throws BufferOverflowException if the packet's data buffer does not have at least
+     *                                 {@value #BYTES} bytes available after the current content.
+     * @implSpec Default implementation {@link ByteBuffer#wrap(byte[], int, int) wraps} the packet's
+     * data array as a {@link ByteBuffer} starting at ({@link DatagramPacket#getOffset() offset} +
+     * {@link DatagramPacket#getLength() length}) with the remaining space as length, invokes
+     * {@link #put(ByteBuffer) put(buffer)} (which throws {@link BufferOverflowException} if
+     * insufficient space), and extends the packet's length by {@value #BYTES}.
+     * @see DatagramPacket#getData()
+     * @see DatagramPacket#getOffset()
+     * @see DatagramPacket#getLength()
+     * @see DatagramPacket#setLength(int)
+     * @see ByteBuffer#wrap(byte[], int, int)
+     * @see #put(ByteBuffer)
+     */
+    default DatagramPacket append(final DatagramPacket packet) {
+        Objects.requireNonNull(packet, "packet is null");
+        final ByteBuffer buffer;
+        {
+            final var array = packet.getData();
+            final var offset = packet.getOffset() + packet.getLength();
+            final var length = array.length - offset;
+            buffer = ByteBuffer.wrap(array, offset, length);
+        }
+        put(buffer);
+        packet.setLength(buffer.position() - packet.getOffset());
+        return packet;
+    }
+
+    /**
+     * Sends the <a href="#hello-world-bytes">hello-world-bytes</a> through the specified
+     * {@link DatagramSocket#isConnected() connected } datagram socket.
+     *
+     * @param <T>    socket type parameter
+     * @param socket the socket through which bytes are sent.
+     * @return the given {@code socket}.
+     * @throws NullPointerException     if {@code socket} is {@code null}.
+     * @throws IllegalArgumentException if the {@code socket} is not
+     *                                  {@link DatagramSocket#isConnected() connected}.
+     * @throws IOException              if an I/O error occurs.
+     * @implSpec Default implementation invokes {@link #set(DatagramPacket) set(packet)} with a
+     * datagram packet of {@value #BYTES}-long data array, and
+     * {@link DatagramSocket#send(DatagramPacket) sends} the packet through the {@code socket}.
+     * @see #set(DatagramPacket)
+     * @see DatagramSocket#send(DatagramPacket)
+     */
     default <T extends DatagramSocket> T send(final T socket) throws IOException {
         if (socket == null) {
             throw new NullPointerException("socket is null");
@@ -516,9 +619,82 @@ public interface HelloWorld {
             throw new IllegalArgumentException("not connected; " + socket);
         }
         final var packet = new DatagramPacket(new byte[BYTES], BYTES);
-        data(packet);
+        set(packet);
         socket.send(packet);
         return socket;
+    }
+
+    /**
+     * Sends the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified target address
+     * via the specified datagram socket.
+     *
+     * @param <T>    socket type parameter
+     * @param socket the datagram socket through which bytes are sent.
+     * @param target the target address to which bytes are sent.
+     * @return the given {@code socket}.
+     * @throws NullPointerException if {@code socket} is {@code null} or {@code target} is
+     *                              {@code null}.
+     * @throws IOException          if an I/O error occurs.
+     * @implSpec Default implementation invokes {@link #set(DatagramPacket) set(packet)} with a
+     * datagram packet of {@value #BYTES}-long data array with the {@code target} address, and
+     * {@link DatagramSocket#send(DatagramPacket) sends} it through the {@code socket}.
+     * @see #set(DatagramPacket)
+     * @see DatagramSocket#send(DatagramPacket)
+     */
+    default <T extends DatagramSocket> T send(final T socket, final SocketAddress target)
+            throws IOException {
+        Objects.requireNonNull(socket, "socket is null");
+        Objects.requireNonNull(target, "target is null");
+        final var packet = new DatagramPacket(new byte[BYTES], BYTES, target);
+        set(packet);
+        socket.send(packet);
+        return socket;
+    }
+
+    /**
+     * Sends the <a href="#hello-world-bytes">hello-world-bytes</a> through the specified multicast
+     * socket.
+     *
+     * @param <T>    socket type parameter
+     * @param socket the multicast socket through which bytes are sent; must be
+     *               {@link MulticastSocket#isConnected() connected} to a multicast group address.
+     * @return the given {@code socket}.
+     * @throws NullPointerException     if {@code socket} is {@code null}.
+     * @throws IllegalArgumentException if the {@code socket} is not
+     *                                  {@link MulticastSocket#isConnected() connected}.
+     * @throws IOException              if an I/O error occurs.
+     * @implSpec Default implementation invokes {@link #send(DatagramSocket)} with {@code socket}.
+     * @deprecated Invoke {@link #send(DatagramSocket)} with the {@code socket}.
+     */
+    @屋上架屋("MulticastSocket extends DatagramSocket")
+    @Deprecated(forRemoval = true)
+    @SuppressWarnings("unchecked")
+    default <T extends MulticastSocket> T send(final T socket) throws IOException {
+        return (T) send((DatagramSocket) socket);
+    }
+
+    /**
+     * Sends the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified target address
+     * via the specified multicast socket.
+     *
+     * @param <T>    socket type parameter
+     * @param socket the multicast socket through which bytes are sent.
+     * @param target the target address to which bytes are sent.
+     * @return the given {@code socket}.
+     * @throws NullPointerException if {@code socket} is {@code null} or {@code target} is
+     *                              {@code null}.
+     * @throws IOException          if an I/O error occurs.
+     * @implSpec Default implementation invokes {@link #send(DatagramSocket, SocketAddress)} with
+     * {@code socket} and {@code target}.
+     * @deprecated Invoke {@link #send(DatagramSocket, SocketAddress)} with {@code socket} and
+     * {@code target}.
+     */
+    @屋上架屋("MulticastSocket extends DatagramSocket")
+    @Deprecated(forRemoval = true)
+    @SuppressWarnings("unchecked")
+    default <T extends MulticastSocket> T send(final T socket, final SocketAddress target)
+            throws IOException {
+        return (T) send((DatagramSocket) socket, target);
     }
 
     /**
@@ -550,6 +726,36 @@ public interface HelloWorld {
         final var stream = socket.getOutputStream();
 //        write(stream);
         return socket;
+    }
+
+    // ------------------------------------------------------------------------------- java.net.http
+
+    /**
+     * Sets the <a href="#hello-world-bytes">hello-world-bytes</a> as the request body on the
+     * specified HTTP request builder with the specified method.
+     *
+     * @param <T>     builder type parameter
+     * @param builder the HTTP request builder on which the body is set.
+     * @param method  the HTTP method name (e.g., "POST", "PUT").
+     * @return the given {@code builder}.
+     * @throws NullPointerException if {@code builder} is {@code null} or {@code method} is
+     *                              {@code null}.
+     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
+     * of {@value #BYTES} bytes, and invokes
+     * {@link HttpRequest.Builder#method(String, HttpRequest.BodyPublisher) builder.method(method, publisher)}
+     * with {@code method} and {@link HttpRequest.BodyPublishers#ofByteArray(byte[])
+     * BodyPublishers.ofByteArray(array)}.
+     * @see #set(byte[])
+     * @see HttpRequest.Builder#method(String, HttpRequest.BodyPublisher)
+     * @see HttpRequest.BodyPublishers#ofByteArray(byte[])
+     */
+    default <T extends HttpRequest.Builder> T method(final T builder, final String method) {
+        Objects.requireNonNull(builder, "builder is null");
+        Objects.requireNonNull(method, "method is null");
+        final var array = new byte[BYTES];
+        set(array);
+        builder.method(method, HttpRequest.BodyPublishers.ofByteArray(array));
+        return builder;
     }
 
     // ------------------------------------------------------------------------------------ java.nio
@@ -695,8 +901,8 @@ public interface HelloWorld {
      * @return the given {@code channel}.
      * @throws NullPointerException if {@code channel} is {@code null}.
      * @throws IOException          if an I/O error occurs.
-     * @implSpec Default implementation invokes {@link #put(ByteBuffer)} method with a buffer of
-     * {@value #BYTES} bytes, {@link ByteBuffer#flip() flips} it, writes the buffer to
+     * @implSpec Default implementation invokes {@link #put(ByteBuffer)} method with a byte buffer
+     * of {@value #BYTES} bytes, {@link ByteBuffer#flip() flips} it, writes the buffer to
      * {@code channel}, by continuously invoking
      * {@link WritableByteChannel#write(ByteBuffer) channel.write(buffer)} while the buffer has
      * remaining, and returns the {@code channel}.
@@ -718,13 +924,86 @@ public interface HelloWorld {
     }
 
     // --------------------------------------------------------------------------- java.nio.channels
-    @Deprecated(forRemoval = true)
-    default <T extends DatagramChannel> T send(final T channel) throws IOException {
+
+    /**
+     * Sends the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified target address
+     * via the specified datagram channel.
+     *
+     * @param <T>     channel type parameter
+     * @param channel the datagram channel through which the bytes are sent.
+     * @param target  the address to which the bytes are sent.
+     * @return the given {@code channel}.
+     * @throws NullPointerException if {@code channel} is {@code null} or {@code target} is
+     *                              {@code null}.
+     * @throws IOException          if an I/O error occurs, or if the datagram was not sent due to
+     *                              the OS's send buffer being full.
+     * @implSpec Default implementation invokes {@link #put(ByteBuffer) put(buffer)} method with a
+     * byte buffer of {@value #BYTES} bytes, {@link ByteBuffer#flip() flips} it, and
+     * {@link DatagramChannel#send(ByteBuffer, SocketAddress) sends} the buffer to {@code target}
+     * via the {@code channel}.
+     * @see #put(ByteBuffer)
+     * @see DatagramChannel#send(ByteBuffer, SocketAddress)
+     */
+    default <T extends DatagramChannel> T send(final T channel, final SocketAddress target)
+            throws IOException {
+        Objects.requireNonNull(channel, "channel is null");
+        {
+            final var sndbuf = channel.getOption(StandardSocketOptions.SO_SNDBUF);
+            assert sndbuf == null || sndbuf >= BYTES;
+        }
+        Objects.requireNonNull(target, "target is null");
+        final var buffer = ByteBuffer.allocate(BYTES);
+        put(buffer);
+        buffer.flip();
+        final var written = channel.send(buffer, target);
+        if (written != BYTES) {
+            assert written == 0;
+            throw new IOException("packet dropped; OS's send buffer is full");
+        }
+        assert !buffer.hasRemaining();
+        assert written == buffer.capacity();
+        return channel;
+    }
+
+    /**
+     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified connected
+     * datagram channel.
+     *
+     * @param <T>     channel type parameter
+     * @param channel the connected datagram channel to which bytes are written.
+     * @return the given {@code channel}.
+     * @throws NullPointerException     if {@code channel} is {@code null}.
+     * @throws IllegalArgumentException if the {@code channel} is not
+     *                                  {@link DatagramChannel#isConnected() connected}.
+     * @throws IOException              if an I/O error occurs, or if the datagram was not sent due
+     *                                  to the OS's send buffer being full.
+     * @implSpec Default implementation invokes {@link #put(ByteBuffer) put(buffer)} method with a
+     * byte buffer of {@value #BYTES} bytes, {@link ByteBuffer#flip() flips} it, and
+     * {@link DatagramChannel#write(ByteBuffer) writes} the buffer to the {@code channel}.
+     * @see #put(ByteBuffer)
+     * @see DatagramChannel#write(ByteBuffer)
+     */
+    default <T extends DatagramChannel> T write(final T channel) throws IOException {
         Objects.requireNonNull(channel, "channel is null");
         if (!channel.isConnected()) {
             throw new IllegalArgumentException("not connected: " + channel);
         }
-        return write(channel);
+        {
+            final var sndbuf = channel.getOption(StandardSocketOptions.SO_SNDBUF);
+            assert sndbuf == null || sndbuf >= BYTES;
+        }
+        final var buffer = ByteBuffer.allocate(BYTES);
+        put(buffer);
+        buffer.flip();
+        assert buffer.remaining() == BYTES;
+        final var written = channel.write(buffer);
+        if (written != BYTES) {
+            assert written == 0;
+            throw new IOException("packet dropped; OS's send buffer is full");
+        }
+        assert !buffer.hasRemaining();
+        assert written == buffer.capacity();
+        return channel;
     }
 
     /**

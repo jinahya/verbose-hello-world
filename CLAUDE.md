@@ -93,6 +93,22 @@ The `generate-executables` profile (active by default) produces multiple artifac
 - The default `./mvnw test` runs common tests; DI/CDI-specific tests require activating the corresponding Maven profile (see Build Commands above)
 - CI runs all 8 profiles sequentially against the lib module
 
+### Test Naming Conventions
+
+**Test class**: `HelloWorld_{Action}_{Type}_Test` — one class per method under test
+- `HelloWorld_Send_DatagramSocket_Test` tests `send(DatagramSocket)`
+- `HelloWorld_Write_DatagramChannel_Test` tests `write(DatagramChannel)`
+- `HelloWorld_Send_DatagramChannel_Target_Test` tests `send(DatagramChannel, SocketAddress)`
+
+**Test method**: `(method)_{then}_{given}` — all three parts may be omitted
+- `_ThrowNullPointerException_SocketIsNull` — throws NPE when socket is null
+- `_ThrowIllegalArgumentException_SocketIsNotConnected` — throws IAE when not connected
+- `__()` — happy path (all parts omitted, verifies normal behavior)
+- `_添足_畵蛇()` — integration test with `@畵蛇添足` annotation
+  - 畵蛇添足 (huà shé tiān zú) = "drawing a snake and adding feet" (Chinese idiom for doing something superfluous)
+  - `_添足_畵蛇` = `_{then}_{given}` = "adding feet" given "drawing a snake"
+  - Marks tests that go beyond unit testing (e.g., real network I/O instead of mocks)
+
 ## Key Conventions
 
 - Java Module System (`module-info.java`) is used across modules

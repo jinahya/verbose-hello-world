@@ -284,6 +284,11 @@
         <version>2.7.4</version>
       </dependency>
       <dependency>
+        <groupId>org.java-websocket</groupId>
+        <artifactId>Java-WebSocket</artifactId>
+        <version>1.6.0</version>
+      </dependency>
+      <dependency>
         <groupId>org.jboss.weld</groupId>
         <artifactId>weld-junit5</artifactId>
         <version>${version.org.jboss.weld-junit}</version>

@@ -92,7 +92,7 @@ class HelloWorld_01_Write_OutputStream_Test extends HelloWorldTest {
         // stub: <service.set(array)> will return the <array>
         Mockito.doAnswer(i -> i.getArgument(0))
                 .when(service)
-                .set(ArgumentMatchers.any());
+                .set(ArgumentMatchers.any(byte[].class));
         // prepare: a mock object of <OutputStream>
         final var stream = Mockito.mock(OutputStream.class);
         // ------------------------------------------------------------------------------------ when

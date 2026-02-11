@@ -85,6 +85,10 @@ public abstract class HelloWorldTest {
         HelloWorldTestUtils.stub_set_array_will_return_the_array(service);
     }
 
+    protected final void stub_set_array_will_set_actual_hello_world_bytes() {
+        HelloWorldTestUtils.stub_set_array_will_set_actual_hello_world_bytes(service);
+    }
+
     /**
      * Verifies that {@link HelloWorld#set(byte[]) set(array)} method invoked on the
      * {@link #service() service} instance with an array of {@value HelloWorld#BYTES} bytes.

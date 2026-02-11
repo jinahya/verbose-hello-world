@@ -76,7 +76,7 @@ public final class HelloWorldTestUtils {
         requireMock(service);
         Mockito.doAnswer(i -> i.getArgument(0))
                 .when(service)
-                .set(ArgumentMatchers.any());
+                .set(ArgumentMatchers.any(byte[].class));
     }
 
     public static void stub_set_array_will_set_actual_hello_world_bytes(final HelloWorld service) {
@@ -101,6 +101,18 @@ public final class HelloWorldTestUtils {
         return array;
     }
 
+    public static void stub_put_buffer_will_put_actual_hello_world_bytes(final HelloWorld service) {
+        requireMock(service);
+        Mockito
+                .doAnswer(i -> {
+                    final var buffer = i.getArgument(0, ByteBuffer.class);
+                    buffer.put(helloWorldBytes());
+                    return buffer;
+                })
+                .when(service)
+                .put(ArgumentMatchers.any(ByteBuffer.class));
+    }
+
     /**
      * Stubs given mock service's {@link HelloWorld#put(ByteBuffer) put(buffer)} method to just
      * return the {@code bufefer} whose {@link ByteBuffer#position() position} is increased by
@@ -120,7 +132,7 @@ public final class HelloWorldTestUtils {
                 .put(ArgumentMatchers.argThat(b -> b != null && b.remaining() >= HelloWorld.BYTES));
     }
 
-    static ByteBuffer verify_put_buffer12_invoked_once(final HelloWorld service) {
+    public static ByteBuffer verify_put_buffer12_invoked_once(final HelloWorld service) {
         requireMock(service);
         final var captor = ArgumentCaptor.forClass(ByteBuffer.class);
         Mockito.verify(service, Mockito.times(1)).put(captor.capture());

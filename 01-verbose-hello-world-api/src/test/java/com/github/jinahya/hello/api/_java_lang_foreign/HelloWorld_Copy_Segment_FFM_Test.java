@@ -74,7 +74,7 @@ class HelloWorld_Copy_Segment_FFM_Test {
                     return array;
                 })
                 .when(service)
-                .set(Mockito.any());
+                .set(Mockito.any(byte[].class));
     }
 
 

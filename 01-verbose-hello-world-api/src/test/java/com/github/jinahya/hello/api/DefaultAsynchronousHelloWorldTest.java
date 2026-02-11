@@ -2,11 +2,11 @@ package com.github.jinahya.hello.api;
 
 import java.util.concurrent.Executors;
 
-class DefaultAsynchronousHelloWorldTest
+public class DefaultAsynchronousHelloWorldTest
         extends AsynchronousHelloWorldTest<DefaultAsynchronousHelloWorld> {
 
     // -------------------------------------------------------------------------------- CONSTRUCTORS
-    DefaultAsynchronousHelloWorldTest() {
+    protected DefaultAsynchronousHelloWorldTest() {
         super(DefaultAsynchronousHelloWorld.class);
     }
 

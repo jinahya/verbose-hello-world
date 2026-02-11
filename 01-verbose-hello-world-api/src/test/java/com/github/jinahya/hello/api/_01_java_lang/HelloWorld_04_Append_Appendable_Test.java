@@ -85,7 +85,7 @@ class HelloWorld_04_Append_Appendable_Test extends HelloWorldTest {
             final var array = i.getArgument(0, byte[].class);
             ThreadLocalRandom.current().nextBytes(array);
             return array;
-        }).when(service).set(ArgumentMatchers.any());
+        }).when(service).set(ArgumentMatchers.any(byte[].class));
         final var appendable = Mockito.mock(Appendable.class); // <2>
         // ------------------------------------------------------------------------------------ when
         final var result = service.append(appendable);
