@@ -61,14 +61,14 @@ class DefaultAsynchronousHelloWorld implements AsynchronousHelloWorld {
 
     // --------------------------------------------------------------------------- java.nio.channels
     @Override
-    public <T extends AsynchronousByteChannel, A> void write(
-            final T channel,
-            final @Nullable A attachment,
-            final CompletionHandler<? super T, ? super A> handler) { // @formatter:off
+    public <T extends AsynchronousByteChannel, A>
+    void write(final T channel,
+               @Nullable final A attachment,
+               final CompletionHandler<? super T, ? super A> handler) {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(handler, "handler is null");
         final var buffer = service.put(ByteBuffer.allocate(HelloWorld.BYTES)).flip();
-        channel.write(
+        channel.write( // @formatter:off
                 buffer,                     // <src>
                 attachment,                 // <attachment>
                 new CompletionHandler<>() { // <handler>
@@ -90,8 +90,8 @@ class DefaultAsynchronousHelloWorld implements AsynchronousHelloWorld {
                     public void failed(final Throwable exc, final A attachment) {
                         handler.failed(exc, attachment); // <1>
                     }
-                }
-        ); // @formatter:on
+                } // @formatter:on
+        );
     }
 
     @Override
