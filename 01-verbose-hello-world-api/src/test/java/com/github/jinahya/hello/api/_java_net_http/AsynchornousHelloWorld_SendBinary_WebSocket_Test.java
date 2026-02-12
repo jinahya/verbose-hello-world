@@ -3,6 +3,7 @@ package com.github.jinahya.hello.api._java_net_http;
 import com.github.jinahya.hello.api.AsynchronousHelloWorld;
 import com.github.jinahya.hello.api.DefaultAsynchronousHelloWorldTest;
 import com.github.jinahya.hello.api.HelloWorld;
+import io.vertx.core.Vertx;
 import lombok.extern.slf4j.Slf4j;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
@@ -19,19 +20,20 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 
 /**
- * A class for testing {@link AsynchronousHelloWorld#send(WebSocket, boolean) send(socket, last)}
- * method.
+ * A class for testing
+ * {@link AsynchronousHelloWorld#sendBinary(WebSocket, boolean) send(socket, last)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @DisplayName("send(WebSocket, boolean)")
 @Slf4j
-class AsynchornousHelloWorld_Send_WebSocket_Test extends DefaultAsynchronousHelloWorldTest {
+class AsynchornousHelloWorld_SendBinary_WebSocket_Test extends DefaultAsynchronousHelloWorldTest {
 
     // -------------------------------------------------------------------------------- CONSTRUCTORS
-    AsynchornousHelloWorld_Send_WebSocket_Test() {
+    AsynchornousHelloWorld_SendBinary_WebSocket_Test() {
         super();
     }
 
@@ -48,7 +50,7 @@ class AsynchornousHelloWorld_Send_WebSocket_Test extends DefaultAsynchronousHell
         // ------------------------------------------------------------------------------- when/then
         Assertions.assertThrows(
                 NullPointerException.class,
-                () -> service.send(socket, last)
+                () -> service.sendBinary(socket, last)
         );
     }
 
@@ -68,7 +70,7 @@ class AsynchornousHelloWorld_Send_WebSocket_Test extends DefaultAsynchronousHell
                 .thenReturn(future);
         final var last = ThreadLocalRandom.current().nextBoolean();
         // ------------------------------------------------------------------------------------ when
-        final var result = service.send(socket, last);
+        final var result = service.sendBinary(socket, last);
         // ------------------------------------------------------------------------------------ then
         Mockito.verify(socket, Mockito.times(1)).sendBinary(
                 Mockito.argThat(b -> b.remaining() == HelloWorld.BYTES),
@@ -107,11 +109,43 @@ class AsynchornousHelloWorld_Send_WebSocket_Test extends DefaultAsynchronousHell
                     .buildAsync(URI.create("ws://localhost:" + port), new WebSocket.Listener() {
                     })
                     .join();
-            final var future = service.send(client, true);
+            final var future = service.sendBinary(client, true);
             future.join();
             client.sendClose(WebSocket.NORMAL_CLOSURE, "ok").join();
         } finally {
             server.stop();
         }
     }
+
+    @Test
+    void __vertx() throws Exception {
+        final var service = service();
+        final var vertx = Vertx.vertx();
+        final var received = new CompletableFuture<Void>();
+        final var port = 8888;
+        final var server = vertx.createHttpServer()
+                .webSocketHandler(sws -> {
+                    sws.handler(b -> {
+                        log.debug("received: {}", b);
+                        received.complete(null);
+                    });
+                })
+                .listen(port)
+                .toCompletionStage()
+                .toCompletableFuture()
+                .get();
+        final var client = HttpClient.newHttpClient()
+                .newWebSocketBuilder()
+                .buildAsync(URI.create("ws://localhost:" + port), new WebSocket.Listener() {
+                })
+                .join();
+        service.sendBinary(client, true);
+        received.get(5, TimeUnit.SECONDS);
+        server.close().toCompletionStage().toCompletableFuture().get();
+        vertx.close().toCompletionStage().toCompletableFuture().get();
+    }
+
+    // TODO: add SpringBoot WebSocket
+
+    // TODO: add Tyrus
 }

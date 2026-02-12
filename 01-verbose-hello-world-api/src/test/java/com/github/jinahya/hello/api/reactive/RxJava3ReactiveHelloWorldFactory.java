@@ -73,7 +73,8 @@ public final class RxJava3ReactiveHelloWorldFactory extends AbstractReactiveHell
                                     .observeOn(scheduler)
                                     .subscribe(
                                             array -> {
-                                                if (AbstractReactiveHelloWorldPublisher.isNotCancelled(canc)) {
+                                                if (AbstractReactiveHelloWorldPublisher.isNotCancelled(
+                                                        canc)) {
                                                     log.debug("publishing array: {}", array);
                                                     subscriber.onNext(array);
                                                     pend.decrementAndGet();
@@ -82,7 +83,8 @@ public final class RxJava3ReactiveHelloWorldFactory extends AbstractReactiveHell
                                                 }
                                             },
                                             error -> {
-                                                if (AbstractReactiveHelloWorldPublisher.isNotCancelled(canc)) {
+                                                if (AbstractReactiveHelloWorldPublisher.isNotCancelled(
+                                                        canc)) {
                                                     subscriber.onError(error);
                                                 }
                                             }
@@ -114,7 +116,8 @@ public final class RxJava3ReactiveHelloWorldFactory extends AbstractReactiveHell
                                     .observeOn(scheduler)
                                     .subscribe(
                                             string -> {
-                                                if (AbstractReactiveHelloWorldPublisher.isNotCancelled(canc)) {
+                                                if (AbstractReactiveHelloWorldPublisher.isNotCancelled(
+                                                        canc)) {
                                                     log.debug("publishing string: {}", string);
                                                     subscriber.onNext(string);
                                                     pend.decrementAndGet();
@@ -123,7 +126,8 @@ public final class RxJava3ReactiveHelloWorldFactory extends AbstractReactiveHell
                                                 }
                                             },
                                             error -> {
-                                                if (AbstractReactiveHelloWorldPublisher.isNotCancelled(canc)) {
+                                                if (AbstractReactiveHelloWorldPublisher.isNotCancelled(
+                                                        canc)) {
                                                     subscriber.onError(error);
                                                 }
                                             }

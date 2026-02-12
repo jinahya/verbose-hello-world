@@ -58,6 +58,12 @@ class HelloWorld_Write_SeekableByteChannel_Test extends HelloWorldTest {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var channel = Mockito.mock(SeekableByteChannel.class);
+        Mockito.when(channel.write(Mockito.any(ByteBuffer.class))).thenAnswer(i -> {
+            final var buffer = i.getArgument(0, ByteBuffer.class);
+            final var remaining = buffer.remaining();
+            buffer.position(buffer.limit());
+            return remaining;
+        });
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(channel);
         // ------------------------------------------------------------------------------------ then

@@ -79,11 +79,11 @@ public interface AsynchronousHelloWorld {
     }
 
     // ------------------------------------------------------------------------------- java.net.http
-    CompletableFuture<WebSocket> send(WebSocket socket, boolean last);
+    CompletableFuture<WebSocket> sendBinary(WebSocket socket, boolean last);
 
-    <T extends WebSocket> CompletableFuture<T> ping(T socket);
+    CompletableFuture<WebSocket> sendPing(WebSocket socket);
 
-    <T extends WebSocket> CompletableFuture<T> pong(T socket);
+    CompletableFuture<WebSocket> sendPong(WebSocket socket);
 
     // --------------------------------------------------------------------------- java.nio.channels
 

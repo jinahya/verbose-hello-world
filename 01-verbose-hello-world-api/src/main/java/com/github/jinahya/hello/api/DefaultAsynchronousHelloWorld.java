@@ -41,7 +41,7 @@ class DefaultAsynchronousHelloWorld implements AsynchronousHelloWorld {
 
     // ------------------------------------------------------------------------------- java.net.http
     @Override
-    public CompletableFuture<WebSocket> send(final WebSocket socket, final boolean last) {
+    public CompletableFuture<WebSocket> sendBinary(final WebSocket socket, final boolean last) {
         Objects.requireNonNull(socket, "socket is null");
         final var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
         service.put(buffer);
@@ -50,12 +50,12 @@ class DefaultAsynchronousHelloWorld implements AsynchronousHelloWorld {
     }
 
     @Override
-    public <T extends WebSocket> CompletableFuture<T> ping(T socket) {
+    public CompletableFuture<WebSocket> sendPing(WebSocket socket) {
         return null;
     }
 
     @Override
-    public <T extends WebSocket> CompletableFuture<T> pong(T socket) {
+    public CompletableFuture<WebSocket> sendPong(WebSocket socket) {
         return null;
     }
 

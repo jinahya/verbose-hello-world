@@ -21,8 +21,8 @@ public interface ReactiveHelloWorldFactory {
     /**
      * Returns a publisher that publishes the hello-world-bytes as a single byte array.
      * <p>
-     * The default implementation collects bytes from {@link #newOctetPublisher()} and publishes them
-     * as a complete byte array.
+     * The default implementation collects bytes from {@link #newOctetPublisher()} and publishes
+     * them as a complete byte array.
      * <p>
      * This is a naive implementation: when a subscriber requests {@code n} items of {@code byte[]},
      * for each item, the implementation subscribes to the bytes publisher, requests 12 bytes, waits
