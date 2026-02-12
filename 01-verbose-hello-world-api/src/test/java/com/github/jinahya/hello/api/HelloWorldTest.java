@@ -111,6 +111,10 @@ public abstract class HelloWorldTest {
         HelloWorldTestUtils.stub_put_buffer_will_increase_buffer_position_by_12(service);
     }
 
+    protected final void stub_put_buffer_will_put_actual_hello_world_bytes() {
+        HelloWorldTestUtils.stub_put_buffer_will_put_actual_hello_world_bytes(service);
+    }
+
     /**
      * Verifies that {@link HelloWorld#put(ByteBuffer) put(buffer)} method invoked on the
      * {@link #service() service} instance with a byte buffer of {@value HelloWorld#BYTES} bytes.

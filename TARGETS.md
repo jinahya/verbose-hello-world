@@ -1,102 +1,114 @@
 # TARGETS
 
-Analysis of `HelloWorld.java` interface methods organized by Java API package.
+Analysis of interface methods organized by Java API package.
 
+> **Interfaces**: `HelloWorld` (sync), `AsynchronousHelloWorld` (async), `ReactiveHelloWorld` (reactive)
+>
 > **Note**: The `→` in Notes column shows the call-chain (e.g., `→ set(byte[])` means the method delegates to `set(byte[])`). Methods are ordered by dependency within each package.
 
 ## java.lang
 
-| Target Class | Method | Status | Notes |
-|--------------|--------|--------|-------|
-| `byte[]` | `set(byte[], int)` | Active | Abstract method |
-| `byte[]` | `set(byte[])` | Active | → `set(array, 0)` |
-| `byte[]` | `set()` | Active | → `set(new byte[BYTES])` |
-| `Appendable` | `append(T)` | Active | → `set(byte[])` |
+| Interface | Target Class | Method | Status | Notes |
+|-----------|--------------|--------|--------|-------|
+| `HelloWorld` | `byte[]` | `set(byte[], int)` | Active | Abstract method |
+| `HelloWorld` | `byte[]` | `set(byte[])` | Active | → `set(array, 0)` |
+| `HelloWorld` | `byte[]` | `set()` | Active | → `set(new byte[BYTES])` |
+| `HelloWorld` | `Appendable` | `append(T)` | Active | → `set(byte[])` |
 
 ## java.lang.foreign
 
-| Target Class | Method | Status | Notes |
-|--------------|--------|--------|-------|
-| `MemorySegment` | `copy(T)` | Active | → `set(byte[])` |
+| Interface | Target Class | Method | Status | Notes |
+|-----------|--------------|--------|--------|-------|
+| `HelloWorld` | `MemorySegment` | `copy(T)` | Active | → `set(byte[])` |
 
 ## java.io
 
-| Target Class | Method | Status | Notes |
-|--------------|--------|--------|-------|
-| `OutputStream` | `write(T)` | Active | → `set(byte[])` |
-| `DataOutput` | `write(T)` | Active | → `set(byte[])` |
-| `RandomAccessFile` | `write(T)` | Active | → `write(DataOutput)` |
-| `Writer` | `write(T)` | Active | → `append(Appendable)` |
-| `File` | `append(T)` | Active | → `write(OutputStream)` |
+| Interface | Target Class | Method | Status | Notes |
+|-----------|--------------|--------|--------|-------|
+| `HelloWorld` | `OutputStream` | `write(T)` | Active | → `set(byte[])` |
+| `HelloWorld` | `DataOutput` | `write(T)` | Active | → `set(byte[])` |
+| `HelloWorld` | `RandomAccessFile` | `write(T)` | Active | → `write(DataOutput)` |
+| `HelloWorld` | `Writer` | `write(T)` | Active | → `append(Appendable)` |
+| `HelloWorld` | `File` | `append(T)` | Active | → `write(OutputStream)` |
 
 ## java.net
 
-| Target Class | Method | Status | Notes |
-|--------------|--------|--------|-------|
-| `DatagramPacket` | `set(DatagramPacket)` | Active | → `set(byte[])` |
-| `DatagramPacket` | `append(DatagramPacket)` | Active | → `put(ByteBuffer)` |
-| `DatagramSocket` | `send(T)` | Active | → `set(DatagramPacket)` |
-| `DatagramSocket` | `send(T, SocketAddress)` | Active | → `set(DatagramPacket)` |
-| `MulticastSocket` | `send(T)` | Deprecated | → `send(DatagramSocket)` |
-| `MulticastSocket` | `send(T, SocketAddress)` | Deprecated | → `send(DatagramSocket, SocketAddress)` |
-| `Socket` | `send(T)` | Active | → `write(OutputStream)` |
+| Interface | Target Class | Method | Status | Notes |
+|-----------|--------------|--------|--------|-------|
+| `HelloWorld` | `DatagramPacket` | `set(DatagramPacket)` | Active | → `set(byte[])` |
+| `HelloWorld` | `DatagramPacket` | `append(DatagramPacket)` | Active | → `put(ByteBuffer)` |
+| `HelloWorld` | `DatagramSocket` | `send(T)` | Active | → `set(DatagramPacket)` |
+| `HelloWorld` | `DatagramSocket` | `send(T, SocketAddress)` | Active | → `set(DatagramPacket)` |
+| `HelloWorld` | `MulticastSocket` | `send(T)` | Deprecated | → `send(DatagramSocket)` |
+| `HelloWorld` | `MulticastSocket` | `send(T, SocketAddress)` | Deprecated | → `send(DatagramSocket, SocketAddress)` |
+| `HelloWorld` | `Socket` | `send(T)` | Active | → `write(OutputStream)` |
 
 ## java.net.http
 
-| Target Class | Method | Status | Notes |
-|--------------|--------|--------|-------|
-| `HttpRequest.Builder` | `method(T, String)` | Active | → `set(byte[])` |
+| Interface | Target Class | Method | Status | Notes |
+|-----------|--------------|--------|--------|-------|
+| `HelloWorld` | `HttpRequest.Builder` | `method(T, String)` | Active | → `set(byte[])` |
+| `AsynchronousHelloWorld` | `WebSocket` | `send(T, boolean)` | Active | `sendBinary(ByteBuffer, boolean)` |
+| `AsynchronousHelloWorld` | `WebSocket` | `ping(T)` | Active | `sendPing(ByteBuffer)` |
+| `AsynchronousHelloWorld` | `WebSocket` | `pong(T)` | Active | `sendPong(ByteBuffer)` |
 
 ## java.nio
 
-| Target Class | Method | Status | Notes |
-|--------------|--------|--------|-------|
-| `ByteBuffer` | `put(T)` | Active | → `set(byte[])` |
-| `ByteBuffer` | `put()` | Active | → `put(ByteBuffer.allocate(BYTES))` |
+| Interface | Target Class | Method | Status | Notes |
+|-----------|--------------|--------|--------|-------|
+| `HelloWorld` | `ByteBuffer` | `put(T)` | Active | → `set(byte[])` |
+| `HelloWorld` | `ByteBuffer` | `put()` | Active | → `put(ByteBuffer.allocate(BYTES))` |
 
 ## java.nio.channels
 
-| Target Class | Method | Status | Notes |
-|--------------|--------|--------|-------|
-| `WritableByteChannel` | `write(T)` | Active | → `put(ByteBuffer)` |
-| `DatagramChannel` | `write(T)` | Active | → `write(WritableByteChannel)` |
-| `DatagramChannel` | `send(T, SocketAddress)` | Active | → `put(ByteBuffer)` |
-| `SocketChannel` | `send(T)` | Deprecated | → `write(WritableByteChannel)` |
-| `AsynchronousByteChannel` | `write(T)` | Active | → `put(ByteBuffer)` |
-| `AsynchronousByteChannel` | `write(T, A, CompletionHandler)` | Active | → `put(ByteBuffer)` |
-| `AsynchronousFileChannel` | `write(T, long)` | Active | → `put(ByteBuffer)` |
-| `AsynchronousFileChannel` | `write(T, long, A, CompletionHandler)` | Active | → `put(ByteBuffer)` |
-| `AsynchronousSocketChannel` | `send(T)` | Deprecated | → `write(AsynchronousByteChannel)` |
-| `AsynchronousSocketChannel` | `send(T, A, CompletionHandler)` | Deprecated | → `write(AsynchronousByteChannel, ...)` |
+| Interface | Target Class | Method | Status | Notes |
+|-----------|--------------|--------|--------|-------|
+| `HelloWorld` | `WritableByteChannel` | `write(T)` | Active | → `put(ByteBuffer)` |
+| `HelloWorld` | `GatheringByteChannel` | `write(T)` | Deprecated | → `put(ByteBuffer)` |
+| `HelloWorld` | `SeekableByteChannel` | `write(T)` | Deprecated | → `write(WritableByteChannel)` |
+| `HelloWorld` | `DatagramChannel` | `write(T)` | Active | → `write(WritableByteChannel)` |
+| `HelloWorld` | `DatagramChannel` | `send(T, SocketAddress)` | Active | → `put(ByteBuffer)` |
+| `HelloWorld` | `SocketChannel` | `send(T)` | Deprecated | → `write(WritableByteChannel)` |
+| `HelloWorld` | `AsynchronousByteChannel` | `write(T)` | Active | → `put(ByteBuffer)` |
+| `AsynchronousHelloWorld` | `AsynchronousByteChannel` | `write(T, A, CompletionHandler)` | Active | → `put(ByteBuffer)` |
+| `HelloWorld` | `AsynchronousFileChannel` | `write(T, long)` | Active | → `put(ByteBuffer)` |
+| `AsynchronousHelloWorld` | `AsynchronousFileChannel` | `write(T, long, A, CompletionHandler)` | Active | → `put(ByteBuffer)` |
+| `AsynchronousHelloWorld` | `AsynchronousSocketChannel` | `send(T, A, CompletionHandler)` | Deprecated | → `write(AsynchronousByteChannel, ...)` |
 
 ## java.nio.file
 
-| Target Class | Method | Status | Notes |
-|--------------|--------|--------|-------|
-| `Path` | `append(T)` | Active | → `write(WritableByteChannel)` |
-| `Path` | `append(T, A, CompletionHandler)` | Active | → `write(AsynchronousFileChannel, ...)` |
+| Interface | Target Class | Method | Status | Notes |
+|-----------|--------------|--------|--------|-------|
+| `HelloWorld` | `Path` | `append(T)` | Active | → `write(WritableByteChannel)` |
+| `AsynchronousHelloWorld` | `Path` | `append(T, A, CompletionHandler)` | Active | → `write(AsynchronousFileChannel, ...)` |
 
 ## java.security / javax.crypto
 
-| Target Class | Method | Status | Notes |
-|--------------|--------|--------|-------|
-| `MessageDigest` | `update(T)` | Active | → `set(byte[])` |
-| `Signature` | `update(T)` | Active | → `set(byte[])` |
-| `Mac` | `update(T)` | Active | → `set(byte[])` |
-| `Cipher` | `update(T, Consumer)` | Active | → `set(byte[])` |
+| Interface | Target Class | Method | Status | Notes |
+|-----------|--------------|--------|--------|-------|
+| `HelloWorld` | `MessageDigest` | `update(T)` | Active | → `set(byte[])` |
+| `HelloWorld` | `Signature` | `update(T)` | Active | → `set(byte[])` |
+| `HelloWorld` | `Mac` | `update(T)` | Active | → `set(byte[])` |
+| `HelloWorld` | `Cipher` | `update(T, Consumer)` | Active | → `set(byte[])` |
 
 ## java.sql
 
-| Target Class | Method | Status | Notes |
-|--------------|--------|--------|-------|
-| `Blob` | `set(T, long)` | Active | → `write(OutputStream)` |
+| Interface | Target Class | Method | Status | Notes |
+|-----------|--------------|--------|--------|-------|
+| `HelloWorld` | `Blob` | `set(T, long)` | Active | → `write(OutputStream)` |
+
+## java.util
+
+| Interface | Target Class | Method | Status | Notes |
+|-----------|--------------|--------|--------|-------|
+| `HelloWorld` | `BitSet` | `set(T, int)` | Active | → `set(byte[])`, little-endian bit order |
 
 ## java.util.zip
 
-| Target Class | Method | Status | Notes |
-|--------------|--------|--------|-------|
-| `Checksum` | `update(T)` | Active | → `set(byte[])` |
-| `Deflater` | `input(T)` | Active | → `set(byte[])` |
+| Interface | Target Class | Method | Status | Notes |
+|-----------|--------------|--------|--------|-------|
+| `HelloWorld` | `Checksum` | `update(T)` | Active | → `set(byte[])` |
+| `HelloWorld` | `Deflater` | `input(T)` | Active | → `set(byte[])` |
 
 ---
 
@@ -104,9 +116,9 @@ Analysis of `HelloWorld.java` interface methods organized by Java API package.
 
 | Metric | Count |
 |--------|-------|
-| **Total methods** | 40 |
-| **Active methods** | 35 |
-| **Deprecated methods** | 5 |
+| **Total methods** | 45 |
+| **Active methods** | 38 |
+| **Deprecated methods** | 7 |
 | **Abstract methods** | 1 |
 | **Async (Future-based)** | 2 |
 | **Async (CompletionHandler)** | 3 |
@@ -116,6 +128,8 @@ Analysis of `HelloWorld.java` interface methods organized by Java API package.
 
 | Method | Use Instead |
 |--------|-------------|
+| `write(GatheringByteChannel)` | `write(WritableByteChannel)` |
+| `write(SeekableByteChannel)` | `write(WritableByteChannel)` |
 | `send(SocketChannel)` | `write(WritableByteChannel)` |
 | `send(AsynchronousSocketChannel)` | `write(AsynchronousByteChannel)` |
 | `send(AsynchronousSocketChannel, A, CompletionHandler)` | `write(AsynchronousByteChannel, A, CompletionHandler)` |
@@ -139,14 +153,11 @@ Analysis of `HelloWorld.java` interface methods organized by Java API package.
 
 ### To Add
 
-| Package | Target | Method | Notes |
-|---------|--------|--------|-------|
-| `java.net.http` | `WebSocket` | | `sendBinary(ByteBuffer, boolean)` |
-| `java.nio.channels` | `GatheringByteChannel` | | Scatter/gather I/O |
-| `java.nio.channels` | `SeekableByteChannel` | | Positioned writes |
-| `java.util.concurrent.Flow` | `Publisher<ByteBuffer>` | | Reactive streams |
-| `javax.imageio.stream` | `ImageOutputStream` | | `write(byte[])` |
-| `javax.sound.sampled` | `SourceDataLine` | | Audio output |
+| Interface | Package | Target | Notes |
+|-----------|---------|--------|-------|
+| `ReactiveHelloWorld` | `java.util.concurrent.Flow` | `Publisher<ByteBuffer>` | Reactive streams |
+| `HelloWorld` | `javax.imageio.stream` | `ImageOutputStream` | `write(byte[])` |
+| `HelloWorld` | `javax.sound.sampled` | `SourceDataLine` | Audio output |
 
 ### Redundant (Covered by Existing Methods)
 

@@ -48,21 +48,21 @@ import java.util.concurrent.ThreadLocalRandom;
 })
 public final class HelloWorldTestUtils {
 
+    /**
+     * Returns a new byte array containing the "hello, world" bytes.
+     *
+     * @return a new byte array containing the "hello, world" bytes.
+     */
+    public static byte[] getHelloWorldBytes() {
+        return HelloWorldTestConstants.HELLO_WORLD_STRING.getBytes(StandardCharsets.US_ASCII);
+    }
+
     static HelloWorld requireMock(final HelloWorld service) {
         Objects.requireNonNull(service, "service is null");
         if (!Mockito.mockingDetails(service).isMock()) {
             throw new IllegalArgumentException("not a mock: " + service);
         }
         return service;
-    }
-
-    /**
-     * Returns a new byte array containing the "hello, world" bytes.
-     *
-     * @return a new byte array containing the "hello, world" bytes.
-     */
-    public static byte[] helloWorldBytes() {
-        return HelloWorldTestConstants.HELLO_WORLD_STRING.getBytes(StandardCharsets.US_ASCII);
     }
 
     /**
@@ -84,7 +84,7 @@ public final class HelloWorldTestUtils {
         Mockito
                 .doAnswer(i -> {
                     final var array = i.getArgument(0, byte[].class);
-                    System.arraycopy(helloWorldBytes(), 0, array, 0, HelloWorld.BYTES);
+                    System.arraycopy(getHelloWorldBytes(), 0, array, 0, HelloWorld.BYTES);
                     return array;
                 })
                 .when(service)
@@ -106,7 +106,7 @@ public final class HelloWorldTestUtils {
         Mockito
                 .doAnswer(i -> {
                     final var buffer = i.getArgument(0, ByteBuffer.class);
-                    buffer.put(helloWorldBytes());
+                    buffer.put(getHelloWorldBytes());
                     return buffer;
                 })
                 .when(service)

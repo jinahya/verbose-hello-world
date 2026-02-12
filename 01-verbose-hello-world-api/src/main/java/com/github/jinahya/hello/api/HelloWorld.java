@@ -49,6 +49,8 @@ import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.FileChannel;
+import java.nio.channels.GatheringByteChannel;
+import java.nio.channels.SeekableByteChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.file.OpenOption;
@@ -59,6 +61,8 @@ import java.security.Signature;
 import java.security.SignatureException;
 import java.sql.Blob;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -742,9 +746,9 @@ public interface HelloWorld {
      *                              {@code null}.
      * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
      * of {@value #BYTES} bytes, and invokes
-     * {@link HttpRequest.Builder#method(String, HttpRequest.BodyPublisher) builder.method(method, publisher)}
-     * with {@code method} and {@link HttpRequest.BodyPublishers#ofByteArray(byte[])
-     * BodyPublishers.ofByteArray(array)}.
+     * {@link HttpRequest.Builder#method(String, HttpRequest.BodyPublisher) builder.method(method,
+     * publisher)} with {@code method} and
+     * {@link HttpRequest.BodyPublishers#ofByteArray(byte[]) BodyPublishers.ofByteArray(array)}.
      * @see #set(byte[])
      * @see HttpRequest.Builder#method(String, HttpRequest.BodyPublisher)
      * @see HttpRequest.BodyPublishers#ofByteArray(byte[])
@@ -881,6 +885,8 @@ public interface HelloWorld {
         return buffer;
     }
 
+    // --------------------------------------------------------------------------- java.nio.channels
+
     /**
      * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified channel.
      * <p>
@@ -923,7 +929,56 @@ public interface HelloWorld {
         return channel;
     }
 
-    // --------------------------------------------------------------------------- java.nio.channels
+    /**
+     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified gathering byte
+     * channel.
+     * {@snippet lang = "java":
+     * Objects.requireNonNull(channel, "channel is null");
+     * final var buffer = put(ByteBuffer.allocate(BYTES));
+     * buffer.flip(); // @highlight
+     * final var srcs = new ByteBuffer[] {buffer}; // @highlight
+     * for (var r = Arrays.stream(srcs).mapToLong(ByteBuffer::remaining).sum(); r > 0; ) {
+     *     r -= channel.write(srcs);
+     * }
+     * return channel;
+     *}
+     *
+     * @param <T>     channel type parameter
+     * @param channel the gathering byte channel to which bytes are written.
+     * @return the given {@code channel}.
+     * @throws NullPointerException if {@code channel} is {@code null}.
+     * @throws IOException          if an I/O error occurs.
+     * @implSpec Default implementation invokes {@link #put(ByteBuffer)} method with a byte buffer
+     * of {@value #BYTES} bytes, {@link ByteBuffer#flip() flips} it, wraps it in a
+     * {@code ByteBuffer} array, and writes the array to the {@code channel} by continuously
+     * invoking {@link GatheringByteChannel#write(ByteBuffer[]) channel.write(srcs)} while the total
+     * remaining bytes is greater than zero.
+     * @see #put(ByteBuffer)
+     * @see ByteBuffer#flip()
+     * @see GatheringByteChannel#write(ByteBuffer[])
+     * @deprecated This method is just for demonstrating the
+     * {@link GatheringByteChannel#write(ByteBuffer[])} method; use
+     * {@link #write(WritableByteChannel) write(channel)} instead.
+     */
+    @Deprecated(forRemoval = true)
+    @屋上架屋
+    default <T extends GatheringByteChannel> T write(final T channel) throws IOException {
+        Objects.requireNonNull(channel, "channel is null");
+        final var buffer = put(ByteBuffer.allocate(BYTES));
+        buffer.flip();
+        assert buffer.remaining() == BYTES;
+        final var srcs = new ByteBuffer[] {buffer};
+        for (var r = Arrays.stream(srcs).mapToLong(ByteBuffer::remaining).sum(); r > 0; ) {
+            r -= channel.write(srcs);
+        }
+        return channel;
+    }
+
+    @Deprecated(forRemoval = true)
+    @屋上架屋
+    default <T extends SeekableByteChannel> T write(final T channel) throws IOException {
+        return (T) write((WritableByteChannel) channel);
+    }
 
     /**
      * Sends the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified target address
@@ -1031,8 +1086,6 @@ public interface HelloWorld {
     default <T extends SocketChannel> T send(final T channel) throws IOException {
         return write(channel);
     }
-
-    // --------------------------------------------------------------------------- java.nio.channels
 
     /**
      * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified channel.
@@ -1555,6 +1608,46 @@ public interface HelloWorld {
             pos += written;
         }
         return blob;
+    }
+
+    // ----------------------------------------------------------------------------------- java.util
+
+    /**
+     * Sets the <a href="#hello-world-bytes">hello-world-bytes</a> into the specified bit set,
+     * starting at the specified index, in little-endian bit order (LSB first).
+     * <pre>
+     * 'h' = 0x68 = 0b0110_1000, 'e' = 0x65 = 0b0110_0101, ...
+     *
+     *      h --->          e --->
+     *      index           index+8
+     *      ↓               ↓
+     * ... |0|0|0|1|0|1|1|0|1|0|1|0| ...
+     *     |LSB         MSB|
+     * </pre>
+     *
+     * @param bitset the bit set into which the bits are set.
+     * @param index  the starting index in the bit set.
+     * @param <T>    bit set type parameter
+     * @return the given {@code bitset}.
+     * @throws NullPointerException     when the {@code bitset} is {@code null}.
+     * @throws IllegalArgumentException when the {@code index} is negative.
+     */
+    default <T extends BitSet> T set(final T bitset, int index) {
+        if (bitset == null) {
+            throw new NullPointerException("bitset is null");
+        }
+        if (index < 0) {
+            throw new IllegalArgumentException("negative index: " + index);
+        }
+        final var array = new byte[BYTES];
+        set(array);
+        for (var b : array) {
+            for (int i = 0; i < Byte.SIZE; i++) {
+                bitset.set(index++, (b & 1) == 1);
+                b = (byte) (b >> 1);
+            }
+        }
+        return bitset;
     }
 
     // ------------------------------------------------------------------------------- java.util.jar

@@ -8,6 +8,7 @@ module com.github.jinahya.hello.api {
     requires static java.net.http;
     requires java.sql;
     requires java.sql.rowset;
+    requires java.desktop;
     exports com.github.jinahya.hello.api;
     exports com.github.jinahya.hello.api.spi;
     exports com.github.jinahya.hello.api.reactive;

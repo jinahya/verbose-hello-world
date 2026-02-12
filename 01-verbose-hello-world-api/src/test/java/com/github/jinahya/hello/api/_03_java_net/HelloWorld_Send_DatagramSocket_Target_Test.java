@@ -112,16 +112,16 @@ class HelloWorld_Send_DatagramSocket_Target_Test extends HelloWorldTest {
                 .when(service)
                 .set(Mockito.any(DatagramPacket.class));
         final var socket = Mockito.mock(DatagramSocket.class);
-        final var target = Mockito.mock(SocketAddress.class);
+        final var target = new InetSocketAddress(InetAddress.getLocalHost(), 1234);
         // ------------------------------------------------------------------------------------ when
         final var result = service.send(socket, target);
         // ------------------------------------------------------------------------------------ then
-        final var captor = ArgumentCaptor.forClass(DatagramPacket.class);
-        Mockito.verify(service, Mockito.times(1)).set(captor.capture()); // <1>
+        final var captor = ArgumentCaptor.forClass(DatagramPacket.class); // <1>
+        Mockito.verify(service, Mockito.times(1)).set(captor.capture());
         final var packet = captor.getValue();
-        Assertions.assertSame(target, packet.getSocketAddress());        // <2> packet has target
-        Mockito.verify(socket, Mockito.times(1)).send(packet);           // <3>
-        Assertions.assertSame(socket, result);                           // <4>
+        Assertions.assertEquals(target, packet.getSocketAddress());       // <2> packet has target
+        Mockito.verify(socket, Mockito.times(1)).send(packet);            // <3>
+        Assertions.assertSame(socket, result);                            // <4>
     }
 
     @畵蛇添足

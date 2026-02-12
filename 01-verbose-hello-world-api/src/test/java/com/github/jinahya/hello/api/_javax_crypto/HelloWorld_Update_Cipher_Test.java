@@ -123,7 +123,7 @@ class HelloWorld_Update_Cipher_Test extends HelloWorldTest {
             // NoPadding doesn't strip padding on decryption, so we compare only the first 12 bytes.
             Assertions.assertEquals(AES_BLOCK_SIZE, decrypted.length);
             Assertions.assertArrayEquals(
-                    HelloWorldTestUtils.helloWorldBytes(),
+                    HelloWorldTestUtils.getHelloWorldBytes(),
                     Arrays.copyOf(decrypted, HelloWorld.BYTES)
             );
         }
@@ -170,7 +170,7 @@ class HelloWorld_Update_Cipher_Test extends HelloWorldTest {
             cipher.init(Cipher.DECRYPT_MODE, key, params);
             final var decrypted = cipher.doFinal(encrypted);
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorldTestUtils.helloWorldBytes(), decrypted);
+            Assertions.assertArrayEquals(HelloWorldTestUtils.getHelloWorldBytes(), decrypted);
         }
     }
 
@@ -221,7 +221,7 @@ class HelloWorld_Update_Cipher_Test extends HelloWorldTest {
             // NoPadding doesn't strip padding on decryption, so we compare only the first 12 bytes.
             Assertions.assertEquals(AES_BLOCK_SIZE, decrypted.length);
             Assertions.assertArrayEquals(
-                    HelloWorldTestUtils.helloWorldBytes(),
+                    HelloWorldTestUtils.getHelloWorldBytes(),
                     Arrays.copyOf(decrypted, HelloWorld.BYTES)
             );
         }
@@ -262,7 +262,7 @@ class HelloWorld_Update_Cipher_Test extends HelloWorldTest {
             cipher.init(Cipher.DECRYPT_MODE, key);
             final var decrypted = cipher.doFinal(encrypted);
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorldTestUtils.helloWorldBytes(), decrypted);
+            Assertions.assertArrayEquals(HelloWorldTestUtils.getHelloWorldBytes(), decrypted);
         }
     }
 
@@ -312,7 +312,7 @@ class HelloWorld_Update_Cipher_Test extends HelloWorldTest {
             final var decrypted = cipher.doFinal(encrypted);
             // -------------------------------------------------------------------------------- then
             // GCM is a stream cipher mode - no padding needed, decrypted equals original plaintext
-            Assertions.assertArrayEquals(HelloWorldTestUtils.helloWorldBytes(), decrypted);
+            Assertions.assertArrayEquals(HelloWorldTestUtils.getHelloWorldBytes(), decrypted);
         }
     }
 
@@ -356,7 +356,7 @@ class HelloWorld_Update_Cipher_Test extends HelloWorldTest {
             final var decrypted = cipher.doFinal(encrypted);
             // -------------------------------------------------------------------------------- then
             // ChaCha20-Poly1305 is a stream cipher (AEAD) - no padding, decrypted equals original
-            Assertions.assertArrayEquals(HelloWorldTestUtils.helloWorldBytes(), decrypted);
+            Assertions.assertArrayEquals(HelloWorldTestUtils.getHelloWorldBytes(), decrypted);
         }
     }
 
@@ -413,7 +413,7 @@ class HelloWorld_Update_Cipher_Test extends HelloWorldTest {
             // decrypted is 16 bytes: 12 bytes of "hello, world" + 4 bytes of zero padding.
             Assertions.assertEquals(16, decrypted.length);
             Assertions.assertArrayEquals(
-                    HelloWorldTestUtils.helloWorldBytes(),
+                    HelloWorldTestUtils.getHelloWorldBytes(),
                     Arrays.copyOf(decrypted, HelloWorld.BYTES)
             );
         }
@@ -460,7 +460,7 @@ class HelloWorld_Update_Cipher_Test extends HelloWorldTest {
             cipher.init(Cipher.DECRYPT_MODE, key, params);
             final var decrypted = cipher.doFinal(encrypted);
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorldTestUtils.helloWorldBytes(), decrypted);
+            Assertions.assertArrayEquals(HelloWorldTestUtils.getHelloWorldBytes(), decrypted);
         }
     }
 
@@ -511,7 +511,7 @@ class HelloWorld_Update_Cipher_Test extends HelloWorldTest {
             // decrypted is 16 bytes: 12 bytes of "hello, world" + 4 bytes of zero padding.
             Assertions.assertEquals(16, decrypted.length);
             Assertions.assertArrayEquals(
-                    HelloWorldTestUtils.helloWorldBytes(),
+                    HelloWorldTestUtils.getHelloWorldBytes(),
                     Arrays.copyOf(decrypted, HelloWorld.BYTES)
             );
         }
@@ -552,7 +552,7 @@ class HelloWorld_Update_Cipher_Test extends HelloWorldTest {
             cipher.init(Cipher.DECRYPT_MODE, key);
             final var decrypted = cipher.doFinal(encrypted);
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorldTestUtils.helloWorldBytes(), decrypted);
+            Assertions.assertArrayEquals(HelloWorldTestUtils.getHelloWorldBytes(), decrypted);
         }
     }
 
@@ -597,7 +597,7 @@ class HelloWorld_Update_Cipher_Test extends HelloWorldTest {
             cipher.init(Cipher.DECRYPT_MODE, keyPair.getPrivate());
             final var decrypted = cipher.doFinal(encrypted);
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorldTestUtils.helloWorldBytes(), decrypted);
+            Assertions.assertArrayEquals(HelloWorldTestUtils.getHelloWorldBytes(), decrypted);
         }
     }
 
@@ -637,7 +637,7 @@ class HelloWorld_Update_Cipher_Test extends HelloWorldTest {
             cipher.init(Cipher.DECRYPT_MODE, keyPair.getPrivate());
             final var decrypted = cipher.doFinal(encrypted);
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorldTestUtils.helloWorldBytes(), decrypted);
+            Assertions.assertArrayEquals(HelloWorldTestUtils.getHelloWorldBytes(), decrypted);
         }
     }
 
@@ -677,7 +677,7 @@ class HelloWorld_Update_Cipher_Test extends HelloWorldTest {
             cipher.init(Cipher.DECRYPT_MODE, keyPair.getPrivate());
             final var decrypted = cipher.doFinal(encrypted);
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorldTestUtils.helloWorldBytes(), decrypted);
+            Assertions.assertArrayEquals(HelloWorldTestUtils.getHelloWorldBytes(), decrypted);
         }
     }
 }
