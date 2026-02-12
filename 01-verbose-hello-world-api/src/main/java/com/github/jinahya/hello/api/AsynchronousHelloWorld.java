@@ -130,11 +130,9 @@ public interface AsynchronousHelloWorld {
      * @see AsynchronousByteChannel#write(ByteBuffer, Object, CompletionHandler)
      */
     <T extends AsynchronousByteChannel, A>
-
-    void write(
-            final T channel,
-            @Nullable final A attachment,
-            final CompletionHandler<? super T, ? super A> handler);
+    void write(final T channel,
+               @Nullable final A attachment,
+               final CompletionHandler<? super T, ? super A> handler);
 
     /**
      * Sends the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to the specified
@@ -156,9 +154,9 @@ public interface AsynchronousHelloWorld {
      */
     @屋上架屋("AsynchronousSocketChannel implements AsynchronousByteChannel")
     @Deprecated(forRemoval = true)
-    default <T extends AsynchronousSocketChannel, A> void send(
-            final T channel, final A attachment,
-            final CompletionHandler<? super T, ? super A> handler) {
+    default <T extends AsynchronousSocketChannel, A>
+    void send(final T channel, final A attachment,
+              final CompletionHandler<? super T, ? super A> handler) {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(handler, "handler is null");
         write(channel, attachment, handler);
@@ -180,12 +178,11 @@ public interface AsynchronousHelloWorld {
      * @throws IllegalArgumentException if {@code position} is negative.
      * @see AsynchronousFileChannel#write(ByteBuffer, long, Object, CompletionHandler)
      */
-    // @formatter:off
-    <T extends AsynchronousFileChannel, A> void write(
-            final T channel,
-            final long position,
-            final @Nullable A attachment,
-            final CompletionHandler<? super T, ? super A> handler);
+    <T extends AsynchronousFileChannel, A>
+    void write(final T channel,
+               final long position,
+               final @Nullable A attachment,
+               final CompletionHandler<? super T, ? super A> handler);
 
     /**
      * Appends the <a href="#hello-world-bytes">hello-world-bytes</a> to the end of the specified
@@ -198,8 +195,9 @@ public interface AsynchronousHelloWorld {
      * @param <A>        attachment type parameter
      * @throws IOException if an I/O error occurs.
      */
-    default <T extends Path, A> void append(final T path, @Nullable final A attachment,
-                                            final CompletionHandler<? super T, ? super A> handler)
+    default <T extends Path, A>
+    void append(final T path, @Nullable final A attachment,
+                final CompletionHandler<? super T, ? super A> handler)
             throws IOException {
         Objects.requireNonNull(path, "path is null");
         Objects.requireNonNull(handler, "handler is null");
