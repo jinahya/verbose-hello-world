@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.api._04_java_nio;
+package com.github.jinahya.hello.api._java_nio_channels;
 
 /*-
  * #%L
@@ -50,7 +50,8 @@ import java.util.concurrent.atomic.LongAdder;
 @SuppressWarnings({
         "java:S101"
 })
-class HelloWorld_05_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
+class HelloWorld_Write_AsynchronousByteChannel_Test
+        extends HelloWorldTest {
 
     /**
      * Verifies {@link HelloWorld#write(AsynchronousByteChannel) write(channel)} method throws a

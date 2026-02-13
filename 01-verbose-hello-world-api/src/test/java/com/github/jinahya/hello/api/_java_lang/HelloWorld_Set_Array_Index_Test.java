@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.api._01_java_lang;
+package com.github.jinahya.hello.api._java_lang;
 
 /*-
  * #%L
@@ -38,7 +38,8 @@ import org.junit.jupiter.api.DisplayName;
 @SuppressWarnings({
         "java:S2187" // empty
 })
-class HelloWorld_01_Set_ArrayWithIndex_Test extends HelloWorldTest {
+class HelloWorld_Set_Array_Index_Test
+        extends HelloWorldTest {
 
     // empty; we're not going to implement the method in this module.
 }

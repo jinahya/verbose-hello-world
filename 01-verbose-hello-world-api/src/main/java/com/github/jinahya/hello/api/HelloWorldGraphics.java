@@ -11,6 +11,7 @@ public interface HelloWorldGraphics {
         );
     }
 
+    // ------------------------------------------------------------------------------------ java.awt
     /**
      * Returns three colors derived from the
      * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>.
@@ -42,8 +43,7 @@ public interface HelloWorldGraphics {
      */
     Color[] getFourColors();
 
-    // ---------------------------------------------------------------------------------------------
-    // fill three horizontally divided rectangles with getThreeColors
+    // fill three, horizontally divided, rectangles with getThreeColors
     // use Rectangle2D.Double if graphics is Graphics2D
     <T extends Graphics> T fillWithThreeColors(T graphics, int x, int y, int width, int height);
 }

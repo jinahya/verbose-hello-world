@@ -172,13 +172,6 @@
         <version>${version.com.uber.nullaway}</version>
       </dependency>
       <dependency>
-        <groupId>org.junit</groupId>
-        <artifactId>junit-bom</artifactId>
-        <version>${version.org.junit}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
         <groupId>io.projectreactor</groupId>
         <artifactId>reactor-core</artifactId>
         <version>3.8.1</version>
@@ -204,7 +197,7 @@
         <groupId>jakarta.platform</groupId>
         <artifactId>jakarta.jakartaee-bom</artifactId>
         <!-- https://central.sonatype.com/artifact/jakarta.platform/jakarta.jakartaee-bom/versions -->
-        <version>11.0.0-M4</version>
+        <version>11.0.0</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -299,13 +292,16 @@
         <version>${version.org.jboss.weld.se}</version>
       </dependency>
       <dependency>
+        <groupId>org.junit</groupId>
+        <artifactId>junit-bom</artifactId>
+        <version>${version.org.junit}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
         <groupId>org.jspecify</groupId>
         <artifactId>jspecify</artifactId>
         <version>${version.org.jspecify}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.junit.jupiter</groupId>
-        <artifactId>junit-jupiter</artifactId>
       </dependency>
       <dependency>
         <groupId>org.mockito</groupId>
@@ -405,7 +401,6 @@
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
-      <version>${version.org.junit.jupiter}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -565,9 +560,10 @@
             <!--            <detectLinks>true</detectLinks>-->
             <links>
               <!--              <link>https://static.javadoc.io/org.junit.jupiter/junit-jupiter-api/${version.org.junit.jupiter}</link>-->
+              <link>https://jakarta.ee/specifications/platform/11/apidocs/</link>
+              <link>https://junit.org/junit5/docs/current/api/</link>
               <link>https://javadoc.io/doc/org.jspecify/jspecify/${version.org.jspecify}</link>
               <link>https://static.javadoc.io/org.mockito/mockito-junit-jupiter/${version.org.mockito}</link>
-              <link>https://junit.org/junit5/docs/current/api/</link>
             </links>
             <show>package</show>
             <tags>
@@ -628,7 +624,7 @@
             <!--            <argLine>@{argLine} -javaagent:${org.mockito:mockito-core:jar}</argLine>-->
             <argLine>--enable-preview -Djdk.httpclient.HttpClient.log=all</argLine>
             <redirectTestOutputToFile>false</redirectTestOutputToFile>
-<!--            <trimStackTrace>false</trimStackTrace>-->
+            <!--            <trimStackTrace>false</trimStackTrace>-->
           </configuration>
         </plugin>
         <plugin>

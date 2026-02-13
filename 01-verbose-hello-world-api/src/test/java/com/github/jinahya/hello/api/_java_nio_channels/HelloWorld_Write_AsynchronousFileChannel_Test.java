@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.api._04_java_nio;
+package com.github.jinahya.hello.api._java_nio_channels;
 
 /*-
  * #%L
@@ -51,7 +51,8 @@ import java.util.concurrent.atomic.LongAdder;
  */
 @DisplayName("write(channel, position)")
 @Slf4j
-class HelloWorld_09_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
+class HelloWorld_Write_AsynchronousFileChannel_Test
+        extends HelloWorldTest {
 
     /**
      * Verifies that the

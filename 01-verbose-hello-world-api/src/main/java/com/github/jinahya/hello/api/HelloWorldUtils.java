@@ -32,6 +32,11 @@ import java.util.function.Supplier;
 
 final class HelloWorldUtils {
 
+    static byte[] getHelloWorldBytes() {
+        return HelloWorldConstants.HELLO_WORLD_STRING
+                .getBytes(HelloWorldConstants.HELLO_WORLD_CHARSET);
+    }
+
     public static <T> Future<T> executeAsync(
             final Supplier<? extends HelloWorld> supplier,
             final Function<? super HelloWorld, ? extends T> function, final Executor executor) {

@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.api._04_java_nio;
+package com.github.jinahya.hello.api._java_nio_channels;
 
 /*-
  * #%L
@@ -45,7 +45,8 @@ import java.nio.charset.StandardCharsets;
  * A class for testing {@link HelloWorld#send(AsynchronousSocketChannel)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @deprecated The {@link HelloWorld#send(AsynchronousSocketChannel)} method has been deprecated.
+ * @deprecated The {@link HelloWorld#send(AsynchronousSocketChannel)} method has been deprecated, so
+ * has this class.
  */
 @屋上架屋("AsynchronousSocketChannel implements AsynchronousByteChannel")
 @Deprecated(forRemoval = true)
@@ -55,7 +56,8 @@ import java.nio.charset.StandardCharsets;
 @SuppressWarnings({
         "java:S101"
 })
-class HelloWorld_06_Send_AsynchronousSocketChannel_Test extends HelloWorldTest {
+class HelloWorld_Send_AsynchronousSocketChannel_Test
+        extends HelloWorldTest {
 
     /**
      * Verifies {@link HelloWorld#send(AsynchronousSocketChannel) send(channel)} method throws a

@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.api._04_java_nio;
+package com.github.jinahya.hello.api._java_nio_channels;
 
 /*-
  * #%L
@@ -62,7 +62,8 @@ import java.util.stream.Stream;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_01_Put_ByteBuffer_Test extends HelloWorldTest {
+class HelloWorld_Put_ByteBuffer_Test
+        extends HelloWorldTest {
 
     private static final Random RANDOM;
 

@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.api._01_java_lang;
+package com.github.jinahya.hello.api._java_lang;
 
 /*-
  * #%L
@@ -43,7 +43,8 @@ import java.util.concurrent.ThreadLocalRandom;
         "java:S1854", // useless (yet) assignments
         "java:S2699"  // no assertions (yet)
 })
-class HelloWorld_02_Set_Array_Test extends HelloWorldTest {
+class HelloWorld_Set_Array_Test
+        extends HelloWorldTest {
 
     /**
      * Verifies that the {@link HelloWorld#set(byte[]) set(array)} method throws a
@@ -103,10 +104,11 @@ class HelloWorld_02_Set_Array_Test extends HelloWorldTest {
     void __() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        Mockito.doAnswer(i -> i.getArgument(0)).when(service).set(
-                ArgumentMatchers.any(byte[].class),   // <array>
-                ArgumentMatchers.anyInt()             // <index>
-        );
+        Mockito.doAnswer(i -> i.getArgument(0))
+                .when(service)
+                .set(ArgumentMatchers.any(byte[].class),   // <array>
+                     ArgumentMatchers.anyInt()             // <index>
+                );
         final var array = new byte[HelloWorld.BYTES];
         // ------------------------------------------------------------------------------------ when
         final var result = service.set(array);

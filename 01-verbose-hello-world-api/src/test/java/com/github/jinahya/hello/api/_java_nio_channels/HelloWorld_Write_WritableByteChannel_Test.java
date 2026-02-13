@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.api._04_java_nio;
+package com.github.jinahya.hello.api._java_nio_channels;
 
 /*-
  * #%L
@@ -46,7 +46,8 @@ import java.util.concurrent.atomic.LongAdder;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_02_Write_WritableByteChannel_Test extends HelloWorldTest {
+class HelloWorld_Write_WritableByteChannel_Test
+        extends HelloWorldTest {
 
     /**
      * Verifies {@link HelloWorld#write(WritableByteChannel) write(channel)} method throws a

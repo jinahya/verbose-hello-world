@@ -1,5 +1,6 @@
 package com.github.jinahya.hello.api;
 
+import jakarta.validation.constraints.PositiveOrZero;
 import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
@@ -34,6 +35,16 @@ public interface AsynchronousHelloWorld {
         return new DefaultAsynchronousHelloWorld(service);
     }
 
+    /**
+     * Creates a new instance.
+     *
+     * @return a new instance.
+     * @see #from(HelloWorld)
+     */
+    static AsynchronousHelloWorld newInstance() {
+        return from(HelloWorldRevisited.newInstance());
+    }
+
     // ---------------------------------------------------------------------------------------------
 
     /**
@@ -42,9 +53,9 @@ public interface AsynchronousHelloWorld {
      * <p>
      * Example usage:
      * {@snippet lang = "java":
-     * var asyncHelloWorld = AsynchronousHelloWorld.from(helloWorld);
-     * asyncHelloWorld.applyAsync(outputStream, HelloWorld::write, executor)
-     *     .thenAccept(stream -> System.out.println("written"));
+     * var instance = AsynchronousHelloWorld.newInstance();
+     * instance.applyAsync(outputStream, HelloWorld::write, executor)
+     *         .thenAccept(stream -> System.out.println("written"));
      *}
      *
      * @param <T>      target type parameter
@@ -71,6 +82,7 @@ public interface AsynchronousHelloWorld {
      * @throws NullPointerException if {@code mapper} is {@code null}.
      * @implSpec Default implementation invokes {@link #applyAsync(Object, BiFunction, Executor)}
      * with the {@code target}, {@code mapper}, and {@link ForkJoinPool#commonPool()}.
+     * @see #applyAsync(Object, BiFunction, Executor)
      */
     default <T> CompletionStage<T> applyAsync(
             final T target,
@@ -79,6 +91,15 @@ public interface AsynchronousHelloWorld {
     }
 
     // ------------------------------------------------------------------------------- java.net.http
+
+    /**
+     * .
+     *
+     * @param socket .
+     * @param last   .
+     * @return .
+     * @see WebSocket#sendBinary(ByteBuffer, boolean)
+     */
     CompletableFuture<WebSocket> sendBinary(WebSocket socket, boolean last);
 
     CompletableFuture<WebSocket> sendPing(WebSocket socket);
@@ -96,15 +117,15 @@ public interface AsynchronousHelloWorld {
      * {@snippet lang = "java":
      * Objects.requireNonNull(channel, "channel is null");
      * Objects.requireNonNull(handler, "handler is null");
-     * final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
+     * var buffer = put(ByteBuffer.allocate(BYTES)).flip();
      * channel.write( // @highlight region
      *         buffer,                                    // <src>
-     *         null,                                      // <attachment>
+     *         attachment,                                // <attachment>
      *         new CompletionHandler<Integer, Object>() { // <handler>
      *                 @Override
      *                 public void completed(final Integer result, final Object a) {
      *                     if (!buffer.hasRemaining()) {
-     *                         handler.completed(channel, attachment);
+     *                         handler.completed(channel, a);
      *                         return;
      *                     }
      *                     channel.write(
@@ -115,7 +136,7 @@ public interface AsynchronousHelloWorld {
      *                 }
      *                 @Override
      *                 public void failed(final Throwable exc, final Object a) {
-     *                     handler.failed(exc, attachment);
+     *                     handler.failed(exc, a);
      *                 }
      *         }
      * ); // @end
@@ -176,10 +197,10 @@ public interface AsynchronousHelloWorld {
      * @see AsynchronousFileChannel#write(ByteBuffer, long, Object, CompletionHandler)
      */
     <T extends AsynchronousFileChannel, A>
-    void write(final T channel,
-               final long position,
-               final @Nullable A attachment,
-               final CompletionHandler<? super T, ? super A> handler);
+    void write(T channel,
+               @PositiveOrZero long position,
+               @Nullable A attachment,
+               CompletionHandler<? super T, ? super A> handler);
 
     /**
      * Appends the <a href="#hello-world-bytes">hello-world-bytes</a> to the end of the specified
@@ -202,8 +223,8 @@ public interface AsynchronousHelloWorld {
      * closes the channel and notifies {@code handler.failed(exc, attachment)}.
      * @implNote The reading of the channel's {@link AsynchronousFileChannel#size() size} and the
      * subsequent {@link #write(AsynchronousFileChannel, long, Object, CompletionHandler) write} are
-     * not atomic. A concurrent writer may extend the file between the two operations, causing
-     * data being overwritten rather than appended.
+     * not atomic. A concurrent writer may extend the file between the two operations, causing data
+     * being overwritten rather than appended.
      */
     default <T extends Path, A>
     void append(final T path, @Nullable final A attachment,

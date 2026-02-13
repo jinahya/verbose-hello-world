@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.api._04_java_nio;
+package com.github.jinahya.hello.api._java_nio_channels;
 
 /*-
  * #%L
@@ -52,7 +52,8 @@ import java.nio.charset.StandardCharsets;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_03_Send_SocketChannel_Test extends HelloWorldTest {
+class HelloWorld_Send_SocketChannel_Test
+        extends HelloWorldTest {
 
     @DisplayName("send(SocketChannel)")
     @Test

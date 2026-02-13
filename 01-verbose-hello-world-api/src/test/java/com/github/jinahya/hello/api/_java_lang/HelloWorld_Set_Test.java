@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.api._04_java_nio;
+package com.github.jinahya.hello.api._java_lang;
 
 /*-
  * #%L
@@ -22,46 +22,48 @@ package com.github.jinahya.hello.api._04_java_nio;
 
 import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldTest;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import java.nio.ByteBuffer;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 
 /**
- * A class for testing {@link HelloWorld#put() put()} method.
+ * A class for testing {@link HelloWorld#set()} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("put()")
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
+@DisplayName("set()")
 @Slf4j
-@SuppressWarnings({"java:S101"})
-class HelloWorld_01_Put_Test extends HelloWorldTest {
+@SuppressWarnings({
+        "java:S1481", // unused (yet) local variables
+        "java:S1854", // useless (yet) assignments
+        "java:S2699"  // no assertions (yet)
+})
+class HelloWorld_Set_Test
+        extends HelloWorldTest {
 
     /**
-     * Verifies that the {@link HelloWorld#put() put()} method, invokes the
-     * {@link HelloWorld#put(ByteBuffer) put(buffer)} method with a byte buffer of
-     * {@value HelloWorld#BYTES} bytes, and return the bufer flipped.
+     * Verifies that the {@link HelloWorld#set() set()} method invokes
+     * {@link HelloWorld#set(byte[]) set(array} method with an array of {@value HelloWorld#BYTES}
+     * bytes, and returns the array.
      */
     @DisplayName("""
-            should invoke <put(buffer(12))>"""
+            should invoke <set(array)> with byte[12]
+            and returns the <array>"""
     )
     @Test
-    void __BufferHasBackingArray() {
+    void __() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
+        Mockito.doAnswer(i -> i.getArgument(0))
+                .when(service)
+                .set(ArgumentMatchers.any(byte[].class));
         // ------------------------------------------------------------------------------------ when
-        final var result = service.put();
+        final var result = service.set();
         // ------------------------------------------------------------------------------------ then
-        // verify: <service.put(buffer(12)> invoked, once
-        final var captured = verify_put_buffer12_invoked_once();
-        // verify: <result> is the same as <captured>
-        Assertions.assertSame(captured, result);
-        // verify: <result.remaining> is <12>
-        Assertions.assertEquals(HelloWorld.BYTES, result.remaining());
+        final var captured = verify_set_array12_invoked_once();
+        Assertions.assertSame(result, captured);
     }
 }

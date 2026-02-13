@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.api._01_java_lang;
+package com.github.jinahya.hello.api._java_lang;
 
 /*-
  * #%L
@@ -43,7 +43,8 @@ import java.util.concurrent.ThreadLocalRandom;
 @DisplayName("append(appendable)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_04_Append_Appendable_Test extends HelloWorldTest {
+class HelloWorld_Append_Appendable_Test
+        extends HelloWorldTest {
 
     /**
      * Verifies that the {@link HelloWorld#append(Appendable) append(appendable)} method throws a

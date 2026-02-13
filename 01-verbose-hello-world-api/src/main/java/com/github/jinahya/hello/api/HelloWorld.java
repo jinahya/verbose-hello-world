@@ -852,34 +852,37 @@ public interface HelloWorld {
 
     /**
      * Returns a byte buffer of {@value #BYTES} bytes, containing the <a
-     * href="#hello-world-bytes">hello-world-bytes</a> which is ready to be drained.
+     * href="#hello-world-bytes">hello-world-bytes</a>.
      * <p>
      * The result buffer's state, on successful return, is as follows.
      * <pre>
      *  0                       12
-     *  position                limit = capacity
+     *                          position = limit = capacity
      *  ↓                       ↓
      * |h|e|l|l|o|,| |w|o|r|l|d|
-     * |------ remaining ------|
-     *              (12)
+     *                         |
+     *                         remaining
+     *                         (0)
      * </pre>
      * <p>
      * The default implementation would be as follows.
      * {@snippet lang = "java":
-     * final var buffer = ByteBuffer.allocate(BYTES);
+     * var buffer = ByteBuffer.allocate(BYTES);
      * put(buffer);
-     * buffer.flip();
      * return buffer;
      *}
      *
      * @return a byte buffer ready to be drained.
      * @implSpec Default implementation invokes {@link #put(ByteBuffer)} with a byte buffer of
-     * {@value #BYTES}, and returns the result as {@link ByteBuffer#flip() flipped}.
+     * {@value #BYTES}, and returns the byte buffer.
+     * @apiNote The returned buffer has no remaining. Callers should {@link ByteBuffer#flip() flip}
+     * the buffer before reading from it.
      * @see #put(ByteBuffer)
+     * @see ByteBuffer#flip()
      */
     default ByteBuffer put() {
-        final var buffer = put(ByteBuffer.allocate(BYTES));
-        buffer.flip();
+        final var buffer = ByteBuffer.allocate(BYTES);
+        put(buffer);
         return buffer;
     }
 
@@ -891,11 +894,10 @@ public interface HelloWorld {
      * The default implementation would be as follows.
      * {@snippet lang = "java":
      * Objects.requireNonNull(channel, "channel is null");
-     * final var buffer = put(ByteBuffer.allocate(BYTES));
+     * var buffer = put(ByteBuffer.allocate(BYTES));
      * buffer.flip(); // @highlight
      * while (buffer.hasRemaining()) { // @highlight region
-     *     final var written = channel.write(buffer);
-     *     assert written >= 0; // why?
+     *     channel.write(buffer);
      * } // @end
      * return channel;
      *}
@@ -932,7 +934,7 @@ public interface HelloWorld {
      * channel.
      * {@snippet lang = "java":
      * Objects.requireNonNull(channel, "channel is null");
-     * final var buffer = put(ByteBuffer.allocate(BYTES));
+     * var buffer = put(ByteBuffer.allocate(BYTES));
      * buffer.flip(); // @highlight
      * final var srcs = new ByteBuffer[] {buffer}; // @highlight
      * for (var r = Arrays.stream(srcs).mapToLong(ByteBuffer::remaining).sum(); r > 0; ) {
