@@ -14,7 +14,8 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executor;
 import java.util.function.BiFunction;
 
-class DefaultAsynchronousHelloWorld implements AsynchronousHelloWorld {
+class DefaultAsynchronousHelloWorld
+        implements AsynchronousHelloWorld {
 
     private static final System.Logger logger =
             System.getLogger(MethodHandles.lookup().lookupClass().getName());
@@ -95,12 +96,11 @@ class DefaultAsynchronousHelloWorld implements AsynchronousHelloWorld {
     }
 
     @Override
-    // @formatter:off
-    public <T extends AsynchronousFileChannel, A> void write(
-            final T channel,
-            final long position,
-            final @Nullable A attachment,
-            final CompletionHandler<? super T, ? super A> handler) {
+    public <T extends AsynchronousFileChannel, A>
+    void write(final T channel,
+               final long position,
+               final @Nullable A attachment,
+               final CompletionHandler<? super T, ? super A> handler) {
         Objects.requireNonNull(channel, "channel is null");
         if (position < 0L) {
             throw new IllegalArgumentException("position(" + position + ") is negative");
@@ -114,7 +114,8 @@ class DefaultAsynchronousHelloWorld implements AsynchronousHelloWorld {
                 position,                   // <position>
                 position,                   // <attachment>
                 new CompletionHandler<>() { // <handler>
-                    @Override public void completed(final Integer r, final Long p) {
+                    @Override
+                    public void completed(final Integer r, final Long p) {
                         assert r > 0; // why?
                         if (!buffer.hasRemaining()) {
                             handler.completed(channel, attachment);
@@ -128,7 +129,9 @@ class DefaultAsynchronousHelloWorld implements AsynchronousHelloWorld {
                                 this      // <handler>
                         );
                     }
-                    @Override public void failed(final Throwable t, final Long p) {
+
+                    @Override
+                    public void failed(final Throwable t, final Long p) {
                         handler.failed(t, attachment);
                     }
                 }

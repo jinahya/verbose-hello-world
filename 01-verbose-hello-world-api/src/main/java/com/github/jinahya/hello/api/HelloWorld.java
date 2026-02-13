@@ -21,7 +21,6 @@ package com.github.jinahya.hello.api;
  */
 
 import jakarta.validation.constraints.Positive;
-import org.jspecify.annotations.Nullable;
 
 import javax.crypto.Cipher;
 import javax.crypto.Mac;
@@ -46,7 +45,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.AsynchronousSocketChannel;
-import java.nio.channels.CompletionHandler;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.FileChannel;
 import java.nio.channels.GatheringByteChannel;
@@ -1146,116 +1144,6 @@ public interface HelloWorld {
     }
 
     /**
-     * Writes, asynchronously, the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>
-     * to the specified channel, and notifies a completion (or a failure) to the specified handler
-     * with the specified attachment.
-     * <p>
-     * The default implementation would be as follows.
-     * {@snippet lang = "java":
-     * Objects.requireNonNull(channel, "channel is null");
-     * Objects.requireNonNull(handler, "handler is null");
-     * final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
-     * channel.write( // @highlight region
-     *         buffer,                                    // <src>
-     *         null,                                      // <attachment>
-     *         new CompletionHandler<Integer, Object>() { // <handler>
-     *                 @Override
-     *                 public void completed(final Integer result, final Object a) {
-     *                     if (!buffer.hasRemaining()) {
-     *                         handler.completed(channel, attachment);
-     *                         return;
-     *                     }
-     *                     channel.write(
-     *                             buffer, // <src>
-     *                             a,      // <attachment>
-     *                             this    // <handler>
-     *                     );
-     *                 }
-     *                 @Override
-     *                 public void failed(final Throwable exc, final Object a) {
-     *                     handler.failed(exc, attachment);
-     *                 }
-     *         }
-     * ); // @end
-     *}
-     *
-     * @param <T>        channel type parameter
-     * @param channel    the channel to which bytes are written.
-     * @param attachment the attachment for the {@code handler}; may be {@code null}.
-     * @param handler    the completion handler to be notified with a completion (or a failure).
-     * @throws NullPointerException if either {@code channel} or {@code handler} is {@code null}.
-     * @implSpec Default implementation invokes {@link #put(ByteBuffer) put(buffer)} method with a
-     * byte buffer of {@value #BYTES} bytes, {@link ByteBuffer#flip() flips} it, writes the buffer
-     * to the {@code channel} while the buffer has remaining, and notifies a completion (or a
-     * failure) to the {@code handler}.
-     * @see #put(ByteBuffer)
-     * @see AsynchronousByteChannel#write(ByteBuffer, Object, CompletionHandler)
-     * @see <a
-     * href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-15.html#jls-15.8.3">15.8.3.
-     * this</a> (The Java® Language Specification)
-     */
-    default <T extends AsynchronousByteChannel, A> void write(
-            final T channel,
-            @Nullable final A attachment,
-            final CompletionHandler<? super T, ? super A> handler) {
-        Objects.requireNonNull(channel, "channel is null");
-        Objects.requireNonNull(handler, "handler is null");
-        // get the <hello-world-bytes>
-        final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
-        // keep invoking <channel.write(buffer, attachment, same-handler)>,
-        //         while <buffer> has <remaining>
-        // and, eventually, invoke <handler.complete(channel, attachment)>
-//        channel.write(
-//                buffer,                     // <src>
-//                null,                       // <attachment>
-//                new CompletionHandler<>() { // <handler>
-//                    @Override // @formatter:off
-//                    public void completed(final Integer result, final Object a) {
-//                        assert result > 0; // why?
-//                        if (!buffer.hasRemaining()) {
-//                            handler.completed(channel, attachment);
-//                            return;
-//                        }
-//                        channel.write(
-//                                buffer, // <src>
-//                                a,      // <attachment>
-//                                this    // <handler>; what does the `this` expression denote?
-//                        );
-//                    }
-//                    @Override public void failed(final Throwable exc, final Object a) {
-//                        handler.failed(exc, attachment);
-//                    } // @formatter:on
-//                }
-//        );
-    }
-
-    /**
-     * Sends, asynchronously, the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>
-     * to the specified channel, and notifies a completion (or a failure) to the specified handler
-     * with the specified attachment.
-     *
-     * @param channel    the channel to which the <a
-     *                   href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> are sent.
-     * @param attachment an attachment.
-     * @param handler    the handler to be notified with a completion (or a failure).
-     * @param <T>        channel type parameter
-     * @param <A>        attachment type parameter
-     * @implSpec Default implementation invokes
-     * {@link #write(AsynchronousByteChannel, Object, CompletionHandler)} method with the given
-     * arguments.
-     * @deprecated Invoke, directly, the
-     * {@link #write(AsynchronousByteChannel, Object, CompletionHandler)} method with
-     * {@code channel}, {@code attachment}, and {@code handler}.
-     */
-    @屋上架屋("AsynchronousSocketChannel implements AsynchronousByteChannel")
-    @Deprecated(forRemoval = true)
-    default <T extends AsynchronousSocketChannel, A> void send(
-            final T channel, final A attachment,
-            final CompletionHandler<? super T, ? super A> handler) {
-        write(channel, attachment, handler);
-    }
-
-    /**
      * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified asynchronous
      * file channel, starting at the given file position.
      * <pre>
@@ -1328,113 +1216,6 @@ public interface HelloWorld {
             }
         }
         return channel;
-    }
-
-    /**
-     * Writes, asynchronously, the <a href="#hello-world-bytes">hello-world-bytes</a> to the
-     * specified channel, starting at the specified position, and notifies a completion (or a
-     * failure) to the specified handler.
-     *
-     * @param <T>        channel type parameter
-     * @param <A>        attachment type parameter
-     * @param channel    the asynchronous file channel to which bytes are written.
-     * @param position   the file position at which the transfer is to begin; must be non-negative.
-     * @param attachment an attachment for the {@code handler}; may be {@code null}.
-     * @param handler    the handler.
-     * @throws NullPointerException     if either {@code channel} or {@code handler} is
-     *                                  {@code null}.
-     * @throws IllegalArgumentException if {@code position} is negative.
-     * @see AsynchronousFileChannel#write(ByteBuffer, long, Object, CompletionHandler)
-     */
-    // @formatter:off
-    default <T extends AsynchronousFileChannel, A> void write(
-            final T channel,
-            final long position,
-            final @Nullable A attachment,
-            final CompletionHandler<? super T, ? super A> handler) {
-        Objects.requireNonNull(channel, "channel is null");
-        if (position < 0L) {
-            throw new IllegalArgumentException("position(" + position + ") is negative");
-        }
-        Objects.requireNonNull(handler, "handler is null");
-        // get the <hello-world-bytes>
-        final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
-        // write the <buffer> to the <channel>
-        channel.write(
-                buffer,                     // <src>
-                position,                   // <position>
-                position,                   // <attachment>
-                new CompletionHandler<>() { // <handler>
-                    @Override public void completed(final Integer r, final Long p) {
-                        assert r > 0; // why?
-                        if (!buffer.hasRemaining()) {
-                            handler.completed(channel, attachment);
-                            return;
-                        }
-                        final var position = p + r;
-                        channel.write(
-                                buffer,   // <src>
-                                position, // <position>
-                                position, // <attachment>
-                                this      // <handler>
-                        );
-                    }
-                    @Override public void failed(final Throwable t, final Long p) {
-                        handler.failed(t, attachment);
-                    }
-                }
-        );
-    } // @formatter:on
-
-    /**
-     * Appends the <a href="#hello-world-bytes">hello-world-bytes</a> to the end of the specified
-     * path to a file, and notifies a completion (or a failure) to the specified handler.
-     *
-     * @param path       the path to a file to which the bytes are appended.
-     * @param attachment an attachment for the handler.
-     * @param handler    the handler to be notified with a completion (or a failure).
-     * @param <T>        path type parameter
-     * @param <A>        attachment type parameter
-     * @throws IOException if an I/O error occurs.
-     */
-    default <T extends Path, A> void append(final T path, @Nullable final A attachment,
-                                            final CompletionHandler<? super T, ? super A> handler)
-            throws IOException {
-        Objects.requireNonNull(path, "path is null");
-        Objects.requireNonNull(handler, "handler is null");
-        final var options = new OpenOption[] {
-                StandardOpenOption.CREATE,
-                StandardOpenOption.WRITE
-        };
-        @SuppressWarnings({
-                "java:S2095" // Resources should be closed
-        })
-        final var channel = AsynchronousFileChannel.open(path, options); // no try-with-resources?
-        write(channel, channel.size(), attachment, new CompletionHandler<>() { // @formatter:off
-            @Override public void completed(final AsynchronousFileChannel r, final A a) {
-                assert r == channel;
-                try {
-                    r.force(true);
-                    r.close();
-                } catch (final IOException ioe) {
-//                    log().error("failed to force/close the channel", ioe);
-                    handler.failed(ioe, a);
-                    return;
-                }
-                handler.completed(path, a);
-            }
-            @Override public void failed(final Throwable t, final A a) {
-//                log().error("failed({}, {})", t, a, t);
-                try {
-                    channel.close();
-                } catch (final IOException ioe) {
-//                    log().error("failed to close the channel", ioe);
-                    handler.failed(ioe, a);
-                    return;
-                }
-                handler.failed(t, a);
-            } // @formatter:on
-        });
     }
 
     // ------------------------------------------------------------------------------- java.nio.file

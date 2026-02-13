@@ -1,8 +1,8 @@
 package com.github.jinahya.hello.api._java_nio_channels;
 
+import com.github.jinahya.hello.api.AsynchronousHelloWorld;
 import com.github.jinahya.hello.api.DefaultAsynchronousHelloWorldTest;
 import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldTestUtils;
 import com.github.jinahya.hello.api.畵蛇添足;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
@@ -27,19 +27,18 @@ import java.util.concurrent.atomic.LongAdder;
 
 /**
  * A class for testing
- * {@link com.github.jinahya.hello.api.AsynchronousHelloWorld#write(AsynchronousByteChannel, Object,
- * CompletionHandler)} method.
+ * {@link AsynchronousHelloWorld#write(AsynchronousByteChannel, Object, CompletionHandler)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @DisplayName("write(channel, attachment, handler)")
 @Slf4j
-class AsynchronousHelloWorld_Write_Channel_Attachment_Handler_Test
+class AsynchronousHelloWorld_Write_AsynchronouseByteChannel_Test
         extends DefaultAsynchronousHelloWorldTest {
 
     /**
      * Verifies that the
-     * {@link com.github.jinahya.hello.api.AsynchronousHelloWorld#write(AsynchronousByteChannel,
+     * {@link AsynchronousHelloWorld#write(AsynchronousByteChannel,
      * Object, CompletionHandler) write(channel, attachment, handler)} method throws a
      * {@link NullPointerException} when the {@code channel} argument is {@code null}.
      */
@@ -63,7 +62,7 @@ class AsynchronousHelloWorld_Write_Channel_Attachment_Handler_Test
 
     /**
      * Verifies that the
-     * {@link com.github.jinahya.hello.api.AsynchronousHelloWorld#write(AsynchronousByteChannel,
+     * {@link AsynchronousHelloWorld#write(AsynchronousByteChannel,
      * Object, CompletionHandler) write(channel, attachment, handler)} method throws a
      * {@link NullPointerException} when the {@code handler} argument is {@code null}.
      */
@@ -84,11 +83,9 @@ class AsynchronousHelloWorld_Write_Channel_Attachment_Handler_Test
         );
     }
 
-    // ---------------------------------------------------------------------------------------------
-
     /**
      * Verifies that the
-     * {@link com.github.jinahya.hello.api.AsynchronousHelloWorld#write(AsynchronousByteChannel,
+     * {@link AsynchronousHelloWorld#write(AsynchronousByteChannel,
      * Object, CompletionHandler) write(channel, attachment, handler)} method writes all
      * {@value HelloWorld#BYTES} bytes to the channel and invokes
      * {@link CompletionHandler#completed(Object, Object) handler.completed(channel, attachment)}.
@@ -153,7 +150,7 @@ class AsynchronousHelloWorld_Write_Channel_Attachment_Handler_Test
 
     /**
      * Verifies that the
-     * {@link com.github.jinahya.hello.api.AsynchronousHelloWorld#write(AsynchronousByteChannel,
+     * {@link AsynchronousHelloWorld#write(AsynchronousByteChannel,
      * Object, CompletionHandler) write(channel, attachment, handler)} method invokes
      * {@link CompletionHandler#failed(Throwable, Object) handler.failed(exc, attachment)} when the
      * {@code channel} fails to write.

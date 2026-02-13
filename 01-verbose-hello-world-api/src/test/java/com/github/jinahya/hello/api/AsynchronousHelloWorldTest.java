@@ -1,6 +1,7 @@
 package com.github.jinahya.hello.api;
 
 import org.junit.platform.commons.util.ReflectionUtils;
+import org.mockito.Mockito;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Objects;
@@ -50,7 +51,7 @@ abstract class AsynchronousHelloWorldTest<T extends AsynchronousHelloWorld> {
     protected final AsynchronousHelloWorld service() {
         T result = _instance;
         if (result == null) {
-            result = _instance = newTypeInstance();
+            result = _instance = Mockito.spy(newTypeInstance());
         }
         return result;
     }

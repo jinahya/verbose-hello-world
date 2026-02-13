@@ -130,3 +130,8 @@ The `generate-executables` profile (active by default) produces multiple artifac
   - Before/after states for I/O operations
 - **@implSpec**: Describes default implementation behavior
 - **@apiNote**: Documents usage notes (e.g., "does not flush the stream")
+
+## Tracking Documents
+
+- **`TARGETS.md`** — Catalog of all interface methods organized by Java API package, with call-chain dependencies, status (active/deprecated), and potential additions
+- **`ASSESSMENTS.md`** — Code review findings per interface and method (issues, stub implementations, missing javadoc, etc.)

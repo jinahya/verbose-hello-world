@@ -20,8 +20,6 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import org.jspecify.annotations.Nullable;
-
 import java.io.DataOutput;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -34,20 +32,19 @@ import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.AsynchronousFileChannel;
-import java.nio.channels.CompletionHandler;
 import java.nio.channels.WritableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Just a revisited implementation.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-interface HelloWorldRevisited extends HelloWorld {
+interface HelloWorldRevisited
+        extends HelloWorld {
 
     // ----------------------------------------------------------------------------------- java.lang
     @Override
@@ -161,58 +158,8 @@ interface HelloWorldRevisited extends HelloWorld {
     }
 
     @Override
-    default <T extends AsynchronousByteChannel, A> void write(
-            final T channel,
-            final @Nullable A attachment,
-            final CompletionHandler<? super T, ? super A> handler) { // @formatter:off
-        Objects.requireNonNull(channel, "channel is null");
-        Objects.requireNonNull(handler, "handler is null");
-        final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
-        channel.write(buffer, attachment, new CompletionHandler<>() {
-            @Override public void completed(final Integer result, final A attachment) {
-                if (!buffer.hasRemaining()) {
-                    handler.completed(channel, attachment);
-                    return;
-                }
-                channel.write(buffer, attachment, this);
-            }
-            @Override public void failed(final Throwable exc, final A attachment) {
-                handler.failed(exc, attachment);
-            }
-        }); // @formatter:on
-    }
-
-    @Override
     default <T extends AsynchronousFileChannel> T write(final T channel, long position)
             throws InterruptedException, IOException {
         return HelloWorld.super.write(channel, position);
-    }
-
-    @Override
-    default <T extends AsynchronousFileChannel, A> void write(
-            final T channel,
-            final long position,
-            final @Nullable A attachment,
-            final CompletionHandler<? super T, ? super A> handler) { // @formatter:off
-        final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
-        channel.write(
-                buffer,                     // <src>
-                position,                   // <position>
-                new AtomicLong(position),   // <attachment>
-                new CompletionHandler<>() { // <handler>
-                    @Override
-                    public void completed(final Integer result, final AtomicLong cursor) {
-                        if (!buffer.hasRemaining()) {
-                            handler.completed(channel, attachment);
-                            return;
-                        }
-                        channel.write(buffer, cursor.addAndGet(result), cursor, this);
-                    }
-                    @Override
-                    public void failed(final Throwable exc, final AtomicLong cursor) {
-                        handler.failed(exc, attachment);
-                    }
-                }
-        ); // @formatter:on
     }
 }

@@ -148,17 +148,14 @@ public interface AsynchronousHelloWorld {
      * @implSpec Default implementation invokes
      * {@link #write(AsynchronousByteChannel, Object, CompletionHandler)} method with
      * {@code channel}, {@code attachment}, and {@code handler}.
-     * @deprecated Invoke, directly, the
-     * {@link #write(AsynchronousByteChannel, Object, CompletionHandler)} method with
-     * {@code channel}, {@code attachment}, and {@code handler}.
+     * @deprecated The {@link AsynchronousSocketChannel} implements {@link AsynchronousByteChannel}.
+     * Use {@link #write(AsynchronousByteChannel, Object, CompletionHandler)} method.
      */
-    @屋上架屋("AsynchronousSocketChannel implements AsynchronousByteChannel")
     @Deprecated(forRemoval = true)
+    @屋上架屋("AsynchronousSocketChannel implements AsynchronousByteChannel")
     default <T extends AsynchronousSocketChannel, A>
     void send(final T channel, final A attachment,
               final CompletionHandler<? super T, ? super A> handler) {
-        Objects.requireNonNull(channel, "channel is null");
-        Objects.requireNonNull(handler, "handler is null");
         write(channel, attachment, handler);
     }
 
@@ -190,10 +187,23 @@ public interface AsynchronousHelloWorld {
      *
      * @param path       the path to a file to which the bytes are appended.
      * @param attachment an attachment for the handler.
-     * @param handler    the handler to be notified with a completion (or a failure).
+     * @param handler    the handler.
      * @param <T>        path type parameter
      * @param <A>        attachment type parameter
-     * @throws IOException if an I/O error occurs.
+     * @throws IOException          if an I/O error occurs.
+     * @throws NullPointerException if either {@code path} or {@code handler} is {@code null}.
+     * @implSpec The default implementation opens an {@link AsynchronousFileChannel} for the
+     * specified {@code path} with {@link StandardOpenOption#CREATE CREATE} and
+     * {@link StandardOpenOption#WRITE WRITE} options, and invokes the
+     * {@link #write(AsynchronousFileChannel, long, Object, CompletionHandler)} method with the
+     * channel, the channel's current {@link AsynchronousFileChannel#size() size} as the position,
+     * the {@code attachment}, and a {@link CompletionHandler} that, on completion, forces the
+     * channel, closes it, and notifies {@code handler.completed(path, attachment)}, or, on failure,
+     * closes the channel and notifies {@code handler.failed(exc, attachment)}.
+     * @implNote The reading of the channel's {@link AsynchronousFileChannel#size() size} and the
+     * subsequent {@link #write(AsynchronousFileChannel, long, Object, CompletionHandler) write} are
+     * not atomic. A concurrent writer may extend the file between the two operations, causing
+     * data being overwritten rather than appended.
      */
     default <T extends Path, A>
     void append(final T path, @Nullable final A attachment,
@@ -214,6 +224,16 @@ public interface AsynchronousHelloWorld {
                 assert r == channel;
                 try {
                     r.force(true);
+                } catch (final IOException ioe) {
+                    try {
+                        r.close();
+                    } catch (final IOException cioe) {
+                        ioe.addSuppressed(cioe);
+                    }
+                    handler.failed(ioe, a);
+                    return;
+                }
+                try {
                     r.close();
                 } catch (final IOException ioe) {
                     handler.failed(ioe, a);
@@ -225,6 +245,7 @@ public interface AsynchronousHelloWorld {
                 try {
                     channel.close();
                 } catch (final IOException ioe) {
+                    ioe.addSuppressed(t);
                     handler.failed(ioe, a);
                     return;
                 }
