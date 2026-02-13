@@ -60,10 +60,10 @@ Code review findings per interface and method, organized by Java API package.
 #### `send(DatagramSocket, SocketAddress)` — with target
 - No issues.
 
-#### `send(MulticastSocket)` — deprecated
+#### ~~`send(MulticastSocket)`~~ — deprecated
 - No issues. Delegates to `send(DatagramSocket)`.
 
-#### `send(MulticastSocket, SocketAddress)` — deprecated
+#### ~~`send(MulticastSocket, SocketAddress)`~~ — deprecated
 - No issues. Delegates to `send(DatagramSocket, SocketAddress)`.
 
 #### `send(Socket)`
@@ -87,10 +87,10 @@ Code review findings per interface and method, organized by Java API package.
 #### `write(WritableByteChannel)`
 - No issues. Loop with `hasRemaining` is correct.
 
-#### `write(GatheringByteChannel)` — deprecated
+#### ~~`write(GatheringByteChannel)`~~ — deprecated
 - No issues. Correctly deprecated, delegates via `ByteBuffer[]` array.
 
-#### `write(SeekableByteChannel)` — deprecated
+#### ~~`write(SeekableByteChannel)`~~ — deprecated
 - **Missing javadoc**: No javadoc at all.
 - Delegates to `write(WritableByteChannel)` via cast.
 
@@ -101,20 +101,20 @@ Code review findings per interface and method, organized by Java API package.
 #### `write(DatagramChannel)` — connected
 - Same pattern as `send(DatagramChannel, SocketAddress)`. No issues.
 
-#### `send(SocketChannel)` — deprecated
+#### ~~`send(SocketChannel)`~~ — deprecated
 - No issues. Delegates to `write(WritableByteChannel)`.
 
 #### `write(AsynchronousByteChannel)` — Future-based
 - **ExecutionException unwrapping**: Correctly re-throws `InterruptedException`, `Error`, `RuntimeException`, `IOException`, and wraps anything else in `RuntimeException`. No issues.
 
-#### `send(AsynchronousSocketChannel)` — deprecated
+#### ~~`send(AsynchronousSocketChannel)`~~ — deprecated
 - No issues. Delegates to `write(AsynchronousByteChannel)`.
 
 #### `write(AsynchronousByteChannel, A, CompletionHandler)`
 - **Stub implementation**: The `channel.write(...)` call with internal `CompletionHandler` is commented out. Needs implementation.
 - Javadoc and `@implSpec` are correct.
 
-#### `send(AsynchronousSocketChannel, A, CompletionHandler)` — deprecated
+#### ~~`send(AsynchronousSocketChannel, A, CompletionHandler)`~~ — deprecated
 - No issues. Delegates to `write(AsynchronousByteChannel, A, CompletionHandler)`.
 
 #### `write(AsynchronousFileChannel, long)` — Future-based
@@ -170,7 +170,70 @@ Code review findings per interface and method, organized by Java API package.
 
 ## AsynchronousHelloWorld
 
-*(assessed separately)*
+### Static factory methods
+
+#### `from(HelloWorld)` — static factory
+- No issues. Null check, wraps in `DefaultAsynchronousHelloWorld`.
+
+### General async
+
+#### `applyAsync(T, BiFunction, Executor)` — abstract
+- No issues.
+
+#### `applyAsync(T, BiFunction)`
+- No issues. Delegates to `applyAsync(T, BiFunction, ForkJoinPool.commonPool())`.
+
+### java.net.http
+
+#### `sendBinary(WebSocket, boolean)` — abstract
+- No issues in specification.
+
+#### `sendPing(WebSocket)` — abstract
+- No issues in specification.
+
+#### `sendPong(WebSocket)` — abstract
+- No issues in specification.
+
+### java.nio.channels
+
+#### `write(AsynchronousByteChannel, A, CompletionHandler)` — abstract
+- No issues. Javadoc and snippet are correct.
+
+#### ~~`send(AsynchronousSocketChannel, A, CompletionHandler)`~~ — deprecated
+- No issues. Delegates to `write(AsynchronousByteChannel, A, CompletionHandler)`.
+
+#### `write(AsynchronousFileChannel, long, A, CompletionHandler)` — abstract
+- No issues. Javadoc complete with `@throws` for NPE and IAE.
+
+### java.nio.file
+
+#### `append(Path, A, CompletionHandler)`
+- No issues after fixes applied:
+  - `force()`/`close()` separated so `close()` always runs even if `force()` throws.
+  - `addSuppressed` used in `failed` path to preserve original exception when `close()` throws.
+  - `addSuppressed` used in `completed` path when `force()` fails and `close()` also fails.
+- **TOCTOU race** documented via `@implNote`: `channel.size()` and `write()` are not atomic.
+- `@throws NullPointerException` documented for `path` and `handler`.
+
+### DefaultAsynchronousHelloWorld (implementation)
+
+#### `applyAsync(T, BiFunction, Executor)`
+- No issues. Uses `CompletableFuture.supplyAsync`.
+
+#### `sendBinary(WebSocket, boolean)`
+- No issues.
+
+#### `sendPing(WebSocket)`
+- **Stub implementation**: Returns `null`. Needs implementation.
+
+#### `sendPong(WebSocket)`
+- **Stub implementation**: Returns `null`. Needs implementation.
+
+#### `write(AsynchronousByteChannel, A, CompletionHandler)`
+- No issues. Recursive callback pattern with `this` reference. Correctly handles partial writes.
+
+#### `write(AsynchronousFileChannel, long, A, CompletionHandler)`
+- No issues. Uses internal `Long` attachment to track position across partial writes. Correctly increments position by result.
 
 ## ReactiveHelloWorld
 

@@ -109,6 +109,11 @@ The `generate-executables` profile (active by default) produces multiple artifac
   - `_添足_畵蛇` = `_{then}_{given}` = "adding feet" given "drawing a snake"
   - Marks tests that go beyond unit testing (e.g., real network I/O instead of mocks)
 
+### Test Documentation Conventions
+
+- **Test class javadoc**: Every concrete test class must specify which class and method it tests, using `{@link}` references. Example: `"A class for testing {@link HelloWorld#write(OutputStream) write(stream)} method."`
+- **Test method javadoc**: Every test method must be documented starting with "Asserts" or "Verifies". Example: `"Verifies that the method throws a {@link NullPointerException} when the {@code channel} argument is {@code null}."`
+
 ## Key Conventions
 
 - Java Module System (`module-info.java`) is used across modules

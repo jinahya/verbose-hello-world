@@ -141,7 +141,7 @@ class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Test
     )
     @Test
     @SuppressWarnings({"unchecked"})
-    void _PutBufferWriteBufferToChannel_() {
+    void _completed_() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var channel = Mockito.mock(AsynchronousFileChannel.class);
@@ -152,6 +152,8 @@ class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Test
             final var p = i.getArgument(1, Long.class);
             final var a = i.getArgument(2);
             final var h = i.getArgument(3, CompletionHandler.class);
+            // verify that the position increments by cumulative written bytes
+            Assertions.assertEquals(position + written.longValue(), p);
             Thread.ofPlatform().start(() -> {
                 final var result = ThreadLocalRandom.current().nextInt(s.remaining()) + 1;
                 s.position(s.position() + result);
@@ -187,13 +189,54 @@ class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Test
         Assertions.assertEquals(HelloWorld.BYTES, written.intValue());
     }
 
+    @DisplayName("""
+            should invoke <handler.failed(exc, attachment)>
+            when the <channel> fails to write""")
+    @Test
+    @SuppressWarnings({"unchecked"})
+    void _failed_() {
+        // ----------------------------------------------------------------------------------- given
+        final var service = service();
+        // a mock object of <AsynchronousFileChannel>
+        final var channel = Mockito.mock(AsynchronousFileChannel.class);
+        // the exception to be thrown by the <channel>
+        final var exc = new RuntimeException("simulated write failure");
+        // stub, <channel.write(src, position, attachment, handler)> will start a new thread
+        //         which invokes <handler.failed(exc, attachment)>.
+        Mockito.doAnswer(i -> {
+            final var a = i.getArgument(2);
+            final var h = i.getArgument(3, CompletionHandler.class);
+            Thread.ofPlatform().start(() -> h.failed(exc, a));
+            return null;
+        }).when(channel).write(
+                ArgumentMatchers.notNull(), // <src>
+                ArgumentMatchers.anyLong(), // <position>
+                ArgumentMatchers.any(),     // <attachment>
+                ArgumentMatchers.notNull()  // <handler>
+        );
+        final var position = ThreadLocalRandom.current().nextLong(1024L);
+        // an attachment; <null> or non-<null>
+        final var attachment = ThreadLocalRandom.current().nextBoolean() ? null : new Object();
+        // a mock object of <CompletionHandler>
+        final var handler = Mockito.mock(CompletionHandler.class);
+        // ------------------------------------------------------------------------------------ when
+        service.write(channel, position, attachment, handler);
+        // ------------------------------------------------------------------------------------ then
+        // verify, <handler.failed(exc, attachment)> invoked, once, within some time.
+        Mockito.verify(handler, Mockito.timeout(TimeUnit.SECONDS.toMillis(8L)).times(1))
+                .failed(exc, attachment);
+        // verify, <handler.completed(?, ?)> never invoked.
+        Mockito.verify(handler, Mockito.never())
+                .completed(ArgumentMatchers.any(), ArgumentMatchers.any());
+    }
+
     @畵蛇添足("testing with a real file doesn't add any value")
     @Test
     void _添足_畵蛇(@TempDir final Path dir) throws Exception {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var file = Files.createTempFile(dir, null, null);
-        final var position = ThreadLocalRandom.current().nextLong(1024L);
+        final var position = ThreadLocalRandom.current().nextLong(128L);
         final var latch = new CountDownLatch(1);
         // ------------------------------------------------------------------------------------ when
         try (var channel = AsynchronousFileChannel.open(file, StandardOpenOption.WRITE)) {
