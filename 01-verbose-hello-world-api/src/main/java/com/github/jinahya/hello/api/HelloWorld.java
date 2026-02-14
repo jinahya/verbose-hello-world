@@ -55,6 +55,7 @@ import java.nio.CharBuffer;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.nio.MappedByteBuffer;
+import java.nio.ShortBuffer;
 import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.AsynchronousSocketChannel;
@@ -987,12 +988,28 @@ public interface HelloWorld {
 
     @Deprecated(forRemoval = true)
     @屋上架屋("CharBuffer implements Appendable")
-    default <T extends IntBuffer> T put(final T buffer) throws IOException {
+    default <T extends ShortBuffer> T put(final T buffer) throws IOException {
         Objects.requireNonNull(buffer, "buffer is null");
         if (buffer.remaining() < BYTES) {
             throw new BufferOverflowException();
         }
         final var b = ByteBuffer.allocate(BYTES);
+        put(b);
+        b.flip();
+        while (b.hasRemaining()) {
+            buffer.put(b.get());
+        }
+        return buffer;
+    }
+
+    @Deprecated(forRemoval = true)
+    @屋上架屋("CharBuffer implements Appendable")
+    default <T extends IntBuffer> T put(final T buffer) throws IOException {
+        Objects.requireNonNull(buffer, "buffer is null");
+        if (buffer.remaining() < BYTES) {
+            throw new BufferOverflowException();
+        }
+        final var b = ShortBuffer.allocate(BYTES);
         put(b);
         b.flip();
         while (b.hasRemaining()) {
