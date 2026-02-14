@@ -24,6 +24,9 @@ import java.time.Duration;
 import java.util.function.LongFunction;
 import java.util.function.LongSupplier;
 
+/**
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 interface StopwatchProvider<C> {
 
     LongSupplier DEFAULT_SUPPLIER = System::nanoTime;

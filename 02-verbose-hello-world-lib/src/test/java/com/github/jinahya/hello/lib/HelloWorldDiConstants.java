@@ -20,6 +20,9 @@ package com.github.jinahya.hello.lib;
  * #L%
  */
 
+/**
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @SuppressWarnings({
         "java:S115" // Constant names should comply with a naming convention
 })

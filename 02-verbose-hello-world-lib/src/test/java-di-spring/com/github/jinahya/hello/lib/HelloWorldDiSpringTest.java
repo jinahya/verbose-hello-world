@@ -26,6 +26,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+/**
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorldDiSpringTest extends HelloWorldDiTest {

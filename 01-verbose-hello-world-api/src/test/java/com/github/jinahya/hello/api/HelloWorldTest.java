@@ -108,11 +108,11 @@ public abstract class HelloWorldTest {
      * @see #verify_put_buffer12_invoked_once()
      */
     protected final void stub_put_buffer_will_increase_buffer_position_by_12() {
-        HelloWorldTestUtils.stub_put_buffer_will_increase_buffer_position_by_12(service);
+        HelloWorldTestUtils.put_buffer_will_increase_buffer_position_by_12(service);
     }
 
     protected final void stub_put_buffer_will_put_actual_hello_world_bytes() {
-        HelloWorldTestUtils.stub_put_buffer_will_put_actual_hello_world_bytes(service);
+        HelloWorldTestUtils.put_buffer_will_put_actual_hello_world_bytes(service);
     }
 
     /**

@@ -26,6 +26,9 @@ import com.github.jinahya.hello.lib.util.JavaLangObjectUtils;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 class HelloWorldWrap extends HelloWorldImpl {
 
     private static final String STRING = "hello, world";

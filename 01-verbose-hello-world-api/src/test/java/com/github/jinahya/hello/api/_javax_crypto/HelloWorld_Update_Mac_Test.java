@@ -28,6 +28,7 @@ import java.util.stream.Stream;
  * @see <a
  * href="https://docs.oracle.com/en/java/javase/25/docs/specs/security/standard-names.html#mac-algorithms">Mac
  * Algorithms</a> (Java Security Standard Algorithm Names)
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
 class HelloWorld_Update_Mac_Test extends HelloWorldTest {

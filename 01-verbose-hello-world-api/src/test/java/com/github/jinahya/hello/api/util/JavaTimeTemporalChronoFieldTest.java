@@ -27,6 +27,9 @@ import org.junit.jupiter.params.provider.EnumSource;
 
 import java.time.temporal.ChronoField;
 
+/**
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @Slf4j
 class JavaTimeTemporalChronoFieldTest {
 

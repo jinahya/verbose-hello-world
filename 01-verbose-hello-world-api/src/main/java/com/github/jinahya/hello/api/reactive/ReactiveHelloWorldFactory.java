@@ -4,6 +4,9 @@ import com.github.jinahya.hello.api.HelloWorld;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscription;
 
+/**
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 public interface ReactiveHelloWorldFactory {
 
     /**

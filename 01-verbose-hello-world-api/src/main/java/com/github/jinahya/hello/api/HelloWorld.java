@@ -23,12 +23,21 @@ package com.github.jinahya.hello.api;
 import jakarta.validation.constraints.Positive;
 
 import javax.crypto.Cipher;
+import javax.crypto.CipherOutputStream;
 import javax.crypto.Mac;
+import javax.net.ssl.SSLSocket;
+import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.DataOutput;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FilterOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.io.RandomAccessFile;
 import java.io.Writer;
 import java.lang.foreign.MemorySegment;
@@ -42,12 +51,17 @@ import java.net.StandardSocketOptions;
 import java.net.http.HttpRequest;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.IntBuffer;
+import java.nio.LongBuffer;
+import java.nio.MappedByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.FileChannel;
 import java.nio.channels.GatheringByteChannel;
+import java.nio.channels.Pipe;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.WritableByteChannel;
@@ -65,8 +79,13 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
+import java.util.jar.JarOutputStream;
 import java.util.zip.Checksum;
 import java.util.zip.Deflater;
+import java.util.zip.DeflaterOutputStream;
+import java.util.zip.GZIPOutputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * An interface for writing <a href="#hello-world-bytes">hello-world-bytes</a> to various targets.
@@ -359,6 +378,36 @@ public interface HelloWorld {
         return stream;
     }
 
+    @Deprecated(forRemoval = true)
+    @屋上架屋("FilterOutputStream extends OutputStream")
+    default <T extends FilterOutputStream> T write(final T stream) throws IOException {
+        return (T) write((OutputStream) stream);
+    }
+
+    @Deprecated(forRemoval = true)
+    @屋上架屋("BufferedOutputStream extends FilterOutputStream")
+    default <T extends BufferedOutputStream> T write(final T stream) throws IOException {
+        return (T) write((FilterOutputStream) stream);
+    }
+
+    @Deprecated(forRemoval = true)
+    @屋上架屋("CipherOutputStream extends FilterOutputStream")
+    default <T extends CipherOutputStream> T write(final T stream) throws IOException {
+        return (T) write((FilterOutputStream) stream);
+    }
+
+    @Deprecated(forRemoval = true)
+    @屋上架屋("PrintStream extends FilterOutputStream")
+    default <T extends PrintStream> T write(final T stream) throws IOException {
+        return (T) write((FilterOutputStream) stream);
+    }
+
+    @Deprecated(forRemoval = true)
+    @屋上架屋("ObjectOutputStream extends OutputStream")
+    default <T extends ObjectOutputStream> T write(final T stream) throws IOException {
+        return (T) write((OutputStream) stream);
+    }
+
     /**
      * Appends the <a href="#hello-world-bytes">hello-world-bytes</a> to the end of the specified
      * file.
@@ -438,6 +487,12 @@ public interface HelloWorld {
         return output;
     }
 
+    @Deprecated(forRemoval = true)
+    @屋上架屋("DataOutputStream extends FilterOutputStream, implements DataOutput")
+    default <T extends DataOutputStream> T write(final T stream) throws IOException {
+        return (T) write((DataOutput) stream);
+    }
+
     /**
      * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified random access
      * file starting at its current file pointer.
@@ -501,6 +556,18 @@ public interface HelloWorld {
         }
 //        append(writer);
         return writer;
+    }
+
+    @Deprecated(forRemoval = true)
+    @屋上架屋("BufferedWriter extends Writer")
+    default <T extends BufferedWriter> T write(final T writer) throws IOException {
+        return (T) write((Writer) writer);
+    }
+
+    @Deprecated(forRemoval = true)
+    @屋上架屋("PrintWriter extends Writer")
+    default <T extends PrintWriter> T write(final T writer) throws IOException {
+        return (T) write((Writer) writer);
     }
 
     // ------------------------------------------------------------------------------------ java.net
@@ -730,6 +797,12 @@ public interface HelloWorld {
         return socket;
     }
 
+    @Deprecated(forRemoval = true)
+    @屋上架屋("SSLSocket extends Socket")
+    default <T extends SSLSocket> T send(final T socket) throws IOException {
+        return (T) send((Socket) socket);
+    }
+
     // ------------------------------------------------------------------------------- java.net.http
 
     /**
@@ -886,6 +959,70 @@ public interface HelloWorld {
         return buffer;
     }
 
+    /**
+     * Puts the <a href="#hello-world-bytes">hello-world-bytes</a> on the specified char buffer.
+     *
+     * @param <T>    buffer type parameter
+     * @param buffer the char buffer on which bytes are put.
+     * @return the given {@code buffer}.
+     * @throws NullPointerException    if {@code buffer} is {@code null}.
+     * @throws BufferOverflowException if {@link ByteBuffer#remaining() buffer.remaining} is less
+     *                                 than {@value #BYTES}.
+     * @implSpec Default implementation, invokes {@link #append(Appendable) append(appendable)}
+     * method with the {@code buffer}, and returns the result.
+     * @see #append(Appendable)
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/CharBuffer.html">java.nio.CharBuffer</a>
+     * @deprecated Use {@link #append(Appendable)} method.
+     */
+    @Deprecated(forRemoval = true)
+    @屋上架屋("CharBuffer implements Appendable")
+    default <T extends CharBuffer> T put(final T buffer) throws IOException {
+        Objects.requireNonNull(buffer, "buffer is null");
+        if (buffer.remaining() < BYTES) {
+            throw new BufferOverflowException();
+        }
+        return (T) append((Appendable) buffer);
+    }
+
+    @Deprecated(forRemoval = true)
+    @屋上架屋("CharBuffer implements Appendable")
+    default <T extends IntBuffer> T put(final T buffer) throws IOException {
+        Objects.requireNonNull(buffer, "buffer is null");
+        if (buffer.remaining() < BYTES) {
+            throw new BufferOverflowException();
+        }
+        final var b = ByteBuffer.allocate(BYTES);
+        put(b);
+        b.flip();
+        while (b.hasRemaining()) {
+            buffer.put(b.get());
+        }
+        return buffer;
+    }
+
+    @Deprecated(forRemoval = true)
+    @屋上架屋("CharBuffer implements Appendable")
+    default <T extends LongBuffer> T put(final T buffer) throws IOException {
+        Objects.requireNonNull(buffer, "buffer is null");
+        if (buffer.remaining() < BYTES) {
+            throw new BufferOverflowException();
+        }
+        final var b = IntBuffer.allocate(BYTES);
+        put(b);
+        b.flip();
+        while (b.hasRemaining()) {
+            buffer.put(b.get());
+        }
+        return buffer;
+    }
+
+    @Deprecated(forRemoval = true)
+    @屋上架屋("MappedByteBuffer extends ByteBuffer")
+    default <T extends MappedByteBuffer> T put(final T buffer) {
+        return (T) put((ByteBuffer) buffer);
+    }
+
     // --------------------------------------------------------------------------- java.nio.channels
 
     /**
@@ -975,8 +1112,14 @@ public interface HelloWorld {
     }
 
     @Deprecated(forRemoval = true)
-    @屋上架屋
+    @屋上架屋("SeekableByteChannel extends WritableByteChannel")
     default <T extends SeekableByteChannel> T write(final T channel) throws IOException {
+        return (T) write((WritableByteChannel) channel);
+    }
+
+    @Deprecated(forRemoval = true)
+    @屋上架屋("Pipe.SinkChannel extends WritableByteChannel")
+    default <T extends Pipe.SinkChannel> T write(final T channel) throws IOException {
         return (T) write((WritableByteChannel) channel);
     }
 
@@ -1449,5 +1592,40 @@ public interface HelloWorld {
         set(array);
         deflater.setInput(array);
         return deflater;
+    }
+
+    @Deprecated(forRemoval = true)
+    @屋上架屋("DeflatorOutputStream extends FilterOutputStream")
+    default <T extends DeflaterOutputStream> T write(final T stream) throws IOException {
+        return (T) write((FilterOutputStream) stream);
+    }
+
+    @Deprecated(forRemoval = true)
+    @屋上架屋("GZIPOutputStream extends DeflatorOutputStream")
+    default <T extends GZIPOutputStream> T write(final T stream) throws IOException {
+        return (T) write((DeflaterOutputStream) stream);
+    }
+
+    @屋上架屋("ZipOutputStream extends DeflaterOutputStream")
+    @Deprecated(forRemoval = true)
+    default <T extends ZipOutputStream> T write(final T stream) throws IOException {
+        return (T) write((DeflaterOutputStream) stream);
+    }
+
+    @屋上架屋("JarOutputStream extends ZipOutputStream")
+    @Deprecated(forRemoval = true)
+    default <T extends JarOutputStream> T write(final T stream) throws IOException {
+        return (T) write((ZipOutputStream) stream);
+    }
+
+    default <T extends ZipOutputStream> T put(final T stream, final String name)
+            throws IOException {
+        Objects.requireNonNull(stream, "stream is null");
+        Objects.requireNonNull(name, "name is null");
+        final var entry = new ZipEntry(name);
+        stream.putNextEntry(entry);
+        write(stream);
+        stream.closeEntry();
+        return stream;
     }
 }

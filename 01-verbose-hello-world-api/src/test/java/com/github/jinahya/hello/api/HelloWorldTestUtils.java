@@ -41,7 +41,11 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.IntStream;
 
+/**
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @Slf4j
 @SuppressWarnings({
         "java:S101"
@@ -57,10 +61,18 @@ public final class HelloWorldTestUtils {
         return HelloWorldTestConstants.HELLO_WORLD_STRING.getBytes(StandardCharsets.US_ASCII);
     }
 
-    static HelloWorld requireMock(final HelloWorld service) {
+    static <T extends HelloWorld> T requireMock(final T service) {
         Objects.requireNonNull(service, "service is null");
         if (!Mockito.mockingDetails(service).isMock()) {
             throw new IllegalArgumentException("not a mock: " + service);
+        }
+        return service;
+    }
+
+    static <T extends HelloWorld> T requireNotMock(final T service) {
+        Objects.requireNonNull(service, "service is null");
+        if (Mockito.mockingDetails(service).isMock()) {
+            throw new IllegalArgumentException("a mock: " + service);
         }
         return service;
     }
@@ -101,7 +113,8 @@ public final class HelloWorldTestUtils {
         return array;
     }
 
-    public static void stub_put_buffer_will_put_actual_hello_world_bytes(final HelloWorld service) {
+    public static <T extends HelloWorld> T put_buffer_will_put_actual_hello_world_bytes(
+            final T service) {
         requireMock(service);
         Mockito
                 .doAnswer(i -> {
@@ -111,25 +124,31 @@ public final class HelloWorldTestUtils {
                 })
                 .when(service)
                 .put(ArgumentMatchers.any(ByteBuffer.class));
+        return service;
     }
 
     /**
      * Stubs given mock service's {@link HelloWorld#put(ByteBuffer) put(buffer)} method to just
-     * return the {@code bufefer} whose {@link ByteBuffer#position() position} is increased by
+     * return the {@code bufefer} whose {@link ByteBuffer#position() position} increased by
      * {@value HelloWorld#BYTES}.
      *
      * @param service the mock service.
      * @see #verify_put_buffer12_invoked_once(HelloWorld)
      */
-    static void stub_put_buffer_will_increase_buffer_position_by_12(final HelloWorld service) {
+    public static <T extends HelloWorld>
+    T put_buffer_will_increase_buffer_position_by_12(final T service) {
         requireMock(service);
         Mockito.doAnswer(i -> {
-                    final var buffer = i.getArgument(0, ByteBuffer.class);
+                    final var buffer = Mockito.spy(i.getArgument(0, ByteBuffer.class));
+//                    final var buffer = Mockito.spy(i.getArgument(0, ByteBuffer.class));
                     buffer.position(buffer.position() + HelloWorld.BYTES);
                     return buffer;
                 })
                 .when(service)
-                .put(ArgumentMatchers.argThat(b -> b != null && b.remaining() >= HelloWorld.BYTES));
+                .<ByteBuffer>put(ArgumentMatchers.argThat(
+                        b -> b != null && b.remaining() >= HelloWorld.BYTES
+                ));
+        return service;
     }
 
     public static ByteBuffer verify_put_buffer12_invoked_once(final HelloWorld service) {
@@ -140,6 +159,25 @@ public final class HelloWorldTestUtils {
         Assertions.assertNotNull(buffer);
         Assertions.assertEquals(HelloWorld.BYTES, buffer.capacity());
         return buffer;
+    }
+
+    public static <T extends HelloWorld> T append_appendable_appends_12_chars(final T service)
+            throws IOException {
+        requireMock(service);
+        Mockito.doAnswer(i -> {
+                    final var appendable = i.getArgument(0, Appendable.class);
+                    IntStream.range(0, HelloWorld.BYTES).forEach(_ -> {
+                        try {
+                            appendable.append('0');
+                        } catch (final IOException ioe) {
+                            throw new RuntimeException(ioe);
+                        }
+                    });
+                    return appendable;
+                })
+                .when(service)
+                .append(ArgumentMatchers.notNull(Appendable.class));
+        return service;
     }
 
     // ---------------------------------------------------------------------------------------------

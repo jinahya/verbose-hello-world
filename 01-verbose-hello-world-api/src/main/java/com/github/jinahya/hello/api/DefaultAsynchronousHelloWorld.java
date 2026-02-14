@@ -14,6 +14,9 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executor;
 import java.util.function.BiFunction;
 
+/**
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 class DefaultAsynchronousHelloWorld
         implements AsynchronousHelloWorld {
 

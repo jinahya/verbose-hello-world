@@ -24,6 +24,9 @@ import java.io.PrintStream;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 
+/**
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 public final class JavaNioByteBufferUtils {
 
     /**

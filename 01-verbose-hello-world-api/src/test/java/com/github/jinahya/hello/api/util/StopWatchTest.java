@@ -33,6 +33,9 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @DisplayName("Stopwatch1")
 @Nested
 class StopWatchTest {

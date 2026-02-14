@@ -25,6 +25,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 //@Retention(RetentionPolicy.CLASS)
 @Retention(RetentionPolicy.RUNTIME) // javadoc
 @Target({ElementType.CONSTRUCTOR})

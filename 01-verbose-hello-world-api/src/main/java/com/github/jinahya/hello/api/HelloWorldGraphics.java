@@ -3,6 +3,9 @@ package com.github.jinahya.hello.api;
 import java.awt.*;
 import java.util.Objects;
 
+/**
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 public interface HelloWorldGraphics {
 
     static HelloWorldGraphics newInstance(final HelloWorld service) {

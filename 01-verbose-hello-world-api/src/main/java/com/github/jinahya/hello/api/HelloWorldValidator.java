@@ -2,6 +2,9 @@ package com.github.jinahya.hello.api;
 
 import java.util.Objects;
 
+/**
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 final class HelloWorldValidator {
 
     static byte[] requireValid(final byte[] array) {

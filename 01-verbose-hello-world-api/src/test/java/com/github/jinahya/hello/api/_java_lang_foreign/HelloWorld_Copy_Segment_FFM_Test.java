@@ -24,6 +24,8 @@ import java.util.Optional;
 /**
  * Tests {@link HelloWorld#copy(MemorySegment)} with various native libraries via FFM API. Tests are
  * conditionally skipped based on OS and library availability.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 class HelloWorld_Copy_Segment_FFM_Test {
 

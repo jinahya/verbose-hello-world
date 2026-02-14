@@ -30,13 +30,17 @@ import java.util.concurrent.FutureTask;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-final class HelloWorldUtils {
+/**
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
+public final class HelloWorldUtils {
 
     static byte[] getHelloWorldBytes() {
         return HelloWorldConstants.HELLO_WORLD_STRING
                 .getBytes(HelloWorldConstants.HELLO_WORLD_CHARSET);
     }
 
+    // ---------------------------------------------------------------------------------------------
     public static <T> Future<T> executeAsync(
             final Supplier<? extends HelloWorld> supplier,
             final Function<? super HelloWorld, ? extends T> function, final Executor executor) {
@@ -61,6 +65,7 @@ final class HelloWorldUtils {
         );
     }
 
+    // ---------------------------------------------------------------------------------------------
     @_ExcludeFromCoverage_PrivateConstructor_Obviously
     private HelloWorldUtils() {
         throw new AssertionError("instantiation is not allowed");

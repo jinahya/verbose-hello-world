@@ -27,6 +27,9 @@ import org.slf4j.event.Level;
 import java.lang.reflect.Method;
 import java.util.Objects;
 
+/**
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @Slf4j
 // https://gist.github.com/nkcoder/cd74919fd80594c56e09b448a2d1ba31
 final class LoggingUtils {

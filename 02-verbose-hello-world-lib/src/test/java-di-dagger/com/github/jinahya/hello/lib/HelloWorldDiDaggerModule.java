@@ -30,6 +30,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.lang.annotation.Annotation;
 
+/**
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @Module
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j

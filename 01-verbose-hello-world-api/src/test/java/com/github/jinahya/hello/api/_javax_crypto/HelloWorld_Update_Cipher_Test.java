@@ -27,6 +27,7 @@ import java.util.concurrent.ThreadLocalRandom;
  *
  * @see <a
  * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/javax/crypto/Cipher.html">javax.crypto.Cipher</a>
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 class HelloWorld_Update_Cipher_Test extends HelloWorldTest {
 

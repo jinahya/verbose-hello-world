@@ -23,6 +23,9 @@ package com.github.jinahya.hello.lib;
 import dagger.Component;
 import dagger.MembersInjector;
 
+/**
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @Component(modules = {HelloWorldDiDaggerModule.class})
 interface HelloWorldDiDaggerMembersInjector extends MembersInjector<HelloWorldDiDaggerTest> {
 

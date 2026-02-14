@@ -22,6 +22,8 @@ import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * A class for testing {@link HelloWorld#write(SeekableByteChannel)} method.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @DisplayName("write(SeekableByteChannel)")
 @Slf4j
@@ -83,7 +85,7 @@ class HelloWorld_Write_SeekableByteChannel_Test extends HelloWorldTest {
     void _添足_畵蛇(@TempDir final Path tempDir) throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        HelloWorldTestUtils.stub_put_buffer_will_put_actual_hello_world_bytes(service);
+        HelloWorldTestUtils.put_buffer_will_put_actual_hello_world_bytes(service);
         final var file = Files.createTempFile(tempDir, null, null);
         final var position = ThreadLocalRandom.current().nextLong(128L);
         // ----------------------------------------------------------------------------------- write

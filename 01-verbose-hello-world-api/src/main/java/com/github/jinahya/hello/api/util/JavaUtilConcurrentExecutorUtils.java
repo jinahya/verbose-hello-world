@@ -22,6 +22,9 @@ package com.github.jinahya.hello.api.util;
 
 import java.util.concurrent.Executor;
 
+/**
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 public final class JavaUtilConcurrentExecutorUtils {
 
     /**

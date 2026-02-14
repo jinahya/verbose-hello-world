@@ -31,6 +31,7 @@ import java.lang.annotation.RetentionPolicy;
  * @see <a href="https://namu.wiki/w/%EC%98%A5%EC%83%81%EA%B0%80%EC%98%A5">옥상가옥</a> (manu.wiki)
  * @see 屋下架屋
  * @see 畵蛇添足
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Documented
 @Repeatable(屋上架屋Container.class)

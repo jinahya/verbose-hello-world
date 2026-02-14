@@ -26,6 +26,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.jboss.weld.junit5.auto.AddBeanClasses;
 import org.jboss.weld.junit5.auto.EnableAutoWeld;
 
+/**
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @AddBeanClasses({HelloWorldCdiFactory.class})
 @EnableAutoWeld
 @NoArgsConstructor(access = AccessLevel.PACKAGE)

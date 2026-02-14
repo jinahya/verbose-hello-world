@@ -20,6 +20,11 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
 import java.util.function.BiFunction;
 
+/**
+ * .
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 public interface AsynchronousHelloWorld {
 
     // ---------------------------------------------------------------------- STATIC_FACTORY_METHODS

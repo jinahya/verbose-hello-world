@@ -5,6 +5,9 @@ import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 import java.util.Objects;
 
+/**
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 class DefaultHelloWorldGraphics implements HelloWorldGraphics {
 
     private static final System.Logger logger =

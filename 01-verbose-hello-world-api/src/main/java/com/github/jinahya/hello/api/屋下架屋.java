@@ -30,6 +30,7 @@ import java.lang.annotation.RetentionPolicy;
  *
  * @see 屋上架屋
  * @see 畵蛇添足
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Documented
 @Repeatable(屋下架屋Container.class)

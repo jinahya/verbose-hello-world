@@ -4,6 +4,9 @@ import org.junit.platform.commons.util.ReflectionUtils;
 
 import java.util.Objects;
 
+/**
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 abstract class HelloWorldGraphicsTest<T extends HelloWorldGraphics> {
 
     HelloWorldGraphicsTest(final Class<T> type) {

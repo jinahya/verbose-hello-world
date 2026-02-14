@@ -65,7 +65,7 @@ class HelloWorld_Send_DatagramChannel_Target_Test extends HelloWorldTest {
     // ---------------------------------------------------------------------------------------------
     @BeforeEach
     void beforeEach() {
-        HelloWorldTestUtils.stub_put_buffer_will_put_actual_hello_world_bytes(service());
+        HelloWorldTestUtils.put_buffer_will_put_actual_hello_world_bytes(service());
     }
 
     // ---------------------------------------------------------------------------------------------

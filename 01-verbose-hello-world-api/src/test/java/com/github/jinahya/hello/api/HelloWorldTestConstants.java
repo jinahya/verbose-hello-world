@@ -23,6 +23,9 @@ package com.github.jinahya.hello.api;
 import com.github.jinahya.hello.api.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @Slf4j
 @SuppressWarnings({
         "java:S101"

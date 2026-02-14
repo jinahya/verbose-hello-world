@@ -24,6 +24,9 @@ import java.nio.channels.Selector;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @Slf4j
 class HelloWorld_Write_DatagramChannel_Test extends HelloWorldTest {
 
@@ -58,7 +61,7 @@ class HelloWorld_Write_DatagramChannel_Test extends HelloWorldTest {
     // ---------------------------------------------------------------------------------------------
     @BeforeEach
     void beforeEach() {
-        HelloWorldTestUtils.stub_put_buffer_will_put_actual_hello_world_bytes(service());
+        HelloWorldTestUtils.put_buffer_will_put_actual_hello_world_bytes(service());
     }
 
     // ---------------------------------------------------------------------------------------------

@@ -25,6 +25,9 @@ import java.security.MessageDigest;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @SuppressWarnings({
         "java:S4274" // > Replace this assert with a proper check.
 })

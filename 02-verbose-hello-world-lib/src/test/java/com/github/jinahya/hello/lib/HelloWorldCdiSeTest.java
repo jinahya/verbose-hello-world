@@ -23,6 +23,9 @@ package com.github.jinahya.hello.lib;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+/**
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 abstract class HelloWorldCdiSeTest extends HelloWorldDiTest {
 

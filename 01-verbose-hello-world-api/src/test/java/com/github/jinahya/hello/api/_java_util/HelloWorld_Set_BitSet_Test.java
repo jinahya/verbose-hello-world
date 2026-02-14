@@ -16,6 +16,8 @@ import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * A class for testing {@link HelloWorld#set(BitSet, int)} method.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @DisplayName("set(BitSet, int)")
 @Slf4j

@@ -25,6 +25,9 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+/**
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @ExtendWith({HelloWorldCdiSeTestInstanceFactory.class})
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j

@@ -14,6 +14,7 @@ Analysis of interface methods organized by Java API package.
 | `HelloWorld` | `byte[]` | `set(byte[])` | Active | → `set(array, 0)` |
 | `HelloWorld` | `byte[]` | `set()` | Active | → `set(new byte[BYTES])` |
 | `HelloWorld` | `Appendable` | `append(T)` | Active | → `set(byte[])` |
+| `HelloWorld` | `CharBuffer` | `append(T)` | Deprecated | → `append(Appendable)` |
 
 ## java.lang.foreign
 
@@ -26,9 +27,17 @@ Analysis of interface methods organized by Java API package.
 | Interface | Target Class | Method | Status | Notes |
 |-----------|--------------|--------|--------|-------|
 | `HelloWorld` | `OutputStream` | `write(T)` | Active | → `set(byte[])` |
+| `HelloWorld` | `FilterOutputStream` | `write(T)` | Deprecated | → `write(OutputStream)` |
+| `HelloWorld` | `BufferedOutputStream` | `write(T)` | Deprecated | → `write(FilterOutputStream)` |
+| `HelloWorld` | `CipherOutputStream` | `write(T)` | Deprecated | → `write(FilterOutputStream)` |
+| `HelloWorld` | `PrintStream` | `write(T)` | Deprecated | → `write(FilterOutputStream)` |
+| `HelloWorld` | `ObjectOutputStream` | `write(T)` | Deprecated | → `write(OutputStream)` |
 | `HelloWorld` | `DataOutput` | `write(T)` | Active | → `set(byte[])` |
+| `HelloWorld` | `DataOutputStream` | `write(T)` | Deprecated | → `write(DataOutput)` / `write(FilterOutputStream)` |
 | `HelloWorld` | `RandomAccessFile` | `write(T)` | Active | → `write(DataOutput)` |
 | `HelloWorld` | `Writer` | `write(T)` | Active | → `append(Appendable)` |
+| `HelloWorld` | `BufferedWriter` | `write(T)` | Deprecated | → `write(Writer)` |
+| `HelloWorld` | `PrintWriter` | `write(T)` | Deprecated | → `write(Writer)` |
 | `HelloWorld` | `File` | `append(T)` | Active | → `write(OutputStream)` |
 
 ## java.net
@@ -42,6 +51,7 @@ Analysis of interface methods organized by Java API package.
 | `HelloWorld` | `MulticastSocket` | `send(T)` | Deprecated | → `send(DatagramSocket)` |
 | `HelloWorld` | `MulticastSocket` | `send(T, SocketAddress)` | Deprecated | → `send(DatagramSocket, SocketAddress)` |
 | `HelloWorld` | `Socket` | `send(T)` | Active | → `write(OutputStream)` |
+| `HelloWorld` | `SSLSocket` | `send(T)` | Deprecated | → `send(Socket)` |
 
 ## java.net.http
 
@@ -58,6 +68,7 @@ Analysis of interface methods organized by Java API package.
 |-----------|--------------|--------|--------|-------|
 | `HelloWorld` | `ByteBuffer` | `put(T)` | Active | → `set(byte[])` |
 | `HelloWorld` | `ByteBuffer` | `put()` | Active | → `put(ByteBuffer.allocate(BYTES))` |
+| `HelloWorld` | `MappedByteBuffer` | `put(T)` | Deprecated | → `put(ByteBuffer)` |
 
 ## java.nio.channels
 
@@ -68,6 +79,7 @@ Analysis of interface methods organized by Java API package.
 | `HelloWorld` | `SeekableByteChannel` | `write(T)` | Deprecated | → `write(WritableByteChannel)` |
 | `HelloWorld` | `DatagramChannel` | `write(T)` | Active | → `write(WritableByteChannel)` |
 | `HelloWorld` | `DatagramChannel` | `send(T, SocketAddress)` | Active | → `put(ByteBuffer)` |
+| `HelloWorld` | `Pipe.SinkChannel` | `write(T)` | Deprecated | → `write(WritableByteChannel)` |
 | `HelloWorld` | `SocketChannel` | `send(T)` | Deprecated | → `write(WritableByteChannel)` |
 | `HelloWorld` | `AsynchronousByteChannel` | `write(T)` | Active | → `put(ByteBuffer)` |
 | `AsynchronousHelloWorld` | `AsynchronousByteChannel` | `write(T, A, CompletionHandler)` | Active | → `put(ByteBuffer)` |
@@ -109,6 +121,11 @@ Analysis of interface methods organized by Java API package.
 |-----------|--------------|--------|--------|-------|
 | `HelloWorld` | `Checksum` | `update(T)` | Active | → `set(byte[])` |
 | `HelloWorld` | `Deflater` | `input(T)` | Active | → `set(byte[])` |
+| `HelloWorld` | `DeflaterOutputStream` | `write(T)` | Deprecated | → `write(FilterOutputStream)` |
+| `HelloWorld` | `GZIPOutputStream` | `write(T)` | Deprecated | → `write(DeflaterOutputStream)` |
+| `HelloWorld` | `ZipOutputStream` | `write(T)` | Deprecated | → `write(DeflaterOutputStream)` |
+| `HelloWorld` | `JarOutputStream` | `write(T)` | Deprecated | → `write(ZipOutputStream)` |
+| `HelloWorld` | `ZipOutputStream` | `put(T, String)` | Active | → `write(OutputStream)`, creates/closes `ZipEntry` |
 
 ---
 
@@ -116,9 +133,9 @@ Analysis of interface methods organized by Java API package.
 
 | Metric | Count |
 |--------|-------|
-| **Total methods** | 45 |
-| **Active methods** | 38 |
-| **Deprecated methods** | 7 |
+| **Total methods** | 62 |
+| **Active methods** | 39 |
+| **Deprecated methods** | 23 |
 | **Abstract methods** | 1 |
 | **Async (Future-based)** | 2 |
 | **Async (CompletionHandler)** | 3 |
@@ -135,6 +152,22 @@ Analysis of interface methods organized by Java API package.
 | `send(AsynchronousSocketChannel, A, CompletionHandler)` | `write(AsynchronousByteChannel, A, CompletionHandler)` |
 | `send(MulticastSocket)` | `send(DatagramSocket)` |
 | `send(MulticastSocket, SocketAddress)` | `send(DatagramSocket, SocketAddress)` |
+| `write(FilterOutputStream)` | `write(OutputStream)` |
+| `write(DeflaterOutputStream)` | `write(FilterOutputStream)` |
+| `write(GZIPOutputStream)` | `write(DeflaterOutputStream)` |
+| `write(ZipOutputStream)` | `put(ZipOutputStream, String)` |
+| `append(CharBuffer)` | `append(Appendable)` |
+| `write(BufferedOutputStream)` | `write(FilterOutputStream)` |
+| `write(CipherOutputStream)` | `write(FilterOutputStream)` |
+| `write(PrintStream)` | `write(FilterOutputStream)` |
+| `write(ObjectOutputStream)` | `write(OutputStream)` |
+| `write(DataOutputStream)` | `write(DataOutput)` |
+| `write(BufferedWriter)` | `write(Writer)` |
+| `write(PrintWriter)` | `write(Writer)` |
+| `send(SSLSocket)` | `send(Socket)` |
+| `put(MappedByteBuffer)` | `put(ByteBuffer)` |
+| `write(Pipe.SinkChannel)` | `write(WritableByteChannel)` |
+| `write(JarOutputStream)` | `write(ZipOutputStream)` |
 
 ---
 
@@ -159,21 +192,3 @@ Analysis of interface methods organized by Java API package.
 | `HelloWorld` | `javax.imageio.stream` | `ImageOutputStream` | `write(byte[])` |
 | `HelloWorld` | `javax.sound.sampled` | `SourceDataLine` | Audio output |
 
-### Redundant (Covered by Existing Methods)
-
-| Target | Covered By | Reason |
-|--------|------------|--------|
-| `BufferedOutputStream` | `OutputStream` | Subclass |
-| `BufferedWriter` | `Writer` | Subclass |
-| `CharBuffer` | `Appendable` | Implements Appendable |
-| `CipherOutputStream` | `OutputStream` | Subclass |
-| `DataOutputStream` | `DataOutput` | Implements DataOutput |
-| `GZIPOutputStream` | `OutputStream` | Subclass |
-| `JarOutputStream` | `OutputStream` | Subclass |
-| `MappedByteBuffer` | `ByteBuffer` | Subclass |
-| `ObjectOutputStream` | `OutputStream` | Subclass |
-| `Pipe.SinkChannel` | `WritableByteChannel` | Implements interface |
-| `PrintStream` | `OutputStream` | Subclass |
-| `PrintWriter` | `Writer` | Subclass |
-| `SSLSocket` | `Socket` | Subclass |
-| `ZipOutputStream` | `OutputStream` | Subclass |

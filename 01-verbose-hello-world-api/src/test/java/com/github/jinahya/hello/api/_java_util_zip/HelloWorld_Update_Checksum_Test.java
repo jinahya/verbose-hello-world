@@ -29,6 +29,7 @@ import java.util.zip.Checksum;
  * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/zip/CRC32C.html">CRC32C</a>
  * @see <a
  * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/zip/Adler32.html">Adler32</a>
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
 class HelloWorld_Update_Checksum_Test extends HelloWorldTest {

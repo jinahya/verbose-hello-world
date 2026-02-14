@@ -29,6 +29,9 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @Slf4j
 @SuppressWarnings({
         "java:S100" // ..._

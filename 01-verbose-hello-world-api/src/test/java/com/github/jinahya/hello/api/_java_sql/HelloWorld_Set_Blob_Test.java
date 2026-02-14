@@ -19,6 +19,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @Slf4j
 class HelloWorld_Set_Blob_Test extends HelloWorldTest {
 

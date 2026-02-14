@@ -26,6 +26,9 @@ import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 
+/**
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 public class JavaUtilConcurrentCallableUtils {
 
     public static void callUnchecked(final Callable<?> callable,

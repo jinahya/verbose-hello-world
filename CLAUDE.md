@@ -133,6 +133,7 @@ The `generate-executables` profile (active by default) produces multiple artifac
   - Array indices and contents: `|h|e|l|l|o|,| |w|o|r|l|d|`
   - ByteBuffer state (position, limit, capacity, remaining)
   - Before/after states for I/O operations
+- **@author**: `@author Jin Kwon &lt;onacit_at_gmail.com&gt;`
 - **@implSpec**: Describes default implementation behavior
 - **@apiNote**: Documents usage notes (e.g., "does not flush the stream")
 

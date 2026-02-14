@@ -13,6 +13,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
 import java.util.List;
 
+/**
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @Slf4j
 class HelloWorld_Update_Digest_Test extends HelloWorldTest {
 

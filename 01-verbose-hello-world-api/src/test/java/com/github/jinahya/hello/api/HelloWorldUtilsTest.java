@@ -23,6 +23,9 @@ import lombok.extern.slf4j.Slf4j;
  * limitations under the License.
  * #L%
  */
+/**
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorldUtilsTest extends HelloWorldTest {

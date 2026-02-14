@@ -20,6 +20,9 @@ package com.github.jinahya.hello.api.util;
  * #L%
  */
 
+/**
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 class HelloWorldSystemUtilsTest {
 
 }

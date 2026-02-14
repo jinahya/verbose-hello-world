@@ -97,7 +97,8 @@ class HelloWorld_Write_AsynchronousByteChannel_Test
                     return buffer;
                 })
                 .when(service)
-                .put(ArgumentMatchers.argThat(b -> b != null && b.remaining() >= HelloWorld.BYTES));
+                .<ByteBuffer>put(ArgumentMatchers.argThat(
+                        b -> b != null && b.remaining() >= HelloWorld.BYTES));
         // prepare, a mock object of <AsynchronousByteChannel>
         final var channel = Mockito.mock(AsynchronousByteChannel.class);
         // number of bytes written so far

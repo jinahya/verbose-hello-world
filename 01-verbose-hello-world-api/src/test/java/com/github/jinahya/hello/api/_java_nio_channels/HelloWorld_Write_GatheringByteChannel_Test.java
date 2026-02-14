@@ -20,6 +20,8 @@ import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * A class for testing {@link HelloWorld#write(GatheringByteChannel)} method.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @DisplayName("write(GatheringByteChannel)")
 @Slf4j
@@ -56,7 +58,7 @@ class HelloWorld_Write_GatheringByteChannel_Test extends HelloWorldTest {
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        HelloWorldTestUtils.stub_put_buffer_will_put_actual_hello_world_bytes(service);
+        HelloWorldTestUtils.put_buffer_will_put_actual_hello_world_bytes(service);
         final var channel = Mockito.mock(GatheringByteChannel.class);
         Mockito.when(channel.write(Mockito.any(ByteBuffer[].class)))
                 .thenAnswer(i -> {
@@ -96,7 +98,7 @@ class HelloWorld_Write_GatheringByteChannel_Test extends HelloWorldTest {
     void _添足_畵蛇() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        HelloWorldTestUtils.stub_put_buffer_will_put_actual_hello_world_bytes(service);
+        HelloWorldTestUtils.put_buffer_will_put_actual_hello_world_bytes(service);
         // ----------------------------------------------------------------------------- when / then
         final var pipe = Pipe.open();
         // ----------------------------------------------------------------------------------- write

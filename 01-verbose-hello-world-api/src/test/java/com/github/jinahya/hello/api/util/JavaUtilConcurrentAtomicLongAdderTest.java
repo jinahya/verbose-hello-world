@@ -6,6 +6,9 @@ import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.atomic.LongAdder;
 
+/**
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @Slf4j
 class JavaUtilConcurrentAtomicLongAdderTest {
 

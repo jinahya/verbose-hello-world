@@ -24,6 +24,9 @@ import java.nio.channels.CompletionHandler;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 
+/**
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 public final class JavaNioChannelsCompletionHandlerUtils {
 
     // @formatter:off
