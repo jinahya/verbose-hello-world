@@ -31,85 +31,66 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import java.io.BufferedWriter;
-import java.io.FilterWriter;
+import java.io.DataOutput;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.Writer;
 
 /**
- * A class for testing {@link HelloWorld#write(FilterWriter) write(writer)} method.
+ * A class for testing {@link HelloWorld#write(java.io.DataOutputStream)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see <a
- * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/io/FilterWriter.html">java.io.FilterWriter</a>
  */
-@DisplayName("write(FilterWriter)")
+@DisplayName("write(data)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_Write_FilterWriter_Test
+class HelloWorld_Write_DataOutputStream_Test
         extends HelloWorldTest {
 
     /**
-     * Verifies that the {@link HelloWorld#write(BufferedWriter) write(writer)} method throws a
-     * {@link NullPointerException} when the {@code writer} argument is {@code null}.
+     * Asserts {@link HelloWorld#write(DataOutputStream)} method throws a
+     * {@link NullPointerException} when the {@code data} argument is {@code null}.
      */
     @DisplayName("""
             should throw a <NullPointerException>
-            when the <writer> argument is <null>"""
+            when the <output> argument is <null>"""
     )
     @Test
-    void _ThrowNullPointerException_WriterIsNull() {
+    void _ThrowNullPointerException_DataIsNull() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        final var writer = (FilterWriter) null;
+        final var output = (DataOutputStream) null;
         // ------------------------------------------------------------------------------- when/then
         Assertions.assertThrows(
                 NullPointerException.class,
-                () -> service.write(writer)
+                () -> service.write(output)
         );
     }
 
     /**
-     * Verifies that the {@link HelloWorld#write(FilterWriter)} method invokes
-     * {@link HelloWorld#write(Writer)} method with {@code writer}.
+     * Asserts {@link HelloWorld#write(DataOutputStream)} method invokes
+     * {@link HelloWorld#write(DataOutput)} method with {@code stream}, and returns the
+     * {@code stream}.
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("should invoke <write((Writer) writer)>")
+    @DisplayName("should invoke <set(array[12])>, and invoke output.write(array)")
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        Mockito.doAnswer(i -> i.getArgument(0))
-                .when(service)
-                .write(ArgumentMatchers.any(Writer.class));
-        final var writer = Mockito.mock(FilterWriter.class);
-        // ------------------------------------------------------------------------------------ when
-        final var result = service.write(writer);
-        // ------------------------------------------------------------------------------------ then
-        Mockito.verify(service, Mockito.times(1)).write((Writer) writer);
-        Assertions.assertSame(writer, result);
-    }
-
-    @Test
-    void _添足_畵蛇() throws IOException {
-        // ----------------------------------------------------------------------------------- given
-        final var service = service();
         Mockito.doAnswer(i -> {
-                    final var writer = i.getArgument(0, Writer.class);
-                    writer.write(new char[HelloWorld.BYTES]);
-                    return writer;
+                    final var output = i.getArgument(0, DataOutput.class);
+                    output.write(new byte[HelloWorld.BYTES]);
+                    return output;
                 })
                 .when(service)
-                .write(ArgumentMatchers.any(Writer.class));
-        final var out = Mockito.mock(Writer.class);
-        final var writer = new FilterWriter(out) {
-        };
+                .write(ArgumentMatchers.<DataOutput>notNull());
+        final var output = Mockito.mock(DataOutputStream.class);
         // ------------------------------------------------------------------------------------ when
-        service.write(writer).flush();
+        final var result = service.write(output);
         // ------------------------------------------------------------------------------------ then
-        final var invocations = Mockito.mockingDetails(out).printInvocations();
-        log.debug("invocations: {}", invocations);
+        Mockito.verify(service, Mockito.times(1)).write((DataOutput) output);
+        Assertions.assertSame(output, result);
     }
 }

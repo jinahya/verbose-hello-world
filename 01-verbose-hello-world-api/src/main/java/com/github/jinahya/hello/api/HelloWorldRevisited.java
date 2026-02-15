@@ -28,17 +28,23 @@ import javax.crypto.Mac;
 import javax.net.ssl.SSLSocket;
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
+import java.io.CharArrayWriter;
 import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilterOutputStream;
+import java.io.FilterWriter;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PipedOutputStream;
+import java.io.PipedWriter;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.RandomAccessFile;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.foreign.MemorySegment;
 import java.lang.foreign.ValueLayout;
@@ -137,6 +143,41 @@ interface HelloWorldRevisited
         return file;
     }
 
+    @Override
+    default <T extends FileOutputStream> T write(final T stream) throws IOException {
+        return HelloWorld.super.write(stream);
+    }
+
+    @Override
+    default <T extends PipedOutputStream> T write(final T stream) throws IOException {
+        return HelloWorld.super.write(stream);
+    }
+
+    @Override
+    default <T extends CharArrayWriter> T write(final T writer) throws IOException {
+        return HelloWorld.super.write(writer);
+    }
+
+    @Override
+    default <T extends FilterWriter> T write(final T writer) throws IOException {
+        return HelloWorld.super.write(writer);
+    }
+
+    @Override
+    default <T extends OutputStreamWriter> T write(final T writer) throws IOException {
+        return HelloWorld.super.write(writer);
+    }
+
+    @Override
+    default <T extends PipedWriter> T write(final T writer) throws IOException {
+        return HelloWorld.super.write(writer);
+    }
+
+    @Override
+    default <T extends StringWriter> T write(final T writer) throws IOException {
+        return HelloWorld.super.write(writer);
+    }
+
     @SuppressWarnings("removal")
     @Deprecated(forRemoval = true)
     @Override
@@ -179,9 +220,7 @@ interface HelloWorldRevisited
 
     @SuppressWarnings("removal")
     @Deprecated(forRemoval = true)
-    @Override
-    default <T extends PrintStream> T write(final T stream)
-            throws IOException {
+    default <T extends PrintStream> T write(final T stream) throws IOException {
         return HelloWorld.super.write(stream);
     }
 

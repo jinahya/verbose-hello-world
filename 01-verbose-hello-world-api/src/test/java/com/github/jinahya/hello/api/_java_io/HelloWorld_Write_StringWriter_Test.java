@@ -22,32 +22,32 @@ package com.github.jinahya.hello.api._java_io;
 
 import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldTest;
+import com.github.jinahya.hello.api.HelloWorldTestUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import java.io.BufferedWriter;
-import java.io.FilterWriter;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.io.Writer;
 
 /**
- * A class for testing {@link HelloWorld#write(FilterWriter) write(writer)} method.
+ * A class for testing {@link HelloWorld#write(StringWriter) write(writer)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see <a
- * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/io/FilterWriter.html">java.io.FilterWriter</a>
+ * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/io/StringWriter.html">java.io.StringWriter</a>
  */
-@DisplayName("write(FilterWriter)")
+@DisplayName("write(StringWriter)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_Write_FilterWriter_Test
+class HelloWorld_Write_StringWriter_Test
         extends HelloWorldTest {
 
     /**
@@ -62,7 +62,7 @@ class HelloWorld_Write_FilterWriter_Test
     void _ThrowNullPointerException_WriterIsNull() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        final var writer = (FilterWriter) null;
+        final var writer = (StringWriter) null;
         // ------------------------------------------------------------------------------- when/then
         Assertions.assertThrows(
                 NullPointerException.class,
@@ -71,7 +71,7 @@ class HelloWorld_Write_FilterWriter_Test
     }
 
     /**
-     * Verifies that the {@link HelloWorld#write(FilterWriter)} method invokes
+     * Verifies that the {@link HelloWorld#write(StringWriter)} method invokes
      * {@link HelloWorld#write(Writer)} method with {@code writer}.
      *
      * @throws IOException if an I/O error occurs.
@@ -80,11 +80,8 @@ class HelloWorld_Write_FilterWriter_Test
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
-        final var service = service();
-        Mockito.doAnswer(i -> i.getArgument(0))
-                .when(service)
-                .write(ArgumentMatchers.any(Writer.class));
-        final var writer = Mockito.mock(FilterWriter.class);
+        final var service = HelloWorldTestUtils.write_writer_will_write_12_chars(service());
+        final var writer = Mockito.mock(StringWriter.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(writer);
         // ------------------------------------------------------------------------------------ then
@@ -95,21 +92,12 @@ class HelloWorld_Write_FilterWriter_Test
     @Test
     void _添足_畵蛇() throws IOException {
         // ----------------------------------------------------------------------------------- given
-        final var service = service();
-        Mockito.doAnswer(i -> {
-                    final var writer = i.getArgument(0, Writer.class);
-                    writer.write(new char[HelloWorld.BYTES]);
-                    return writer;
-                })
-                .when(service)
-                .write(ArgumentMatchers.any(Writer.class));
-        final var out = Mockito.mock(Writer.class);
-        final var writer = new FilterWriter(out) {
-        };
+        final var service = HelloWorldTestUtils.write_writer_will_write_12_chars(service());
+        final var writer = Mockito.spy(new StringWriter());
         // ------------------------------------------------------------------------------------ when
         service.write(writer).flush();
         // ------------------------------------------------------------------------------------ then
-        final var invocations = Mockito.mockingDetails(out).printInvocations();
+        final var invocations = Mockito.mockingDetails(writer).printInvocations();
         log.debug("invocations: {}", invocations);
     }
 }

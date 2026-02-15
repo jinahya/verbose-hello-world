@@ -39,8 +39,8 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PipedOutputStream;
 import java.io.PipedWriter;
-import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.RandomAccessFile;
 import java.io.StringWriter;
@@ -71,6 +71,7 @@ import java.nio.channels.Pipe;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.WritableByteChannel;
+import java.nio.charset.Charset;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -377,26 +378,32 @@ public interface HelloWorld {
     }
 
     @Deprecated(forRemoval = true)
-    @屋上架屋("FilterOutputStream extends OutputStream")
-    default <T extends FilterOutputStream> T write(final T stream) throws IOException {
-        return (T) write((OutputStream) stream);
-    }
-
-    @Deprecated(forRemoval = true)
     @屋上架屋("BufferedOutputStream extends FilterOutputStream")
     default <T extends BufferedOutputStream> T write(final T stream) throws IOException {
         return (T) write((FilterOutputStream) stream);
     }
 
     @Deprecated(forRemoval = true)
-    @屋上架屋("PrintStream extends FilterOutputStream")
-    default <T extends PrintStream> T write(final T stream) throws IOException {
-        return (T) write((FilterOutputStream) stream);
+    @屋上架屋("FilterOutputStream extends OutputStream")
+    default <T extends FileOutputStream> T write(final T stream) throws IOException {
+        return (T) write((OutputStream) stream);
+    }
+
+    @Deprecated(forRemoval = true)
+    @屋上架屋("FilterOutputStream extends OutputStream")
+    default <T extends FilterOutputStream> T write(final T stream) throws IOException {
+        return (T) write((OutputStream) stream);
     }
 
     @Deprecated(forRemoval = true)
     @屋上架屋("ObjectOutputStream extends OutputStream")
     default <T extends ObjectOutputStream> T write(final T stream) throws IOException {
+        return (T) write((OutputStream) stream);
+    }
+
+    @Deprecated(forRemoval = true)
+    @屋上架屋("PrintStream extends OutputStream")
+    default <T extends PipedOutputStream> T write(final T stream) throws IOException {
         return (T) write((OutputStream) stream);
     }
 
@@ -411,7 +418,7 @@ public interface HelloWorld {
      * }
      * try (var stream = new FileOutputStream(file, true)) { // @highlight region
      *     write(stream);
-     *     stream.flush();
+     *     stream.flush(); // maybe redundant, not harmful
      * } // @end
      * return file;
      *}
@@ -428,6 +435,7 @@ public interface HelloWorld {
      * returns {@code file}.
      * @see java.io.FileOutputStream#FileOutputStream(File, boolean)
      * @see #write(OutputStream)
+     * @see #append(File, Charset)
      */
     default <T extends File> T append(final T file) throws IOException {
         if (file == null) {
@@ -477,7 +485,7 @@ public interface HelloWorld {
     }
 
     @Deprecated(forRemoval = true)
-    @屋上架屋("DataOutputStream extends FilterOutputStream, implements DataOutput")
+    @屋上架屋("DataOutputStream extends FilterOutputStream implements DataOutput")
     @SuppressWarnings({"unchecked"})
     default <T extends DataOutputStream> T write(final T stream) throws IOException {
         return (T) write((DataOutput) stream);
@@ -606,6 +614,24 @@ public interface HelloWorld {
     @SuppressWarnings({"unchecked"})
     default <T extends StringWriter> T write(final T writer) throws IOException {
         return (T) write((Writer) writer);
+    }
+
+    /**
+     * Appends the <a href="#hello-world-bytes">hello-world-bytes</a>, decoded with the specified
+     * charset, to the end of the specified file, and returns the file.
+     *
+     * @param <T>     file type parameter
+     * @param file    the file to append to
+     * @param charset the character set to use for encoding
+     * @see #append(File)
+     */
+    default <T extends File> T append(final T file, final Charset charset) throws IOException {
+        Objects.requireNonNull(file, "file is null");
+        Objects.requireNonNull(charset, "charset is null");
+        try (var writer = new OutputStreamWriter(new FileOutputStream(file, true), charset)) {
+            write((OutputStreamWriter) writer).flush();
+        }
+        return file;
     }
 
     // ------------------------------------------------------------------------------------ java.net
@@ -1469,8 +1495,7 @@ public interface HelloWorld {
      * href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-14.html#jls-14.20.3">14.20.3.
      * try-with-resources</a> (The Java® Language Specification)
      */
-    default <T extends Path> T append(final T path)
-            throws IOException {
+    default <T extends Path> T append(final T path) throws IOException {
         Objects.requireNonNull(path, "path is null");
         // open a <FileChannel> with <path>,
         //         <StandardOpenOption.CREATE>, and <StandardOpenOption.APPEND>

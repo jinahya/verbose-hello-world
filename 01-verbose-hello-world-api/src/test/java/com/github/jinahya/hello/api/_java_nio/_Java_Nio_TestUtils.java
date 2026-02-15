@@ -50,21 +50,25 @@ public final class _Java_Nio_TestUtils {
         );
     }
 
-    public static Stream<Charset> standardCharsets() {
-        return Arrays.stream(StandardCharsets.class.getFields())
-                .filter(f -> {
-                    final var modifiers = f.getModifiers();
-                    return Modifier.isStatic(modifiers) &&
-                           Modifier.isFinal(modifiers) &&
-                           Charset.class.isAssignableFrom(f.getType());
-                })
-                .map(f -> {
-                    try {
-                        return (Charset) f.get(null);
-                    } catch (final IllegalAccessException iae) {
-                        throw new RuntimeException(iae);
-                    }
-                });
+    public static Stream<Charset> charsetStream() {
+        return Stream.concat(
+                Arrays.stream(StandardCharsets.class.getFields())
+                        .filter(f -> {
+                            final var modifiers = f.getModifiers();
+                            return Modifier.isStatic(modifiers) &&
+                                   Modifier.isFinal(modifiers) &&
+                                   Charset.class.isAssignableFrom(f.getType());
+                        })
+                        .map(f -> {
+                            try {
+                                return (Charset) f.get(null);
+                            } catch (final IllegalAccessException iae) {
+                                throw new RuntimeException(iae);
+                            }
+                        }),
+                Stream.of("X-UTF-32LE-BOM", "X-UTF-32BE-BOM")
+                        .map(Charset::forName)
+        );
     }
 
     private _Java_Nio_TestUtils() {

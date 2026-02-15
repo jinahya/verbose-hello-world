@@ -31,6 +31,7 @@ import org.mockito.Mockito;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.Writer;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
@@ -128,6 +129,38 @@ public final class HelloWorldTestUtils {
     }
 
     // ------------------------------------------------------------------------------------- java.io
+    public static <T extends HelloWorld>
+    T write_stream_will_write_12_bytes(final T service) throws IOException {
+        requireMock(service);
+        Mockito.doAnswer(i -> {
+                    final var stream = i.getArgument(0, OutputStream.class);
+                    stream.write(new byte[HelloWorld.BYTES]);
+                    return stream;
+                })
+                .when(service)
+                .write(ArgumentMatchers.<OutputStream>notNull());
+        return service;
+    }
+
+    public static OutputStream write_stream_invoked_once(final HelloWorld service)
+            throws IOException {
+        requireMock(service);
+        final var captor = ArgumentCaptor.forClass(OutputStream.class);
+        Mockito.verify(service, Mockito.times(1)).write(captor.capture());
+        final var value = captor.getValue();
+        Assertions.assertNotNull(value);
+        return value;
+    }
+
+    /**
+     * Stubs the {@link HelloWorld#write(Writer)} method of the specified mock service to write an
+     * array {@value HelloWorld#BYTES} {@code char}s.
+     *
+     * @param service the service mock to stub.
+     * @param <T>     service type parameter
+     * @return given {@code service}.
+     * @throws IOException if an I/O error occurs.
+     */
     public static <T extends HelloWorld>
     T write_writer_will_write_12_chars(final T service) throws IOException {
         requireMock(service);
