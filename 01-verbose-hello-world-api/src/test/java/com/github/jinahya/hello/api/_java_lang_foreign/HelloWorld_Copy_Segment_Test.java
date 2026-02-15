@@ -23,13 +23,13 @@ import java.nio.file.StandardOpenOption;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorld_Copy_Segment_Test extends HelloWorldTest {
+class HelloWorld_Copy_Segment_Test
+        extends HelloWorldTest {
 
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
-        final var service = service();
-        stub_set_array_will_return_the_array();
+        final var service = HelloWorldTestUtils.set_array_will_return_the_array(service());
         try (var arena = Arena.ofConfined()) {
             final var segment = arena.allocate(HelloWorld.BYTES);
             try (var mockedStatic = Mockito.mockStatic(MemorySegment.class,
@@ -38,7 +38,7 @@ class HelloWorld_Copy_Segment_Test extends HelloWorldTest {
                 final var result = service.copy(segment);
                 // ---------------------------------------------------------------------------- then
                 Assertions.assertSame(segment, result);
-                final var array = verify_set_array12_invoked_once();
+                final var array = HelloWorldTestUtils.set_array12_invoked_once(service);
                 mockedStatic.verify(() -> MemorySegment.copy(
                         Mockito.same(array),
                         Mockito.eq(0),
@@ -52,7 +52,8 @@ class HelloWorld_Copy_Segment_Test extends HelloWorldTest {
     }
 
     // -----------------------------------------------------------------------------------------------------------------
-    static void compileNative(final Path source, final Path target) throws Exception {
+    static void compileNative(final Path source, final Path target)
+            throws Exception {
         final boolean windows = System.getProperty("os.name").startsWith("Win");
         // List of common compilers in order of preference
         final var compilers = windows
@@ -93,7 +94,8 @@ class HelloWorld_Copy_Segment_Test extends HelloWorldTest {
 
     // ---------------------------------------------------------------------------------------------
     @Test
-    void testJavaToCBridge(@TempDir final Path tempDir) throws Exception {
+    void testJavaToCBridge(@TempDir final Path tempDir)
+            throws Exception {
         final var windows = System.getProperty("os.name").startsWith("Win");
         final var sourcePath = Paths.get("src", "test", "c", "reader.c");
         final var targetPath = tempDir.resolve(windows ? "reader.exe" : "reader");
@@ -109,7 +111,7 @@ class HelloWorld_Copy_Segment_Test extends HelloWorldTest {
              final var arena = Arena.ofShared()) {
             // ---------------------------------------------------------------- write hello, world\0
             final var segment = channel.map(FileChannel.MapMode.READ_WRITE, 0, 13, arena);
-            HelloWorldTestUtils.stub_set_array_will_set_actual_hello_world_bytes(service());
+            HelloWorldTestUtils.set_array_will_set_actual_hello_world_bytes(service());
             service().copy(segment);
             segment.set(ValueLayout.JAVA_BYTE, 12, (byte) 0);
             log.debug("bytes written to the file");

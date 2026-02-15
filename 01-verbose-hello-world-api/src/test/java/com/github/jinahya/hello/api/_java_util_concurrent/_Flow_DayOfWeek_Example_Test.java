@@ -55,7 +55,8 @@ import java.util.stream.IntStream;
 })
 class _Flow_DayOfWeek_Example_Test {
 
-    private static class DayOfWeekSubscription implements Flow.Subscription {
+    private static class DayOfWeekSubscription
+            implements Flow.Subscription {
 
         private DayOfWeekSubscription(final Flow.Subscriber<? super DayOfWeek> subscriber) {
             super();
@@ -125,7 +126,8 @@ class _Flow_DayOfWeek_Example_Test {
         private final Thread thread;
     }
 
-    private static class DayOfWeekPublisher implements Flow.Publisher<DayOfWeek> {
+    private static class DayOfWeekPublisher
+            implements Flow.Publisher<DayOfWeek> {
 
         private static class InstanceHolder {
 
@@ -158,7 +160,8 @@ class _Flow_DayOfWeek_Example_Test {
         }
     }
 
-    private static class DayOfWeekSubscriber implements Flow.Subscriber<DayOfWeek> {
+    private static class DayOfWeekSubscriber
+            implements Flow.Subscriber<DayOfWeek> {
 
         private DayOfWeekSubscriber() {
             super();

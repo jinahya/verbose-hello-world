@@ -22,6 +22,7 @@ package com.github.jinahya.hello.api._java_io;
 
 import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldTest;
+import com.github.jinahya.hello.api.HelloWorldTestUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,7 +44,8 @@ import java.io.IOException;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_03_Write_DataOutput_Test extends HelloWorldTest {
+class HelloWorld_Write_DataOutput_Test
+        extends HelloWorldTest {
 
     /**
      * Asserts {@link HelloWorld#write(DataOutput) write(output)} method throws a
@@ -78,20 +80,16 @@ class HelloWorld_03_Write_DataOutput_Test extends HelloWorldTest {
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // stub: <service.set(array)> to return the <array>.
-        Mockito.doAnswer(i -> i.getArgument(0))
+        Mockito.doAnswer(i -> i.getArgument(0)) // <1>
                 .when(service)
                 .set(ArgumentMatchers.any(byte[].class));
         final var output = Mockito.mock(DataOutput.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(output);
         // ------------------------------------------------------------------------------------ then
-        // verify: <set(byte[12])> invoked, once
-        final var array = verify_set_array12_invoked_once();
-        // verify: <output.write(array)> invoked, once
+        final var array = HelloWorldTestUtils.set_array12_invoked_once(service); // <1>
 //        Mockito.verify(output, Mockito.times(1)).write(array);
 //        Mockito.verifyNoMoreInteractions(output);
-        // assert: <result> is same as <output>
         Assertions.assertSame(output, result);
     }
 }

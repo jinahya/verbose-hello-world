@@ -22,6 +22,7 @@ package com.github.jinahya.hello.api._java_nio_channels;
 
 import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldTest;
+import com.github.jinahya.hello.api.HelloWorldTestUtils;
 import com.github.jinahya.hello.api.畵蛇添足;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
@@ -114,21 +115,17 @@ class HelloWorld_Write_AsynchronousFileChannel_Test
             and write the <buffer> to the <channel>"""
     )
     @Test
-    void _PutBufferWriteBufferToChannel_() throws InterruptedException, IOException {
+    void __()
+            throws InterruptedException, IOException {
         // ----------------------------------------------------------------------------------- given
-        final var service = service();
-        // stub: <service.put(buffer)> will increase the <buffer>'s <position> by <12>
-        stub_put_buffer_will_increase_buffer_position_by_12();
-        // prepare: a mock object of <AsynchronousFileChannel>
+        final var service = HelloWorldTestUtils.put_buffer_will_increase_buffer_position_by_12(
+                service()
+        );
         final var channel = Mockito.mock(AsynchronousFileChannel.class,
                                          Mockito.withSettings().verboseLogging());
-        final var written = new LongAdder(); // total number of bytes written to <channel>
-        // stub: <channel.write(src, position)> will return a future
-        //       which increases the <src>'s <position> by a random value.
-        Mockito.doAnswer(w -> { // invocation of <channel.write(src, position)>
-            // prepare: a mock of <Future>
+        final var written = new LongAdder(); // total number of bytes written to the <channel>
+        Mockito.doAnswer(w -> {
             final var future = Mockito.mock(Future.class);
-            // stub: <future.get()> will increase <src>'s <position> by a random value
             Mockito.doAnswer(g -> {
                 final var src = w.getArgument(0, ByteBuffer.class);
                 assert src.hasRemaining();
@@ -150,13 +147,10 @@ class HelloWorld_Write_AsynchronousFileChannel_Test
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(channel, position);
         // ------------------------------------------------------------------------------------ then
-        // verify: <service.put(buffer[12])> invoked, once
-        final var buffer = verify_put_buffer12_invoked_once();
-        // verify: <channel.write(buffer, a-position)> invoked, at least once
+        final var buffer = HelloWorldTestUtils.put_buffer12_invoked_once(service);
         final var captor = ArgumentCaptor.forClass(long.class);
         Mockito.verify(channel, Mockito.atLeastOnce())
                 .write(ArgumentMatchers.same(buffer), captor.capture());  // <1>
-        // verify: all <position>s are incremental
         final var positions = captor.getAllValues();                      // <2>
         Assertions.assertEquals(position, positions.getFirst());          // <3>
         final var last = positions.stream().reduce((p1, p2) -> {          // <4>
@@ -165,17 +159,15 @@ class HelloWorld_Write_AsynchronousFileChannel_Test
         });
         Assertions.assertTrue(last.isPresent());                           // <5>
         Assertions.assertTrue(last.get() < (position + HelloWorld.BYTES)); // <6>
-        // verify: <12> bytes has been written
         Assertions.assertEquals(HelloWorld.BYTES, written.intValue());
-        // verify: <buffer> has no remaining
         Assertions.assertFalse(buffer.hasRemaining());
-        // assert: <result> is same as <channel>
         Assertions.assertSame(channel, result);
     }
 
     @畵蛇添足("testing with a real file doesn't add any value")
     @Test
-    void _添足_畵蛇(@TempDir final Path dir) throws Exception {
+    void _添足_畵蛇(@TempDir final Path dir)
+            throws Exception {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // stub, <service.write(channel, position)> will write <12> bytes starting at <position>

@@ -75,57 +75,6 @@ public abstract class HelloWorldTest {
 
     // ------------------------------------------------------------------------------------- service
 
-    /**
-     * Stubs {@link HelloWorld#set(byte[]) service#set(array)} method to return the {@code array}.
-     *
-     * @see HelloWorldTestUtils#stub_set_array_will_return_the_array(HelloWorld)
-     * @see #verify_set_array12_invoked_once()
-     */
-    protected final void stub_set_array_will_return_the_array() {
-        HelloWorldTestUtils.stub_set_array_will_return_the_array(service);
-    }
-
-    protected final void stub_set_array_will_set_actual_hello_world_bytes() {
-        HelloWorldTestUtils.stub_set_array_will_set_actual_hello_world_bytes(service);
-    }
-
-    /**
-     * Verifies that {@link HelloWorld#set(byte[]) set(array)} method invoked on the
-     * {@link #service() service} instance with an array of {@value HelloWorld#BYTES} bytes.
-     *
-     * @return the {@code array} argument captured.
-     * @see #stub_set_array_will_return_the_array()
-     * @see HelloWorldTestUtils#verify_set_array12_invoked_once(HelloWorld)
-     */
-    protected final byte[] verify_set_array12_invoked_once() {
-        return HelloWorldTestUtils.verify_set_array12_invoked_once(service);
-    }
-
-    /**
-     * Stubs {@link HelloWorld#put(ByteBuffer) service#put(buffer)} method to increase the
-     * {@code buffer}'s {@code position} by {@value HelloWorld#BYTES}.
-     *
-     * @see #verify_put_buffer12_invoked_once()
-     */
-    protected final void stub_put_buffer_will_increase_buffer_position_by_12() {
-        HelloWorldTestUtils.put_buffer_will_increase_buffer_position_by_12(service);
-    }
-
-    protected final void stub_put_buffer_will_put_actual_hello_world_bytes() {
-        HelloWorldTestUtils.put_buffer_will_put_actual_hello_world_bytes(service);
-    }
-
-    /**
-     * Verifies that {@link HelloWorld#put(ByteBuffer) put(buffer)} method invoked on the
-     * {@link #service() service} instance with a byte buffer of {@value HelloWorld#BYTES} bytes.
-     *
-     * @return the {@code buffer} argument captured.
-     * @see #stub_put_buffer_will_increase_buffer_position_by_12()
-     */
-    protected final ByteBuffer verify_put_buffer12_invoked_once() {
-        return HelloWorldTestUtils.verify_put_buffer12_invoked_once(service);
-    }
-
     // ---------------------------------------------------------------------------------------------
     @Spy
     @Accessors(fluent = true)

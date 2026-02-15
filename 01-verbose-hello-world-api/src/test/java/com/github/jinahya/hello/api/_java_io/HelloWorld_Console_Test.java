@@ -16,11 +16,14 @@ import java.util.Optional;
 /**
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-class HelloWorld_Console_Test extends HelloWorldTest {
+class HelloWorld_Console_Test
+        extends HelloWorldTest {
 
-    private interface PrivateHelloWorld extends HelloWorld {
+    private interface PrivateHelloWorld
+            extends HelloWorld {
 
-        default <T extends Console> T write(final T console) throws IOException {
+        default <T extends Console> T write(final T console)
+                throws IOException {
             Objects.requireNonNull(console, "console is null");
             write(console.writer());
             return console;
@@ -48,7 +51,8 @@ class HelloWorld_Console_Test extends HelloWorldTest {
 
     @DisplayName("invoke write(console.writer)")
     @Test
-    void __() throws IOException {
+    void __()
+            throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = Mockito.spy(PrivateHelloWorld.class);
         Mockito.doAnswer(i -> i.getArgument(0))

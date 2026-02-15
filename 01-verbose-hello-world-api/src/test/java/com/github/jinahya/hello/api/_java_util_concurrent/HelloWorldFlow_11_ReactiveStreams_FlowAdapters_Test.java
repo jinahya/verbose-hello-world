@@ -46,7 +46,8 @@ import java.util.function.Supplier;
  */
 @SuppressWarnings({"unchecked"})
 @Slf4j
-class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test extends _HelloWorldFlowTest {
+class HelloWorldFlow_11_ReactiveStreams_FlowAdapters_Test
+        extends _HelloWorldFlowTest {
 
     private static final class ReactiveStreamsSubscriber<T>
             implements org.reactivestreams.Subscriber<T> {

@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.api._java_util_zip;
+package com.github.jinahya.hello.api._java_util_jar;
 
 import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldTest;
@@ -17,21 +17,21 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
+import java.util.jar.JarEntry;
+import java.util.jar.JarOutputStream;
 
 /**
- * A class for testing {@link HelloWorld#put(ZipOutputStream, String) put(stream, name)} method.
+ * A class for testing {@link HelloWorld#put(JarOutputStream, String) put(stream, name)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @DisplayName("put(stream, name)")
 @Slf4j
-class HelloWorld_Put_ZipOutputStream_Test
+class HelloWorld_Put_JarOutputStream_Test
         extends HelloWorldTest {
 
     /**
-     * Verifies that the {@link HelloWorld#put(ZipOutputStream, String) put(stream, name)} method
+     * Verifies that the {@link HelloWorld#put(JarOutputStream, String) put(stream, name)} method
      * throws a {@link NullPointerException} when the {@code stream} argument is {@code null}.
      */
     @DisplayName("""
@@ -42,7 +42,7 @@ class HelloWorld_Put_ZipOutputStream_Test
     void _ThrowNullPointerException_StreamIsNull() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        final var stream = (ZipOutputStream) null;
+        final var stream = (JarOutputStream) null;
         final var name = "entry";
         // ------------------------------------------------------------------------------- when/then
         Assertions.assertThrows(
@@ -52,7 +52,7 @@ class HelloWorld_Put_ZipOutputStream_Test
     }
 
     /**
-     * Verifies that the {@link HelloWorld#put(ZipOutputStream, String) put(stream, name)} method
+     * Verifies that the {@link HelloWorld#put(JarOutputStream, String) put(stream, name)} method
      * throws a {@link NullPointerException} when the {@code name} argument is {@code null}.
      */
     @DisplayName("""
@@ -63,7 +63,7 @@ class HelloWorld_Put_ZipOutputStream_Test
     void _ThrowNullPointerException_NameIsNull() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        final var stream = Mockito.mock(ZipOutputStream.class);
+        final var stream = Mockito.mock(JarOutputStream.class);
         final var name = (String) null;
         // ------------------------------------------------------------------------------- when/then
         Assertions.assertThrows(
@@ -73,10 +73,10 @@ class HelloWorld_Put_ZipOutputStream_Test
     }
 
     /**
-     * Asserts {@link HelloWorld#put(ZipOutputStream, String) put(stream, name)} method invokes
-     * {@link ZipOutputStream#putNextEntry(ZipEntry) putNextEntry(entry)},
+     * Asserts {@link HelloWorld#put(JarOutputStream, String) put(stream, name)} method invokes
+     * {@link JarOutputStream#putNextEntry(JarEntry) putNextEntry(entry)},
      * {@link HelloWorld#write(OutputStream) write(stream)}, and
-     * {@link ZipOutputStream#closeEntry() closeEntry()} on the {@code stream}, and returns the
+     * {@link JarOutputStream#closeEntry() closeEntry()} on the {@code stream}, and returns the
      * {@code stream}.
      *
      * @throws IOException if an I/O error occurs.
@@ -90,9 +90,9 @@ class HelloWorld_Put_ZipOutputStream_Test
             throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = HelloWorldTestUtils.set_array_will_return_the_array(service());
-        final var stream = Mockito.mock(ZipOutputStream.class);
+        final var stream = Mockito.mock(JarOutputStream.class);
         final var name = "hello.txt";
-        try (var construction = Mockito.mockConstruction(ZipEntry.class, (_, c) -> {
+        try (var construction = Mockito.mockConstruction(JarEntry.class, (_, c) -> {
             Assertions.assertEquals(1, c.arguments().size());
             Assertions.assertEquals(name, c.arguments().getFirst());
         })) {
@@ -108,13 +108,13 @@ class HelloWorld_Put_ZipOutputStream_Test
     }
 
     /**
-     * Asserts {@link HelloWorld#put(ZipOutputStream, String) put(stream, name)} method writes the
-     * {@code hello, world} bytes as a zip entry to a {@link ByteArrayOutputStream}.
+     * Asserts {@link HelloWorld#put(JarOutputStream, String) put(stream, name)} method writes the
+     * {@code hello, world} bytes as a jar entry to a {@link ByteArrayOutputStream}.
      *
      * @throws IOException if an I/O error occurs.
      */
-    @畵蛇添足("testing with a real ZipOutputStream backed by ByteArrayOutputStream")
-    @DisplayName("should write a zip entry to a <ByteArrayOutputStream>")
+    @畵蛇添足("testing with a real JarOutputStream backed by ByteArrayOutputStream")
+    @DisplayName("should write a jar entry to a <ByteArrayOutputStream>")
     @Test
     void _添足_畵蛇()
             throws IOException {
@@ -128,7 +128,7 @@ class HelloWorld_Put_ZipOutputStream_Test
         final var baos = new ByteArrayOutputStream();
         final var name = "hello.txt";
         // ------------------------------------------------------------------------------------ when
-        try (var stream = new ZipOutputStream(baos)) {
+        try (var stream = new JarOutputStream(baos)) {
             final var result = service.put(stream, name);
             assert result == stream;
             stream.flush(); // maybe redundant, not harmful
@@ -138,14 +138,14 @@ class HelloWorld_Put_ZipOutputStream_Test
     }
 
     /**
-     * Asserts {@link HelloWorld#put(ZipOutputStream, String) put(stream, name)} method writes the
-     * {@code hello, world} bytes as a zip entry to a {@link FileOutputStream}.
+     * Asserts {@link HelloWorld#put(JarOutputStream, String) put(stream, name)} method writes the
+     * {@code hello, world} bytes as a jar entry to a {@link FileOutputStream}.
      *
      * @param dir the temporary directory.
      * @throws IOException if an I/O error occurs.
      */
-    @畵蛇添足("testing with a real ZipOutputStream backed by FileOutputStream")
-    @DisplayName("should write a zip entry to a <FileOutputStream>")
+    @畵蛇添足("testing with a real JarOutputStream backed by FileOutputStream")
+    @DisplayName("should write a jar entry to a <FileOutputStream>")
     @Test
     void _添足_畵蛇(@TempDir final File dir)
             throws IOException {
@@ -156,10 +156,10 @@ class HelloWorld_Put_ZipOutputStream_Test
             s.write(HelloWorldTestUtils.getHelloWorldArray());
             return s;
         }).when(service).write(ArgumentMatchers.<OutputStream>notNull());
-        final var file = File.createTempFile("tmp", ".zip", dir);
+        final var file = File.createTempFile("tmp", ".jar", dir);
         final var name = "hello.txt";
         // ------------------------------------------------------------------------------------ when
-        try (var stream = new ZipOutputStream(new FileOutputStream(file))) {
+        try (var stream = new JarOutputStream(new FileOutputStream(file))) {
             final var result = service.put(stream, name);
             assert result == stream;
             stream.flush(); // maybe redundant, not harmful

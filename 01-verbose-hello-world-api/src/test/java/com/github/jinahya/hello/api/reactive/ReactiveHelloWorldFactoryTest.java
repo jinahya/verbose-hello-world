@@ -42,7 +42,8 @@ abstract class ReactiveHelloWorldFactoryTest<T extends ReactiveHelloWorldFactory
      *
      * @param <E> the item type
      */
-    static class SubscriberForTesting<E> implements Subscriber<E> {
+    static class SubscriberForTesting<E>
+            implements Subscriber<E> {
 
         /**
          * Creates a new subscriber that will request the specified number of items upon

@@ -23,12 +23,13 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorld_Set_Blob_Test extends HelloWorldTest {
+class HelloWorld_Set_Blob_Test
+        extends HelloWorldTest {
 
     // ---------------------------------------------------------------------------------------------
     @BeforeEach
     void _stub_set_array_will_set_hello_world_bytes_() {
-        HelloWorldTestUtils.stub_set_array_will_set_actual_hello_world_bytes(service());
+        HelloWorldTestUtils.set_array_will_set_actual_hello_world_bytes(service());
     }
 
     @Test
@@ -58,7 +59,8 @@ class HelloWorld_Set_Blob_Test extends HelloWorldTest {
     }
 
     @Test
-    void __() throws SQLException {
+    void __()
+            throws SQLException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var blob = Mockito.mock(Blob.class);
@@ -82,7 +84,7 @@ class HelloWorld_Set_Blob_Test extends HelloWorldTest {
         // ------------------------------------------------------------------------------------ when
         final var result = service.set(blob, pos);
         // ------------------------------------------------------------------------------------ then
-        final var array = verify_set_array12_invoked_once();                        // <1>
+        final var array = HelloWorldTestUtils.set_array12_invoked_once(service);
         // capture all invocations of setBytes(pos, bytes, offset, len)
         final var posCaptor = ArgumentCaptor.forClass(Long.class);
         final var bytesCaptor = ArgumentCaptor.forClass(byte[].class);
@@ -114,7 +116,8 @@ class HelloWorld_Set_Blob_Test extends HelloWorldTest {
 
     @畵蛇添足
     @Test
-    void __h2() throws SQLException {
+    void __h2()
+            throws SQLException {
         final var service = service();
         String url = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1";
         String user = "sa";
@@ -144,7 +147,8 @@ class HelloWorld_Set_Blob_Test extends HelloWorldTest {
     }
 
     @Test
-    void __hsql() throws SQLException {
+    void __hsql()
+            throws SQLException {
         final var service = service();
         String url = "jdbc:hsqldb:mem:testdb";
         String user = "SA";
@@ -178,7 +182,8 @@ class HelloWorld_Set_Blob_Test extends HelloWorldTest {
     @Disabled("java.sql.SQLFeatureNotSupportedException: not implemented by SQLite JDBC driver")
     @畵蛇添足
     @Test
-    void __sqlite() throws SQLException {
+    void __sqlite()
+            throws SQLException {
         final var service = service();
         final var url = "jdbc:sqlite::memory:";
         try (var connection = DriverManager.getConnection(url)) {

@@ -28,9 +28,9 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * A roof underneath a roof.
  *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see 屋上架屋
  * @see 畵蛇添足
- * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Documented
 @Repeatable(屋下架屋Container.class)

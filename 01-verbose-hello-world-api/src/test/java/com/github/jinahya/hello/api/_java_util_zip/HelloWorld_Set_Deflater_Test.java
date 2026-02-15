@@ -18,7 +18,8 @@ import java.util.zip.Inflater;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorld_Set_Deflater_Test extends HelloWorldTest {
+class HelloWorld_Set_Deflater_Test
+        extends HelloWorldTest {
 
     @Test
     void _ThrowNullPointerException_DeflaterIsNull() {
@@ -29,7 +30,8 @@ class HelloWorld_Set_Deflater_Test extends HelloWorldTest {
 
     @ValueSource(ints = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, -1})
     @ParameterizedTest
-    void __(final int level) throws DataFormatException {
+    void __(final int level)
+            throws DataFormatException {
         // -----------------------------------------------------------------------------------------
         final var service = service();
         Mockito.doAnswer(i -> i.getArgument(0, byte[].class))

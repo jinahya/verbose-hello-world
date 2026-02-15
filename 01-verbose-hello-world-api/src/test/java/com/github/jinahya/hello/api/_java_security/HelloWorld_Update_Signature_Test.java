@@ -39,7 +39,8 @@ import java.util.stream.Stream;
  * Algorithms</a>
  */
 @Slf4j
-class HelloWorld_Update_Signature_Test extends HelloWorldTest {
+class HelloWorld_Update_Signature_Test
+        extends HelloWorldTest {
 
     static final List<String> ALGORITHMS = List.of(
             "RSASSA-PSS",
@@ -156,7 +157,8 @@ class HelloWorld_Update_Signature_Test extends HelloWorldTest {
                 512, 1024
         })
         @ParameterizedTest
-        void __SHA1withDSA(final int keysize) throws Exception {
+        void __SHA1withDSA(final int keysize)
+                throws Exception {
             // ------------------------------------------------------------------------------- given
             final var service = service();
             final var keyPair = generateKeyPair(KEY_PAIR_ALGORITHM, keysize);
@@ -188,7 +190,8 @@ class HelloWorld_Update_Signature_Test extends HelloWorldTest {
                 512, 1024, 2048
         })
         @ParameterizedTest
-        void __SHA1withDSA(final int keysize) throws Exception {
+        void __SHA1withDSA(final int keysize)
+                throws Exception {
             // ------------------------------------------------------------------------------- given
             final var service = service();
             final var keyPair = generateKeyPair(KEY_PAIR_ALGORITHM, keysize);
@@ -219,7 +222,8 @@ class HelloWorld_Update_Signature_Test extends HelloWorldTest {
         static final String CURVE_NAME = "secp256r1"; // Standard for P-256
 
         @Test
-        void __() throws Exception {
+        void __()
+                throws Exception {
             // ------------------------------------------------------------------------------- given
             final var service = service();
             final var keyPair = generateKeyPair(KEY_PAIR_ALGORITHM,
@@ -251,7 +255,8 @@ class HelloWorld_Update_Signature_Test extends HelloWorldTest {
         static final String CURVE_NAME = "secp384r1";
 
         @Test
-        void __() throws Exception {
+        void __()
+                throws Exception {
             // ------------------------------------------------------------------------------- given
             final var service = service();
             final var keyPair = generateKeyPair(KEY_PAIR_ALGORITHM,
@@ -284,7 +289,8 @@ class HelloWorld_Update_Signature_Test extends HelloWorldTest {
                 1024, 2048, 2072, 4096
         })
         @ParameterizedTest
-        void __(final int keysize) throws Exception {
+        void __(final int keysize)
+                throws Exception {
             // ------------------------------------------------------------------------------- given
             final var service = service();
             final var keyPair = generateKeyPair(KEY_PAIR_ALGORITHM, keysize);
@@ -316,7 +322,8 @@ class HelloWorld_Update_Signature_Test extends HelloWorldTest {
                 2048, 3072, 4096
         })
         @ParameterizedTest
-        void __(final int keysize) throws Exception {
+        void __(final int keysize)
+                throws Exception {
             // ------------------------------------------------------------------------------- given
             final var service = service();
             final var keyPair = generateKeyPair(KEY_PAIR_ALGORITHM, keysize);
@@ -348,7 +355,8 @@ class HelloWorld_Update_Signature_Test extends HelloWorldTest {
                 2048, 3072, 4096
         })
         @ParameterizedTest
-        void __(final int keysize) throws Exception {
+        void __(final int keysize)
+                throws Exception {
             // ------------------------------------------------------------------------------- given
             final var service = service();
             final var keyPair = generateKeyPair(KEY_PAIR_ALGORITHM, keysize);

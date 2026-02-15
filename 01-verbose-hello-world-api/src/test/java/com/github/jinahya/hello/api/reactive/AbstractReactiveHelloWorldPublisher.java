@@ -19,7 +19,8 @@ import java.util.concurrent.atomic.AtomicLong;
  * @param <T> the type of element published
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-abstract class AbstractReactiveHelloWorldPublisher<T> implements Publisher<T> {
+abstract class AbstractReactiveHelloWorldPublisher<T>
+        implements Publisher<T> {
 
     /**
      * Creates a new subscription for the given subscriber.

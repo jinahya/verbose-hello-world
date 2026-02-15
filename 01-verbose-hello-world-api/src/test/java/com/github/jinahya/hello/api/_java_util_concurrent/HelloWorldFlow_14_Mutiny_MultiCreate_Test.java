@@ -49,7 +49,8 @@ import java.util.concurrent.TimeUnit;
 @Disabled("fails with github action")
 @DisplayName("MultiCreate")
 @Slf4j
-class HelloWorldFlow_14_Mutiny_MultiCreate_Test extends _HelloWorldFlowTest {
+class HelloWorldFlow_14_Mutiny_MultiCreate_Test
+        extends _HelloWorldFlowTest {
 
     @DisplayName("publisher(Flow.Publisher)")
     @Nested

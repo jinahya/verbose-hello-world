@@ -22,7 +22,6 @@ package com.github.jinahya.hello.api._java_nio_channels;
 
 import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.屋上架屋;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,10 +43,7 @@ import java.nio.charset.StandardCharsets;
  * A class for testing {@link HelloWorld#send(SocketChannel) send(channel)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @deprecated The {@link HelloWorld#send(SocketChannel) send(channel)} method has been deprecated.
  */
-@屋上架屋("SocketChannel implements WritableByteChannel")
-@Deprecated(forRemoval = true)
 @DisplayName("send(SocketChannel)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
@@ -57,7 +53,8 @@ class HelloWorld_Send_SocketChannel_Test
 
     @DisplayName("send(SocketChannel)")
     @Test
-    void __() throws Exception {
+    void __()
+            throws Exception {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // stub, <service.write(channel)> will write the 'hello, world' bytes

@@ -1,6 +1,7 @@
 package com.github.jinahya.hello.api._java_net_http;
 
 import com.github.jinahya.hello.api.HelloWorldTest;
+import com.github.jinahya.hello.api.HelloWorldTestUtils;
 import com.github.jinahya.hello.api.畵蛇添足;
 import com.sun.net.httpserver.HttpServer;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +26,8 @@ import java.nio.charset.StandardCharsets;
  */
 @DisplayName("method(HttpRequest.Builder, String)")
 @Slf4j
-class HelloWorld_Method_HttpRequest_Builder_Test extends HelloWorldTest {
+class HelloWorld_Method_HttpRequest_Builder_Test
+        extends HelloWorldTest {
 
     // -------------------------------------------------------------------------------- CONSTRUCTORS
     HelloWorld_Method_HttpRequest_Builder_Test() {
@@ -72,8 +74,7 @@ class HelloWorld_Method_HttpRequest_Builder_Test extends HelloWorldTest {
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
-        final var service = service();
-        stub_set_array_will_return_the_array();
+        final var service = HelloWorldTestUtils.set_array_will_return_the_array(service());
         final var builder = HttpRequest.newBuilder();
         final var method = "WHATEVER";
         try (var mockStatic = Mockito.mockStatic(HttpRequest.BodyPublishers.class,
@@ -81,7 +82,7 @@ class HelloWorld_Method_HttpRequest_Builder_Test extends HelloWorldTest {
             // -------------------------------------------------------------------------------- when
             final var result = service.method(builder, method);
             // -------------------------------------------------------------------------------- then
-            final var array = verify_set_array12_invoked_once();
+            final var array = HelloWorldTestUtils.set_array12_invoked_once(service);
             mockStatic.verify(
                     () -> HttpRequest.BodyPublishers.ofByteArray(array),
                     Mockito.times(1)
@@ -92,10 +93,11 @@ class HelloWorld_Method_HttpRequest_Builder_Test extends HelloWorldTest {
 
     @畵蛇添足
     @Test
-    void _添足_畵蛇() throws Exception {
+    void _添足_畵蛇()
+            throws Exception {
         // ----------------------------------------------------------------------------------- given
-        final var service = service();
-        stub_set_array_will_set_actual_hello_world_bytes();
+        final var service = HelloWorldTestUtils.set_array_will_set_actual_hello_world_bytes(
+                service());
         final var server = HttpServer.create(new InetSocketAddress(0), 0);
         final var port = server.getAddress().getPort();
         final var path = "/post";

@@ -79,7 +79,8 @@ class HelloWorld_Append_Appendable_Test
             and append each byte in <array> to <appendable>"""
     )
     @Test
-    void __() throws IOException {
+    void __()
+            throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         Mockito.doAnswer(i -> { // <1>

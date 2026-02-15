@@ -28,7 +28,8 @@ import java.util.concurrent.CompletableFuture;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorld_Write_DatagramChannel_Test extends HelloWorldTest {
+class HelloWorld_Write_DatagramChannel_Test
+        extends HelloWorldTest {
 
     // ---------------------------------------------------------------------------------------------
     @DisplayName("(null)NullPointerException")
@@ -87,7 +88,8 @@ class HelloWorld_Write_DatagramChannel_Test extends HelloWorldTest {
         }
 
         @Test
-        void __blocking() throws IOException {
+        void __blocking()
+                throws IOException {
             // ------------------------------------------------------------------------------- given
             final var service = service();
             final var address = new CompletableFuture<SocketAddress>();
@@ -97,14 +99,15 @@ class HelloWorld_Write_DatagramChannel_Test extends HelloWorldTest {
                 // ---------------------------------------------------------------------------- when
                 final var result = service.write(client);
                 // ---------------------------------------------------------------------------- then
-                final var buffer = HelloWorldTestUtils.verify_put_buffer12_invoked_once(service);
+                final var buffer = HelloWorldTestUtils.put_buffer12_invoked_once(service);
                 Mockito.verify(client, Mockito.times(1)).write(buffer);
                 Assertions.assertSame(client, result);
             }
         }
 
         @Test
-        void __nonblocking() throws IOException {
+        void __nonblocking()
+                throws IOException {
             // ------------------------------------------------------------------------------- given
             final var service = service();
             final var address = new CompletableFuture<SocketAddress>();
@@ -115,7 +118,7 @@ class HelloWorld_Write_DatagramChannel_Test extends HelloWorldTest {
                 // ---------------------------------------------------------------------------- when
                 final var result = service.write(client);
                 // ---------------------------------------------------------------------------- then
-                final var buffer = HelloWorldTestUtils.verify_put_buffer12_invoked_once(service);
+                final var buffer = HelloWorldTestUtils.put_buffer12_invoked_once(service);
                 Mockito.verify(client, Mockito.times(1)).write(buffer);
                 Assertions.assertSame(client, result);
             }
@@ -141,7 +144,8 @@ class HelloWorld_Write_DatagramChannel_Test extends HelloWorldTest {
         }
 
         @Test
-        void __blocking() throws IOException {
+        void __blocking()
+                throws IOException {
             // ------------------------------------------------------------------------------- given
             final var service = service();
             final var address = new CompletableFuture<SocketAddress>();
@@ -151,14 +155,15 @@ class HelloWorld_Write_DatagramChannel_Test extends HelloWorldTest {
                 // ---------------------------------------------------------------------------- when
                 final var result = service.write(client);
                 // ---------------------------------------------------------------------------- then
-                final var buffer = HelloWorldTestUtils.verify_put_buffer12_invoked_once(service);
+                final var buffer = HelloWorldTestUtils.put_buffer12_invoked_once(service);
                 Mockito.verify(client, Mockito.times(1)).write(buffer);
                 Assertions.assertSame(client, result);
             }
         }
 
         @Test
-        void __nonblocking() throws IOException {
+        void __nonblocking()
+                throws IOException {
             // ------------------------------------------------------------------------------- given
             final var service = service();
             final var address = new CompletableFuture<SocketAddress>();
@@ -169,7 +174,7 @@ class HelloWorld_Write_DatagramChannel_Test extends HelloWorldTest {
                 // ---------------------------------------------------------------------------- when
                 final var result = service.write(client);
                 // ---------------------------------------------------------------------------- then
-                final var buffer = HelloWorldTestUtils.verify_put_buffer12_invoked_once(service);
+                final var buffer = HelloWorldTestUtils.put_buffer12_invoked_once(service);
                 Mockito.verify(client, Mockito.times(1)).write(buffer);
                 Assertions.assertSame(client, result);
             }
@@ -200,7 +205,8 @@ class HelloWorld_Write_DatagramChannel_Test extends HelloWorldTest {
         }
 
         @Test
-        void __blocking() throws IOException {
+        void __blocking()
+                throws IOException {
             // ------------------------------------------------------------------------------- given
             final var service = service();
             final var address = new CompletableFuture<SocketAddress>();
@@ -210,14 +216,15 @@ class HelloWorld_Write_DatagramChannel_Test extends HelloWorldTest {
                 // ---------------------------------------------------------------------------- when
                 final var result = service.write(client);
                 // ---------------------------------------------------------------------------- then
-                final var buffer = HelloWorldTestUtils.verify_put_buffer12_invoked_once(service);
+                final var buffer = HelloWorldTestUtils.put_buffer12_invoked_once(service);
                 Mockito.verify(client, Mockito.times(1)).write(buffer);
                 Assertions.assertSame(client, result);
             }
         }
 
         @Test
-        void __nonblocking() throws IOException {
+        void __nonblocking()
+                throws IOException {
             // ------------------------------------------------------------------------------- given
             final var service = service();
             final var address = new CompletableFuture<SocketAddress>();
@@ -228,7 +235,7 @@ class HelloWorld_Write_DatagramChannel_Test extends HelloWorldTest {
                 // ---------------------------------------------------------------------------- when
                 final var result = service.write(client);
                 // ---------------------------------------------------------------------------- then
-                final var buffer = HelloWorldTestUtils.verify_put_buffer12_invoked_once(service);
+                final var buffer = HelloWorldTestUtils.put_buffer12_invoked_once(service);
                 Mockito.verify(client, Mockito.times(1)).write(buffer);
                 Assertions.assertSame(client, result);
             }

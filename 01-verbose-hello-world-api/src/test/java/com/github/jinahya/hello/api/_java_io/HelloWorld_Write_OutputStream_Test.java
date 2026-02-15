@@ -22,6 +22,7 @@ package com.github.jinahya.hello.api._java_io;
 
 import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldTest;
+import com.github.jinahya.hello.api.HelloWorldTestUtils;
 import com.github.jinahya.hello.api.畵蛇添足;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -50,7 +51,8 @@ import java.nio.charset.StandardCharsets;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_01_Write_OutputStream_Test extends HelloWorldTest {
+class HelloWorld_Write_OutputStream_Test
+        extends HelloWorldTest {
 
     /**
      * Verifies that the {@link HelloWorld#write(OutputStream) write(stream)} method throws a
@@ -86,7 +88,8 @@ class HelloWorld_01_Write_OutputStream_Test extends HelloWorldTest {
             and writes the <array> to the <stream>"""
     )
     @Test
-    void __() throws IOException {
+    void __()
+            throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // stub: <service.set(array)> will return the <array>
@@ -99,7 +102,7 @@ class HelloWorld_01_Write_OutputStream_Test extends HelloWorldTest {
         final var result = service.write(stream);
         // ------------------------------------------------------------------------------------ then
         // verify: <set(byte[12])> invoked, once
-        final var array = verify_set_array12_invoked_once();
+        final var array = HelloWorldTestUtils.set_array12_invoked_once(service);
         // verify: <stream.write(array)> invoked, once
 //        Mockito.verify(stream, Mockito.times(1)).write(array);
         // verify: no more interactions with the <stream>
@@ -111,7 +114,8 @@ class HelloWorld_01_Write_OutputStream_Test extends HelloWorldTest {
     @畵蛇添足("testing with an existing file doesn't add any extra value")
     @DisplayName("<file>'s length should be increased by <12>")
     @Test
-    void _添足_畵蛇(@TempDir final File dir) throws IOException {
+    void _添足_畵蛇(@TempDir final File dir)
+            throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // stub: <service.write(stream)> will write the <hello, world> bytes

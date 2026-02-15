@@ -21,7 +21,8 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 @DisplayName("set(BitSet, int)")
 @Slf4j
-class HelloWorld_Set_BitSet_Test extends HelloWorldTest {
+class HelloWorld_Set_BitSet_Test
+        extends HelloWorldTest {
 
     @DisplayName("""
             should throw a <NullPointerException>
@@ -65,7 +66,7 @@ class HelloWorld_Set_BitSet_Test extends HelloWorldTest {
         // ------------------------------------------------------------------------------------ when
         final var result = service.set(bitset, index);
         // ------------------------------------------------------------------------------------ then
-        verify_set_array12_invoked_once();
+        final var array = HelloWorldTestUtils.set_array12_invoked_once(service);
         Assertions.assertSame(bitset, result);
     }
 
@@ -74,7 +75,7 @@ class HelloWorld_Set_BitSet_Test extends HelloWorldTest {
     void _添足_畵蛇() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        HelloWorldTestUtils.stub_set_array_will_set_actual_hello_world_bytes(service);
+        HelloWorldTestUtils.set_array_will_set_actual_hello_world_bytes(service);
         final var bitset = new BitSet();
         final var index = ThreadLocalRandom.current().nextInt(16) * Byte.SIZE;
         // ------------------------------------------------------------------------------------ when
@@ -83,6 +84,6 @@ class HelloWorld_Set_BitSet_Test extends HelloWorldTest {
         Assertions.assertSame(bitset, result);
         final var bytes = Arrays.copyOfRange(bitset.toByteArray(), index / Byte.SIZE,
                                              index / Byte.SIZE + HelloWorld.BYTES);
-        Assertions.assertArrayEquals(HelloWorldTestUtils.getHelloWorldBytes(), bytes);
+        Assertions.assertArrayEquals(HelloWorldTestUtils.getHelloWorldArray(), bytes);
     }
 }

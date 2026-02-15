@@ -49,9 +49,11 @@ import java.util.function.LongSupplier;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorldFlow_12_RxJava extends _HelloWorldFlowTest {
+class HelloWorldFlow_12_RxJava
+        extends _HelloWorldFlowTest {
 
-    private static class AlienFunction<T> implements Function<Observable<T>, Disposable> {
+    private static class AlienFunction<T>
+            implements Function<Observable<T>, Disposable> {
 
         private AlienFunction(final LongSupplier countSupplier,
                               final io.reactivex.rxjava3.functions.Consumer<? super T> itemConsumer) {

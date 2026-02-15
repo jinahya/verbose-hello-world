@@ -81,7 +81,8 @@ class HelloWorld_Send_Socket_Test
      */
     @DisplayName("should invoke <write(socket.outputStream)>")
     @Test
-    void __() throws IOException {
+    void __()
+            throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // stub, <service.write(stream)> will return the <stream>
@@ -105,7 +106,8 @@ class HelloWorld_Send_Socket_Test
     }
 
     @Test
-    void _添足_畵蛇() throws IOException {
+    void _添足_畵蛇()
+            throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // stub, <service.write(stream)> will write 'hello, world' bytes to the <stream>

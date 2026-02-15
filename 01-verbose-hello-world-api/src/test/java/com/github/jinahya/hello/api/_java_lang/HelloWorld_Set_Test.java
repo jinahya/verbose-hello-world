@@ -22,6 +22,7 @@ package com.github.jinahya.hello.api._java_lang;
 
 import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldTest;
+import com.github.jinahya.hello.api.HelloWorldTestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -63,7 +64,7 @@ class HelloWorld_Set_Test
         // ------------------------------------------------------------------------------------ when
         final var result = service.set();
         // ------------------------------------------------------------------------------------ then
-        final var captured = verify_set_array12_invoked_once();
+        final var captured = HelloWorldTestUtils.set_array12_invoked_once(service);
         Assertions.assertSame(result, captured);
     }
 }

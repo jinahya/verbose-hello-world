@@ -27,7 +27,8 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 @DisplayName("write(SeekableByteChannel)")
 @Slf4j
-class HelloWorld_Write_SeekableByteChannel_Test extends HelloWorldTest {
+class HelloWorld_Write_SeekableByteChannel_Test
+        extends HelloWorldTest {
 
     /**
      * Verifies that the {@link HelloWorld#write(SeekableByteChannel) write(channel)} method throws
@@ -56,7 +57,8 @@ class HelloWorld_Write_SeekableByteChannel_Test extends HelloWorldTest {
      */
     @DisplayName("should delegate to <write(WritableByteChannel)>")
     @Test
-    void __() throws IOException {
+    void __()
+            throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var channel = Mockito.mock(SeekableByteChannel.class);
@@ -82,7 +84,8 @@ class HelloWorld_Write_SeekableByteChannel_Test extends HelloWorldTest {
      */
     @畵蛇添足
     @Test
-    void _添足_畵蛇(@TempDir final Path tempDir) throws IOException {
+    void _添足_畵蛇(@TempDir final Path tempDir)
+            throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         HelloWorldTestUtils.put_buffer_will_put_actual_hello_world_bytes(service);
@@ -102,7 +105,7 @@ class HelloWorld_Write_SeekableByteChannel_Test extends HelloWorldTest {
                 channel.read(buffer);
             }
             Assertions.assertArrayEquals(
-                    HelloWorldTestUtils.getHelloWorldBytes(),
+                    HelloWorldTestUtils.getHelloWorldArray(),
                     buffer.array()
             );
         }

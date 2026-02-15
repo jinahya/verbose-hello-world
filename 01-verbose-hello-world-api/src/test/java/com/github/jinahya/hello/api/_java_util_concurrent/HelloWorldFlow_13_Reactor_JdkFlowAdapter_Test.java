@@ -45,7 +45,8 @@ import java.util.concurrent.Flow;
  */
 @DisplayName("JdkFlowAdapter")
 @Slf4j
-class HelloWorldFlow_13_Reactor_JdkFlowAdapter_Test extends _HelloWorldFlowTest {
+class HelloWorldFlow_13_Reactor_JdkFlowAdapter_Test
+        extends _HelloWorldFlowTest {
 
     // -----------------------------------------------------------------------------------------------------------------
 

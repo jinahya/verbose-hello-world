@@ -1,6 +1,7 @@
 package com.github.jinahya.hello.api._java_security;
 
 import com.github.jinahya.hello.api.HelloWorldTest;
+import com.github.jinahya.hello.api.HelloWorldTestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -17,7 +18,8 @@ import java.util.List;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorld_Update_Digest_Test extends HelloWorldTest {
+class HelloWorld_Update_Digest_Test
+        extends HelloWorldTest {
 
     static final List<String> ALGORITHMS = List.of(
             "SHA-1",
@@ -41,14 +43,15 @@ class HelloWorld_Update_Digest_Test extends HelloWorldTest {
 
     @MethodSource({"algorithms"})
     @ParameterizedTest
-    void __(final String algorithm) throws NoSuchAlgorithmException {
+    void __(final String algorithm)
+            throws NoSuchAlgorithmException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var digest = Mockito.spy(MessageDigest.getInstance(algorithm));
         // ----------------------------------------------------------------------------- when / then
         final var result = service.update(digest);
         // ------------------------------------------------------------------------------------ then
-        final var array = verify_set_array12_invoked_once();
+        final var array = HelloWorldTestUtils.set_array12_invoked_once(service);
         Mockito.verify(digest, Mockito.times(1)).update(array);
         Assertions.assertEquals(digest, result);
         {

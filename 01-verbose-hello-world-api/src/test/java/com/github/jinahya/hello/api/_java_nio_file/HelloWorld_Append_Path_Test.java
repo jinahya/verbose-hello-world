@@ -79,7 +79,8 @@ class HelloWorld_Append_Path_Test
 
     @DisplayName("should invoke <write(FileChannel.open(path, CREATE, WRITE, APPEND))>")
     @Test
-    void __() throws IOException {
+    void __()
+            throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // stub, <service.write(channel)> will return the <channel>
@@ -126,7 +127,8 @@ class HelloWorld_Append_Path_Test
     @畵蛇添足("testing with an existing file doesn't add any value")
     @DisplayName("<path>'s size should be increased by <12>")
     @Test
-    void _添足_畵蛇(@TempDir final Path dir) throws Exception {
+    void _添足_畵蛇(@TempDir final Path dir)
+            throws Exception {
         // ----------------------------------------------------------------------------------- given
         var service = service();
         // stub, <service.append(path)> will append <12> <zero> bytes

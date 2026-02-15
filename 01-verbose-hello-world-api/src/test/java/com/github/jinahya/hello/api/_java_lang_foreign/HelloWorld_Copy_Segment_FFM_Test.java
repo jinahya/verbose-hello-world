@@ -2,6 +2,7 @@ package com.github.jinahya.hello.api._java_lang_foreign;
 
 import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldTest;
+import com.github.jinahya.hello.api.HelloWorldTestUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Disabled;
@@ -98,7 +99,8 @@ class HelloWorld_Copy_Segment_FFM_Test {
      * cppreference.com</a>
      */
     @Nested
-    class Libc_Test extends HelloWorldTest {
+    class Libc_Test
+            extends HelloWorldTest {
 
         /**
          * Verifies segment content using C {@code puts()}.
@@ -107,7 +109,8 @@ class HelloWorld_Copy_Segment_FFM_Test {
          * {@code stdout}. Requires null-terminated string.
          */
         @Test
-        void _puts__() throws Throwable {
+        void _puts__()
+                throws Throwable {
             // ------------------------------------------------------------------------------- given
             final var service = service();
             stubSetArrayWillCopyHelloWorldBytes(service);
@@ -117,7 +120,7 @@ class HelloWorld_Copy_Segment_FFM_Test {
                 // ----------------------------------------------------------------------------when
                 service.copy(segment);
                 // ---------------------------------------------------------------------------- then
-                verify_set_array12_invoked_once();
+                final var array = HelloWorldTestUtils.set_array12_invoked_once(service);
                 final var content = readSegmentAsString(segment);
                 Assertions.assertEquals("hello, world", content);
                 final var linker = Linker.nativeLinker();
@@ -136,7 +139,8 @@ class HelloWorld_Copy_Segment_FFM_Test {
          * counting the terminating null character.
          */
         @Test
-        void _strlen__() throws Throwable {
+        void _strlen__()
+                throws Throwable {
             // ------------------------------------------------------------------------------- given
             final var service = service();
             stubSetArrayWillCopyHelloWorldBytes(service);
@@ -162,7 +166,8 @@ class HelloWorld_Copy_Segment_FFM_Test {
          * bytes of memory areas {@code s1} and {@code s2}. Returns 0 if they are equal.
          */
         @Test
-        void _memcmp__() throws Throwable {
+        void _memcmp__()
+                throws Throwable {
             // ------------------------------------------------------------------------------- given
             final var service = service();
             stubSetArrayWillCopyHelloWorldBytes(service);
@@ -212,7 +217,8 @@ class HelloWorld_Copy_Segment_FFM_Test {
      * @see <a href="https://docs.python.org/3/c-api/init.html#c.Py_Finalize">Py_Finalize</a>
      */
     @Nested
-    class Python_Test extends HelloWorldTest {
+    class Python_Test
+            extends HelloWorldTest {
 
         private static final List<String> PYTHON_LIBS_MACOS = List.of(
                 // Homebrew Cellar paths (versioned)
@@ -249,7 +255,8 @@ class HelloWorld_Copy_Segment_FFM_Test {
          */
         @Disabled
         @Test
-        void _print_() throws Throwable {
+        void _print_()
+                throws Throwable {
             // ------------------------------------------------------------------------------- given
             Assumptions.assumeTrue(
                     isLibraryAvailable(getPythonLibs().toArray(String[]::new)),
@@ -318,7 +325,8 @@ class HelloWorld_Copy_Segment_FFM_Test {
      */
     @Nested
     @EnabledOnOs(OS.MAC)
-    class MacOS_Test extends HelloWorldTest {
+    class MacOS_Test
+            extends HelloWorldTest {
 
         /**
          * Verifies segment content using POSIX {@code write()} to stdout.
@@ -326,7 +334,8 @@ class HelloWorld_Copy_Segment_FFM_Test {
          * Writes directly to file descriptor 1 (stdout) bypassing buffered I/O.
          */
         @Test
-        void _write_() throws Throwable {
+        void _write_()
+                throws Throwable {
             // ------------------------------------------------------------------------------- given
             final var service = service();
             stubSetArrayWillCopyHelloWorldBytes(service);
@@ -364,13 +373,15 @@ class HelloWorld_Copy_Segment_FFM_Test {
      */
     @Nested
     @EnabledOnOs(OS.LINUX)
-    class Linux_Test extends HelloWorldTest {
+    class Linux_Test
+            extends HelloWorldTest {
 
         /**
          * Verifies segment content using POSIX {@code write()} to stdout.
          */
         @Test
-        void _write_() throws Throwable {
+        void _write_()
+                throws Throwable {
             // ------------------------------------------------------------------------------- given
             final var service = service();
             stubSetArrayWillCopyHelloWorldBytes(service);
@@ -420,7 +431,8 @@ class HelloWorld_Copy_Segment_FFM_Test {
      */
     @Nested
     @EnabledOnOs(OS.WINDOWS)
-    class Windows_Test extends HelloWorldTest {
+    class Windows_Test
+            extends HelloWorldTest {
 
         /**
          * Verifies segment content using Windows {@code WriteConsoleA()}.
@@ -429,7 +441,8 @@ class HelloWorld_Copy_Segment_FFM_Test {
          * content to the console.
          */
         @Test
-        void _WriteConsoleA_() throws Throwable {
+        void _WriteConsoleA_()
+                throws Throwable {
             // ------------------------------------------------------------------------------- given
             Assumptions.assumeTrue(
                     isLibraryAvailable("kernel32", "kernel32.dll"),

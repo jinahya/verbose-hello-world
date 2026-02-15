@@ -23,15 +23,16 @@ import java.util.stream.Stream;
 /**
  * Tests for {@link com.github.jinahya.hello.api.HelloWorld#update(Mac)} method.
  *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see <a
  * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/javax/crypto/Mac.html">javax.crypto.Mac</a>
  * @see <a
  * href="https://docs.oracle.com/en/java/javase/25/docs/specs/security/standard-names.html#mac-algorithms">Mac
  * Algorithms</a> (Java Security Standard Algorithm Names)
- * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorld_Update_Mac_Test extends HelloWorldTest {
+class HelloWorld_Update_Mac_Test
+        extends HelloWorldTest {
 
     // https://docs.oracle.com/en/java/javase/25/docs/specs/security/standard-names.html#mac-algorithms
     // HmacMD5
@@ -57,12 +58,14 @@ class HelloWorld_Update_Mac_Test extends HelloWorldTest {
     // HmacPBESHA512/224
     // HmacPBESHA512/256
 
-    private static Key generateSecretKey(final String algorithm) throws Exception {
+    private static Key generateSecretKey(final String algorithm)
+            throws Exception {
         final var generator = KeyGenerator.getInstance(algorithm);
         return generator.generateKey();
     }
 
-    private static Key generatePBESecretKey(final String keyFactoryAlgorithm) throws Exception {
+    private static Key generatePBESecretKey(final String keyFactoryAlgorithm)
+            throws Exception {
         final var password = "password".toCharArray();
         final var keySpec = new PBEKeySpec(password);
         final var factory = SecretKeyFactory.getInstance(keyFactoryAlgorithm);
@@ -79,7 +82,7 @@ class HelloWorld_Update_Mac_Test extends HelloWorldTest {
     // ---------------------------------------------------------------------------------------------
     @BeforeEach
     void __() {
-        HelloWorldTestUtils.stub_set_array_will_set_actual_hello_world_bytes(service());
+        HelloWorldTestUtils.set_array_will_set_actual_hello_world_bytes(service());
     }
 
     // =============================================================================================
@@ -109,7 +112,8 @@ class HelloWorld_Update_Mac_Test extends HelloWorldTest {
         @MethodSource(
                 "com.github.jinahya.hello.api._javax_crypto.HelloWorld_Update_Mac_Test#getHmacAlgorithmsStream")
         @ParameterizedTest
-        void __(final String algorithm) throws Exception {
+        void __(final String algorithm)
+                throws Exception {
             // ------------------------------------------------------------------------------- given
             final var service = service();
             final var key = generateSecretKey(algorithm);
@@ -147,7 +151,8 @@ class HelloWorld_Update_Mac_Test extends HelloWorldTest {
         @MethodSource(
                 "com.github.jinahya.hello.api._javax_crypto.HelloWorld_Update_Mac_Test#getPbeDigestsStream")
         @ParameterizedTest
-        void __(final String digest) throws Exception {
+        void __(final String digest)
+                throws Exception {
             // ------------------------------------------------------------------------------- given
             final var service = service();
             final var algorithm = "PBEWithHmac" + digest;
@@ -173,7 +178,8 @@ class HelloWorld_Update_Mac_Test extends HelloWorldTest {
         @MethodSource(
                 "com.github.jinahya.hello.api._javax_crypto.HelloWorld_Update_Mac_Test#getPbeDigestsStream")
         @ParameterizedTest
-        void __(final String digest) throws Exception {
+        void __(final String digest)
+                throws Exception {
             // ------------------------------------------------------------------------------- given
             final var service = service();
             final var algorithm = "HmacPBE" + digest;

@@ -55,9 +55,9 @@ class AsynchronousHelloWorld_Append_Path_Test
 
     /**
      * Verifies that the
-     * {@link AsynchronousHelloWorld#append(Path, Object, CompletionHandler)
-     * append(path, attachment, handler)} method throws a {@link NullPointerException} when the
-     * {@code path} argument is {@code null}.
+     * {@link AsynchronousHelloWorld#append(Path, Object, CompletionHandler) append(path,
+     * attachment, handler)} method throws a {@link NullPointerException} when the {@code path}
+     * argument is {@code null}.
      */
     @DisplayName("""
             should throw a <NullPointerException>
@@ -79,9 +79,9 @@ class AsynchronousHelloWorld_Append_Path_Test
 
     /**
      * Verifies that the
-     * {@link AsynchronousHelloWorld#append(Path, Object, CompletionHandler)
-     * append(path, attachment, handler)} method throws a {@link NullPointerException} when the
-     * {@code handler} argument is {@code null}.
+     * {@link AsynchronousHelloWorld#append(Path, Object, CompletionHandler) append(path,
+     * attachment, handler)} method throws a {@link NullPointerException} when the {@code handler}
+     * argument is {@code null}.
      */
     @DisplayName("""
             should throw a <NullPointerException>
@@ -102,8 +102,8 @@ class AsynchronousHelloWorld_Append_Path_Test
 
     /**
      * Verifies that the
-     * {@link AsynchronousHelloWorld#append(Path, Object, CompletionHandler)
-     * append(path, attachment, handler)} method opens a channel, invokes
+     * {@link AsynchronousHelloWorld#append(Path, Object, CompletionHandler) append(path,
+     * attachment, handler)} method opens a channel, invokes
      * {@link AsynchronousHelloWorld#write(AsynchronousFileChannel, long, Object,
      * CompletionHandler)}, and on completion, forces and closes the channel, and notifies
      * {@code handler.completed(path, attachment)}.
@@ -113,7 +113,8 @@ class AsynchronousHelloWorld_Append_Path_Test
             and invoke <handler.completed(path, attachment)>""")
     @Test
     @SuppressWarnings({"unchecked"})
-    void _complete_(@TempDir final Path dir) throws Exception {
+    void _complete_(@TempDir final Path dir)
+            throws Exception {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var file = Files.createTempFile(dir, null, null);
@@ -160,9 +161,9 @@ class AsynchronousHelloWorld_Append_Path_Test
 
     /**
      * Verifies that the
-     * {@link AsynchronousHelloWorld#append(Path, Object, CompletionHandler)
-     * append(path, attachment, handler)} method, when the internal write fails, closes the channel
-     * and notifies {@code handler.failed(exc, attachment)}.
+     * {@link AsynchronousHelloWorld#append(Path, Object, CompletionHandler) append(path,
+     * attachment, handler)} method, when the internal write fails, closes the channel and notifies
+     * {@code handler.failed(exc, attachment)}.
      */
     @DisplayName("""
             should close the channel
@@ -170,7 +171,8 @@ class AsynchronousHelloWorld_Append_Path_Test
             when the write fails""")
     @Test
     @SuppressWarnings({"unchecked"})
-    void _failed_(@TempDir final Path dir) throws Exception {
+    void _failed_(@TempDir final Path dir)
+            throws Exception {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var file = Files.createTempFile(dir, null, null);
@@ -212,13 +214,13 @@ class AsynchronousHelloWorld_Append_Path_Test
     /**
      * Verifies the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to a real
      * temporary file via
-     * {@link AsynchronousHelloWorld#append(Path, Object, CompletionHandler)
-     * append(path, attachment, handler)}, and verifies the file size increased by
-     * {@value HelloWorld#BYTES}.
+     * {@link AsynchronousHelloWorld#append(Path, Object, CompletionHandler) append(path,
+     * attachment, handler)}, and verifies the file size increased by {@value HelloWorld#BYTES}.
      */
     @畵蛇添足("testing with a real file doesn't add any value")
     @Test
-    void _添足_畵蛇(@TempDir final Path dir) throws Exception {
+    void _添足_畵蛇(@TempDir final Path dir)
+            throws Exception {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var file = Files.createTempFile(dir, null, null);

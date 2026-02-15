@@ -22,7 +22,6 @@ package com.github.jinahya.hello.api._java_nio_channels;
 
 import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.屋上架屋;
 import com.github.jinahya.hello.api.畵蛇添足;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -45,11 +44,7 @@ import java.nio.charset.StandardCharsets;
  * A class for testing {@link HelloWorld#send(AsynchronousSocketChannel)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @deprecated The {@link HelloWorld#send(AsynchronousSocketChannel)} method has been deprecated, so
- * has this class.
  */
-@屋上架屋("AsynchronousSocketChannel implements AsynchronousByteChannel")
-@Deprecated(forRemoval = true)
 @DisplayName("send(AsynchronousSocketChannel)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
@@ -89,7 +84,8 @@ class HelloWorld_Send_AsynchronousSocketChannel_Test
      */
     @DisplayName("should invoke <write(channel)>")
     @Test
-    void __() throws Exception {
+    void __()
+            throws Exception {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // stub, <service.write(channel)> will return the <channel>
@@ -109,7 +105,8 @@ class HelloWorld_Send_AsynchronousSocketChannel_Test
 
     @畵蛇添足("testing with a real socket doesn't add any value")
     @Test
-    void _添足_畵蛇() throws Exception {
+    void _添足_畵蛇()
+            throws Exception {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // stub, <service.write(channel)> will write the <hello, world> bytes

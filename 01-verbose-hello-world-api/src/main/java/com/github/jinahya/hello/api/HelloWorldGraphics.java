@@ -15,6 +15,7 @@ public interface HelloWorldGraphics {
     }
 
     // ------------------------------------------------------------------------------------ java.awt
+
     /**
      * Returns three colors derived from the
      * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>.

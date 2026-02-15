@@ -48,10 +48,12 @@ import java.util.concurrent.ThreadLocalRandom;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_21_Append_File_Using_DataOutput_Test extends HelloWorldTest {
+class HelloWorld_Append_File_Using_DataOutput_Test
+        extends HelloWorldTest {
 
     @Test
-    void __(@TempDir final File dir) throws IOException {
+    void __(@TempDir final File dir)
+            throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // stub: <service.write(DataOutput)> will write <hello, world> bytes.

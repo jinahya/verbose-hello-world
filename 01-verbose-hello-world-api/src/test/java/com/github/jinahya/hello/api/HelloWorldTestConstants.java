@@ -32,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 })
 public final class HelloWorldTestConstants {
 
-    public static final String HELLO_WORLD_STRING = "hello, world";
+    static final String HELLO_WORLD_STRING = "hello, world";
 
     // ---------------------------------------------------------------------------------------------
     @_ExcludeFromCoverage_PrivateConstructor_Obviously

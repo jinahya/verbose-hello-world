@@ -22,6 +22,7 @@ package com.github.jinahya.hello.api._java_net;
 
 import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldTest;
+import com.github.jinahya.hello.api.HelloWorldTestUtils;
 import com.github.jinahya.hello.api.畵蛇添足;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -48,7 +49,8 @@ import java.nio.charset.StandardCharsets;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_Send_DatagramSocket_Test extends HelloWorldTest {
+class HelloWorld_Send_DatagramSocket_Test
+        extends HelloWorldTest {
 
     /**
      * Verifies that the {@link HelloWorld#send(DatagramSocket) send(socket)} method throws a
@@ -100,7 +102,8 @@ class HelloWorld_Send_DatagramSocket_Test extends HelloWorldTest {
      */
     @DisplayName("should invoke <set(packet)> and <socket.send(packet)> with the same packet")
     @Test
-    void __() throws IOException {
+    void __()
+            throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         Mockito.doAnswer(i -> i.getArgument(0))
@@ -120,10 +123,11 @@ class HelloWorld_Send_DatagramSocket_Test extends HelloWorldTest {
 
     @畵蛇添足
     @Test
-    void _添足_畵蛇() throws IOException {
+    void _添足_畵蛇()
+            throws IOException {
         // ----------------------------------------------------------------------------------- given
-        final var service = service();
-        stub_set_array_will_set_actual_hello_world_bytes();
+        final var service = HelloWorldTestUtils.set_array_will_set_actual_hello_world_bytes(
+                service());
         // ----------------------------------------------------------------------------- when / then
         try (var server = new DatagramSocket(
                 new InetSocketAddress(InetAddress.getLoopbackAddress(), 0))) {

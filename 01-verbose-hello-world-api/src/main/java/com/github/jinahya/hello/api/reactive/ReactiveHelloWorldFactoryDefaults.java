@@ -31,7 +31,8 @@ final class ReactiveHelloWorldFactoryDefaults {
     };
 
     // ---------------------------------------------------------------------------------------------
-    abstract static class AbstractSubscriber<T> implements Subscriber<T> {
+    abstract static class AbstractSubscriber<T>
+            implements Subscriber<T> {
 
         AbstractSubscriber(final long n) {
             super();
@@ -59,7 +60,8 @@ final class ReactiveHelloWorldFactoryDefaults {
     }
 
     // ---------------------------------------------------------------------------------------------
-    abstract static class AbstractSubscription implements Subscription {
+    abstract static class AbstractSubscription
+            implements Subscription {
 
         @Override
         public void cancel() {
@@ -71,7 +73,8 @@ final class ReactiveHelloWorldFactoryDefaults {
         volatile boolean terminated = false;
     }
 
-    static class ByteSubscription extends AbstractSubscription {
+    static class ByteSubscription
+            extends AbstractSubscription {
 
         ByteSubscription(final Subscriber<? super Byte> subscriber) {
             this.subscriber = Objects.requireNonNull(subscriber, "subscriber is null");
@@ -102,7 +105,8 @@ final class ReactiveHelloWorldFactoryDefaults {
         private int index;
     }
 
-    static class ArraySubscription extends AbstractSubscription {
+    static class ArraySubscription
+            extends AbstractSubscription {
 
         private final Subscriber<? super byte[]> subscriber;
 
@@ -147,7 +151,8 @@ final class ReactiveHelloWorldFactoryDefaults {
         }
     }
 
-    static class StringSubscription extends AbstractSubscription {
+    static class StringSubscription
+            extends AbstractSubscription {
 
         StringSubscription(final Subscriber<? super String> subscriber,
                            final Publisher<byte[]> publisher) {
@@ -201,7 +206,8 @@ final class ReactiveHelloWorldFactoryDefaults {
      *
      * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
      */
-    static final class DefaultOctetPublisher implements Publisher<Byte> {
+    static final class DefaultOctetPublisher
+            implements Publisher<Byte> {
 
         /**
          * Creates a new instance.

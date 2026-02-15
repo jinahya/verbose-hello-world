@@ -22,6 +22,7 @@ package com.github.jinahya.hello.api._java_nio_channels;
 
 import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldTest;
+import com.github.jinahya.hello.api.HelloWorldTestUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -87,7 +88,8 @@ class HelloWorld_Write_AsynchronousByteChannel_Test
             and write the <buffer> to the <channel> while the the <buffer> has remaining"""
     )
     @Test
-    void __() throws InterruptedException, IOException {
+    void __()
+            throws InterruptedException, IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // stub, <service.put(buffer)> will increase <buffer>'s <position> by <HelloWorld.BYTES>
@@ -133,7 +135,7 @@ class HelloWorld_Write_AsynchronousByteChannel_Test
         final var result = service.write(channel);
         // ------------------------------------------------------------------------------------ then
         // verify, <service.put(buffer[12])> invoked, once
-        final var buffer = verify_put_buffer12_invoked_once();
+        final var buffer = HelloWorldTestUtils.put_buffer12_invoked_once(service);
         // verify, <channel.write(buffer)> invoked, at least once
 //        Mockito.verify(channel, Mockito.atLeastOnce()).write(buffer);
         // assert, <buffer> has no <remaining>

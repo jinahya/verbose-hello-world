@@ -31,6 +31,7 @@ import org.mockito.Mockito;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Writer;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
@@ -53,14 +54,21 @@ import java.util.stream.IntStream;
 public final class HelloWorldTestUtils {
 
     /**
-     * Returns a new byte array containing the "hello, world" bytes.
+     * Returns a byte array containing the {@value HelloWorldTestConstants#HELLO_WORLD_STRING}
+     * bytes.
      *
-     * @return a new byte array containing the "hello, world" bytes.
+     * @return a byte array containing the {@value HelloWorldTestConstants#HELLO_WORLD_STRING}
+     * bytes.
      */
-    public static byte[] getHelloWorldBytes() {
+    public static byte[] getHelloWorldArray() {
         return HelloWorldTestConstants.HELLO_WORLD_STRING.getBytes(StandardCharsets.US_ASCII);
     }
 
+    public static ByteBuffer getHelloWorldBuffer() {
+        return ByteBuffer.wrap(getHelloWorldArray());
+    }
+
+    // ---------------------------------------------------------------------------------------------
     static <T extends HelloWorld> T requireMock(final T service) {
         Objects.requireNonNull(service, "service is null");
         if (!Mockito.mockingDetails(service).isMock()) {
@@ -82,28 +90,34 @@ public final class HelloWorldTestUtils {
      * the {@code array}.
      *
      * @param service the mock service.
-     * @see #verify_set_array12_invoked_once(HelloWorld)
+     * @return the given {@code service}.
+     * @see #set_array12_invoked_once(HelloWorld)
      */
-    public static void stub_set_array_will_return_the_array(final HelloWorld service) {
+    public static <T extends HelloWorld> T set_array_will_return_the_array(final T service) {
         requireMock(service);
         Mockito.doAnswer(i -> i.getArgument(0))
                 .when(service)
-                .set(ArgumentMatchers.any(byte[].class));
+                .set(ArgumentMatchers.<byte[]>argThat(
+                        v -> v != null && v.length >= HelloWorld.BYTES
+                ));
+        return service;
     }
 
-    public static void stub_set_array_will_set_actual_hello_world_bytes(final HelloWorld service) {
+    public static <T extends HelloWorld>
+    T set_array_will_set_actual_hello_world_bytes(final T service) {
         requireMock(service);
         Mockito
                 .doAnswer(i -> {
                     final var array = i.getArgument(0, byte[].class);
-                    System.arraycopy(getHelloWorldBytes(), 0, array, 0, HelloWorld.BYTES);
+                    System.arraycopy(getHelloWorldArray(), 0, array, 0, HelloWorld.BYTES);
                     return array;
                 })
                 .when(service)
                 .set(ArgumentMatchers.any(byte[].class));
+        return service;
     }
 
-    public static byte[] verify_set_array12_invoked_once(final HelloWorld service) {
+    public static byte[] set_array12_invoked_once(final HelloWorld service) {
         requireMock(service);
         final var captor = ArgumentCaptor.forClass(byte[].class);
         Mockito.verify(service, Mockito.times(1)).set(captor.capture());
@@ -113,34 +127,52 @@ public final class HelloWorldTestUtils {
         return array;
     }
 
-    public static <T extends HelloWorld> T put_buffer_will_put_actual_hello_world_bytes(
-            final T service) {
+    // ------------------------------------------------------------------------------------- java.io
+    public static <T extends HelloWorld>
+    T write_writer_will_write_12_chars(final T service) throws IOException {
         requireMock(service);
-        Mockito
-                .doAnswer(i -> {
+        Mockito.doAnswer(i -> {
+                    final var writer = i.getArgument(0, Writer.class);
+                    writer.write(new char[HelloWorld.BYTES]);
+                    return writer;
+                })
+                .when(service)
+                .write(ArgumentMatchers.<Writer>notNull());
+        return service;
+    }
+
+    // ------------------------------------------------------------------------------------ java.nio
+    public static <T extends HelloWorld>
+    T put_buffer_will_put_actual_hello_world_bytes(final T service) {
+        requireMock(service);
+        Mockito.doAnswer(i -> {
                     final var buffer = i.getArgument(0, ByteBuffer.class);
-                    buffer.put(getHelloWorldBytes());
+                    buffer.put(getHelloWorldArray());
                     return buffer;
                 })
                 .when(service)
-                .put(ArgumentMatchers.any(ByteBuffer.class));
+                .put(ArgumentMatchers.<ByteBuffer>argThat(
+                        v -> v != null && v.remaining() >= HelloWorld.BYTES)
+                );
         return service;
     }
 
     /**
-     * Stubs given mock service's {@link HelloWorld#put(ByteBuffer) put(buffer)} method to just
-     * return the {@code bufefer} whose {@link ByteBuffer#position() position} increased by
-     * {@value HelloWorld#BYTES}.
+     * Stubs given mock service's {@link HelloWorld#put(ByteBuffer) put(buffer)} method, when the
+     * {@code buffer} is not {@code null} and has remaining greater than or equal to
+     * {@value HelloWorld#BYTES}, to just return the {@code bufefer} whose
+     * {@link ByteBuffer#position() position} increased by {@value HelloWorld#BYTES}.
      *
      * @param service the mock service.
-     * @see #verify_put_buffer12_invoked_once(HelloWorld)
+     * @return given {@code service} whose {@link HelloWorld#put(ByteBuffer)} method stubbed as
+     * above.
+     * @see #put_buffer12_invoked_once(HelloWorld)
      */
     public static <T extends HelloWorld>
     T put_buffer_will_increase_buffer_position_by_12(final T service) {
         requireMock(service);
         Mockito.doAnswer(i -> {
-                    final var buffer = Mockito.spy(i.getArgument(0, ByteBuffer.class));
-//                    final var buffer = Mockito.spy(i.getArgument(0, ByteBuffer.class));
+                    final var buffer = i.getArgument(0, ByteBuffer.class);
                     buffer.position(buffer.position() + HelloWorld.BYTES);
                     return buffer;
                 })
@@ -151,7 +183,7 @@ public final class HelloWorldTestUtils {
         return service;
     }
 
-    public static ByteBuffer verify_put_buffer12_invoked_once(final HelloWorld service) {
+    public static ByteBuffer put_buffer12_invoked_once(final HelloWorld service) {
         requireMock(service);
         final var captor = ArgumentCaptor.forClass(ByteBuffer.class);
         Mockito.verify(service, Mockito.times(1)).put(captor.capture());
@@ -161,7 +193,8 @@ public final class HelloWorldTestUtils {
         return buffer;
     }
 
-    public static <T extends HelloWorld> T append_appendable_appends_12_chars(final T service)
+    public static <T extends HelloWorld>
+    T append_appendable_appends_12_chars(final T service)
             throws IOException {
         requireMock(service);
         Mockito.doAnswer(i -> {
@@ -181,7 +214,10 @@ public final class HelloWorldTestUtils {
     }
 
     // ---------------------------------------------------------------------------------------------
-    private static <T extends File> T writeSome_(final T file) throws IOException {
+
+    // ---------------------------------------------------------------------------------------------
+    private static <T extends File> T writeSome_(final T file)
+            throws IOException {
         Objects.requireNonNull(file, "file is null");
         try (var stream = new FileOutputStream(file)) {
             stream.write(new byte[ThreadLocalRandom.current().nextInt(128)]);
@@ -189,7 +225,8 @@ public final class HelloWorldTestUtils {
         return file;
     }
 
-    private static <T extends Path> T writeSome_(final T path) throws IOException {
+    private static <T extends Path> T writeSome_(final T path)
+            throws IOException {
         Objects.requireNonNull(path, "path is null");
         try (var channel = FileChannel.open(path, StandardOpenOption.WRITE)) {
             for (final var b = ByteBuffer.allocate(ThreadLocalRandom.current().nextInt(128));
@@ -202,7 +239,8 @@ public final class HelloWorldTestUtils {
     }
 
     @SuppressWarnings({"unchecked"})
-    public static <T extends File> T writeSome(final T file) throws IOException {
+    public static <T extends File> T writeSome(final T file)
+            throws IOException {
         Objects.requireNonNull(file, "file is null");
         if (ThreadLocalRandom.current().nextBoolean()) {
             return (T) writeSome_(file.toPath()).toFile();
@@ -211,7 +249,8 @@ public final class HelloWorldTestUtils {
     }
 
     @SuppressWarnings({"unchecked"})
-    public static <T extends Path> T writeSome(final T path) throws IOException {
+    public static <T extends Path> T writeSome(final T path)
+            throws IOException {
         Objects.requireNonNull(path, "path is null");
         if (ThreadLocalRandom.current().nextBoolean()) {
             return (T) writeSome_(path.toFile()).toPath();

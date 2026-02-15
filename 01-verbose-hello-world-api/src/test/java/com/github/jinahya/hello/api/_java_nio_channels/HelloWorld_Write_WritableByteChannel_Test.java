@@ -22,6 +22,7 @@ package com.github.jinahya.hello.api._java_nio_channels;
 
 import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldTest;
+import com.github.jinahya.hello.api.HelloWorldTestUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -82,11 +83,12 @@ class HelloWorld_Write_WritableByteChannel_Test
             and writes the <buffer> to the <channel> while the <buffer> has <remaining>"""
     )
     @Test
-    void __() throws IOException {
+    void __()
+            throws IOException {
         // ----------------------------------------------------------------------------------- given
-        final var service = service();
-        // stub: <service.put(buffer)> will increase the <buffer>'s <position> by <12>
-        stub_put_buffer_will_increase_buffer_position_by_12();
+        final var service = HelloWorldTestUtils.put_buffer_will_increase_buffer_position_by_12(
+                service()
+        );
         // prepare: a <WritableByteChannel>
         //          whose <write(buffer)> will increase the <buffer>'s <position> by a random value
         final var channel = Mockito.mock(WritableByteChannel.class);
@@ -106,7 +108,7 @@ class HelloWorld_Write_WritableByteChannel_Test
         final var result = service.write(channel);
         // ------------------------------------------------------------------------------------ then
         // verify: <service.put(buffer[12])> invoked, once
-        final var buffer = verify_put_buffer12_invoked_once();
+        final var buffer = HelloWorldTestUtils.put_buffer12_invoked_once(service);
         // verify: <channel.write(buffer)> invoked, at least once
 //        Mockito.verify(channel, Mockito.atLeastOnce()).write(buffer);
         // assert: <written.sum()> is equal to <12>

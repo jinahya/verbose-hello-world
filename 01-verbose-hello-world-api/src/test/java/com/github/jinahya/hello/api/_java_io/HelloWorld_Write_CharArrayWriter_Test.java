@@ -31,24 +31,27 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
+import java.io.BufferedWriter;
+import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.Writer;
 
 /**
- * A class for testing {@link HelloWorld#write(Writer) write(writer)} method.
+ * A class for testing {@link HelloWorld#write(java.io.CharArrayWriter) write(writer)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see <a href="https://github.com/jinahya/verbose-hello-world/issues/1">Implement
- * HelloWorld#write(Writer)</a> (GitHub Issues)
+ * @see <a
+ * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/io/CharArrayWriter.html">java.io.CharArrayWriter</a>
  */
-@DisplayName("write(writer)")
+@DisplayName("write(BufferedWriter)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_05_Write_Writer_Test extends HelloWorldTest {
+class HelloWorld_Write_CharArrayWriter_Test
+        extends HelloWorldTest {
 
     /**
-     * Verifies that the {@link HelloWorld#write(Writer) write(writer)} method throws a
+     * Verifies that the {@link HelloWorld#write(BufferedWriter) write(writer)} method throws a
      * {@link NullPointerException} when the {@code writer} argument is {@code null}.
      */
     @DisplayName("""
@@ -59,9 +62,8 @@ class HelloWorld_05_Write_Writer_Test extends HelloWorldTest {
     void _ThrowNullPointerException_WriterIsNull() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        final var writer = (Writer) null;
+        final var writer = (CharArrayWriter) null;
         // ------------------------------------------------------------------------------- when/then
-        // assert: <service.write(writer:null)> throws a <NullPointerException>
         Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.write(writer)
@@ -69,30 +71,43 @@ class HelloWorld_05_Write_Writer_Test extends HelloWorldTest {
     }
 
     /**
-     * Verifies that the {@link HelloWorld#write(Writer) write(writer)} method invokes
-     * {@link HelloWorld#append(Appendable) append(appendable)} method with given {@code writer},
-     * and returns the {@code writer}.
+     * Verifies that the {@link HelloWorld#write(CharArrayWriter)} method invokes
+     * {@link HelloWorld#write(Writer)} method with {@code writer}.
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("should invoke <append(writer)>")
+    @DisplayName("should invoke <write((Writer) write)>")
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // stub: <service.append(appendable)> will return given <appendable>
         Mockito.doAnswer(i -> i.getArgument(0))
                 .when(service)
-                .append(ArgumentMatchers.any(Appendable.class));
-        // prepare: a mock object of <Writer>
-        final var writer = Mockito.mock(Writer.class);
+                .write(ArgumentMatchers.any(Writer.class));
+        final var writer = Mockito.mock(CharArrayWriter.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(writer);
         // ------------------------------------------------------------------------------------ then
-        // verify: <service.append(writer)> invoked, once
-//        Mockito.verify(service, Mockito.times(1)).append(writer);
-//        Mockito.verifyNoMoreInteractions(writer);
-        // assert: <result> is same as <writer>
+        Mockito.verify(service, Mockito.times(1)).write((Writer) writer);
         Assertions.assertSame(writer, result);
+    }
+
+    @Test
+    void _添足_畵蛇() throws IOException {
+        // ----------------------------------------------------------------------------------- given
+        final var service = service();
+        Mockito.doAnswer(i -> {
+                    final var writer = i.getArgument(0, Writer.class);
+                    writer.write(new char[HelloWorld.BYTES]);
+                    return writer;
+                })
+                .when(service)
+                .write(ArgumentMatchers.any(Writer.class));
+        final var writer = new CharArrayWriter();
+        // ------------------------------------------------------------------------------------ when
+        final var result = service.write(writer);
+        writer.flush(); // maybe redundant, not harmful
+        // ------------------------------------------------------------------------------------ then
+        Assertions.assertEquals(HelloWorld.BYTES, writer.size());
     }
 }

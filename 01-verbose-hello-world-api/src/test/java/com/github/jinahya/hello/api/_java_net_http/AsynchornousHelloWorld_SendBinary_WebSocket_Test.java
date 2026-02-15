@@ -30,7 +30,8 @@ import java.util.concurrent.TimeUnit;
  */
 @DisplayName("send(WebSocket, boolean)")
 @Slf4j
-class AsynchornousHelloWorld_SendBinary_WebSocket_Test extends DefaultAsynchronousHelloWorldTest {
+class AsynchornousHelloWorld_SendBinary_WebSocket_Test
+        extends DefaultAsynchronousHelloWorldTest {
 
     // -------------------------------------------------------------------------------- CONSTRUCTORS
     AsynchornousHelloWorld_SendBinary_WebSocket_Test() {
@@ -80,7 +81,8 @@ class AsynchornousHelloWorld_SendBinary_WebSocket_Test extends DefaultAsynchrono
     }
 
     @Test
-    void _添足_畵蛇() throws Exception {
+    void _添足_畵蛇()
+            throws Exception {
         final var service = service();
         final var port = 8887;
 
@@ -118,7 +120,8 @@ class AsynchornousHelloWorld_SendBinary_WebSocket_Test extends DefaultAsynchrono
     }
 
     @Test
-    void __vertx() throws Exception {
+    void __vertx()
+            throws Exception {
         final var service = service();
         final var vertx = Vertx.vertx();
         final var received = new CompletableFuture<Void>();

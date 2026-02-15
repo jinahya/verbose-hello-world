@@ -91,7 +91,8 @@ class HelloWorld_Put_ShortBuffer_Test
     }
 
     @Test
-    void __() throws IOException {
+    void __()
+            throws IOException {
         // ----------------------------------------------------------------------------------- given
 //        final var service = HelloWorldTestUtils.put_buffer_will_increase_buffer_position_by_12(
         final var service = HelloWorldTestUtils.put_buffer_will_put_actual_hello_world_bytes(
@@ -101,7 +102,8 @@ class HelloWorld_Put_ShortBuffer_Test
         // ------------------------------------------------------------------------------------ when
         final var result = service.put(buffer);
         // ------------------------------------------------------------------------------------ then
-        final var b = HelloWorldTestUtils.verify_put_buffer12_invoked_once(service).limit(HelloWorld.BYTES);
+        final var b = HelloWorldTestUtils.put_buffer12_invoked_once(service)
+                .limit(HelloWorld.BYTES);
         final var inOrder = Mockito.inOrder(buffer);
         for (int i = 0; i < b.capacity(); i++) {
             inOrder.verify(buffer).put(b.get(i));
@@ -114,7 +116,8 @@ class HelloWorld_Put_ShortBuffer_Test
             "namedByteOrderStream"
     })
     @ParameterizedTest
-    void _ShouldPut12Ints_(final ByteOrder byteOrder) throws IOException {
+    void _ShouldPut12Ints_(final ByteOrder byteOrder)
+            throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = HelloWorldTestUtils.put_buffer_will_put_actual_hello_world_bytes(
                 service()
@@ -124,7 +127,7 @@ class HelloWorld_Put_ShortBuffer_Test
         // ------------------------------------------------------------------------------------ when
         final var result = service.put(buffer);
         // ------------------------------------------------------------------------------------ then
-        final var b = HelloWorldTestUtils.verify_put_buffer12_invoked_once(service);
+        final var b = HelloWorldTestUtils.put_buffer12_invoked_once(service);
         final var inOrder = Mockito.inOrder(buffer);
         for (int i = 0; i < b.capacity(); i++) {
             inOrder.verify(buffer).put(b.get(i));

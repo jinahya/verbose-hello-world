@@ -28,17 +28,22 @@ import javax.crypto.Mac;
 import javax.net.ssl.SSLSocket;
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
+import java.io.CharArrayWriter;
 import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilterOutputStream;
+import java.io.FilterWriter;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PipedWriter;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.RandomAccessFile;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.foreign.MemorySegment;
 import java.lang.foreign.ValueLayout;
@@ -80,6 +85,7 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
+import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.zip.Checksum;
 import java.util.zip.Deflater;
@@ -113,17 +119,6 @@ import java.util.zip.ZipOutputStream;
         "UnicodeInCode" // https://errorprone.info/bugpattern/UnicodeInCode
 })
 public interface HelloWorld {
-
-    // ---------------------------------------------------------------------------------- log/logger
-
-    /**
-     * Returns a logger for this interface.
-     *
-     * @return a logger for this interface.
-     */
-    private System.Logger logger() {
-        return HelloWorldLoggers.logger();
-    }
 
     // ----------------------------------------------------------------------------------- constants
 
@@ -170,9 +165,11 @@ public interface HelloWorld {
      * <p>
      * The elements in the array, on successful return, will be set as follows.
      * <pre>
-     *  0                       12    &lt;= array.length
-     *  ↓                       ↓        ↓
-     * |h|e|l|l|o|,| |w|o|r|l|d| |....| |
+     *  0                       12
+     *  ↓                       ↓
+     * |h|e|l|l|o|,| |w|o|r|l|d|....
+     *                              ↑
+     *                           &lt;= array.length
      * </pre>
      * <p>
      * The default implementation would be as follows.
@@ -365,8 +362,8 @@ public interface HelloWorld {
      * @apiNote This method does not {@link OutputStream#flush() flush} the {@code stream}.
      * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
      * of {@value #BYTES} bytes, writes the array to {@code stream} by invoking
-     * {@link OutputStream#write(byte[])} method on {@code stream} with the array, and returns the
-     * {@code stream}.
+     * {@link OutputStream#write(byte[])} method on the {@code stream} with the array, and returns
+     * the {@code stream}.
      * @see #set(byte[])
      * @see OutputStream#write(byte[])
      */
@@ -388,12 +385,6 @@ public interface HelloWorld {
     @Deprecated(forRemoval = true)
     @屋上架屋("BufferedOutputStream extends FilterOutputStream")
     default <T extends BufferedOutputStream> T write(final T stream) throws IOException {
-        return (T) write((FilterOutputStream) stream);
-    }
-
-    @Deprecated(forRemoval = true)
-    @屋上架屋("CipherOutputStream extends FilterOutputStream")
-    default <T extends CipherOutputStream> T write(final T stream) throws IOException {
         return (T) write((FilterOutputStream) stream);
     }
 
@@ -442,13 +433,9 @@ public interface HelloWorld {
         if (file == null) {
             throw new NullPointerException("file is null");
         }
-        // create a new <FileOutputStream> with <file> and <true>
 //        try (var stream = new FileOutputStream(file, true)) { // appending mode
-//            // invoke <write(stream)> method with it
-////            final var result = write(stream);
-////            assert result == stream;
-//            // flush the <stream>
-////            stream.flush();
+//            write(stream);
+//            stream.flush(); // maybe redundant, not harmful
 //        }
         return file;
     }
@@ -483,13 +470,15 @@ public interface HelloWorld {
         if (output == null) {
             throw new NullPointerException("output is null");
         }
-        final var array = set(new byte[BYTES]);
+        final var array = new byte[BYTES];
+        set(array);
 //        output.write(array);
         return output;
     }
 
     @Deprecated(forRemoval = true)
     @屋上架屋("DataOutputStream extends FilterOutputStream, implements DataOutput")
+    @SuppressWarnings({"unchecked"})
     default <T extends DataOutputStream> T write(final T stream) throws IOException {
         return (T) write((DataOutput) stream);
     }
@@ -525,7 +514,8 @@ public interface HelloWorld {
         if (file == null) {
             throw new NullPointerException("file is null");
         }
-        final var array = set(new byte[BYTES]);
+        final var array = new byte[BYTES];
+        set(array);
 //        file.write(array);
         return file;
     }
@@ -561,13 +551,60 @@ public interface HelloWorld {
 
     @Deprecated(forRemoval = true)
     @屋上架屋("BufferedWriter extends Writer")
+    @SuppressWarnings({"unchecked"})
     default <T extends BufferedWriter> T write(final T writer) throws IOException {
         return (T) write((Writer) writer);
     }
 
     @Deprecated(forRemoval = true)
-    @屋上架屋("PrintWriter extends Writer")
+    @屋上架屋("CharArrayWriter extends Writer")
+    @SuppressWarnings({"unchecked"})
+    default <T extends CharArrayWriter> T write(final T writer) throws IOException {
+        return (T) write((Writer) writer);
+    }
+
+    @Deprecated(forRemoval = true)
+    @屋上架屋("FilterWriter extends Writer")
+    @SuppressWarnings({"unchecked"})
+    default <T extends FilterWriter> T write(final T writer) throws IOException {
+        return (T) write((Writer) writer);
+    }
+
+    /**
+     * .
+     *
+     * @param writer .
+     * @param <T>    .
+     * @return .
+     * @throws IOException .
+     * @see <a *
+     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/io/OutputStreamWriter.html">java.io.OutputStreamWriter</a>
+     */
+    @Deprecated(forRemoval = true)
+    @屋上架屋("OutputStreamWriter extends Writer")
+    @SuppressWarnings({"unchecked"})
+    default <T extends OutputStreamWriter> T write(final T writer) throws IOException {
+        return (T) write((Writer) writer);
+    }
+
+    @Deprecated(forRemoval = true)
+    @屋上架屋("PipedWriter extends Writer implements Appendable")
+    @SuppressWarnings({"unchecked"})
+    default <T extends PipedWriter> T write(final T writer) throws IOException {
+        return (T) write((Writer) writer);
+    }
+
+    @Deprecated(forRemoval = true)
+    @屋上架屋("PrintWriter extends Writer implements Appendable")
+    @SuppressWarnings({"unchecked"})
     default <T extends PrintWriter> T write(final T writer) throws IOException {
+        return (T) write((Writer) writer);
+    }
+
+    @Deprecated(forRemoval = true)
+    @屋上架屋("StringWriter extends Writer")
+    @SuppressWarnings({"unchecked"})
+    default <T extends StringWriter> T write(final T writer) throws IOException {
         return (T) write((Writer) writer);
     }
 
@@ -681,7 +718,8 @@ public interface HelloWorld {
      * @see #set(DatagramPacket)
      * @see DatagramSocket#send(DatagramPacket)
      */
-    default <T extends DatagramSocket> T send(final T socket) throws IOException {
+    default <T extends DatagramSocket> T send(final T socket)
+            throws IOException {
         if (socket == null) {
             throw new NullPointerException("socket is null");
         }
@@ -739,7 +777,8 @@ public interface HelloWorld {
     @屋上架屋("MulticastSocket extends DatagramSocket")
     @Deprecated(forRemoval = true)
     @SuppressWarnings("unchecked")
-    default <T extends MulticastSocket> T send(final T socket) throws IOException {
+    default <T extends MulticastSocket> T send(final T socket)
+            throws IOException {
         return (T) send((DatagramSocket) socket);
     }
 
@@ -789,7 +828,8 @@ public interface HelloWorld {
      * @see Socket#getOutputStream()
      * @see #write(OutputStream)
      */
-    default <T extends Socket> T send(final T socket) throws IOException {
+    default <T extends Socket> T send(final T socket)
+            throws IOException {
         if (socket == null) {
             throw new NullPointerException("socket is null");
         }
@@ -800,7 +840,8 @@ public interface HelloWorld {
 
     @Deprecated(forRemoval = true)
     @屋上架屋("SSLSocket extends Socket")
-    default <T extends SSLSocket> T send(final T socket) throws IOException {
+    default <T extends SSLSocket> T send(final T socket)
+            throws IOException {
         return (T) send((Socket) socket);
     }
 
@@ -926,7 +967,8 @@ public interface HelloWorld {
 
     /**
      * Returns a byte buffer of {@value #BYTES} bytes, containing the <a
-     * href="#hello-world-bytes">hello-world-bytes</a>.
+     * href="#hello-world-bytes">hello-world-bytes</a>, whose {@code position}, {@code limit} is
+     * equal to the {@code capacity}.
      * <p>
      * The result buffer's state, on successful return, is as follows.
      * <pre>
@@ -935,8 +977,7 @@ public interface HelloWorld {
      *  ↓                       ↓
      * |h|e|l|l|o|,| |w|o|r|l|d|
      *                         |
-     *                         remaining
-     *                         (0)
+     *                         remaining(0)
      * </pre>
      * <p>
      * The default implementation would be as follows.
@@ -978,7 +1019,8 @@ public interface HelloWorld {
      */
     @Deprecated(forRemoval = true)
     @屋上架屋("CharBuffer implements Appendable")
-    default <T extends CharBuffer> T put(final T buffer) throws IOException {
+    default <T extends CharBuffer> T put(final T buffer)
+            throws IOException {
         Objects.requireNonNull(buffer, "buffer is null");
         if (buffer.remaining() < BYTES) {
             throw new BufferOverflowException();
@@ -988,7 +1030,8 @@ public interface HelloWorld {
 
     @Deprecated(forRemoval = true)
     @屋上架屋("CharBuffer implements Appendable")
-    default <T extends ShortBuffer> T put(final T buffer) throws IOException {
+    default <T extends ShortBuffer> T put(final T buffer)
+            throws IOException {
         Objects.requireNonNull(buffer, "buffer is null");
         if (buffer.remaining() < BYTES) {
             throw new BufferOverflowException();
@@ -1004,7 +1047,8 @@ public interface HelloWorld {
 
     @Deprecated(forRemoval = true)
     @屋上架屋("CharBuffer implements Appendable")
-    default <T extends IntBuffer> T put(final T buffer) throws IOException {
+    default <T extends IntBuffer> T put(final T buffer)
+            throws IOException {
         Objects.requireNonNull(buffer, "buffer is null");
         if (buffer.remaining() < BYTES) {
             throw new BufferOverflowException();
@@ -1020,7 +1064,8 @@ public interface HelloWorld {
 
     @Deprecated(forRemoval = true)
     @屋上架屋("CharBuffer implements Appendable")
-    default <T extends LongBuffer> T put(final T buffer) throws IOException {
+    default <T extends LongBuffer> T put(final T buffer)
+            throws IOException {
         Objects.requireNonNull(buffer, "buffer is null");
         if (buffer.remaining() < BYTES) {
             throw new BufferOverflowException();
@@ -1071,7 +1116,8 @@ public interface HelloWorld {
      * @see ByteBuffer#hasRemaining()
      * @see WritableByteChannel#write(ByteBuffer)
      */
-    default <T extends WritableByteChannel> T write(final T channel) throws IOException {
+    default <T extends WritableByteChannel> T write(final T channel)
+            throws IOException {
         Objects.requireNonNull(channel, "channel is null");
         final var buffer = put(ByteBuffer.allocate(BYTES));
         buffer.flip();
@@ -1116,7 +1162,8 @@ public interface HelloWorld {
      */
     @Deprecated(forRemoval = true)
     @屋上架屋
-    default <T extends GatheringByteChannel> T write(final T channel) throws IOException {
+    default <T extends GatheringByteChannel> T write(final T channel)
+            throws IOException {
         Objects.requireNonNull(channel, "channel is null");
         final var buffer = put(ByteBuffer.allocate(BYTES));
         buffer.flip();
@@ -1130,13 +1177,15 @@ public interface HelloWorld {
 
     @Deprecated(forRemoval = true)
     @屋上架屋("SeekableByteChannel extends WritableByteChannel")
-    default <T extends SeekableByteChannel> T write(final T channel) throws IOException {
+    default <T extends SeekableByteChannel> T write(final T channel)
+            throws IOException {
         return (T) write((WritableByteChannel) channel);
     }
 
     @Deprecated(forRemoval = true)
     @屋上架屋("Pipe.SinkChannel extends WritableByteChannel")
-    default <T extends Pipe.SinkChannel> T write(final T channel) throws IOException {
+    default <T extends Pipe.SinkChannel> T write(final T channel)
+            throws IOException {
         return (T) write((WritableByteChannel) channel);
     }
 
@@ -1198,7 +1247,8 @@ public interface HelloWorld {
      * @see #put(ByteBuffer)
      * @see DatagramChannel#write(ByteBuffer)
      */
-    default <T extends DatagramChannel> T write(final T channel) throws IOException {
+    default <T extends DatagramChannel> T write(final T channel)
+            throws IOException {
         Objects.requireNonNull(channel, "channel is null");
         if (!channel.isConnected()) {
             throw new IllegalArgumentException("not connected: " + channel);
@@ -1243,7 +1293,8 @@ public interface HelloWorld {
      */
     @屋上架屋("SocketChannel implements WritableByteChannel")
     @Deprecated(forRemoval = true)
-    default <T extends SocketChannel> T send(final T channel) throws IOException {
+    default <T extends SocketChannel> T send(final T channel)
+            throws IOException {
         return write(channel);
     }
 
@@ -1418,7 +1469,8 @@ public interface HelloWorld {
      * href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-14.html#jls-14.20.3">14.20.3.
      * try-with-resources</a> (The Java® Language Specification)
      */
-    default <T extends Path> T append(final T path) throws IOException {
+    default <T extends Path> T append(final T path)
+            throws IOException {
         Objects.requireNonNull(path, "path is null");
         // open a <FileChannel> with <path>,
         //         <StandardOpenOption.CREATE>, and <StandardOpenOption.APPEND>
@@ -1436,7 +1488,7 @@ public interface HelloWorld {
         return path;
     }
 
-    // ---------------------------------------------------------------- java.security / javax.crypto
+    // ------------------------------------------------------------------------------- java.security
 
     /**
      * Updates the specified message digest with the <a
@@ -1474,7 +1526,8 @@ public interface HelloWorld {
      * @see #set(byte[])
      * @see Signature#update(byte[])
      */
-    default <T extends Signature> T update(final T signature) throws SignatureException {
+    default <T extends Signature> T update(final T signature)
+            throws SignatureException {
         Objects.requireNonNull(signature, "signature is null");
         final var array = new byte[BYTES];
         set(array);
@@ -1482,57 +1535,9 @@ public interface HelloWorld {
         return signature;
     }
 
-    /**
-     * Updates the specified cipher with the <a href="#hello-world-bytes">hello-world-bytes</a>, and
-     * accepts the result to the specified consumer.
-     *
-     * @param cipher   the cipher to be updated.
-     * @param consumer the consumer to accept the result of
-     *                 {@link Cipher#update(byte[]) cipher.update(array)}.
-     * @param <T>      cipher type parameter
-     * @return the given {@code cipher}.
-     * @throws NullPointerException if {@code cipher} is {@code null} or {@code consumer} is
-     *                              {@code null}.
-     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
-     * of {@value #BYTES} bytes, {@link Cipher#update(byte[]) updates} the {@code cipher} with the
-     * array, and {@link Consumer#accept(Object) accepts} the result to the {@code consumer}.
-     * @see #set(byte[])
-     * @see Cipher#update(byte[])
-     * @see Consumer#accept(Object)
-     */
-    default <T extends Cipher> T update(final T cipher, final Consumer<? super byte[]> consumer) {
-        Objects.requireNonNull(cipher, "cipher is null");
-        Objects.requireNonNull(consumer, "consumer is null");
-        final var array = new byte[BYTES];
-        set(array);
-        final var result = cipher.update(array);
-        consumer.accept(result);
-        return cipher;
-    }
-
-    /**
-     * Updates the specified MAC with the <a href="#hello-world-bytes">hello-world-bytes</a>.
-     *
-     * @param mac the MAC to be updated.
-     * @param <T> MAC type parameter
-     * @return the given {@code mac}.
-     * @throws NullPointerException if {@code mac} is {@code null}.
-     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
-     * of {@value #BYTES} bytes, and {@link Mac#update(byte[]) updates} the {@code mac} with the
-     * array.
-     * @see #set(byte[])
-     * @see Mac#update(byte[])
-     */
-    default <T extends Mac> T update(final T mac) {
-        Objects.requireNonNull(mac, "mac is null");
-        final var array = new byte[BYTES];
-        set(array);
-        mac.update(array);
-        return mac;
-    }
-
     // ------------------------------------------------------------------------------------ java.sql
-    default <T extends Blob> T set(final T blob, @Positive long pos) throws SQLException {
+    default <T extends Blob> T set(final T blob, @Positive long pos)
+            throws SQLException {
         Objects.requireNonNull(blob, "blob is null");
         if (pos <= 0L) {
             throw new IllegalArgumentException("non-positive pos: " + pos);
@@ -1594,6 +1599,23 @@ public interface HelloWorld {
     }
 
     // ------------------------------------------------------------------------------- java.util.jar
+    @屋上架屋("JarOutputStream extends ZipOutputStream")
+    @Deprecated(forRemoval = true)
+    @SuppressWarnings({"unchecked"})
+    default <T extends JarOutputStream> T write(final T stream) throws IOException {
+        return (T) write((ZipOutputStream) stream);
+    }
+
+    default <T extends JarOutputStream> T put(final T stream, final String name)
+            throws IOException {
+        Objects.requireNonNull(stream, "stream is null");
+        Objects.requireNonNull(name, "name is null");
+        final var entry = new JarEntry(name);
+        stream.putNextEntry(entry);
+        write(stream);
+        stream.closeEntry();
+        return stream;
+    }
 
     // ------------------------------------------------------------------------------- java.util.zip
     default <T extends Checksum> T update(final T checksum) {
@@ -1613,28 +1635,35 @@ public interface HelloWorld {
 
     @Deprecated(forRemoval = true)
     @屋上架屋("DeflatorOutputStream extends FilterOutputStream")
-    default <T extends DeflaterOutputStream> T write(final T stream) throws IOException {
+    default <T extends DeflaterOutputStream> T write(final T stream)
+            throws IOException {
         return (T) write((FilterOutputStream) stream);
     }
 
     @Deprecated(forRemoval = true)
     @屋上架屋("GZIPOutputStream extends DeflatorOutputStream")
-    default <T extends GZIPOutputStream> T write(final T stream) throws IOException {
+    default <T extends GZIPOutputStream> T write(final T stream)
+            throws IOException {
         return (T) write((DeflaterOutputStream) stream);
     }
 
     @屋上架屋("ZipOutputStream extends DeflaterOutputStream")
     @Deprecated(forRemoval = true)
-    default <T extends ZipOutputStream> T write(final T stream) throws IOException {
+    default <T extends ZipOutputStream> T write(final T stream)
+            throws IOException {
         return (T) write((DeflaterOutputStream) stream);
     }
 
-    @屋上架屋("JarOutputStream extends ZipOutputStream")
-    @Deprecated(forRemoval = true)
-    default <T extends JarOutputStream> T write(final T stream) throws IOException {
-        return (T) write((ZipOutputStream) stream);
-    }
-
+    /**
+     * Puts an entry of the specified name, whose content is the <a
+     * href="#hello-world-bytes">hello-world-bytes</a>, to the specified zip output stream.
+     *
+     * @param stream the zip output stream to which the entry is put.
+     * @param name   the name of the entry to put.
+     * @param <T>    zip output stream type parameter
+     * @return given {@code stream}.
+     * @throws IOException if an I/O error occurs.
+     */
     default <T extends ZipOutputStream> T put(final T stream, final String name)
             throws IOException {
         Objects.requireNonNull(stream, "stream is null");
@@ -1644,5 +1673,63 @@ public interface HelloWorld {
         write(stream);
         stream.closeEntry();
         return stream;
+    }
+
+    // -------------------------------------------------------------------------------- javax.crypto
+
+    /**
+     * Updates the specified cipher with the <a href="#hello-world-bytes">hello-world-bytes</a>, and
+     * accepts the result to the specified consumer.
+     *
+     * @param cipher   the cipher to be updated.
+     * @param consumer the consumer to accept the result of
+     *                 {@link Cipher#update(byte[]) cipher.update(array)}.
+     * @param <T>      cipher type parameter
+     * @return the given {@code cipher}.
+     * @throws NullPointerException if {@code cipher} is {@code null} or {@code consumer} is
+     *                              {@code null}.
+     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
+     * of {@value #BYTES} bytes, {@link Cipher#update(byte[]) updates} the {@code cipher} with the
+     * array, and {@link Consumer#accept(Object) accepts} the result to the {@code consumer}.
+     * @see #set(byte[])
+     * @see Cipher#update(byte[])
+     * @see Consumer#accept(Object)
+     */
+    default <T extends Cipher> T update(final T cipher, final Consumer<? super byte[]> consumer) {
+        Objects.requireNonNull(cipher, "cipher is null");
+        Objects.requireNonNull(consumer, "consumer is null");
+        final var array = new byte[BYTES];
+        set(array);
+        final var result = cipher.update(array);
+        consumer.accept(result);
+        return cipher;
+    }
+
+    @Deprecated(forRemoval = true)
+    @屋上架屋("CipherOutputStream extends FilterOutputStream")
+    default <T extends CipherOutputStream> T write(final T stream)
+            throws IOException {
+        return (T) write((FilterOutputStream) stream);
+    }
+
+    /**
+     * Updates the specified MAC with the <a href="#hello-world-bytes">hello-world-bytes</a>.
+     *
+     * @param mac the MAC to be updated.
+     * @param <T> MAC type parameter
+     * @return the given {@code mac}.
+     * @throws NullPointerException if {@code mac} is {@code null}.
+     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
+     * of {@value #BYTES} bytes, and {@link Mac#update(byte[]) updates} the {@code mac} with the
+     * array.
+     * @see #set(byte[])
+     * @see Mac#update(byte[])
+     */
+    default <T extends Mac> T update(final T mac) {
+        Objects.requireNonNull(mac, "mac is null");
+        final var array = new byte[BYTES];
+        set(array);
+        mac.update(array);
+        return mac;
     }
 }

@@ -38,9 +38,9 @@ class AsynchronousHelloWorld_Write_AsynchronouseByteChannel_Test
 
     /**
      * Verifies that the
-     * {@link AsynchronousHelloWorld#write(AsynchronousByteChannel,
-     * Object, CompletionHandler) write(channel, attachment, handler)} method throws a
-     * {@link NullPointerException} when the {@code channel} argument is {@code null}.
+     * {@link AsynchronousHelloWorld#write(AsynchronousByteChannel, Object, CompletionHandler)
+     * write(channel, attachment, handler)} method throws a {@link NullPointerException} when the
+     * {@code channel} argument is {@code null}.
      */
     @DisplayName("""
             should throw a <NullPointerException>
@@ -62,9 +62,9 @@ class AsynchronousHelloWorld_Write_AsynchronouseByteChannel_Test
 
     /**
      * Verifies that the
-     * {@link AsynchronousHelloWorld#write(AsynchronousByteChannel,
-     * Object, CompletionHandler) write(channel, attachment, handler)} method throws a
-     * {@link NullPointerException} when the {@code handler} argument is {@code null}.
+     * {@link AsynchronousHelloWorld#write(AsynchronousByteChannel, Object, CompletionHandler)
+     * write(channel, attachment, handler)} method throws a {@link NullPointerException} when the
+     * {@code handler} argument is {@code null}.
      */
     @DisplayName("""
             should throw a <NullPointerException>
@@ -85,9 +85,9 @@ class AsynchronousHelloWorld_Write_AsynchronouseByteChannel_Test
 
     /**
      * Verifies that the
-     * {@link AsynchronousHelloWorld#write(AsynchronousByteChannel,
-     * Object, CompletionHandler) write(channel, attachment, handler)} method writes all
-     * {@value HelloWorld#BYTES} bytes to the channel and invokes
+     * {@link AsynchronousHelloWorld#write(AsynchronousByteChannel, Object, CompletionHandler)
+     * write(channel, attachment, handler)} method writes all {@value HelloWorld#BYTES} bytes to the
+     * channel and invokes
      * {@link CompletionHandler#completed(Object, Object) handler.completed(channel, attachment)}.
      */
     @DisplayName("""
@@ -150,8 +150,8 @@ class AsynchronousHelloWorld_Write_AsynchronouseByteChannel_Test
 
     /**
      * Verifies that the
-     * {@link AsynchronousHelloWorld#write(AsynchronousByteChannel,
-     * Object, CompletionHandler) write(channel, attachment, handler)} method invokes
+     * {@link AsynchronousHelloWorld#write(AsynchronousByteChannel, Object, CompletionHandler)
+     * write(channel, attachment, handler)} method invokes
      * {@link CompletionHandler#failed(Throwable, Object) handler.failed(exc, attachment)} when the
      * {@code channel} fails to write.
      */
@@ -207,7 +207,8 @@ class AsynchronousHelloWorld_Write_AsynchronouseByteChannel_Test
      */
     @畵蛇添足
     @Test
-    void _添足_畵蛇() throws Exception {
+    void _添足_畵蛇()
+            throws Exception {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var latch = new CountDownLatch(1);

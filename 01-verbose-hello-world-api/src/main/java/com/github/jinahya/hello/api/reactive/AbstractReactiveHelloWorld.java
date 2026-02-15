@@ -7,7 +7,8 @@ import java.util.Objects;
 /**
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-public abstract class AbstractReactiveHelloWorld implements ReactiveHelloWorldFactory {
+public abstract class AbstractReactiveHelloWorld
+        implements ReactiveHelloWorldFactory {
 
     protected AbstractReactiveHelloWorld(final HelloWorld service) {
         super();

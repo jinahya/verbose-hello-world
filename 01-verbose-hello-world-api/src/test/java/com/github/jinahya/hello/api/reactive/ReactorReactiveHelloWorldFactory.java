@@ -24,7 +24,8 @@ import java.util.stream.IntStream;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-public final class ReactorReactiveHelloWorldFactory extends AbstractReactiveHelloWorld {
+public final class ReactorReactiveHelloWorldFactory
+        extends AbstractReactiveHelloWorld {
 
     // ---------------------------------------------------------------------------------------------
 

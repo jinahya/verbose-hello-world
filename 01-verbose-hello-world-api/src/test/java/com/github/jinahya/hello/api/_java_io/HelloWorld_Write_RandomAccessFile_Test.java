@@ -22,6 +22,7 @@ package com.github.jinahya.hello.api._java_io;
 
 import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldTest;
+import com.github.jinahya.hello.api.HelloWorldTestUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +46,8 @@ import java.io.RandomAccessFile;
 @SuppressWarnings({
         "java:S101"
 })
-class HelloWorld_04_Write_RandomAccessFile_Test extends HelloWorldTest {
+class HelloWorld_Write_RandomAccessFile_Test
+        extends HelloWorldTest {
 
     /**
      * Verifies that the
@@ -79,7 +81,8 @@ class HelloWorld_04_Write_RandomAccessFile_Test extends HelloWorldTest {
      */
     @DisplayName("should invoke <set(array[12])>, <file.write(array)>, and returns <file>")
     @Test
-    void __() throws IOException {
+    void __()
+            throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // stub: <service.set(array)> to return the <array>
@@ -92,7 +95,7 @@ class HelloWorld_04_Write_RandomAccessFile_Test extends HelloWorldTest {
         final var result = service.write(file);
         // ------------------------------------------------------------------------------------ then
         // verify: <service.set(byte[12])> invoked, once
-        final var array = verify_set_array12_invoked_once();
+        final var array = HelloWorldTestUtils.set_array12_invoked_once(service);
         // verify: <file.write(array)> invoked, once and only
 //        Mockito.verify(file, Mockito.times(1)).write(array);
 //        Mockito.verifyNoMoreInteractions(file);

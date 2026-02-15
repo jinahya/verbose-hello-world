@@ -53,14 +53,16 @@ public final class HelloWorldFlow {
      * @param <T> item type parameter.
      * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
      */
-    public abstract static class HelloWorldPublisher<T> implements Flow.Publisher<T> {
+    public abstract static class HelloWorldPublisher<T>
+            implements Flow.Publisher<T> {
 
         /**
          * A publisher publishes each byte of <em>hello-world-bytes</em>.
          *
          * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
          */
-        public static class OfByte extends HelloWorldPublisher<Byte> {
+        public static class OfByte
+                extends HelloWorldPublisher<Byte> {
 
             /**
              * Creates a new instance.
@@ -147,7 +149,8 @@ public final class HelloWorldFlow {
          *
          * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
          */
-        public static class OfArray extends HelloWorldPublisher<byte[]> {
+        public static class OfArray
+                extends HelloWorldPublisher<byte[]> {
 
             /**
              * Creates a new instance with the specified service and executor.
@@ -249,7 +252,8 @@ public final class HelloWorldFlow {
          *
          * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
          */
-        public static class OfBuffer extends HelloWorldPublisher<ByteBuffer> {
+        public static class OfBuffer
+                extends HelloWorldPublisher<ByteBuffer> {
 
             /**
              * Creates a new instance with the specified service and executor.
@@ -323,7 +327,8 @@ public final class HelloWorldFlow {
          *
          * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
          */
-        public static class OfString extends HelloWorldPublisher<String> {
+        public static class OfString
+                extends HelloWorldPublisher<String> {
 
             /**
              * Creates a new instance with the specified service and executor.
@@ -415,12 +420,14 @@ public final class HelloWorldFlow {
      * @param <T> item type parameter.
      */
     @Slf4j
-    public abstract static class HelloWorldSubscriber<T> implements Flow.Subscriber<T> {
+    public abstract static class HelloWorldSubscriber<T>
+            implements Flow.Subscriber<T> {
 
         /**
          * A subscriber for {@link HelloWorldPublisher.OfByte}.
          */
-        public static class OfByte extends HelloWorldSubscriber<Byte> {
+        public static class OfByte
+                extends HelloWorldSubscriber<Byte> {
 
             /**
              * Creates a new instance.
@@ -439,7 +446,8 @@ public final class HelloWorldFlow {
         /**
          * A subscriber for {@link HelloWorldPublisher.OfArray}.
          */
-        public static class OfArray extends HelloWorldSubscriber<byte[]> {
+        public static class OfArray
+                extends HelloWorldSubscriber<byte[]> {
 
             /**
              * Creates a new instance.
@@ -458,7 +466,8 @@ public final class HelloWorldFlow {
         /**
          * A subscriber for {@link HelloWorldPublisher.OfBuffer}.
          */
-        public static class OfBuffer extends HelloWorldSubscriber<ByteBuffer> {
+        public static class OfBuffer
+                extends HelloWorldSubscriber<ByteBuffer> {
 
             /**
              * Creates a new instance.
@@ -477,7 +486,8 @@ public final class HelloWorldFlow {
         /**
          * A subscriber for {@link HelloWorldPublisher.OfString}.
          */
-        public static class OfString extends HelloWorldSubscriber<String> {
+        public static class OfString
+                extends HelloWorldSubscriber<String> {
 
             /**
              * Creates a new instance.

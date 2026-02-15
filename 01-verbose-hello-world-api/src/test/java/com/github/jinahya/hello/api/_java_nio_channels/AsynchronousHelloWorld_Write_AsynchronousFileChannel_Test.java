@@ -232,7 +232,8 @@ class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Test
 
     @畵蛇添足("testing with a real file doesn't add any value")
     @Test
-    void _添足_畵蛇(@TempDir final Path dir) throws Exception {
+    void _添足_畵蛇(@TempDir final Path dir)
+            throws Exception {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var file = Files.createTempFile(dir, null, null);

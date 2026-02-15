@@ -50,7 +50,8 @@ import java.util.concurrent.ThreadLocalRandom;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_02_Append_File_Test extends HelloWorldTest {
+class HelloWorld_Append_File_Test
+        extends HelloWorldTest {
 
     /**
      * Verifies that the {@link HelloWorld#append(File) append(file)} method throws a
@@ -87,7 +88,8 @@ class HelloWorld_02_Append_File_Test extends HelloWorldTest {
             and <flushes/closes> the stream"""
     )
     @Test
-    void __() throws IOException {
+    void __()
+            throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // stub: <service.write(stream)> will just return the <stream>
@@ -122,7 +124,8 @@ class HelloWorld_02_Append_File_Test extends HelloWorldTest {
     @畵蛇添足("testing with an existing file doesn't add any value")
     @DisplayName("<file>'s length should be increased by <12>")
     @Test
-    void _添足_畵蛇(@TempDir final File dir) throws IOException {
+    void _添足_畵蛇(@TempDir final File dir)
+            throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // stub: <service.append(file)> will append the <12> bytes, and will return the <file>

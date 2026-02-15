@@ -25,7 +25,8 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 @DisplayName("write(GatheringByteChannel)")
 @Slf4j
-class HelloWorld_Write_GatheringByteChannel_Test extends HelloWorldTest {
+class HelloWorld_Write_GatheringByteChannel_Test
+        extends HelloWorldTest {
 
     /**
      * Verifies that the {@link HelloWorld#write(GatheringByteChannel) write(channel)} method throws
@@ -55,7 +56,8 @@ class HelloWorld_Write_GatheringByteChannel_Test extends HelloWorldTest {
      */
     @DisplayName("should invoke <put(buffer)> and <channel.write(srcs)>")
     @Test
-    void __() throws IOException {
+    void __()
+            throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         HelloWorldTestUtils.put_buffer_will_put_actual_hello_world_bytes(service);
@@ -77,7 +79,7 @@ class HelloWorld_Write_GatheringByteChannel_Test extends HelloWorldTest {
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(channel);
         // ------------------------------------------------------------------------------------ then
-        final var buffer = HelloWorldTestUtils.verify_put_buffer12_invoked_once(service);
+        final var buffer = HelloWorldTestUtils.put_buffer12_invoked_once(service);
         final var captor = ArgumentCaptor.forClass(ByteBuffer[].class);
         Mockito.verify(channel, Mockito.atLeastOnce()).write(captor.capture());
         for (final var srcs : captor.getAllValues()) {
@@ -95,7 +97,8 @@ class HelloWorld_Write_GatheringByteChannel_Test extends HelloWorldTest {
      */
     @畵蛇添足
     @Test
-    void _添足_畵蛇() throws IOException {
+    void _添足_畵蛇()
+            throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         HelloWorldTestUtils.put_buffer_will_put_actual_hello_world_bytes(service);
@@ -131,7 +134,7 @@ class HelloWorld_Write_GatheringByteChannel_Test extends HelloWorldTest {
                 offset += length;
             }
             Assertions.assertArrayEquals(
-                    HelloWorldTestUtils.getHelloWorldBytes(),
+                    HelloWorldTestUtils.getHelloWorldArray(),
                     result
             );
         }

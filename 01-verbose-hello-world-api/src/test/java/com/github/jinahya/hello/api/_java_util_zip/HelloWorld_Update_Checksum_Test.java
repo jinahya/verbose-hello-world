@@ -21,6 +21,7 @@ import java.util.zip.Checksum;
 /**
  * Tests for {@link HelloWorld#update(Checksum)} method.
  *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see <a
  * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/zip/Checksum.html">Checksum</a>
  * @see <a
@@ -29,15 +30,15 @@ import java.util.zip.Checksum;
  * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/zip/CRC32C.html">CRC32C</a>
  * @see <a
  * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/zip/Adler32.html">Adler32</a>
- * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorld_Update_Checksum_Test extends HelloWorldTest {
+class HelloWorld_Update_Checksum_Test
+        extends HelloWorldTest {
 
     // ---------------------------------------------------------------------------------------------
     @BeforeEach
     void __() {
-        HelloWorldTestUtils.stub_set_array_will_set_actual_hello_world_bytes(service());
+        HelloWorldTestUtils.set_array_will_set_actual_hello_world_bytes(service());
     }
 
     @Test
@@ -65,9 +66,9 @@ class HelloWorld_Update_Checksum_Test extends HelloWorldTest {
         // ------------------------------------------------------------------------------------ when
         final var result = service.update(checksum);
         // ------------------------------------------------------------------------------------ then
-        final var array = verify_set_array12_invoked_once();      // <1>
-        Mockito.verify(checksum, Mockito.times(1)).update(array); // <2>
-        Assertions.assertSame(checksum, result);                  // <3>
+        final var array = HelloWorldTestUtils.set_array12_invoked_once(service); // <1>
+        Mockito.verify(checksum, Mockito.times(1)).update(array);                // <2>
+        Assertions.assertSame(checksum, result);                                 // <3>
         final var value = checksum.getValue();
         log.debug("{}: 0x{}", String.format("%1$7s", checksum.getClass().getSimpleName()),
                   Long.toHexString(value).toUpperCase());

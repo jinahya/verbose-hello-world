@@ -22,6 +22,7 @@ package com.github.jinahya.hello.api._java_nio;
 
 import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldTest;
+import com.github.jinahya.hello.api.HelloWorldTestUtils;
 import com.github.jinahya.hello.api.util.JavaNioByteBufferUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -371,9 +372,7 @@ class HelloWorld_Put_ByteBuffer_Test
     @Test
     void __BufferDoesNotHaveBackingArray() {
         // ----------------------------------------------------------------------------------- given
-        final var service = service();
-        // stub: <service.set(array)> to just return the <array>
-        stub_set_array_will_return_the_array();
+        final var service = HelloWorldTestUtils.set_array_will_return_the_array(service());
         // prepare: create a spy object of a direct buffer
         final var buffer = Mockito.spy(
                 slice(ByteBuffer.allocateDirect(HelloWorld.BYTES << 1), HelloWorld.BYTES)
@@ -390,7 +389,7 @@ class HelloWorld_Put_ByteBuffer_Test
         final var result = service.put(buffer);
         // ------------------------------------------------------------------------------------ then
         // verify: <service.set(array[12])> invoked, once
-        final var array = verify_set_array12_invoked_once();
+        final var array = HelloWorldTestUtils.set_array12_invoked_once(service);
         // verify: <buffer.put(array)> invoked, once
 
         // verify: <result> is same as <buffer>

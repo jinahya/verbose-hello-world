@@ -41,7 +41,8 @@ class JavaSecurityMessageDigestUtilsTest {
     class UpdateDigestTest {
 
         @Test
-        void __() throws NoSuchAlgorithmException {
+        void __()
+                throws NoSuchAlgorithmException {
             final var buffer = ByteBuffer.allocate(ThreadLocalRandom.current().nextInt(128));
             buffer.limit(ThreadLocalRandom.current().nextInt(buffer.limit() + 1));
             buffer.position(

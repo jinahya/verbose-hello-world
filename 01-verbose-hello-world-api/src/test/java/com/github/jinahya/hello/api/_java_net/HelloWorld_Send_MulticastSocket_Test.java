@@ -2,6 +2,7 @@ package com.github.jinahya.hello.api._java_net;
 
 import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldTest;
+import com.github.jinahya.hello.api.HelloWorldTestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -38,10 +39,12 @@ class HelloWorld_Send_MulticastSocket_Test
     // ---------------------------------------------------------------------------------------------
     @DisplayName("send via connected MulticastSocket to multiple receivers")
     @Test
-    void __() throws Exception {
+    void __()
+            throws Exception {
         // ----------------------------------------------------------------------------------- given
-        final var service = service();
-        stub_set_array_will_set_actual_hello_world_bytes();
+        final var service = HelloWorldTestUtils.set_array_will_set_actual_hello_world_bytes(
+                service()
+        );
         final var mcastaddr = new InetSocketAddress(
                 InetAddress.getByName(MULTICAST_HOST),
                 MULTICAST_PORT

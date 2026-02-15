@@ -27,7 +27,8 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-public final class VertxReactiveHelloWorldFactory extends AbstractReactiveHelloWorld {
+public final class VertxReactiveHelloWorldFactory
+        extends AbstractReactiveHelloWorld {
 
     // ---------------------------------------------------------------------------------------------
 
