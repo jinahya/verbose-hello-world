@@ -74,12 +74,10 @@ class DefaultAsynchronousHelloWorld
         final var buffer = service.put(ByteBuffer.allocate(HelloWorld.BYTES)).flip();
         channel.write( // @formatter:off
                 buffer,                     // <src>
-                attachment,                 // <attachment>
+                null,                       // <attachment>
                 new CompletionHandler<>() { // <handler>
                     @Override
-                    public void completed(final Integer result, final A attachment) {
-                        logger.log(System.Logger.Level.DEBUG, "completed({0}, {1})", result,
-                                   attachment);
+                    public void completed(final Integer result, final Object a) {
                         if (!buffer.hasRemaining()) {               // <1>
                             handler.completed(channel, attachment); // <2>
                             return;                                 // <3>
@@ -91,7 +89,7 @@ class DefaultAsynchronousHelloWorld
                         );
                     }
                     @Override
-                    public void failed(final Throwable exc, final A attachment) {
+                    public void failed(final Throwable exc, final Object a) {
                         handler.failed(exc, attachment); // <1>
                     }
                 } // @formatter:on
@@ -109,22 +107,20 @@ class DefaultAsynchronousHelloWorld
             throw new IllegalArgumentException("position(" + position + ") is negative");
         }
         Objects.requireNonNull(handler, "handler is null");
-        // get the <hello-world-bytes>
         final var buffer = service.put(ByteBuffer.allocate(HelloWorld.BYTES)).flip();
-        // write the <buffer> to the <channel>
-        channel.write(
+        channel.write( // @formatting:off
                 buffer,                     // <src>
                 position,                   // <position>
                 position,                   // <attachment>
                 new CompletionHandler<>() { // <handler>
                     @Override
-                    public void completed(final Integer r, final Long p) {
-                        assert r > 0; // why?
+                    public void completed(final Integer result, final Long p) {
+                        assert result > 0; // why?
                         if (!buffer.hasRemaining()) {
                             handler.completed(channel, attachment);
                             return;
                         }
-                        final var position = p + r;
+                        final var position = p + result;
                         channel.write(
                                 buffer,   // <src>
                                 position, // <position>
@@ -132,12 +128,11 @@ class DefaultAsynchronousHelloWorld
                                 this      // <handler>
                         );
                     }
-
                     @Override
                     public void failed(final Throwable t, final Long p) {
                         handler.failed(t, attachment);
                     }
-                }
+                } // @formatting:on
         );
     } // @formatter:on
 

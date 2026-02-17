@@ -46,6 +46,8 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
 
 /**
+ * Utilities for testing {@link HelloWorld} service classes.
+ *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
@@ -86,15 +88,19 @@ public final class HelloWorldTestUtils {
         return service;
     }
 
+    // ----------------------------------------------------------------------------------- java.lang
+
     /**
      * Stubs given mock serivce's {@link HelloWorld#set(byte[]) set(array)} method to just return
      * the {@code array}.
      *
      * @param service the mock service.
      * @return the given {@code service}.
+     * @see #set_array_will_set_actual_hello_world_bytes(HelloWorld)
      * @see #set_array12_invoked_once(HelloWorld)
      */
-    public static <T extends HelloWorld> T set_array_will_return_the_array(final T service) {
+    public static <T extends HelloWorld>
+    T set_array_will_return_the_array(final T service) {
         requireMock(service);
         Mockito.doAnswer(i -> i.getArgument(0))
                 .when(service)
@@ -104,6 +110,16 @@ public final class HelloWorldTestUtils {
         return service;
     }
 
+    /**
+     * Stubs the specified mock service's {@link HelloWorld#set(byte[]) set(array)} method to set an
+     * actual {@code hello, world} bytes to the {@code array}, and returns the array.
+     *
+     * @param service the mock service.
+     * @param <T>     service type parameter
+     * @return given {@code service}.
+     * @see #set_array_will_return_the_array(HelloWorld)
+     * @see #set_array12_invoked_once(HelloWorld)
+     */
     public static <T extends HelloWorld>
     T set_array_will_set_actual_hello_world_bytes(final T service) {
         requireMock(service);
@@ -118,6 +134,13 @@ public final class HelloWorldTestUtils {
         return service;
     }
 
+    /**
+     * Verifies that the specified mock service's {@link HelloWorld#set(byte[]) set(array)} method
+     * is invoked once, and returns the captured array.
+     *
+     * @param service the mock service.
+     * @return captured array.
+     */
     public static byte[] set_array12_invoked_once(final HelloWorld service) {
         requireMock(service);
         final var captor = ArgumentCaptor.forClass(byte[].class);
@@ -175,20 +198,6 @@ public final class HelloWorldTestUtils {
     }
 
     // ------------------------------------------------------------------------------------ java.nio
-    public static <T extends HelloWorld>
-    T put_buffer_will_put_actual_hello_world_bytes(final T service) {
-        requireMock(service);
-        Mockito.doAnswer(i -> {
-                    final var buffer = i.getArgument(0, ByteBuffer.class);
-                    buffer.put(getHelloWorldArray());
-                    return buffer;
-                })
-                .when(service)
-                .put(ArgumentMatchers.<ByteBuffer>argThat(
-                        v -> v != null && v.remaining() >= HelloWorld.BYTES)
-                );
-        return service;
-    }
 
     /**
      * Stubs given mock service's {@link HelloWorld#put(ByteBuffer) put(buffer)} method, when the
@@ -216,6 +225,21 @@ public final class HelloWorldTestUtils {
         return service;
     }
 
+    public static <T extends HelloWorld>
+    T put_buffer_will_put_actual_hello_world_bytes(final T service) {
+        requireMock(service);
+        Mockito.doAnswer(i -> {
+                    final var buffer = i.getArgument(0, ByteBuffer.class);
+                    buffer.put(getHelloWorldArray());
+                    return buffer;
+                })
+                .when(service)
+                .put(ArgumentMatchers.<ByteBuffer>argThat(
+                        v -> v != null && v.remaining() >= HelloWorld.BYTES)
+                );
+        return service;
+    }
+
     public static ByteBuffer put_buffer12_invoked_once(final HelloWorld service) {
         requireMock(service);
         final var captor = ArgumentCaptor.forClass(ByteBuffer.class);
@@ -227,8 +251,7 @@ public final class HelloWorldTestUtils {
     }
 
     public static <T extends HelloWorld>
-    T append_appendable_appends_12_chars(final T service)
-            throws IOException {
+    T append_appendable_appends_12_chars(final T service) throws IOException {
         requireMock(service);
         Mockito.doAnswer(i -> {
                     final var appendable = i.getArgument(0, Appendable.class);
@@ -242,15 +265,14 @@ public final class HelloWorldTestUtils {
                     return appendable;
                 })
                 .when(service)
-                .append(ArgumentMatchers.notNull(Appendable.class));
+                .append(ArgumentMatchers.<Appendable>notNull());
         return service;
     }
 
     // ---------------------------------------------------------------------------------------------
 
     // ---------------------------------------------------------------------------------------------
-    private static <T extends File> T writeSome_(final T file)
-            throws IOException {
+    private static <T extends File> T writeSome_(final T file) throws IOException {
         Objects.requireNonNull(file, "file is null");
         try (var stream = new FileOutputStream(file)) {
             stream.write(new byte[ThreadLocalRandom.current().nextInt(128)]);

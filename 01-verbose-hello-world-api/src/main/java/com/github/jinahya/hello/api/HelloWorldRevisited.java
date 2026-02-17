@@ -104,8 +104,7 @@ interface HelloWorldRevisited
 
     // ------------------------------------------------------------------------------------- java.io
     @Override
-    default <T extends DataOutput> T write(final T output)
-            throws IOException {
+    default <T extends DataOutput> T write(final T output) throws IOException {
         output.write(set());
         return output;
     }
@@ -130,8 +129,7 @@ interface HelloWorldRevisited
     @SuppressWarnings("removal")
     @Deprecated(forRemoval = true)
     @Override
-    default <T extends DataOutputStream> T write(final T stream)
-            throws IOException {
+    default <T extends DataOutputStream> T write(final T stream) throws IOException {
         return HelloWorld.super.write(stream);
     }
 
@@ -175,46 +173,41 @@ interface HelloWorldRevisited
 
     @Override
     default <T extends StringWriter> T write(final T writer) throws IOException {
-        return HelloWorld.super.write(writer);
+        return (T) write((Writer) writer);
     }
 
     @SuppressWarnings("removal")
     @Deprecated(forRemoval = true)
     @Override
-    default <T extends FilterOutputStream> T write(final T stream)
-            throws IOException {
+    default <T extends FilterOutputStream> T write(final T stream) throws IOException {
         return HelloWorld.super.write(stream);
     }
 
     @SuppressWarnings("removal")
     @Deprecated(forRemoval = true)
     @Override
-    default <T extends ObjectOutputStream> T write(final T stream)
-            throws IOException {
+    default <T extends ObjectOutputStream> T write(final T stream) throws IOException {
         return HelloWorld.super.write(stream);
     }
 
     @SuppressWarnings("removal")
     @Deprecated(forRemoval = true)
     @Override
-    default <T extends BufferedWriter> T write(final T writer)
-            throws IOException {
+    default <T extends BufferedWriter> T write(final T writer) throws IOException {
         return HelloWorld.super.write(writer);
     }
 
     @SuppressWarnings("removal")
     @Deprecated(forRemoval = true)
     @Override
-    default <T extends PrintWriter> T write(final T writer)
-            throws IOException {
+    default <T extends PrintWriter> T write(final T writer) throws IOException {
         return HelloWorld.super.write(writer);
     }
 
     @SuppressWarnings("removal")
     @Deprecated(forRemoval = true)
     @Override
-    default <T extends BufferedOutputStream> T write(final T stream)
-            throws IOException {
+    default <T extends BufferedOutputStream> T write(final T stream) throws IOException {
         return HelloWorld.super.write(stream);
     }
 
@@ -238,8 +231,7 @@ interface HelloWorldRevisited
     }
 
     @Override
-    default <T extends Appendable> T append(final T appendable)
-            throws IOException {
+    default <T extends Appendable> T append(final T appendable) throws IOException {
         for (final var b : set()) {
             appendable.append((char) b);
         }
@@ -291,15 +283,13 @@ interface HelloWorldRevisited
     }
 
     @Override
-    default <T extends Socket> T send(final T socket)
-            throws IOException {
+    default <T extends Socket> T send(final T socket) throws IOException {
         write(socket.getOutputStream());
         return socket;
     }
 
     @Override
-    default <T extends DatagramSocket> T send(final T socket)
-            throws IOException {
+    default <T extends DatagramSocket> T send(final T socket) throws IOException {
         socket.send(set(new DatagramPacket(new byte[BYTES], BYTES)));
         return socket;
     }
@@ -314,8 +304,7 @@ interface HelloWorldRevisited
     @SuppressWarnings("removal")
     @Deprecated(forRemoval = true)
     @Override
-    default <T extends MulticastSocket> T send(final T socket)
-            throws IOException {
+    default <T extends MulticastSocket> T send(final T socket) throws IOException {
         return HelloWorld.super.send(socket);
     }
 
@@ -349,8 +338,7 @@ interface HelloWorldRevisited
     @SuppressWarnings("removal")
     @Deprecated(forRemoval = true)
     @Override
-    default <T extends CharBuffer> T put(final T buffer)
-            throws IOException {
+    default <T extends CharBuffer> T put(final T buffer) throws IOException {
         return HelloWorld.super.put(buffer);
     }
 
@@ -369,24 +357,21 @@ interface HelloWorldRevisited
     @SuppressWarnings("removal")
     @Deprecated(forRemoval = true)
     @Override
-    default <T extends ShortBuffer> T put(final T buffer)
-            throws IOException {
+    default <T extends ShortBuffer> T put(final T buffer) throws IOException {
         return HelloWorld.super.put(buffer);
     }
 
     @SuppressWarnings("removal")
     @Deprecated(forRemoval = true)
     @Override
-    default <T extends IntBuffer> T put(final T buffer)
-            throws IOException {
+    default <T extends IntBuffer> T put(final T buffer) throws IOException {
         return HelloWorld.super.put(buffer);
     }
 
     @SuppressWarnings("removal")
     @Deprecated(forRemoval = true)
     @Override
-    default <T extends LongBuffer> T put(final T buffer)
-            throws IOException {
+    default <T extends LongBuffer> T put(final T buffer) throws IOException {
         return HelloWorld.super.put(buffer);
     }
 
@@ -419,27 +404,10 @@ interface HelloWorldRevisited
 
     @Override
     default <T extends AsynchronousFileChannel> T write(final T channel, long position)
-            throws InterruptedException, IOException {
+            throws InterruptedException, ExecutionException {
         for (final var b = put().flip(); b.hasRemaining(); ) {
             final var future = channel.write(b, position);
-            try {
-                position += future.get();
-            } catch (final ExecutionException ee) {
-                final var cause = ee.getCause();
-                if (cause instanceof InterruptedException ie) {
-                    throw ie;
-                }
-                if (cause instanceof Error err) {
-                    throw err;
-                }
-                if (cause instanceof RuntimeException re) {
-                    throw re;
-                }
-                if (cause instanceof IOException ioe) {
-                    throw ioe;
-                }
-                throw new RuntimeException("failed to write", cause);
-            }
+            position += future.get();
         }
         return channel;
     }
@@ -475,8 +443,7 @@ interface HelloWorldRevisited
     }
 
     @Override
-    default <T extends WritableByteChannel> T write(final T channel)
-            throws IOException {
+    default <T extends WritableByteChannel> T write(final T channel) throws IOException {
         for (final var b = put().flip(); b.hasRemaining(); ) {
             channel.write(b);
         }
@@ -494,31 +461,27 @@ interface HelloWorldRevisited
     @SuppressWarnings("removal")
     @Deprecated(forRemoval = true)
     @Override
-    default <T extends Pipe.SinkChannel> T write(final T channel)
-            throws IOException {
+    default <T extends Pipe.SinkChannel> T write(final T channel) throws IOException {
         return HelloWorld.super.write(channel);
     }
 
     @SuppressWarnings("removal")
     @Deprecated(forRemoval = true)
     @Override
-    default <T extends SeekableByteChannel> T write(final T channel)
-            throws IOException {
+    default <T extends SeekableByteChannel> T write(final T channel) throws IOException {
         return HelloWorld.super.write(channel);
     }
 
     @SuppressWarnings("removal")
     @Deprecated(forRemoval = true)
     @Override
-    default <T extends SocketChannel> T send(final T channel)
-            throws IOException {
+    default <T extends SocketChannel> T send(final T channel) throws IOException {
         return HelloWorld.super.send(channel);
     }
 
     // ------------------------------------------------------------------------------- java.nio.file
     @Override
-    default <T extends Path> T append(final T path)
-            throws IOException {
+    default <T extends Path> T append(final T path) throws IOException {
         final var options = new OpenOption[] {
                 StandardOpenOption.CREATE,
                 StandardOpenOption.APPEND
@@ -543,8 +506,7 @@ interface HelloWorldRevisited
 
     // ------------------------------------------------------------------------------------ java.sql
     @Override
-    default <T extends Blob> T set(final T blob, @Positive final long pos)
-            throws SQLException {
+    default <T extends Blob> T set(final T blob, @Positive final long pos) throws SQLException {
         return HelloWorld.super.set(blob, pos);
     }
 
@@ -559,8 +521,7 @@ interface HelloWorldRevisited
     @SuppressWarnings("removal")
     @Deprecated(forRemoval = true)
     @Override
-    default <T extends JarOutputStream> T write(final T stream)
-            throws IOException {
+    default <T extends JarOutputStream> T write(final T stream) throws IOException {
         return HelloWorld.super.write(stream);
     }
 
@@ -586,24 +547,21 @@ interface HelloWorldRevisited
     @SuppressWarnings("removal")
     @Deprecated(forRemoval = true)
     @Override
-    default <T extends DeflaterOutputStream> T write(final T stream)
-            throws IOException {
+    default <T extends DeflaterOutputStream> T write(final T stream) throws IOException {
         return HelloWorld.super.write(stream);
     }
 
     @SuppressWarnings("removal")
     @Deprecated(forRemoval = true)
     @Override
-    default <T extends GZIPOutputStream> T write(final T stream)
-            throws IOException {
+    default <T extends GZIPOutputStream> T write(final T stream) throws IOException {
         return HelloWorld.super.write(stream);
     }
 
     @SuppressWarnings("removal")
     @Deprecated(forRemoval = true)
     @Override
-    default <T extends ZipOutputStream> T write(final T stream)
-            throws IOException {
+    default <T extends ZipOutputStream> T write(final T stream) throws IOException {
         return HelloWorld.super.write(stream);
     }
 
@@ -622,8 +580,7 @@ interface HelloWorldRevisited
     @SuppressWarnings("removal")
     @Deprecated(forRemoval = true)
     @Override
-    default <T extends CipherOutputStream> T write(final T stream)
-            throws IOException {
+    default <T extends CipherOutputStream> T write(final T stream) throws IOException {
         return HelloWorld.super.write(stream);
     }
 
@@ -636,8 +593,7 @@ interface HelloWorldRevisited
     @SuppressWarnings("removal")
     @Deprecated(forRemoval = true)
     @Override
-    default <T extends SSLSocket> T send(final T socket)
-            throws IOException {
+    default <T extends SSLSocket> T send(final T socket) throws IOException {
         return HelloWorld.super.send(socket);
     }
 }

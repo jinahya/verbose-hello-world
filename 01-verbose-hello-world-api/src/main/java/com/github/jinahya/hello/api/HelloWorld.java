@@ -613,7 +613,10 @@ public interface HelloWorld {
     @屋上架屋("StringWriter extends Writer")
     @SuppressWarnings({"unchecked"})
     default <T extends StringWriter> T write(final T writer) throws IOException {
-        return (T) write((Writer) writer);
+        final var cast = (Writer) writer;
+        final var result = write(cast);
+        assert result == writer;
+        return writer;
     }
 
     /**
@@ -1422,7 +1425,7 @@ public interface HelloWorld {
      * @param position the file position at which the transfer is to begin; must be non-negative.
      * @return the given {@code channel}.
      * @throws InterruptedException if interrupted while executing.
-     * @throws IOException          if an I/O error occurs.
+     * @throws ExecutionException   if failed to write bytes.
      * @implSpec Default implementation invokes {@link #put(ByteBuffer) put(buffer)} with a byte
      * buffer of {@value #BYTES} bytes, flips it, and writes the {@code buffer} to {@code channel},
      * while the {@code buffer} {@link ByteBuffer#hasRemaining() has remaining}, by continuously
@@ -1433,7 +1436,7 @@ public interface HelloWorld {
      * @see AsynchronousFileChannel#write(ByteBuffer, long)
      */
     default <T extends AsynchronousFileChannel> T write(final T channel, long position)
-            throws InterruptedException, IOException {
+            throws InterruptedException, ExecutionException {
         Objects.requireNonNull(channel, "channel is null");
         if (position < 0L) {
             throw new IllegalArgumentException("position(" + position + ") is negative");
@@ -1441,18 +1444,9 @@ public interface HelloWorld {
         final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
         while (buffer.hasRemaining()) {
             final var future = channel.write(buffer, position);
-            try {
-                final var written = future.get();
-                assert written > 0; // why?
-                position += written;
-            } catch (final ExecutionException ee) {
-                final var cause = ee.getCause();
-                if (cause instanceof InterruptedException ie) throw ie;
-                if (cause instanceof Error err) throw err;
-                if (cause instanceof RuntimeException re) throw re;
-                if (cause instanceof IOException ioe) throw ioe;
-                throw new RuntimeException("failed to write", cause);
-            }
+            final var written = future.get();
+            assert written > 0; // why?
+            position += written;
         }
         return channel;
     }
