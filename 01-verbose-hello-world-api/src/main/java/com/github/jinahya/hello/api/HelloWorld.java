@@ -857,21 +857,13 @@ public interface HelloWorld {
      * @see Socket#getOutputStream()
      * @see #write(OutputStream)
      */
-    default <T extends Socket> T send(final T socket)
-            throws IOException {
+    default <T extends Socket> T send(final T socket) throws IOException {
         if (socket == null) {
             throw new NullPointerException("socket is null");
         }
         final var stream = socket.getOutputStream();
 //        write(stream);
         return socket;
-    }
-
-    @Deprecated(forRemoval = true)
-    @屋上架屋("SSLSocket extends Socket")
-    default <T extends SSLSocket> T send(final T socket)
-            throws IOException {
-        return (T) send((Socket) socket);
     }
 
     // ------------------------------------------------------------------------------- java.net.http
@@ -902,6 +894,13 @@ public interface HelloWorld {
         set(array);
         builder.method(method, HttpRequest.BodyPublishers.ofByteArray(array));
         return builder;
+    }
+
+    // -------------------------------------------------------------------------------- java.net.ssl
+    @Deprecated(forRemoval = true)
+    @屋上架屋("SSLSocket extends Socket")
+    default <T extends SSLSocket> T send(final T socket) throws IOException {
+        return (T) send((Socket) socket);
     }
 
     // ------------------------------------------------------------------------------------ java.nio
@@ -1654,22 +1653,19 @@ public interface HelloWorld {
 
     @Deprecated(forRemoval = true)
     @屋上架屋("DeflatorOutputStream extends FilterOutputStream")
-    default <T extends DeflaterOutputStream> T write(final T stream)
-            throws IOException {
+    default <T extends DeflaterOutputStream> T write(final T stream) throws IOException {
         return (T) write((FilterOutputStream) stream);
     }
 
     @Deprecated(forRemoval = true)
     @屋上架屋("GZIPOutputStream extends DeflatorOutputStream")
-    default <T extends GZIPOutputStream> T write(final T stream)
-            throws IOException {
+    default <T extends GZIPOutputStream> T write(final T stream) throws IOException {
         return (T) write((DeflaterOutputStream) stream);
     }
 
     @屋上架屋("ZipOutputStream extends DeflaterOutputStream")
     @Deprecated(forRemoval = true)
-    default <T extends ZipOutputStream> T write(final T stream)
-            throws IOException {
+    default <T extends ZipOutputStream> T write(final T stream) throws IOException {
         return (T) write((DeflaterOutputStream) stream);
     }
 
@@ -1726,8 +1722,7 @@ public interface HelloWorld {
 
     @Deprecated(forRemoval = true)
     @屋上架屋("CipherOutputStream extends FilterOutputStream")
-    default <T extends CipherOutputStream> T write(final T stream)
-            throws IOException {
+    default <T extends CipherOutputStream> T write(final T stream) throws IOException {
         return (T) write((FilterOutputStream) stream);
     }
 
@@ -1739,8 +1734,8 @@ public interface HelloWorld {
      * @return the given {@code mac}.
      * @throws NullPointerException if {@code mac} is {@code null}.
      * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
-     * of {@value #BYTES} bytes, and {@link Mac#update(byte[]) updates} the {@code mac} with the
-     * array.
+     * of {@value #BYTES} bytes, and invokes {@link Mac#update(byte[])} method, on the {@code mac},
+     * with the array.
      * @see #set(byte[])
      * @see Mac#update(byte[])
      */

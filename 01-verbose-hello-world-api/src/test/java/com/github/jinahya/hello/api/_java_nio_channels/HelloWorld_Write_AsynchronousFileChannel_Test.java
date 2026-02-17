@@ -149,7 +149,7 @@ class HelloWorld_Write_AsynchronousFileChannel_Test
         Assertions.assertEquals(position, positions.getFirst());
         final var iterator = increments.iterator();
         positions.stream().reduce((p1, p2) -> {
-            Assertions.assertEquals(p2, p1 + iterator.next());
+            Assertions.assertEquals(p1 + iterator.next(), p2);
             return p2;
         });
         Assertions.assertSame(channel, result);

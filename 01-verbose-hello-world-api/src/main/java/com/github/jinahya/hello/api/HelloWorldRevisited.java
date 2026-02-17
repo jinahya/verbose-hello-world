@@ -586,7 +586,8 @@ interface HelloWorldRevisited
 
     @Override
     default <T extends Mac> T update(final T mac) {
-        return HelloWorld.super.update(mac);
+        mac.update(set());
+        return mac;
     }
 
     // ----------------------------------------------------------------------------- javax.net.ssl

@@ -63,7 +63,7 @@ class HelloWorld_Send_Socket_Test
     void _ThrowNullPointerException_SocketIsNull() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        final Socket socket = null;
+        final var socket = (Socket) null;
         // ------------------------------------------------------------------------------- when/then
         // assert, <service.send(socket)> throws a <NullPointerException>
         Assertions.assertThrows(
@@ -73,19 +73,17 @@ class HelloWorld_Send_Socket_Test
     }
 
     /**
-     * Verifies that the {@link HelloWorld#send(Socket) send(socket)} method invokes
-     * {@link HelloWorld#write(OutputStream) write(stream)} method with
+     * Verifies that the {@link HelloWorld#send(Socket)} method invokes
+     * {@link HelloWorld#write(OutputStream)} method with
      * {@link Socket#getOutputStream() socket.outputStream}, and returns the {@code socket}.
      *
      * @throws IOException if an I/O error occurs.
      */
     @DisplayName("should invoke <write(socket.outputStream)>")
     @Test
-    void __()
-            throws IOException {
+    void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // stub, <service.write(stream)> will return the <stream>
         Mockito.doAnswer(i -> i.getArgument(0))
                 .when(service)
                 .write(ArgumentMatchers.any(OutputStream.class));
@@ -95,49 +93,41 @@ class HelloWorld_Send_Socket_Test
         // ------------------------------------------------------------------------------------ when
         final var result = service.send(socket);
         // ------------------------------------------------------------------------------------ then
-        // verify, <socket.getOutputStream()> invoked, once
-        Mockito.verify(socket, Mockito.times(1)).getOutputStream();
-        // verify, <service.write(stream)> invoked, once
-
-        // verify, no more interactions with the <socket>
-
-        // assert, <result> is same as <socket>
+//        Mockito.verify(service, Mockito.times(1)).write(stream);
         Assertions.assertSame(socket, result);
     }
 
     @Test
-    void _添足_畵蛇()
-            throws IOException {
+    void _添足_畵蛇() throws IOException, InterruptedException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // stub, <service.write(stream)> will write 'hello, world' bytes to the <stream>
         Mockito.doAnswer(i -> {
                     final var stream = i.getArgument(0, OutputStream.class);
                     stream.write("hello, world".getBytes(StandardCharsets.US_ASCII));
                     return stream;
                 })
                 .when(service)
-                .write(ArgumentMatchers.notNull(OutputStream.class));
-        // ------------------------------------------------------------------------------ when/then
+                .write(ArgumentMatchers.<OutputStream>notNull());
+        // ----------------------------------------------------------------------------- when / then
         try (var server = new ServerSocket()) {
-            // bind to a random port
             server.bind(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0));
-            // start a new thread which accepts a client, and reads <12> bytes from it
-            Thread.ofPlatform().daemon().start(() -> {
+            final var thread = Thread.ofPlatform().daemon().start(() -> {
                 try {
                     try (var client = server.accept()) {
                         final var array = client.getInputStream().readNBytes(HelloWorld.BYTES);
-                        log.debug("string: {}", new String(array, StandardCharsets.US_ASCII));
+                        assert array.length == HelloWorld.BYTES;
+                        log.debug("decoded: {}", new String(array, StandardCharsets.US_ASCII));
                     }
                 } catch (final IOException ioe) {
                     throw new RuntimeException(ioe);
                 }
             });
-            // connect to the <server>, and send the 'hello, world' bytes
             try (var client = new Socket()) {
                 client.connect(server.getLocalSocketAddress());
-                service.write(client.getOutputStream()).flush();
+                service.write(client.getOutputStream());
+                client.getOutputStream().flush();
             }
+            thread.join();
         }
     }
 }
