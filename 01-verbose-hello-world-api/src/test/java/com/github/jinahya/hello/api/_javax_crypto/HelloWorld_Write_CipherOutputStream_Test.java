@@ -13,80 +13,88 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
+import javax.crypto.CipherOutputStream;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.IvParameterSpec;
 import java.io.ByteArrayOutputStream;
+import java.io.FilterOutputStream;
+import java.io.IOException;
 import java.security.Key;
 import java.security.KeyPair;
-import java.security.KeyPairGenerator;
 import java.security.spec.AlgorithmParameterSpec;
 import java.util.Arrays;
 import java.util.HexFormat;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Consumer;
 
 /**
- * .
+ * A class for testing {@link HelloWorld#write(CipherOutputStream) write(stream)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see <a
- * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/javax/crypto/Cipher.html">javax.crypto.Cipher</a>
+ * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/javax/crypto/CipherOutputStream.html#close()">javax.crypto.CipherOutputStream#close()</a>
  */
+@DisplayName("write(CipherOutputStream)")
 @Slf4j
-class HelloWorld_Update_Cipher_Test
+class HelloWorld_Write_CipherOutputStream_Test
         extends HelloWorldTest {
 
-    //AES/CBC/NoPadding (128)
-    //AES/CBC/PKCS5Padding (128)
-    //AES/ECB/NoPadding (128)
-    //AES/ECB/PKCS5Padding (128)
-    //AES/GCM/NoPadding (128, 256)
-    //ChaCha20-Poly1305
-    //DESede/CBC/NoPadding (168)
-    //DESede/CBC/PKCS5Padding (168)
-    //DESede/ECB/NoPadding (168)
-    //DESede/ECB/PKCS5Padding (168)
-    //RSA/ECB/PKCS1Padding (1024, 2048)
-    //RSA/ECB/OAEPWithSHA-1AndMGF1Padding (1024, 2048)
-    //RSA/ECB/OAEPWithSHA-256AndMGF1Padding (1024, 2048)
+    static final int AES_BLOCK_SIZE = HelloWorld_Update_Cipher_Test.AES_BLOCK_SIZE;
 
-    static final int AES_BLOCK_SIZE = 16;
+    static final int DESEDE_BLOCK_SIZE = HelloWorld_Update_Cipher_Test.DESEDE_BLOCK_SIZE;
 
-    static final int DESEDE_BLOCK_SIZE = 8;
-
-    static Key generateSecretKey(final String algorithm, final int keysize) throws Exception {
-        final var generator = KeyGenerator.getInstance(algorithm);
-        generator.init(keysize);
-        return generator.generateKey();
+    static Key generateSecretKey(final String algorithm, final int keysize)
+            throws Exception {
+        return HelloWorld_Update_Cipher_Test.generateSecretKey(algorithm, keysize);
     }
 
-    static KeyPair generateKeyPair(final String algorithm, final int keysize) throws Exception {
-        final var generator = KeyPairGenerator.getInstance(algorithm);
-        generator.initialize(keysize);
-        return generator.generateKeyPair();
+    private static KeyPair generateKeyPair(final String algorithm, final int keysize)
+            throws Exception {
+        return HelloWorld_Update_Cipher_Test.generateKeyPair(algorithm, keysize);
     }
 
-    // ---------------------------------------------------------------------------------------------
+    /**
+     * Verifies that the {@link HelloWorld#write(CipherOutputStream) write(stream)} method throws a
+     * {@link NullPointerException} when the {@code stream} argument is {@code null}.
+     */
+    @DisplayName("""
+            should throw a <NullPointerException>
+            when the <stream> argument is <null>""")
     @Test
-    void __() {
-        // ------------------------------------------------------------------------------- given
-        final var service = set_array_will_return_the_array();
-        final var cipher = Mockito.mock(Cipher.class);
-        final var output = ThreadLocalRandom.current().nextBoolean() ? new byte[0] : null;
-        Mockito.doAnswer(i -> output).when(cipher).update(ArgumentMatchers.notNull());
-        @SuppressWarnings("unchecked")
-        final var consumer = (Consumer<? super byte[]>) Mockito.mock(Consumer.class);
-        // -------------------------------------------------------------------------------- when
-        final var result = service.update(cipher, consumer);
-        // -------------------------------------------------------------------------------- then
-        final var array = set_array12_invoked_once();
-        Mockito.verify(cipher).update(array);
-        Mockito.verify(consumer, Mockito.atMostOnce()).accept(output);
-        Assertions.assertSame(cipher, result);
+    void _ThrowNullPointerException_StreamIsNull() {
+        // ----------------------------------------------------------------------------------- given
+        final var service = service();
+        final CipherOutputStream stream = null;
+        // ------------------------------------------------------------------------------- when/then
+        Assertions.assertThrows(
+                NullPointerException.class,
+                () -> service.write(stream)
+        );
     }
 
-    // ---------------------------------------------------------------------------------------------
+    /**
+     * Verifies that the {@link HelloWorld#write(CipherOutputStream) write(stream)} method invokes
+     * {@link HelloWorld#write(FilterOutputStream) write((FilterOutputStream) stream)}.
+     *
+     * @throws IOException if an I/O error occurs.
+     */
+    @DisplayName("should invoke <write((FilterOutputStream) stream)>")
+    @Test
+    void __() throws IOException {
+        // ----------------------------------------------------------------------------------- given
+        final var service = service();
+        Mockito.doAnswer(i -> i.getArgument(0))
+                .when(service)
+                .write(ArgumentMatchers.<FilterOutputStream>notNull());
+        final var stream = Mockito.mock(CipherOutputStream.class);
+        // ------------------------------------------------------------------------------------ when
+        final var result = service.write(stream);
+        // ------------------------------------------------------------------------------------ then
+        Mockito.verify(service, Mockito.times(1)).write((FilterOutputStream) stream);
+        Assertions.assertSame(stream, result);
+    }
+
+    // =============================================================================================
+
     @DisplayName("AES/CBC/NoPadding")
     @Nested
     class AES_CBC_NoPadding_Test {
@@ -99,9 +107,7 @@ class HelloWorld_Update_Cipher_Test
 
         private static final String TRANSFORMATION = ALGORITHM + '/' + MODE + '/' + PADDING;
 
-        @ValueSource(ints = {
-                128
-        })
+        @ValueSource(ints = {128})
         @ParameterizedTest
         void __(final int keysize) throws Exception {
             // ------------------------------------------------------------------------------- given
@@ -117,20 +123,11 @@ class HelloWorld_Update_Cipher_Test
             // ----------------------------------------------------------------------------- encrypt
             cipher.init(Cipher.ENCRYPT_MODE, key, params);
             final var baos = new ByteArrayOutputStream();
-            service.update(cipher, r -> {
-                if (r != null) {
-                    baos.writeBytes(r);
-                }
-            });
-            {
-                // AES/CBC/NoPadding requires input to be a multiple of the block size (16 bytes).
-                // Since "hello, world" is 12 bytes, we pad with 4 zero bytes to complete the block.
-                final var updated = cipher.update(new byte[AES_BLOCK_SIZE - HelloWorld.BYTES]);
-                if (updated != null) {
-                    baos.writeBytes(updated);
-                }
+            try (var cos = new CipherOutputStream(baos, cipher)) {
+                service.write(cos);
+                // NoPadding: pad to block size
+                cos.write(new byte[AES_BLOCK_SIZE - HelloWorld.BYTES]);
             }
-            baos.writeBytes(cipher.doFinal());
             final var encrypted = baos.toByteArray();
             log.debug("encrypted: {}", HexFormat.of().formatHex(encrypted));
             // ----------------------------------------------------------------------------- decrypt
@@ -138,8 +135,6 @@ class HelloWorld_Update_Cipher_Test
             final var decrypted = cipher.doFinal(encrypted);
             log.debug("decrypted: {}", HexFormat.of().formatHex(decrypted));
             // -------------------------------------------------------------------------------- then
-            // decrypted is 16 bytes: 12 bytes of "hello, world" + 4 bytes of zero padding.
-            // NoPadding doesn't strip padding on decryption, so we compare only the first 12 bytes.
             Assertions.assertEquals(AES_BLOCK_SIZE, decrypted.length);
             Assertions.assertArrayEquals(
                     hello_world_byte_array(),
@@ -160,9 +155,7 @@ class HelloWorld_Update_Cipher_Test
 
         private static final String TRANSFORMATION = ALGORITHM + '/' + MODE + '/' + PADDING;
 
-        @ValueSource(ints = {
-                128
-        })
+        @ValueSource(ints = {128})
         @ParameterizedTest
         void __(final int keysize) throws Exception {
             // ------------------------------------------------------------------------------- given
@@ -178,12 +171,9 @@ class HelloWorld_Update_Cipher_Test
             // ----------------------------------------------------------------------------- encrypt
             cipher.init(Cipher.ENCRYPT_MODE, key, params);
             final var baos = new ByteArrayOutputStream();
-            service.update(cipher, r -> {
-                if (r != null) {
-                    baos.writeBytes(r);
-                }
-            });
-            baos.writeBytes(cipher.doFinal());
+            try (var cos = new CipherOutputStream(baos, cipher)) {
+                service.write(cos);
+            }
             final var encrypted = baos.toByteArray();
             log.debug("encrypted: {}", HexFormat.of().formatHex(encrypted));
             // ----------------------------------------------------------------------------- decrypt
@@ -207,9 +197,7 @@ class HelloWorld_Update_Cipher_Test
 
         private static final String TRANSFORMATION = ALGORITHM + '/' + MODE + '/' + PADDING;
 
-        @ValueSource(ints = {
-                128
-        })
+        @ValueSource(ints = {128})
         @ParameterizedTest
         void __(final int keysize) throws Exception {
             // ------------------------------------------------------------------------------- given
@@ -219,19 +207,10 @@ class HelloWorld_Update_Cipher_Test
             // ----------------------------------------------------------------------------- encrypt
             cipher.init(Cipher.ENCRYPT_MODE, key);
             final var baos = new ByteArrayOutputStream();
-            service.update(cipher, r -> {
-                if (r != null) {
-                    baos.writeBytes(r);
-                }
-            });
-            {
-                // AES/ECB/NoPadding requires input to be a multiple of the block size (16 bytes).
-                // Since "hello, world" is 12 bytes, we pad with 4 zero bytes to complete the block.
-                final var updated = cipher.update(new byte[AES_BLOCK_SIZE - HelloWorld.BYTES]);
-                if (updated != null) {
-                    baos.writeBytes(updated);
-                }
-                baos.writeBytes(cipher.doFinal());
+            try (var cos = new CipherOutputStream(baos, cipher)) {
+                service.write(cos);
+                // NoPadding: pad to block size
+                cos.write(new byte[AES_BLOCK_SIZE - HelloWorld.BYTES]);
             }
             final var encrypted = baos.toByteArray();
             log.debug("encrypted: {}", HexFormat.of().formatHex(encrypted));
@@ -240,8 +219,6 @@ class HelloWorld_Update_Cipher_Test
             final var decrypted = cipher.doFinal(encrypted);
             log.debug("decrypted: {}", HexFormat.of().formatHex(decrypted));
             // -------------------------------------------------------------------------------- then
-            // decrypted is 16 bytes: 12 bytes of "hello, world" + 4 bytes of zero padding.
-            // NoPadding doesn't strip padding on decryption, so we compare only the first 12 bytes.
             Assertions.assertEquals(AES_BLOCK_SIZE, decrypted.length);
             Assertions.assertArrayEquals(
                     hello_world_byte_array(),
@@ -262,9 +239,7 @@ class HelloWorld_Update_Cipher_Test
 
         private static final String TRANSFORMATION = ALGORITHM + '/' + MODE + '/' + PADDING;
 
-        @ValueSource(ints = {
-                128
-        })
+        @ValueSource(ints = {128})
         @ParameterizedTest
         void __(final int keysize) throws Exception {
             // ------------------------------------------------------------------------------- given
@@ -274,12 +249,9 @@ class HelloWorld_Update_Cipher_Test
             // ----------------------------------------------------------------------------- encrypt
             cipher.init(Cipher.ENCRYPT_MODE, key);
             final var baos = new ByteArrayOutputStream();
-            service.update(cipher, r -> {
-                if (r != null) {
-                    baos.writeBytes(r);
-                }
-            });
-            baos.writeBytes(cipher.doFinal());
+            try (var cos = new CipherOutputStream(baos, cipher)) {
+                service.write(cos);
+            }
             final var encrypted = baos.toByteArray();
             log.debug("encrypted: {}", HexFormat.of().formatHex(encrypted));
             // ----------------------------------------------------------------------------- decrypt
@@ -303,13 +275,11 @@ class HelloWorld_Update_Cipher_Test
 
         private static final String TRANSFORMATION = ALGORITHM + '/' + MODE + '/' + PADDING;
 
-        private static final int GCM_IV_LENGTH = 12;  // 12 bytes recommended for GCM
+        private static final int GCM_IV_LENGTH = 12;
 
-        private static final int GCM_TAG_LENGTH = 128;  // 128 bits
+        private static final int GCM_TAG_LENGTH = 128;
 
-        @ValueSource(ints = {
-                128, 256
-        })
+        @ValueSource(ints = {128, 256})
         @ParameterizedTest
         void __(final int keysize) throws Exception {
             // ------------------------------------------------------------------------------- given
@@ -322,38 +292,19 @@ class HelloWorld_Update_Cipher_Test
                 ThreadLocalRandom.current().nextBytes(iv);
                 params = new GCMParameterSpec(GCM_TAG_LENGTH, iv);
             }
-            // optional AAD (Additional Authenticated Data) - authenticated but not encrypted
-            final byte[] aad;
-            if (ThreadLocalRandom.current().nextBoolean()) {
-                aad = new byte[ThreadLocalRandom.current().nextInt(1, 32)];
-                ThreadLocalRandom.current().nextBytes(aad);
-                log.debug("aad: {}", HexFormat.of().formatHex(aad));
-            } else {
-                aad = null;
-            }
             // ----------------------------------------------------------------------------- encrypt
             cipher.init(Cipher.ENCRYPT_MODE, key, params);
-            if (aad != null) {
-                cipher.updateAAD(aad);
-            }
             final var baos = new ByteArrayOutputStream();
-            service.update(cipher, r -> {
-                if (r != null) {
-                    baos.writeBytes(r);
-                }
-            });
-            baos.writeBytes(cipher.doFinal());
+            try (var cos = new CipherOutputStream(baos, cipher)) {
+                service.write(cos);
+            }
             final var encrypted = baos.toByteArray();
             log.debug("encrypted: {}", HexFormat.of().formatHex(encrypted));
             // ----------------------------------------------------------------------------- decrypt
             cipher.init(Cipher.DECRYPT_MODE, key, params);
-            if (aad != null) {
-                cipher.updateAAD(aad);
-            }
             final var decrypted = cipher.doFinal(encrypted);
             log.debug("decrypted: {}", HexFormat.of().formatHex(decrypted));
             // -------------------------------------------------------------------------------- then
-            // GCM is a stream cipher mode - no padding needed, decrypted equals original plaintext
             Assertions.assertArrayEquals(hello_world_byte_array(), decrypted);
         }
     }
@@ -366,11 +317,9 @@ class HelloWorld_Update_Cipher_Test
 
         private static final String TRANSFORMATION = "ChaCha20-Poly1305";
 
-        private static final int NONCE_LENGTH = 12;  // 96 bits
+        private static final int NONCE_LENGTH = 12;
 
-        @ValueSource(ints = {
-                256  // ChaCha20 only supports 256-bit keys
-        })
+        @ValueSource(ints = {256})
         @ParameterizedTest
         void __(final int keysize) throws Exception {
             // ------------------------------------------------------------------------------- given
@@ -386,12 +335,9 @@ class HelloWorld_Update_Cipher_Test
             // ----------------------------------------------------------------------------- encrypt
             cipher.init(Cipher.ENCRYPT_MODE, key, params);
             final var baos = new ByteArrayOutputStream();
-            service.update(cipher, r -> {
-                if (r != null) {
-                    baos.writeBytes(r);
-                }
-            });
-            baos.writeBytes(cipher.doFinal());
+            try (var cos = new CipherOutputStream(baos, cipher)) {
+                service.write(cos);
+            }
             final var encrypted = baos.toByteArray();
             log.debug("encrypted: {}", HexFormat.of().formatHex(encrypted));
             // ----------------------------------------------------------------------------- decrypt
@@ -399,7 +345,6 @@ class HelloWorld_Update_Cipher_Test
             final var decrypted = cipher.doFinal(encrypted);
             log.debug("decrypted: {}", HexFormat.of().formatHex(decrypted));
             // -------------------------------------------------------------------------------- then
-            // ChaCha20-Poly1305 is a stream cipher (AEAD) - no padding, decrypted equals original
             Assertions.assertArrayEquals(hello_world_byte_array(), decrypted);
         }
     }
@@ -416,9 +361,7 @@ class HelloWorld_Update_Cipher_Test
 
         private static final String TRANSFORMATION = ALGORITHM + '/' + MODE + '/' + PADDING;
 
-        @ValueSource(ints = {
-                168
-        })
+        @ValueSource(ints = {168})
         @ParameterizedTest
         void __(final int keysize) throws Exception {
             // ------------------------------------------------------------------------------- given
@@ -434,20 +377,12 @@ class HelloWorld_Update_Cipher_Test
             // ----------------------------------------------------------------------------- encrypt
             cipher.init(Cipher.ENCRYPT_MODE, key, params);
             final var baos = new ByteArrayOutputStream();
-            service.update(cipher, r -> {
-                if (r != null) {
-                    baos.writeBytes(r);
-                }
-            });
-            {
-                // DESede block size is 8 bytes. "hello, world" (12 bytes) needs padding to 16 bytes.
+            try (var cos = new CipherOutputStream(baos, cipher)) {
+                service.write(cos);
+                // NoPadding: pad to block size (12 bytes → 16 bytes)
                 final var paddingNeeded = DESEDE_BLOCK_SIZE - (HelloWorld.BYTES
                                                                % DESEDE_BLOCK_SIZE);
-                final var updated = cipher.update(new byte[paddingNeeded]);
-                if (updated != null) {
-                    baos.writeBytes(updated);
-                }
-                baos.writeBytes(cipher.doFinal());
+                cos.write(new byte[paddingNeeded]);
             }
             final var encrypted = baos.toByteArray();
             log.debug("encrypted: {}", HexFormat.of().formatHex(encrypted));
@@ -456,7 +391,6 @@ class HelloWorld_Update_Cipher_Test
             final var decrypted = cipher.doFinal(encrypted);
             log.debug("decrypted: {}", HexFormat.of().formatHex(decrypted));
             // -------------------------------------------------------------------------------- then
-            // decrypted is 16 bytes: 12 bytes of "hello, world" + 4 bytes of zero padding.
             Assertions.assertEquals(16, decrypted.length);
             Assertions.assertArrayEquals(
                     hello_world_byte_array(),
@@ -477,9 +411,7 @@ class HelloWorld_Update_Cipher_Test
 
         private static final String TRANSFORMATION = ALGORITHM + '/' + MODE + '/' + PADDING;
 
-        @ValueSource(ints = {
-                168
-        })
+        @ValueSource(ints = {168})
         @ParameterizedTest
         void __(final int keysize) throws Exception {
             // ------------------------------------------------------------------------------- given
@@ -495,12 +427,9 @@ class HelloWorld_Update_Cipher_Test
             // ----------------------------------------------------------------------------- encrypt
             cipher.init(Cipher.ENCRYPT_MODE, key, params);
             final var baos = new ByteArrayOutputStream();
-            service.update(cipher, r -> {
-                if (r != null) {
-                    baos.writeBytes(r);
-                }
-            });
-            baos.writeBytes(cipher.doFinal());
+            try (var cos = new CipherOutputStream(baos, cipher)) {
+                service.write(cos);
+            }
             final var encrypted = baos.toByteArray();
             log.debug("encrypted: {}", HexFormat.of().formatHex(encrypted));
             // ----------------------------------------------------------------------------- decrypt
@@ -524,9 +453,7 @@ class HelloWorld_Update_Cipher_Test
 
         private static final String TRANSFORMATION = ALGORITHM + '/' + MODE + '/' + PADDING;
 
-        @ValueSource(ints = {
-                168
-        })
+        @ValueSource(ints = {168})
         @ParameterizedTest
         void __(final int keysize) throws Exception {
             // ------------------------------------------------------------------------------- given
@@ -536,19 +463,12 @@ class HelloWorld_Update_Cipher_Test
             // ----------------------------------------------------------------------------- encrypt
             cipher.init(Cipher.ENCRYPT_MODE, key);
             final var baos = new ByteArrayOutputStream();
-            service.update(cipher, r -> {
-                if (r != null) {
-                    baos.writeBytes(r);
-                }
-            });
-            {
-                // DESede block size is 8 bytes. "hello, world" (12 bytes) needs padding to 16 bytes.
-                final var required = DESEDE_BLOCK_SIZE - (HelloWorld.BYTES % DESEDE_BLOCK_SIZE);
-                final var updated = cipher.update(new byte[required]);
-                if (updated != null) {
-                    baos.writeBytes(updated);
-                }
-                baos.writeBytes(cipher.doFinal());
+            try (var cos = new CipherOutputStream(baos, cipher)) {
+                service.write(cos);
+                // NoPadding: pad to block size (12 bytes → 16 bytes)
+                final var paddingNeeded = DESEDE_BLOCK_SIZE - (HelloWorld.BYTES
+                                                               % DESEDE_BLOCK_SIZE);
+                cos.write(new byte[paddingNeeded]);
             }
             final var encrypted = baos.toByteArray();
             log.debug("encrypted: {}", HexFormat.of().formatHex(encrypted));
@@ -557,7 +477,6 @@ class HelloWorld_Update_Cipher_Test
             final var decrypted = cipher.doFinal(encrypted);
             log.debug("decrypted: {}", HexFormat.of().formatHex(decrypted));
             // -------------------------------------------------------------------------------- then
-            // decrypted is 16 bytes: 12 bytes of "hello, world" + 4 bytes of zero padding.
             Assertions.assertEquals(16, decrypted.length);
             Assertions.assertArrayEquals(
                     hello_world_byte_array(),
@@ -578,9 +497,7 @@ class HelloWorld_Update_Cipher_Test
 
         private static final String TRANSFORMATION = ALGORITHM + '/' + MODE + '/' + PADDING;
 
-        @ValueSource(ints = {
-                168
-        })
+        @ValueSource(ints = {168})
         @ParameterizedTest
         void __(final int keysize) throws Exception {
             // ------------------------------------------------------------------------------- given
@@ -590,12 +507,9 @@ class HelloWorld_Update_Cipher_Test
             // ----------------------------------------------------------------------------- encrypt
             cipher.init(Cipher.ENCRYPT_MODE, key);
             final var baos = new ByteArrayOutputStream();
-            service.update(cipher, r -> {
-                if (r != null) {
-                    baos.writeBytes(r);
-                }
-            });
-            baos.writeBytes(cipher.doFinal());
+            try (var cos = new CipherOutputStream(baos, cipher)) {
+                service.write(cos);
+            }
             final var encrypted = baos.toByteArray();
             log.debug("encrypted: {}", HexFormat.of().formatHex(encrypted));
             // ----------------------------------------------------------------------------- decrypt
@@ -623,9 +537,7 @@ class HelloWorld_Update_Cipher_Test
 
         private static final String TRANSFORMATION = ALGORITHM + '/' + MODE + '/' + PADDING;
 
-        @ValueSource(ints = {
-                1024, 2048
-        })
+        @ValueSource(ints = {1024, 2048})
         @ParameterizedTest
         void __(final int keysize) throws Exception {
             // ------------------------------------------------------------------------------- given
@@ -633,19 +545,14 @@ class HelloWorld_Update_Cipher_Test
             final var keyPair = generateKeyPair(ALGORITHM, keysize);
             final var cipher = Cipher.getInstance(TRANSFORMATION);
             // ----------------------------------------------------------------------------- encrypt
-            // RSA encrypts with PUBLIC key
             cipher.init(Cipher.ENCRYPT_MODE, keyPair.getPublic());
             final var baos = new ByteArrayOutputStream();
-            service.update(cipher, r -> {
-                if (r != null) {
-                    baos.writeBytes(r);
-                }
-            });
-            baos.writeBytes(cipher.doFinal());
+            try (var cos = new CipherOutputStream(baos, cipher)) {
+                service.write(cos);
+            }
             final var encrypted = baos.toByteArray();
             log.debug("encrypted: {}", HexFormat.of().formatHex(encrypted));
             // ----------------------------------------------------------------------------- decrypt
-            // RSA decrypts with PRIVATE key
             cipher.init(Cipher.DECRYPT_MODE, keyPair.getPrivate());
             final var decrypted = cipher.doFinal(encrypted);
             log.debug("decrypted: {}", HexFormat.of().formatHex(decrypted));
@@ -662,14 +569,11 @@ class HelloWorld_Update_Cipher_Test
 
         private static final String MODE = "ECB";
 
-        // OAEP with SHA-1 for message digest and MGF1 (also using SHA-1)
         private static final String PADDING = "OAEPWithSHA-1AndMGF1Padding";
 
         private static final String TRANSFORMATION = ALGORITHM + '/' + MODE + '/' + PADDING;
 
-        @ValueSource(ints = {
-                1024, 2048
-        })
+        @ValueSource(ints = {1024, 2048})
         @ParameterizedTest
         void __(final int keysize) throws Exception {
             // ------------------------------------------------------------------------------- given
@@ -679,12 +583,9 @@ class HelloWorld_Update_Cipher_Test
             // ----------------------------------------------------------------------------- encrypt
             cipher.init(Cipher.ENCRYPT_MODE, keyPair.getPublic());
             final var baos = new ByteArrayOutputStream();
-            service.update(cipher, r -> {
-                if (r != null) {
-                    baos.writeBytes(r);
-                }
-            });
-            baos.writeBytes(cipher.doFinal());
+            try (var cos = new CipherOutputStream(baos, cipher)) {
+                service.write(cos);
+            }
             final var encrypted = baos.toByteArray();
             log.debug("encrypted: {}", HexFormat.of().formatHex(encrypted));
             // ----------------------------------------------------------------------------- decrypt
@@ -704,14 +605,11 @@ class HelloWorld_Update_Cipher_Test
 
         private static final String MODE = "ECB";
 
-        // OAEP with SHA-256 for message digest and MGF1 (using SHA-256)
         private static final String PADDING = "OAEPWithSHA-256AndMGF1Padding";
 
         private static final String TRANSFORMATION = ALGORITHM + '/' + MODE + '/' + PADDING;
 
-        @ValueSource(ints = {
-                1024, 2048
-        })
+        @ValueSource(ints = {1024, 2048})
         @ParameterizedTest
         void __(final int keysize) throws Exception {
             // ------------------------------------------------------------------------------- given
@@ -721,12 +619,9 @@ class HelloWorld_Update_Cipher_Test
             // ----------------------------------------------------------------------------- encrypt
             cipher.init(Cipher.ENCRYPT_MODE, keyPair.getPublic());
             final var baos = new ByteArrayOutputStream();
-            service.update(cipher, r -> {
-                if (r != null) {
-                    baos.writeBytes(r);
-                }
-            });
-            baos.writeBytes(cipher.doFinal());
+            try (var cos = new CipherOutputStream(baos, cipher)) {
+                service.write(cos);
+            }
             final var encrypted = baos.toByteArray();
             log.debug("encrypted: {}", HexFormat.of().formatHex(encrypted));
             // ----------------------------------------------------------------------------- decrypt

@@ -73,6 +73,15 @@ public abstract class HelloWorldTest {
 
     // -------------------------------------------------------------------------------- CONSTRUCTORS
 
+    // ---------------------------------------------------------------------------------------------
+    protected byte[] hello_world_byte_array() {
+        return HelloWorldTestUtils.hello_world_byte_array();
+    }
+
+    protected ByteBuffer hello_world_byte_buffer() {
+        return HelloWorldTestUtils.hello_world_byte_buffer();
+    }
+
     // ------------------------------------------------------------------------------------- service
     protected HelloWorld set_array_will_return_the_array() {
         return HelloWorldTestUtils.set_array_will_return_the_array(service);
@@ -82,8 +91,16 @@ public abstract class HelloWorldTest {
         return HelloWorldTestUtils.set_array_will_set_actual_hello_world_bytes(service);
     }
 
+    protected byte[] set_array12_invoked_once() {
+        return HelloWorldTestUtils.set_array12_invoked_once(service);
+    }
+
     protected HelloWorld put_buffer_will_increase_buffer_position_by_12() {
         return HelloWorldTestUtils.put_buffer_will_increase_buffer_position_by_12(service);
+    }
+
+    protected HelloWorld put_buffer_will_put_actual_hello_world_bytes() {
+        return HelloWorldTestUtils.put_buffer_will_put_actual_hello_world_bytes(service);
     }
 
     protected ByteBuffer put_buffer12_invoked_once() {

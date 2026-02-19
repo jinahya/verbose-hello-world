@@ -2,7 +2,6 @@ package com.github.jinahya.hello.api;
 
 import org.jspecify.annotations.Nullable;
 
-import java.lang.invoke.MethodHandles;
 import java.net.http.WebSocket;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
@@ -15,15 +14,20 @@ import java.util.concurrent.Executor;
 import java.util.function.BiFunction;
 
 /**
+ * A default implementation of {@link AsynchronousHelloWorld} interface.
+ *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 class DefaultAsynchronousHelloWorld
         implements AsynchronousHelloWorld {
 
-    private static final System.Logger logger =
-            System.getLogger(MethodHandles.lookup().lookupClass().getName());
-
     // -------------------------------------------------------------------------------- CONSTRUCTORS
+
+    /**
+     * Creates a new instance with the specified service.
+     *
+     * @param service the service for the <em>hello-world-bytes</em>.
+     */
     DefaultAsynchronousHelloWorld(final HelloWorld service) {
         super();
         this.service = Objects.requireNonNull(service, "service is null");
@@ -35,6 +39,7 @@ class DefaultAsynchronousHelloWorld
             final T target,
             final BiFunction<? super HelloWorld, ? super T, ? extends T> mapper,
             final Executor executor) {
+        Objects.requireNonNull(target, "target is null");
         Objects.requireNonNull(mapper, "mapper is null");
         Objects.requireNonNull(executor, "executor is null");
         return CompletableFuture.supplyAsync(
@@ -128,6 +133,7 @@ class DefaultAsynchronousHelloWorld
                                 this      // <handler>
                         );
                     }
+
                     @Override
                     public void failed(final Throwable t, final Long p) {
                         handler.failed(t, attachment);

@@ -59,8 +59,8 @@ public interface AsynchronousHelloWorld {
      * Example usage:
      * {@snippet lang = "java":
      * var instance = AsynchronousHelloWorld.newInstance();
-     * instance.applyAsync(outputStream, HelloWorld::write, executor)
-     *         .thenAccept(stream -> System.out.println("written"));
+     * instance.applyAsync(s, HelloWorld::write, executor)
+     *         .thenAccept(s -> System.out.println("written"));
      *}
      *
      * @param <T>      target type parameter
@@ -69,7 +69,8 @@ public interface AsynchronousHelloWorld {
      *                 {@code target}, and returns a result.
      * @param executor the executor to use for async execution.
      * @return a {@link CompletionStage} representing the async operation.
-     * @throws NullPointerException if {@code mapper} or {@code executor} is {@code null}.
+     * @throws NullPointerException if {@code target}, {@code mapper} or {@code executor} is
+     *                              {@code null}.
      */
     <T> CompletionStage<T> applyAsync(T target,
                                       BiFunction<? super HelloWorld, ? super T, ? extends T> mapper,
@@ -84,7 +85,7 @@ public interface AsynchronousHelloWorld {
      * @param mapper the mapper to apply; receives a {@link HelloWorld} instance and the
      *               {@code target}, and returns a result.
      * @return a {@link CompletionStage} representing the async operation.
-     * @throws NullPointerException if {@code mapper} is {@code null}.
+     * @throws NullPointerException if {@code target} or {@code mapper} is {@code null}.
      * @implSpec Default implementation invokes {@link #applyAsync(Object, BiFunction, Executor)}
      * with the {@code target}, {@code mapper}, and {@link ForkJoinPool#commonPool()}.
      * @see #applyAsync(Object, BiFunction, Executor)

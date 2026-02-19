@@ -220,7 +220,10 @@ interface HelloWorldRevisited
     // ----------------------------------------------------------------------------------- java.lang
     @Override
     default byte[] set(final byte[] array, final int index) {
-        final var src = HelloWorldUtils.getHelloWorldBytes();
+        assert array != null;
+        assert index >= 0;
+        assert index + BYTES <= array.length;
+        final var src = HelloWorldUtils.hello_world_bytes();
         System.arraycopy(src, 0, array, index, src.length);
         return array;
     }
@@ -231,16 +234,16 @@ interface HelloWorldRevisited
     }
 
     @Override
+    default byte[] set() {
+        return set(new byte[BYTES]);
+    }
+
+    @Override
     default <T extends Appendable> T append(final T appendable) throws IOException {
         for (final var b : set()) {
             appendable.append((char) b);
         }
         return appendable;
-    }
-
-    @Override
-    default byte[] set() {
-        return set(new byte[BYTES]);
     }
 
     // --------------------------------------------------------------------------- java.lang.foreign
@@ -335,69 +338,61 @@ interface HelloWorldRevisited
         return buffer;
     }
 
-    @SuppressWarnings("removal")
-    @Deprecated(forRemoval = true)
-    @Override
-    default <T extends CharBuffer> T put(final T buffer) throws IOException {
-        return HelloWorld.super.put(buffer);
-    }
-
     @Override
     default ByteBuffer put() {
         return put(ByteBuffer.allocate(BYTES));
     }
 
-    @SuppressWarnings("removal")
     @Deprecated(forRemoval = true)
     @Override
+    @SuppressWarnings("unchecked")
+    default <T extends CharBuffer> T put(final T buffer) throws IOException {
+        return (T) append((Appendable) buffer);
+    }
+
+    @Deprecated(forRemoval = true)
+    @Override
+    @SuppressWarnings("unchecked")
     default <T extends MappedByteBuffer> T put(final T buffer) {
-        return HelloWorld.super.put(buffer);
+        return (T) put((ByteBuffer) buffer);
     }
 
     @SuppressWarnings("removal")
     @Deprecated(forRemoval = true)
     @Override
     default <T extends ShortBuffer> T put(final T buffer) throws IOException {
-        return HelloWorld.super.put(buffer);
+        for (final var b = put(ByteBuffer.allocate(BYTES)); b.hasRemaining(); ) {
+            buffer.put(b.get());
+        }
+        return buffer;
     }
 
     @SuppressWarnings("removal")
     @Deprecated(forRemoval = true)
     @Override
     default <T extends IntBuffer> T put(final T buffer) throws IOException {
-        return HelloWorld.super.put(buffer);
+        for (final var b = put(ShortBuffer.allocate(BYTES)).flip(); b.hasRemaining(); ) {
+            buffer.put(b.get());
+        }
+        return buffer;
     }
 
     @SuppressWarnings("removal")
     @Deprecated(forRemoval = true)
     @Override
     default <T extends LongBuffer> T put(final T buffer) throws IOException {
-        return HelloWorld.super.put(buffer);
+        for (var b = put(IntBuffer.allocate(BYTES)).flip(); b.hasRemaining(); ) {
+            buffer.put(b.get());
+        }
+        return buffer;
     }
 
     // --------------------------------------------------------------------------- java.nio.channels
     @Override
     default <T extends AsynchronousByteChannel> T write(final T channel)
-            throws InterruptedException, IOException {
+            throws InterruptedException, ExecutionException {
         for (final var b = put().flip(); b.hasRemaining(); ) {
-            try {
-                channel.write(b).get();
-            } catch (final ExecutionException ee) {
-                final var cause = ee.getCause();
-                if (cause instanceof InterruptedException ie) {
-                    throw ie;
-                }
-                if (cause instanceof Error err) {
-                    throw err;
-                }
-                if (cause instanceof RuntimeException re) {
-                    throw re;
-                }
-                if (cause instanceof IOException ioe) {
-                    throw ioe;
-                }
-                throw new RuntimeException("failed to write", cause);
-            }
+            channel.write(b).get();
         }
         return channel;
     }
@@ -422,8 +417,7 @@ interface HelloWorldRevisited
     }
 
     @Override
-    default <T extends DatagramChannel> T write(final T channel)
-            throws IOException {
+    default <T extends DatagramChannel> T write(final T channel) throws IOException {
         if (channel.write(put().flip()) != BYTES) {
             throw new IOException("packet dropped; OS's send buffer is full");
         }
@@ -433,8 +427,7 @@ interface HelloWorldRevisited
     @SuppressWarnings("removal")
     @Deprecated(forRemoval = true)
     @Override
-    default <T extends GatheringByteChannel> T write(final T channel)
-            throws IOException {
+    default <T extends GatheringByteChannel> T write(final T channel) throws IOException {
         final var srcs = new ByteBuffer[] {put().flip()};
         for (var r = Arrays.stream(srcs).mapToLong(ByteBuffer::remaining).sum(); r > 0L; ) {
             r -= channel.write(srcs);
@@ -454,7 +447,7 @@ interface HelloWorldRevisited
     @Deprecated(forRemoval = true)
     @Override
     default <T extends AsynchronousSocketChannel> T send(final T channel)
-            throws InterruptedException, IOException {
+            throws InterruptedException, ExecutionException {
         return HelloWorld.super.send(channel);
     }
 
@@ -492,16 +485,17 @@ interface HelloWorldRevisited
         return path;
     }
 
-    // ------------------------------------------------------------------------------ java.security
+    // ------------------------------------------------------------------------------- java.security
     @Override
     default <T extends MessageDigest> T update(final T digest) {
-        return HelloWorld.super.update(digest);
+        digest.update(set());
+        return digest;
     }
 
     @Override
-    default <T extends Signature> T update(final T signature)
-            throws SignatureException {
-        return HelloWorld.super.update(signature);
+    default <T extends Signature> T update(final T signature) throws SignatureException {
+        signature.update(set());
+        return signature;
     }
 
     // ------------------------------------------------------------------------------------ java.sql
@@ -517,7 +511,6 @@ interface HelloWorldRevisited
     }
 
     // ------------------------------------------------------------------------------- java.util.jar
-
     @SuppressWarnings("removal")
     @Deprecated(forRemoval = true)
     @Override
@@ -571,17 +564,18 @@ interface HelloWorldRevisited
         return HelloWorld.super.put(stream, name);
     }
 
-    // ------------------------------------------------------------------------------ javax.crypto
+    // -------------------------------------------------------------------------------- javax.crypto
     @Override
     default <T extends Cipher> T update(final T cipher, final Consumer<? super byte[]> consumer) {
-        return HelloWorld.super.update(cipher, consumer);
+        consumer.accept(cipher.update(set()));
+        return cipher;
     }
 
-    @SuppressWarnings("removal")
     @Deprecated(forRemoval = true)
     @Override
+    @SuppressWarnings({"removal", "unchecked"})
     default <T extends CipherOutputStream> T write(final T stream) throws IOException {
-        return HelloWorld.super.write(stream);
+        return (T) write((FilterOutputStream) stream);
     }
 
     @Override
@@ -590,8 +584,7 @@ interface HelloWorldRevisited
         return mac;
     }
 
-    // ----------------------------------------------------------------------------- javax.net.ssl
-    @SuppressWarnings("removal")
+    // ------------------------------------------------------------------------------- javax.net.ssl
     @Deprecated(forRemoval = true)
     @Override
     default <T extends SSLSocket> T send(final T socket) throws IOException {

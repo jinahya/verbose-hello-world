@@ -22,47 +22,14 @@ package com.github.jinahya.hello.api;
 
 import com.github.jinahya.hello.api.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 
-import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
-import java.util.function.Function;
-import java.util.function.Supplier;
-
 /**
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-public final class HelloWorldUtils {
+final class HelloWorldUtils {
 
-    static byte[] getHelloWorldBytes() {
+    static byte[] hello_world_bytes() {
         return HelloWorldConstants.HELLO_WORLD_STRING
                 .getBytes(HelloWorldConstants.HELLO_WORLD_CHARSET);
-    }
-
-    // ---------------------------------------------------------------------------------------------
-    public static <T> Future<T> executeAsync(
-            final Supplier<? extends HelloWorld> supplier,
-            final Function<? super HelloWorld, ? extends T> function, final Executor executor) {
-        Objects.requireNonNull(supplier, "supplier is null");
-        Objects.requireNonNull(function, "function is null");
-        Objects.requireNonNull(executor, "executor is null");
-        final var command = new FutureTask<T>(() -> function.apply(supplier.get()));
-        executor.execute(command); // Runnable  <- RunnableFuture<V> <- FutureTask<V>
-        return command;            // Future<V> <- RunnableFuture<V> <- FutureTask<V>
-    }
-
-    public static <T> CompletableFuture<T> completeAsync(
-            final Supplier<? extends HelloWorld> supplier,
-            final Function<? super HelloWorld, ? extends T> function,
-            final Executor executor) {
-        Objects.requireNonNull(supplier, "supplier is null");
-        Objects.requireNonNull(function, "function is null");
-        Objects.requireNonNull(executor, "executor is null");
-        return CompletableFuture.supplyAsync(
-                () -> function.apply(supplier.get()),
-                executor
-        );
     }
 
     // ---------------------------------------------------------------------------------------------

@@ -63,12 +63,12 @@ public final class HelloWorldTestUtils {
      * @return a byte array containing the {@value HelloWorldTestConstants#HELLO_WORLD_STRING}
      * bytes.
      */
-    public static byte[] getHelloWorldArray() {
+    public static byte[] hello_world_byte_array() {
         return HelloWorldTestConstants.HELLO_WORLD_STRING.getBytes(StandardCharsets.US_ASCII);
     }
 
-    public static ByteBuffer getHelloWorldBuffer() {
-        return ByteBuffer.wrap(getHelloWorldArray());
+    public static ByteBuffer hello_world_byte_buffer() {
+        return ByteBuffer.wrap(hello_world_byte_array());
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -126,7 +126,7 @@ public final class HelloWorldTestUtils {
         Mockito
                 .doAnswer(i -> {
                     final var array = i.getArgument(0, byte[].class);
-                    System.arraycopy(getHelloWorldArray(), 0, array, 0, HelloWorld.BYTES);
+                    System.arraycopy(hello_world_byte_array(), 0, array, 0, HelloWorld.BYTES);
                     return array;
                 })
                 .when(service)
@@ -230,7 +230,7 @@ public final class HelloWorldTestUtils {
         requireMock(service);
         Mockito.doAnswer(i -> {
                     final var buffer = i.getArgument(0, ByteBuffer.class);
-                    buffer.put(getHelloWorldArray());
+                    buffer.put(hello_world_byte_array());
                     return buffer;
                 })
                 .when(service)

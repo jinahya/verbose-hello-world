@@ -25,12 +25,14 @@ import java.nio.ByteBuffer;
 import java.util.Objects;
 
 /**
+ * Utilities for {@link ByteBuffer}.
+ *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 public final class JavaNioByteBufferUtils {
 
     /**
-     * Prints out specified byte buffer's current status.
+     * Prints out the specified byte buffer's current status.
      *
      * @param buffer  the byte buffer.
      * @param printer the print stream to which {@code buffer}'s status is printed.
@@ -98,7 +100,7 @@ public final class JavaNioByteBufferUtils {
     }
 
     /**
-     * Prints out specified byte buffer's status.
+     * Prints out the specified byte buffer's status.
      *
      * @param buffer the byte buffer.
      * @param <T>    buffer type parameter

@@ -3,22 +3,15 @@ package com.github.jinahya.hello.api._java_util_jar;
 import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldTest;
 import com.github.jinahya.hello.api.HelloWorldTestUtils;
-import com.github.jinahya.hello.api.畵蛇添足;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
+import java.util.zip.ZipOutputStream;
 
 /**
  * A class for testing {@link HelloWorld#put(JarOutputStream, String) put(stream, name)} method.
@@ -73,99 +66,26 @@ class HelloWorld_Put_JarOutputStream_Test
     }
 
     /**
-     * Asserts {@link HelloWorld#put(JarOutputStream, String) put(stream, name)} method invokes
-     * {@link JarOutputStream#putNextEntry(JarEntry) putNextEntry(entry)},
-     * {@link HelloWorld#write(OutputStream) write(stream)}, and
-     * {@link JarOutputStream#closeEntry() closeEntry()} on the {@code stream}, and returns the
-     * {@code stream}.
+     * Asserts {@link HelloWorld#put(JarOutputStream, String)} method invokes
+     * {@link HelloWorld#put(ZipOutputStream, String)} method with given {@code stream} and
+     * {@code name}.
      *
      * @throws IOException if an I/O error occurs.
      */
     @DisplayName("""
-            should invoke <putNextEntry>, <write(stream)>, and <closeEntry>
+            should invoke <put((ZipOutputStream) stream, name>
             and return the <stream>"""
     )
     @Test
-    void __()
-            throws IOException {
+    void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = HelloWorldTestUtils.set_array_will_return_the_array(service());
         final var stream = Mockito.mock(JarOutputStream.class);
         final var name = "hello.txt";
-        try (var construction = Mockito.mockConstruction(JarEntry.class, (_, c) -> {
-            Assertions.assertEquals(1, c.arguments().size());
-            Assertions.assertEquals(name, c.arguments().getFirst());
-        })) {
-            // -------------------------------------------------------------------------------- when
-            final var result = service.put(stream, name);
-            // -------------------------------------------------------------------------------- then
-            Assertions.assertEquals(1, construction.constructed().size());
-            final var entry = construction.constructed().getFirst();
-            Mockito.verify(stream, Mockito.times(1)).putNextEntry(entry);
-            Mockito.verify(stream, Mockito.times(1)).closeEntry();
-            Assertions.assertSame(stream, result);
-        }
-    }
-
-    /**
-     * Asserts {@link HelloWorld#put(JarOutputStream, String) put(stream, name)} method writes the
-     * {@code hello, world} bytes as a jar entry to a {@link ByteArrayOutputStream}.
-     *
-     * @throws IOException if an I/O error occurs.
-     */
-    @畵蛇添足("testing with a real JarOutputStream backed by ByteArrayOutputStream")
-    @DisplayName("should write a jar entry to a <ByteArrayOutputStream>")
-    @Test
-    void _添足_畵蛇()
-            throws IOException {
-        // ----------------------------------------------------------------------------------- given
-        final var service = service();
-        Mockito.doAnswer(i -> {
-            final var s = i.getArgument(0, OutputStream.class);
-            s.write(HelloWorldTestUtils.getHelloWorldArray());
-            return s;
-        }).when(service).write(ArgumentMatchers.<OutputStream>notNull());
-        final var baos = new ByteArrayOutputStream();
-        final var name = "hello.txt";
         // ------------------------------------------------------------------------------------ when
-        try (var stream = new JarOutputStream(baos)) {
-            final var result = service.put(stream, name);
-            assert result == stream;
-            stream.flush(); // maybe redundant, not harmful
-        }
+        final var result = service.put(stream, name);
         // ------------------------------------------------------------------------------------ then
-        log.debug("length: {}", baos.size());
-    }
-
-    /**
-     * Asserts {@link HelloWorld#put(JarOutputStream, String) put(stream, name)} method writes the
-     * {@code hello, world} bytes as a jar entry to a {@link FileOutputStream}.
-     *
-     * @param dir the temporary directory.
-     * @throws IOException if an I/O error occurs.
-     */
-    @畵蛇添足("testing with a real JarOutputStream backed by FileOutputStream")
-    @DisplayName("should write a jar entry to a <FileOutputStream>")
-    @Test
-    void _添足_畵蛇(@TempDir final File dir)
-            throws IOException {
-        // ----------------------------------------------------------------------------------- given
-        final var service = service();
-        Mockito.doAnswer(i -> {
-            final var s = i.getArgument(0, OutputStream.class);
-            s.write(HelloWorldTestUtils.getHelloWorldArray());
-            return s;
-        }).when(service).write(ArgumentMatchers.<OutputStream>notNull());
-        final var file = File.createTempFile("tmp", ".jar", dir);
-        final var name = "hello.txt";
-        // ------------------------------------------------------------------------------------ when
-        try (var stream = new JarOutputStream(new FileOutputStream(file))) {
-            final var result = service.put(stream, name);
-            assert result == stream;
-            stream.flush(); // maybe redundant, not harmful
-        }
-        // ------------------------------------------------------------------------------------ then
-        Assertions.assertTrue(file.length() > 0L);
-        log.debug("length: {}", file.length());
+        Mockito.verify(service, Mockito.times(1)).put((ZipOutputStream) stream, name);
+        Assertions.assertSame(stream, result);
     }
 }

@@ -32,9 +32,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicReference;
@@ -81,33 +81,19 @@ class HelloWorld_Write_AsynchronousByteChannel_Test
      * {@value HelloWorld#BYTES} bytes, and writes the buffer to specified {@code channel}.
      *
      * @throws InterruptedException if interrupted while testing.
-     * @throws IOException          if an I/O error occurs.
+     * @throws ExecutionException   if an I/O error occurs.
      */
     @DisplayName("""
             should invoke put(buffer[12])
             and write the <buffer> to the <channel> while the the <buffer> has remaining"""
     )
     @Test
-    void __()
-            throws InterruptedException, IOException {
+    void __() throws InterruptedException, ExecutionException {
         // ----------------------------------------------------------------------------------- given
-        final var service = service();
-        // stub, <service.put(buffer)> will increase <buffer>'s <position> by <HelloWorld.BYTES>
-        Mockito.doAnswer(i -> {
-                    final var buffer = i.getArgument(0, ByteBuffer.class);
-                    buffer.position(buffer.position() + HelloWorld.BYTES);
-                    return buffer;
-                })
-                .when(service)
-                .<ByteBuffer>put(ArgumentMatchers.argThat(
-                        b -> b != null && b.remaining() >= HelloWorld.BYTES));
-        // prepare, a mock object of <AsynchronousByteChannel>
+        final var service = put_buffer_will_increase_buffer_position_by_12();
         final var channel = Mockito.mock(AsynchronousByteChannel.class);
-        // number of bytes written so far
         final var written = new LongAdder();
-        // a reference to the result of <channel.write(buffer)>
         final var reference = new AtomicReference<Future<Integer>>();
-        // stub, <channel.write(buffer)> will return a <future> drains the <buffer>
         Mockito.doAnswer(w -> {
                     // preceding <future>'s <get()> should be invoked
                     final var previous = reference.get();

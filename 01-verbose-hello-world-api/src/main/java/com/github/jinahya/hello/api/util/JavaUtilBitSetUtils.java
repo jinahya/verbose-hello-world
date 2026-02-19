@@ -1,0 +1,106 @@
+package com.github.jinahya.hello.api.util;
+
+/*-
+ * #%L
+ * verbose-hello-world-api
+ * %%
+ * Copyright (C) 2018 - 2023 Jinahya, Inc.
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import java.io.PrintStream;
+import java.util.BitSet;
+import java.util.Objects;
+
+/**
+ * Utilities for the {@link java.util.BitSet BitSet}.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
+public final class JavaUtilBitSetUtils {
+
+    /**
+     * Prints the specified bit set's bits to the specified print stream, grouped by 64-bit long
+     * words as returned by {@link BitSet#toLongArray()}.
+     *
+     * <pre>
+     *        0                               31                              63
+     * [  0]: 0 0 0 1 0 1 1 0 0 1 1 0 0 1 0 1 0 1 1 0 1 1 0 0 0 1 1 0 1 1 0 0 | 68 65 6C 6C 6F 2C 20 77
+     * [  1]: 0 1 1 1 0 1 1 1 0 1 1 0 1 1 1 1 0 1 1 1 0 0 1 0 0 1 1 0 1 1 0 0 | 6F 72 6C 64 00 00 00 00
+     * length: 96, cardinality: 48, size: 128
+     * </pre>
+     *
+     * @param bitset  the bit set to print.
+     * @param printer the print stream to which the output is printed.
+     * @param <T>     bit set type parameter
+     * @return the given {@code bitset}.
+     */
+    public static <T extends BitSet> T print(final T bitset, final PrintStream printer) {
+        Objects.requireNonNull(bitset, "bitset is null");
+        Objects.requireNonNull(printer, "printer is null");
+        final var longs = bitset.toLongArray();
+        final var totalBits = longs.length * Long.SIZE;
+        // ------------------------------------------------------------------------------------- header
+        printer.print("       ");
+        for (var i = 0; i < Long.SIZE; i++) {
+            if (i == 0 || i == 31 || i == 63) {
+                printer.printf("%-2d", i);
+            } else {
+                printer.print("  ");
+            }
+        }
+        printer.println();
+        // --------------------------------------------------------------------------------------- bits
+        for (var w = 0; w < longs.length; w++) {
+            printer.printf("[%3d]: ", w);
+            for (var i = 0; i < Long.SIZE; i++) {
+                printer.printf("%-2d", bitset.get(w * Long.SIZE + i) ? 1 : 0);
+            }
+            printer.print(" | ");
+            for (var b = 0; b < Long.BYTES; b++) {
+                var v = 0;
+                for (var i = 0; i < Byte.SIZE; i++) {
+                    if (bitset.get(w * Long.SIZE + b * Byte.SIZE + i)) {
+                        v |= (1 << i);
+                    }
+                }
+                printer.printf("%02X ", v);
+            }
+            printer.println();
+        }
+        // ------------------------------------------------------------------------------------- footer
+        printer.printf("length: %d, cardinality: %d, size: %d%n",
+                       bitset.length(), bitset.cardinality(), bitset.size());
+        return bitset;
+    }
+
+    /**
+     * Prints the specified bit set's bits to {@link System#out}.
+     *
+     * @param bitset the bit set to print.
+     * @param <T>    bit set type parameter
+     * @return the given {@code bitset}.
+     */
+    @SuppressWarnings({"java:S106"})
+    public static <T extends BitSet> T print(final T bitset) {
+        return print(bitset, System.out);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    @_ExcludeFromCoverage_PrivateConstructor_Obviously
+    private JavaUtilBitSetUtils() {
+        throw new AssertionError("instantiation is not allowed");
+    }
+}

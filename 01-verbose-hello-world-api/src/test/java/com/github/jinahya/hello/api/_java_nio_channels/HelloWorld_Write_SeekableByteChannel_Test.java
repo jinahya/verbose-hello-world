@@ -57,8 +57,7 @@ class HelloWorld_Write_SeekableByteChannel_Test
      */
     @DisplayName("should delegate to <write(WritableByteChannel)>")
     @Test
-    void __()
-            throws IOException {
+    void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var channel = Mockito.mock(SeekableByteChannel.class);
@@ -84,11 +83,9 @@ class HelloWorld_Write_SeekableByteChannel_Test
      */
     @畵蛇添足
     @Test
-    void _添足_畵蛇(@TempDir final Path tempDir)
-            throws IOException {
+    void _添足_畵蛇(@TempDir final Path tempDir) throws IOException {
         // ----------------------------------------------------------------------------------- given
-        final var service = service();
-        HelloWorldTestUtils.put_buffer_will_put_actual_hello_world_bytes(service);
+        final var service = put_buffer_will_put_actual_hello_world_bytes();
         final var file = Files.createTempFile(tempDir, null, null);
         final var position = ThreadLocalRandom.current().nextLong(128L);
         // ----------------------------------------------------------------------------------- write
@@ -105,7 +102,7 @@ class HelloWorld_Write_SeekableByteChannel_Test
                 channel.read(buffer);
             }
             Assertions.assertArrayEquals(
-                    HelloWorldTestUtils.getHelloWorldArray(),
+                    HelloWorldTestUtils.hello_world_byte_array(),
                     buffer.array()
             );
         }

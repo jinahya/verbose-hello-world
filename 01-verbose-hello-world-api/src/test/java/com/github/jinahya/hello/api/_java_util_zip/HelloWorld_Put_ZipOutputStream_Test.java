@@ -122,7 +122,7 @@ class HelloWorld_Put_ZipOutputStream_Test
         final var service = service();
         Mockito.doAnswer(i -> {
             final var s = i.getArgument(0, OutputStream.class);
-            s.write(HelloWorldTestUtils.getHelloWorldArray());
+            s.write(HelloWorldTestUtils.hello_world_byte_array());
             return s;
         }).when(service).write(ArgumentMatchers.<OutputStream>notNull());
         final var baos = new ByteArrayOutputStream();
@@ -153,7 +153,7 @@ class HelloWorld_Put_ZipOutputStream_Test
         final var service = service();
         Mockito.doAnswer(i -> {
             final var s = i.getArgument(0, OutputStream.class);
-            s.write(HelloWorldTestUtils.getHelloWorldArray());
+            s.write(HelloWorldTestUtils.hello_world_byte_array());
             return s;
         }).when(service).write(ArgumentMatchers.<OutputStream>notNull());
         final var file = File.createTempFile("tmp", ".zip", dir);
