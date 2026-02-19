@@ -1650,7 +1650,9 @@ public interface HelloWorld {
     @Deprecated(forRemoval = true)
     @屋上架屋("DeflatorOutputStream extends FilterOutputStream")
     default <T extends DeflaterOutputStream> T write(final T stream) throws IOException {
-        return (T) write((FilterOutputStream) stream);
+        final var result = write((FilterOutputStream) stream);
+        assert result == stream;
+        return stream;
     }
 
     /**
@@ -1668,7 +1670,9 @@ public interface HelloWorld {
     @Deprecated(forRemoval = true)
     @屋上架屋("GZIPOutputStream extends DeflatorOutputStream")
     default <T extends GZIPOutputStream> T write(final T stream) throws IOException {
-        return (T) write((DeflaterOutputStream) stream);
+        final var result = write((DeflaterOutputStream) stream);
+        assert result == stream;
+        return stream;
     }
 
     @屋上架屋("ZipOutputStream extends DeflaterOutputStream")
