@@ -1,6 +1,5 @@
 package com.github.jinahya.hello.api;
 
-import jakarta.validation.constraints.PositiveOrZero;
 import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
@@ -204,7 +203,7 @@ public interface AsynchronousHelloWorld {
      */
     <T extends AsynchronousFileChannel, A>
     void write(T channel,
-               @PositiveOrZero long position,
+               long position,
                @Nullable A attachment,
                CompletionHandler<? super T, ? super A> handler);
 

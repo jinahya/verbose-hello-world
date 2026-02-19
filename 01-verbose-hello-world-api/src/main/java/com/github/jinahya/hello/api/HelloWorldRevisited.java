@@ -20,8 +20,6 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import jakarta.validation.constraints.Positive;
-
 import javax.crypto.Cipher;
 import javax.crypto.CipherOutputStream;
 import javax.crypto.Mac;
@@ -500,7 +498,7 @@ interface HelloWorldRevisited
 
     // ------------------------------------------------------------------------------------ java.sql
     @Override
-    default <T extends Blob> T set(final T blob, @Positive final long pos) throws SQLException {
+    default <T extends Blob> T set(final T blob, final long pos) throws SQLException {
         return HelloWorld.super.set(blob, pos);
     }
 

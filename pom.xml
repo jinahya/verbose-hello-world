@@ -365,11 +365,11 @@
       <artifactId>jakarta.enterprise.cdi-api</artifactId>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>jakarta.validation</groupId>
-      <artifactId>jakarta.validation-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
+<!--    <dependency>-->
+<!--      <groupId>jakarta.validation</groupId>-->
+<!--      <artifactId>jakarta.validation-api</artifactId>-->
+<!--      <scope>provided</scope>-->
+<!--    </dependency>-->
     <!--    <dependency>-->
     <!--      <groupId>org.assertj</groupId>-->
     <!--      <artifactId>assertj-core</artifactId>-->

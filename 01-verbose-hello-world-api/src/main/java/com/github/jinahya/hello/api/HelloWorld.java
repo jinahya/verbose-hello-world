@@ -20,8 +20,6 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import jakarta.validation.constraints.Positive;
-
 import javax.crypto.Cipher;
 import javax.crypto.CipherOutputStream;
 import javax.crypto.Mac;
@@ -1535,7 +1533,7 @@ public interface HelloWorld {
     }
 
     // ------------------------------------------------------------------------------------ java.sql
-    default <T extends Blob> T set(final T blob, @Positive long pos) throws SQLException {
+    default <T extends Blob> T set(final T blob, long pos) throws SQLException {
         Objects.requireNonNull(blob, "blob is null");
         if (pos <= 0L) {
             throw new IllegalArgumentException("non-positive pos: " + pos);

@@ -2,7 +2,7 @@ module com.github.jinahya.hello.api {
     requires static lombok;
     requires transitive org.jspecify;
     requires transitive org.slf4j;
-    requires jakarta.validation;
+//    requires jakarta.validation;
     requires org.reactivestreams;
     requires static jdk.httpserver;
     requires static java.net.http;
