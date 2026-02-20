@@ -1,5 +1,0 @@
-digraph "org.jspecify" {
-    // Path: /Users/jin.kwon/gitcl/github.com/jinahya/verbose-hello-world/01-verbose-hello-world-api/target/dependency/jspecify-1.0.0.jar
-   "org.jspecify.annotations"                         -> "java.lang (java.base)";
-   "org.jspecify.annotations"                         -> "java.lang.annotation (java.base)";
-}
