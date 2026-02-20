@@ -68,6 +68,7 @@ import java.nio.channels.Pipe;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.WritableByteChannel;
+import java.nio.charset.Charset;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -81,6 +82,7 @@ import java.util.BitSet;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 import java.util.jar.JarOutputStream;
+import java.util.stream.Stream;
 import java.util.zip.Checksum;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
@@ -162,6 +164,14 @@ interface HelloWorldRevisited
     @Override
     default <T extends OutputStreamWriter> T write(final T writer) throws IOException {
         return HelloWorld.super.write(writer);
+    }
+
+    @Override
+    default <T extends File> T append(final T file, final Charset charset) throws IOException {
+        try (var writer = new OutputStreamWriter(new FileOutputStream(file, true), charset)) {
+            write((OutputStreamWriter) writer).flush();
+        }
+        return file;
     }
 
     @Override
@@ -508,6 +518,15 @@ interface HelloWorldRevisited
         return HelloWorld.super.set(bitset, index);
     }
 
+    // -------------------------------------------------------------------------- java.util.function
+    @Override
+    default <T extends Consumer<? super Byte>> T accept(final T consumer) {
+        for (final var b : set()) {
+            consumer.accept(b);
+        }
+        return consumer;
+    }
+
     // ------------------------------------------------------------------------------- java.util.jar
     @SuppressWarnings("removal")
     @Deprecated(forRemoval = true)
@@ -520,6 +539,12 @@ interface HelloWorldRevisited
     default <T extends JarOutputStream> T put(final T stream, final String name)
             throws IOException {
         return HelloWorld.super.put(stream, name);
+    }
+
+    // ---------------------------------------------------------------------------- java.util.stream
+    @Override
+    default <T extends Stream.Builder<? super Byte>> T add(final T builder) {
+        return HelloWorld.super.add(builder);
     }
 
     // ------------------------------------------------------------------------------- java.util.zip

@@ -30,7 +30,7 @@ import java.util.stream.IntStream;
  */
 @Slf4j
 public final class AkkaReactiveHelloWorldFactory
-        extends AbstractReactiveHelloWorld {
+        extends AbstractReactiveHelloWorldFactory {
 
     // ---------------------------------------------------------------------------------------------
 

@@ -1,0 +1,38 @@
+digraph "org.slf4j" {
+    // Path: /Users/jin.kwon/gitcl/github.com/jinahya/verbose-hello-world/01-verbose-hello-world-api/target/dependency/slf4j-api-2.0.17.jar
+   "org.slf4j"                                        -> "java.io (java.base)";
+   "org.slf4j"                                        -> "java.lang (java.base)";
+   "org.slf4j"                                        -> "java.lang.invoke (java.base)";
+   "org.slf4j"                                        -> "java.lang.reflect (java.base)";
+   "org.slf4j"                                        -> "java.net (java.base)";
+   "org.slf4j"                                        -> "java.security (java.base)";
+   "org.slf4j"                                        -> "java.util (java.base)";
+   "org.slf4j"                                        -> "java.util.concurrent (java.base)";
+   "org.slf4j"                                        -> "org.slf4j (org.slf4j)";
+   "org.slf4j"                                        -> "org.slf4j.event (org.slf4j)";
+   "org.slf4j"                                        -> "org.slf4j.helpers (org.slf4j)";
+   "org.slf4j"                                        -> "org.slf4j.spi (org.slf4j)";
+   "org.slf4j.event"                                  -> "java.lang (java.base)";
+   "org.slf4j.event"                                  -> "java.util (java.base)";
+   "org.slf4j.event"                                  -> "org.slf4j (org.slf4j)";
+   "org.slf4j.event"                                  -> "org.slf4j.event (org.slf4j)";
+   "org.slf4j.event"                                  -> "org.slf4j.helpers (org.slf4j)";
+   "org.slf4j.event"                                  -> "org.slf4j.spi (org.slf4j)";
+   "org.slf4j.helpers"                                -> "java.io (java.base)";
+   "org.slf4j.helpers"                                -> "java.lang (java.base)";
+   "org.slf4j.helpers"                                -> "java.lang.annotation (java.base)";
+   "org.slf4j.helpers"                                -> "java.lang.reflect (java.base)";
+   "org.slf4j.helpers"                                -> "java.util (java.base)";
+   "org.slf4j.helpers"                                -> "java.util.concurrent (java.base)";
+   "org.slf4j.helpers"                                -> "org.slf4j (org.slf4j)";
+   "org.slf4j.helpers"                                -> "org.slf4j.event (org.slf4j)";
+   "org.slf4j.helpers"                                -> "org.slf4j.helpers (org.slf4j)";
+   "org.slf4j.helpers"                                -> "org.slf4j.spi (org.slf4j)";
+   "org.slf4j.spi"                                    -> "java.lang (java.base)";
+   "org.slf4j.spi"                                    -> "java.util (java.base)";
+   "org.slf4j.spi"                                    -> "java.util.function (java.base)";
+   "org.slf4j.spi"                                    -> "org.slf4j (org.slf4j)";
+   "org.slf4j.spi"                                    -> "org.slf4j.event (org.slf4j)";
+   "org.slf4j.spi"                                    -> "org.slf4j.helpers (org.slf4j)";
+   "org.slf4j.spi"                                    -> "org.slf4j.spi (org.slf4j)";
+}

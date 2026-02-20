@@ -80,11 +80,13 @@ import java.security.SignatureException;
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.BitSet;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
 import java.util.jar.JarOutputStream;
+import java.util.stream.Stream;
 import java.util.zip.Checksum;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
@@ -587,49 +589,60 @@ public interface HelloWorld {
      */
     @Deprecated(forRemoval = true)
     @屋上架屋("OutputStreamWriter extends Writer")
-    @SuppressWarnings({"unchecked"})
     default <T extends OutputStreamWriter> T write(final T writer) throws IOException {
-        return (T) write((Writer) writer);
+        Objects.requireNonNull(writer, "writer is null");
+        final var result = write((Writer) writer);
+        assert result == writer;
+        return writer;
     }
 
     @Deprecated(forRemoval = true)
     @屋上架屋("PipedWriter extends Writer implements Appendable")
-    @SuppressWarnings({"unchecked"})
+
     default <T extends PipedWriter> T write(final T writer) throws IOException {
-        return (T) write((Writer) writer);
+        Objects.requireNonNull(writer, "writer is null");
+        final var result = write((Writer) writer);
+        assert result == writer;
+        return writer;
     }
 
     @Deprecated(forRemoval = true)
     @屋上架屋("PrintWriter extends Writer implements Appendable")
-    @SuppressWarnings({"unchecked"})
     default <T extends PrintWriter> T write(final T writer) throws IOException {
-        return (T) write((Writer) writer);
+        Objects.requireNonNull(writer, "writer is null");
+        final var result = write((Writer) writer);
+        assert result == writer;
+        return writer;
     }
 
     @Deprecated(forRemoval = true)
     @屋上架屋("StringWriter extends Writer")
-    @SuppressWarnings({"unchecked"})
     default <T extends StringWriter> T write(final T writer) throws IOException {
-        final var cast = (Writer) writer;
-        final var result = write(cast);
+        Objects.requireNonNull(writer, "writer is null");
+        final var result = write((Writer) writer);
         assert result == writer;
         return writer;
     }
 
     /**
-     * Appends the <a href="#hello-world-bytes">hello-world-bytes</a>, decoded with the specified
+     * Appends the <a href="#hello-world-bytes">hello-world-bytes</a>, encoded with the specified
      * charset, to the end of the specified file, and returns the file.
      *
      * @param <T>     file type parameter
      * @param file    the file to append to
      * @param charset the character set to use for encoding
+     * @see FileOutputStream#FileOutputStream(File, boolean)
+     * @see OutputStreamWriter#OutputStreamWriter(OutputStream, Charset)
+     * @see #write(OutputStreamWriter)
      * @see #append(File)
      */
     default <T extends File> T append(final T file, final Charset charset) throws IOException {
         Objects.requireNonNull(file, "file is null");
         Objects.requireNonNull(charset, "charset is null");
         try (var writer = new OutputStreamWriter(new FileOutputStream(file, true), charset)) {
-            write((OutputStreamWriter) writer).flush();
+            final var result = write((OutputStreamWriter) writer);
+            assert result == writer;
+            writer.flush();
         }
         return file;
     }
@@ -1613,6 +1626,67 @@ public interface HelloWorld {
         return set(bitset, 0);
     }
 
+    /**
+     * Collects each of the <a href="#hello-world-bytes">hello-world-bytes</a>, boxed as
+     * {@link Byte}, into the specified collection.
+     *
+     * @param <T>        collection type parameter
+     * @param collection the collection into which each byte is collected.
+     * @return the given {@code collection}.
+     * @throws NullPointerException if {@code collection} is {@code null}.
+     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
+     * of {@value #BYTES} bytes, and {@link Collection#add(Object) adds} each byte in the array,
+     * boxed as {@link Byte}, to the {@code collection}.
+     * @see #set(byte[])
+     * @see Collection#add(Object)
+     */
+    default <T extends Collection<? super Byte>> T collect(final T collection) {
+        Objects.requireNonNull(collection, "collection is null");
+        final var array = new byte[BYTES];
+        set(array);
+        for (final var b : array) {
+            collection.add(b);
+        }
+        return collection;
+    }
+
+    // -------------------------------------------------------------------------- java.util.function
+
+    /**
+     * Accepts each of the <a href="#hello-world-bytes">hello-world-bytes</a>, boxed as
+     * {@link Byte}, to the specified consumer.
+     * <p>
+     * The default implementation would be as follows.
+     * {@snippet lang = "java":
+     * Objects.requireNonNull(consumer, "consumer is null");
+     * final var array = new byte[BYTES];
+     * set(array);
+     * for (final var b : array) { // @highlight region
+     *     consumer.accept(b);
+     * } // @end
+     * return consumer;
+     *}
+     *
+     * @param <T>      consumer type parameter
+     * @param consumer the consumer to which each byte is accepted.
+     * @return the given {@code consumer}.
+     * @throws NullPointerException if {@code consumer} is {@code null}.
+     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
+     * of {@value #BYTES} bytes, and {@link Consumer#accept(Object) accepts} each byte in the array,
+     * boxed as {@link Byte}, to the {@code consumer}.
+     * @see #set(byte[])
+     * @see Consumer#accept(Object)
+     */
+    default <T extends Consumer<? super Byte>> T accept(final T consumer) {
+        Objects.requireNonNull(consumer, "consumer is null");
+        final var array = new byte[BYTES];
+        set(array);
+        for (final var b : array) {
+            consumer.accept(b);
+        }
+        return consumer;
+    }
+
     // ------------------------------------------------------------------------------- java.util.jar
     @屋上架屋("JarOutputStream extends ZipOutputStream")
     @Deprecated(forRemoval = true)
@@ -1704,6 +1778,30 @@ public interface HelloWorld {
         return stream;
     }
 
+    // ---------------------------------------------------------------------------- java.util.stream
+
+    /**
+     * Accepts each of the <a href="#hello-world-bytes">hello-world-bytes</a>, boxed as
+     * {@link Byte}, to the specified stream builder.
+     *
+     * @param <T>     stream builder type parameter
+     * @param builder the stream builder to which each byte is accepted.
+     * @return the given {@code builder}.
+     * @throws NullPointerException if {@code builder} is {@code null}.
+     * @implSpec Default implementation invokes {@link #accept(Consumer) accept(consumer)} method
+     * with the {@code builder} cast as a {@link Consumer}, and returns the {@code builder}.
+     * @see #accept(Consumer)
+     * @see Stream.Builder
+     * @deprecated Invoke {@link #accept(Consumer)} with the {@code builder}.
+     */
+    @屋上架屋("Stream.Builder<T> extends Consumer<T>")
+    @Deprecated(forRemoval = true)
+    default <T extends Stream.Builder<? super Byte>> T add(final T builder) {
+        final var result = accept((Consumer<? super Byte>) builder);
+        assert result == builder;
+        return builder;
+    }
+
     // -------------------------------------------------------------------------------- javax.crypto
 
     /**
@@ -1715,8 +1813,7 @@ public interface HelloWorld {
      *                 {@link Cipher#update(byte[]) cipher.update(array)}.
      * @param <T>      cipher type parameter
      * @return the given {@code cipher}.
-     * @throws NullPointerException if {@code cipher} is {@code null} or {@code consumer} is
-     *                              {@code null}.
+     * @throws NullPointerException if either {@code cipher} or {@code consumer} is {@code null}.
      * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
      * of {@value #BYTES} bytes, {@link Cipher#update(byte[]) updates} the {@code cipher} with the
      * array, and {@link Consumer#accept(Object) accepts} the result to the {@code consumer}.

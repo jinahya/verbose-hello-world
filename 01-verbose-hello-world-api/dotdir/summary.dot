@@ -1,0 +1,12 @@
+digraph "summary" {
+  "org.jspecify"                                     -> "java.base (java.base)";
+  "org.reactivestreams"                              -> "java.base (java.base)";
+  "org.slf4j"                                        -> "java.base (java.base)";
+  "com.github.jinahya.hello.api"                     -> "java.base (java.base)";
+  "com.github.jinahya.hello.api"                     -> "java.desktop (java.desktop)";
+  "com.github.jinahya.hello.api"                     -> "java.sql (java.sql)";
+  "com.github.jinahya.hello.api"                     -> "not found";
+  "com.github.jinahya.hello.api"                     -> "org.jspecify";
+  "com.github.jinahya.hello.api"                     -> "org.reactivestreams";
+  "com.github.jinahya.hello.api"                     -> "org.slf4j";
+}

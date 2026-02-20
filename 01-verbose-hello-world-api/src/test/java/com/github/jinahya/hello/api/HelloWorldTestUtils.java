@@ -71,6 +71,15 @@ public final class HelloWorldTestUtils {
         return ByteBuffer.wrap(hello_world_byte_array());
     }
 
+    public static char[] hello_world_char_array() {
+        final var bytes = hello_world_byte_array();
+        final var chars = new char[bytes.length];
+        for (int i = 0; i < chars.length; i++) {
+            chars[i] = (char) bytes[i];
+        }
+        return chars;
+    }
+
     // ---------------------------------------------------------------------------------------------
     static <T extends HelloWorld> T requireMock(final T service) {
         Objects.requireNonNull(service, "service is null");

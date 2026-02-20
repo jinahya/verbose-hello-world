@@ -72,10 +72,8 @@
     <version.maven-surefire>3.5.4</version.maven-surefire>
     <version.maven-failsafe>${version.maven-surefire}</version.maven-failsafe>
     <version.maven-javadoc-plugin>3.12.0</version.maven-javadoc-plugin>
-    <!-- https://central.sonatype.com/artifact/io.smallrye.reactive/mutiny-bom -->
-    <!--    <version.io.smallrye.reactive>2.6.2</version.io.smallrye.reactive>-->
-    <!--    <version.io.smallrye.reactive>2.7.0</version.io.smallrye.reactive>-->
-    <version.io.smallrye.reactive>3.1.0</version.io.smallrye.reactive>
+    <!-- https://central.sonatype.com/artifact/io.smallrye.reactive/mutiny-bom/versions -->
+    <version.io.smallrye.reactive>3.1.1</version.io.smallrye.reactive>
     <!-- https://central.sonatype.com/artifact/org.apache.openwebbeans/openwebbeans-junit5/versions -->
     <version.org.apache.openwebbeans>4.0.3</version.org.apache.openwebbeans>
     <version.org.aspectj>1.9.25.1</version.org.aspectj>
@@ -88,8 +86,7 @@
     <version.org.jboss.weld.se>6.0.3.Final</version.org.jboss.weld.se> <!-- weld-se-core -->
     <version.org.jspecify>1.0.0</version.org.jspecify>
     <!-- https://central.sonatype.com/artifact/org.junit/junit-bom/versions -->
-    <!--    <version.org.junit>5.14.2</version.org.junit>-->
-    <version.org.junit>6.0.2</version.org.junit>
+    <version.org.junit>6.0.3</version.org.junit>
     <version.org.junit.jupiter>${version.org.junit}</version.org.junit.jupiter>
     <version.org.mockito>5.21.0</version.org.mockito>
     <version.org.projectlombok>1.18.42</version.org.projectlombok>
@@ -100,8 +97,7 @@
     <version.org.springframework>7.0.3</version.org.springframework>
     <version.org.springframework.boot>4.0.2</version.org.springframework.boot>
     <!-- https://central.sonatype.com/artifact/io.vertx/vertx-reactive-streams -->
-    <!--    <version.org.vertx>4.5.11</version.org.vertx>-->
-    <version.org.vertx>5.0.7</version.org.vertx>
+    <version.org.vertx>5.0.8</version.org.vertx>
   </properties>
 
   <dependencyManagement>
@@ -110,7 +106,7 @@
         <!-- https://central.sonatype.com/artifact/ch.qos.logback/logback-classic/versions -->
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
-        <version>1.5.29</version>
+        <version>1.5.32</version>
       </dependency>
       <dependency>
         <groupId>com.formdev</groupId>
@@ -138,13 +134,13 @@
         <artifactId>error_prone_core</artifactId>
         <version>${version.com.google.errorprone}</version>
       </dependency>
-      <dependency>
-        <groupId>com.google.guava</groupId>
-        <artifactId>guava-bom</artifactId>
-        <version>${version.com.google.guava}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
+      <!--      <dependency>-->
+      <!--        <groupId>com.google.guava</groupId>-->
+      <!--        <artifactId>guava-bom</artifactId>-->
+      <!--        <version>${version.com.google.guava}</version>-->
+      <!--        <type>pom</type>-->
+      <!--        <scope>import</scope>-->
+      <!--      </dependency>-->
       <dependency>
         <groupId>com.google.inject</groupId>
         <artifactId>guice</artifactId>
@@ -201,12 +197,12 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
-      <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-lang3</artifactId>
-        <!-- https://central.sonatype.com/artifact/org.apache.commons/commons-lang3/versions -->
-        <version>3.20.0</version>
-      </dependency>
+      <!--      <dependency>-->
+      <!--        <groupId>org.apache.commons</groupId>-->
+      <!--        <artifactId>commons-lang3</artifactId>-->
+      <!--        &lt;!&ndash; https://central.sonatype.com/artifact/org.apache.commons/commons-lang3/versions &ndash;&gt;-->
+      <!--        <version>3.20.0</version>-->
+      <!--      </dependency>-->
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-text</artifactId>
@@ -365,11 +361,11 @@
       <artifactId>jakarta.enterprise.cdi-api</artifactId>
       <scope>provided</scope>
     </dependency>
-<!--    <dependency>-->
-<!--      <groupId>jakarta.validation</groupId>-->
-<!--      <artifactId>jakarta.validation-api</artifactId>-->
-<!--      <scope>provided</scope>-->
-<!--    </dependency>-->
+    <!--    <dependency>-->
+    <!--      <groupId>jakarta.validation</groupId>-->
+    <!--      <artifactId>jakarta.validation-api</artifactId>-->
+    <!--      <scope>provided</scope>-->
+    <!--    </dependency>-->
     <!--    <dependency>-->
     <!--      <groupId>org.assertj</groupId>-->
     <!--      <artifactId>assertj-core</artifactId>-->
@@ -416,7 +412,8 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <scope>compile</scope>
+<!--      <scope>compile</scope>-->
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -506,7 +503,7 @@
                   <dependencyConvergence>
                     <excludes>
                       <exclude>com.google.guava:failureaccess</exclude> <!-- from dagger-compiler -->
-                      <exclude>com.google.guava:guava</exclude> <!-- from dagger-compiler -->
+                      <!--                      <exclude>com.google.guava:guava</exclude> &lt;!&ndash; from dagger-compiler &ndash;&gt;-->
                       <exclude>jakarta.annotation:jakarta.annotation-api</exclude> <!-- jakarta-.enterprise.cdi-api - weld-se-core -->
                       <exclude>jakarta.el:jakarta.el-api</exclude> <!-- jakarta-.enterprise.cdi-api - weld-se-core -->
                       <exclude>jakarta.interceptor:jakarta.interceptor-api</exclude>
@@ -532,6 +529,11 @@
               </configuration>
             </execution>
           </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jdeps-plugin</artifactId>
+          <version>3.2.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -696,22 +698,45 @@
       </plugins>
     </pluginManagement>
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>properties</goal>
-            </goals>
-            <phase>initialize</phase>
-          </execution>
-        </executions>
-      </plugin>
+      <!--      <plugin>-->
+      <!--        <groupId>org.apache.maven.plugins</groupId>-->
+      <!--        <artifactId>maven-dependency-plugin</artifactId>-->
+      <!--        <executions>-->
+      <!--          <execution>-->
+      <!--            <goals>-->
+      <!--              <goal>properties</goal>-->
+      <!--            </goals>-->
+      <!--            <phase>initialize</phase>-->
+      <!--          </execution>-->
+      <!--        </executions>-->
+      <!--        <configuration>-->
+      <!--          <multiRelease>17</multiRelease>-->
+      <!--        </configuration>-->
+      <!--      </plugin>-->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
       </plugin>
+      <!--      <plugin>-->
+      <!--        <groupId>org.apache.maven.plugins</groupId>-->
+      <!--        <artifactId>maven-jdeps-plugin</artifactId>-->
+      <!--        <executions>-->
+      <!--          <execution>-->
+      <!--            <goals>-->
+      <!--              <goal>jdkinternals</goal>-->
+      <!--&lt;!&ndash;              <goal>test-jdkinternals</goal>&ndash;&gt;-->
+      <!--            </goals>-->
+      <!--          </execution>-->
+      <!--        </executions>-->
+      <!--        <configuration>-->
+      <!--          <multiRelease>25</multiRelease>-->
+      <!--&lt;!&ndash;          <modulePath>${project.build.outputDirectory}</modulePath>&ndash;&gt;-->
+      <!--&lt;!&ndash;          <failOnMissingEntry>false</failOnMissingEntry>&ndash;&gt;-->
+      <!--          <ignoreMissingDependencies>true</ignoreMissingDependencies>-->
+      <!--          <ignoreMissingDeps>true</ignoreMissingDeps>-->
+      <!--          <recursive>true</recursive>-->
+      <!--        </configuration>-->
+      <!--      </plugin>-->
     </plugins>
   </build>
 

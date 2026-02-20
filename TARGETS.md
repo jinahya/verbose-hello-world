@@ -26,17 +26,24 @@ Analysis of interface methods organized by Java API package.
 | Interface | Target Class | Method | Status | Notes |
 |-----------|--------------|--------|--------|-------|
 | `HelloWorld` | `OutputStream` | `write(T)` | Active | → `set(byte[])` |
+| `HelloWorld` | `FileOutputStream` | `write(T)` | Deprecated | → `write(OutputStream)` |
 | `HelloWorld` | `FilterOutputStream` | `write(T)` | Deprecated | → `write(OutputStream)` |
 | `HelloWorld` | `BufferedOutputStream` | `write(T)` | Deprecated | → `write(FilterOutputStream)` |
-| `HelloWorld` | `PrintStream` | `write(T)` | Deprecated | → `write(FilterOutputStream)` |
+| `HelloWorld` | `PipedOutputStream` | `write(T)` | Deprecated | → `write(OutputStream)` |
 | `HelloWorld` | `ObjectOutputStream` | `write(T)` | Deprecated | → `write(OutputStream)` |
 | `HelloWorld` | `DataOutput` | `write(T)` | Active | → `set(byte[])` |
 | `HelloWorld` | `DataOutputStream` | `write(T)` | Deprecated | → `write(DataOutput)` / `write(FilterOutputStream)` |
 | `HelloWorld` | `RandomAccessFile` | `write(T)` | Active | → `write(DataOutput)` |
 | `HelloWorld` | `Writer` | `write(T)` | Active | → `append(Appendable)` |
 | `HelloWorld` | `BufferedWriter` | `write(T)` | Deprecated | → `write(Writer)` |
+| `HelloWorld` | `CharArrayWriter` | `write(T)` | Deprecated | → `write(Writer)` |
+| `HelloWorld` | `FilterWriter` | `write(T)` | Deprecated | → `write(Writer)` |
+| `HelloWorld` | `OutputStreamWriter` | `write(T)` | Deprecated | → `write(Writer)` |
+| `HelloWorld` | `PipedWriter` | `write(T)` | Deprecated | → `write(Writer)` |
 | `HelloWorld` | `PrintWriter` | `write(T)` | Deprecated | → `write(Writer)` |
+| `HelloWorld` | `StringWriter` | `write(T)` | Deprecated | → `write(Writer)` |
 | `HelloWorld` | `File` | `append(T)` | Active | → `write(OutputStream)` |
+| `HelloWorld` | `File` | `append(T, Charset)` | Active | → `write(OutputStreamWriter)` |
 
 ## java.net
 
@@ -86,6 +93,7 @@ Analysis of interface methods organized by Java API package.
 | `AsynchronousHelloWorld` | `AsynchronousByteChannel` | `write(T, A, CompletionHandler)` | Active | → `put(ByteBuffer)` |
 | `HelloWorld` | `AsynchronousFileChannel` | `write(T, long)` | Active | → `put(ByteBuffer)` |
 | `AsynchronousHelloWorld` | `AsynchronousFileChannel` | `write(T, long, A, CompletionHandler)` | Active | → `put(ByteBuffer)` |
+| `HelloWorld` | `AsynchronousSocketChannel` | `send(T)` | Deprecated | → `write(AsynchronousByteChannel)` |
 | `AsynchronousHelloWorld` | `AsynchronousSocketChannel` | `send(T, A, CompletionHandler)` | Deprecated | → `write(AsynchronousByteChannel, ...)` |
 
 ## java.nio.file
@@ -100,6 +108,7 @@ Analysis of interface methods organized by Java API package.
 | Interface | Target Class | Method | Status | Notes |
 |-----------|--------------|--------|--------|-------|
 | `HelloWorld` | `MessageDigest` | `update(T)` | Active | → `set(byte[])` |
+| `HelloWorld` | `DigestOutputStream` | `write(T)` | Active | → `write(FilterOutputStream)` |
 | `HelloWorld` | `Signature` | `update(T)` | Active | → `set(byte[])` |
 
 ## java.sql
@@ -113,13 +122,27 @@ Analysis of interface methods organized by Java API package.
 | Interface | Target Class | Method | Status | Notes |
 |-----------|--------------|--------|--------|-------|
 | `HelloWorld` | `BitSet` | `set(T, int)` | Active | → `set(byte[])`, little-endian bit order |
+| `HelloWorld` | `BitSet` | `set(T)` | Active | → `set(bitset, 0)` |
+| `HelloWorld` | `Collection<? super Byte>` | `collect(T)` | Active | → `set(byte[])` |
+
+## java.util.function
+
+| Interface | Target Class | Method | Status | Notes |
+|-----------|--------------|--------|--------|-------|
+| `HelloWorld` | `Consumer<? super Byte>` | `accept(T)` | Active | → `set(byte[])` |
+
+## java.util.stream
+
+| Interface | Target Class | Method | Status | Notes |
+|-----------|--------------|--------|--------|-------|
+| `HelloWorld` | `Stream.Builder<? super Byte>` | `accept(T)` | Deprecated | → `accept(Consumer)` |
 
 ## java.util.jar
 
 | Interface | Target Class | Method | Status | Notes |
 |-----------|--------------|--------|--------|-------|
 | `HelloWorld` | `JarOutputStream` | `write(T)` | Deprecated | → `write(ZipOutputStream)` |
-| `HelloWorld` | `JarOutputStream` | `put(T, String)` | Active | → `put(ZipOutputStream, String)` |
+| `HelloWorld` | `JarOutputStream` | `put(T, String)` | Deprecated | → `put(ZipOutputStream, String)` |
 
 ## java.util.zip
 
@@ -152,9 +175,9 @@ Analysis of interface methods organized by Java API package.
 
 | Metric | Count |
 |--------|-------|
-| **Total methods** | 65 |
-| **Active methods** | 40 |
-| **Deprecated methods** | 25 |
+| **Total methods** | 77 |
+| **Active methods** | 43 |
+| **Deprecated methods** | 34 |
 | **Abstract methods** | 1 |
 | **Async (Future-based)** | 2 |
 | **Async (CompletionHandler)** | 3 |
@@ -181,15 +204,23 @@ Analysis of interface methods organized by Java API package.
 | `put(LongBuffer)` | `put(IntBuffer)` |
 | `write(BufferedOutputStream)` | `write(FilterOutputStream)` |
 | `write(CipherOutputStream)` | `write(FilterOutputStream)` |
-| `write(PrintStream)` | `write(FilterOutputStream)` |
+| `write(FileOutputStream)` | `write(OutputStream)` |
+| `write(PipedOutputStream)` | `write(OutputStream)` |
 | `write(ObjectOutputStream)` | `write(OutputStream)` |
 | `write(DataOutputStream)` | `write(DataOutput)` |
 | `write(BufferedWriter)` | `write(Writer)` |
+| `write(CharArrayWriter)` | `write(Writer)` |
+| `write(FilterWriter)` | `write(Writer)` |
+| `write(OutputStreamWriter)` | `write(Writer)` |
+| `write(PipedWriter)` | `write(Writer)` |
 | `write(PrintWriter)` | `write(Writer)` |
+| `write(StringWriter)` | `write(Writer)` |
 | `send(SSLSocket)` | `send(Socket)` |
 | `put(MappedByteBuffer)` | `put(ByteBuffer)` |
 | `write(Pipe.SinkChannel)` | `write(WritableByteChannel)` |
 | `write(JarOutputStream)` | `write(ZipOutputStream)` |
+| `put(JarOutputStream, String)` | `put(ZipOutputStream, String)` |
+| `accept(Stream.Builder<? super Byte>)` | `accept(Consumer)` |
 
 ---
 

@@ -28,7 +28,7 @@ import java.util.stream.IntStream;
  */
 @Slf4j
 public final class MutinyReactiveHelloWorldFactory
-        extends AbstractReactiveHelloWorld {
+        extends AbstractReactiveHelloWorldFactory {
 
     // ---------------------------------------------------------------------------------------------
 

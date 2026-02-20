@@ -22,6 +22,8 @@ package com.github.jinahya.hello.api._java_lang;
 
 import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldTest;
+import com.github.jinahya.hello.api.HelloWorldTestConstants;
+import com.github.jinahya.hello.api.畵蛇添足;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -79,15 +81,14 @@ class HelloWorld_Append_Appendable_Test
             and append each byte in <array> to <appendable>"""
     )
     @Test
-    void __()
-            throws IOException {
+    void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        Mockito.doAnswer(i -> { // <1>
+        Mockito.doAnswer(i -> {                                // <1>
             final var array = i.getArgument(0, byte[].class);
             ThreadLocalRandom.current().nextBytes(array);
             return array;
-        }).when(service).set(ArgumentMatchers.any(byte[].class));
+        }).when(service).set(ArgumentMatchers.<byte[]>notNull());
         final var appendable = Mockito.mock(Appendable.class); // <2>
         // ------------------------------------------------------------------------------------ when
         final var result = service.append(appendable);
@@ -104,5 +105,24 @@ class HelloWorld_Append_Appendable_Test
 //            Assertions.assertEquals(array[i], (byte) chars.get(i).charValue());
 //        }
         Assertions.assertSame(appendable, result);
+    }
+
+    @畵蛇添足
+    @Test
+    void _添足_畵蛇() throws IOException {
+        // ----------------------------------------------------------------------------------- given
+        final var service = service();
+        Mockito.doAnswer(i -> {
+            final var appendable = i.getArgument(0, Appendable.class);
+            for (final var c : hello_world_char_array()) {
+                appendable.append(c);
+            }
+            return appendable;
+        }).when(service).append(ArgumentMatchers.<Appendable>notNull());
+        final var appendable = new StringBuilder();
+        // ------------------------------------------------------------------------------------ when
+        service.append(appendable);
+        // ------------------------------------------------------------------------------------ then
+        Assertions.assertEquals(HelloWorldTestConstants.HELLO_WORLD_STRING, appendable.toString());
     }
 }

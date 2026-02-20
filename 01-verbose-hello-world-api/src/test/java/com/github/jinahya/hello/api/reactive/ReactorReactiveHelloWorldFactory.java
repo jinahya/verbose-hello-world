@@ -25,7 +25,7 @@ import java.util.stream.IntStream;
  */
 @Slf4j
 public final class ReactorReactiveHelloWorldFactory
-        extends AbstractReactiveHelloWorld {
+        extends AbstractReactiveHelloWorldFactory {
 
     // ---------------------------------------------------------------------------------------------
 

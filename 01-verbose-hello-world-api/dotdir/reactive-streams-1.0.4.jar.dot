@@ -1,0 +1,5 @@
+digraph "org.reactivestreams" {
+    // Path: /Users/jin.kwon/gitcl/github.com/jinahya/verbose-hello-world/01-verbose-hello-world-api/target/dependency/reactive-streams-1.0.4.jar
+   "org.reactivestreams"                              -> "java.lang (java.base)";
+   "org.reactivestreams"                              -> "org.reactivestreams (org.reactivestreams)";
+}

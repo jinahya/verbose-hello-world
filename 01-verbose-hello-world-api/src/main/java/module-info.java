@@ -9,7 +9,7 @@ module com.github.jinahya.hello.api {
     requires java.sql;
     requires java.sql.rowset;
     requires java.desktop;
-    requires org.apache.commons.lang3;
+//    requires org.apache.commons.lang3;
     exports com.github.jinahya.hello.api;
     exports com.github.jinahya.hello.api.spi;
     exports com.github.jinahya.hello.api.reactive;

@@ -7,10 +7,10 @@ import java.util.Objects;
 /**
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-public abstract class AbstractReactiveHelloWorld
+public abstract class AbstractReactiveHelloWorldFactory
         implements ReactiveHelloWorldFactory {
 
-    protected AbstractReactiveHelloWorld(final HelloWorld service) {
+    protected AbstractReactiveHelloWorldFactory(final HelloWorld service) {
         super();
         this.service = Objects.requireNonNull(service, "service is null");
     }

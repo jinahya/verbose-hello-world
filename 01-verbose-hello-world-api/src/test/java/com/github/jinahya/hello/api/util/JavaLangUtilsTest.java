@@ -20,12 +20,10 @@ package com.github.jinahya.hello.api.util;
  * #L%
  */
 
-import com.google.common.primitives.Primitives;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -38,18 +36,6 @@ import java.util.Set;
  */
 @Slf4j
 class JavaLangUtilsTest {
-
-    @Test
-    void __() {
-        Assertions.assertEquals(
-                Primitives.allPrimitiveTypes(),
-                JavaLangUtils.WRAPPER_CLASSES.keySet()
-        );
-        Assertions.assertEquals(
-                Primitives.allWrapperTypes(),
-                JavaLangUtils.PRIMITIVE_CLASSES.keySet()
-        );
-    }
 
     @Nested
     class IsPrimitiveTest {

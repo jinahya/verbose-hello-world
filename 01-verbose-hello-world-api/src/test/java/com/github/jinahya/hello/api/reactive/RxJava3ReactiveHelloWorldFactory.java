@@ -28,7 +28,7 @@ import java.util.stream.IntStream;
  */
 @Slf4j
 public final class RxJava3ReactiveHelloWorldFactory
-        extends AbstractReactiveHelloWorld {
+        extends AbstractReactiveHelloWorldFactory {
 
     // ---------------------------------------------------------------------------------------------
 

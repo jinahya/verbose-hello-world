@@ -78,6 +78,10 @@ public abstract class HelloWorldTest {
         return HelloWorldTestUtils.hello_world_byte_array();
     }
 
+    protected char[] hello_world_char_array() {
+        return HelloWorldTestUtils.hello_world_char_array();
+    }
+
     protected ByteBuffer hello_world_byte_buffer() {
         return HelloWorldTestUtils.hello_world_byte_buffer();
     }

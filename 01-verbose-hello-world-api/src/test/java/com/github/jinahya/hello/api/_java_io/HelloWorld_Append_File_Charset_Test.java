@@ -42,6 +42,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.util.HexFormat;
 import java.util.stream.Stream;
 
@@ -123,7 +124,7 @@ class HelloWorld_Append_File_Charset_Test
      * Verifies {@link HelloWorld#append(File, Charset)} method constructs a new
      * {@link FileOutputStream} with {@code file} and {@code true}, constructs a new
      * {@link OutputStreamWriter} with the {@code stream} and the {@code charset}, invokes
-     * {@link HelloWorld#write(OutputStreamWriter)} method with it, flushes/closes the stream, and
+     * {@link HelloWorld#write(OutputStreamWriter)} method with it, flushes/closes the writer, and
      * returns the {@code file}.
      *
      * @throws IOException if an I/O error occurs.
@@ -131,8 +132,8 @@ class HelloWorld_Append_File_Charset_Test
     @DisplayName("""
             should create a <new FileOutputStream> as <appending mode>,
             should create a <new OutputStreamWriter> with the stream and charset,
-            and invoke <write(writer)> method with it,
-            and <flushes/closes> the writer"""
+            should invoke <write(writer)> method with it,
+            and should <flushes/closes> the writer"""
     )
     @Test
     void __() throws IOException {
@@ -144,12 +145,16 @@ class HelloWorld_Append_File_Charset_Test
         final var file = Mockito.mock(File.class);    // <2>
         final var charset = Charset.defaultCharset(); // <3>
         try (var c1 = Mockito.mockConstruction(FileOutputStream.class, (m, c) -> {   // <1>
-            Assertions.assertSame(file, c.arguments().get(0));
-            Assertions.assertTrue((Boolean) c.arguments().get(1));
+            final var arguments = c.arguments();
+            Assertions.assertEquals(2, arguments.size());
+            Assertions.assertSame(file, arguments.get(0));
+            Assertions.assertTrue((Boolean) arguments.get(1));
         });
              var c2 = Mockito.mockConstruction(OutputStreamWriter.class, (m, c) -> { // <2>
-                 Assertions.assertSame(c1.constructed().getFirst(), c.arguments().get(0));
-                 Assertions.assertSame(charset, c.arguments().get(1));
+                 final var arguments = c.arguments();
+                 Assertions.assertEquals(2, arguments.size());
+                 Assertions.assertSame(c1.constructed().getFirst(), arguments.get(0));
+                 Assertions.assertSame(charset, arguments.get(1));
              })) {
             // -------------------------------------------------------------------------------- when
             final var result = service.append(file, charset);
@@ -164,12 +169,12 @@ class HelloWorld_Append_File_Charset_Test
         }
     }
 
-    private byte[] getFirst4Bytes(final File file) throws IOException {
-        assert file.length() >= 4;
-        try (var fis = new FileInputStream(file)) {
-            return fis.readNBytes(4);
-        }
-    }
+//    private byte[] getFirst4Bytes(final File file) throws IOException {
+//        assert file.length() >= 4;
+//        try (var fis = new FileInputStream(file)) {
+//            return fis.readNBytes(4);
+//        }
+//    }
 
     @MethodSource({"fileAndCharsetArgumentsStream"})
     @ParameterizedTest(name = "[{index}]: {1}")
@@ -178,7 +183,7 @@ class HelloWorld_Append_File_Charset_Test
         final var service = service();
         Mockito.doAnswer(i -> {
                     final var writer = i.getArgument(0, OutputStreamWriter.class);
-                    writer.write(new char[HelloWorld.BYTES]);
+                    writer.write(hello_world_char_array());
                     return writer;
                 })
                 .when(service)
@@ -188,7 +193,10 @@ class HelloWorld_Append_File_Charset_Test
         // ------------------------------------------------------------------------------------ then
         final var length = file.length();
         Assertions.assertTrue(length >= HelloWorld.BYTES);
+//        log.debug("{}: {} {}", String.format("%14s", charset.name()), length,
+//                  HexFormat.of().formatHex(getFirst4Bytes(file)));
         log.debug("{}: {} {}", String.format("%14s", charset.name()), length,
-                  HexFormat.of().formatHex(getFirst4Bytes(file)));
+                  HexFormat.of().formatHex(Files.readAllBytes(file.toPath())));
+        ;
     }
 }

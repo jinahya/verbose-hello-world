@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 @Slf4j
 public final class VertxReactiveHelloWorldFactory
-        extends AbstractReactiveHelloWorld {
+        extends AbstractReactiveHelloWorldFactory {
 
     // ---------------------------------------------------------------------------------------------
 
