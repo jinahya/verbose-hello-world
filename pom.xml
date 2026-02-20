@@ -558,8 +558,9 @@
               <link>https://junit.org/junit5/docs/current/api/</link>
               <link>https://javadoc.io/doc/org.jspecify/jspecify/${version.org.jspecify}</link>
               <link>https://static.javadoc.io/org.mockito/mockito-junit-jupiter/${version.org.mockito}</link>
+              <link>https://www.reactive-streams.org/reactive-streams-1.0.4-javadoc</link>
             </links>
-            <show>package</show>
+<!--            <show>package</show>-->
             <tags>
               <tag>
                 <name>apiNote</name>

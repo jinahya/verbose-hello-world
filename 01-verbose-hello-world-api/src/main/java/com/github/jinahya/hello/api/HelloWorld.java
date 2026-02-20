@@ -391,7 +391,9 @@ public interface HelloWorld {
     @Deprecated(forRemoval = true)
     @屋上架屋("FilterOutputStream extends OutputStream")
     default <T extends FilterOutputStream> T write(final T stream) throws IOException {
-        return (T) write((OutputStream) stream);
+        final var result = write((OutputStream) stream);
+        assert result == stream;
+        return stream;
     }
 
     @Deprecated(forRemoval = true)
@@ -574,7 +576,9 @@ public interface HelloWorld {
     @屋上架屋("FilterWriter extends Writer")
     @SuppressWarnings({"unchecked"})
     default <T extends FilterWriter> T write(final T writer) throws IOException {
-        return (T) write((Writer) writer);
+        final var result = write((Writer) writer);
+        assert result == writer;
+        return writer;
     }
 
     /**
@@ -689,54 +693,54 @@ public interface HelloWorld {
      * packet.
      * <p>
      * The bytes are written starting at ({@link DatagramPacket#getOffset() offset} +
-     * {@link DatagramPacket#getLength() length}), and the packet's length is extended by
+     * {@link DatagramPacket#getLength() length}), and the packet's length is increased by
      * {@value #BYTES}.
      * <pre>
      * Given,
      *
-     *          4                   14
-     *  0    &lt;= offset           <= offset + length      &lt;= data.length
-     *  ↓       ↓                   ↓                       ↓
-     * | | | | |e|x|i|s|t|i|n|g|.|.| | | | | | | | | | | | |
-     *         |---- length (10) --|
+     * packet:       0     &le; offset    &le; offset + length
+     *               ↓       ↓           ↓
+     * packet.data: | | | | |.|.|.|.|.|.| | | | | | | | | | | | | | | | |
      *
      * Then, on successful return,
      *
-     *          4                   14
-     *  0    &lt;= offset           <= offset + length        &lt;= data.length
-     *  ↓       ↓                   ↓                         ↓
-     * | | | | |e|x|i|s|t|i|n|g|.|.|h|e|l|l|o|,| |w|o|r|l|d| |
-     *         |--------------- length (22) --------------|
+     * packet:       0     &le; offset                            &lt; offset + length'
+     *               ↓       ↓                                   ↓
+     * packet.data: | | | | |.|.|.|.|.|.|h|e|l|l|o|,| |w|o|r|l|d| | | | |
+     *                                                (length' = length + 12)
      * </pre>
      *
      * @param packet the datagram packet to which bytes are appended.
      * @return the given {@code packet}.
-     * @throws NullPointerException    if {@code packet} is {@code null}.
-     * @throws BufferOverflowException if the packet's data buffer does not have at least
-     *                                 {@value #BYTES} bytes available after the current content.
-     * @implSpec Default implementation {@link ByteBuffer#wrap(byte[], int, int) wraps} the packet's
-     * data array as a {@link ByteBuffer} starting at ({@link DatagramPacket#getOffset() offset} +
-     * {@link DatagramPacket#getLength() length}) with the remaining space as length, invokes
-     * {@link #put(ByteBuffer) put(buffer)} (which throws {@link BufferOverflowException} if
-     * insufficient space), and extends the packet's length by {@value #BYTES}.
+     * @throws NullPointerException      if {@code packet} is {@code null}.
+     * @throws IndexOutOfBoundsException if the packet's data buffer does not have at least
+     *                                   {@value #BYTES} bytes available after
+     *                                   {@code offset + length}.
+     * @implSpec Default implementation invokes {@link #set(byte[])} method with an array of
+     * {@value #BYTES} bytes, copies the array into the {@code packet}'s
+     * {@link DatagramPacket#getData() data} buffer starting at
+     * ({@link DatagramPacket#getOffset() packet.offset} +
+     * {@link DatagramPacket#getLength() packet.length}), increments the {@code packet}'s
+     * {@link DatagramPacket#getLength() length} by {@value #BYTES}, and returns the
+     * {@code packet}.
      * @see DatagramPacket#getData()
      * @see DatagramPacket#getOffset()
      * @see DatagramPacket#getLength()
      * @see DatagramPacket#setLength(int)
-     * @see ByteBuffer#wrap(byte[], int, int)
-     * @see #put(ByteBuffer)
+     * @see #set(byte[])
      */
     default DatagramPacket append(final DatagramPacket packet) {
         Objects.requireNonNull(packet, "packet is null");
-        final ByteBuffer buffer;
-        {
-            final var array = packet.getData();
-            final var offset = packet.getOffset() + packet.getLength();
-            final var length = array.length - offset;
-            buffer = ByteBuffer.wrap(array, offset, length);
-        }
-        put(buffer);
-        packet.setLength(buffer.position() - packet.getOffset());
+        final var array = new byte[BYTES];
+        set(array);
+        System.arraycopy(
+                array,
+                0,
+                packet.getData(),
+                packet.getOffset() + packet.getLength(),
+                array.length
+        );
+        packet.setLength(packet.getLength() + BYTES);
         return packet;
     }
 
@@ -757,8 +761,7 @@ public interface HelloWorld {
      * @see #set(DatagramPacket)
      * @see DatagramSocket#send(DatagramPacket)
      */
-    default <T extends DatagramSocket> T send(final T socket)
-            throws IOException {
+    default <T extends DatagramSocket> T send(final T socket) throws IOException {
         if (socket == null) {
             throw new NullPointerException("socket is null");
         }

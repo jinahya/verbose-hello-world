@@ -157,13 +157,15 @@ interface HelloWorldRevisited
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     default <T extends FilterWriter> T write(final T writer) throws IOException {
-        return HelloWorld.super.write(writer);
+        return (T) write((Writer) writer);
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     default <T extends OutputStreamWriter> T write(final T writer) throws IOException {
-        return HelloWorld.super.write(writer);
+        return (T) write((Writer) writer);
     }
 
     @Override
@@ -175,20 +177,22 @@ interface HelloWorldRevisited
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     default <T extends PipedWriter> T write(final T writer) throws IOException {
-        return HelloWorld.super.write(writer);
+        return (T) write((Writer) writer);
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     default <T extends StringWriter> T write(final T writer) throws IOException {
         return (T) write((Writer) writer);
     }
 
-    @SuppressWarnings("removal")
     @Deprecated(forRemoval = true)
     @Override
+    @SuppressWarnings("unchecked")
     default <T extends FilterOutputStream> T write(final T stream) throws IOException {
-        return HelloWorld.super.write(stream);
+        return (T) write((OutputStream) stream);
     }
 
     @SuppressWarnings("removal")

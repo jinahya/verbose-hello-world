@@ -1,10 +1,16 @@
 package com.github.jinahya.hello.api;
 
+import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
-import java.util.concurrent.Flow;
+public sealed interface ReactiveHelloWorld<T>
+        permits ReactiveHelloWorld.OfBytes {
 
-interface ReactiveHelloWorld<T> {
+    sealed interface OfBytes
+            extends ReactiveHelloWorld<Byte>
+            permits ReactiveHelloWorldDefaultOfBytes {
 
-    Subscription subscribe(Flow.Subscriber<? super T> subscriber);
+    }
+
+    Subscription subscribe(Subscriber<? super T> subscriber);
 }
