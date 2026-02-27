@@ -1,5 +1,7 @@
 package com.github.jinahya.hello;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -7,7 +9,7 @@ import org.junit.jupiter.api.Test;
 // Sign	Sign	Sign
 // Exponent	Biased Exponent	Characteristic
 // Fraction	Trailing Significand	Mantissa
-
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 class FloatingPointTest {
 
     static String printBits(final float f) {
@@ -32,6 +34,7 @@ class FloatingPointTest {
         System.out.printf("%s: %s (%+e)%n", name, printBits(value), value);
     }
 
+    // ---------------------------------------------------------------------------------------------
     @Test
     void Zeros() {
         {
@@ -112,8 +115,10 @@ class FloatingPointTest {
     void qNaNs() {
         {
             printf("         Float.NaN", Float.NaN);
-            final float floatNaNSign0 = Float.intBitsToFloat(0x7FC00000); // qNaN: sign=0, fraction MSB=1
-            final float floatNaNSign1 = Float.intBitsToFloat(0xFFC00000); // qNaN: sign=1, fraction MSB=1
+            final float floatNaNSign0 = Float.intBitsToFloat(
+                    0x7FC00000); // qNaN: sign=0, fraction MSB=1
+            final float floatNaNSign1 = Float.intBitsToFloat(
+                    0xFFC00000); // qNaN: sign=1, fraction MSB=1
             printf("float NaN (sign=0)", floatNaNSign0);
             printf("float NaN (sign=1)", floatNaNSign1);
             Assertions.assertTrue(Float.isNaN(floatNaNSign0));
@@ -121,8 +126,10 @@ class FloatingPointTest {
         }
         {
             printf("         Double.NaN", Double.NaN);
-            final double doubleNaNSign0 = Double.longBitsToDouble(0x7FF8000000000000L); // qNaN: sign=0, fraction MSB=1
-            final double doubleNaNSign1 = Double.longBitsToDouble(0xFFF8000000000000L); // qNaN: sign=1, fraction MSB=1
+            final double doubleNaNSign0 = Double.longBitsToDouble(
+                    0x7FF8000000000000L); // qNaN: sign=0, fraction MSB=1
+            final double doubleNaNSign1 = Double.longBitsToDouble(
+                    0xFFF8000000000000L); // qNaN: sign=1, fraction MSB=1
             printf("double NaN (sign=0)", doubleNaNSign0);
             printf("double NaN (sign=1)", doubleNaNSign1);
             Assertions.assertTrue(Double.isNaN(doubleNaNSign0));
@@ -136,8 +143,10 @@ class FloatingPointTest {
             // float sNaN: exponent=11111111, fraction MSB=0, at least one other bit non-zero
             final float sNaN0 = Float.intBitsToFloat(0x7F800001); // fraction=000...001 (bit 0)
             final float sNaN1 = Float.intBitsToFloat(0x7F800002); // fraction=000...010 (bit 1)
-            final float sNaN2 = Float.intBitsToFloat(0x7FA00000); // fraction=010...000 (bit 21 — just below quiet bit)
-            final float sNaN3 = Float.intBitsToFloat(0x7FBFFFFF); // fraction=011...111 (all but MSB)
+            final float sNaN2 = Float.intBitsToFloat(
+                    0x7FA00000); // fraction=010...000 (bit 21 — just below quiet bit)
+            final float sNaN3 = Float.intBitsToFloat(
+                    0x7FBFFFFF); // fraction=011...111 (all but MSB)
             printf("float sNaN (0x7F800001)", sNaN0);
             printf("float sNaN (0x7F800002)", sNaN1);
             printf("float sNaN (0x7FA00000)", sNaN2);
@@ -149,10 +158,14 @@ class FloatingPointTest {
         }
         {
             // double sNaN: exponent=11111111111, fraction MSB=0, at least one other bit non-zero
-            final double sNaN0 = Double.longBitsToDouble(0x7FF0000000000001L); // fraction=000...001 (bit 0)
-            final double sNaN1 = Double.longBitsToDouble(0x7FF0000000000002L); // fraction=000...010 (bit 1)
-            final double sNaN2 = Double.longBitsToDouble(0x7FF4000000000000L); // fraction=010...000 (bit 50 — just below quiet bit)
-            final double sNaN3 = Double.longBitsToDouble(0x7FF7FFFFFFFFFFFFL); // fraction=011...111 (all but MSB)
+            final double sNaN0 = Double.longBitsToDouble(
+                    0x7FF0000000000001L); // fraction=000...001 (bit 0)
+            final double sNaN1 = Double.longBitsToDouble(
+                    0x7FF0000000000002L); // fraction=000...010 (bit 1)
+            final double sNaN2 = Double.longBitsToDouble(
+                    0x7FF4000000000000L); // fraction=010...000 (bit 50 — just below quiet bit)
+            final double sNaN3 = Double.longBitsToDouble(
+                    0x7FF7FFFFFFFFFFFFL); // fraction=011...111 (all but MSB)
             printf("double sNaN (0x7FF0000000000001L)", sNaN0);
             printf("double sNaN (0x7FF0000000000002L)", sNaN1);
             printf("double sNaN (0x7FF4000000000000L)", sNaN2);
