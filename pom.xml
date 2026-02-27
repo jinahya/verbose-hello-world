@@ -412,7 +412,7 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-<!--      <scope>compile</scope>-->
+      <!--      <scope>compile</scope>-->
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -462,7 +462,8 @@
               <!--              <arg>&#45;&#45;should-stop=ifError=FLOW</arg>-->
               <!--              &lt;!&ndash; https://github.com/google/error-prone/issues/5354 &ndash;&gt;-->
               <!--              &lt;!&ndash;              <arg>-Xplugin:ErrorProne -Xep:NullAway:ERROR -XepOpt:NullAway:OnlyNullMarked=true</arg>&ndash;&gt;-->
-              <arg>--enable-preview</arg>
+<!--              <arg>-Xlint:preview</arg>-->
+<!--              <arg>&#45;&#45;enable-preview</arg>-->
             </compilerArgs>
             <annotationProcessorPaths>
               <path>
@@ -560,7 +561,7 @@
               <link>https://static.javadoc.io/org.mockito/mockito-junit-jupiter/${version.org.mockito}</link>
               <link>https://www.reactive-streams.org/reactive-streams-1.0.4-javadoc</link>
             </links>
-<!--            <show>package</show>-->
+            <!--            <show>package</show>-->
             <tags>
               <tag>
                 <name>apiNote</name>
