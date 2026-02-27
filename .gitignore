@@ -244,5 +244,9 @@ venv
 .DS_Store
 *.dylib
 
+# C executables (compiled by c.sh)
+/floating_point_types
+/integral_types
+
 
 .ai

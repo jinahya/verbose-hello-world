@@ -1,5 +1,10 @@
 package com.github.jinahya.hello;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+
 class IntegralTest {
 
     /**
@@ -28,11 +33,11 @@ class IntegralTest {
      * Returns a string representing binary of the specified value, starting from the specified higher bit index
      * (inclusive) to the specified lower bit index (inclusive).
      *
-     * @param l the long value whose bit binary is printed.
-     * @param h the higher bit index (inclusive) which should be less than or equal to {@code 63} and greater than the
-     *          {@code lo}.
+     * @param l  the long value whose bit binary is printed.
+     * @param h  the higher bit index (inclusive) which should be less than or equal to {@code 63} and greater than the
+     *           {@code lo}.
      * @param lo the lower bit index (inclusive) which should be greater than or equal to {@code 0} and less than the
-     *          {@code h}.
+     *           {@code h}.
      * @return a string representing bit
      */
     static String printBits(long l, final int h, final int lo) {
@@ -44,5 +49,137 @@ class IntegralTest {
             builder.append(l & 1);
         }
         return builder.reverse().toString();
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+
+    static String printBits(final byte b) {
+        return printBits(b, 7, 0);
+    }
+
+    static String printBits(final short s) {
+        return printBits(s, 15, 8) + "_" + printBits(s, 7, 0);
+    }
+
+    static String printBits(final int i) {
+        return printBits(i, 31, 24)
+               + "_" + printBits(i, 23, 16)
+               + "_" + printBits(i, 15, 8)
+               + "_" + printBits(i, 7, 0);
+    }
+
+    static String printBits(final long v) {
+        return printBits(v, 63, 56)
+               + "_" + printBits(v, 55, 48)
+               + "_" + printBits(v, 47, 40)
+               + "_" + printBits(v, 39, 32)
+               + "_" + printBits(v, 31, 24)
+               + "_" + printBits(v, 23, 16)
+               + "_" + printBits(v, 15, 8)
+               + "_" + printBits(v, 7, 0);
+    }
+
+    static String printBits(final char c) {
+        return printBits(c, 15, 8) + "_" + printBits(c, 7, 0);
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+
+    static void printf(final String name, final byte value) {
+        System.out.printf("%-20s: %s (%+4d, 0x%02X)%n",
+                name, printBits(value), value, Byte.toUnsignedInt(value));
+    }
+
+    static void printf(final String name, final short value) {
+        System.out.printf("%-20s: %s (%+6d, 0x%04X)%n",
+                name, printBits(value), value, Short.toUnsignedInt(value));
+    }
+
+    static void printf(final String name, final int value) {
+        System.out.printf("%-20s: %s (%+12d, 0x%08X)%n",
+                name, printBits(value), value, value);
+    }
+
+    static void printf(final String name, final long value) {
+        System.out.printf("%-20s: %s (%+20d, 0x%016X)%n",
+                name, printBits(value), value, value);
+    }
+
+    static void printf(final String name, final char value) {
+        System.out.printf("%-20s: %s (%+6d, U+%04X, '%c')%n",
+                name, printBits(value), (int) value, (int) value, value);
+    }
+
+    // =================================================================================================================
+
+    @Nested
+    @NoArgsConstructor(access = AccessLevel.PACKAGE)
+    class ByteTests {
+
+        @Test
+        void values() {
+            printf("Byte.MIN_VALUE", Byte.MIN_VALUE);
+            printf("      (byte) -1", (byte) -1);
+            printf("      (byte)  0", (byte) 0);
+            printf("      (byte) +1", (byte) 1);
+            printf("Byte.MAX_VALUE", Byte.MAX_VALUE);
+        }
+    }
+
+    @Nested
+    @NoArgsConstructor(access = AccessLevel.PACKAGE)
+    class ShortTests {
+
+        @Test
+        void values() {
+            printf("Short.MIN_VALUE", Short.MIN_VALUE);
+            printf("     (short) -1", (short) -1);
+            printf("     (short)  0", (short) 0);
+            printf("     (short) +1", (short) 1);
+            printf("Short.MAX_VALUE", Short.MAX_VALUE);
+        }
+    }
+
+    @Nested
+    @NoArgsConstructor(access = AccessLevel.PACKAGE)
+    class IntTests {
+
+        @Test
+        void values() {
+            printf("Integer.MIN_VALUE", Integer.MIN_VALUE);
+            printf("               -1", -1);
+            printf("                0", 0);
+            printf("               +1", 1);
+            printf("Integer.MAX_VALUE", Integer.MAX_VALUE);
+        }
+    }
+
+    @Nested
+    @NoArgsConstructor(access = AccessLevel.PACKAGE)
+    class LongTests {
+
+        @Test
+        void values() {
+            printf("Long.MIN_VALUE", Long.MIN_VALUE);
+            printf("           -1L", -1L);
+            printf("            0L", 0L);
+            printf("           +1L", 1L);
+            printf("Long.MAX_VALUE", Long.MAX_VALUE);
+        }
+    }
+
+    @Nested
+    @NoArgsConstructor(access = AccessLevel.PACKAGE)
+    class CharTests {
+
+        @Test
+        void values() {
+            printf("Character.MIN_VALUE", Character.MIN_VALUE);
+            printf("              ' '", ' ');
+            printf("              '0'", '0');
+            printf("              'A'", 'A');
+            printf("              'a'", 'a');
+            printf("Character.MAX_VALUE", Character.MAX_VALUE);
+        }
     }
 }
