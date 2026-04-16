@@ -55,10 +55,6 @@
     <maven.compiler.testRelase>${maven.compiler.testTarget}</maven.compiler.testRelase>
     <sonar.organization>jinahya-github</sonar.organization>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-    <!-- https://central.sonatype.com/artifact/org.asciidoctor/asciidoctorj -->
-    <!--    <version.asciidoctorj>3.0.1</version.asciidoctorj>-->
-    <version.asciidoctorj>3.1.1</version.asciidoctorj>
-    <version.asciidoctorj-pdf>2.3.23</version.asciidoctorj-pdf>
     <!--    <version.com.formdev>3.3</version.com.formdev>-->
     <!--    <version.com.formdev>3.5.2</version.com.formdev>-->
     <version.com.formdev>3.7</version.com.formdev>
@@ -224,16 +220,6 @@
         <version>${version.org.apache.openwebbeans}</version>
         <type>pom</type>
         <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.asciidoctor</groupId>
-        <artifactId>asciidoctorj</artifactId>
-        <version>${version.asciidoctorj}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.asciidoctor</groupId>
-        <artifactId>asciidoctorj-pdf</artifactId>
-        <version>${version.asciidoctorj-pdf}</version>
       </dependency>
       <dependency>
         <groupId>org.aspectj</groupId>
@@ -627,12 +613,6 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-report-plugin</artifactId>
           <version>${version.maven-surefire}</version>
-        </plugin>
-        <plugin>
-          <groupId>org.asciidoctor</groupId>
-          <artifactId>asciidoctor-maven-plugin</artifactId>
-          <!-- https://central.sonatype.com/artifact/org.asciidoctor/asciidoctor-maven-plugin -->
-          <version>3.2.1</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
