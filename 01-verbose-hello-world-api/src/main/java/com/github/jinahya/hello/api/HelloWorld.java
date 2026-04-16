@@ -199,9 +199,9 @@ public interface HelloWorld {
         if (array == null) {
 //            throw new NullPointerException("array is null");
         }
-        if (array.length < BYTES) {
+//        if (array.length < BYTES) {
 //            throw new IndexOutOfBoundsException("array.length(" + array.length + ") < " + BYTES);
-        }
+//        }
 //        set(array, 0);
 //        return array;
         return null;
