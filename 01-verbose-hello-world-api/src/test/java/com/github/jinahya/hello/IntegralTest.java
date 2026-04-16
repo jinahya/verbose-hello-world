@@ -96,7 +96,7 @@ class IntegralTest {
     }
 
     static void printf(final String name, final int value) {
-        System.out.printf("%-20s: %s (%+12d, 0x%08X)%n",
+        System.out.printf("%-20s: %s (%+11d, 0x%08X)%n",
                 name, printBits(value), value, value);
     }
 
@@ -119,9 +119,9 @@ class IntegralTest {
         @Test
         void values() {
             printf("Byte.MIN_VALUE", Byte.MIN_VALUE);
-            printf("      (byte) -1", (byte) -1);
-            printf("      (byte)  0", (byte) 0);
-            printf("      (byte) +1", (byte) 1);
+            printf("     (byte) -1", (byte) -1);
+            printf("     (byte)  0", (byte) 0);
+            printf("     (byte) +1", (byte) +1);
             printf("Byte.MAX_VALUE", Byte.MAX_VALUE);
         }
     }
@@ -133,9 +133,9 @@ class IntegralTest {
         @Test
         void values() {
             printf("Short.MIN_VALUE", Short.MIN_VALUE);
-            printf("     (short) -1", (short) -1);
-            printf("     (short)  0", (short) 0);
-            printf("     (short) +1", (short) 1);
+            printf("    (short) -1", (short) -1);
+            printf("    (short)  0", (short) 0);
+            printf("    (short) +1", (short) +1);
             printf("Short.MAX_VALUE", Short.MAX_VALUE);
         }
     }
@@ -149,7 +149,7 @@ class IntegralTest {
             printf("Integer.MIN_VALUE", Integer.MIN_VALUE);
             printf("               -1", -1);
             printf("                0", 0);
-            printf("               +1", 1);
+            printf("               +1", +1);
             printf("Integer.MAX_VALUE", Integer.MAX_VALUE);
         }
     }
@@ -163,7 +163,7 @@ class IntegralTest {
             printf("Long.MIN_VALUE", Long.MIN_VALUE);
             printf("           -1L", -1L);
             printf("            0L", 0L);
-            printf("           +1L", 1L);
+            printf("           +1L", +1L);
             printf("Long.MAX_VALUE", Long.MAX_VALUE);
         }
     }
