@@ -4,11 +4,12 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>com.github.jinahya</groupId>
+    <groupId>io.github.jinahya</groupId>
     <artifactId>jinahya-parent</artifactId>
-    <version>0.9.2</version>
+    <version>1.0.8</version>
   </parent>
 
+  <groupId>io.github.jinahya</groupId>
   <artifactId>verbose-hello-world</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
@@ -448,8 +449,8 @@
               <!--              <arg>&#45;&#45;should-stop=ifError=FLOW</arg>-->
               <!--              &lt;!&ndash; https://github.com/google/error-prone/issues/5354 &ndash;&gt;-->
               <!--              &lt;!&ndash;              <arg>-Xplugin:ErrorProne -Xep:NullAway:ERROR -XepOpt:NullAway:OnlyNullMarked=true</arg>&ndash;&gt;-->
-<!--              <arg>-Xlint:preview</arg>-->
-<!--              <arg>&#45;&#45;enable-preview</arg>-->
+              <!--              <arg>-Xlint:preview</arg>-->
+              <!--              <arg>&#45;&#45;enable-preview</arg>-->
             </compilerArgs>
             <annotationProcessorPaths>
               <path>

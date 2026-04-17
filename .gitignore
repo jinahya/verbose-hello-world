@@ -1,5 +1,22 @@
 
 
+# ----------------------------------------------------------------------------------------------------------------------
+# Created by https://www.toptal.com/developers/gitignore/api/jenv
+# Edit at https://www.toptal.com/developers/gitignore?templates=jenv
+
+### JEnv ###
+# JEnv local Java version configuration file
+.java-version
+
+# Used by previous versions of JEnv
+.jenv-version
+
+# End of https://www.toptal.com/developers/gitignore/api/jenv
+# ----------------------------------------------------------------------------------------------------------------------
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 # Created by https://www.toptal.com/developers/gitignore/api/maven,intellij,eclipse,nette,visualstudiocode
 # Edit at https://www.toptal.com/developers/gitignore?templates=maven,intellij,eclipse,nette,visualstudiocode
 
