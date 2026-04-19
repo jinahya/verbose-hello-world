@@ -5,6 +5,12 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.util.function.IntUnaryOperator;
+import java.util.function.Supplier;
+import java.util.function.ToIntFunction;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 class Junit_Assertions_Test {
 
     @Nested
@@ -38,13 +44,65 @@ class Junit_Assertions_Test {
     }
 
     @Nested
+    class AssertNull_Test {
+
+        @Test
+        void __() {
+            {
+                Assertions.assertNull(null);
+                try {
+                    Assertions.assertNotNull(null);
+                } catch (final AssertionError ae) {
+                    // expected
+                }
+            }
+            {
+                final Supplier<Object> supplier = Object::new;
+                try {
+                    Assertions.assertNull(supplier.get());
+                } catch (final AssertionError ae) {
+                    // expected
+                }
+                Assertions.assertNotNull(supplier.get());
+            }
+        }
+    }
+
+    @Nested
+    class AssertThrows_Test {
+
+        @Test
+        void assertThrows__() {
+            {
+                final ToIntFunction<String> parser = Integer::parseInt;
+                Assertions.assertThrows(
+                        Throwable.class,
+                        () -> parser.applyAsInt(null)
+                );
+                Assertions.assertDoesNotThrow(
+                        () -> parser.applyAsInt("0")
+                );
+                Assertions.assertThrowsExactly(
+                        NumberFormatException.class,
+                        () -> parser.applyAsInt(null)
+                );
+            }
+        }
+
+        @Test
+        void assertDoesNotThrow__() {
+            final IntUnaryOperator fx = a -> a + 1;
+        }
+    }
+
+    @Nested
     class AssertSame_Test {
 
         @Test
         void __Null() {
             assert null == null;
             Assertions.assertSame(null, null);
-            Assertions.assertThrows(AssertionError.class, () -> {
+            assertThrows(AssertionError.class, () -> {
                 Assertions.assertNotSame(null, null);
             });
         }
@@ -54,7 +112,7 @@ class Junit_Assertions_Test {
             final Object self = new Object();
             assert self == self;
             Assertions.assertSame(self, self);
-            Assertions.assertThrows(AssertionError.class, () -> {
+            assertThrows(AssertionError.class, () -> {
                 Assertions.assertNotSame(self, self);
             });
         }
@@ -72,7 +130,7 @@ class Junit_Assertions_Test {
             final Object expected = new Object();
             final Object actual = new Object();
             assert actual != expected;
-            Assertions.assertThrows(AssertionError.class, () -> {
+            assertThrows(AssertionError.class, () -> {
                 Assertions.assertSame(expected, actual); // Fails
             });
         }
@@ -83,31 +141,31 @@ class Junit_Assertions_Test {
 
         @Test
         void __Null() {
-            assert java.util.Objects.equals(null, null);
+            assert java.util.Objects.equals(null, null); // (a == b) || (a != null && a.equals(b))
             // then
-            Assertions.assertEquals((Object) null, null);
-            Assertions.assertThrows(AssertionError.class, () -> {
-                Assertions.assertNotEquals((Object) null, null);
+            Assertions.assertEquals((Object) null, null);        // Passes
+            assertThrows(AssertionError.class, () -> {
+                Assertions.assertNotEquals((Object) null, null); // Fails
             });
         }
 
         @Test
         void __Self() {
-            final var self = new Object();
-            assert self.equals(self);
-            // when
-            Assertions.assertEquals(self, self);
-            Assertions.assertThrows(AssertionError.class, () -> {
-                Assertions.assertNotEquals(self, self);
-            });
-        }
-
-        @Test
-        void __Equals() {
-            final var expected = new Object();
-            final var actual = expected;
-            assert actual.equals(expected);
-            Assertions.assertEquals(expected, actual);
+            {
+                final var self = new Object();
+                assert self.equals(self); // (this == obj)
+                // then
+                Assertions.assertEquals(self, self);
+                assertThrows(AssertionError.class, () -> {
+                    Assertions.assertNotEquals(self, self);
+                });
+            }
+            {
+                final var expected = new Object();
+                final var actual = expected;
+                assert actual.equals(expected);
+                Assertions.assertEquals(expected, actual);
+            }
         }
 
         @Test
@@ -116,7 +174,7 @@ class Junit_Assertions_Test {
             final var actual = new Object();
             assert actual != expected;
             assert !java.util.Objects.equals(actual, expected);
-            Assertions.assertThrows(AssertionError.class, () -> {
+            assertThrows(AssertionError.class, () -> {
                 Assertions.assertEquals(expected, actual); // Fails
             });
         }

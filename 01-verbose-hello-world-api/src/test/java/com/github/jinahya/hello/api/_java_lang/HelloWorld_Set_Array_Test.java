@@ -25,6 +25,7 @@ import com.github.jinahya.hello.api.HelloWorldTest;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.mockito.verification.VerificationMode;
@@ -113,7 +114,12 @@ class HelloWorld_Set_Array_Test
         // ------------------------------------------------------------------------------------ when
         final var result = service.set(array);
         // ------------------------------------------------------------------------------------ then
-//        Mockito.verify(service, Mockito.times(1)).set(array, 0);
+//        Mockito.verify(service, Mockito.times(1))
+//                .set(ArgumentMatchers.same(array), ArgumentMatchers.intThat(v -> v == 0));
+//        final var arrayCaptor = ArgumentCaptor.forClass(byte[].class);
+//        final var indexCaptor = ArgumentCaptor.forClass(int.class);
+//        Mockito.verify(service, Mockito.times(1))
+//                .set(arrayCaptor.capture(), indexCaptor.capture());
 //        Assertions.assertSame(array, result);
     }
 }

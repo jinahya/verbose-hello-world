@@ -63,20 +63,20 @@ static void printf_i(const char *name, const int value) {
 static void value_range_constants(void) {
     printf("\n--- 1. Value Range Constants ---\n");
     {
-        printf_f("FLT_MAX", +FLT_MAX);
-        printf_f("FLT_MIN", +FLT_MIN);
+        printf_f("FLT_MAX",      +FLT_MAX);       /* Float.MAX_VALUE */
+        printf_f("FLT_MIN",      +FLT_MIN);       /* Float.MIN_NORMAL */
         /* FLT_TRUE_MIN (C11): smallest positive subnormal float */
         const uint32_t ftm_bits = 0x00000001U;
         float ftm; memcpy(&ftm, &ftm_bits, sizeof ftm);
-        printf_f("FLT_TRUE_MIN", ftm);
+        printf_f("FLT_TRUE_MIN", ftm);             /* Float.MIN_VALUE */
     }
     {
-        printf_d("DBL_MAX", +DBL_MAX);
-        printf_d("DBL_MIN", +DBL_MIN);
+        printf_d("DBL_MAX",      +DBL_MAX);        /* Double.MAX_VALUE */
+        printf_d("DBL_MIN",      +DBL_MIN);        /* Double.MIN_NORMAL */
         /* DBL_TRUE_MIN (C11): smallest positive subnormal double */
         const uint64_t dtm_bits = 0x0000000000000001UL;
         double dtm; memcpy(&dtm, &dtm_bits, sizeof dtm);
-        printf_d("DBL_TRUE_MIN", dtm);
+        printf_d("DBL_TRUE_MIN", dtm);             /* Double.MIN_VALUE */
     }
     {
         printf_ld("LDBL_MAX", +LDBL_MAX);
@@ -93,19 +93,19 @@ static void precision_digit_constants(void) {
     printf_i("DBL_MANT_DIG",  DBL_MANT_DIG);
     printf_i("LDBL_MANT_DIG", LDBL_MANT_DIG);
 #ifdef FLT_DECIMAL_DIG
-    printf_i("FLT_DECIMAL_DIG", FLT_DECIMAL_DIG); /* C11 */
+    printf_i("FLT_DECIMAL_DIG", FLT_DECIMAL_DIG);  /* C11 */
 #endif
 #ifdef DECIMAL_DIG
-    printf_i("DECIMAL_DIG",   DECIMAL_DIG);        /* C11 */
+    printf_i("DECIMAL_DIG",   DECIMAL_DIG);         /* C11 */
 #endif
 }
 
 static void exponent_range_constants(void) {
     printf("\n--- 3. Exponent Range Constants ---\n");
-    printf_i("FLT_MIN_EXP",    FLT_MIN_EXP);
-    printf_i("FLT_MAX_EXP",    FLT_MAX_EXP);
-    printf_i("DBL_MIN_EXP",    DBL_MIN_EXP);
-    printf_i("DBL_MAX_EXP",    DBL_MAX_EXP);
+    printf_i("FLT_MIN_EXP",    FLT_MIN_EXP);       /* Float.MIN_EXPONENT + 1 */
+    printf_i("FLT_MAX_EXP",    FLT_MAX_EXP);        /* Float.MAX_EXPONENT + 1 */
+    printf_i("DBL_MIN_EXP",    DBL_MIN_EXP);        /* Double.MIN_EXPONENT + 1 */
+    printf_i("DBL_MAX_EXP",    DBL_MAX_EXP);         /* Double.MAX_EXPONENT + 1 */
     printf_i("FLT_MIN_10_EXP", FLT_MIN_10_EXP);
     printf_i("FLT_MAX_10_EXP", FLT_MAX_10_EXP);
     printf_i("DBL_MIN_10_EXP", DBL_MIN_10_EXP);
@@ -114,7 +114,9 @@ static void exponent_range_constants(void) {
 
 static void error_behavior_constants(void) {
     printf("\n--- 4. Error & Behavior Constants ---\n");
-    printf_f("FLT_EPSILON",     FLT_EPSILON);
+    printf_f("FLT_EPSILON",      FLT_EPSILON);
+    printf_d("DBL_EPSILON",     DBL_EPSILON);
+    printf_ld("LDBL_EPSILON",   LDBL_EPSILON);
     printf_i("FLT_RADIX",       FLT_RADIX);
     printf_i("FLT_ROUNDS",      FLT_ROUNDS);
     printf_i("FLT_EVAL_METHOD", FLT_EVAL_METHOD);
@@ -123,6 +125,42 @@ static void error_behavior_constants(void) {
 // -------------------------------------------------------------------------
 
 int main(void) {
+    printf("--- 0. IEEE 754 Conformance ---\n");
+#ifdef __STDC_IEC_559__
+    printf("__STDC_IEC_559__          : defined (IEEE 754 conformant)\n");
+#else
+    printf("__STDC_IEC_559__          : not defined\n");
+#endif
+#ifdef __STDC_IEC_60559_BFP__
+    printf("__STDC_IEC_60559_BFP__    : defined (IEEE 754 conformant, C23)\n");
+#else
+    printf("__STDC_IEC_60559_BFP__    : not defined\n");
+#endif
+    printf_i("FLT_RADIX",               FLT_RADIX);
+    printf_i("sizeof(float)",            (int) sizeof(float));
+    printf_i("sizeof(double)",           (int) sizeof(double));
+    printf_i("sizeof(long double)",      (int) sizeof(long double));
+#ifdef __STDC_VERSION__
+    printf_i("__STDC_VERSION__",        (int) __STDC_VERSION__);
+#endif
+#ifdef __STDC_IEC_60559_TYPES__
+    printf("__STDC_IEC_60559_TYPES__  : defined\n");
+#ifdef FLT32_MAX
+    printf_i("sizeof(_Float32)",        (int) sizeof(_Float32));
+    printf_f("FLT32_MAX",              (float) FLT32_MAX);
+    printf_f("FLT32_MIN",              (float) FLT32_MIN);
+    printf_f("FLT32_EPSILON",          (float) FLT32_EPSILON);
+#endif
+#ifdef FLT64_MAX
+    printf_i("sizeof(_Float64)",        (int) sizeof(_Float64));
+    printf_d("FLT64_MAX",              (double) FLT64_MAX);
+    printf_d("FLT64_MIN",              (double) FLT64_MIN);
+    printf_d("FLT64_EPSILON",          (double) FLT64_EPSILON);
+#endif
+#else
+    printf("__STDC_IEC_60559_TYPES__  : not defined (C23 _Float32/_Float64 unavailable)\n");
+#endif
+
     value_range_constants();
     precision_digit_constants();
     exponent_range_constants();
