@@ -68,7 +68,6 @@ class HelloWorld_Write_OutputStream_Test
         final var service = service();
         final var stream = (OutputStream) null;
         // ------------------------------------------------------------------------------- when/then
-        // assert: <service.write(stream:null)> throws a <NullPointerException>
         Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.write(stream)
@@ -88,43 +87,40 @@ class HelloWorld_Write_OutputStream_Test
             and writes the <array> to the <stream>"""
     )
     @Test
-    void __()
-            throws IOException {
+    void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // stub: <service.set(array)> will return the <array>
         Mockito.doAnswer(i -> i.getArgument(0))
                 .when(service)
                 .set(ArgumentMatchers.any(byte[].class));
-        // prepare: a mock object of <OutputStream>
         final var stream = Mockito.mock(OutputStream.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(stream);
         // ------------------------------------------------------------------------------------ then
-        // verify: <set(byte[12])> invoked, once
         final var array = HelloWorldTestUtils.set_array12_invoked_once(service);
-        // verify: <stream.write(array)> invoked, once
 //        Mockito.verify(stream, Mockito.times(1)).write(array);
-        // verify: no more interactions with the <stream>
-//        Mockito.verifyNoMoreInteractions(stream);
-        // verify: <result> is same as <stream>
         Assertions.assertSame(stream, result);
     }
 
     @畵蛇添足("testing with an existing file doesn't add any extra value")
     @DisplayName("<file>'s length should be increased by <12>")
     @Test
-    void _添足_畵蛇(@TempDir final File dir)
-            throws IOException {
+    void _添足_畵蛇(@TempDir final File dir) throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // stub: <service.write(stream)> will write the <hello, world> bytes
         Mockito.doAnswer(i -> {
-            final var stream = i.getArgument(0, OutputStream.class);
-            stream.write(new_hello_world_array());
-            return stream;
-        }).when(service).write(ArgumentMatchers.<OutputStream>notNull());
-        // prepare: create a temp file, and write some dummy bytes
+            final var array = i.getArgument(0, byte[].class);
+            System.arraycopy(
+                    "hello, world".getBytes(StandardCharsets.US_ASCII),
+                    0,
+                    array,
+                    0,
+                    array.length
+            );
+            return array;
+        }).when(service).set(ArgumentMatchers.<byte[]>argThat(a -> {
+            return a != null && a.length == HelloWorld.BYTES;
+        }));
         final var file = File.createTempFile("tmp", null, dir);
         // ------------------------------------------------------------------------------------ when
         try (var stream = new FileOutputStream(file)) {

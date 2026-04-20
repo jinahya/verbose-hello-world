@@ -271,13 +271,11 @@ public interface HelloWorld {
         if (appendable == null) {
             throw new NullPointerException("appendable is null");
         }
-        final var array = new byte[BYTES];
-        set(array);
-        // append each byte in <array>, cast as <char>, to <appendable>
-//        for (final var b : array) {
-//            appendable.append((char) b);
-//        }
-        // return given <appendable>
+//        final var array = new byte[BYTES];
+//        set(array);
+        for (final var b : set(new byte[BYTES])) {
+            appendable.append((char) b);
+        }
         return appendable;
     }
 
@@ -371,8 +369,9 @@ public interface HelloWorld {
         if (stream == null) {
             throw new NullPointerException("stream is null");
         }
-        final var array = set(new byte[BYTES]);
-        stream.write(array);
+        final var array = new byte[BYTES];
+        set(new byte[BYTES]);
+//        stream.write(array);
         return stream;
     }
 
@@ -383,7 +382,7 @@ public interface HelloWorld {
     }
 
     @Deprecated(forRemoval = true)
-    @屋上架屋("FilterOutputStream extends OutputStream")
+    @屋上架屋("FileOutputStream extends OutputStream")
     default <T extends FileOutputStream> T write(final T stream) throws IOException {
         return (T) write((OutputStream) stream);
     }

@@ -88,35 +88,26 @@ class HelloWorld_Append_File_Test
             and <flushes/closes> the stream"""
     )
     @Test
-    void __()
-            throws IOException {
+    void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // stub: <service.write(stream)> will just return the <stream>
         Mockito.doAnswer(i -> i.getArgument(0, OutputStream.class))
                 .when(service)
                 .write(ArgumentMatchers.any(OutputStream.class));
-        // prepare: a mock object of <File>
         final var file = Mockito.mock(File.class);
-        // mock: constructions of <FileOutputStream>
         final MockedConstruction.MockInitializer<FileOutputStream> initializer = (m, c) -> {
-            // does nothing
+            log.debug("mock: {}, context: {}", m, c);
         };
         try (var construction = Mockito.mockConstruction(FileOutputStream.class, initializer)) {
             // -------------------------------------------------------------------------------- when
             final var result = service.append(file);
             // ---------------------------------------------------------------------------------then
-            // verify: <new FileOutputStream(file, true)<stream>> invoked, once
-            final var constructed = construction.constructed();
+//            final var constructed = construction.constructed();
 //            Assertions.assertEquals(1, constructed.size());
 //            final var stream = constructed.getFirst();
-            // verify: <service.write(<stream>)> invoked, once
 //            Mockito.verify(service, Mockito.times(1)).write(stream);
-            // verify: <<stream>.flush()> invoked, once
 //            Mockito.verify(stream, Mockito.times(1)).flush();
-            // verify: <<stream>.close()> invoked, once
 //            Mockito.verify(stream, Mockito.times(1)).close();
-            // assert: <result> is same as <file>
             Assertions.assertSame(file, result);
         }
     }

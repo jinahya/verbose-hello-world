@@ -81,12 +81,12 @@ public final class HelloWorldTestUtils {
     }
 
     // ---------------------------------------------------------------------------------------------
-    static <T extends HelloWorld> T requireMock(final T service) {
-        Objects.requireNonNull(service, "service is null");
-        if (!Mockito.mockingDetails(service).isMock()) {
-            throw new IllegalArgumentException("not a mock: " + service);
+    static <T extends HelloWorld> T requireMock(final T object) {
+        Objects.requireNonNull(object, "object is null");
+        if (!Mockito.mockingDetails(object).isMock()) {
+            throw new IllegalArgumentException("not a mock: " + object);
         }
-        return service;
+        return object;
     }
 
     static <T extends HelloWorld> T requireNotMock(final T service) {
@@ -313,8 +313,7 @@ public final class HelloWorldTestUtils {
     }
 
     @SuppressWarnings({"unchecked"})
-    public static <T extends Path> T writeSome(final T path)
-            throws IOException {
+    public static <T extends Path> T writeSome(final T path) throws IOException {
         Objects.requireNonNull(path, "path is null");
         if (ThreadLocalRandom.current().nextBoolean()) {
             return (T) writeSome_(path.toFile()).toPath();

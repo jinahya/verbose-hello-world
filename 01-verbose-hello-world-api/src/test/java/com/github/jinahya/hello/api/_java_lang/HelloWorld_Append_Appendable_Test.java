@@ -93,17 +93,17 @@ class HelloWorld_Append_Appendable_Test
         // ------------------------------------------------------------------------------------ when
         final var result = service.append(appendable);
         // ------------------------------------------------------------------------------------ then
-        final var arrayCaptor = ArgumentCaptor.forClass(byte[].class);        // <1>
-        Mockito.verify(service, Mockito.times(1)).set(arrayCaptor.capture()); // <2>
-        final var array = arrayCaptor.getValue();                             // <3>
-        Assertions.assertNotNull(array);                                      // <4>
-        Assertions.assertEquals(HelloWorld.BYTES, array.length);              // <5>
+        final var arrayCaptor = ArgumentCaptor.forClass(byte[].class);
+        Mockito.verify(service, Mockito.times(1)).set(arrayCaptor.capture());
+        final var array = arrayCaptor.getValue();
+        Assertions.assertNotNull(array);
+        Assertions.assertEquals(HelloWorld.BYTES, array.length);
         final var charCaptor = ArgumentCaptor.forClass(char.class);
-//        Mockito.verify(appendable, Mockito.times(array.length)).append(charCaptor.capture());
-//        final var chars = charCaptor.getAllValues();
-//        for (int i = 0; i < chars.size(); i++) {
-//            Assertions.assertEquals(array[i], (byte) chars.get(i).charValue());
-//        }
+        Mockito.verify(appendable, Mockito.times(array.length)).append(charCaptor.capture());
+        final var chars = charCaptor.getAllValues();
+        for (int i = 0; i < chars.size(); i++) {
+            Assertions.assertEquals(array[i], (byte) chars.get(i).charValue());
+        }
         Assertions.assertSame(appendable, result);
     }
 
