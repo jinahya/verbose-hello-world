@@ -39,10 +39,10 @@ import org.mockito.Mockito;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.HexFormat;
 import java.util.stream.Stream;
 
@@ -58,22 +58,8 @@ import java.util.stream.Stream;
 class HelloWorld_Append_File_Charset_Test
         extends HelloWorldTest {
 
-    @TempDir
-    private static File tempDir;
-
     private static Stream<Charset> charsetStream() {
         return _Java_Nio_TestUtils.charsetStream();
-    }
-
-    private static Stream<Arguments> fileAndCharsetArgumentsStream() {
-        return charsetStream().map(
-                c -> {
-                    try {
-                        return Arguments.of(File.createTempFile("tmp", "txt", tempDir), c);
-                    } catch (final IOException ioe) {
-                        throw new RuntimeException(ioe);
-                    }
-                });
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -136,7 +122,7 @@ class HelloWorld_Append_File_Charset_Test
     )
     @MethodSource("charsetStream")
     @ParameterizedTest
-    void __(final Charset charset) throws IOException {
+    void __(final Charset charset) throws IOException, NoSuchMethodException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         Mockito.doAnswer(i -> i.getArgument(0))
@@ -144,8 +130,12 @@ class HelloWorld_Append_File_Charset_Test
                 .write(ArgumentMatchers.<Writer>any());
         final var file = Mockito.mock(File.class);
         try (var mockConstruction = Mockito.mockConstruction(FileWriter.class, (m, c) -> {
+            Assertions.assertEquals(
+                    FileWriter.class.getConstructor(File.class, Charset.class, boolean.class),
+                    c.constructor()
+            );
             final var arguments = c.arguments();
-            Assertions.assertEquals(3, arguments.size());
+            assert arguments.size() == 3;
             Assertions.assertSame(file, arguments.get(0));
             Assertions.assertSame(charset, arguments.get(1));
             Assertions.assertTrue((Boolean) arguments.get(2));
@@ -163,34 +153,49 @@ class HelloWorld_Append_File_Charset_Test
         }
     }
 
-    //    private byte[] getFirst4Bytes(final File file) throws IOException {
-//        assert file.length() >= 4;
-//        try (var fis = new FileInputStream(file)) {
-//            return fis.readNBytes(4);
-//        }
-//    }
+    @TempDir
+    private static File tempDir;
+
+    private static Stream<Arguments> fileAndCharsetArgumentsStream() {
+        return charsetStream().map(c -> {
+            try {
+                return Arguments.of(File.createTempFile("tmp", "txt", tempDir), c);
+            } catch (final IOException ioe) {
+                throw new RuntimeException(ioe);
+            }
+        });
+    }
 
     @MethodSource({"fileAndCharsetArgumentsStream"})
     @ParameterizedTest(name = "[{index}]: {1}")
     void _添足_畵蛇(final File file, final Charset charset) throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
+        final var decoded = "hello, world";
+        final var encoded = decoded.toCharArray();
         Mockito.doAnswer(i -> {
-                    final var writer = i.getArgument(0, OutputStreamWriter.class);
-                    writer.write(hello_world_char_array());
+                    final var writer = i.getArgument(0, Writer.class);
+                    writer.write(encoded);
                     return writer;
                 })
                 .when(service)
-                .write(ArgumentMatchers.<OutputStreamWriter>notNull());
+                .write(ArgumentMatchers.<Writer>any());
+        Mockito.doAnswer(i -> {
+                    final var f = i.getArgument(0, File.class);
+                    final var c = i.getArgument(1, Charset.class);
+                    try (var w = new FileWriter(f, c, true)) {
+                        service.write(w);
+                        w.flush();
+                    }
+                    return f;
+                })
+                .when(service)
+                .append(ArgumentMatchers.any(), ArgumentMatchers.any());
         // ------------------------------------------------------------------------------------ when
         service.append(file, charset);
         // ------------------------------------------------------------------------------------ then
-        final var length = file.length();
-        Assertions.assertTrue(length >= HelloWorld.BYTES);
-//        log.debug("{}: {} {}", String.format("%14s", charset.name()), length,
-//                  HexFormat.of().formatHex(getFirst4Bytes(file)));
-        log.debug("{}: {} {}", String.format("%14s", charset.name()), length,
-                  HexFormat.of().formatHex(Files.readAllBytes(file.toPath())));
-        ;
+        final var bytes = Files.readAllBytes(file.toPath());
+        log.debug("{}: {} {}", String.format("%14s", charset.name()), bytes.length,
+                  HexFormat.of().formatHex(bytes));
     }
 }

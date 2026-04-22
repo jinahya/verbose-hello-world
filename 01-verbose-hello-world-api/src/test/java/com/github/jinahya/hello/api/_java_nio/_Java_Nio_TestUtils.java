@@ -66,7 +66,7 @@ public final class _Java_Nio_TestUtils {
                                 throw new RuntimeException(iae);
                             }
                         }),
-                Stream.of("X-UTF-32LE-BOM", "X-UTF-32BE-BOM")
+                Stream.of("X-UTF-32BE-BOM", "X-UTF-32LE-BOM")
                         .map(Charset::forName)
         );
     }

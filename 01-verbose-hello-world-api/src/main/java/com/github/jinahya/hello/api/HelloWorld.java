@@ -655,10 +655,10 @@ public interface HelloWorld {
     default <T extends File> T append(final T file, final Charset charset) throws IOException {
         Objects.requireNonNull(file, "file is null");
         Objects.requireNonNull(charset, "charset is null");
-        try (var writer = new FileWriter(file, charset, true)) {
+//        try (var writer = new FileWriter(file, charset, true)) {
 //            write(writer);
 //            writer.flush();
-        }
+//        }
         return file;
     }
 
