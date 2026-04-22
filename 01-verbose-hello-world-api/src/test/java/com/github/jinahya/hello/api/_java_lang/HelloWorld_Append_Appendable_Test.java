@@ -22,7 +22,6 @@ package com.github.jinahya.hello.api._java_lang;
 
 import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorldTestConstants;
 import com.github.jinahya.hello.api.畵蛇添足;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -35,6 +34,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -112,17 +112,17 @@ class HelloWorld_Append_Appendable_Test
     void _添足_畵蛇() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
+        final var decoded = "hello, world";
+        final var encoded = decoded.getBytes(StandardCharsets.US_ASCII);
         Mockito.doAnswer(i -> {
-            final var appendable = i.getArgument(0, Appendable.class);
-            for (final var c : hello_world_char_array()) {
-                appendable.append(c);
-            }
-            return appendable;
-        }).when(service).append(ArgumentMatchers.<Appendable>notNull());
+            final var array = i.getArgument(0, byte[].class);
+            System.arraycopy(encoded, 0, array, 0, encoded.length);
+            return array;
+        }).when(service).set(ArgumentMatchers.<byte[]>notNull());
         final var appendable = new StringBuilder();
         // ------------------------------------------------------------------------------------ when
         service.append(appendable);
         // ------------------------------------------------------------------------------------ then
-        Assertions.assertEquals(HelloWorldTestConstants.HELLO_WORLD_STRING, appendable.toString());
+        Assertions.assertEquals(decoded, appendable.toString());
     }
 }

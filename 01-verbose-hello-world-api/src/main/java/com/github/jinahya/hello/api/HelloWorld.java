@@ -31,6 +31,7 @@ import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.FilterOutputStream;
 import java.io.FilterWriter;
 import java.io.IOException;
@@ -580,16 +581,6 @@ public interface HelloWorld {
         return writer;
     }
 
-    /**
-     * .
-     *
-     * @param writer .
-     * @param <T>    .
-     * @return .
-     * @throws IOException .
-     * @see <a *
-     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/io/OutputStreamWriter.html">java.io.OutputStreamWriter</a>
-     */
     @Deprecated(forRemoval = true)
     @屋上架屋("OutputStreamWriter extends Writer")
     default <T extends OutputStreamWriter> T write(final T writer) throws IOException {
@@ -634,17 +625,14 @@ public interface HelloWorld {
      * @param <T>     file type parameter
      * @param file    the file to append to
      * @param charset the character set to use for encoding
-     * @see FileOutputStream#FileOutputStream(File, boolean)
-     * @see OutputStreamWriter#OutputStreamWriter(OutputStream, Charset)
-     * @see #write(OutputStreamWriter)
-     * @see #append(File)
+     * @see FileWriter#FileWriter(File, Charset, boolean)
+     * @see #write(Writer)
      */
     default <T extends File> T append(final T file, final Charset charset) throws IOException {
         Objects.requireNonNull(file, "file is null");
         Objects.requireNonNull(charset, "charset is null");
-        try (var writer = new OutputStreamWriter(new FileOutputStream(file, true), charset)) {
-            final var result = write((OutputStreamWriter) writer);
-            assert result == writer;
+        try (var writer = new FileWriter(file, charset, true)) {
+            write(writer);
             writer.flush();
         }
         return file;
