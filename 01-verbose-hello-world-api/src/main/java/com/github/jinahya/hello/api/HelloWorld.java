@@ -724,34 +724,33 @@ public interface HelloWorld {
      * @param packet the datagram packet to which bytes are appended.
      * @return the given {@code packet}.
      * @throws NullPointerException      if {@code packet} is {@code null}.
-     * @throws IndexOutOfBoundsException if the packet's data buffer does not have at least
-     *                                   {@value #BYTES} bytes available after
-     *                                   {@code offset + length}.
-     * @implSpec Default implementation invokes {@link #set(byte[])} method with an array of
-     * {@value #BYTES} bytes, copies the array into the {@code packet}'s
-     * {@link DatagramPacket#getData() data} buffer starting at
+     * @throws IllegalArgumentException if the packet's {@link DatagramPacket#getData() data}
+     *                                  buffer does not have at least {@value #BYTES} bytes
+     *                                  available after {@code offset + length}.
+     * @implSpec Default implementation invokes the {@link #set(byte[], int)} method with the
+     * {@code packet}'s {@link DatagramPacket#getData() data} buffer and
      * ({@link DatagramPacket#getOffset() packet.offset} +
-     * {@link DatagramPacket#getLength() packet.length}), increments the {@code packet}'s
-     * {@link DatagramPacket#getLength() length} by {@value #BYTES}, and returns the
-     * {@code packet}.
+     * {@link DatagramPacket#getLength() packet.length}) as the index, increments the
+     * {@code packet}'s {@link DatagramPacket#getLength() length} by {@value #BYTES}, and returns
+     * the {@code packet}.
      * @see DatagramPacket#getData()
      * @see DatagramPacket#getOffset()
      * @see DatagramPacket#getLength()
      * @see DatagramPacket#setLength(int)
-     * @see #set(byte[])
+     * @see #set(byte[], int)
      */
     default DatagramPacket append(final DatagramPacket packet) {
-        Objects.requireNonNull(packet, "packet is null");
-        final var array = new byte[BYTES];
-        set(array);
-        System.arraycopy(
-                array,
-                0,
-                packet.getData(),
-                packet.getOffset() + packet.getLength(),
-                array.length
-        );
-        packet.setLength(packet.getLength() + BYTES);
+        if (packet == null) {
+            throw new NullPointerException("packet is null");
+        }
+        final var data = packet.getData();
+        final var offset = packet.getOffset(); // the offset in the data
+        final var length = packet.getLength(); // the number of bytes to send from the offset
+        if (offset + length + BYTES > data.length) {
+            throw new IllegalArgumentException("packet.data is not enough");
+        }
+//        set(data, offset + length);
+//        packet.setLength(packet.getLength() + BYTES);
         return packet;
     }
 
