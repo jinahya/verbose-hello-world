@@ -621,10 +621,34 @@ public interface HelloWorld {
     /**
      * Appends the <a href="#hello-world-bytes">hello-world-bytes</a>, encoded with the specified
      * charset, to the end of the specified file, and returns the file.
+     * <p>
+     * The default implementation would be as follows.
+     * {@snippet lang = "java":
+     * if (file == null) {
+     *     throw new NullPointerException("file is null");
+     * }
+     * if (charset == null) {
+     *     throw new NullPointerException("charset is null");
+     * }
+     * try (var writer = new FileWriter(file, charset, true)) { // @highlight region
+     *     write(writer);
+     *     writer.flush();
+     * } // @end
+     * return file;
+     *}
      *
      * @param <T>     file type parameter
      * @param file    the file to append to
      * @param charset the character set to use for encoding
+     * @return the given {@code file}.
+     * @throws NullPointerException if {@code file} is {@code null}.
+     * @throws NullPointerException if {@code charset} is {@code null}.
+     * @throws IOException          if an I/O error occurs.
+     * @implSpec Default implementation creates a new {@link FileWriter} with {@code file},
+     * {@code charset}, and {@code true} for
+     * {@link FileWriter#FileWriter(File, Charset, boolean) appending mode}, invokes the
+     * {@link #write(Writer) write(writer)} method with it, {@link Writer#flush() flushes} and
+     * {@link Writer#close() closes} the writer, and returns {@code file}.
      * @see FileWriter#FileWriter(File, Charset, boolean)
      * @see #write(Writer)
      */
