@@ -656,8 +656,8 @@ public interface HelloWorld {
         Objects.requireNonNull(file, "file is null");
         Objects.requireNonNull(charset, "charset is null");
         try (var writer = new FileWriter(file, charset, true)) {
-            write(writer);
-            writer.flush();
+//            write(writer);
+//            writer.flush();
         }
         return file;
     }

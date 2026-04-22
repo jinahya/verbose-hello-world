@@ -37,7 +37,6 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -122,11 +121,10 @@ class HelloWorld_Append_File_Charset_Test
     }
 
     /**
-     * Verifies {@link HelloWorld#append(File, Charset)} method constructs a new
-     * {@link FileOutputStream} with {@code file} and {@code true}, constructs a new
-     * {@link OutputStreamWriter} with the {@code stream} and the {@code charset}, invokes
-     * {@link HelloWorld#write(OutputStreamWriter)} method with it, flushes/closes the writer, and
-     * returns the {@code file}.
+     * Verifies {@link HelloWorld#append(File, Charset)} method constructs a new {@link FileWriter}
+     * with {@code file}, {@code charset}, and {@code true}, invokes
+     * {@link HelloWorld#write(Writer)} method with it, flushes/closes the writer, and returns the
+     * {@code file}.
      *
      * @throws IOException if an I/O error occurs.
      */
@@ -136,27 +134,27 @@ class HelloWorld_Append_File_Charset_Test
             should invoke <write(writer)> method with it,
             and should <flushes/closes> the writer"""
     )
-    @Test
-    void __() throws IOException {
+    @MethodSource("charsetStream")
+    @ParameterizedTest
+    void __(final Charset charset) throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         Mockito.doAnswer(i -> i.getArgument(0))
                 .when(service)
                 .write(ArgumentMatchers.<Writer>any());
         final var file = Mockito.mock(File.class);
-        final var charset = Charset.defaultCharset();
         try (var mockConstruction = Mockito.mockConstruction(FileWriter.class, (m, c) -> {
             final var arguments = c.arguments();
-//            Assertions.assertEquals(3, arguments.size());
-//            Assertions.assertSame(file, arguments.get(0));
-//            Assertions.assertSame(charset, arguments.get(1));
-//            Assertions.assertTrue((Boolean) arguments.get(2));
+            Assertions.assertEquals(3, arguments.size());
+            Assertions.assertSame(file, arguments.get(0));
+            Assertions.assertSame(charset, arguments.get(1));
+            Assertions.assertTrue((Boolean) arguments.get(2));
         })) {
             // -------------------------------------------------------------------------------- when
             final var result = service.append(file, charset);
             // -------------------------------------------------------------------------------- then
             final var constructed = mockConstruction.constructed();
-//            Assertions.assertEquals(1, constructed.size());
+            Assertions.assertEquals(1, constructed.size());
 //            final var writer = constructed.getFirst();
 //            Mockito.verify(service, Mockito.times(1)).write(writer);
 //            Mockito.verify(writer, Mockito.times(1)).flush();
