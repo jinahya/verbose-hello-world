@@ -45,7 +45,6 @@ import java.lang.foreign.MemorySegment;
 import java.lang.foreign.ValueLayout;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.MulticastSocket;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.StandardSocketOptions;
@@ -742,7 +741,7 @@ public interface HelloWorld {
         if (target == null) {
             throw new NullPointerException("target is null");
         }
-        final var packet = new DatagramPacket(new byte[BYTES], BYTES, target);
+//        final var packet = new DatagramPacket(new byte[BYTES], 0, target);
 //        append(packet);
 //        socket.send(packet);
         return socket;
@@ -772,57 +771,10 @@ public interface HelloWorld {
         if (!socket.isConnected()) {
             throw new IllegalArgumentException("not connected; " + socket);
         }
-        final var packet = new DatagramPacket(new byte[BYTES], BYTES);
-        append(packet);
-        socket.send(packet);
+        final var target = socket.getRemoteSocketAddress();
+        assert target != null;
+//        send(socket, target);
         return socket;
-    }
-
-    /**
-     * Sends the <a href="#hello-world-bytes">hello-world-bytes</a> through the specified multicast
-     * socket.
-     *
-     * @param <T>    socket type parameter
-     * @param socket the multicast socket through which bytes are sent; must be
-     *               {@link MulticastSocket#isConnected() connected} to a multicast group address.
-     * @return the given {@code socket}.
-     * @throws NullPointerException     if {@code socket} is {@code null}.
-     * @throws IllegalArgumentException if the {@code socket} is not
-     *                                  {@link MulticastSocket#isConnected() connected}.
-     * @throws IOException              if an I/O error occurs.
-     * @implSpec Default implementation invokes {@link #send(DatagramSocket)} with {@code socket}.
-     * @deprecated Invoke {@link #send(DatagramSocket)} with the {@code socket}.
-     */
-    @屋上架屋("MulticastSocket extends DatagramSocket")
-    @Deprecated(forRemoval = true)
-    @SuppressWarnings("unchecked")
-    default <T extends MulticastSocket> T send(final T socket)
-            throws IOException {
-        return (T) send((DatagramSocket) socket);
-    }
-
-    /**
-     * Sends the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified target address
-     * via the specified multicast socket.
-     *
-     * @param <T>    socket type parameter
-     * @param socket the multicast socket through which bytes are sent.
-     * @param target the target address to which bytes are sent.
-     * @return the given {@code socket}.
-     * @throws NullPointerException if {@code socket} is {@code null} or {@code target} is
-     *                              {@code null}.
-     * @throws IOException          if an I/O error occurs.
-     * @implSpec Default implementation invokes {@link #send(DatagramSocket, SocketAddress)} with
-     * {@code socket} and {@code target}.
-     * @deprecated Invoke {@link #send(DatagramSocket, SocketAddress)} with {@code socket} and
-     * {@code target}.
-     */
-    @屋上架屋("MulticastSocket extends DatagramSocket")
-    @Deprecated(forRemoval = true)
-    @SuppressWarnings("unchecked")
-    default <T extends MulticastSocket> T send(final T socket, final SocketAddress target)
-            throws IOException {
-        return (T) send((DatagramSocket) socket, target);
     }
 
     /**

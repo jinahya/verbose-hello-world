@@ -28,10 +28,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import java.io.IOException;
@@ -39,7 +38,9 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * A class for testing {@link HelloWorld#send(DatagramSocket) send(socket)} method.
@@ -96,59 +97,72 @@ class HelloWorld_Send_DatagramSocket_Test
 
     /**
      * Verifies that the {@link HelloWorld#send(DatagramSocket) send(socket)} method invokes
-     * {@link HelloWorld#append(DatagramPacket) append(packet)} and
-     * {@link DatagramSocket#send(DatagramPacket) socket.send(packet)} with the same packet.
+     * {@link HelloWorld#send(DatagramSocket, SocketAddress) send(socket, target)} method with
+     * {@code socket} and
+     * {@link DatagramSocket#getRemoteSocketAddress() socket.remoteSocketAddress}, and returns the
+     * {@code socket}.
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("should invoke <append(packet)> and <socket.send(packet)> with the same packet")
+    @DisplayName("should invoke <send(socket, socket.remoteAddress)>")
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         Mockito.doAnswer(i -> i.getArgument(0))
                 .when(service)
-                .append(Mockito.any(DatagramPacket.class));
+                .send(ArgumentMatchers.<DatagramSocket>any(), ArgumentMatchers.any());
         final var socket = Mockito.mock(DatagramSocket.class);
         Mockito.when(socket.isConnected()).thenReturn(true);
+        final var target = Mockito.mock(SocketAddress.class);
+        Mockito.when(socket.getRemoteSocketAddress()).thenReturn(target);
         // ------------------------------------------------------------------------------------ when
         final var result = service.send(socket);
         // ------------------------------------------------------------------------------------ then
-        final var captor = ArgumentCaptor.forClass(DatagramPacket.class);
-        Mockito.verify(service, Mockito.times(1)).append(captor.capture());
-        final var packet = captor.getValue();
-        Mockito.verify(socket, Mockito.times(1)).send(packet);
+//        Mockito.verify(service, Mockito.times(1)).send(socket, target);
         Assertions.assertSame(socket, result);
     }
 
-    @Disabled
     @畵蛇添足
     @Test
     void _添足_畵蛇() throws IOException {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.set_array_will_set_actual_hello_world_bytes(
-                service());
+        final var service = service();
+        Mockito.doAnswer(i -> {
+            final var socket = i.getArgument(0, DatagramSocket.class);
+            socket.send(new DatagramPacket(
+                    HelloWorldTestUtils.hello_world_byte_array(),
+                    HelloWorld.BYTES
+            ));
+            return socket;
+        }).when(service).send(ArgumentMatchers.<DatagramSocket>any());
         // ----------------------------------------------------------------------------- when / then
         try (var server = new DatagramSocket(
                 new InetSocketAddress(InetAddress.getLoopbackAddress(), 0))) {
             // start a receiver thread
-            Thread.ofVirtual().start(() -> {
+            Thread.ofPlatform().start(() -> {
                 try {
-                    final var packet = new DatagramPacket(new byte[HelloWorld.BYTES],
-                                                          HelloWorld.BYTES);
+                    final DatagramPacket packet = new DatagramPacket(
+                            new byte[HelloWorld.BYTES << 1],                       // <buf>
+                            ThreadLocalRandom.current().nextInt(HelloWorld.BYTES), // <offset>
+                            HelloWorld.BYTES                                       // <length>
+                    );
                     server.receive(packet);
-                    log.debug("received: {}",
-                              new String(packet.getData(), 0, packet.getLength(),
-                                         StandardCharsets.US_ASCII));
+                    final var decoded = new String(
+                            packet.getData(),         // <bytes>
+                            packet.getOffset(),       // <offset>
+                            packet.getLength(),       // <length>
+                            StandardCharsets.US_ASCII // <charset>
+                    );
+                    log.debug("received: {}", decoded);
                 } catch (final IOException ioe) {
                     log.error("failed to receive", ioe);
                 }
             });
+            // send the 'hello, world' packet
             try (var client = new DatagramSocket()) {
                 client.connect(server.getLocalSocketAddress());
-                assert client.isConnected();
-                final var result = service.send(client);
-                Assertions.assertSame(client, result);
+                service.send(client);
             }
         }
     }

@@ -280,21 +280,6 @@ interface HelloWorldRevisited
         return socket;
     }
 
-    @SuppressWarnings("removal")
-    @Deprecated(forRemoval = true)
-    @Override
-    default <T extends MulticastSocket> T send(final T socket) throws IOException {
-        return HelloWorld.super.send(socket);
-    }
-
-    @SuppressWarnings("removal")
-    @Deprecated(forRemoval = true)
-    @Override
-    default <T extends MulticastSocket> T send(final T socket, final SocketAddress target)
-            throws IOException {
-        return HelloWorld.super.send(socket, target);
-    }
-
     // ------------------------------------------------------------------------------- java.net.http
     @SuppressWarnings({"unchecked"})
     @Override
