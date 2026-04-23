@@ -812,12 +812,37 @@ public interface HelloWorld {
         return socket;
     }
 
+    /**
+     * Sends the <a href="#hello-world-bytes">hello-world-bytes</a> through the specified url
+     * connection.
+     * <p>
+     * The default implementation would be as follows.
+     * {@snippet lang = "java":
+     * if (connection == null) {
+     *     throw new NullPointerException("connection is null");
+     * }
+     * write(connection.getOutputStream()); // @highlight
+     * return connection;
+     *}
+     *
+     * @param <T>        url connection type parameter
+     * @param connection the url connection through which bytes are sent.
+     * @return the given {@code socket}.
+     * @throws NullPointerException if {@code socket} is {@code null}.
+     * @throws IOException          if an I/O error occurs.
+     * @implSpec Default implementation invokes {@link #write(OutputStream)} method with
+     * {@link URLConnection#getOutputStream() connection.outputStream}, and returns the
+     * {@code connection}.
+     * @implNote Note that this method does not {@link Flushable#flush() flush} the
+     * {@code connection}'s output stream.
+     * @see URLConnection#getOutputStream()
+     * @see #write(OutputStream)
+     */
     default <T extends URLConnection> T send(final T connection) throws IOException {
         if (connection == null) {
             throw new NullPointerException("connection is null");
         }
-        final var stream = connection.getOutputStream();
-        write(stream);
+        write(connection.getOutputStream());
         return connection;
     }
 
