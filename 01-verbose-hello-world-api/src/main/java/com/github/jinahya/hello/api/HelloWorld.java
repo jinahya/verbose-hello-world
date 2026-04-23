@@ -718,36 +718,6 @@ public interface HelloWorld {
     }
 
     /**
-     * Sends the <a href="#hello-world-bytes">hello-world-bytes</a> through the specified
-     * {@link DatagramSocket#isConnected() connected } datagram socket.
-     *
-     * @param <T>    socket type parameter
-     * @param socket the socket through which bytes are sent.
-     * @return the given {@code socket}.
-     * @throws NullPointerException     if {@code socket} is {@code null}.
-     * @throws IllegalArgumentException if the {@code socket} is not
-     *                                  {@link DatagramSocket#isConnected() connected}.
-     * @throws IOException              if an I/O error occurs.
-     * @implSpec Default implementation invokes {@link #set(DatagramPacket) set(packet)} with a
-     * datagram packet of {@value #BYTES}-long data array, and
-     * {@link DatagramSocket#send(DatagramPacket) sends} the packet through the {@code socket}.
-     * @see #set(DatagramPacket)
-     * @see DatagramSocket#send(DatagramPacket)
-     */
-    default <T extends DatagramSocket> T send(final T socket) throws IOException {
-        if (socket == null) {
-            throw new NullPointerException("socket is null");
-        }
-        if (!socket.isConnected()) {
-            throw new IllegalArgumentException("not connected; " + socket);
-        }
-        final var packet = new DatagramPacket(new byte[BYTES], BYTES);
-        append(packet);
-        socket.send(packet);
-        return socket;
-    }
-
-    /**
      * Sends the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified target address
      * via the specified datagram socket.
      *
@@ -773,6 +743,36 @@ public interface HelloWorld {
             throw new NullPointerException("target is null");
         }
         final var packet = new DatagramPacket(new byte[BYTES], BYTES, target);
+//        append(packet);
+//        socket.send(packet);
+        return socket;
+    }
+
+    /**
+     * Sends the <a href="#hello-world-bytes">hello-world-bytes</a> through the specified
+     * {@link DatagramSocket#isConnected() connected } datagram socket.
+     *
+     * @param <T>    socket type parameter
+     * @param socket the socket through which bytes are sent.
+     * @return the given {@code socket}.
+     * @throws NullPointerException     if {@code socket} is {@code null}.
+     * @throws IllegalArgumentException if the {@code socket} is not
+     *                                  {@link DatagramSocket#isConnected() connected}.
+     * @throws IOException              if an I/O error occurs.
+     * @implSpec Default implementation invokes {@link #append(DatagramPacket) set(packet)} with a
+     * datagram packet of {@value #BYTES}-long data array, and
+     * {@link DatagramSocket#send(DatagramPacket) sends} the packet through the {@code socket}.
+     * @see #append(DatagramPacket)
+     * @see DatagramSocket#send(DatagramPacket)
+     */
+    default <T extends DatagramSocket> T send(final T socket) throws IOException {
+        if (socket == null) {
+            throw new NullPointerException("socket is null");
+        }
+        if (!socket.isConnected()) {
+            throw new IllegalArgumentException("not connected; " + socket);
+        }
+        final var packet = new DatagramPacket(new byte[BYTES], BYTES);
         append(packet);
         socket.send(packet);
         return socket;

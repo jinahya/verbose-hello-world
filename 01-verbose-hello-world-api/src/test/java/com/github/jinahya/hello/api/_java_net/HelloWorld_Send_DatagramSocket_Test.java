@@ -96,12 +96,12 @@ class HelloWorld_Send_DatagramSocket_Test
 
     /**
      * Verifies that the {@link HelloWorld#send(DatagramSocket) send(socket)} method invokes
-     * {@link HelloWorld#append(DatagramPacket) set(packet)} and
+     * {@link HelloWorld#append(DatagramPacket) append(packet)} and
      * {@link DatagramSocket#send(DatagramPacket) socket.send(packet)} with the same packet.
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("should invoke <set(packet)> and <socket.send(packet)> with the same packet")
+    @DisplayName("should invoke <append(packet)> and <socket.send(packet)> with the same packet")
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
