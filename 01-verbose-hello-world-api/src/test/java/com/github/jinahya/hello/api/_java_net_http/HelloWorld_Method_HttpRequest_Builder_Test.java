@@ -1,9 +1,12 @@
 package com.github.jinahya.hello.api._java_net_http;
 
+import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldTest;
 import com.github.jinahya.hello.api.HelloWorldTestUtils;
 import com.github.jinahya.hello.api.畵蛇添足;
 import com.sun.net.httpserver.HttpServer;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -19,20 +22,15 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * A class for testing
- * {@link com.github.jinahya.hello.api.HelloWorld#method(HttpRequest.Builder, String)
- * method(builder, method)} method.
+ * {@link HelloWorld#method(HttpRequest.Builder, String) method(builder, method)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @DisplayName("method(HttpRequest.Builder, String)")
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_Method_HttpRequest_Builder_Test
         extends HelloWorldTest {
-
-    // -------------------------------------------------------------------------------- CONSTRUCTORS
-    HelloWorld_Method_HttpRequest_Builder_Test() {
-        super();
-    }
 
     // ---------------------------------------------------------------------------------------------
     @DisplayName("""

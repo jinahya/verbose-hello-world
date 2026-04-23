@@ -65,7 +65,6 @@ class HelloWorld_Send_Socket_Test
         final var service = service();
         final var socket = (Socket) null;
         // ------------------------------------------------------------------------------- when/then
-        // assert, <service.send(socket)> throws a <NullPointerException>
         Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.send(socket)
@@ -102,29 +101,26 @@ class HelloWorld_Send_Socket_Test
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         Mockito.doAnswer(i -> {
-                    final var stream = i.getArgument(0, OutputStream.class);
-                    stream.write("hello, world".getBytes(StandardCharsets.US_ASCII));
-                    return stream;
-                })
-                .when(service)
-                .write(ArgumentMatchers.<OutputStream>notNull());
+            final var socket = i.getArgument(0, Socket.class);
+            socket.getOutputStream().write("hello, world".getBytes(StandardCharsets.US_ASCII));
+            socket.getOutputStream().flush();
+            return socket;
+        }).when(service).send(ArgumentMatchers.<Socket>notNull());
         // ----------------------------------------------------------------------------- when / then
         try (var server = new ServerSocket()) {
             server.bind(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0));
             final var thread = Thread.ofPlatform().daemon().start(() -> {
-                try {
-                    try (var client = server.accept()) {
-                        final var array = client.getInputStream().readNBytes(HelloWorld.BYTES);
-                        assert array.length == HelloWorld.BYTES;
-                        log.debug("decoded: {}", new String(array, StandardCharsets.US_ASCII));
-                    }
+                try (var client = server.accept()) {
+                    final var array = client.getInputStream().readNBytes(HelloWorld.BYTES);
+                    assert array.length == HelloWorld.BYTES;
+                    log.debug("read: {}", new String(array, StandardCharsets.US_ASCII));
                 } catch (final IOException ioe) {
-                    throw new RuntimeException(ioe);
+                    throw new RuntimeException("failed to accept/read", ioe);
                 }
             });
             try (var client = new Socket()) {
                 client.connect(server.getLocalSocketAddress());
-                service.write(client.getOutputStream());
+                service.send(client);
                 client.getOutputStream().flush();
             }
             thread.join();

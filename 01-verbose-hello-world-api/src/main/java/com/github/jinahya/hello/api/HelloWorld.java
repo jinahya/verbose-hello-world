@@ -33,6 +33,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.FilterOutputStream;
 import java.io.FilterWriter;
+import java.io.Flushable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -48,6 +49,7 @@ import java.net.DatagramSocket;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.StandardSocketOptions;
+import java.net.URLConnection;
 import java.net.http.HttpRequest;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
@@ -796,6 +798,8 @@ public interface HelloWorld {
      * @throws IOException          if an I/O error occurs.
      * @implSpec Default implementation invokes {@link #write(OutputStream)} method with
      * {@link Socket#getOutputStream() socket.outputStream}, and returns the {@code socket}.
+     * @implNote Note that this method does not {@link Flushable#flush() flush} the {@code socket}'s
+     * output stream.
      * @see Socket#getOutputStream()
      * @see #write(OutputStream)
      */
@@ -803,9 +807,18 @@ public interface HelloWorld {
         if (socket == null) {
             throw new NullPointerException("socket is null");
         }
-        final var stream = socket.getOutputStream();
+//        final var stream = socket.getOutputStream();
 //        write(stream);
         return socket;
+    }
+
+    default <T extends URLConnection> T send(final T connection) throws IOException {
+        if (connection == null) {
+            throw new NullPointerException("connection is null");
+        }
+        final var stream = connection.getOutputStream();
+        write(stream);
+        return connection;
     }
 
     // ------------------------------------------------------------------------------- java.net.http
