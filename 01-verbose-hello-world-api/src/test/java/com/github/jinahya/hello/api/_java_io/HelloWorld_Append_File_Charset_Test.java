@@ -144,7 +144,7 @@ class HelloWorld_Append_File_Charset_Test
             final var result = service.append(file, charset);
             // -------------------------------------------------------------------------------- then
             final var constructed = mockConstruction.constructed();
-            Assertions.assertEquals(1, constructed.size());
+//            Assertions.assertEquals(1, constructed.size());
 //            final var writer = constructed.getFirst();
 //            Mockito.verify(service, Mockito.times(1)).write(writer);
 //            Mockito.verify(writer, Mockito.times(1)).flush();

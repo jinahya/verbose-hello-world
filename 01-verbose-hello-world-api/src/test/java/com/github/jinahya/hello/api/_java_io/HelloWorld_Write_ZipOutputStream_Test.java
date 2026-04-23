@@ -37,6 +37,7 @@ import org.mockito.Mockito;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.HexFormat;
 import java.util.zip.CRC32;
 import java.util.zip.DeflaterOutputStream;
@@ -112,6 +113,11 @@ class HelloWorld_Write_ZipOutputStream_Test
     void _添足_畵蛇(final int level) throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = set_array_will_set_actual_hello_world_bytes();
+        Mockito.doAnswer(i -> {
+            final var stream = i.getArgument(0, OutputStream.class);
+            stream.write(service.set(new byte[HelloWorld.BYTES]));
+            return stream;
+        }).when(service).write(ArgumentMatchers.<OutputStream>any());
         final var bytes = hello_world_byte_array();
         // ------------------------------------------------------------------------------ compress
         final var baos = new ByteArrayOutputStream();
@@ -146,6 +152,11 @@ class HelloWorld_Write_ZipOutputStream_Test
     void _添足_畵蛇() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = set_array_will_set_actual_hello_world_bytes();
+        Mockito.doAnswer(i -> {
+            final var stream = i.getArgument(0, OutputStream.class);
+            stream.write(service.set(new byte[HelloWorld.BYTES]));
+            return stream;
+        }).when(service).write(ArgumentMatchers.<OutputStream>any());
         final var bytes = hello_world_byte_array();
         // ------------------------------------------------------------------------------ compress
         final var baos = new ByteArrayOutputStream();

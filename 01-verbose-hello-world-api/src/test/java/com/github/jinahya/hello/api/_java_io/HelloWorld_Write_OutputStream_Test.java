@@ -108,19 +108,13 @@ class HelloWorld_Write_OutputStream_Test
     void _添足_畵蛇(@TempDir final File dir) throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
+        final var decoded = "hello, world";
+        final var encoded = decoded.getBytes(StandardCharsets.US_ASCII);
         Mockito.doAnswer(i -> {
-            final var array = i.getArgument(0, byte[].class);
-            System.arraycopy(
-                    "hello, world".getBytes(StandardCharsets.US_ASCII),
-                    0,
-                    array,
-                    0,
-                    array.length
-            );
-            return array;
-        }).when(service).set(ArgumentMatchers.<byte[]>argThat(a -> {
-            return a != null && a.length == HelloWorld.BYTES;
-        }));
+            final var stream = i.getArgument(0, OutputStream.class);
+            stream.write(encoded);
+            return stream;
+        }).when(service).write(ArgumentMatchers.<OutputStream>any());
         final var file = File.createTempFile("tmp", null, dir);
         // ------------------------------------------------------------------------------------ when
         try (var stream = new FileOutputStream(file)) {
@@ -138,8 +132,7 @@ class HelloWorld_Write_OutputStream_Test
                 }
                 o += r;
             }
-            final var decoded = new String(b, StandardCharsets.US_ASCII);
-            log.debug("decoded: {}", decoded);
+            log.debug("decoded: {}", new String(b, StandardCharsets.US_ASCII));
         }
     }
 }

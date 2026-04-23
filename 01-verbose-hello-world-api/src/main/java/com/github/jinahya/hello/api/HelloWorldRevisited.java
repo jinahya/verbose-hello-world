@@ -286,16 +286,16 @@ interface HelloWorldRevisited
         return packet;
     }
 
-    @Override
-    default DatagramPacket set(final DatagramPacket packet) {
-        if (packet.getData().length >= BYTES) {
-            set(packet.getData());
-            packet.setData(packet.getData(), 0, BYTES);
-        } else {
-            packet.setData(set());
-        }
-        return packet;
-    }
+//    @Override
+//    default DatagramPacket set(final DatagramPacket packet) {
+//        if (packet.getData().length >= BYTES) {
+//            set(packet.getData());
+//            packet.setData(packet.getData(), 0, BYTES);
+//        } else {
+//            packet.setData(set());
+//        }
+//        return packet;
+//    }
 
     @Override
     default <T extends Socket> T send(final T socket) throws IOException {
@@ -305,14 +305,14 @@ interface HelloWorldRevisited
 
     @Override
     default <T extends DatagramSocket> T send(final T socket) throws IOException {
-        socket.send(set(new DatagramPacket(new byte[BYTES], BYTES)));
+        socket.send(append(new DatagramPacket(new byte[BYTES], BYTES)));
         return socket;
     }
 
     @Override
     default <T extends DatagramSocket> T send(final T socket, final SocketAddress target)
             throws IOException {
-        socket.send(set(new DatagramPacket(new byte[BYTES], BYTES, target)));
+        socket.send(append(new DatagramPacket(new byte[BYTES], BYTES, target)));
         return socket;
     }
 

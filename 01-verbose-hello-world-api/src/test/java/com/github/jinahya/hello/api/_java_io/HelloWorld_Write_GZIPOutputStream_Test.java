@@ -26,6 +26,7 @@ import com.github.jinahya.hello.api.畵蛇添足;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.java_websocket.util.Base64;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,6 +36,7 @@ import org.mockito.Mockito;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.HexFormat;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPInputStream;
@@ -106,6 +108,11 @@ class HelloWorld_Write_GZIPOutputStream_Test
     void _添足_畵蛇() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = set_array_will_set_actual_hello_world_bytes();
+        Mockito.doAnswer(i -> {
+            final var stream = i.getArgument(0, OutputStream.class);
+            stream.write(service.set(new byte[HelloWorld.BYTES]));
+            return stream;
+        }).when(service).write(ArgumentMatchers.<OutputStream>any());
         // ------------------------------------------------------------------------------ compress
         final var baos = new ByteArrayOutputStream();
         try (var gzos = new GZIPOutputStream(baos)) {

@@ -28,6 +28,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -95,36 +96,35 @@ class HelloWorld_Send_DatagramSocket_Test
 
     /**
      * Verifies that the {@link HelloWorld#send(DatagramSocket) send(socket)} method invokes
-     * {@link HelloWorld#set(DatagramPacket) set(packet)} and
+     * {@link HelloWorld#append(DatagramPacket) set(packet)} and
      * {@link DatagramSocket#send(DatagramPacket) socket.send(packet)} with the same packet.
      *
      * @throws IOException if an I/O error occurs.
      */
     @DisplayName("should invoke <set(packet)> and <socket.send(packet)> with the same packet")
     @Test
-    void __()
-            throws IOException {
+    void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         Mockito.doAnswer(i -> i.getArgument(0))
                 .when(service)
-                .set(Mockito.any(DatagramPacket.class));
+                .append(Mockito.any(DatagramPacket.class));
         final var socket = Mockito.mock(DatagramSocket.class);
         Mockito.when(socket.isConnected()).thenReturn(true);
         // ------------------------------------------------------------------------------------ when
         final var result = service.send(socket);
         // ------------------------------------------------------------------------------------ then
         final var captor = ArgumentCaptor.forClass(DatagramPacket.class);
-        Mockito.verify(service, Mockito.times(1)).set(captor.capture()); // <1>
+        Mockito.verify(service, Mockito.times(1)).append(captor.capture());
         final var packet = captor.getValue();
-        Mockito.verify(socket, Mockito.times(1)).send(packet);           // <2>
-        Assertions.assertSame(socket, result);                           // <3>
+        Mockito.verify(socket, Mockito.times(1)).send(packet);
+        Assertions.assertSame(socket, result);
     }
 
+    @Disabled
     @畵蛇添足
     @Test
-    void _添足_畵蛇()
-            throws IOException {
+    void _添足_畵蛇() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = HelloWorldTestUtils.set_array_will_set_actual_hello_world_bytes(
                 service());

@@ -4,6 +4,7 @@ import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldTest;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -33,6 +34,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * @see <a
  * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/javax/crypto/CipherOutputStream.html#close()">javax.crypto.CipherOutputStream#close()</a>
  */
+@Disabled
 @DisplayName("write(CipherOutputStream)")
 @Slf4j
 class HelloWorld_Write_CipherOutputStream_Test

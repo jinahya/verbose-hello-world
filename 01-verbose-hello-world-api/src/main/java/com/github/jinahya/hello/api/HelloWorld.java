@@ -664,40 +664,40 @@ public interface HelloWorld {
 
     // ------------------------------------------------------------------------------------ java.net
 
-    /**
-     * Sets the <a href="#hello-world-bytes">hello-world-bytes</a> in the specified datagram
-     * packet.
-     * <p>
-     * If the packet's data buffer is at least {@value #BYTES} bytes long, the buffer is reused.
-     * Otherwise, a new buffer is allocated and set on the packet. In either case, the packet's
-     * offset is reset to {@code 0} and its length is set to {@value #BYTES}.
-     *
-     * @param packet the datagram packet in which bytes are set.
-     * @return the given {@code packet}.
-     * @throws NullPointerException if {@code packet} is {@code null}.
-     * @implSpec Default implementation checks if the packet's data buffer has at least
-     * {@value #BYTES} bytes. If so, it invokes {@link #set(byte[])} with the buffer and resets the
-     * packet's offset and length via {@link DatagramPacket#setData(byte[], int, int)}. Otherwise,
-     * it creates a new array of {@value #BYTES} bytes, invokes {@link #set(byte[])} with it, and
-     * sets the array on the packet via {@link DatagramPacket#setData(byte[])}.
-     * @see DatagramPacket#getData()
-     * @see DatagramPacket#setData(byte[], int, int)
-     * @see DatagramPacket#setData(byte[])
-     */
-    default DatagramPacket set(final DatagramPacket packet) {
-        if (packet == null) {
-            throw new NullPointerException("packet is null");
-        }
-        if (packet.getData().length >= BYTES) {
-            set(packet.getData());
-            packet.setData(packet.getData(), 0, BYTES);
-        } else {
-            final var array = new byte[BYTES];
-            set(array);
-            packet.setData(array);
-        }
-        return packet;
-    }
+//    /**
+//     * Sets the <a href="#hello-world-bytes">hello-world-bytes</a> in the specified datagram
+//     * packet.
+//     * <p>
+//     * If the packet's data buffer is at least {@value #BYTES} bytes long, the buffer is reused.
+//     * Otherwise, a new buffer is allocated and set on the packet. In either case, the packet's
+//     * offset is reset to {@code 0} and its length is set to {@value #BYTES}.
+//     *
+//     * @param packet the datagram packet in which bytes are set.
+//     * @return the given {@code packet}.
+//     * @throws NullPointerException if {@code packet} is {@code null}.
+//     * @implSpec Default implementation checks if the packet's data buffer has at least
+//     * {@value #BYTES} bytes. If so, it invokes {@link #set(byte[])} with the buffer and resets the
+//     * packet's offset and length via {@link DatagramPacket#setData(byte[], int, int)}. Otherwise,
+//     * it creates a new array of {@value #BYTES} bytes, invokes {@link #set(byte[])} with it, and
+//     * sets the array on the packet via {@link DatagramPacket#setData(byte[])}.
+//     * @see DatagramPacket#getData()
+//     * @see DatagramPacket#setData(byte[], int, int)
+//     * @see DatagramPacket#setData(byte[])
+//     */
+//    default DatagramPacket set(final DatagramPacket packet) {
+//        if (packet == null) {
+//            throw new NullPointerException("packet is null");
+//        }
+//        if (packet.getData().length >= BYTES) {
+//            set(packet.getData());
+//            packet.setData(packet.getData(), 0, BYTES);
+//        } else {
+//            final var array = new byte[BYTES];
+//            set(array);
+//            packet.setData(array);
+//        }
+//        return packet;
+//    }
 
     /**
      * Appends the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified datagram
@@ -779,7 +779,7 @@ public interface HelloWorld {
             throw new IllegalArgumentException("not connected; " + socket);
         }
         final var packet = new DatagramPacket(new byte[BYTES], BYTES);
-        set(packet);
+        append(packet);
         socket.send(packet);
         return socket;
     }
@@ -806,7 +806,7 @@ public interface HelloWorld {
         Objects.requireNonNull(socket, "socket is null");
         Objects.requireNonNull(target, "target is null");
         final var packet = new DatagramPacket(new byte[BYTES], BYTES, target);
-        set(packet);
+        append(packet);
         socket.send(packet);
         return socket;
     }

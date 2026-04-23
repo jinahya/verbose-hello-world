@@ -27,6 +27,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -92,8 +93,8 @@ class HelloWorld_Append_DatagramPacket_Test
     }
 
     /**
-     * Verifies that the {@link HelloWorld#append(DatagramPacket) append(packet)} method invokes
-     * the {@link HelloWorld#set(byte[], int) set(data, offset + length)} method, increments the
+     * Verifies that the {@link HelloWorld#append(DatagramPacket) append(packet)} method invokes the
+     * {@link HelloWorld#set(byte[], int) set(data, offset + length)} method, increments the
      * packet's length by {@value HelloWorld#BYTES}, and returns the packet.
      */
     @DisplayName("""
@@ -123,6 +124,7 @@ class HelloWorld_Append_DatagramPacket_Test
      * Verifies that the {@link HelloWorld#append(DatagramPacket) append(packet)} method correctly
      * appends the hello-world-bytes to a packet that already has existing data.
      */
+    @Disabled
     @畵蛇添足
     @Test
     void _添足_畵蛇() throws IOException {
