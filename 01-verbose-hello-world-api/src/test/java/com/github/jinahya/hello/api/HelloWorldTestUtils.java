@@ -174,6 +174,17 @@ public final class HelloWorldTestUtils {
         return service;
     }
 
+    public static <T extends HelloWorld>
+    T write_stream_will_write_actual_hello_world_bytes(final T service) throws IOException {
+        requireMock(service);
+        Mockito.doAnswer(i -> {
+            final var stream = i.getArgument(0, OutputStream.class);
+            stream.write(hello_world_byte_array());
+            return stream;
+        }).when(service).write(ArgumentMatchers.<OutputStream>notNull());
+        return service;
+    }
+
     public static OutputStream write_stream_invoked_once(final HelloWorld service)
             throws IOException {
         requireMock(service);

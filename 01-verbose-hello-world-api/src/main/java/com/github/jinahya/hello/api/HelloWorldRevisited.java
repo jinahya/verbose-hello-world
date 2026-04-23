@@ -24,7 +24,6 @@ import javax.crypto.Cipher;
 import javax.crypto.CipherOutputStream;
 import javax.crypto.Mac;
 import javax.net.ssl.SSLSocket;
-import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.CharArrayWriter;
 import java.io.DataOutput;
@@ -34,10 +33,8 @@ import java.io.FileOutputStream;
 import java.io.FilterOutputStream;
 import java.io.FilterWriter;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.PipedOutputStream;
 import java.io.PipedWriter;
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -85,8 +82,6 @@ import java.util.jar.JarOutputStream;
 import java.util.stream.Stream;
 import java.util.zip.Checksum;
 import java.util.zip.Deflater;
-import java.util.zip.DeflaterOutputStream;
-import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipOutputStream;
 
 /**
@@ -142,16 +137,6 @@ interface HelloWorldRevisited
     }
 
     @Override
-    default <T extends FileOutputStream> T write(final T stream) throws IOException {
-        return HelloWorld.super.write(stream);
-    }
-
-    @Override
-    default <T extends PipedOutputStream> T write(final T stream) throws IOException {
-        return HelloWorld.super.write(stream);
-    }
-
-    @Override
     default <T extends CharArrayWriter> T write(final T writer) throws IOException {
         return HelloWorld.super.write(writer);
     }
@@ -188,20 +173,6 @@ interface HelloWorldRevisited
         return (T) write((Writer) writer);
     }
 
-    @Deprecated(forRemoval = true)
-    @Override
-    @SuppressWarnings("unchecked")
-    default <T extends FilterOutputStream> T write(final T stream) throws IOException {
-        return (T) write((OutputStream) stream);
-    }
-
-    @SuppressWarnings("removal")
-    @Deprecated(forRemoval = true)
-    @Override
-    default <T extends ObjectOutputStream> T write(final T stream) throws IOException {
-        return HelloWorld.super.write(stream);
-    }
-
     @SuppressWarnings("removal")
     @Deprecated(forRemoval = true)
     @Override
@@ -214,13 +185,6 @@ interface HelloWorldRevisited
     @Override
     default <T extends PrintWriter> T write(final T writer) throws IOException {
         return HelloWorld.super.write(writer);
-    }
-
-    @SuppressWarnings("removal")
-    @Deprecated(forRemoval = true)
-    @Override
-    default <T extends BufferedOutputStream> T write(final T stream) throws IOException {
-        return HelloWorld.super.write(stream);
     }
 
     @SuppressWarnings("removal")
@@ -562,27 +526,6 @@ interface HelloWorldRevisited
     default <T extends Deflater> T input(final T deflater) {
         deflater.setInput(set());
         return deflater;
-    }
-
-    @SuppressWarnings("removal")
-    @Deprecated(forRemoval = true)
-    @Override
-    default <T extends DeflaterOutputStream> T write(final T stream) throws IOException {
-        return HelloWorld.super.write(stream);
-    }
-
-    @SuppressWarnings("removal")
-    @Deprecated(forRemoval = true)
-    @Override
-    default <T extends GZIPOutputStream> T write(final T stream) throws IOException {
-        return HelloWorld.super.write(stream);
-    }
-
-    @SuppressWarnings("removal")
-    @Deprecated(forRemoval = true)
-    @Override
-    default <T extends ZipOutputStream> T write(final T stream) throws IOException {
-        return HelloWorld.super.write(stream);
     }
 
     @Override

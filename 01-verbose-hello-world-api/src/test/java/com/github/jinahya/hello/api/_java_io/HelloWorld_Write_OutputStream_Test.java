@@ -34,6 +34,8 @@ import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -41,6 +43,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.HexFormat;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * A class for testing {@link HelloWorld#write(OutputStream) write(stream)} method.
@@ -105,7 +110,7 @@ class HelloWorld_Write_OutputStream_Test
     @畵蛇添足("testing with an existing file doesn't add any extra value")
     @DisplayName("<file>'s length should be increased by <12>")
     @Test
-    void _添足_畵蛇(@TempDir final File dir) throws IOException {
+    void _添足_畵蛇(@TempDir final File tempDir) throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var decoded = "hello, world";
@@ -115,7 +120,7 @@ class HelloWorld_Write_OutputStream_Test
             stream.write(encoded);
             return stream;
         }).when(service).write(ArgumentMatchers.<OutputStream>any());
-        final var file = File.createTempFile("tmp", null, dir);
+        final var file = File.createTempFile("tmp", null, tempDir);
         // ------------------------------------------------------------------------------------ when
         try (var stream = new FileOutputStream(file)) {
             final var result = service.write(stream);
@@ -133,6 +138,54 @@ class HelloWorld_Write_OutputStream_Test
                 o += r;
             }
             log.debug("decoded: {}", new String(b, StandardCharsets.US_ASCII));
+        }
+    }
+
+    @畵蛇添足
+    @Test
+    void __DeflatorOutputStream() throws IOException {
+        // ----------------------------------------------------------------------------------- given
+        final var service = HelloWorldTestUtils
+                .write_stream_will_write_actual_hello_world_bytes(service());
+        // -------------------------------------------------------------------------------- compress
+        final var baos = new ByteArrayOutputStream();
+        try (var zipos = new GZIPOutputStream(baos)) {
+            service.write(zipos);
+            zipos.flush();
+            zipos.finish(); // maybe redundant; DeflatorOutputStream#close() does this
+        }
+        final var compressed = baos.toByteArray();
+        log.debug("  compressed: {} ({})", HexFormat.of().formatHex(compressed), compressed.length);
+        // ------------------------------------------------------------------------------ decompress
+        try (var gzipis = new GZIPInputStream(new ByteArrayInputStream(compressed))) {
+            final var decompressed = gzipis.readAllBytes();
+            log.debug("decompressed: {} ({})", HexFormat.of().formatHex(decompressed),
+                      decompressed.length);
+            Assertions.assertArrayEquals(hello_world_byte_array(), decompressed);
+        }
+    }
+
+    @畵蛇添足
+    @Test
+    void __GZIPOutputStream() throws IOException {
+        // ----------------------------------------------------------------------------------- given
+        final var service = HelloWorldTestUtils
+                .write_stream_will_write_actual_hello_world_bytes(service());
+        // -------------------------------------------------------------------------------- compress
+        final var baos = new ByteArrayOutputStream();
+        try (var zipos = new GZIPOutputStream(baos)) {
+            service.write(zipos);
+            zipos.flush();
+            zipos.finish(); // maybe redundant; DeflatorOutputStream#close() does this
+        }
+        final var compressed = baos.toByteArray();
+        log.debug("  compressed: {} ({})", HexFormat.of().formatHex(compressed), compressed.length);
+        // ------------------------------------------------------------------------------ decompress
+        try (var gzipis = new GZIPInputStream(new ByteArrayInputStream(compressed))) {
+            final var decompressed = gzipis.readAllBytes();
+            log.debug("decompressed: {} ({})", HexFormat.of().formatHex(decompressed),
+                      decompressed.length);
+            Assertions.assertArrayEquals(hello_world_byte_array(), decompressed);
         }
     }
 }

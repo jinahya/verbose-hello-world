@@ -24,7 +24,6 @@ import javax.crypto.Cipher;
 import javax.crypto.CipherOutputStream;
 import javax.crypto.Mac;
 import javax.net.ssl.SSLSocket;
-import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.CharArrayWriter;
 import java.io.DataOutput;
@@ -35,10 +34,8 @@ import java.io.FileWriter;
 import java.io.FilterOutputStream;
 import java.io.FilterWriter;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.PipedOutputStream;
 import java.io.PipedWriter;
 import java.io.PrintWriter;
 import java.io.RandomAccessFile;
@@ -90,8 +87,6 @@ import java.util.jar.JarOutputStream;
 import java.util.stream.Stream;
 import java.util.zip.Checksum;
 import java.util.zip.Deflater;
-import java.util.zip.DeflaterOutputStream;
-import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -374,38 +369,6 @@ public interface HelloWorld {
         set(new byte[BYTES]);
 //        stream.write(array);
         return stream;
-    }
-
-    @Deprecated(forRemoval = true)
-    @屋上架屋("BufferedOutputStream extends FilterOutputStream")
-    default <T extends BufferedOutputStream> T write(final T stream) throws IOException {
-        return (T) write((FilterOutputStream) stream);
-    }
-
-    @Deprecated(forRemoval = true)
-    @屋上架屋("FileOutputStream extends OutputStream")
-    default <T extends FileOutputStream> T write(final T stream) throws IOException {
-        return (T) write((OutputStream) stream);
-    }
-
-    @Deprecated(forRemoval = true)
-    @屋上架屋("FilterOutputStream extends OutputStream")
-    default <T extends FilterOutputStream> T write(final T stream) throws IOException {
-        final var result = write((OutputStream) stream);
-        assert result == stream;
-        return stream;
-    }
-
-    @Deprecated(forRemoval = true)
-    @屋上架屋("ObjectOutputStream extends OutputStream")
-    default <T extends ObjectOutputStream> T write(final T stream) throws IOException {
-        return (T) write((OutputStream) stream);
-    }
-
-    @Deprecated(forRemoval = true)
-    @屋上架屋("PrintStream extends OutputStream")
-    default <T extends PipedOutputStream> T write(final T stream) throws IOException {
-        return (T) write((OutputStream) stream);
     }
 
     /**
@@ -723,10 +686,10 @@ public interface HelloWorld {
      *
      * @param packet the datagram packet to which bytes are appended.
      * @return the given {@code packet}.
-     * @throws NullPointerException      if {@code packet} is {@code null}.
-     * @throws IllegalArgumentException if the packet's {@link DatagramPacket#getData() data}
-     *                                  buffer does not have at least {@value #BYTES} bytes
-     *                                  available after {@code offset + length}.
+     * @throws NullPointerException     if {@code packet} is {@code null}.
+     * @throws IllegalArgumentException if the packet's {@link DatagramPacket#getData() data} buffer
+     *                                  does not have at least {@value #BYTES} bytes available after
+     *                                  {@code offset + length}.
      * @implSpec Default implementation invokes the {@link #set(byte[], int)} method with the
      * {@code packet}'s {@link DatagramPacket#getData() data} buffer and
      * ({@link DatagramPacket#getOffset() packet.offset} +
@@ -795,16 +758,20 @@ public interface HelloWorld {
      * @throws NullPointerException if {@code socket} is {@code null} or {@code target} is
      *                              {@code null}.
      * @throws IOException          if an I/O error occurs.
-     * @implSpec Default implementation invokes {@link #set(DatagramPacket) set(packet)} with a
-     * datagram packet of {@value #BYTES}-long data array with the {@code target} address, and
+     * @implSpec Default implementation invokes {@link #append(DatagramPacket) append(packet)} with
+     * a datagram packet of {@value #BYTES}-long data array with the {@code target} address, and
      * {@link DatagramSocket#send(DatagramPacket) sends} it through the {@code socket}.
-     * @see #set(DatagramPacket)
+     * @see #append(DatagramPacket)
      * @see DatagramSocket#send(DatagramPacket)
      */
     default <T extends DatagramSocket> T send(final T socket, final SocketAddress target)
             throws IOException {
-        Objects.requireNonNull(socket, "socket is null");
-        Objects.requireNonNull(target, "target is null");
+        if (socket == null) {
+            throw new NullPointerException("socket is null");
+        }
+        if (target == null) {
+            throw new NullPointerException("target is null");
+        }
         final var packet = new DatagramPacket(new byte[BYTES], BYTES, target);
         append(packet);
         socket.send(packet);
@@ -1732,42 +1699,6 @@ public interface HelloWorld {
         set(array);
         deflater.setInput(array);
         return deflater;
-    }
-
-    @Deprecated(forRemoval = true)
-    @屋上架屋("DeflatorOutputStream extends FilterOutputStream")
-    default <T extends DeflaterOutputStream> T write(final T stream) throws IOException {
-        final var result = write((FilterOutputStream) stream);
-        assert result == stream;
-        return stream;
-    }
-
-    /**
-     * .
-     *
-     * @param stream .
-     * @param <T>    .
-     * @return .
-     * @throws IOException if an I/O error occurs.
-     * @see <a
-     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/zip/GZIPOutputStream.html">java.util.zip.GZIPOutputStream</a>
-     * @see <a
-     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/zip/GZIPInputStream.html">java.util.zip.GZIPInputStream</a>
-     */
-    @Deprecated(forRemoval = true)
-    @屋上架屋("GZIPOutputStream extends DeflatorOutputStream")
-    default <T extends GZIPOutputStream> T write(final T stream) throws IOException {
-        final var result = write((DeflaterOutputStream) stream);
-        assert result == stream;
-        return stream;
-    }
-
-    @屋上架屋("ZipOutputStream extends DeflaterOutputStream")
-    @Deprecated(forRemoval = true)
-    default <T extends ZipOutputStream> T write(final T stream) throws IOException {
-        final var result = write((DeflaterOutputStream) stream);
-        assert result == stream;
-        return stream;
     }
 
     /**
