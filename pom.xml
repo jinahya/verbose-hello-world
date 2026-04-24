@@ -616,7 +616,7 @@
             <!-- https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#0.3 -->
             <!--            <argLine>@{argLine} -XX:+EnableDynamicAgentLoading -javaagent:${org.mockito:mockito-core:jar}</argLine>-->
             <!--            <argLine>@{argLine} -javaagent:${org.mockito:mockito-core:jar}</argLine>-->
-            <argLine>--enable-preview -Djdk.httpclient.HttpClient.log=all</argLine>
+<!--            <argLine>&#45;&#45;enable-preview -Djdk.httpclient.HttpClient.log=all</argLine>-->
             <redirectTestOutputToFile>false</redirectTestOutputToFile>
             <!--            <trimStackTrace>false</trimStackTrace>-->
           </configuration>

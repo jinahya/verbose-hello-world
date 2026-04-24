@@ -4,7 +4,6 @@ import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldTest;
 import com.github.jinahya.hello.api.HelloWorldTestUtils;
 import com.github.jinahya.hello.api.畵蛇添足;
-import com.sun.net.httpserver.HttpServer;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,12 +12,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * A class for testing
@@ -29,7 +28,7 @@ import java.nio.charset.StandardCharsets;
 @DisplayName("method(HttpRequest.Builder, String)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_Method_HttpRequest_Builder_Test
+class HelloWorld_Method_HttpRequestBuilder_String_Test
         extends HelloWorldTest {
 
     // ---------------------------------------------------------------------------------------------
@@ -98,31 +97,43 @@ class HelloWorld_Method_HttpRequest_Builder_Test
         Mockito.doAnswer(i -> {
             final var builder = i.getArgument(0, HttpRequest.Builder.class);
             final var method = i.getArgument(1, String.class);
+            builder.method(
+                    method,
+                    HttpRequest.BodyPublishers.ofByteArray(
+                            "hello, world".getBytes(StandardCharsets.US_ASCII)
+                    )
+            );
             return builder;
-        }).when(service).method(Mockito.any(), Mockito.anyString());
-        final var server = HttpServer.create(new InetSocketAddress(0), 0);
-        final var port = server.getAddress().getPort();
-        final var path = "/post";
-        server.createContext(path, h -> {
-            try (h) {
-                final var input = h.getRequestBody().readAllBytes();
-                log.debug("request: {}", new String(input, StandardCharsets.US_ASCII));
-                h.sendResponseHeaders(204, -1); // -1 means no body
+        }).when(service).method(Mockito.<HttpRequest.Builder>any(), Mockito.anyString());
+        HelloWorldTestUtils.executeWithHttpServerStarted(p -> () -> {
+            final HttpClient.Version version;
+            {
+                final var versions = HttpClient.Version.values();
+                version = versions[ThreadLocalRandom.current().nextInt(versions.length)];
+            }
+            try (var client = HttpClient.newBuilder().version(version).build()) {
+                final var builder = HttpRequest.newBuilder()
+                        .uri(URI.create("http://localhost:" + p));
+                // ---------------------------------------------------------------------------- when
+                service.method(builder, "POST");
+                builder.header("Content-Type", "text/plain");
+                final var request = builder.build();
+                final var response = client.send(
+                        request,
+                        HttpResponse.BodyHandlers.ofByteArray()
+                );
+                System.out.printf(
+                        "%s %d%n",
+                        response.version() == HttpClient.Version.HTTP_1_1 ? "HTTP/1.1" : "HTTP/2",
+                        response.statusCode()
+                );
+                response.headers().map().forEach((k, v) -> {
+                    v.forEach(e -> {
+                        System.out.printf("%s: %s%n", k, e);
+                    });
+                });
+                System.out.printf("%n%s%n", new String(response.body(), StandardCharsets.US_ASCII));
             }
         });
-        try {
-            server.start();
-            try (var client = HttpClient.newHttpClient()) {
-                final var builder = HttpRequest.newBuilder();
-                service.method(builder, "POST");
-                final var request = builder
-                        .uri(URI.create("http://localhost:" + port + path))
-                        .build();
-                // ---------------------------------------------------------------------------- when
-                client.send(request, HttpResponse.BodyHandlers.ofByteArray());
-            }
-        } finally {
-            server.stop(0);
-        }
     }
 }

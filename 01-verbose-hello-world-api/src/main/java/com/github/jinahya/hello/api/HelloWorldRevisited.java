@@ -23,7 +23,6 @@ package com.github.jinahya.hello.api;
 import javax.crypto.Cipher;
 import javax.crypto.CipherOutputStream;
 import javax.crypto.Mac;
-import javax.net.ssl.SSLSocket;
 import java.io.BufferedWriter;
 import java.io.CharArrayWriter;
 import java.io.DataOutput;
@@ -45,7 +44,6 @@ import java.lang.foreign.MemorySegment;
 import java.lang.foreign.ValueLayout;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.MulticastSocket;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.http.HttpRequest;
@@ -60,10 +58,6 @@ import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.FileChannel;
-import java.nio.channels.GatheringByteChannel;
-import java.nio.channels.Pipe;
-import java.nio.channels.SeekableByteChannel;
-import java.nio.channels.SocketChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.charset.Charset;
 import java.nio.file.OpenOption;
@@ -74,7 +68,6 @@ import java.security.Signature;
 import java.security.SignatureException;
 import java.sql.Blob;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.BitSet;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
@@ -385,17 +378,6 @@ interface HelloWorldRevisited
         return channel;
     }
 
-    @SuppressWarnings("removal")
-    @Deprecated(forRemoval = true)
-    @Override
-    default <T extends GatheringByteChannel> T write(final T channel) throws IOException {
-        final var srcs = new ByteBuffer[] {put().flip()};
-        for (var r = Arrays.stream(srcs).mapToLong(ByteBuffer::remaining).sum(); r > 0L; ) {
-            r -= channel.write(srcs);
-        }
-        return channel;
-    }
-
     @Override
     default <T extends WritableByteChannel> T write(final T channel) throws IOException {
         for (final var b = put().flip(); b.hasRemaining(); ) {
@@ -409,27 +391,6 @@ interface HelloWorldRevisited
     @Override
     default <T extends AsynchronousSocketChannel> T send(final T channel)
             throws InterruptedException, ExecutionException {
-        return HelloWorld.super.send(channel);
-    }
-
-    @SuppressWarnings("removal")
-    @Deprecated(forRemoval = true)
-    @Override
-    default <T extends Pipe.SinkChannel> T write(final T channel) throws IOException {
-        return HelloWorld.super.write(channel);
-    }
-
-    @SuppressWarnings("removal")
-    @Deprecated(forRemoval = true)
-    @Override
-    default <T extends SeekableByteChannel> T write(final T channel) throws IOException {
-        return HelloWorld.super.write(channel);
-    }
-
-    @SuppressWarnings("removal")
-    @Deprecated(forRemoval = true)
-    @Override
-    default <T extends SocketChannel> T send(final T channel) throws IOException {
         return HelloWorld.super.send(channel);
     }
 
@@ -540,9 +501,9 @@ interface HelloWorldRevisited
     }
 
     // ------------------------------------------------------------------------------- javax.net.ssl
-    @Deprecated(forRemoval = true)
-    @Override
-    default <T extends SSLSocket> T send(final T socket) throws IOException {
-        return HelloWorld.super.send(socket);
-    }
+//    @Deprecated(forRemoval = true)
+//    @Override
+//    default <T extends SSLSocket> T send(final T socket) throws IOException {
+//        return HelloWorld.super.send(socket);
+//    }
 }

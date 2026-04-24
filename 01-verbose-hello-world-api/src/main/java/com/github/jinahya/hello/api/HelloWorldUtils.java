@@ -25,7 +25,7 @@ import com.github.jinahya.hello.api.util._ExcludeFromCoverage_PrivateConstructor
 /**
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-final class HelloWorldUtils {
+public final class HelloWorldUtils {
 
     static byte[] hello_world_bytes() {
         return HelloWorldConstants.HELLO_WORLD_STRING

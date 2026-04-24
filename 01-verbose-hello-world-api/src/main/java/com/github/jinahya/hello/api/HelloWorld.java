@@ -23,7 +23,6 @@ package com.github.jinahya.hello.api;
 import javax.crypto.Cipher;
 import javax.crypto.CipherOutputStream;
 import javax.crypto.Mac;
-import javax.net.ssl.SSLSocket;
 import java.io.BufferedWriter;
 import java.io.CharArrayWriter;
 import java.io.DataOutput;
@@ -63,9 +62,6 @@ import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.FileChannel;
-import java.nio.channels.GatheringByteChannel;
-import java.nio.channels.Pipe;
-import java.nio.channels.SeekableByteChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.charset.Charset;
@@ -842,12 +838,12 @@ public interface HelloWorld {
     }
 
     // -------------------------------------------------------------------------------- java.net.ssl
-    @Deprecated(forRemoval = true)
-    @屋上架屋("SSLSocket extends Socket")
-    @SuppressWarnings({"unchecked"})
-    default <T extends SSLSocket> T send(final T socket) throws IOException {
-        return (T) send((Socket) socket);
-    }
+//    @Deprecated(forRemoval = true)
+//    @屋上架屋("SSLSocket extends Socket")
+//    @SuppressWarnings({"unchecked"})
+//    default <T extends SSLSocket> T send(final T socket) throws IOException {
+//        return (T) send((Socket) socket);
+//    }
 
     // ------------------------------------------------------------------------------------ java.nio
 
@@ -927,14 +923,14 @@ public interface HelloWorld {
             throw new BufferOverflowException();
         }
         if (buffer.hasArray()) {
-            final var array = buffer.array();
-            final var index = buffer.arrayOffset() + buffer.position();
-            set(array, index);
-            buffer.position(buffer.position() + BYTES);
+//            final var array = buffer.array();
+//            final var index = buffer.arrayOffset() + buffer.position();
+//            set(array, index);
+//            buffer.position(buffer.position() + BYTES);
         } else {
-            final var array = new byte[BYTES];
-            set(array);
-            buffer.put(array);
+//            final var array = new byte[BYTES];
+//            set(array);
+//            buffer.put(array);
         }
         return buffer;
     }
@@ -1105,56 +1101,6 @@ public interface HelloWorld {
     }
 
     /**
-     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified gathering byte
-     * channel.
-     * {@snippet lang = "java":
-     * Objects.requireNonNull(channel, "channel is null");
-     * var buffer = put(ByteBuffer.allocate(BYTES));
-     * buffer.flip(); // @highlight
-     * final var srcs = new ByteBuffer[] {buffer}; // @highlight
-     * for (var r = Arrays.stream(srcs).mapToLong(ByteBuffer::remaining).sum(); r > 0; ) {
-     *     r -= channel.write(srcs);
-     * }
-     * return channel;
-     *}
-     *
-     * @param <T>     channel type parameter
-     * @param channel the gathering byte channel to which bytes are written.
-     * @return the given {@code channel}.
-     * @throws NullPointerException if {@code channel} is {@code null}.
-     * @throws IOException          if an I/O error occurs.
-     * @implSpec Default implementation invokes {@link #put(ByteBuffer)} method with a byte buffer
-     * of {@value #BYTES} bytes, {@link ByteBuffer#flip() flips} it, wraps it in a
-     * {@code ByteBuffer} array, and writes the array to the {@code channel} by continuously
-     * invoking {@link GatheringByteChannel#write(ByteBuffer[]) channel.write(srcs)} while the total
-     * remaining bytes is greater than zero.
-     * @see #put(ByteBuffer)
-     * @see ByteBuffer#flip()
-     * @see GatheringByteChannel#write(ByteBuffer[])
-     * @deprecated This method is just for demonstrating the
-     * {@link GatheringByteChannel#write(ByteBuffer[])} method; use
-     * {@link #write(WritableByteChannel) write(channel)} instead.
-     */
-    @Deprecated(forRemoval = true)
-    @屋上架屋("GatheringByteChannel extends WritableByteChannel")
-    default <T extends GatheringByteChannel> T write(final T channel) throws IOException {
-        Objects.requireNonNull(channel, "channel is null");
-        return (T) write((WritableByteChannel) channel);
-    }
-
-    @Deprecated(forRemoval = true)
-    @屋上架屋("SeekableByteChannel extends WritableByteChannel")
-    default <T extends SeekableByteChannel> T write(final T channel) throws IOException {
-        return (T) write((WritableByteChannel) channel);
-    }
-
-    @Deprecated(forRemoval = true)
-    @屋上架屋("Pipe.SinkChannel extends WritableByteChannel")
-    default <T extends Pipe.SinkChannel> T write(final T channel) throws IOException {
-        return (T) write((WritableByteChannel) channel);
-    }
-
-    /**
      * Sends the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified target address
      * via the specified datagram channel.
      *
@@ -1233,32 +1179,6 @@ public interface HelloWorld {
         assert !buffer.hasRemaining();
         assert written == buffer.capacity();
         return channel;
-    }
-
-    /**
-     * Sends the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified socket
-     * channel.
-     * <p>
-     * The default implementation would be as follows.
-     * {@snippet lang = "java":
-     * Objects.requireNonNull(channel, "channel is null");
-     * write(channel); // @highlight
-     * return channel;
-     *}
-     *
-     * @param channel the socket channel to which the <a
-     *                href="#hello-world-bytes">hello-world-bytes</a> are sent.
-     * @param <T>     socket channel type parameter
-     * @return the given {@code channel}.
-     * @throws IOException if an I/O error occurs.
-     * @implSpec Default implementation invokes {@link #write(WritableByteChannel)} method with
-     * {@code channel}, and returns the result.
-     * @deprecated Invoke {@link #write(WritableByteChannel)} method with the {@code channel}.
-     */
-    @屋上架屋("SocketChannel implements WritableByteChannel")
-    @Deprecated(forRemoval = true)
-    default <T extends SocketChannel> T send(final T channel) throws IOException {
-        return write(channel);
     }
 
     /**

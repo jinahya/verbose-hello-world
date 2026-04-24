@@ -61,45 +61,6 @@ import java.util.stream.IntStream;
 })
 public final class HelloWorldTestUtils {
 
-//    @Deprecated(forRemoval = true)
-//    public static void executeWithHttpServerStarted(final int port, final Executable executable) {
-//        Objects.requireNonNull(executable, "executable is null");
-//        Assumptions.assumingThat(
-//                () -> {
-//                    try {
-//                        final var server = com.sun.net.httpserver.HttpServer.create(
-//                                new InetSocketAddress(port), 0
-//                        );
-//                        server.createContext("/", x -> {
-//                            System.out.printf("%s %s %s%n", x.getRequestMethod(), x.getRequestURI(),
-//                                              x.getProtocol());
-//                            x.getRequestHeaders().forEach((k, v) -> v.forEach(
-//                                    v1 -> System.out.printf("%s: %s%n", k, v1))
-//                            );
-//                            final byte[] requestBytes;
-//                            try (var body = x.getRequestBody()) {
-//                                requestBytes = body.readAllBytes();
-//                            }
-//                            System.out.printf("%n%s%n", new String(requestBytes));
-//                            System.out.println("-------------------------------------------------");
-//                            x.sendResponseHeaders(200, requestBytes.length);
-//                            try (var body = x.getResponseBody()) {
-//                                body.write(requestBytes);
-//                                body.flush();
-//                            }
-//                        });
-//                        server.setExecutor(null);
-//                        server.start();
-//                        return true;
-//                    } catch (final Throwable t) {
-//                        log.error("failed to start HTTP server", t);
-//                        return false;
-//                    }
-//                },
-//                executable
-//        );
-//    }
-
     /**
      * Starts an HTTP server which responds requested content, and executes the specified function.
      *
@@ -122,6 +83,7 @@ public final class HelloWorldTestUtils {
                         h -> h.values().forEach(v -> System.out.printf("%s: %s%n", h.key(), v))
                 );
                 System.out.printf("%n%s%n", request.getBodyAsString());
+                System.out.println("-------------------------------------------------------------");
             });
             server.stubFor(
                     WireMock.any(WireMock.anyUrl()).willReturn(
@@ -186,10 +148,11 @@ public final class HelloWorldTestUtils {
     // ----------------------------------------------------------------------------------- java.lang
 
     /**
-     * Stubs given mock serivce's {@link HelloWorld#set(byte[]) set(array)} method to just return
-     * the {@code array}.
+     * Stubs given mock object's {@link HelloWorld#set(byte[]) set(array)} method to just return the
+     * {@code array}.
      *
-     * @param service the mock service.
+     * @param service the mock object whose {@link HelloWorld#set(byte[]) set(array)} method needs
+     *                to be stubbed.
      * @return the given {@code service}.
      * @see #set_array_will_set_actual_hello_world_bytes(HelloWorld)
      * @see #set_array12_invoked_once(HelloWorld)
