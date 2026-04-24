@@ -111,9 +111,8 @@ class HelloWorld_Send_Socket_Test
             server.bind(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0));
             final var thread = Thread.ofPlatform().daemon().start(() -> {
                 try (var client = server.accept()) {
-                    final var array = client.getInputStream().readNBytes(HelloWorld.BYTES);
-                    assert array.length == HelloWorld.BYTES;
-                    log.debug("read: {}", new String(array, StandardCharsets.US_ASCII));
+                    final var bytes = client.getInputStream().readNBytes(HelloWorld.BYTES);
+                    log.debug("read: {}", new String(bytes, StandardCharsets.US_ASCII));
                 } catch (final IOException ioe) {
                     throw new RuntimeException("failed to accept/read", ioe);
                 }

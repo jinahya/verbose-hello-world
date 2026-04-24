@@ -22,6 +22,7 @@ package com.github.jinahya.hello.api._java_net;
 
 import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldTest;
+import com.github.jinahya.hello.api.HelloWorldTestUtils;
 import com.github.jinahya.hello.api.畵蛇添足;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -35,27 +36,24 @@ import org.mockito.Mockito;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.ServerSocket;
 import java.net.URI;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 
 /**
- * A class for testing {@link HelloWorld#send(URLConnection) send(connection)} method.
+ * A class for testing {@link HelloWorld#write(URLConnection) write(connection)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("send(URLConnection)")
+@DisplayName("write(URLConnection)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_Send_URLConnection_Test
+class HelloWorld_Write_URLConnection_Test
         extends HelloWorldTest {
 
     /**
-     * Verifies that the {@link HelloWorld#send(URLConnection) send(connection)} method throws a
+     * Verifies that the {@link HelloWorld#write(URLConnection) write(connection)} method throws a
      * {@link NullPointerException} when the {@code connection} argument is {@code null}.
      */
     @DisplayName("""
@@ -70,12 +68,12 @@ class HelloWorld_Send_URLConnection_Test
         // ------------------------------------------------------------------------------- when/then
         Assertions.assertThrows(
                 NullPointerException.class,
-                () -> service.send(connection)
+                () -> service.write(connection)
         );
     }
 
     /**
-     * Verifies that the {@link HelloWorld#send(URLConnection) send(connection)} method invokes
+     * Verifies that the {@link HelloWorld#write(URLConnection) write(connection)} method invokes
      * {@link HelloWorld#write(OutputStream) write(stream)} with
      * {@link URLConnection#getOutputStream() connection.outputStream}, and returns the
      * {@code connection}.
@@ -90,50 +88,55 @@ class HelloWorld_Send_URLConnection_Test
         Mockito.doAnswer(i -> i.getArgument(0))
                 .when(service)
                 .write(ArgumentMatchers.any(OutputStream.class));
-        final var connection = Mockito.mock(URLConnection.class);        // <1>
-        final var stream = Mockito.mock(OutputStream.class);             // <2>
-        Mockito.when(connection.getOutputStream()).thenReturn(stream);   // <3>
+        final var connection = Mockito.mock(URLConnection.class);
+        final var stream = Mockito.mock(OutputStream.class);
+        Mockito.when(connection.getOutputStream()).thenReturn(stream);
         // ------------------------------------------------------------------------------------ when
-        final var result = service.send(connection);
+        final var result = service.write(connection);
         // ------------------------------------------------------------------------------------ then
-        Mockito.verify(service, Mockito.times(1)).write(stream);         // <4>
-        Assertions.assertSame(connection, result);                       // <5>
+        Mockito.verify(service, Mockito.times(1)).write(stream);
+        Assertions.assertSame(connection, result);
     }
 
     @畵蛇添足
     @Test
-    void _添足_畵蛇() throws IOException, InterruptedException {
+    void _添足_畵蛇() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         Mockito.doAnswer(i -> {
-            final var stream = i.getArgument(0, OutputStream.class);
-            stream.write("hello, world".getBytes(StandardCharsets.US_ASCII));
-            return stream;
-        }).when(service).write(ArgumentMatchers.<OutputStream>notNull());
-        // ----------------------------------------------------------------------------- when / then
-        try (var server = new ServerSocket()) {
-            server.bind(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0));
-            final var thread = Thread.ofPlatform().daemon().start(() -> {
-                try (var client = server.accept()) {
-                    final var bytes = client.getInputStream().readAllBytes();
-                    log.debug("read: ({})\n{}", bytes.length,
-                              new String(bytes, StandardCharsets.ISO_8859_1));
-                } catch (final IOException ioe) {
-                    throw new RuntimeException("failed to accept/read", ioe);
-                }
-            });
-            final var uri = URI.create("http://localhost:" + server.getLocalPort());
-            final var connection = uri.toURL().openConnection();
+            final var connection = i.getArgument(0, URLConnection.class);
+            connection.getOutputStream().write("hello, world".getBytes(StandardCharsets.US_ASCII));
+            return connection;
+        }).when(service).write(ArgumentMatchers.<URLConnection>notNull());
+        HelloWorldTestUtils.executeWithHttpServerStarted(p -> () -> {
+            final var uri = URI.create("http://localhost:" + p);
+            final var connection = (HttpURLConnection) uri.toURL().openConnection();
             connection.setDoOutput(true);
-            connection.setDoInput(false);
+            connection.setDoInput(true);
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Content-Type", "text/plain");
             try {
                 connection.connect();
-                service.send(connection);
+                // ---------------------------------------------------------------------------- when
+                service.write(connection);
                 connection.getOutputStream().flush();
+                connection.getOutputStream().close();
+                // ---------------------------------------------------------------------------- then
+                final var status = connection.getResponseCode();
+                Assertions.assertEquals(200, status);
+                System.out.printf("%s%n", connection.getHeaderField(0));
+                connection.getHeaderFields().entrySet().stream().skip(1L).forEach(
+                        e -> e.getValue().forEach(
+                                v -> System.out.printf("%s: %s%n", e.getKey(), v)
+                        )
+                );
+                try (final var is = connection.getInputStream()) {
+                    final var bytes = is.readAllBytes();
+                    System.out.printf("%n%s%n", new String(bytes, StandardCharsets.US_ASCII));
+                }
             } finally {
-                ((HttpURLConnection) connection).disconnect();
+                connection.disconnect();
             }
-            thread.join();
-        }
+        });
     }
 }

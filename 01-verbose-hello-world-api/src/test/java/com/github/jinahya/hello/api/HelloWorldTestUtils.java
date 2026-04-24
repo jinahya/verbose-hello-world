@@ -21,9 +21,13 @@ package com.github.jinahya.hello.api;
  */
 
 import com.github.jinahya.hello.api.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.function.Executable;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
@@ -43,6 +47,7 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.IntFunction;
 import java.util.stream.IntStream;
 
 /**
@@ -55,6 +60,87 @@ import java.util.stream.IntStream;
         "java:S101"
 })
 public final class HelloWorldTestUtils {
+
+//    @Deprecated(forRemoval = true)
+//    public static void executeWithHttpServerStarted(final int port, final Executable executable) {
+//        Objects.requireNonNull(executable, "executable is null");
+//        Assumptions.assumingThat(
+//                () -> {
+//                    try {
+//                        final var server = com.sun.net.httpserver.HttpServer.create(
+//                                new InetSocketAddress(port), 0
+//                        );
+//                        server.createContext("/", x -> {
+//                            System.out.printf("%s %s %s%n", x.getRequestMethod(), x.getRequestURI(),
+//                                              x.getProtocol());
+//                            x.getRequestHeaders().forEach((k, v) -> v.forEach(
+//                                    v1 -> System.out.printf("%s: %s%n", k, v1))
+//                            );
+//                            final byte[] requestBytes;
+//                            try (var body = x.getRequestBody()) {
+//                                requestBytes = body.readAllBytes();
+//                            }
+//                            System.out.printf("%n%s%n", new String(requestBytes));
+//                            System.out.println("-------------------------------------------------");
+//                            x.sendResponseHeaders(200, requestBytes.length);
+//                            try (var body = x.getResponseBody()) {
+//                                body.write(requestBytes);
+//                                body.flush();
+//                            }
+//                        });
+//                        server.setExecutor(null);
+//                        server.start();
+//                        return true;
+//                    } catch (final Throwable t) {
+//                        log.error("failed to start HTTP server", t);
+//                        return false;
+//                    }
+//                },
+//                executable
+//        );
+//    }
+
+    /**
+     * Starts an HTTP server which responds requested content, and executes the specified function.
+     *
+     * @param function the function to execute.
+     */
+    public static void executeWithHttpServerStarted(
+            final IntFunction<? extends Executable> function) {
+        Objects.requireNonNull(function, "function is null");
+        final var server = new WireMockServer(
+                WireMockConfiguration.wireMockConfig()
+                        .dynamicPort()
+                        .globalTemplating(true)
+        );
+        try {
+            server.start();
+            server.addMockServiceRequestListener((request, response) -> {
+                System.out.printf("%s %s %s%n", request.getMethod(),
+                                  request.getPathAndQueryWithoutPrefix(), request.getProtocol());
+                request.getHeaders().all().forEach(
+                        h -> h.values().forEach(v -> System.out.printf("%s: %s%n", h.key(), v))
+                );
+                System.out.printf("%n%s%n", request.getBodyAsString());
+            });
+            server.stubFor(
+                    WireMock.any(WireMock.anyUrl()).willReturn(
+                            WireMock.aResponse()
+                                    .withStatus(200)
+                                    .withHeader("Content-Type", "{{request.headers.Content-Type}}")
+                                    .withBody("{{request.body}}")
+                                    .withTransformers("response-template")
+                    )
+            );
+            function.apply(server.port()).execute();
+        } catch (final Throwable t) {
+            log.error("failed to execute with HTTP server started", t);
+        } finally {
+            server.stop();
+        }
+    }
+
+    // ---------------------------------------------------------------------------------------------
 
     /**
      * Returns a byte array containing the {@value HelloWorldTestConstants#HELLO_WORLD_STRING}

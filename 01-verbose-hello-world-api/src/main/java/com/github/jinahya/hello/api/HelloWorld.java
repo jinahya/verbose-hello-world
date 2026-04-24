@@ -813,8 +813,8 @@ public interface HelloWorld {
     }
 
     /**
-     * Sends the <a href="#hello-world-bytes">hello-world-bytes</a> through the specified url
-     * connection.
+     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> through the specified url
+     * connection's output stream.
      * <p>
      * The default implementation would be as follows.
      * {@snippet lang = "java":
@@ -838,7 +838,7 @@ public interface HelloWorld {
      * @see URLConnection#getOutputStream()
      * @see #write(OutputStream)
      */
-    default <T extends URLConnection> T send(final T connection) throws IOException {
+    default <T extends URLConnection> T write(final T connection) throws IOException {
         if (connection == null) {
             throw new NullPointerException("connection is null");
         }
