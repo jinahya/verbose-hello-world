@@ -42,7 +42,7 @@ class HelloWorld_Method_HttpRequest_Builder_Test
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final HttpRequest.Builder builder = null;
-        final var method = "POST";
+        final var method = "";
         // ------------------------------------------------------------------------------- when/then
         Assertions.assertThrows(
                 NullPointerException.class,
@@ -58,7 +58,7 @@ class HelloWorld_Method_HttpRequest_Builder_Test
     void _ThrowNullPointerException_MethodIsNull() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        final var builder = HttpRequest.newBuilder();
+        final var builder = Mockito.mock(HttpRequest.Builder.class);
         final String method = null;
         // ------------------------------------------------------------------------------- when/then
         Assertions.assertThrows(
@@ -68,12 +68,13 @@ class HelloWorld_Method_HttpRequest_Builder_Test
     }
 
     // ---------------------------------------------------------------------------------------------
-    @DisplayName("should invoke method(method, publisher)")
+    @DisplayName("should invoke builder.method(method, publisher)")
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
         final var service = HelloWorldTestUtils.set_array_will_return_the_array(service());
-        final var builder = HttpRequest.newBuilder();
+//        final var builder = HttpRequest.newBuilder();
+        final var builder = Mockito.mock(HttpRequest.Builder.class);
         final var method = "WHATEVER";
         try (var mockStatic = Mockito.mockStatic(HttpRequest.BodyPublishers.class,
                                                  Mockito.CALLS_REAL_METHODS)) {
@@ -91,11 +92,14 @@ class HelloWorld_Method_HttpRequest_Builder_Test
 
     @畵蛇添足
     @Test
-    void _添足_畵蛇()
-            throws Exception {
+    void _添足_畵蛇() throws Exception {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.set_array_will_set_actual_hello_world_bytes(
-                service());
+        final var service = service();
+        Mockito.doAnswer(i -> {
+            final var builder = i.getArgument(0, HttpRequest.Builder.class);
+            final var method = i.getArgument(1, String.class);
+            return builder;
+        }).when(service).method(Mockito.any(), Mockito.anyString());
         final var server = HttpServer.create(new InetSocketAddress(0), 0);
         final var port = server.getAddress().getPort();
         final var path = "/post";
