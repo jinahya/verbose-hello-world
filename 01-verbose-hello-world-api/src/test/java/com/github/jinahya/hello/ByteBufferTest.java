@@ -1,9 +1,11 @@
 package com.github.jinahya.hello;
 
+import com.github.jinahya.hello.api.util.JavaNioBufferUtils;
 import com.github.jinahya.hello.api.util.JavaNioByteBufferUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
@@ -35,6 +37,28 @@ class ByteBufferTest {
         JavaNioByteBufferUtils.print(buffer);
     }
 
+    @Test
+    void __AbsRel() {
+        final var buffer = ByteBuffer.allocate(10);
+        JavaNioByteBufferUtils.print(buffer);
+        {
+            final var b = buffer.get();
+            JavaNioByteBufferUtils.print(buffer);
+        }
+        {
+            final var b = buffer.get(buffer.position());
+            JavaNioByteBufferUtils.print(buffer);
+        }
+        {
+            buffer.put(new byte[2]);
+            JavaNioByteBufferUtils.print(buffer);
+        }
+        {
+            buffer.get(1, new byte[5]);
+            JavaNioByteBufferUtils.print(buffer);
+        }
+    }
+
     @DisplayName("calculateAge(person) should return calculateAgeAt(person, now())")
     @Test
     void calculateAge_InvokeCalculateAgeAtWithPersonAndNow_() {
@@ -57,5 +81,121 @@ class ByteBufferTest {
             Assertions.assertEquals(now, dateCaptor.getValue());
             Assertions.assertEquals(expected, age);
         }
+    }
+
+    @Test
+    void __29() {
+        final var buffer = ByteBuffer.allocate(10).position(1).limit(9);
+//        JavaNioByteBufferUtils.print(buffer);
+        JavaNioBufferUtils.print(buffer);
+        buffer.position(buffer.position() + 3);
+        JavaNioBufferUtils.print(buffer);
+    }
+
+    @Nested
+    class IntBufferTest {
+
+        @Test
+        void __() {
+            final var bbuf = ByteBuffer.allocate(Integer.BYTES);
+            JavaNioByteBufferUtils.print(bbuf);
+            bbuf.put(0, new byte[] {(byte) 0x7F, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF});
+            JavaNioByteBufferUtils.print(bbuf);
+            final var ibuf = bbuf.asIntBuffer();
+            assert ibuf.position() == 0;
+            assert ibuf.capacity() == bbuf.remaining() / Integer.BYTES;
+            assert ibuf.limit() == bbuf.remaining() / Integer.BYTES;
+            JavaNioBufferUtils.print(ibuf);
+            final var i = ibuf.get();
+            assert i == Integer.MAX_VALUE;
+            JavaNioBufferUtils.print(ibuf);
+        }
+    }
+
+    @Nested
+    class ManipulationTest {
+
+        @Test
+        void __clear() {
+            final var b = ByteBuffer.allocate(10);
+            JavaNioBufferUtils.print(b);
+            b.limit(7).position(4).mark().position(6);
+            JavaNioBufferUtils.print(b);
+            b.clear();
+            JavaNioBufferUtils.print(b);
+        }
+
+        @Test
+        void __flip() {
+            final var b = ByteBuffer.allocate(10);
+            JavaNioBufferUtils.print(b);
+            b.put(new byte[5]);
+            JavaNioBufferUtils.print(b);
+            b.flip();
+            JavaNioBufferUtils.print(b);
+        }
+
+        @Test
+        void __rewind() {
+            final var b = ByteBuffer.allocate(10).limit(7).position(4);
+            JavaNioBufferUtils.print(b);
+            b.rewind();
+            JavaNioBufferUtils.print(b);
+        }
+
+        @Test
+        void __compact1() {
+            final var b = ByteBuffer.allocate(10);
+            b.put(new byte[8]);
+            JavaNioBufferUtils.print(b);
+            b.flip();
+            JavaNioBufferUtils.print(b);
+            b.position(3);
+            JavaNioBufferUtils.print(b);
+            b.compact();
+            JavaNioBufferUtils.print(b);
+        }
+
+        @Test
+        void __compact2() {
+            final var b = ByteBuffer.allocate(10);
+            b.put(new byte[8]);                        // position=8, limit=10
+            b.flip();                                  // position=0, limit=8
+            JavaNioBufferUtils.print(b);
+            b.position(8);
+            JavaNioBufferUtils.print(b);
+            b.compact();
+            JavaNioBufferUtils.print(b);
+        }
+    }
+
+    @Nested
+    class MarkResetTest {
+
+        @Test
+        void __markReset() {
+            final var b = ByteBuffer.allocate(10);
+            JavaNioBufferUtils.print(b);
+            b.position(3).mark().position(7);
+            JavaNioBufferUtils.print(b);
+            b.reset();
+            JavaNioBufferUtils.print(b);
+        }
+    }
+
+    @Test
+    void __positionLimit() {
+        final var b = ByteBuffer.allocate(10);
+        JavaNioBufferUtils.print(b);
+        b.limit(7).position(3);
+        JavaNioBufferUtils.print(b);
+    }
+
+    @Test
+    void __remainingHasRemaining() {
+        final var b = ByteBuffer.allocate(10).limit(8).position(3);
+        JavaNioBufferUtils.print(b);
+        b.position(8);
+        JavaNioBufferUtils.print(b);
     }
 }
