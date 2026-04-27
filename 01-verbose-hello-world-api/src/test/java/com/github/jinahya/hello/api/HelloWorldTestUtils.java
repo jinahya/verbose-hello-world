@@ -47,6 +47,7 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.IntFunction;
 import java.util.stream.IntStream;
 
@@ -292,6 +293,31 @@ public final class HelloWorldTestUtils {
                         b -> b != null && b.remaining() >= HelloWorld.BYTES
                 ));
         return service;
+    }
+
+    /**
+     * Variant of {@link #put_buffer_will_increase_buffer_position_by_12(HelloWorld)} that returns a
+     * spy of the buffer (so the test can verify subsequent calls like {@code flip()}). The returned
+     * holder is populated when the SUT invokes
+     * {@link HelloWorld#put(ByteBuffer) service.put(buffer)}.
+     *
+     * @param service the mock service.
+     * @return a holder whose value is the spy returned to the SUT from {@code put(...)}.
+     */
+    public static AtomicReference<ByteBuffer>
+    put_buffer_will_increase_buffer_position_by_12_spying(final HelloWorld service) {
+        requireMock(service);
+        final var ref = new AtomicReference<ByteBuffer>();
+        Mockito.doAnswer(i -> {
+            final var buffer = i.getArgument(0, ByteBuffer.class);
+            buffer.position(buffer.position() + HelloWorld.BYTES);
+            final var spy = Mockito.spy(buffer);
+            ref.set(spy);
+            return spy;
+        }).when(service).<ByteBuffer>put(ArgumentMatchers.argThat(
+                b -> b != null && b.remaining() >= HelloWorld.BYTES
+        ));
+        return ref;
     }
 
     public static <T extends HelloWorld>

@@ -23,6 +23,7 @@ package com.github.jinahya.hello.api._java_nio_channels;
 import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldTest;
 import com.github.jinahya.hello.api.HelloWorldTestUtils;
+import com.github.jinahya.hello.api.MockitoUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -83,37 +84,29 @@ class HelloWorld_Write_WritableByteChannel_Test
             and writes the <buffer> to the <channel> while the <buffer> has <remaining>"""
     )
     @Test
-    void __()
-            throws IOException {
+    void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.put_buffer_will_increase_buffer_position_by_12(
-                service()
-        );
-        // prepare: a <WritableByteChannel>
-        //          whose <write(buffer)> will increase the <buffer>'s <position> by a random value
+        final var service = service();
+        final var bufferRef = HelloWorldTestUtils
+                .put_buffer_will_increase_buffer_position_by_12_spying(service);
         final var channel = Mockito.mock(WritableByteChannel.class);
-        final var written = new LongAdder();
         Mockito.doAnswer(i -> {
-                    final var src = i.getArgument(0, ByteBuffer.class);
-                    assert src.hasRemaining();
-                    final var w = ThreadLocalRandom.current().nextInt(src.remaining() + 1);
-                    assert w >= 0; // always true, I know
-                    src.position(src.position() + w);
-                    written.add(w);
-                    return w;
-                })
-                .when(channel)
-                .write(ArgumentMatchers.argThat(b -> b != null && b.hasRemaining()));
+            final var src = i.getArgument(0, ByteBuffer.class);
+            assert src.hasRemaining();
+            final var w = ThreadLocalRandom.current().nextInt(src.remaining() + 1);
+            src.position(src.position() + w);
+            return w;
+        }).when(channel).write(ArgumentMatchers.notNull());
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(channel);
         // ------------------------------------------------------------------------------------ then
-        // verify: <service.put(buffer[12])> invoked, once
-        final var buffer = HelloWorldTestUtils.put_buffer12_invoked_once(service);
-        // verify: <channel.write(buffer)> invoked, at least once
-//        Mockito.verify(channel, Mockito.atLeastOnce()).write(buffer);
-        // assert: <written.sum()> is equal to <12>
-//        Assertions.assertEquals(HelloWorld.BYTES, written.sum());
-        // assert: <result> is same as <channel>
+        final var buffer = bufferRef.get();
+        Assertions.assertNotNull(buffer);
+        Assertions.assertEquals(HelloWorld.BYTES, buffer.capacity());
+        final var inOrder = Mockito.inOrder(buffer, channel);
+        inOrder.verify(buffer, Mockito.times(1)).flip();
+        inOrder.verify(channel, Mockito.atLeastOnce()).write(buffer);
+        Assertions.assertFalse(buffer.hasRemaining());
         Assertions.assertSame(channel, result);
     }
 }

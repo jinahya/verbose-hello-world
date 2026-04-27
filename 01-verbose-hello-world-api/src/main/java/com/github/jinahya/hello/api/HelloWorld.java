@@ -1092,10 +1092,8 @@ public interface HelloWorld {
         Objects.requireNonNull(channel, "channel is null");
         final var buffer = put(ByteBuffer.allocate(BYTES));
         buffer.flip();
-        assert buffer.remaining() == BYTES;
         while (buffer.hasRemaining()) {
-            final var written = channel.write(buffer);
-            assert written >= 0; // why
+            channel.write(buffer);
         }
         return channel;
     }
