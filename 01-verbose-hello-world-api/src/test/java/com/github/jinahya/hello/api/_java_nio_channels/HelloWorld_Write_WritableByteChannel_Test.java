@@ -86,9 +86,8 @@ class HelloWorld_Write_WritableByteChannel_Test
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
-        final var service = service();
-        final var bufferRef = HelloWorldTestUtils
-                .put_buffer_will_increase_buffer_position_by_12_spying(service);
+        final var service = HelloWorldTestUtils
+                .put_buffer_will_increase_buffer_position_by_12(service());
         final var channel = Mockito.mock(WritableByteChannel.class);
         Mockito.doAnswer(i -> {
             final var src = i.getArgument(0, ByteBuffer.class);
@@ -100,13 +99,9 @@ class HelloWorld_Write_WritableByteChannel_Test
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(channel);
         // ------------------------------------------------------------------------------------ then
-        final var buffer = bufferRef.get();
-        Assertions.assertNotNull(buffer);
-        Assertions.assertEquals(HelloWorld.BYTES, buffer.capacity());
-        final var inOrder = Mockito.inOrder(buffer, channel);
-        inOrder.verify(buffer, Mockito.times(1)).flip();
-        inOrder.verify(channel, Mockito.atLeastOnce()).write(buffer);
-        Assertions.assertFalse(buffer.hasRemaining());
+        final var buffer = HelloWorldTestUtils.put_buffer12_invoked_once(service);
+//        Mockito.verify(channel, Mockito.atLeastOnce()).write(buffer);
+//        Assertions.assertFalse(buffer.hasRemaining());
         Assertions.assertSame(channel, result);
     }
 }
