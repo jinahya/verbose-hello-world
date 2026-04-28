@@ -47,7 +47,6 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.IntFunction;
 import java.util.stream.IntStream;
 
@@ -291,6 +290,34 @@ public final class HelloWorldTestUtils {
                 .when(service)
                 .<ByteBuffer>put(ArgumentMatchers.argThat(
                         b -> b != null && b.remaining() >= HelloWorld.BYTES
+                ));
+        return service;
+    }
+
+    /**
+     * Stubs given mock service's {@link HelloWorld#put(ByteBuffer) put(buffer)} method, when the
+     * {@code buffer} is not {@code null} and its capacity and remaining are equal to
+     * {@value HelloWorld#BYTES}, to just return the {@code bufefer} whose
+     * {@link ByteBuffer#position() position} increased by {@value HelloWorld#BYTES}.
+     *
+     * @param service the mock service.
+     * @return given {@code service} whose {@link HelloWorld#put(ByteBuffer)} method stubbed as
+     * above.
+     * @see #put_buffer12_invoked_once(HelloWorld)
+     */
+    public static <T extends HelloWorld>
+    T put_buffer12_will_increase_buffer_position_by_12(final T service) {
+        requireMock(service);
+        Mockito.doAnswer(i -> {
+                    final var buffer = i.getArgument(0, ByteBuffer.class);
+                    buffer.position(buffer.position() + HelloWorld.BYTES);
+                    return buffer;
+                })
+                .when(service)
+                .<ByteBuffer>put(ArgumentMatchers.argThat(
+                        b -> b != null
+                             && b.capacity() == HelloWorld.BYTES
+                             && b.remaining() == HelloWorld.BYTES
                 ));
         return service;
     }
