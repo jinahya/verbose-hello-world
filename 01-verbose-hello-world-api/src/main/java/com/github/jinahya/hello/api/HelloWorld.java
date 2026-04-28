@@ -52,17 +52,11 @@ import java.net.URLConnection;
 import java.net.http.HttpRequest;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.IntBuffer;
-import java.nio.LongBuffer;
-import java.nio.MappedByteBuffer;
-import java.nio.ShortBuffer;
 import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.FileChannel;
-import java.nio.channels.SocketChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.charset.Charset;
 import java.nio.file.OpenOption;
@@ -968,92 +962,6 @@ public interface HelloWorld {
     default ByteBuffer put() {
         final var buffer = ByteBuffer.allocate(BYTES);
         put(buffer);
-        return buffer;
-    }
-
-    /**
-     * Puts the <a href="#hello-world-bytes">hello-world-bytes</a> on the specified char buffer.
-     *
-     * @param <T>    buffer type parameter
-     * @param buffer the char buffer on which bytes are put.
-     * @return the given {@code buffer}.
-     * @throws NullPointerException    if {@code buffer} is {@code null}.
-     * @throws BufferOverflowException if {@link ByteBuffer#remaining() buffer.remaining} is less
-     *                                 than {@value #BYTES}.
-     * @implSpec Default implementation, invokes {@link #append(Appendable) append(appendable)}
-     * method with the {@code buffer}, and returns the result.
-     * @see #append(Appendable)
-     * @see <a
-     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/CharBuffer.html">java.nio.CharBuffer</a>
-     * @deprecated Use {@link #append(Appendable)} method.
-     */
-    @Deprecated(forRemoval = true)
-    @屋上架屋("CharBuffer implements Appendable")
-    @SuppressWarnings("unchecked")
-    default <T extends CharBuffer> T put(final T buffer) throws IOException {
-        Objects.requireNonNull(buffer, "buffer is null");
-        if (buffer.remaining() < BYTES) {
-            throw new BufferOverflowException();
-        }
-        final var result = append((Appendable) buffer);
-        assert result == buffer;
-        return buffer;
-    }
-
-    @Deprecated(forRemoval = true)
-    @屋上架屋("CharBuffer implements Appendable")
-    default <T extends ShortBuffer> T put(final T buffer) throws IOException {
-        Objects.requireNonNull(buffer, "buffer is null");
-        if (buffer.remaining() < BYTES) {
-            throw new BufferOverflowException();
-        }
-        final var b = ByteBuffer.allocate(BYTES);
-        put(b);
-        b.flip();
-        while (b.hasRemaining()) {
-            buffer.put(b.get());
-        }
-        return buffer;
-    }
-
-    @Deprecated(forRemoval = true)
-    @屋上架屋("CharBuffer implements Appendable")
-    default <T extends IntBuffer> T put(final T buffer) throws IOException {
-        Objects.requireNonNull(buffer, "buffer is null");
-        if (buffer.remaining() < BYTES) {
-            throw new BufferOverflowException();
-        }
-        final var b = ShortBuffer.allocate(BYTES);
-        put(b);
-        b.flip();
-        while (b.hasRemaining()) {
-            buffer.put(b.get());
-        }
-        return buffer;
-    }
-
-    @Deprecated(forRemoval = true)
-    @屋上架屋("CharBuffer implements Appendable")
-    default <T extends LongBuffer> T put(final T buffer) throws IOException {
-        Objects.requireNonNull(buffer, "buffer is null");
-        if (buffer.remaining() < BYTES) {
-            throw new BufferOverflowException();
-        }
-        final var b = IntBuffer.allocate(BYTES);
-        put(b);
-        b.flip();
-        while (b.hasRemaining()) {
-            buffer.put(b.get());
-        }
-        return buffer;
-    }
-
-    @Deprecated(forRemoval = true)
-    @屋上架屋("MappedByteBuffer extends ByteBuffer")
-    @SuppressWarnings("unchecked")
-    default <T extends MappedByteBuffer> T put(final T buffer) {
-        final var result = put((ByteBuffer) buffer);
-        assert result == buffer;
         return buffer;
     }
 

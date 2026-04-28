@@ -48,11 +48,6 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.http.HttpRequest;
 import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.IntBuffer;
-import java.nio.LongBuffer;
-import java.nio.MappedByteBuffer;
-import java.nio.ShortBuffer;
 import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.AsynchronousSocketChannel;
@@ -295,50 +290,6 @@ interface HelloWorldRevisited
     @Override
     default ByteBuffer put() {
         return put(ByteBuffer.allocate(BYTES));
-    }
-
-    @Deprecated(forRemoval = true)
-    @Override
-    @SuppressWarnings("unchecked")
-    default <T extends CharBuffer> T put(final T buffer) throws IOException {
-        return (T) append((Appendable) buffer);
-    }
-
-    @Deprecated(forRemoval = true)
-    @Override
-    @SuppressWarnings("unchecked")
-    default <T extends MappedByteBuffer> T put(final T buffer) {
-        return (T) put((ByteBuffer) buffer);
-    }
-
-    @SuppressWarnings("removal")
-    @Deprecated(forRemoval = true)
-    @Override
-    default <T extends ShortBuffer> T put(final T buffer) throws IOException {
-        for (final var b = put(ByteBuffer.allocate(BYTES)); b.hasRemaining(); ) {
-            buffer.put(b.get());
-        }
-        return buffer;
-    }
-
-    @SuppressWarnings("removal")
-    @Deprecated(forRemoval = true)
-    @Override
-    default <T extends IntBuffer> T put(final T buffer) throws IOException {
-        for (final var b = put(ShortBuffer.allocate(BYTES)).flip(); b.hasRemaining(); ) {
-            buffer.put(b.get());
-        }
-        return buffer;
-    }
-
-    @SuppressWarnings("removal")
-    @Deprecated(forRemoval = true)
-    @Override
-    default <T extends LongBuffer> T put(final T buffer) throws IOException {
-        for (var b = put(IntBuffer.allocate(BYTES)).flip(); b.hasRemaining(); ) {
-            buffer.put(b.get());
-        }
-        return buffer;
     }
 
     // --------------------------------------------------------------------------- java.nio.channels
