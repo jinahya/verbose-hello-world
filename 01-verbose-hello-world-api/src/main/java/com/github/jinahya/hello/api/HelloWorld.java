@@ -1014,35 +1014,43 @@ public interface HelloWorld {
      * @param channel the datagram channel through which the bytes are sent.
      * @param target  the address to which the bytes are sent.
      * @return the given {@code channel}.
-     * @throws NullPointerException if {@code channel} is {@code null} or {@code target} is
+     * @throws NullPointerException if {@code channel} is {@code null}, or if {@code target} is
      *                              {@code null}.
-     * @throws IOException          if an I/O error occurs, or if the datagram was not sent due to
-     *                              the OS's send buffer being full.
+     * @throws RuntimeException     if, while the implementation is waiting for the underlying
+     *                              output buffer to drain, {@code channel.SO_SNDBUF} cannot be read
+     *                              (returns {@code null}) or is observed to be less than
+     *                              {@value #BYTES}.
+     * @throws IOException          if an I/O error occurs.
      * @implSpec Default implementation invokes {@link #put(ByteBuffer) put(buffer)} method with a
-     * byte buffer of {@value #BYTES} bytes, {@link ByteBuffer#flip() flips} it, and
-     * {@link DatagramChannel#send(ByteBuffer, SocketAddress) sends} the buffer to {@code target}
-     * via the {@code channel}.
+     * byte buffer of {@value #BYTES} bytes, {@link ByteBuffer#flip() flips} it, and repeatedly
+     * invokes {@link DatagramChannel#send(ByteBuffer, SocketAddress) channel.send(buffer, target)}
+     * until a non-zero count is returned. While the call returns {@code 0}, the implementation
+     * re-reads {@link StandardSocketOptions#SO_SNDBUF SO_SNDBUF} and throws a
+     * {@link RuntimeException} if the option cannot be read, or if its value is less than
+     * {@value #BYTES} — the loop's progress guarantee depends on a verified
+     * {@code SO_SNDBUF >= }{@value #BYTES}.
+     * @apiNote In blocking mode, {@code channel.send} returns {@value #BYTES} on the first
+     * invocation and the loop runs exactly once. In non-blocking mode, {@code channel.send} may
+     * return {@code 0} when the OS send buffer is temporarily full; the loop then spins, issuing
+     * {@link Thread#onSpinWait()} as a hint, until the kernel drains the buffer and the datagram is
+     * accepted. Callers that need cooperative back-pressure handling should use a
+     * {@link java.nio.channels.Selector Selector} with
+     * {@link java.nio.channels.SelectionKey#OP_WRITE OP_WRITE} instead of this method.
      * @see #put(ByteBuffer)
      * @see DatagramChannel#send(ByteBuffer, SocketAddress)
      */
     default <T extends DatagramChannel> T send(final T channel, final SocketAddress target)
             throws IOException {
         Objects.requireNonNull(channel, "channel is null");
-        {
-            final var sndbuf = channel.getOption(StandardSocketOptions.SO_SNDBUF);
-            assert sndbuf == null || sndbuf >= BYTES;
-        }
         Objects.requireNonNull(target, "target is null");
-        final var buffer = ByteBuffer.allocate(BYTES);
-        put(buffer);
-        buffer.flip();
-        final var written = channel.send(buffer, target);
-        if (written != BYTES) {
-            assert written == 0;
-            throw new IOException("packet dropped; OS's send buffer is full");
+        final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
+        while (channel.send(buffer, target) == 0) {
+            final var sndbuf = channel.getOption(StandardSocketOptions.SO_SNDBUF);
+            if (sndbuf == null || sndbuf < BYTES) {
+                throw new RuntimeException("channel.SNDBUF is not enough");
+            }
+            Thread.onSpinWait();
         }
-        assert !buffer.hasRemaining();
-        assert written == buffer.capacity();
         return channel;
     }
 

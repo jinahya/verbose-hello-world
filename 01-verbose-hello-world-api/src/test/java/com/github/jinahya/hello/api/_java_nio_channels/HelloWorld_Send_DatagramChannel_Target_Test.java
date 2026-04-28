@@ -17,12 +17,14 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * A class for testing {@link HelloWorld#send(DatagramChannel, SocketAddress) send(channel, target)}
@@ -61,6 +63,33 @@ class HelloWorld_Send_DatagramChannel_Target_Test
                 NullPointerException.class,
                 () -> service.send(channel, target)
         );
+    }
+
+    @Test
+    void __() throws IOException {
+        // ----------------------------------------------------------------------------------- given
+        final var service = HelloWorldTestUtils
+                .put_buffer12_will_increase_buffer_position_by_12(service());
+        final var channel = Mockito.mock(DatagramChannel.class);
+        Mockito.when(channel.send(Mockito.any(ByteBuffer.class), Mockito.any(SocketAddress.class)))
+                .thenAnswer(i -> {
+                    if (ThreadLocalRandom.current().nextBoolean()) {
+                        return 0;
+                    }
+                    final ByteBuffer src = i.getArgument(0);
+                    final int written = src.remaining();
+                    src.position(src.limit());
+                    return written;
+                });
+        Mockito.when(channel.getOption(StandardSocketOptions.SO_SNDBUF))
+                .thenAnswer(i -> HelloWorld.BYTES + ThreadLocalRandom.current().nextInt(1024));
+        final var target = Mockito.mock(SocketAddress.class);
+        // ------------------------------------------------------------------------------------ when
+        final var result = service.send(channel, target);
+        // ------------------------------------------------------------------------------------ then
+        final var buffer = HelloWorldTestUtils.put_buffer12_invoked_once(service);
+        Mockito.verify(channel, Mockito.atLeastOnce()).send(buffer, target);
+        Assertions.assertSame(channel, result);
     }
 
     // ---------------------------------------------------------------------------------------------

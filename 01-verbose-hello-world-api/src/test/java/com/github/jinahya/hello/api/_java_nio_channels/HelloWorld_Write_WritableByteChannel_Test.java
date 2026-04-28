@@ -23,6 +23,7 @@ package com.github.jinahya.hello.api._java_nio_channels;
 import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldTest;
 import com.github.jinahya.hello.api.HelloWorldTestUtils;
+import com.github.jinahya.hello.api.畵蛇添足;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +37,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
+import java.nio.channels.Pipe;
 import java.nio.channels.WritableByteChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -157,16 +161,15 @@ class HelloWorld_Write_WritableByteChannel_Test
             ThreadLocalRandom.current().nextBytes(src);
             srcRef.set(src);
             return i.getArgument(0, ByteBuffer.class).put(src);
-        }).when(service).put(ArgumentMatchers.<ByteBuffer>argThat(v -> {
+        }).when(service).put(ArgumentMatchers.argThat(v -> {
             return v != null && v.remaining() >= HelloWorld.BYTES;
         }));
-        final var channel = Mockito.mock(WritableByteChannel.class);
         final var baos = new ByteArrayOutputStream(HelloWorld.BYTES);
+        final var channel = Mockito.spy(Channels.newChannel(baos));
         Mockito.doAnswer(i -> {
             final var src = i.getArgument(0, ByteBuffer.class);
             final var bytes = new byte[ThreadLocalRandom.current().nextInt(1, src.remaining() + 1)];
             src.get(bytes);
-            baos.write(bytes);
             return bytes.length;
         }).when(channel).write(ArgumentMatchers.argThat(v -> {
             return v != null && v.remaining() > 0;
@@ -178,5 +181,44 @@ class HelloWorld_Write_WritableByteChannel_Test
 //        Mockito.verify(channel, Mockito.atLeastOnce()).write(buffer);
 //        Assertions.assertArrayEquals(srcRef.get(), baos.toByteArray());
         Assertions.assertSame(channel, result);
+    }
+
+    @畵蛇添足
+    @Test
+    void _添足_畵蛇() throws IOException, InterruptedException {
+        // ----------------------------------------------------------------------------------- given
+        final var service = service();
+        Mockito.doAnswer(i -> {
+            final var channel = i.getArgument(0, WritableByteChannel.class);
+            for (var b = ByteBuffer.wrap("hello, world".getBytes(StandardCharsets.US_ASCII));
+                 b.hasRemaining(); ) {
+                channel.write(b);
+            }
+            return channel;
+        }).when(service).write(ArgumentMatchers.<WritableByteChannel>notNull());
+        final var pipe = Pipe.open();
+        try (var sink = pipe.sink(); var source = pipe.source()) {
+//            if (ThreadLocalRandom.current().nextBoolean()) {
+//                sink.configureBlocking(false);
+//            }
+//            if (ThreadLocalRandom.current().nextBoolean()) {
+//                source.configureBlocking(false);
+//            }
+            // -------------------------------------------------------------------------------- when
+            final var thread = Thread.ofPlatform().start(() -> {
+                try {
+                    service.write(sink);
+                } catch (final IOException ioe) {
+                    throw new RuntimeException(ioe);
+                }
+            });
+            // -------------------------------------------------------------------------------- then
+            final var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
+            while (buffer.hasRemaining()) {
+                source.read(buffer);
+            }
+            log.debug("read: {}", StandardCharsets.US_ASCII.decode(buffer.flip()));
+            thread.join();
+        }
     }
 }
