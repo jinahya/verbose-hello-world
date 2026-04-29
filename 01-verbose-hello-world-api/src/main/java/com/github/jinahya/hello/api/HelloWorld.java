@@ -30,7 +30,6 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
-import java.io.FilterOutputStream;
 import java.io.FilterWriter;
 import java.io.Flushable;
 import java.io.IOException;
@@ -72,7 +71,9 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
+import java.util.function.IntConsumer;
 import java.util.jar.JarOutputStream;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.zip.Checksum;
 import java.util.zip.Deflater;
@@ -1275,8 +1276,7 @@ public interface HelloWorld {
      */
     default <T extends MessageDigest> T update(final T digest) {
         Objects.requireNonNull(digest, "digest is null");
-        final var array = new byte[BYTES];
-        set(array);
+        final var array = set(new byte[BYTES]);
         digest.update(array);
         return digest;
     }
@@ -1297,8 +1297,7 @@ public interface HelloWorld {
      */
     default <T extends Signature> T update(final T signature) throws SignatureException {
         Objects.requireNonNull(signature, "signature is null");
-        final var array = new byte[BYTES];
-        set(array);
+        final var array = set(new byte[BYTES]);
         signature.update(array);
         return signature;
     }
@@ -1437,9 +1436,15 @@ public interface HelloWorld {
      */
     default <T extends Consumer<? super Byte>> T accept(final T consumer) {
         Objects.requireNonNull(consumer, "consumer is null");
-        final var array = new byte[BYTES];
-        set(array);
-        for (final var b : array) {
+        for (final var b : set(new byte[BYTES])) {
+            consumer.accept(b);
+        }
+        return consumer;
+    }
+
+    default <T extends IntConsumer> T accept(final T consumer) {
+        Objects.requireNonNull(consumer, "consumer is null");
+        for (final var b : set(new byte[BYTES])) {
             consumer.accept(b);
         }
         return consumer;
@@ -1473,6 +1478,7 @@ public interface HelloWorld {
     }
 
     default <T extends Deflater> T input(final T deflater) {
+        Objects.requireNonNull(deflater, "deflater is null");
         final var array = new byte[BYTES];
         set(array);
         deflater.setInput(array);
@@ -1519,9 +1525,13 @@ public interface HelloWorld {
     @屋上架屋("Stream.Builder<T> extends Consumer<T>")
     @Deprecated(forRemoval = true)
     default <T extends Stream.Builder<? super Byte>> T add(final T builder) {
-        final var result = accept((Consumer<? super Byte>) builder);
-        assert result == builder;
-        return builder;
+        return (T) accept((Consumer<? super Byte>) builder);
+    }
+
+    @屋上架屋("IntStream.Builder extends IntConsumer")
+    @Deprecated(forRemoval = true)
+    default <T extends IntStream.Builder> T add(final T builder) {
+        return (T) accept((IntConsumer) builder);
     }
 
     // -------------------------------------------------------------------------------- javax.crypto
@@ -1563,14 +1573,12 @@ public interface HelloWorld {
      * @param <T>    cipher output stream type parameter
      * @return the given {@code stream}
      * @throws IOException if an I/O error occurs
-     * @see #write(FilterOutputStream)
+     * @see #write(OutputStream)
      */
     @Deprecated(forRemoval = true)
-    @屋上架屋("CipherOutputStream extends FilterOutputStream")
+    @屋上架屋("CipherOutputStream extends OutputStream")
     default <T extends CipherOutputStream> T write(final T stream) throws IOException {
-        final var result = write((FilterOutputStream) stream);
-        assert result == stream;
-        return stream;
+        return (T) write((OutputStream) stream);
     }
 
     /**
@@ -1588,8 +1596,7 @@ public interface HelloWorld {
      */
     default <T extends Mac> T update(final T mac) {
         Objects.requireNonNull(mac, "mac is null");
-        final var array = new byte[BYTES];
-        set(array);
+        final var array = set(new byte[BYTES]);
         mac.update(array);
         return mac;
     }

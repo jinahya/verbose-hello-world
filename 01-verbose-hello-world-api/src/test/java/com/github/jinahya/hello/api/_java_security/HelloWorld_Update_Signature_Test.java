@@ -1,6 +1,7 @@
 package com.github.jinahya.hello.api._java_security;
 
 import com.github.jinahya.hello.api.HelloWorldTest;
+import com.github.jinahya.hello.api.HelloWorldTestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -107,7 +108,7 @@ class HelloWorld_Update_Signature_Test
         void __(int keysize, final MGF1ParameterSpec mgfSpec, final int saltLen)
                 throws Exception {
             // ------------------------------------------------------------------------------- given
-            final var service = service();
+            final var service = HelloWorldTestUtils.set_array_will_return_the_array(service());
             final var keyPair = generateKeyPair(KEY_PAIR_ALGORITHM, keysize);
             final var pssSpec = new PSSParameterSpec(
                     mgfSpec.getDigestAlgorithm(),
@@ -160,7 +161,7 @@ class HelloWorld_Update_Signature_Test
         void __SHA1withDSA(final int keysize)
                 throws Exception {
             // ------------------------------------------------------------------------------- given
-            final var service = service();
+            final var service = HelloWorldTestUtils.set_array_will_return_the_array(service());
             final var keyPair = generateKeyPair(KEY_PAIR_ALGORITHM, keysize);
             // -------------------------------------------------------------------------------- when
             final var instance = Signature.getInstance(SIGNATURE_ALGORITHM);
@@ -193,7 +194,7 @@ class HelloWorld_Update_Signature_Test
         void __SHA1withDSA(final int keysize)
                 throws Exception {
             // ------------------------------------------------------------------------------- given
-            final var service = service();
+            final var service = HelloWorldTestUtils.set_array_will_return_the_array(service());
             final var keyPair = generateKeyPair(KEY_PAIR_ALGORITHM, keysize);
             // -------------------------------------------------------------------------------- when
             final var instance = Signature.getInstance(SIGNATURE_ALGORITHM);
@@ -225,7 +226,7 @@ class HelloWorld_Update_Signature_Test
         void __()
                 throws Exception {
             // ------------------------------------------------------------------------------- given
-            final var service = service();
+            final var service = HelloWorldTestUtils.set_array_will_return_the_array(service());
             final var keyPair = generateKeyPair(KEY_PAIR_ALGORITHM,
                                                 new ECGenParameterSpec(CURVE_NAME));
             // -------------------------------------------------------------------------------- when
@@ -258,7 +259,7 @@ class HelloWorld_Update_Signature_Test
         void __()
                 throws Exception {
             // ------------------------------------------------------------------------------- given
-            final var service = service();
+            final var service = HelloWorldTestUtils.set_array_will_return_the_array(service());
             final var keyPair = generateKeyPair(KEY_PAIR_ALGORITHM,
                                                 new ECGenParameterSpec(CURVE_NAME));
             // -------------------------------------------------------------------------------- when
@@ -292,7 +293,7 @@ class HelloWorld_Update_Signature_Test
         void __(final int keysize)
                 throws Exception {
             // ------------------------------------------------------------------------------- given
-            final var service = service();
+            final var service = HelloWorldTestUtils.set_array_will_return_the_array(service());
             final var keyPair = generateKeyPair(KEY_PAIR_ALGORITHM, keysize);
             // -------------------------------------------------------------------------------- when
             final var instance = Signature.getInstance(SIGNATURE_ALGORITHM);
@@ -325,7 +326,7 @@ class HelloWorld_Update_Signature_Test
         void __(final int keysize)
                 throws Exception {
             // ------------------------------------------------------------------------------- given
-            final var service = service();
+            final var service = HelloWorldTestUtils.set_array_will_return_the_array(service());
             final var keyPair = generateKeyPair(KEY_PAIR_ALGORITHM, keysize);
             // -------------------------------------------------------------------------------- when
             final var instance = Signature.getInstance(SIGNATURE_ALGORITHM);
@@ -358,7 +359,7 @@ class HelloWorld_Update_Signature_Test
         void __(final int keysize)
                 throws Exception {
             // ------------------------------------------------------------------------------- given
-            final var service = service();
+            final var service = HelloWorldTestUtils.set_array_will_return_the_array(service());
             final var keyPair = generateKeyPair(KEY_PAIR_ALGORITHM, keysize);
             // -------------------------------------------------------------------------------- when
             final var instance = Signature.getInstance(SIGNATURE_ALGORITHM);

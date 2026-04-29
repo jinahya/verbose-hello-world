@@ -43,10 +43,9 @@ class HelloWorld_Update_Digest_Test
 
     @MethodSource({"algorithms"})
     @ParameterizedTest
-    void __(final String algorithm)
-            throws NoSuchAlgorithmException {
+    void __(final String algorithm) throws NoSuchAlgorithmException {
         // ----------------------------------------------------------------------------------- given
-        final var service = service();
+        final var service = HelloWorldTestUtils.set_array_will_return_the_array(service());
         final var digest = Mockito.spy(MessageDigest.getInstance(algorithm));
         // ----------------------------------------------------------------------------- when / then
         final var result = service.update(digest);
