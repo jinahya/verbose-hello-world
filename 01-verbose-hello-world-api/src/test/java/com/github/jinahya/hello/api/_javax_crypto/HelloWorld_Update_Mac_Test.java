@@ -82,7 +82,7 @@ class HelloWorld_Update_Mac_Test
     // ---------------------------------------------------------------------------------------------
     @BeforeEach
     void __() {
-        HelloWorldTestUtils.set_array_will_set_actual_hello_world_bytes(service());
+        HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(service());
     }
 
     // =============================================================================================

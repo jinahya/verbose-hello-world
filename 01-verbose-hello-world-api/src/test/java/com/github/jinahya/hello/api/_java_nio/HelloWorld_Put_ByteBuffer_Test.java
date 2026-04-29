@@ -365,7 +365,7 @@ class HelloWorld_Put_ByteBuffer_Test
     @Test
     void __BufferDoesNotHaveBackingArray() {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.set_array_will_return_the_array(service());
+        final var service = HelloWorldTestUtils.set_array_returns_the_array(service());
         final var buffer = Mockito.spy(
                 slice(ByteBuffer.allocateDirect(HelloWorld.BYTES << 1), HelloWorld.BYTES)
         );

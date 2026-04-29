@@ -29,7 +29,7 @@ class HelloWorld_Copy_Segment_Test
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.set_array_will_return_the_array(service());
+        final var service = HelloWorldTestUtils.set_array_returns_the_array(service());
         try (var arena = Arena.ofConfined()) {
             final var segment = arena.allocate(HelloWorld.BYTES);
             try (var mockedStatic = Mockito.mockStatic(MemorySegment.class,
@@ -111,7 +111,7 @@ class HelloWorld_Copy_Segment_Test
              final var arena = Arena.ofShared()) {
             // ---------------------------------------------------------------- write hello, world\0
             final var segment = channel.map(FileChannel.MapMode.READ_WRITE, 0, 13, arena);
-            HelloWorldTestUtils.set_array_will_set_actual_hello_world_bytes(service());
+            HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(service());
             service().copy(segment);
             segment.set(ValueLayout.JAVA_BYTE, 12, (byte) 0);
             log.debug("bytes written to the file");

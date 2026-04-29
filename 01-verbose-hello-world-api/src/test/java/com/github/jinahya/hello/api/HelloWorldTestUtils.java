@@ -161,11 +161,10 @@ public final class HelloWorldTestUtils {
      * @param service the mock object whose {@link HelloWorld#set(byte[]) set(array)} method needs
      *                to be stubbed.
      * @return the given {@code service}.
-     * @see #set_array_will_set_actual_hello_world_bytes(HelloWorld)
+     * @see #set_array_sets_actual_hello_world_bytes(HelloWorld)
      * @see #set_array12_invoked_once(HelloWorld)
      */
-    public static <T extends HelloWorld>
-    T set_array_will_return_the_array(final T service) {
+    public static <T extends HelloWorld> T set_array_returns_the_array(final T service) {
         requireMock(service);
         Mockito.doAnswer(i -> i.getArgument(0))
                 .when(service)
@@ -182,11 +181,11 @@ public final class HelloWorldTestUtils {
      * @param service the mock service.
      * @param <T>     service type parameter
      * @return given {@code service}.
-     * @see #set_array_will_return_the_array(HelloWorld)
+     * @see #set_array_returns_the_array(HelloWorld)
      * @see #set_array12_invoked_once(HelloWorld)
      */
     public static <T extends HelloWorld>
-    T set_array_will_set_actual_hello_world_bytes(final T service) {
+    T set_array_sets_actual_hello_world_bytes(final T service) {
         requireMock(service);
         Mockito
                 .doAnswer(i -> {

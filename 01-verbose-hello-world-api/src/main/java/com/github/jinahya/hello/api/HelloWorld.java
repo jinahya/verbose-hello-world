@@ -1276,8 +1276,7 @@ public interface HelloWorld {
      */
     default <T extends MessageDigest> T update(final T digest) {
         Objects.requireNonNull(digest, "digest is null");
-        final var array = set(new byte[BYTES]);
-        digest.update(array);
+        digest.update(set(new byte[BYTES]));
         return digest;
     }
 
@@ -1297,8 +1296,7 @@ public interface HelloWorld {
      */
     default <T extends Signature> T update(final T signature) throws SignatureException {
         Objects.requireNonNull(signature, "signature is null");
-        final var array = set(new byte[BYTES]);
-        signature.update(array);
+        signature.update(set(new byte[BYTES]));
         return signature;
     }
 

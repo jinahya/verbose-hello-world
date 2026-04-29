@@ -79,7 +79,7 @@ class HelloWorld_Put_JarOutputStream_Test
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.set_array_will_return_the_array(service());
+        final var service = HelloWorldTestUtils.set_array_returns_the_array(service());
         final var stream = Mockito.mock(JarOutputStream.class);
         final var name = "hello.txt";
         // ------------------------------------------------------------------------------------ when

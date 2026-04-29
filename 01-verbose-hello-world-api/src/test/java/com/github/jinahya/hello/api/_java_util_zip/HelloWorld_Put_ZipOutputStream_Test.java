@@ -89,7 +89,7 @@ class HelloWorld_Put_ZipOutputStream_Test
     void __()
             throws IOException {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.set_array_will_return_the_array(service());
+        final var service = HelloWorldTestUtils.set_array_returns_the_array(service());
         final var stream = Mockito.mock(ZipOutputStream.class);
         final var name = "hello.txt";
         try (var construction = Mockito.mockConstruction(ZipEntry.class, (_, c) -> {

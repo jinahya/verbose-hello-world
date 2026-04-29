@@ -88,11 +88,11 @@ public abstract class HelloWorldTest {
 
     // ------------------------------------------------------------------------------------- service
     protected HelloWorld set_array_will_return_the_array() {
-        return HelloWorldTestUtils.set_array_will_return_the_array(service);
+        return HelloWorldTestUtils.set_array_returns_the_array(service);
     }
 
     protected HelloWorld set_array_will_set_actual_hello_world_bytes() {
-        return HelloWorldTestUtils.set_array_will_set_actual_hello_world_bytes(service);
+        return HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(service);
     }
 
     protected byte[] set_array12_invoked_once() {

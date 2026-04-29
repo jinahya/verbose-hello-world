@@ -71,7 +71,7 @@ class HelloWorld_Method_HttpRequestBuilder_String_Test
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.set_array_will_return_the_array(service());
+        final var service = HelloWorldTestUtils.set_array_returns_the_array(service());
 //        final var builder = HttpRequest.newBuilder();
         final var builder = Mockito.mock(HttpRequest.Builder.class);
         final var method = "WHATEVER";

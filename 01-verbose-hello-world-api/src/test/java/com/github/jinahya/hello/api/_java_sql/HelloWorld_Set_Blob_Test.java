@@ -29,7 +29,7 @@ class HelloWorld_Set_Blob_Test
     // ---------------------------------------------------------------------------------------------
     @BeforeEach
     void _stub_set_array_will_set_hello_world_bytes_() {
-        HelloWorldTestUtils.set_array_will_set_actual_hello_world_bytes(service());
+        HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(service());
     }
 
     @Test
