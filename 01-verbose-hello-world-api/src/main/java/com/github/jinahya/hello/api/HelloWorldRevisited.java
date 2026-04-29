@@ -50,7 +50,6 @@ import java.net.http.HttpRequest;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.AsynchronousFileChannel;
-import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
@@ -335,14 +334,6 @@ interface HelloWorldRevisited
             channel.write(b);
         }
         return channel;
-    }
-
-    @SuppressWarnings("removal")
-    @Deprecated(forRemoval = true)
-    @Override
-    default <T extends AsynchronousSocketChannel> T send(final T channel)
-            throws InterruptedException, ExecutionException {
-        return HelloWorld.super.send(channel);
     }
 
     // ------------------------------------------------------------------------------- java.nio.file

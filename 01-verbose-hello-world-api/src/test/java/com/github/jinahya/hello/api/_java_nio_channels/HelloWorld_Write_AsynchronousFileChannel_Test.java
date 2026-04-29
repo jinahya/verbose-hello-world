@@ -22,21 +22,16 @@ package com.github.jinahya.hello.api._java_nio_channels;
 
 import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.畵蛇添足;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousFileChannel;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -153,21 +148,5 @@ class HelloWorld_Write_AsynchronousFileChannel_Test
             return p2;
         });
         Assertions.assertSame(channel, result);
-    }
-
-    @畵蛇添足("testing with a real file doesn't add any value")
-    @Test
-    void _添足_畵蛇(@TempDir final Path dir) throws Exception {
-        // ----------------------------------------------------------------------------------- given
-        final var service = put_buffer_will_increase_buffer_position_by_12();
-        final var path = Files.createTempFile(dir, null, null);
-        final var position = ThreadLocalRandom.current().nextLong(8L);
-        // ------------------------------------------------------------------------------------ when
-        try (var channel = AsynchronousFileChannel.open(path, StandardOpenOption.WRITE)) {
-            final var result = service.write(channel, position);
-            result.force(false);
-        }
-        // ------------------------------------------------------------------------------------ then
-        Assertions.assertEquals(position + HelloWorld.BYTES, Files.size(path));
     }
 }

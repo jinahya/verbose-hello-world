@@ -40,6 +40,7 @@ import java.io.Writer;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
+import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
@@ -467,6 +468,24 @@ public final class HelloWorldTestUtils {
             }
             return channel;
         }).when(service).write(ArgumentMatchers.<AsynchronousByteChannel>notNull());
+        return service;
+    }
+
+    public static <T extends HelloWorld>
+    T write_asynchornousfilechannel_position_writes_hello_world(final T service)
+            throws ExecutionException, InterruptedException {
+        requireMock(service);
+        Mockito.doAnswer(i -> {
+            final var channel = i.getArgument(0, AsynchronousFileChannel.class);
+            var position = i.getArgument(1, Long.class);
+            for (final var b = hello_world_byte_buffer(); b.hasRemaining(); ) {
+                position += channel.write(b, position).get();
+            }
+            return channel;
+        }).when(service).write(
+                ArgumentMatchers.<AsynchronousFileChannel>notNull(),
+                ArgumentMatchers.longThat(v -> v >= 0L)
+        );
         return service;
     }
 

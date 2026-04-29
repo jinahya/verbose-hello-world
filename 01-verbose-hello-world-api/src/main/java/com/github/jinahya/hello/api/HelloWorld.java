@@ -1146,28 +1146,6 @@ public interface HelloWorld {
     }
 
     /**
-     * Sends the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified socket
-     * channel.
-     *
-     * @param channel the socket channel to which the <a
-     *                href="#hello-world-bytes">hello-world-bytes</a> are sent.
-     * @param <T>     socket channel type parameter
-     * @return the given {@code channel}.
-     * @throws InterruptedException if interrupted while executing.
-     * @throws ExecutionException   if failed while writing.
-     * @implSpec Default implementation invokes {@link #write(AsynchronousByteChannel)} method with
-     * {@code channel}, and returns the result.
-     * @deprecated Invoke directly the {@link #write(AsynchronousByteChannel)} method with
-     * {@code channel}.
-     */
-    @屋上架屋("AsynchronousSocketChannel implements AsynchronousByteChannel")
-    @Deprecated(forRemoval = true)
-    default <T extends AsynchronousSocketChannel> T send(final T channel)
-            throws InterruptedException, ExecutionException {
-        return write(channel);
-    }
-
-    /**
      * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified asynchronous
      * file channel, starting at the given file position.
      * <pre>
