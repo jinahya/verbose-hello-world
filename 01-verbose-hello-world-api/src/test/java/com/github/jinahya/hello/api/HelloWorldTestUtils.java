@@ -391,7 +391,8 @@ public final class HelloWorldTestUtils {
 
     // --------------------------------------------------------------------------- java.nio.channels
     public static <T extends HelloWorld>
-    T send_channel_target_sends_hello_world_buffer(final T service) throws IOException {
+    T send_datagramchannel_socketaddress_sends_hello_world_buffer(final T service)
+            throws IOException {
         requireMock(service);
         Mockito.doAnswer(i -> {
             final var channel = i.getArgument(0, DatagramChannel.class);
@@ -405,6 +406,33 @@ public final class HelloWorldTestUtils {
         }).when(service).send(
                 ArgumentMatchers.<DatagramChannel>notNull(),
                 ArgumentMatchers.<SocketAddress>notNull()
+        );
+        return service;
+    }
+
+    /**
+     * Stubs the specified {@link HelloWorld#write(DatagramChannel)} method to write actual 'hello,
+     * world' bytes.
+     *
+     * @param service the service whose {@link HelloWorld#write(DatagramChannel)} method is
+     *                stubbed.
+     * @param <T>     service type parameter
+     * @return given {@code service}.
+     * @throws IOException if an I/O error occurs.
+     */
+    public static <T extends HelloWorld>
+    T write_datagramchannel_writes_hello_world_buffer(final T service) throws IOException {
+        requireMock(service);
+        Mockito.doAnswer(i -> {
+            final var channel = i.getArgument(0, DatagramChannel.class);
+            final var src = hello_world_byte_buffer();
+            int written;
+            do {
+                written = channel.write(src);
+            } while (written == 0);
+            return channel;
+        }).when(service).write(
+                ArgumentMatchers.<DatagramChannel>notNull()
         );
         return service;
     }

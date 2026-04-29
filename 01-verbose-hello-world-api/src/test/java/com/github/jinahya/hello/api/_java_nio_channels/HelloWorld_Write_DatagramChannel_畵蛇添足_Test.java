@@ -23,15 +23,20 @@ import java.nio.channels.Selector;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * A class for testing {@link HelloWorld#write(DatagramChannel)} method.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @畵蛇添足
 @Slf4j
-class HelloWorld_Send_DatagramChannel_Target_畵蛇添足_Test
+class HelloWorld_Write_DatagramChannel_畵蛇添足_Test
         extends HelloWorldTest {
 
     // ---------------------------------------------------------------------------------------------
     @BeforeEach
     void beforeEach() throws IOException {
-        HelloWorldTestUtils.send_datagramchannel_socketaddress_sends_hello_world_buffer(service());
+        HelloWorldTestUtils.write_datagramchannel_writes_hello_world_buffer(service());
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -60,19 +65,19 @@ class HelloWorld_Send_DatagramChannel_Target_畵蛇添足_Test
 
         @Test
         void __blocking() throws IOException {
-            // ------------------------------------------------------------------------------- given
             try (var client = Mockito.spy(DatagramChannel.open())) {
                 assert client.isBlocking();
-                service().send(client, startServer().join());
+                client.connect(startServer().join());
+                service().write(client);
             }
         }
 
         @Test
         void __nonblocking() throws IOException {
-            // ------------------------------------------------------------------------------- given
             try (var client = Mockito.spy(DatagramChannel.open())) {
                 client.configureBlocking(false);
-                service().send(client, startServer().join());
+                client.connect(startServer().join());
+                service().write(client);
             }
         }
     }
@@ -100,16 +105,17 @@ class HelloWorld_Send_DatagramChannel_Target_畵蛇添足_Test
         @Test
         void __blocking() throws IOException {
             try (var client = Mockito.spy(DatagramChannel.open())) {
-                service().send(client, startServer().join());
+                client.connect(startServer().join());
+                service().write(client);
             }
         }
 
         @Test
         void __nonblocking() throws IOException {
-            // ------------------------------------------------------------------------------- given
             try (var client = Mockito.spy(DatagramChannel.open())) {
                 client.configureBlocking(false);
-                service().send(client, startServer().join());
+                client.connect(startServer().join());
+                service().write(client);
             }
         }
     }
@@ -142,14 +148,17 @@ class HelloWorld_Send_DatagramChannel_Target_畵蛇添足_Test
         @Test
         void __blocking() throws IOException {
             try (var client = Mockito.spy(DatagramChannel.open())) {
-                service().send(client, startServer().join());
+                client.connect(startServer().join());
+                service().write(client);
             }
         }
 
         @Test
         void __nonblocking() throws IOException {
             try (var client = Mockito.spy(DatagramChannel.open())) {
-                service().send(client, startServer().join());
+                client.configureBlocking(false);
+                client.connect(startServer().join());
+                service().write(client);
             }
         }
     }

@@ -1048,7 +1048,7 @@ public interface HelloWorld {
 //            {
 //                final var sndbuf = channel.getOption(StandardSocketOptions.SO_SNDBUF);
 //                if (sndbuf == null || sndbuf < BYTES) {
-//                    throw new RuntimeException("channel.SNDBUF is not enough: " + sndbuf);
+//                    throw new IOException("channel.SNDBUF is not enough: " + sndbuf);
 //                }
 //            }
 //            Thread.onSpinWait();
@@ -1075,25 +1075,19 @@ public interface HelloWorld {
      * @see DatagramChannel#write(ByteBuffer)
      */
     default <T extends DatagramChannel> T write(final T channel) throws IOException {
-        Objects.requireNonNull(channel, "channel is null");
-        if (!channel.isConnected()) {
+        if (!Objects.requireNonNull(channel, "channel is null").isConnected()) {
             throw new IllegalArgumentException("not connected: " + channel);
         }
-        {
-            final var sndbuf = channel.getOption(StandardSocketOptions.SO_SNDBUF);
-            assert sndbuf == null || sndbuf >= BYTES;
+        final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
+        while (channel.write(buffer) == 0) {
+            {
+                final var sndbuf = channel.getOption(StandardSocketOptions.SO_SNDBUF);
+                if (sndbuf == null || sndbuf < BYTES) {
+                    throw new IOException("channel.SNDBUF is not enough: " + sndbuf);
+                }
+            }
+            Thread.onSpinWait();
         }
-        final var buffer = ByteBuffer.allocate(BYTES);
-        put(buffer);
-        buffer.flip();
-        assert buffer.remaining() == BYTES;
-        final var written = channel.write(buffer);
-        if (written != BYTES) {
-            assert written == 0;
-            throw new IOException("packet dropped; OS's send buffer is full");
-        }
-        assert !buffer.hasRemaining();
-        assert written == buffer.capacity();
         return channel;
     }
 
