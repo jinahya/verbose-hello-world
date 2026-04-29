@@ -11,6 +11,9 @@ import org.mockito.Mockito;
 import java.security.MessageDigest;
 
 /**
+ * A class for testing {@link com.github.jinahya.hello.api.HelloWorld#update(MessageDigest)}
+ * method.
+ *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see <a
  * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/security/MessageDigest.html">java.security.MessageDigest</a>

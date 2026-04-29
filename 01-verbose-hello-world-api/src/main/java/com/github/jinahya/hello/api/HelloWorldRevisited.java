@@ -26,7 +26,6 @@ import javax.crypto.Mac;
 import java.io.BufferedWriter;
 import java.io.CharArrayWriter;
 import java.io.DataOutput;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilterOutputStream;
@@ -106,13 +105,6 @@ interface HelloWorldRevisited
     @Override
     default <T extends Writer> T write(final T writer) throws IOException {
         return append(writer);
-    }
-
-    @SuppressWarnings("removal")
-    @Deprecated(forRemoval = true)
-    @Override
-    default <T extends DataOutputStream> T write(final T stream) throws IOException {
-        return HelloWorld.super.write(stream);
     }
 
     @Override

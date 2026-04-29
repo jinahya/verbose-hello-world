@@ -32,6 +32,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
+import java.io.DataOutput;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -216,6 +217,17 @@ public final class HelloWorldTestUtils {
     }
 
     // ------------------------------------------------------------------------------------- java.io
+    public static <T extends HelloWorld>
+    T write_dataoutput_writes_hello_world_bytes(final T service) throws IOException {
+        requireMock(service);
+        Mockito.doAnswer(i -> {
+            final var output = i.getArgument(0, DataOutput.class);
+            output.write(hello_world_byte_array());
+            return output;
+        }).when(service).write(ArgumentMatchers.<DataOutput>notNull());
+        return service;
+    }
+
     public static <T extends HelloWorld>
     T write_stream_will_write_12_bytes(final T service) throws IOException {
         requireMock(service);

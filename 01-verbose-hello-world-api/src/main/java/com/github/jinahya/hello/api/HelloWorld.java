@@ -26,7 +26,6 @@ import javax.crypto.Mac;
 import java.io.BufferedWriter;
 import java.io.CharArrayWriter;
 import java.io.DataOutput;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
@@ -438,13 +437,6 @@ public interface HelloWorld {
         return output;
     }
 
-    @Deprecated(forRemoval = true)
-    @屋上架屋("DataOutputStream extends FilterOutputStream implements DataOutput")
-    @SuppressWarnings({"unchecked"})
-    default <T extends DataOutputStream> T write(final T stream) throws IOException {
-        return (T) write((DataOutput) stream);
-    }
-
     /**
      * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified random access
      * file starting at its current file pointer.
@@ -454,31 +446,26 @@ public interface HelloWorld {
      * if (file == null) {
      *     throw new NullPointerException("file is null");
      * }
-     * final var array = new byte[BYTES];
-     * set(array);
-     * file.write(array); // @highlight
+     * final var output = (DataOutput) file; // @highlight region
+     * write(output); // @end
      * return file;
      *}
      *
      * @param <T>  random access file type parameter
      * @param file the random access file to which bytes are written.
      * @return the given {@code file}.
-     * @throws NullPointerException if {@code file} argument is {@code null}.
+     * @throws NullPointerException if the {@code file} argument is {@code null}.
      * @throws IOException          if an I/O error occurs.
-     * @implSpec Default implementation invokes {@link #set(byte[])} method with an array of
-     * {@value #BYTES} bytes, writes the array to the specified random access file by invoking
-     * {@link RandomAccessFile#write(byte[])} method on {@code file} with the array, and returns the
-     * {@code file}.
-     * @see #set(byte[])
-     * @see RandomAccessFile#write(byte[])
+     * @implSpec Default implementation casts {@code file} to {@link DataOutput}, invokes the
+     * {@link #write(DataOutput) write(output)} method with it, and returns the {@code file}.
+     * @see #write(DataOutput)
      */
     default <T extends RandomAccessFile> T write(final T file) throws IOException {
         if (file == null) {
             throw new NullPointerException("file is null");
         }
-        final var array = new byte[BYTES];
-        set(array);
-//        file.write(array);
+//        final var output = (DataOutput) file;
+//        write(output);
         return file;
     }
 
@@ -1269,8 +1256,8 @@ public interface HelloWorld {
      * @return the given {@code digest}.
      * @throws NullPointerException if {@code digest} is {@code null}.
      * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
-     * of {@value #BYTES} bytes, and {@link MessageDigest#update(byte[]) updates} the {@code digest}
-     * with the array.
+     * of {@value #BYTES} bytes, {@link MessageDigest#update(byte[]) updates} the {@code digest}
+     * with the array, and returns the {@code digest}.
      * @see #set(byte[])
      * @see MessageDigest#update(byte[])
      */
