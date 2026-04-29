@@ -23,11 +23,11 @@ package com.github.jinahya.hello.api._java_nio_channels;
 import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldTest;
 import com.github.jinahya.hello.api.HelloWorldTestUtils;
+import com.github.jinahya.hello.api.畵蛇添足;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -35,23 +35,14 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
-import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutionException;
 
-/**
- * A class for testing {@link HelloWorld#write(AsynchronousByteChannel) write(channel)} method.
- *
- * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- */
-@DisplayName("write(channel)")
+@畵蛇添足
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-@SuppressWarnings({
-        "java:S101"
-})
 class HelloWorld_Write_AsynchronousByteChannel_畵蛇添足_Test
         extends HelloWorldTest {
 
@@ -60,8 +51,9 @@ class HelloWorld_Write_AsynchronousByteChannel_畵蛇添足_Test
         HelloWorldTestUtils.write_asynchornousbytechannel_writes_hello_world(service());
     }
 
+    // ---------------------------------------------------------------------------------------------
     @Nested
-    class EchoServerTest {
+    class SendHelloWorldTest {
 
         @Test
         void __() throws IOException, ExecutionException, InterruptedException {
