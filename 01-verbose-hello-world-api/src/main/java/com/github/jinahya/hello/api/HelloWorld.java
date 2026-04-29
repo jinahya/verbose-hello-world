@@ -36,7 +36,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PipedWriter;
 import java.io.PrintWriter;
-import java.io.RandomAccessFile;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.foreign.MemorySegment;
@@ -435,38 +434,6 @@ public interface HelloWorld {
         set(array);
 //        output.write(array);
         return output;
-    }
-
-    /**
-     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified random access
-     * file starting at its current file pointer.
-     * <p>
-     * The default implementation would be as follows.
-     * {@snippet lang = "java":
-     * if (file == null) {
-     *     throw new NullPointerException("file is null");
-     * }
-     * final var output = (DataOutput) file; // @highlight region
-     * write(output); // @end
-     * return file;
-     *}
-     *
-     * @param <T>  random access file type parameter
-     * @param file the random access file to which bytes are written.
-     * @return the given {@code file}.
-     * @throws NullPointerException if the {@code file} argument is {@code null}.
-     * @throws IOException          if an I/O error occurs.
-     * @implSpec Default implementation casts {@code file} to {@link DataOutput}, invokes the
-     * {@link #write(DataOutput) write(output)} method with it, and returns the {@code file}.
-     * @see #write(DataOutput)
-     */
-    default <T extends RandomAccessFile> T write(final T file) throws IOException {
-        if (file == null) {
-            throw new NullPointerException("file is null");
-        }
-//        final var output = (DataOutput) file;
-//        write(output);
-        return file;
     }
 
     /**

@@ -36,7 +36,6 @@ import java.io.OutputStreamWriter;
 import java.io.PipedWriter;
 import java.io.PrintStream;
 import java.io.PrintWriter;
-import java.io.RandomAccessFile;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.foreign.MemorySegment;
@@ -94,12 +93,6 @@ interface HelloWorldRevisited
     default <T extends OutputStream> T write(final T stream) throws IOException {
         stream.write(set());
         return stream;
-    }
-
-    @Override
-    default <T extends RandomAccessFile> T write(final T file) throws IOException {
-        file.write(set());
-        return file;
     }
 
     @Override
