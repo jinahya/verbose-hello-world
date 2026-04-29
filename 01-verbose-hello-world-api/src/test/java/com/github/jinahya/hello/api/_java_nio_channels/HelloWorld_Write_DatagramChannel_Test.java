@@ -2,7 +2,6 @@ package com.github.jinahya.hello.api._java_nio_channels;
 
 import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorldTestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -10,11 +9,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
+import java.net.DatagramSocket;
 import java.nio.channels.DatagramChannel;
-import java.util.concurrent.atomic.AtomicReference;
+import java.nio.channels.WritableByteChannel;
 
 /**
  * A class for testing {@link HelloWorld#write(DatagramChannel)} method.
@@ -54,29 +52,43 @@ class HelloWorld_Write_DatagramChannel_Test
     }
 
     @Test
-    void __() throws IOException {
+    void __ChannelIsBlocking() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        final var srcRef = new AtomicReference<byte[]>();
-        HelloWorldTestUtils.put_buffer_will_put_12_random_bytes(service, srcRef::set);
         final var channel = Mockito.mock(DatagramChannel.class);
         Mockito.when(channel.isConnected()).thenReturn(true);
-        final var baos = new ByteArrayOutputStream(HelloWorld.BYTES);
-        Mockito.when(channel.write(
-                ArgumentMatchers.<ByteBuffer>argThat(
-                        v -> v != null && v.remaining() == HelloWorld.BYTES)
-        )).thenAnswer(i -> {
-            final var src = i.getArgument(0, ByteBuffer.class);
-            final var dst = new byte[src.remaining()];
-            src.get(dst);
-            baos.write(dst);
-            return dst.length;
-        });
+        Mockito.when(channel.isBlocking()).thenReturn(true);
+        final var socket = Mockito.mock(DatagramSocket.class);
+        Mockito.when(channel.socket()).thenReturn(socket);
+        Mockito.when(socket.getChannel()).thenReturn(channel);
+        Mockito.doReturn(socket).when(service).send(
+                ArgumentMatchers.<DatagramSocket>same(socket)
+        );
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(channel);
         // ------------------------------------------------------------------------------------ then
-        final var buffer = HelloWorldTestUtils.put_buffer12_invoked_once(service);
-        Assertions.assertArrayEquals(srcRef.get(), baos.toByteArray());
+        Mockito.verify(service, Mockito.times(1)).send(
+                ArgumentMatchers.<DatagramSocket>same(socket)
+        );
+        Assertions.assertSame(channel, result);
+    }
+
+    @Test
+    void __ChannelIsNotBlocking() throws IOException {
+        // ----------------------------------------------------------------------------------- given
+        final var service = service();
+        final var channel = Mockito.mock(DatagramChannel.class);
+        Mockito.when(channel.isConnected()).thenReturn(true);
+        Mockito.when(channel.isBlocking()).thenReturn(false);
+        Mockito.doReturn(channel).when(service).write(
+                ArgumentMatchers.<WritableByteChannel>same(channel)
+        );
+        // ------------------------------------------------------------------------------------ when
+        final var result = service.write(channel);
+        // ------------------------------------------------------------------------------------ then
+        Mockito.verify(service, Mockito.times(1)).write(
+                ArgumentMatchers.<WritableByteChannel>same(channel)
+        );
         Assertions.assertSame(channel, result);
     }
 }

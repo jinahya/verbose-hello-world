@@ -12,6 +12,7 @@ import org.mockito.Mockito;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.DatagramSocket;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
@@ -57,12 +58,37 @@ class HelloWorld_Send_DatagramChannel_Target_Test
     }
 
     @Test
-    void __() throws IOException {
+    void __ChannelIsBlocking() throws IOException {
+        // ----------------------------------------------------------------------------------- given
+        final var service = service();
+        final var channel = Mockito.mock(DatagramChannel.class);
+        Mockito.when(channel.isBlocking()).thenReturn(true);
+        final var socket = Mockito.mock(DatagramSocket.class);
+        Mockito.when(channel.socket()).thenReturn(socket);
+        Mockito.when(socket.getChannel()).thenReturn(channel);
+        final var target = Mockito.mock(SocketAddress.class);
+        Mockito.doReturn(socket).when(service).send(
+                ArgumentMatchers.<DatagramSocket>same(socket),
+                ArgumentMatchers.same(target)
+        );
+        // ------------------------------------------------------------------------------------ when
+        final var result = service.send(channel, target);
+        // ------------------------------------------------------------------------------------ then
+        Mockito.verify(service, Mockito.times(1)).send(
+                ArgumentMatchers.<DatagramSocket>same(socket),
+                ArgumentMatchers.same(target)
+        );
+        Assertions.assertSame(channel, result);
+    }
+
+    @Test
+    void __ChannelIsNotBlocking() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var srcRef = new AtomicReference<byte[]>();
         HelloWorldTestUtils.put_buffer_will_put_12_random_bytes(service, srcRef::set);
         final var channel = Mockito.mock(DatagramChannel.class);
+        Mockito.when(channel.isBlocking()).thenReturn(false);
         final var target = Mockito.mock(SocketAddress.class);
         final var baos = new ByteArrayOutputStream(HelloWorld.BYTES);
         Mockito.when(channel.send(

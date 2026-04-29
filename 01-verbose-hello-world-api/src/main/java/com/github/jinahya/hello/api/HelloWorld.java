@@ -1016,33 +1016,49 @@ public interface HelloWorld {
      * @return the given {@code channel}.
      * @throws NullPointerException if {@code channel} is {@code null}, or if {@code target} is
      *                              {@code null}.
-     * @throws RuntimeException     if, while the implementation is waiting for the underlying
-     *                              output buffer to drain, {@code channel.SO_SNDBUF} cannot be read
-     *                              (returns {@code null}) or is observed to be less than
-     *                              {@value #BYTES}.
+     * @throws RuntimeException     if, on the non-blocking branch, while the implementation is
+     *                              waiting for the underlying output buffer to drain,
+     *                              {@code channel.SO_SNDBUF} cannot be read (returns {@code null})
+     *                              or is observed to be less than {@value #BYTES}.
      * @throws IOException          if an I/O error occurs.
-     * @implSpec Default implementation invokes {@link #put(ByteBuffer) put(buffer)} method with a
-     * byte buffer of {@value #BYTES} bytes, {@link ByteBuffer#flip() flips} it, and repeatedly
-     * invokes {@link DatagramChannel#send(ByteBuffer, SocketAddress) channel.send(buffer, target)}
-     * until a non-zero count is returned. While the call returns {@code 0}, the implementation
-     * re-reads {@link StandardSocketOptions#SO_SNDBUF SO_SNDBUF} and throws a
-     * {@link RuntimeException} if the option cannot be read, or if its value is less than
-     * {@value #BYTES} — the loop's progress guarantee depends on a verified
-     * {@code SO_SNDBUF >= }{@value #BYTES}.
-     * @apiNote In blocking mode, {@code channel.send} returns {@value #BYTES} on the first
-     * invocation and the loop runs exactly once. In non-blocking mode, {@code channel.send} may
-     * return {@code 0} when the OS send buffer is temporarily full; the loop then spins, issuing
-     * {@link Thread#onSpinWait()} as a hint, until the kernel drains the buffer and the datagram is
-     * accepted. Callers that need cooperative back-pressure handling should use a
-     * {@link java.nio.channels.Selector Selector} with
+     * @implSpec Default implementation, if the {@code channel}
+     * {@link DatagramChannel#isBlocking() is in blocking mode}, invokes
+     * {@link #send(DatagramSocket, SocketAddress) #send(socket, target)} method with the
+     * {@link DatagramChannel#socket() channel.socket()} and the {@code target}, and returns the
+     * {@link DatagramSocket#getChannel() channel} associated with the resulting socket. Otherwise,
+     * this method invokes {@link #put(ByteBuffer) put(buffer)} method with a byte buffer of
+     * {@value #BYTES} bytes, {@link ByteBuffer#flip() flips} it, and repeatedly invokes
+     * {@link DatagramChannel#send(ByteBuffer, SocketAddress) channel.send(buffer, target)} until a
+     * non-zero count is returned. While that call returns {@code 0}, the implementation re-reads
+     * {@link StandardSocketOptions#SO_SNDBUF SO_SNDBUF} and throws a {@link RuntimeException} if
+     * the option cannot be read, or if its value is less than {@value #BYTES} — the loop's progress
+     * guarantee depends on a verified {@code SO_SNDBUF >= }{@value #BYTES}.
+     * @apiNote The blocking branch routes through {@link DatagramChannel#socket()} and forwards to
+     * the legacy {@link DatagramSocket#send(DatagramPacket)} pathway. The non-blocking branch uses
+     * the NIO {@link DatagramChannel#send(ByteBuffer, SocketAddress)} pathway directly. Splitting
+     * the implementation by {@link DatagramChannel#isBlocking() blocking mode} avoids the
+     * {@link java.nio.channels.IllegalBlockingModeException IllegalBlockingModeException} that the
+     * bridge socket would otherwise throw on a non-blocking channel. On the non-blocking branch,
+     * {@code channel.send} may return {@code 0} when the OS send buffer is temporarily full; the
+     * loop then spins, issuing {@link Thread#onSpinWait()} as a hint, until the kernel drains the
+     * buffer and the datagram is accepted. Callers that need cooperative back-pressure handling
+     * should use a {@link java.nio.channels.Selector Selector} with
      * {@link java.nio.channels.SelectionKey#OP_WRITE OP_WRITE} instead of this method.
+     * @see DatagramChannel#isBlocking()
+     * @see DatagramChannel#socket()
+     * @see DatagramSocket#getChannel()
+     * @see #send(DatagramSocket, SocketAddress)
      * @see #put(ByteBuffer)
      * @see DatagramChannel#send(ByteBuffer, SocketAddress)
      */
+    @SuppressWarnings({"unchecked"})
     default <T extends DatagramChannel> T send(final T channel, final SocketAddress target)
             throws IOException {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(target, "target is null");
+        if (channel.isBlocking()) {
+            return (T) send(channel.socket(), target).getChannel();
+        }
         final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
 //        while (channel.send(buffer, target) == 0) {
 //            {
@@ -1066,29 +1082,38 @@ public interface HelloWorld {
      * @throws NullPointerException     if {@code channel} is {@code null}.
      * @throws IllegalArgumentException if the {@code channel} is not
      *                                  {@link DatagramChannel#isConnected() connected}.
-     * @throws IOException              if an I/O error occurs, or if the datagram was not sent due
-     *                                  to the OS's send buffer being full.
-     * @implSpec Default implementation invokes {@link #put(ByteBuffer) put(buffer)} method with a
-     * byte buffer of {@value #BYTES} bytes, {@link ByteBuffer#flip() flips} it, and
-     * {@link DatagramChannel#write(ByteBuffer) writes} the buffer to the {@code channel}.
-     * @see #put(ByteBuffer)
-     * @see DatagramChannel#write(ByteBuffer)
+     * @throws IOException              if an I/O error occurs.
+     * @implSpec Default implementation, after verifying that the {@code channel} is
+     * {@link DatagramChannel#isConnected() connected}, dispatches as follows: if the
+     * {@code channel} {@link DatagramChannel#isBlocking() is in blocking mode}, invokes
+     * {@link #send(DatagramSocket) #send(socket)} method with the
+     * {@link DatagramChannel#socket() channel.socket()}, and returns the
+     * {@link DatagramSocket#getChannel() channel} associated with the resulting socket. Otherwise,
+     * this method invokes {@link #write(WritableByteChannel) #write(channel)} method with the
+     * {@code channel} widened to a {@link WritableByteChannel}, and returns the result.
+     * @apiNote The blocking branch routes through {@link DatagramChannel#socket()} and forwards to
+     * the legacy {@link DatagramSocket#send(DatagramPacket)} pathway. The non-blocking branch
+     * delegates to the generic {@link WritableByteChannel} pathway, which handles the
+     * {@link ByteBuffer}-based I/O. Splitting the implementation by
+     * {@link DatagramChannel#isBlocking() blocking mode} avoids the
+     * {@link java.nio.channels.IllegalBlockingModeException IllegalBlockingModeException} that the
+     * bridge socket would otherwise throw on a non-blocking channel.
+     * @see DatagramChannel#isConnected()
+     * @see DatagramChannel#isBlocking()
+     * @see DatagramChannel#socket()
+     * @see DatagramSocket#getChannel()
+     * @see #send(DatagramSocket)
+     * @see #write(WritableByteChannel)
      */
+    @SuppressWarnings({"unchecked"})
     default <T extends DatagramChannel> T write(final T channel) throws IOException {
         if (!Objects.requireNonNull(channel, "channel is null").isConnected()) {
             throw new IllegalArgumentException("not connected: " + channel);
         }
-        final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
-        while (channel.write(buffer) == 0) {
-            {
-                final var sndbuf = channel.getOption(StandardSocketOptions.SO_SNDBUF);
-                if (sndbuf == null || sndbuf < BYTES) {
-                    throw new IOException("channel.SNDBUF is not enough: " + sndbuf);
-                }
-            }
-            Thread.onSpinWait();
+        if (channel.isBlocking()) {
+            return (T) send(channel.socket()).getChannel();
         }
-        return channel;
+        return (T) write((WritableByteChannel) channel);
     }
 
     /**

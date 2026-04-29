@@ -41,6 +41,7 @@ import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.FileChannel;
+import java.nio.channels.WritableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -390,6 +391,33 @@ public final class HelloWorldTestUtils {
     }
 
     // --------------------------------------------------------------------------- java.nio.channels
+
+    /**
+     * Stubs the specified {@link HelloWorld#write(WritableByteChannel)} method to write actual
+     * 'hello, world' bytes.
+     *
+     * @param service the service whose {@link HelloWorld#write(WritableByteChannel)} method is
+     *                stubbed.
+     * @param <T>     service type parameter
+     * @return given {@code service}.
+     * @throws IOException if an I/O error occurs.
+     */
+    public static <T extends HelloWorld>
+    T write_writablebytechannel_writes_hello_world_buffer(final T service) throws IOException {
+        requireMock(service);
+        Mockito.doAnswer(i -> {
+            final var channel = i.getArgument(0, WritableByteChannel.class);
+            final var src = hello_world_byte_buffer();
+            while (src.hasRemaining()) {
+                channel.write(src);
+            }
+            return channel;
+        }).when(service).write(
+                ArgumentMatchers.<WritableByteChannel>notNull()
+        );
+        return service;
+    }
+
     public static <T extends HelloWorld>
     T send_datagramchannel_socketaddress_sends_hello_world_buffer(final T service)
             throws IOException {
@@ -410,29 +438,18 @@ public final class HelloWorldTestUtils {
         return service;
     }
 
-    /**
-     * Stubs the specified {@link HelloWorld#write(DatagramChannel)} method to write actual 'hello,
-     * world' bytes.
-     *
-     * @param service the service whose {@link HelloWorld#write(DatagramChannel)} method is
-     *                stubbed.
-     * @param <T>     service type parameter
-     * @return given {@code service}.
-     * @throws IOException if an I/O error occurs.
-     */
     public static <T extends HelloWorld>
     T write_datagramchannel_writes_hello_world_buffer(final T service) throws IOException {
         requireMock(service);
         Mockito.doAnswer(i -> {
-            final var channel = i.getArgument(0, DatagramChannel.class);
+            final var channel = i.getArgument(0, WritableByteChannel.class);
             final var src = hello_world_byte_buffer();
-            int written;
-            do {
-                written = channel.write(src);
-            } while (written == 0);
+            while (src.hasRemaining()) {
+                channel.write(src);
+            }
             return channel;
         }).when(service).write(
-                ArgumentMatchers.<DatagramChannel>notNull()
+                ArgumentMatchers.<DatagramChannel>argThat(v -> v != null && v.isConnected())
         );
         return service;
     }
