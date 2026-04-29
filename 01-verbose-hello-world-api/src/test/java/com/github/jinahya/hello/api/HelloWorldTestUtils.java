@@ -37,7 +37,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.net.SocketAddress;
 import java.nio.ByteBuffer;
+import java.nio.channels.DatagramChannel;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -47,6 +49,7 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Consumer;
 import java.util.function.IntFunction;
 import java.util.stream.IntStream;
 
@@ -323,6 +326,26 @@ public final class HelloWorldTestUtils {
     }
 
     public static <T extends HelloWorld>
+    T put_buffer_will_put_12_random_bytes(final T service,
+                                          final Consumer<? super byte[]> consumer) {
+        requireMock(service);
+        Objects.requireNonNull(consumer, "consumer is null");
+        Mockito.doAnswer(i -> {
+                    final var buffer = i.getArgument(0, ByteBuffer.class);
+                    final var src = new byte[HelloWorld.BYTES];
+                    ThreadLocalRandom.current().nextBytes(src);
+                    buffer.put(src);
+                    consumer.accept(src);
+                    return buffer;
+                })
+                .when(service)
+                .put(ArgumentMatchers.argThat(
+                        b -> b != null && b.remaining() >= HelloWorld.BYTES
+                ));
+        return service;
+    }
+
+    public static <T extends HelloWorld>
     T put_buffer_will_put_actual_hello_world_bytes(final T service) {
         requireMock(service);
         Mockito.doAnswer(i -> {
@@ -366,7 +389,25 @@ public final class HelloWorldTestUtils {
         return service;
     }
 
-    // ---------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------- java.nio.channels
+    public static <T extends HelloWorld>
+    T send_channel_target_sends_hello_world_buffer(final T service) throws IOException {
+        requireMock(service);
+        Mockito.doAnswer(i -> {
+            final var channel = i.getArgument(0, DatagramChannel.class);
+            final var target = i.getArgument(1, SocketAddress.class);
+            final var src = hello_world_byte_buffer();
+            int written;
+            do {
+                written = channel.send(src, target);
+            } while (written == 0);
+            return channel;
+        }).when(service).send(
+                ArgumentMatchers.<DatagramChannel>notNull(),
+                ArgumentMatchers.<SocketAddress>notNull()
+        );
+        return service;
+    }
 
     // ---------------------------------------------------------------------------------------------
     private static <T extends File> T writeSome_(final T file) throws IOException {

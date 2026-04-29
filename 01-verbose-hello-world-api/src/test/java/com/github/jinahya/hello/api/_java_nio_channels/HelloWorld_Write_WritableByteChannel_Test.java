@@ -30,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -42,6 +43,7 @@ import java.nio.channels.Pipe;
 import java.nio.channels.WritableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -183,6 +185,7 @@ class HelloWorld_Write_WritableByteChannel_Test
         Assertions.assertSame(channel, result);
     }
 
+    @Timeout(value = 10, unit = TimeUnit.SECONDS)
     @畵蛇添足
     @Test
     void _添足_畵蛇() throws IOException, InterruptedException {
