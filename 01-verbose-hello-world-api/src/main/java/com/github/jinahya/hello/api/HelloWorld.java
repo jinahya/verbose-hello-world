@@ -1137,11 +1137,11 @@ public interface HelloWorld {
             throws InterruptedException, ExecutionException {
         Objects.requireNonNull(channel, "channel is null");
         final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
-        while (buffer.hasRemaining()) {
-            final var future = channel.write(buffer);
-            final var written = future.get();
-            assert written > 0;
-        }
+//        while (buffer.hasRemaining()) {
+//            final var future = channel.write(buffer);
+//            final var written = future.get();
+//            assert written > 0;
+//        }
         return channel;
     }
 
