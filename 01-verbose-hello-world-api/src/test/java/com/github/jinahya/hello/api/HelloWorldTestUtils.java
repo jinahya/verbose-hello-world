@@ -489,6 +489,24 @@ public final class HelloWorldTestUtils {
         return service;
     }
 
+    // ------------------------------------------------------------------------------ java.nio.files
+    public static <T extends HelloWorld> T append_path_appends_hello_world(final T service)
+            throws IOException {
+        requireMock(service);
+        Mockito.doAnswer(i -> {
+            final var path = i.getArgument(0, Path.class);
+            try (var channel = FileChannel.open(path, StandardOpenOption.CREATE,
+                                                StandardOpenOption.APPEND)) {
+                for (final var b = hello_world_byte_buffer(); b.hasRemaining(); ) {
+                    channel.write(b);
+                }
+                channel.force(false);
+            }
+            return path;
+        }).when(service).append(ArgumentMatchers.<Path>notNull());
+        return service;
+    }
+
     // ---------------------------------------------------------------------------------------------
     private static <T extends File> T writeSome_(final T file) throws IOException {
         Objects.requireNonNull(file, "file is null");

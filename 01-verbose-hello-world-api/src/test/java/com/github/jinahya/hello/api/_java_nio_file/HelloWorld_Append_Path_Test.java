@@ -79,8 +79,7 @@ class HelloWorld_Append_Path_Test
 
     @DisplayName("should invoke <write(FileChannel.open(path, CREATE, WRITE, APPEND))>")
     @Test
-    void __()
-            throws IOException {
+    void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // stub, <service.write(channel)> will return the <channel>
