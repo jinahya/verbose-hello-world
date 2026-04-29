@@ -61,7 +61,6 @@ import java.nio.charset.Charset;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.security.Signature;
 import java.security.SignatureException;
@@ -1280,13 +1279,6 @@ public interface HelloWorld {
         set(array);
         digest.update(array);
         return digest;
-    }
-
-    default <T extends DigestOutputStream> T write(final T stream) throws IOException {
-        Objects.requireNonNull(stream, "stream is null");
-        final var result = write((FilterOutputStream) stream);
-        assert result == stream;
-        return stream;
     }
 
     /**
