@@ -39,6 +39,7 @@ import java.io.OutputStream;
 import java.io.Writer;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
+import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
@@ -49,6 +50,7 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 import java.util.function.IntFunction;
@@ -451,6 +453,20 @@ public final class HelloWorldTestUtils {
         }).when(service).write(
                 ArgumentMatchers.<DatagramChannel>argThat(v -> v != null && v.isConnected())
         );
+        return service;
+    }
+
+    public static <T extends HelloWorld>
+    T write_asynchornousbytechannel_writes_hello_world(final T service)
+            throws ExecutionException, InterruptedException {
+        requireMock(service);
+        Mockito.doAnswer(i -> {
+            final var channel = i.getArgument(0, AsynchronousByteChannel.class);
+            for (final var b = hello_world_byte_buffer(); b.hasRemaining(); ) {
+                channel.write(b).get();
+            }
+            return channel;
+        }).when(service).write(ArgumentMatchers.<AsynchronousByteChannel>notNull());
         return service;
     }
 
