@@ -1045,9 +1045,11 @@ public interface HelloWorld {
         Objects.requireNonNull(target, "target is null");
         final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
         while (channel.send(buffer, target) == 0) {
-            final var sndbuf = channel.getOption(StandardSocketOptions.SO_SNDBUF);
-            if (sndbuf == null || sndbuf < BYTES) {
-                throw new RuntimeException("channel.SNDBUF is not enough");
+            {
+                final var sndbuf = channel.getOption(StandardSocketOptions.SO_SNDBUF);
+                if (sndbuf == null || sndbuf < BYTES) {
+                    throw new RuntimeException("channel.SNDBUF is not enough");
+                }
             }
             Thread.onSpinWait();
         }
