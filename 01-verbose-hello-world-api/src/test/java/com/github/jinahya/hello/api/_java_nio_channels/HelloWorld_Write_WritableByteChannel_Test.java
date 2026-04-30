@@ -44,7 +44,6 @@ import java.nio.channels.WritableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * A class for testing {@link HelloWorld#write(WritableByteChannel) write(channel)} method.
@@ -183,9 +182,7 @@ class HelloWorld_Write_WritableByteChannel_Test
         final var result = service.write(channel);
         // ------------------------------------------------------------------------------------ then
 //        final var buffer = HelloWorldTestUtils.put_buffer12_invoked_once(service);
-//        final byte[] expected = new byte[buffer.position()];
-//        buffer.rewind().get(expected);
-//        Assertions.assertArrayEquals(expected, baos.toByteArray());
+//        Assertions.assertArrayEquals(buffer.array(), baos.toByteArray());
         Assertions.assertSame(channel, result);
     }
 
