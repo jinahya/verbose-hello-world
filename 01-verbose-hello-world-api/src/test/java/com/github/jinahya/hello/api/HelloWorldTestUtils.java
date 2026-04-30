@@ -38,6 +38,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.net.Socket;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
@@ -317,6 +318,18 @@ public final class HelloWorldTestUtils {
             writer.write(hello_world_char_array());
             return writer;
         }).when(service).write(ArgumentMatchers.<Writer>notNull());
+        return service;
+    }
+
+    // ------------------------------------------------------------------------------------ java.net
+    public static <T extends HelloWorld> T send_socket_sends_hello_world_bytes(final T service)
+            throws IOException {
+        requireMock(service);
+        Mockito.doAnswer(i -> {
+            final var socket = i.getArgument(0, Socket.class);
+            socket.getOutputStream().write(hello_world_byte_array());
+            return socket;
+        }).when(service).send(ArgumentMatchers.<Socket>notNull());
         return service;
     }
 

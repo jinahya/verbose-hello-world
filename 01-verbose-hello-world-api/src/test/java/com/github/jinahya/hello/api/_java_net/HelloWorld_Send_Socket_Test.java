@@ -33,11 +33,7 @@ import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 
 /**
  * A class for testing {@link HelloWorld#send(Socket) send(socket)} method.
@@ -94,35 +90,5 @@ class HelloWorld_Send_Socket_Test
         // ------------------------------------------------------------------------------------ then
 //        Mockito.verify(service, Mockito.times(1)).write(stream);
         Assertions.assertSame(socket, result);
-    }
-
-    @Test
-    void _添足_畵蛇() throws IOException, InterruptedException {
-        // ----------------------------------------------------------------------------------- given
-        final var service = service();
-        Mockito.doAnswer(i -> {
-            final var socket = i.getArgument(0, Socket.class);
-            socket.getOutputStream().write("hello, world".getBytes(StandardCharsets.US_ASCII));
-            socket.getOutputStream().flush();
-            return socket;
-        }).when(service).send(ArgumentMatchers.<Socket>notNull());
-        // ----------------------------------------------------------------------------- when / then
-        try (var server = new ServerSocket()) {
-            server.bind(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0));
-            final var thread = Thread.ofPlatform().daemon().start(() -> {
-                try (var client = server.accept()) {
-                    final var bytes = client.getInputStream().readNBytes(HelloWorld.BYTES);
-                    log.debug("read: {}", new String(bytes, StandardCharsets.US_ASCII));
-                } catch (final IOException ioe) {
-                    throw new RuntimeException("failed to accept/read", ioe);
-                }
-            });
-            try (var client = new Socket()) {
-                client.connect(server.getLocalSocketAddress());
-                service.send(client);
-                client.getOutputStream().flush();
-            }
-            thread.join();
-        }
     }
 }
