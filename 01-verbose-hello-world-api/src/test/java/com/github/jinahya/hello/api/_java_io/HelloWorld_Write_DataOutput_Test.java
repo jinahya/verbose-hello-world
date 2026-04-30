@@ -61,7 +61,6 @@ class HelloWorld_Write_DataOutput_Test
         final var service = service();
         final var output = (DataOutput) null;
         // ------------------------------------------------------------------------------- when/then
-        // assert: <service.write(output:null)> throws a <NullPointerException>
         Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.write(output)
