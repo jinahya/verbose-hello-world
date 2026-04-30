@@ -217,6 +217,20 @@ public final class HelloWorldTestUtils {
     }
 
     // ------------------------------------------------------------------------------------- java.io
+    public static <T extends HelloWorld> T append_file_appends_hello_world(final T service)
+            throws IOException {
+        requireMock(service);
+        Mockito.doAnswer(i -> {
+            final var file = i.getArgument(0, File.class);
+            try (var stream = new FileOutputStream(file, true)) {
+                stream.write(hello_world_byte_array());
+                stream.flush();
+            }
+            return file;
+        }).when(service).append(ArgumentMatchers.<File>notNull());
+        return service;
+    }
+
     public static <T extends HelloWorld>
     T write_dataoutput_writes_hello_world_bytes(final T service) throws IOException {
         requireMock(service);
@@ -292,6 +306,17 @@ public final class HelloWorldTestUtils {
                 })
                 .when(service)
                 .write(ArgumentMatchers.<Writer>notNull());
+        return service;
+    }
+
+    public static <T extends HelloWorld>
+    T write_writer_writes_hello_world_string(final T service) throws IOException {
+        requireMock(service);
+        Mockito.doAnswer(i -> {
+            final var writer = i.getArgument(0, Writer.class);
+            writer.write(hello_world_char_array());
+            return writer;
+        }).when(service).write(ArgumentMatchers.<Writer>notNull());
         return service;
     }
 
@@ -538,8 +563,7 @@ public final class HelloWorldTestUtils {
         return file;
     }
 
-    private static <T extends Path> T writeSome_(final T path)
-            throws IOException {
+    private static <T extends Path> T writeSome_(final T path) throws IOException {
         Objects.requireNonNull(path, "path is null");
         try (var channel = FileChannel.open(path, StandardOpenOption.WRITE)) {
             for (final var b = ByteBuffer.allocate(ThreadLocalRandom.current().nextInt(128));
@@ -552,8 +576,7 @@ public final class HelloWorldTestUtils {
     }
 
     @SuppressWarnings({"unchecked"})
-    public static <T extends File> T writeSome(final T file)
-            throws IOException {
+    public static <T extends File> T writeSome(final T file) throws IOException {
         Objects.requireNonNull(file, "file is null");
         if (ThreadLocalRandom.current().nextBoolean()) {
             return (T) writeSome_(file.toPath()).toFile();

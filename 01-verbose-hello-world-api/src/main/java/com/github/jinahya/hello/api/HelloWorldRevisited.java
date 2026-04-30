@@ -109,23 +109,6 @@ interface HelloWorldRevisited
     }
 
     @Override
-    default <T extends CharArrayWriter> T write(final T writer) throws IOException {
-        return HelloWorld.super.write(writer);
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    default <T extends FilterWriter> T write(final T writer) throws IOException {
-        return (T) write((Writer) writer);
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    default <T extends OutputStreamWriter> T write(final T writer) throws IOException {
-        return (T) write((Writer) writer);
-    }
-
-    @Override
     default <T extends File> T append(final T file, final Charset charset) throws IOException {
         try (var writer = new OutputStreamWriter(new FileOutputStream(file, true), charset)) {
             write((OutputStreamWriter) writer).flush();
@@ -133,31 +116,6 @@ interface HelloWorldRevisited
         return file;
     }
 
-    @Override
-    @SuppressWarnings("unchecked")
-    default <T extends PipedWriter> T write(final T writer) throws IOException {
-        return (T) write((Writer) writer);
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    default <T extends StringWriter> T write(final T writer) throws IOException {
-        return (T) write((Writer) writer);
-    }
-
-    @SuppressWarnings("removal")
-    @Deprecated(forRemoval = true)
-    @Override
-    default <T extends BufferedWriter> T write(final T writer) throws IOException {
-        return HelloWorld.super.write(writer);
-    }
-
-    @SuppressWarnings("removal")
-    @Deprecated(forRemoval = true)
-    @Override
-    default <T extends PrintWriter> T write(final T writer) throws IOException {
-        return HelloWorld.super.write(writer);
-    }
 
     @SuppressWarnings("removal")
     @Deprecated(forRemoval = true)

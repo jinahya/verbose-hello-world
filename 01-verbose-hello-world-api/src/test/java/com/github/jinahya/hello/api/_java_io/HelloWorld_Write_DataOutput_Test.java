@@ -80,15 +80,15 @@ class HelloWorld_Write_DataOutput_Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        Mockito.doAnswer(i -> i.getArgument(0)) // <1>
+        Mockito.doAnswer(i -> i.getArgument(0))
                 .when(service)
-                .write(ArgumentMatchers.any(DataOutput.class));
+                .set(ArgumentMatchers.any(byte[].class));
         final var output = Mockito.mock(DataOutput.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(output);
         // ------------------------------------------------------------------------------------ then
+        final var array = HelloWorldTestUtils.set_array12_invoked_once(service);
 //        Mockito.verify(output, Mockito.times(1)).write(array);
-//        Mockito.verifyNoMoreInteractions(output);
         Assertions.assertSame(output, result);
     }
 }

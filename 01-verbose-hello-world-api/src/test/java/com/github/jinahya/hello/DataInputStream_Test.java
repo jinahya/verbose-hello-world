@@ -8,15 +8,17 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.lang.classfile.ClassFile;
+import java.nio.file.Files;
+import java.util.spi.ToolProvider;
 
 @ExtendWith({MockitoExtension.class})
 @Slf4j
 class DataInputStream_Test {
 
-    @Test
-    void __() throws IOException {
+    private static byte[] bytecode() {
         /* class A { } */
-        final var bytecode = new byte[] {
+        return new byte[] {
                 (byte) 0xCA, (byte) 0xFE, (byte) 0xBA, (byte) 0xBE, // Magic
                 0x00, 0x00,                                     // Minor version
                 0x00, 0x34,                                     // Major version (JDK 8)
@@ -27,7 +29,7 @@ class DataInputStream_Test {
                 0x01, 0x00, 0x10, 0x6A, 0x61, 0x76, 0x61, 0x2F, // #4 UTF-8 "java/lang/Object"
                 0x6C, 0x61, 0x6E, 0x67, 0x2F, 0x4F, 0x62, 0x6A, 0x65, 0x63, 0x74,
 
-                0x00, 0x01,                                     // Access Flags (Public)
+                0x00, 0x00,                                     // Access Flags (Public)
                 0x00, 0x01,                                     // This Class (Index #1)
                 0x00, 0x02,                                     // Super Class (Index #2)
                 0x00, 0x00,                                     // Interfaces Count
@@ -35,8 +37,12 @@ class DataInputStream_Test {
                 0x00, 0x00,                                     // Methods Count
                 0x00, 0x00                                      // Attributes Count
         };
+    }
+
+    @Test
+    void __DataInput() throws IOException {
         // -----------------------------------------------------------------------------------------
-        final var stream = new DataInputStream(new ByteArrayInputStream(bytecode));
+        final var stream = new DataInputStream(new ByteArrayInputStream(bytecode()));
         // -----------------------------------------------------------------------------------------
         log.debug("magic: 0x{}", Integer.toHexString(stream.readInt()));
         log.debug("minor_version: {}", stream.readUnsignedShort());
@@ -60,5 +66,35 @@ class DataInputStream_Test {
         log.debug("fields_count: {}", stream.readUnsignedShort());
         log.debug("methods_count: {}", stream.readUnsignedShort());
         log.debug("attributes_count: {}", stream.readUnsignedShort());
+    }
+
+    @Test
+    void __ToolProvider() throws IOException {
+        final var file = Files.createTempFile(null, ".class");
+        try {
+            Files.write(file, bytecode());
+            final var javap = ToolProvider.findFirst("javap").orElseThrow();
+            javap.run(System.out, System.err, "-c", "-p", "-v", file.toString());
+        } finally {
+            Files.deleteIfExists(file);
+        }
+    }
+
+    @Test
+    void __ClassFileApi() {
+        final var model = ClassFile.of().parse(bytecode());
+        log.debug("magic: 0x{}", Integer.toHexString(ClassFile.MAGIC_NUMBER));
+        log.debug("minor_version: {}", model.minorVersion());
+        log.debug("major_version: {}", model.majorVersion());
+        log.debug("constant_pool_count: {}", model.constantPool().size());
+        model.constantPool().forEach(entry -> log.debug("  #{} {}", entry.index(), entry));
+        log.debug("access_flags: 0x{}", Integer.toHexString(model.flags().flagsMask()));
+        log.debug("this_class: {}", model.thisClass().asInternalName());
+        log.debug("super_class: {}",
+                  model.superclass().map(c -> c.asInternalName()).orElse(null));
+        log.debug("interfaces_count: {}", model.interfaces().size());
+        log.debug("fields_count: {}", model.fields().size());
+        log.debug("methods_count: {}", model.methods().size());
+        log.debug("attributes_count: {}", model.attributes().size());
     }
 }

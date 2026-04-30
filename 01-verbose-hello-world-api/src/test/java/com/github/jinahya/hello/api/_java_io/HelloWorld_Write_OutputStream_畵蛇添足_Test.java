@@ -39,8 +39,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.HexFormat;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -110,20 +113,48 @@ class HelloWorld_Write_OutputStream_畵蛇添足_Test
     class PipeOutputStreamTest {
 
         @Test
-        void __() throws IOException {
+        void __EnoughPipeSize() throws IOException {
             // ------------------------------------------------------------------------------- given
             final var service = service();
-            final var file = File.createTempFile("tmp", null, tempDir);
-            // -------------------------------------------------------------------------------- when
-            try (var stream = new FileOutputStream(file)) {
-                service.write(stream).flush();
-            }
-            Assertions.assertEquals(HelloWorld.BYTES, file.length());
-            // -------------------------------------------------------------------------------- then
-            try (var stream = new FileInputStream(file)) {
-                final var bytes = stream.readNBytes(HelloWorld.BYTES);
+            try (var pos = new PipedOutputStream();
+                 var pis = new PipedInputStream(HelloWorld.BYTES)) {
+                pos.connect(pis);
+                // ---------------------------------------------------------------------------- when
+                service.write(pos).flush();
+                // ---------------------------------------------------------------------------- when
+                final var bytes = pis.readNBytes(HelloWorld.BYTES);
                 assert bytes.length == HelloWorld.BYTES;
                 log.debug("read: {}", new String(bytes, StandardCharsets.US_ASCII));
+            }
+        }
+
+        @Test
+        void __NotEnoughPipeSize() throws IOException {
+            // ------------------------------------------------------------------------------- given
+            final var service = service();
+            final var pipeSize = ThreadLocalRandom.current().nextInt(1, HelloWorld.BYTES);
+            try (var pos = new PipedOutputStream();
+                 var pis = new PipedInputStream(pipeSize)) {
+                pos.connect(pis);
+                // ---------------------------------------------------------------------------- when
+                Thread.ofPlatform().start(() -> {
+                    try {
+                        service.write(pos).flush();
+                    } catch (final IOException ioe) {
+                        throw new RuntimeException(ioe);
+                    }
+                });
+                // ---------------------------------------------------------------------------- when
+                final var b = new byte[HelloWorld.BYTES];
+                var off = 0;
+                var len = b.length;
+                while (off < HelloWorld.BYTES) {
+                    final var r = pis.read(b, off, len);
+                    assert r != -1;
+                    off += r;
+                    len -= r;
+                }
+                log.debug("read: {}", new String(b, StandardCharsets.US_ASCII));
             }
         }
     }

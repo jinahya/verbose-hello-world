@@ -22,7 +22,7 @@ package com.github.jinahya.hello.api._java_io;
 
 import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api._java_nio._Java_Nio_TestUtils;
+import com.github.jinahya.hello.api._Java_Nio_Charset_TestUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +42,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.util.Arrays;
 import java.util.HexFormat;
 import java.util.stream.Stream;
 
@@ -59,7 +58,7 @@ class HelloWorld_Append_File_Charset_Test
         extends HelloWorldTest {
 
     private static Stream<Charset> charsetStream() {
-        return _Java_Nio_TestUtils.charsetStream();
+        return _Java_Nio_Charset_TestUtils.charsetStream();
     }
 
     // ---------------------------------------------------------------------------------------------

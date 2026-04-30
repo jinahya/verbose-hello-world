@@ -33,7 +33,6 @@ import java.io.FilterWriter;
 import java.io.Flushable;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.PipedWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -462,66 +461,6 @@ public interface HelloWorld {
             throw new NullPointerException("writer is null");
         }
 //        append(writer);
-        return writer;
-    }
-
-    @Deprecated(forRemoval = true)
-    @屋上架屋("BufferedWriter extends Writer")
-    @SuppressWarnings({"unchecked"})
-    default <T extends BufferedWriter> T write(final T writer) throws IOException {
-        return (T) write((Writer) writer);
-    }
-
-    @Deprecated(forRemoval = true)
-    @屋上架屋("CharArrayWriter extends Writer")
-    @SuppressWarnings({"unchecked"})
-    default <T extends CharArrayWriter> T write(final T writer) throws IOException {
-        return (T) write((Writer) writer);
-    }
-
-    @Deprecated(forRemoval = true)
-    @屋上架屋("FilterWriter extends Writer")
-    @SuppressWarnings({"unchecked"})
-    default <T extends FilterWriter> T write(final T writer) throws IOException {
-        final var result = write((Writer) writer);
-        assert result == writer;
-        return writer;
-    }
-
-    @Deprecated(forRemoval = true)
-    @屋上架屋("OutputStreamWriter extends Writer")
-    default <T extends OutputStreamWriter> T write(final T writer) throws IOException {
-        Objects.requireNonNull(writer, "writer is null");
-        final var result = write((Writer) writer);
-        assert result == writer;
-        return writer;
-    }
-
-    @Deprecated(forRemoval = true)
-    @屋上架屋("PipedWriter extends Writer implements Appendable")
-
-    default <T extends PipedWriter> T write(final T writer) throws IOException {
-        Objects.requireNonNull(writer, "writer is null");
-        final var result = write((Writer) writer);
-        assert result == writer;
-        return writer;
-    }
-
-    @Deprecated(forRemoval = true)
-    @屋上架屋("PrintWriter extends Writer implements Appendable")
-    default <T extends PrintWriter> T write(final T writer) throws IOException {
-        Objects.requireNonNull(writer, "writer is null");
-        final var result = write((Writer) writer);
-        assert result == writer;
-        return writer;
-    }
-
-    @Deprecated(forRemoval = true)
-    @屋上架屋("StringWriter extends Writer")
-    default <T extends StringWriter> T write(final T writer) throws IOException {
-        Objects.requireNonNull(writer, "writer is null");
-        final var result = write((Writer) writer);
-        assert result == writer;
         return writer;
     }
 

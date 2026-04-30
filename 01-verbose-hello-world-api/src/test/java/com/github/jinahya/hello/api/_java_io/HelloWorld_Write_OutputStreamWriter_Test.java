@@ -22,7 +22,7 @@ package com.github.jinahya.hello.api._java_io;
 
 import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api._java_nio._Java_Nio_TestUtils;
+import com.github.jinahya.hello.api._Java_Nio_Charset_TestUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -58,7 +58,7 @@ class HelloWorld_Write_OutputStreamWriter_Test
         extends HelloWorldTest {
 
     private static Stream<Charset> standardCharsetStream() {
-        return _Java_Nio_TestUtils.charsetStream();
+        return _Java_Nio_Charset_TestUtils.charsetStream();
     }
 
     /**
