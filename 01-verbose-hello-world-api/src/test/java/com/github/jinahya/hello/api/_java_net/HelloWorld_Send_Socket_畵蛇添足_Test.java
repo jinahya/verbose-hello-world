@@ -62,7 +62,6 @@ class HelloWorld_Send_Socket_畵蛇添足_Test
 
         @Test
         void ___() throws IOException, InterruptedException {
-            // ------------------------------------------------------------------------------- given
             final var service = service();
             try (var server = new ServerSocket()) {
                 server.bind(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0));
@@ -76,7 +75,6 @@ class HelloWorld_Send_Socket_畵蛇添足_Test
                 });
                 try (var client = new Socket()) {
                     client.connect(server.getLocalSocketAddress());
-                    // ------------------------------------------------------------------------ when
                     service.send(client);
                     client.getOutputStream().flush();
                 }
