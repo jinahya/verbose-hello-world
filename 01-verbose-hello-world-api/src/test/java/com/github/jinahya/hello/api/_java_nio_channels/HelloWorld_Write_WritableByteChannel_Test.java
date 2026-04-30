@@ -157,14 +157,16 @@ class HelloWorld_Write_WritableByteChannel_Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        final var srcRef = new AtomicReference<byte[]>();
+//        final var srcRef = new AtomicReference<byte[]>();
         Mockito.doAnswer(i -> {
             final var src = new byte[HelloWorld.BYTES];
             ThreadLocalRandom.current().nextBytes(src);
-            srcRef.set(src);
+//            srcRef.set(src);
             return i.getArgument(0, ByteBuffer.class).put(src);
         }).when(service).put(ArgumentMatchers.argThat(v -> {
-            return v != null && v.remaining() >= HelloWorld.BYTES;
+            return v != null
+                   && v.capacity() == HelloWorld.BYTES
+                   && v.remaining() == HelloWorld.BYTES;
         }));
         final var baos = new ByteArrayOutputStream(HelloWorld.BYTES);
         final var channel = Mockito.spy(Channels.newChannel(baos));
@@ -172,6 +174,7 @@ class HelloWorld_Write_WritableByteChannel_Test
             final var src = i.getArgument(0, ByteBuffer.class);
             final var bytes = new byte[ThreadLocalRandom.current().nextInt(1, src.remaining() + 1)];
             src.get(bytes);
+            baos.write(bytes);
             return bytes.length;
         }).when(channel).write(ArgumentMatchers.argThat(v -> {
             return v != null && v.remaining() > 0;
@@ -180,8 +183,9 @@ class HelloWorld_Write_WritableByteChannel_Test
         final var result = service.write(channel);
         // ------------------------------------------------------------------------------------ then
 //        final var buffer = HelloWorldTestUtils.put_buffer12_invoked_once(service);
-//        Mockito.verify(channel, Mockito.atLeastOnce()).write(buffer);
-//        Assertions.assertArrayEquals(srcRef.get(), baos.toByteArray());
+//        final byte[] expected = new byte[buffer.position()];
+//        buffer.rewind().get(expected);
+//        Assertions.assertArrayEquals(expected, baos.toByteArray());
         Assertions.assertSame(channel, result);
     }
 

@@ -890,7 +890,8 @@ public interface HelloWorld {
      */
     default <T extends WritableByteChannel> T write(final T channel) throws IOException {
         Objects.requireNonNull(channel, "channel is null");
-//        final var buffer = put(ByteBuffer.allocate(BYTES));
+//        final var buffer = ByteBuffer.allocate(BYTES);
+//        put(buffer);
 //        buffer.flip();
 //        while (buffer.hasRemaining()) {
 //            channel.write(buffer);
