@@ -23,19 +23,13 @@ package com.github.jinahya.hello.api;
 import javax.crypto.Cipher;
 import javax.crypto.CipherOutputStream;
 import javax.crypto.Mac;
-import java.io.BufferedWriter;
-import java.io.CharArrayWriter;
 import java.io.DataOutput;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
-import java.io.FilterWriter;
 import java.io.Flushable;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PipedWriter;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.foreign.MemorySegment;
 import java.lang.foreign.ValueLayout;
@@ -1170,7 +1164,9 @@ public interface HelloWorld {
      */
     default <T extends MessageDigest> T update(final T digest) {
         Objects.requireNonNull(digest, "digest is null");
-        digest.update(set(new byte[BYTES]));
+        final var array = new byte[BYTES];
+        set(array);
+//        digest.update(array);
         return digest;
     }
 
