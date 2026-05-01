@@ -2,17 +2,29 @@ package com.github.jinahya.hello.api._java_security;
 
 import com.github.jinahya.hello.api.HelloWorldTest;
 import com.github.jinahya.hello.api.HelloWorldTestUtils;
+import com.github.jinahya.hello.api._Java_Security_TestUtils;
 import com.github.jinahya.hello.api.畵蛇添足;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.shadow.de.siegmar.fastcsv.util.Nullable;
 
+import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.Security;
 import java.util.HexFormat;
 import java.util.List;
+import java.util.Optional;
 
 @畵蛇添足
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
@@ -20,23 +32,85 @@ import java.util.List;
 class HelloWorld_Update_MessageDigest_畵蛇添足_Test
         extends HelloWorldTest {
 
-    static final List<String> ALGORITHMS = List.of(
-            "SHA-1",
-            "SHA-256",
-            "SHA-384"
-    );
+    @TempDir
+    private static File tempDir;
 
     static List<String> algorithms() {
-        return ALGORITHMS;
+        return _Java_Security_TestUtils.MESSAGE_DIGEST_ALGORITHMS;
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    @BeforeEach
+    void __() {
+        HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(service());
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    void __(final String algorithm, final @Nullable String provider) {
+        final var digest = Optional.ofNullable(provider)
+                .map(v -> {
+                    try {
+                        return MessageDigest.getInstance(algorithm, v);
+                    } catch (final NoSuchAlgorithmException nsae) {
+                        throw new RuntimeException(nsae);
+                    } catch (final NoSuchProviderException nspe) {
+                        throw new RuntimeException(nspe);
+                    }
+                })
+                .orElseGet(() -> {
+                    try {
+                        return MessageDigest.getInstance(algorithm);
+                    } catch (final NoSuchAlgorithmException nsae) {
+                        throw new RuntimeException(nsae);
+                    }
+                });
+        final var digested = service().update(digest).digest();
+        System.out.printf("%10s %10s: %s (%d)%n", digest.getProvider().getName(), algorithm,
+                          HexFormat.of().formatHex(digested), digested.length);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    @MethodSource({"algorithms"})
+    @ParameterizedTest
+    void __(final String algorithm) {
+        __(algorithm, null);
     }
 
     @MethodSource({"algorithms"})
     @ParameterizedTest
-    void __(final String algorithm) throws NoSuchAlgorithmException {
-        final var service = HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(service());
-        final var digest = MessageDigest.getInstance(algorithm);
-        final var digested = service.update(digest).digest();
-        System.out.printf("%10s: %s (%d)%n", algorithm, HexFormat.of().formatHex(digested),
-                          digested.length);
+    void __BC(final String algorithm) {
+        if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
+            Security.addProvider(new BouncyCastleProvider());
+        }
+        __(algorithm, BouncyCastleProvider.PROVIDER_NAME);
+    }
+
+    @Test
+    void avalanche_effect__() throws NoSuchAlgorithmException {
+        final var a = "hello, world".getBytes(StandardCharsets.US_ASCII);
+        final var b = "hello, worle".getBytes(StandardCharsets.US_ASCII);
+        final var ha = MessageDigest.getInstance("SHA-256").digest(a);
+        final var hb = MessageDigest.getInstance("SHA-256").digest(b);
+        int diff = 0;
+        for (var i = 0; i < ha.length; i++) {
+            diff += Integer.bitCount((ha[i] ^ hb[i]) & 0xFF);
+        }
+        System.out.printf("hello, world: %s%n", HexFormat.of().formatHex(ha));
+        System.out.printf("hello, worle: %s%n", HexFormat.of().formatHex(hb));
+        System.out.printf("flipped bits: %d / %d (%.1f%%)%n",
+                          diff, ha.length * 8, diff * 100.0 / (ha.length * 8));
+    }
+
+    @ValueSource(strings = {
+            "iloveyou",
+            "iloveyou!",
+            "test1234",
+            "test1234!"
+    })
+    @ParameterizedTest
+    void rainbow_attack__(final String password) throws NoSuchAlgorithmException {
+        final var digested = MessageDigest.getInstance("SHA-1")
+                .digest(password.getBytes(StandardCharsets.US_ASCII));
+        System.out.printf("%10s %s%n", password, HexFormat.of().formatHex(digested));
     }
 }

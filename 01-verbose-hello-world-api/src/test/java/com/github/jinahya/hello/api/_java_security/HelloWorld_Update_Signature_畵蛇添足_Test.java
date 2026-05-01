@@ -2,26 +2,25 @@ package com.github.jinahya.hello.api._java_security;
 
 import com.github.jinahya.hello.api.HelloWorldTest;
 import com.github.jinahya.hello.api.HelloWorldTestUtils;
+import com.github.jinahya.hello.api._Java_Security_TestUtils;
 import com.github.jinahya.hello.api.畵蛇添足;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import java.security.InvalidAlgorithmParameterException;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
+import java.io.File;
 import java.security.Signature;
-import java.security.spec.AlgorithmParameterSpec;
+import java.security.SignatureException;
 import java.security.spec.ECGenParameterSpec;
 import java.security.spec.MGF1ParameterSpec;
 import java.security.spec.PSSParameterSpec;
@@ -35,35 +34,16 @@ import java.util.stream.Stream;
 class HelloWorld_Update_Signature_畵蛇添足_Test
         extends HelloWorldTest {
 
-    static final List<String> ALGORITHMS = List.of(
-            "RSASSA-PSS",
-            "SHA1withDSA",
-            "SHA256withDSA",
-            "SHA256withECDSA",
-            "SHA384withECDS",
-            "SHA1withRSA",
-            "SHA256withRSA",
-            "SHA384withRSA"
-    );
+    @TempDir
+    private static File tempDir;
+
+    @BeforeEach
+    void __() throws SignatureException {
+        HelloWorldTestUtils.update_signature_updates_hello_world_bytes(service());
+    }
 
     static List<String> algorithms() {
-        return ALGORITHMS;
-    }
-
-    static KeyPair generateKeyPair(final String algorithm, final int keysize)
-            throws NoSuchAlgorithmException {
-        final var generator = KeyPairGenerator.getInstance(algorithm);
-        final var random = SecureRandom.getInstanceStrong();
-        generator.initialize(keysize, random);
-        return generator.generateKeyPair();
-    }
-
-    static KeyPair generateKeyPair(final String algorithm, final AlgorithmParameterSpec spec)
-            throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
-        final var generator = KeyPairGenerator.getInstance(algorithm);
-        final var random = SecureRandom.getInstanceStrong();
-        generator.initialize(spec, random);
-        return generator.generateKeyPair();
+        return _Java_Security_TestUtils.SIGNATURE_ALGORITHMS;
     }
 
     @DisplayName("RSASSA-PSS")
@@ -87,11 +67,13 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
 
         @ParameterizedTest(name = "{0}-bit RSA with {1}")
         @MethodSource("pssTestProvider")
-        void __(int keysize, final MGF1ParameterSpec mgfSpec, final int saltLen)
-                throws Exception {
+        void __(int keysize, final MGF1ParameterSpec mgfSpec, final int saltLen) throws Exception {
             // ------------------------------------------------------------------------------- given
-            final var service = HelloWorldTestUtils.set_array_returns_the_array(service());
-            final var keyPair = generateKeyPair(KEY_PAIR_ALGORITHM, keysize);
+            final var service = service();
+            final var keyPair = _Java_Security_TestUtils.generateKeyPair(
+                    KEY_PAIR_ALGORITHM,
+                    keysize
+            );
             final var pssSpec = new PSSParameterSpec(
                     mgfSpec.getDigestAlgorithm(),
                     MGF1_ALGORITHM,
@@ -144,7 +126,8 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
                 throws Exception {
             // ------------------------------------------------------------------------------- given
             final var service = HelloWorldTestUtils.set_array_returns_the_array(service());
-            final var keyPair = generateKeyPair(KEY_PAIR_ALGORITHM, keysize);
+            final var keyPair = _Java_Security_TestUtils.generateKeyPair(KEY_PAIR_ALGORITHM,
+                                                                         keysize);
             // -------------------------------------------------------------------------------- when
             final var instance = Signature.getInstance(SIGNATURE_ALGORITHM);
             // --------------------------------------------------------------- sign with private key
@@ -177,7 +160,8 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
                 throws Exception {
             // ------------------------------------------------------------------------------- given
             final var service = HelloWorldTestUtils.set_array_returns_the_array(service());
-            final var keyPair = generateKeyPair(KEY_PAIR_ALGORITHM, keysize);
+            final var keyPair = _Java_Security_TestUtils.generateKeyPair(KEY_PAIR_ALGORITHM,
+                                                                         keysize);
             // -------------------------------------------------------------------------------- when
             final var instance = Signature.getInstance(SIGNATURE_ALGORITHM);
             // --------------------------------------------------------------- sign with private key
@@ -209,8 +193,9 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
                 throws Exception {
             // ------------------------------------------------------------------------------- given
             final var service = HelloWorldTestUtils.set_array_returns_the_array(service());
-            final var keyPair = generateKeyPair(KEY_PAIR_ALGORITHM,
-                                                new ECGenParameterSpec(CURVE_NAME));
+            final var keyPair = _Java_Security_TestUtils.generateKeyPair(KEY_PAIR_ALGORITHM,
+                                                                         new ECGenParameterSpec(
+                                                                                 CURVE_NAME));
             // -------------------------------------------------------------------------------- when
             final var instance = Signature.getInstance(SIGNATURE_ALGORITHM);
             // --------------------------------------------------------------- sign with private key
@@ -242,8 +227,9 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
                 throws Exception {
             // ------------------------------------------------------------------------------- given
             final var service = HelloWorldTestUtils.set_array_returns_the_array(service());
-            final var keyPair = generateKeyPair(KEY_PAIR_ALGORITHM,
-                                                new ECGenParameterSpec(CURVE_NAME));
+            final var keyPair = _Java_Security_TestUtils.generateKeyPair(KEY_PAIR_ALGORITHM,
+                                                                         new ECGenParameterSpec(
+                                                                                 CURVE_NAME));
             // -------------------------------------------------------------------------------- when
             final var instance = Signature.getInstance(SIGNATURE_ALGORITHM);
             // --------------------------------------------------------------- sign with private key
@@ -276,7 +262,8 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
                 throws Exception {
             // ------------------------------------------------------------------------------- given
             final var service = HelloWorldTestUtils.set_array_returns_the_array(service());
-            final var keyPair = generateKeyPair(KEY_PAIR_ALGORITHM, keysize);
+            final var keyPair = _Java_Security_TestUtils.generateKeyPair(KEY_PAIR_ALGORITHM,
+                                                                         keysize);
             // -------------------------------------------------------------------------------- when
             final var instance = Signature.getInstance(SIGNATURE_ALGORITHM);
             // --------------------------------------------------------------- sign with private key
@@ -309,7 +296,8 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
                 throws Exception {
             // ------------------------------------------------------------------------------- given
             final var service = HelloWorldTestUtils.set_array_returns_the_array(service());
-            final var keyPair = generateKeyPair(KEY_PAIR_ALGORITHM, keysize);
+            final var keyPair = _Java_Security_TestUtils.generateKeyPair(KEY_PAIR_ALGORITHM,
+                                                                         keysize);
             // -------------------------------------------------------------------------------- when
             final var instance = Signature.getInstance(SIGNATURE_ALGORITHM);
             // --------------------------------------------------------------- sign with private key
@@ -342,7 +330,8 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
                 throws Exception {
             // ------------------------------------------------------------------------------- given
             final var service = HelloWorldTestUtils.set_array_returns_the_array(service());
-            final var keyPair = generateKeyPair(KEY_PAIR_ALGORITHM, keysize);
+            final var keyPair = _Java_Security_TestUtils.generateKeyPair(KEY_PAIR_ALGORITHM,
+                                                                         keysize);
             // -------------------------------------------------------------------------------- when
             final var instance = Signature.getInstance(SIGNATURE_ALGORITHM);
             // --------------------------------------------------------------- sign with private key

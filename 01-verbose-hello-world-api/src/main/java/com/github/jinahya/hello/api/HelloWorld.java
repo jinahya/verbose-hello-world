@@ -1186,7 +1186,9 @@ public interface HelloWorld {
      */
     default <T extends Signature> T update(final T signature) throws SignatureException {
         Objects.requireNonNull(signature, "signature is null");
-        signature.update(set(new byte[BYTES]));
+        final var array = new byte[BYTES];
+        set(array);
+        signature.update(array);
         return signature;
     }
 

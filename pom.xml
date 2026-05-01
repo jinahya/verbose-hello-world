@@ -254,6 +254,7 @@
       <dependency>
         <groupId>org.bouncycastle</groupId>
         <artifactId>bcprov-lts8on</artifactId>
+        <!-- https://central.sonatype.com/artifact/org.bouncycastle/bcprov-lts8on/versions -->
         <version>2.73.10</version>
       </dependency>
       <dependency>

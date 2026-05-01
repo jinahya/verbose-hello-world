@@ -49,6 +49,8 @@ import java.nio.channels.WritableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.security.Signature;
+import java.security.SignatureException;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
@@ -564,6 +566,19 @@ public final class HelloWorldTestUtils {
             }
             return path;
         }).when(service).append(ArgumentMatchers.<Path>notNull());
+        return service;
+    }
+
+    // ------------------------------------------------------------------------------- java.security
+    public static <T extends HelloWorld> T update_signature_updates_hello_world_bytes(
+            final T service)
+            throws SignatureException {
+        requireMock(service);
+        Mockito.doAnswer(i -> {
+            final var signature = i.getArgument(0, Signature.class);
+            signature.update(hello_world_byte_array());
+            return signature;
+        }).when(service).update(ArgumentMatchers.<Signature>notNull());
         return service;
     }
 
